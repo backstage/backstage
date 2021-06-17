@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
+import { IncidentsPage } from '../IncidentsPage';
+import { UptimeMonitorsPage } from '../UptimeMonitorsPage';
+import { OnCallSchedulesPage } from '../OnCallSchedulesPage';
 import {
   Page,
   Header,
   HeaderTabs,
   HeaderLabel,
   Content,
-} from '@backstage/core';
-import { IncidentsPage } from '../IncidentsPage';
-import { UptimeMonitorsPage } from '../UptimeMonitorsPage';
-import { OnCallSchedulesPage } from '../OnCallSchedulesPage';
+} from '@backstage/core-components';
 
 export const ILertPage = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);

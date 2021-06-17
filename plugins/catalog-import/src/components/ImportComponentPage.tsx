@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
+import { Grid, Typography } from '@material-ui/core';
+import React from 'react';
+import { ImportStepper } from './ImportStepper';
+import { StepperProviderOpts } from './ImportStepper/defaults';
+
+import { ConfigApi, configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
-  ConfigApi,
-  configApiRef,
   Content,
   ContentHeader,
   Header,
   InfoCard,
   Page,
   SupportButton,
-  useApi,
-} from '@backstage/core';
-import { Grid, Typography } from '@material-ui/core';
-import React from 'react';
-import { ImportStepper } from './ImportStepper';
-import { StepperProviderOpts } from './ImportStepper/defaults';
+} from '@backstage/core-components';
 
 function repositories(configApi: ConfigApi): string[] {
   const integrations = configApi.getConfig('integrations');

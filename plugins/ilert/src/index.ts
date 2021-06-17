@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconComponent } from '@backstage/core';
 import ILertIconComponent from './assets/ilert.icon.svg';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 export {
   ilertPlugin,

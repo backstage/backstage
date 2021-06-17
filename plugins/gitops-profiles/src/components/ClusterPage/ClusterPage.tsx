@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
+
+import { Link } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
+import { gitOpsApiRef, Status } from '../../api';
+import { transformRunStatus } from '../ProfileCatalog';
+
 import {
   Content,
   Header,
@@ -21,14 +27,8 @@ import {
   Table,
   Progress,
   HeaderLabel,
-  useApi,
-  githubAuthApiRef,
-} from '@backstage/core';
-
-import { Link } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
-import { gitOpsApiRef, Status } from '../../api';
-import { transformRunStatus } from '../ProfileCatalog';
+} from '@backstage/core-components';
+import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
 
 const ClusterPage = () => {
   const params = useParams() as { owner: string; repo: string };

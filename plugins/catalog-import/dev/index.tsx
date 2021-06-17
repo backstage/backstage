@@ -16,7 +16,6 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, EntityName } from '@backstage/catalog-model';
-import { Content, Header, InfoCard, Page } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Grid, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
@@ -31,6 +30,7 @@ import {
   ImportStepper,
 } from '../src';
 import { ImportComponentPage } from '../src/components/ImportComponentPage';
+import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 
 const getEntityNames = (url: string): EntityName[] => [
   {

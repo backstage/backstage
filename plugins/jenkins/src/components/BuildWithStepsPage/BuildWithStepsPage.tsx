@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Breadcrumbs, Content, Link, useRouteRefParams } from '@backstage/core';
 import {
   Box,
   Link as MaterialLink,
@@ -32,6 +31,9 @@ import { buildRouteRef } from '../../plugin';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import { useBuildWithSteps } from '../useBuildWithSteps';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
+
+import { Breadcrumbs, Content, Link } from '@backstage/core-components';
+import { useRouteRefParams } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   root: {

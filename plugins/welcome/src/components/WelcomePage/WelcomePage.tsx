@@ -24,6 +24,7 @@ import {
   ListItemText,
   Link,
 } from '@material-ui/core';
+
 import {
   Content,
   InfoCard,
@@ -33,9 +34,9 @@ import {
   ContentHeader,
   SupportButton,
   WarningPanel,
-  useApi,
-  configApiRef,
-} from '@backstage/core';
+} from '@backstage/core-components';
+
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const WelcomePage = () => {
   const appTitle =

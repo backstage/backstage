@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { KubernetesApi } from './types';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;

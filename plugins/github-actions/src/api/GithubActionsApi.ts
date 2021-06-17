@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { RestEndpointMethodTypes } from '@octokit/rest';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',

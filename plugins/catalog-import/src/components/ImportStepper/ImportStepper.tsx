@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  configApiRef,
-  InfoCard,
-  InfoCardVariants,
-  useApi,
-} from '@backstage/core';
 import { Step, StepContent, Stepper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useMemo } from 'react';
@@ -31,6 +25,9 @@ import {
   StepperProvider,
   StepperProviderOpts,
 } from './defaults';
+
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
   stepperRoot: {

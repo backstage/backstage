@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Progress, ResponseErrorPanel, useApi } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -43,6 +42,9 @@ import {
   YAxis,
 } from 'recharts';
 import { codeCoverageApiRef } from '../../api';
+
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 type Coverage = 'line' | 'branch';
 

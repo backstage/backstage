@@ -21,7 +21,7 @@ import { rootRouteRef, buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
-import { MissingAnnotationEmptyState } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);

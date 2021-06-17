@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { lighthouseApiRef, LighthouseRestApi } from './api';
 import {
   createPlugin,
   createRouteRef,
@@ -21,8 +22,7 @@ import {
   configApiRef,
   createRoutableExtension,
   createComponentExtension,
-} from '@backstage/core';
-import { lighthouseApiRef, LighthouseRestApi } from './api';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '',

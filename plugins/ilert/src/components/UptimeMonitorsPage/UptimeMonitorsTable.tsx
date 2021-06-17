@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableColumn } from '@backstage/core';
 import { TableState } from '../../api';
 import { UptimeMonitor } from '../../types';
 import { StatusChip } from './StatusChip';
@@ -26,6 +25,7 @@ import { EscalationPolicyLink } from '../EscalationPolicy/EscalationPolicyLink';
 import { UptimeMonitorCheckType } from './UptimeMonitorCheckType';
 import { UptimeMonitorActionsMenu } from '../UptimeMonitor/UptimeMonitorActionsMenu';
 import { UptimeMonitorLink } from '../UptimeMonitor/UptimeMonitorLink';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   empty: {

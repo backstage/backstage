@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Observable } from '@backstage/core';
 import ObservableImpl from 'zen-observable';
 import { ResponseError } from '@backstage/errors';
 import { Schema } from 'jsonschema';
 import { ConfigSchemaApi, ConfigSchemaResult } from './types';
+import { Observable } from '@backstage/core-plugin-api';
 
 const DEFAULT_URL = 'config-schema.json';
 

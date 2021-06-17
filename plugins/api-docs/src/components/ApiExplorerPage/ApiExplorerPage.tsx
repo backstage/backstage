@@ -15,13 +15,6 @@
  */
 
 import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  TableColumn,
-  useRouteRef,
-} from '@backstage/core';
-import {
   EntityKindPicker,
   EntityLifecyclePicker,
   EntityListProvider,
@@ -37,6 +30,14 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
+
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  TableColumn,
+} from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

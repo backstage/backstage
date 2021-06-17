@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import { Progress, useApi, errorApiRef } from '@backstage/core';
 import { useAsync } from 'react-use';
 import Radar from '../components/Radar';
 import {
@@ -24,6 +23,9 @@ import {
   TechRadarLoaderResponse,
 } from '../api';
 import { Entry } from '../utils/types';
+
+import { Progress } from '@backstage/core-components';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 const useTechRadarLoader = () => {
   const errorApi = useApi(errorApiRef);

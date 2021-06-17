@@ -15,9 +15,9 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const ApiTypeTitle = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const config = useApi(apiDocsConfigRef);

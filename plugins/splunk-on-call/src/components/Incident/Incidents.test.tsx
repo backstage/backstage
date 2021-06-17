@@ -17,16 +17,16 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { splunkOnCallApiRef } from '../../api';
+import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
+
 import {
   alertApiRef,
-  ApiProvider,
-  ApiRegistry,
   createApiRef,
   IdentityApi,
   identityApiRef,
-} from '@backstage/core';
-import { splunkOnCallApiRef } from '../../api';
-import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
+} from '@backstage/core-plugin-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const mockIdentityApi: Partial<IdentityApi> = {
   getUserId: () => 'test',

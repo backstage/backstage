@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  configApiRef,
-  ConfigReader,
-  googleAuthApiRef,
-} from '@backstage/core';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { AuthProviders } from './AuthProviders';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import { configApiRef, googleAuthApiRef } from '@backstage/core-plugin-api';
 
 const mockSignInHandler = jest.fn().mockReturnValue('');
 const mockGoogleAuth = {

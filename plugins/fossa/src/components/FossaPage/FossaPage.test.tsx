@@ -15,12 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaPage } from './FossaPage';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<FossaPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {

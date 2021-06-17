@@ -20,9 +20,15 @@ import { generatePath } from 'react-router-dom';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import ShareIcon from '@material-ui/icons/Share';
-import { Table, EmptyState, Button, SubvalueCell, Link } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { rootDocsRouteRef } from '../../routes';
+import {
+  Table,
+  EmptyState,
+  Button,
+  SubvalueCell,
+  Link,
+} from '@backstage/core-components';
 
 export const DocsTable = ({
   entities,

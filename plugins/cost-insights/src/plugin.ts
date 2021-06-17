@@ -18,7 +18,7 @@ import {
   createPlugin,
   createRouteRef,
   createRoutableExtension,
-} from '@backstage/core';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',

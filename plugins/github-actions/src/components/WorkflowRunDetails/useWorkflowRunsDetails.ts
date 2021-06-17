@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, useRouteRefParams } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
 import { buildRouteRef } from '../../routes';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 
 export const useWorkflowRunsDetails = ({
   hostname,

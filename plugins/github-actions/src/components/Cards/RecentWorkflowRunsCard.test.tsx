@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  errorApiRef,
-  configApiRef,
-  ConfigApi,
-  ConfigReader,
-} from '@backstage/core';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
@@ -31,6 +23,17 @@ import { MemoryRouter } from 'react-router';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import {
+  errorApiRef,
+  configApiRef,
+  ConfigApi,
+} from '@backstage/core-plugin-api';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),

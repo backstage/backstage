@@ -15,13 +15,6 @@
  */
 import React, { useEffect, useState } from 'react';
 import {
-  ApiRef,
-  SessionApi,
-  useApi,
-  IconComponent,
-  SessionState,
-} from '@backstage/core';
-import {
   Button,
   ListItem,
   ListItemIcon,
@@ -29,6 +22,13 @@ import {
   ListItemText,
   Tooltip,
 } from '@material-ui/core';
+import {
+  ApiRef,
+  SessionApi,
+  useApi,
+  IconComponent,
+  SessionState,
+} from '@backstage/core-plugin-api';
 
 type Props = {
   title: string;

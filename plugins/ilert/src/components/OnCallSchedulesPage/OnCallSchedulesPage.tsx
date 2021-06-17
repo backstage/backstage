@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
+import { AuthenticationError } from '@backstage/errors';
+import { OnCallSchedulesGrid } from './OnCallSchedulesGrid';
+import { MissingAuthorizationHeaderError } from '../Errors';
+import { useOnCallSchedules } from '../../hooks/useOnCallSchedules';
 import {
   Content,
   ContentHeader,
   SupportButton,
   ResponseErrorPanel,
-} from '@backstage/core';
-import { AuthenticationError } from '@backstage/errors';
-import { OnCallSchedulesGrid } from './OnCallSchedulesGrid';
-import { MissingAuthorizationHeaderError } from '../Errors';
-import { useOnCallSchedules } from '../../hooks/useOnCallSchedules';
+} from '@backstage/core-components';
 
 export const OnCallSchedulesPage = () => {
   const [

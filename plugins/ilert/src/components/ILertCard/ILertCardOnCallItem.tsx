@@ -27,9 +27,9 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { makeStyles } from '@material-ui/core/styles';
 import { OnCall } from '../../types';
-import { useApi } from '@backstage/core';
 import { ilertApiRef } from '../../api';
 import { DateTime as dt } from 'luxon';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   listItemPrimary: {

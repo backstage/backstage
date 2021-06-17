@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core';
 import {
   Box,
   Checkbox,
@@ -35,6 +34,7 @@ import {
 import { StepPrepareSelectLocations } from '../StepPrepareSelectLocations';
 import { StepReviewLocation } from '../StepReviewLocation';
 import { ImportFlows, ImportState } from '../useImportState';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 export type StepperProviderOpts = {
   pullRequest?: {

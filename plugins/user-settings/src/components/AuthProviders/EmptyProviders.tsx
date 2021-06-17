@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { CodeSnippet, EmptyState } from '@backstage/core';
 import { Button, Typography } from '@material-ui/core';
+import { CodeSnippet, EmptyState } from '@backstage/core-components';
 
 const EXAMPLE = `auth:
   providers:

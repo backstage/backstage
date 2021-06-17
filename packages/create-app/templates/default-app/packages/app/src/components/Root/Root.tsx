@@ -23,6 +23,9 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+import { NavLink } from 'react-router-dom';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { SidebarSearch } from '@backstage/plugin-search';
 import {
   Sidebar,
   SidebarPage,
@@ -31,10 +34,7 @@ import {
   SidebarItem,
   SidebarDivider,
   SidebarSpace,
-} from '@backstage/core';
-import { NavLink } from 'react-router-dom';
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearch } from '@backstage/plugin-search';
+} from '@backstage/core-components';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

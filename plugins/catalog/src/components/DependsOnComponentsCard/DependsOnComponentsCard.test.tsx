@@ -15,7 +15,6 @@
  */
 
 import { Entity, RELATION_DEPENDS_ON } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
   catalogApiRef,
@@ -25,6 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { DependsOnComponentsCard } from './DependsOnComponentsCard';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<DependsOnComponentsCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {

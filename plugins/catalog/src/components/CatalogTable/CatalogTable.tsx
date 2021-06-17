@@ -15,13 +15,6 @@
  */
 import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
 import {
-  CodeSnippet,
-  Table,
-  TableColumn,
-  TableProps,
-  WarningPanel,
-} from '@backstage/core';
-import {
   formatEntityRefTitle,
   getEntityMetadataEditUrl,
   getEntityMetadataViewUrl,
@@ -39,6 +32,13 @@ import {
 } from '../FavouriteEntity/FavouriteEntity';
 import * as columnFactories from './columns';
 import { EntityRow } from './types';
+import {
+  CodeSnippet,
+  Table,
+  TableColumn,
+  TableProps,
+  WarningPanel,
+} from '@backstage/core-components';
 
 const defaultColumns: TableColumn<EntityRow>[] = [
   columnFactories.createNameColumn(),

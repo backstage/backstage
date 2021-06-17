@@ -16,8 +16,8 @@
 
 import { useKubernetesObjects } from './useKubernetesObjects';
 import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import { renderHook } from '@testing-library/react-hooks';
+import { useApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core');
 

@@ -18,10 +18,10 @@ import React from 'react';
 import { GraphiQLPage } from './GraphiQLPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { act } from 'react-dom/test-utils';
 import { renderWithEffects } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',

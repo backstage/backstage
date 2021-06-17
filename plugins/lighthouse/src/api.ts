@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { Config } from '@backstage/config';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export type LighthouseCategoryId =
   | 'pwa'

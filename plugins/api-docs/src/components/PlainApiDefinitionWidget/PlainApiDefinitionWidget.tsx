@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { CodeSnippet } from '@backstage/core';
 import React from 'react';
+import { CodeSnippet } from '@backstage/core-components';
 
 type Props = {
   definition: any;

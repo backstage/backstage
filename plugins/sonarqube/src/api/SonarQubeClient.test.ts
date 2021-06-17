@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { UrlPatternDiscovery } from '@backstage/core';
 import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { FindingSummary, SonarQubeClient } from './index';
 import { ComponentWrapper, MeasuresWrapper } from './types';
+import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 const server = setupServer();
 

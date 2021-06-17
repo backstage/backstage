@@ -16,8 +16,8 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core';
 import { CodeCoveragePage } from './CodeCoveragePage';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const isCodeCoverageAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.['backstage.io/code-coverage']);

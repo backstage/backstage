@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { circleCIApiRef, CircleCIApi } from './api';
+import { circleCIRouteRef } from './route-refs';
 import {
   createPlugin,
   createApiFactory,
   discoveryApiRef,
   createRoutableExtension,
-} from '@backstage/core';
-import { circleCIApiRef, CircleCIApi } from './api';
-import { circleCIRouteRef } from './route-refs';
+} from '@backstage/core-plugin-api';
 
 export const circleCIPlugin = createPlugin({
   id: 'circleci',

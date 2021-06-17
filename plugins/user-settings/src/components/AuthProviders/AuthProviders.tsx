@@ -16,9 +16,11 @@
 
 import React from 'react';
 import { List } from '@material-ui/core';
-import { configApiRef, InfoCard, useApi } from '@backstage/core';
 import { EmptyProviders } from './EmptyProviders';
 import { DefaultProviderSettings } from './DefaultProviderSettings';
+
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { InfoCard } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;

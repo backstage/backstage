@@ -16,7 +16,6 @@
 
 import React, { ReactNode, useMemo, useState } from 'react';
 import BadgeIcon from '@material-ui/icons/CallToAction';
-import { EmptyState } from '@backstage/core';
 import {
   EntityApiDefinitionCard,
   EntityConsumingComponentsCard,
@@ -108,6 +107,7 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
+import { EmptyState } from '@backstage/core-components';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);

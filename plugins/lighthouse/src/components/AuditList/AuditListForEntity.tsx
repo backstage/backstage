@@ -15,8 +15,8 @@
  */
 import React from 'react';
 import { AuditListTable } from './AuditListTable';
-import { Progress } from '@backstage/core';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
+import { Progress } from '@backstage/core-components';
 
 export const AuditListForEntity = () => {
   const { value, loading, error } = useWebsiteForEntity();

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { Project, Operation } from './types';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const gcpApiRef = createApiRef<GcpApi>({
   id: 'plugin.gcpprojects.service',

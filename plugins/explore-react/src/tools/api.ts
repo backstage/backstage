@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
   id: 'plugin.explore.toolsconfig',

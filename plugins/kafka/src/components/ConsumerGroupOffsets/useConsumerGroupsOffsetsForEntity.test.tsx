@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { EntityContext } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import { when } from 'jest-when';
@@ -26,6 +25,9 @@ import {
 } from '../../api/types';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
 import * as data from './__fixtures__/consumer-group-offsets.json';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
 

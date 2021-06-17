@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createComponentExtension } from '@backstage/core';
 import { bitrisePlugin } from './plugin';
+import { createComponentExtension } from '@backstage/core-plugin-api';
 
 export const EntityBitriseContent = bitrisePlugin.provide(
   createComponentExtension({

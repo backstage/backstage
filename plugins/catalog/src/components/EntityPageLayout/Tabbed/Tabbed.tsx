@@ -24,8 +24,8 @@ import {
   Navigate,
   RouteMatch,
 } from 'react-router';
-import { Tab, HeaderTabs, Content } from '@backstage/core';
 import { Helmet } from 'react-helmet';
+import { Tab, HeaderTabs, Content } from '@backstage/core-components';
 
 const getSelectedIndexOrDefault = (
   matchedRoute: RouteMatch,

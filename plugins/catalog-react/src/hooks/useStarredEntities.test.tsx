@@ -17,10 +17,10 @@
 import React, { PropsWithChildren } from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useStarredEntities } from './useStarredEntities';
-import { ApiProvider, ApiRegistry, WebStorage } from '@backstage/core';
 import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
 import { MockErrorApi } from '@backstage/test-utils';
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry, WebStorage } from '@backstage/core-app-api';
 
 describe('useStarredEntities', () => {
   let mockStorage: StorageApi | undefined;

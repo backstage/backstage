@@ -18,7 +18,6 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { ShortcutItem } from './ShortcutItem';
 import { Shortcut } from './types';
-import { SidebarContext } from '@backstage/core';
 import { LocalStoredShortcuts } from './api';
 import {
   MockStorageApi,
@@ -26,6 +25,7 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import { pageTheme } from '@backstage/theme';
+import { SidebarContext } from '@backstage/core-components';
 
 describe('ShortcutItem', () => {
   const shortcut: Shortcut = {

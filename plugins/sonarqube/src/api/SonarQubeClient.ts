@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
 import fetch from 'cross-fetch';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
 import { ComponentWrapper, MeasuresWrapper } from './types';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;

@@ -16,12 +16,11 @@
 
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
-import { useApi } from '@backstage/core';
-
 import {
   GetLatestReleaseResult,
   GetRepositoryResult,
 } from '../../../api/GitReleaseClient';
+
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
 import { getReleaseCandidateGitInfo } from '../../../helpers/getReleaseCandidateGitInfo';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
@@ -30,6 +29,7 @@ import { Project } from '../../../contexts/ProjectContext';
 import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
+import { useApi } from '@backstage/core-plugin-api';
 
 interface UseCreateReleaseCandidate {
   defaultBranch: GetRepositoryResult['repository']['defaultBranch'];

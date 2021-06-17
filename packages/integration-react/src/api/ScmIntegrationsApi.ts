@@ -15,11 +15,11 @@
  */
 
 import { Config } from '@backstage/config';
-import { ApiRef, createApiRef } from '@backstage/core';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
+import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 
 export class ScmIntegrationsApi {
   static fromConfig(config: Config): ScmIntegrationRegistry {

@@ -16,7 +16,6 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
-import { DiscoveryApi, IdentityApi, OAuthApi } from '@backstage/core';
 import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
@@ -26,6 +25,11 @@ import { Octokit } from '@octokit/rest';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
+import {
+  DiscoveryApi,
+  IdentityApi,
+  OAuthApi,
+} from '@backstage/core-plugin-api';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;

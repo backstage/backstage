@@ -15,8 +15,8 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { createApiRef } from '@backstage/core';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',

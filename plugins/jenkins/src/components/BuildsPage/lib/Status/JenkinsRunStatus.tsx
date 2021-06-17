@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import {
   StatusPending,
   StatusRunning,
@@ -21,8 +22,7 @@ import {
   StatusWarning,
   StatusAborted,
   StatusError,
-} from '@backstage/core';
-import React from 'react';
+} from '@backstage/core-components';
 
 export const JenkinsRunStatus = ({
   status,

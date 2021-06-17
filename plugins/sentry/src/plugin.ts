@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { ProductionSentryApi, sentryApiRef } from './api';
 import {
   configApiRef,
   createApiFactory,
   createPlugin,
   createRouteRef,
   discoveryApiRef,
-} from '@backstage/core';
-import { ProductionSentryApi, sentryApiRef } from './api';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '/sentry',

@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import { GetIncidentsOpts, ilertApiRef, TableState } from '../api';
-import { useApi, errorApiRef } from '@backstage/core';
 import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import {
@@ -25,6 +24,7 @@ import {
   IncidentStatus,
   AlertSource,
 } from '../types';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export const useIncidents = (
   paging: boolean,

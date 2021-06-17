@@ -15,11 +15,11 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { ApiTypeTitle } from './ApiTypeTitle';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ApiTypeTitle />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {

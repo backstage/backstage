@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  GithubAuth,
-  githubAuthApiRef,
-  OAuthRequestManager,
-  UrlPatternDiscovery,
-} from '@backstage/core';
 import { renderInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 import ProfileCatalog from './ProfileCatalog';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  GithubAuth,
+  OAuthRequestManager,
+  UrlPatternDiscovery,
+} from '@backstage/core-app-api';
+
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
 
 describe('ProfileCatalog', () => {
   it('should render', async () => {

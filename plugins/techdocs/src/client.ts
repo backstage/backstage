@@ -16,10 +16,10 @@
 
 import { EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { NotFoundError } from '@backstage/errors';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 /**
  * API to talk to techdocs-backend.

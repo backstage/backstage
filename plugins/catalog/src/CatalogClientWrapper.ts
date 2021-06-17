@@ -23,7 +23,7 @@ import {
   CatalogListResponse,
   CatalogClient,
 } from '@backstage/catalog-client';
-import { IdentityApi } from '@backstage/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 type CatalogRequestOptions = {
   token?: string;

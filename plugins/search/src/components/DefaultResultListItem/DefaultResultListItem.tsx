@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { Link } from '@backstage/core';
 import { IndexableDocument } from '@backstage/search-common';
 import { ListItem, ListItemText, Divider } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 
 type Props = {
   result: IndexableDocument;

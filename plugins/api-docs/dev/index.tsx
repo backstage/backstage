@@ -15,7 +15,6 @@
  */
 
 import { ApiEntity, Entity } from '@backstage/catalog-model';
-import { Content, Header, Page } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import React from 'react';
@@ -29,6 +28,7 @@ import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
+import { Content, Header, Page } from '@backstage/core-components';
 
 const mockEntities = ([
   openapiApiEntity,

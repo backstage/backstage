@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { errorApiRef, useApi } from '@backstage/core';
 import { useCallback } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildName: string) {

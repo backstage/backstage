@@ -22,7 +22,7 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import { SidebarPinStateContext } from '@backstage/core';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 export const PinButton = () => {
   const { isPinned, toggleSidebarPinState } = useContext(

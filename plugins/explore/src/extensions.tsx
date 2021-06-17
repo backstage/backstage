@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { explorePlugin } from './plugin';
+import { exploreRouteRef } from './routes';
 import {
   createComponentExtension,
   createRoutableExtension,
-} from '@backstage/core';
-import { explorePlugin } from './plugin';
-import { exploreRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const ExplorePage = explorePlugin.provide(
   createRoutableExtension({

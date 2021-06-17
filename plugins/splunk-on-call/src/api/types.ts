@@ -21,7 +21,7 @@ import {
   Team,
   User,
 } from '../components/types';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type MessageType =
   | 'CRITICAL'

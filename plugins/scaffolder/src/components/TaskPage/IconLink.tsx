@@ -15,9 +15,11 @@
  */
 
 import React from 'react';
-import { IconComponent, Link } from '@backstage/core';
 import { Grid, LinkProps, makeStyles, Typography } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
+
+import { IconComponent } from '@backstage/core-plugin-api';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   svgIcon: {

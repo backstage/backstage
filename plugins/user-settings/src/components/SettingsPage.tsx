@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Header, Page, TabbedLayout } from '@backstage/core';
 import React from 'react';
 import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
 import { General } from './General';
+import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;

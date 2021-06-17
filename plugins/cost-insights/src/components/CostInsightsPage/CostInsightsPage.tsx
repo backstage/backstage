@@ -23,7 +23,6 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { ActionItems } from '../ActionItems';
@@ -60,6 +59,9 @@ import {
   isAlertDismissed,
   isAlertSnoozed,
 } from '../../utils/alerts';
+
+import { Progress } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();

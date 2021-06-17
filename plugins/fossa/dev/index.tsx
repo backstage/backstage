@@ -15,7 +15,6 @@
  */
 
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { Content, Header, Page } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import {
   CatalogApi,
@@ -28,6 +27,7 @@ import { EntityFossaCard, fossaPlugin } from '../src';
 import { FindingSummary, FossaApi, fossaApiRef } from '../src/api';
 import { FossaPage } from '../src/components/FossaPage';
 import { FOSSA_PROJECT_NAME_ANNOTATION } from '../src/components/getProjectName';
+import { Content, Header, Page } from '@backstage/core-components';
 
 const entity = (name?: string) =>
   ({

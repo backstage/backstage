@@ -27,6 +27,8 @@ import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { durationHumanized, relativeTimeTo } from '../../../../util';
+import { circleCIBuildRouteRef } from '../../../../route-refs';
 import {
   StatusError,
   StatusWarning,
@@ -35,9 +37,7 @@ import {
   StatusRunning,
   Table,
   TableColumn,
-} from '@backstage/core';
-import { durationHumanized, relativeTimeTo } from '../../../../util';
-import { circleCIBuildRouteRef } from '../../../../route-refs';
+} from '@backstage/core-components';
 
 export type CITableBuildInfo = {
   id: string;

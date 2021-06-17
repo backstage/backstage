@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { Content, ContentHeader, SupportButton } from '@backstage/core';
 import React from 'react';
 import { GroupsDiagram } from './GroupsDiagram';
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+} from '@backstage/core-components';
 
 type GroupsExplorerContentProps = {
   title?: string;

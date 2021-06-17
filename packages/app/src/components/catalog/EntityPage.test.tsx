@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { cicdContent } from './EntityPage';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('EntityPage Test', () => {
   const entity = {

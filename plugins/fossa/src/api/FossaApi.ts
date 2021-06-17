@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export interface FindingSummary {
   timestamp: string;

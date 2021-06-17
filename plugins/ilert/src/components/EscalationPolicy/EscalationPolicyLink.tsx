@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useApi, Link } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { EscalationPolicy } from '../../types';
 import { ilertApiRef } from '../../api';
+
+import { useApi } from '@backstage/core-plugin-api';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   link: {

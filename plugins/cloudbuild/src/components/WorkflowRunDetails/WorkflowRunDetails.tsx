@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Breadcrumbs, Link, WarningPanel } from '@backstage/core';
 import {
   Box,
   LinearProgress,
@@ -35,6 +34,7 @@ import React from 'react';
 import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
+import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {

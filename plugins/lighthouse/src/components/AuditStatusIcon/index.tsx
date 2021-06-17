@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { StatusError, StatusOK, StatusPending } from '@backstage/core';
 import React from 'react';
 import { Audit } from '../../api';
+import {
+  StatusError,
+  StatusOK,
+  StatusPending,
+} from '@backstage/core-components';
 
 // TODO(freben): move all of this out of index
 

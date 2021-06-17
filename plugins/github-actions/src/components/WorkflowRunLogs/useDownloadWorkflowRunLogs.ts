@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const useDownloadWorkflowRunLogs = ({
   hostname,

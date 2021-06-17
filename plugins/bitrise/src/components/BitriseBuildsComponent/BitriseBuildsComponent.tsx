@@ -15,18 +15,18 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Content,
-  ContentHeader,
-  MissingAnnotationEmptyState,
-  Page,
-} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useState } from 'react';
 import { useBitriseBuildWorkflows } from '../../hooks/useBitriseBuildWorkflows';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BitriseBuildsTable } from '../BitriseBuildsTableComponent';
 import { Item, Select } from '../Select';
+import {
+  Content,
+  ContentHeader,
+  MissingAnnotationEmptyState,
+  Page,
+} from '@backstage/core-components';
 
 export type Props = {
   entity: Entity;

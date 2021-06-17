@@ -25,10 +25,10 @@ import {
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { Link } from '@backstage/core';
-
 import { ReleaseStats } from '../contexts/ReleaseStatsContext';
+
 import { RowCollapsed } from './RowCollapsed/RowCollapsed';
+import { Link } from '@backstage/core-components';
 
 const useRowStyles = makeStyles({
   root: {

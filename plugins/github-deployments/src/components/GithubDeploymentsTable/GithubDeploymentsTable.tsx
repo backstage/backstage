@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
 import { GithubDeployment } from '../../api';
 import { Typography, makeStyles } from '@material-ui/core';
 import SyncIcon from '@material-ui/icons/Sync';
 import * as columnFactories from './columns';
 import { defaultDeploymentColumns } from './presets';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   empty: {

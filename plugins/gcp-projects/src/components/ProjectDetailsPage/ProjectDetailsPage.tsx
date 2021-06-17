@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 import {
-  Content,
-  ContentHeader,
-  Header,
-  HeaderLabel,
-  Page,
-  SupportButton,
-  useApi,
-  WarningPanel,
-} from '@backstage/core';
-import {
   Button,
   ButtonGroup,
   LinearProgress,
@@ -39,6 +29,18 @@ import {
 import React from 'react';
 import { useAsync } from 'react-use';
 import { gcpApiRef } from '../../api';
+
+import {
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  Page,
+  SupportButton,
+  WarningPanel,
+} from '@backstage/core-components';
+
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {

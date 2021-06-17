@@ -19,8 +19,8 @@ import {
   ResourceEntity,
   SystemEntity,
 } from '@backstage/catalog-model';
-import { TableColumn } from '@backstage/core';
 import { EntityTable } from '@backstage/plugin-catalog-react';
+import { TableColumn } from '@backstage/core-components';
 
 export const componentEntityColumns: TableColumn<ComponentEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'component' }),

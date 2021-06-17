@@ -16,9 +16,13 @@
 
 import React from 'react';
 import { Typography } from '@material-ui/core';
-import { identityApiRef, ProfileInfo, useApi } from '@backstage/core';
 import { useCostInsightsStyles } from '../../utils/styles';
 import { Group } from '../../types';
+import {
+  identityApiRef,
+  ProfileInfo,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 function name(profile: ProfileInfo | undefined): string {
   return profile?.displayName || 'Mysterious Stranger';

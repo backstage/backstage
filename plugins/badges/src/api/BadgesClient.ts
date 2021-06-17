@@ -15,11 +15,11 @@
  */
 
 import { generatePath } from 'react-router';
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { BadgesApi, BadgeSpec } from './types';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class BadgesClient implements BadgesApi {
   private readonly discoveryApi: DiscoveryApi;

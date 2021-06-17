@@ -15,10 +15,10 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { TableColumn } from '@backstage/core';
 import { EntityTable } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
+import { TableColumn } from '@backstage/core-components';
 
 export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
   return {

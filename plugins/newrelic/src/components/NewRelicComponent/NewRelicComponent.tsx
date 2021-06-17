@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Grid } from '@material-ui/core';
+import NewRelicFetchComponent from '../NewRelicFetchComponent';
 import {
   Header,
   Page,
@@ -23,8 +24,7 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
-} from '@backstage/core';
-import NewRelicFetchComponent from '../NewRelicFetchComponent';
+} from '@backstage/core-components';
 
 const NewRelicComponent = () => (
   <Page themeId="tool">

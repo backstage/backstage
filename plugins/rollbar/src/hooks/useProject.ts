@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { ROLLBAR_ANNOTATION } from '../constants';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 export function useProjectSlugFromEntity(entity: Entity) {
   const configApi = useApi(configApiRef);

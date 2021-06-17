@@ -16,13 +16,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
 import { catalogApiRef } from '../api';
 import {
   DefaultEntityFilters,
   useEntityListProvider,
 } from './useEntityListProvider';
 import { EntityTypeFilter } from '../types';
+import { useApi } from '@backstage/core-plugin-api';
 
 type EntityTypeReturn = {
   loading: boolean;

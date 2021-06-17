@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import pLimit from 'p-limit';
 import { FindingSummary, FossaApi } from './FossaApi';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 type FossaProjectsResponse = {
   title: string;

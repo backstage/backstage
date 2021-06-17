@@ -15,7 +15,7 @@
  */
 
 import { SentryIssue } from './sentry-issue';
-import { createApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const sentryApiRef = createApiRef<SentryApi>({
   id: 'plugin.sentry.service',

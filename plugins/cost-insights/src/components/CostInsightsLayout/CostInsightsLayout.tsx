@@ -15,9 +15,9 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { Header, Page } from '@backstage/core';
 import { Group } from '../../types';
 import { CostInsightsTabs } from '../CostInsightsTabs';
+import { Header, Page } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   root: {

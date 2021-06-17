@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi } from '@backstage/core';
 import {
   AlertSource,
   Incident,
@@ -26,6 +25,7 @@ import {
   IncidentAction,
   OnCall,
 } from '../types';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type TableState = {
   page: number;

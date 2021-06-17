@@ -17,9 +17,9 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
 import { Incident } from '../types';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
   getIncidentsByServiceId: () => [],

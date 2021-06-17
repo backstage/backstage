@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Content, ContentHeader, Page } from '@backstage/core';
 import { CoverageHistoryChart } from '../CoverageHistoryChart';
 import { FileExplorer } from '../FileExplorer';
+import { Content, ContentHeader, Page } from '@backstage/core-components';
 
 export const CodeCoveragePage = () => {
   return (

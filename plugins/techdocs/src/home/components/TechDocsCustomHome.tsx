@@ -25,22 +25,22 @@ import {
   useOwnUser,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
+import { DocsTable } from './DocsTable';
+import { DocsCardGrid } from './DocsCardGrid';
+
 import {
   CodeSnippet,
   Content,
-  ConfigApi,
-  configApiRef,
   Header,
   HeaderTabs,
   Page,
   Progress,
-  useApi,
   WarningPanel,
   SupportButton,
   ContentHeader,
-} from '@backstage/core';
-import { DocsTable } from './DocsTable';
-import { DocsCardGrid } from './DocsCardGrid';
+} from '@backstage/core-components';
+
+import { ConfigApi, configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const panels = {
   DocsTable: DocsTable,

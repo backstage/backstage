@@ -15,20 +15,23 @@
  */
 
 import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  storageApiRef,
-  ConfigApi,
-  configApiRef,
-  ConfigReader,
-} from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerPage } from './ApiExplorerPage';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import {
+  storageApiRef,
+  ConfigApi,
+  configApiRef,
+} from '@backstage/core-plugin-api';
 
 describe('ApiCatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {

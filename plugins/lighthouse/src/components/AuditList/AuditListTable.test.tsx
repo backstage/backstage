@@ -17,9 +17,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp, msw } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core';
-
 import AuditListTable from './AuditListTable';
+
 import {
   WebsiteListResponse,
   lighthouseApiRef,
@@ -27,8 +26,9 @@ import {
 } from '../../api';
 import { formatTime } from '../../utils';
 import { setupServer } from 'msw/node';
-
 import * as data from '../../__fixtures__/website-list-response.json';
+
+import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
 
 const websiteListResponse = data as WebsiteListResponse;
 

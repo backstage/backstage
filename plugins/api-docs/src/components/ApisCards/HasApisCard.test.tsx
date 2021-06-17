@@ -15,7 +15,6 @@
  */
 
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
   catalogApiRef,
@@ -26,6 +25,7 @@ import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { HasApisCard } from './HasApisCard';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<HasApisCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {

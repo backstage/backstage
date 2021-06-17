@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { fossaApiRef, FossaClient } from './api';
+import { rootRoute } from './routes';
 import {
   configApiRef,
   createApiFactory,
   createPlugin,
   discoveryApiRef,
   identityApiRef,
-} from '@backstage/core';
-import { fossaApiRef, FossaClient } from './api';
-import { rootRoute } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const fossaPlugin = createPlugin({
   id: 'fossa',

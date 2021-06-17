@@ -16,11 +16,11 @@
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { cloudbuildApiRef } from '../api/CloudbuildApi';
-import { useApi, errorApiRef } from '@backstage/core';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   Substitutions,
 } from '../api/types';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export type WorkflowRun = {
   id: string;

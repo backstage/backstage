@@ -15,15 +15,6 @@
  */
 import React, { useCallback, useState } from 'react';
 import { useAsync } from 'react-use';
-import {
-  configApiRef,
-  EmptyState,
-  HeaderIconLinkRow,
-  IconLinkVerticalProps,
-  MissingAnnotationEmptyState,
-  Progress,
-  useApi,
-} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -42,6 +33,16 @@ import { EscalationPolicy } from './Escalation';
 import { Incidents } from './Incident';
 import { TriggerDialog } from './TriggerDialog';
 import { User } from './types';
+
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
+import {
+  EmptyState,
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+  MissingAnnotationEmptyState,
+  Progress,
+} from '@backstage/core-components';
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
 

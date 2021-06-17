@@ -26,8 +26,10 @@ import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
 import { useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
-import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
+
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress } from '@backstage/core-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

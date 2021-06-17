@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
-
 import { GitReleaseApi } from './GitReleaseClient';
+
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const gitReleaseManagerApiRef = createApiRef<GitReleaseApi>({
   id: 'plugin.git-release-manager.service',

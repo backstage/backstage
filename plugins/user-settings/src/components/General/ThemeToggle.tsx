@@ -17,7 +17,6 @@
 import React, { cloneElement } from 'react';
 import { useObservable } from 'react-use';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
-import { appThemeApiRef, useApi } from '@backstage/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -27,6 +26,7 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core';
+import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 
 type ThemeIconProps = {
   id: string;

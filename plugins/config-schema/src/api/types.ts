@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef, Observable } from '@backstage/core';
 import { Schema } from 'jsonschema';
+import { createApiRef, Observable } from '@backstage/core-plugin-api';
 
 export interface ConfigSchemaResult {
   schema?: Schema;

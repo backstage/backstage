@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import {
   MockErrorApi,
   renderInTestApp,
@@ -28,6 +27,9 @@ import { act } from 'react-dom/test-utils';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('RadarPage', () => {
   beforeAll(() => {

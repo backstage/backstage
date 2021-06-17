@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core';
 import GraphiQLIconComponent from './assets/graphiql.icon.svg';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 export {
   graphiqlPlugin,

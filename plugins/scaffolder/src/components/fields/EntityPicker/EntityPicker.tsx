@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core';
 import {
   catalogApiRef,
   formatEntityRefTitle,
@@ -24,6 +23,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { useAsync } from 'react-use';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const EntityPicker = ({
   onChange,

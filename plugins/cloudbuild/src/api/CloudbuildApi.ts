@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
 } from '../api/types';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
   id: 'plugin.cloudbuild.service',

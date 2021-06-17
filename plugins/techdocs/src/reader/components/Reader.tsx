@@ -15,7 +15,6 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
@@ -38,6 +37,7 @@ import {
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';
 import { useReaderState } from './useReaderState';
+import { useApi } from '@backstage/core-plugin-api';
 
 type Props = {
   entityId: EntityName;

@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  Progress,
-  ResponseErrorPanel,
-  Table,
-  TableColumn,
-  useApi,
-} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -37,6 +30,14 @@ import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
+
+import {
+  Progress,
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 type FileStructureObject = Record<string, any>;
 

@@ -17,10 +17,10 @@
 import React from 'react';
 import { screen, render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useApi } from '@backstage/core';
-
 import { SearchContextProvider } from '../SearchContext';
+
 import { SearchBar } from './SearchBar';
+import { useApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core', () => ({
   ...jest.requireActual('@backstage/core'),

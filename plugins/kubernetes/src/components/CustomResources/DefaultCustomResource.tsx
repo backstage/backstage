@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DefaultCustomResourceDrawer } from './DefaultCustomResourceDrawer';
-import { StructuredMetadataTable } from '@backstage/core';
+import { StructuredMetadataTable } from '@backstage/core-components';
 
 type DefaultCustomResourceAccordionsProps = {
   customResources: any[];

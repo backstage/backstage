@@ -18,9 +18,9 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import { useApi } from '@backstage/core';
-
 import { useSearch, SearchContextProvider } from './SearchContext';
+
+import { useApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core', () => ({
   ...jest.requireActual('@backstage/core'),

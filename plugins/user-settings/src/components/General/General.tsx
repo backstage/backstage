@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InfoCard } from '@backstage/core';
 import { Grid, List } from '@material-ui/core';
 import React from 'react';
 import { PinButton } from './PinButton';
 import { Profile } from './Profile';
 import { ThemeToggle } from './ThemeToggle';
+import { InfoCard } from '@backstage/core-components';
 
 export const General = () => {
   return (

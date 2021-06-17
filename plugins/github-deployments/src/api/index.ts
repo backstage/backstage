@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { parseLocationReference } from '@backstage/catalog-model';
-import { createApiRef, OAuthApi } from '@backstage/core';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
+import { createApiRef, OAuthApi } from '@backstage/core-plugin-api';
 
 const getBaseUrl = (
   scmIntegrationsApi: ScmIntegrationRegistry,

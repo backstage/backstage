@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { useApi, configApiRef } from '@backstage/core';
 import { createDevApp } from './render';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const anyEnv = (process.env = { ...process.env }) as any;
 

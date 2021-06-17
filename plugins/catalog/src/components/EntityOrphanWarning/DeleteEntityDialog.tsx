@@ -15,10 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { alertApiRef, useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import React, { useState } from 'react';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 type Props = {
   open: boolean;

@@ -15,11 +15,11 @@
  */
 
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { rollbarApiRef } from '../api';
 import { RollbarTopActiveItem } from '../api/types';
 import { useProjectSlugFromEntity } from './useProject';
+import { useApi } from '@backstage/core-plugin-api';
 
 export function useTopActiveItems(entity: Entity) {
   const api = useApi(rollbarApiRef);

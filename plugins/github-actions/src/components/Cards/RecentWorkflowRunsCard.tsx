@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import {
-  configApiRef,
-  errorApiRef,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-  Table,
-  useApi,
-} from '@backstage/core';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
@@ -31,6 +22,14 @@ import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Typography } from '@material-ui/core';
+
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  InfoCard,
+  InfoCardVariants,
+  Link,
+  Table,
+} from '@backstage/core-components';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 

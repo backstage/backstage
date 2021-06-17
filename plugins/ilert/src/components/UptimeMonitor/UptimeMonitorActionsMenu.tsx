@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, useApi, Link } from '@backstage/core';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { ilertApiRef } from '../../api';
 import { UptimeMonitor } from '../../types';
+
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Link } from '@backstage/core-components';
 
 export const UptimeMonitorActionsMenu = ({
   uptimeMonitor,

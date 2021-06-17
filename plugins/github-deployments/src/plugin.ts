@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { githubDeploymentsApiRef, GithubDeploymentsApiClient } from './api';
 import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
   githubAuthApiRef,
-} from '@backstage/core';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { githubDeploymentsApiRef, GithubDeploymentsApiClient } from './api';
+} from '@backstage/core-plugin-api';
 
 export const githubDeploymentsPlugin = createPlugin({
   id: 'github-deployments',

@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import { compact, isEqual } from 'lodash';
 import React, {
   createContext,
@@ -36,6 +35,7 @@ import {
   UserListFilter,
 } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
+import { useApi } from '@backstage/core-plugin-api';
 
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;

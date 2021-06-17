@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { NotFoundError } from '@backstage/errors';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
@@ -24,6 +23,7 @@ import {
   reducer,
   useReaderState,
 } from './useReaderState';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('useReaderState', () => {
   let Wrapper: React.ComponentType;

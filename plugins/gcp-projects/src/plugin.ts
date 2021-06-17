@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { gcpApiRef, GcpClient } from './api';
+import { rootRouteRef } from './routes';
 import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
   googleAuthApiRef,
-} from '@backstage/core';
-import { gcpApiRef, GcpClient } from './api';
-import { rootRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const gcpProjectsPlugin = createPlugin({
   id: 'gcp-projects',

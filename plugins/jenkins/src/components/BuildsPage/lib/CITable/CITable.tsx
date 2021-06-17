@@ -18,11 +18,11 @@ import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
-import { Table, TableColumn } from '@backstage/core';
 import { JenkinsRunStatus } from '../Status';
 import { useBuilds } from '../../../useBuilds';
 import { useProjectSlugFromEntity } from '../../../useProjectSlugFromEntity';
 import { buildRouteRef } from '../../../../plugin';
+import { Table, TableColumn } from '@backstage/core-components';
 
 export type CITableBuildInfo = {
   id: string;

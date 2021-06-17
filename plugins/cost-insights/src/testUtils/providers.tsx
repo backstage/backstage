@@ -16,12 +16,6 @@
 
 import React, { PropsWithChildren } from 'react';
 import { costInsightsApiRef, CostInsightsApi } from '../api';
-import {
-  ApiProvider,
-  ApiRegistry,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core';
 import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
 import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
 import { FilterContext, FilterContextProps } from '../hooks/useFilters';
@@ -33,6 +27,9 @@ import {
 } from '../hooks/useLastCompleteBillingDate';
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 

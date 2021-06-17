@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { rollbarApiRef } from './api/RollbarApi';
+import { RollbarClient } from './api/RollbarClient';
 import {
   createApiFactory,
   createPlugin,
@@ -21,9 +23,7 @@ import {
   createRouteRef,
   discoveryApiRef,
   identityApiRef,
-} from '@backstage/core';
-import { rollbarApiRef } from './api/RollbarApi';
-import { RollbarClient } from './api/RollbarClient';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '',

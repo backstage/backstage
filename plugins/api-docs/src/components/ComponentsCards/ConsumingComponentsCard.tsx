@@ -19,13 +19,6 @@ import {
   Entity,
   RELATION_API_CONSUMED_BY,
 } from '@backstage/catalog-model';
-import {
-  CodeSnippet,
-  InfoCard,
-  Link,
-  Progress,
-  WarningPanel,
-} from '@backstage/core';
 import { Typography } from '@material-ui/core';
 import {
   EntityTable,
@@ -33,6 +26,13 @@ import {
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core-components';
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */

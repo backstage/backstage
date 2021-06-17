@@ -15,9 +15,9 @@
  */
 
 import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
-import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { JsonCodeCoverage, JsonCoverageHistory } from './types';
+import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type CodeCoverageApi = {
   discovery: DiscoveryApi;

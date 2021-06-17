@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 const NoIcon = () => null;
 

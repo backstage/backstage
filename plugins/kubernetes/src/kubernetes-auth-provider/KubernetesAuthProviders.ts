@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { OAuthApi } from '@backstage/core';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetesAuthProvider';
 import { AwsKubernetesAuthProvider } from './AwsKubernetesAuthProvider';
+import { OAuthApi } from '@backstage/core-plugin-api';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<

@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { SidebarItem } from '@backstage/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from '../plugin';
+import { SidebarItem } from '@backstage/core-components';
 
 export const Settings = () => {
   return (

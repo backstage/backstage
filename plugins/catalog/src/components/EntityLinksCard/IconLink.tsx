@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Link, IconComponent } from '@backstage/core';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
+
+import { Link } from '@backstage/core-components';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   svgIcon: {

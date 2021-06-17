@@ -16,10 +16,10 @@
 
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { InfoCard } from '@backstage/core';
 import { KubernetesMigrationBarChartLegend } from './KubernetesMigrationBarChartLegend';
 import { KubernetesMigrationBarChart } from './KubernetesMigrationBarChart';
 import { KubernetesMigrationData } from '../../alerts';
+import { InfoCard } from '@backstage/core-components';
 
 type KubernetesMigrationAlertProps = {
   data: KubernetesMigrationData;

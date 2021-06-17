@@ -29,7 +29,6 @@ import {
   V1Pod,
   V1HorizontalPodAutoscaler,
 } from '@kubernetes/client-node';
-import { StatusError, StatusOK } from '@backstage/core';
 import { PodsTable } from '../Pods';
 import { DeploymentDrawer } from './DeploymentDrawer';
 import { HorizontalPodAutoscalerDrawer } from '../HorizontalPodAutoscalers';
@@ -41,6 +40,7 @@ import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
 } from '../../hooks';
+import { StatusError, StatusOK } from '@backstage/core-components';
 
 type DeploymentsAccordionsProps = {
   children?: React.ReactNode;

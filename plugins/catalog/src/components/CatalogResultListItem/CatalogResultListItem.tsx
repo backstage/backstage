@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { Link } from '@backstage/core';
 import {
   Box,
   Chip,
@@ -24,6 +23,7 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   flexContainer: {

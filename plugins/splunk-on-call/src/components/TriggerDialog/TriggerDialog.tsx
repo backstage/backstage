@@ -32,11 +32,11 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
-import { useApi, alertApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import { TriggerAlarmRequest } from '../../api/types';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 
 type Props = {
   team: string;

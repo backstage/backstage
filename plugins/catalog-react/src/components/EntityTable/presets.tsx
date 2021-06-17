@@ -15,7 +15,6 @@
  */
 
 import { ComponentEntity, SystemEntity } from '@backstage/catalog-model';
-import { TableColumn } from '@backstage/core';
 import {
   createDomainColumn,
   createEntityRefColumn,
@@ -25,6 +24,7 @@ import {
   createSpecTypeColumn,
   createSystemColumn,
 } from './columns';
+import { TableColumn } from '@backstage/core-components';
 
 export const systemEntityColumns: TableColumn<SystemEntity>[] = [
   createEntityRefColumn({ defaultKind: 'system' }),

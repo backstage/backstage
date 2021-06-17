@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { ContentHeader, InfoCard, MarkdownContent } from '@backstage/core';
 import { Button, Grid, makeStyles, Tab, Tabs } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import LighthouseSupportButton from '../SupportButton';
+import {
+  ContentHeader,
+  InfoCard,
+  MarkdownContent,
+} from '@backstage/core-components';
 
 // TODO(freben): move all of this out of index
 

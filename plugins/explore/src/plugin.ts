@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createApiFactory, createPlugin } from '@backstage/core';
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import { catalogEntityRouteRef, exploreRouteRef } from './routes';
 import { exampleTools } from './util/examples';
+import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
 
 export const explorePlugin = createPlugin({
   id: 'explore',

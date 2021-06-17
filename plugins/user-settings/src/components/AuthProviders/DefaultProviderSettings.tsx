@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Star from '@material-ui/icons/Star';
+import React from 'react';
+import { ProviderSettingsItem } from './ProviderSettingsItem';
 import {
   auth0AuthApiRef,
   githubAuthApiRef,
@@ -21,10 +24,7 @@ import {
   oauth2ApiRef,
   oktaAuthApiRef,
   microsoftAuthApiRef,
-} from '@backstage/core';
-import Star from '@material-ui/icons/Star';
-import React from 'react';
-import { ProviderSettingsItem } from './ProviderSettingsItem';
+} from '@backstage/core-plugin-api';
 
 type Props = {
   configuredProviders: string[];

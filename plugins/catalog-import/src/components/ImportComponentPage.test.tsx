@@ -15,18 +15,19 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  ApiProvider,
-  ApiRegistry,
-  configApiRef,
-  ConfigReader,
-} from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../api';
 import { ImportComponentPage } from './ImportComponentPage';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 describe('<ImportComponentPage />', () => {
   const identityApi = {

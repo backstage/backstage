@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Header, Page, useApi, configApiRef } from '@backstage/core';
 import React from 'react';
+
+import { Header, Page } from '@backstage/core-components';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 type Props = {
   children?: React.ReactNode;

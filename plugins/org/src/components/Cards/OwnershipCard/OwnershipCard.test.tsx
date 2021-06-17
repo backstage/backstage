@@ -15,7 +15,6 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
   catalogApiRef,
@@ -25,6 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
 import React from 'react';
 import { OwnershipCard } from './OwnershipCard';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('OwnershipCard', () => {
   const userEntity: GroupEntity = {

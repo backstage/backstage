@@ -19,13 +19,15 @@ import { useAsync } from 'react-use';
 import { DateTime } from 'luxon';
 import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Progress, useApi } from '@backstage/core';
 
 import { getDecimalNumber } from '../../helpers/getDecimalNumber';
 import { getTagDates } from '../../helpers/getTagDates';
 import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
 import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
 import { useProjectContext } from '../../../../contexts/ProjectContext';
+
+import { Progress } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 interface ReleaseTimeProps {
   releaseStat: ReleaseStats['releases']['0'];

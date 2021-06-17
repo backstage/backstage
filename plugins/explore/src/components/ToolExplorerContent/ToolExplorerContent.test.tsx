@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   ExploreTool,
   exploreToolsConfigRef,
@@ -25,6 +24,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ToolExplorerContent } from './ToolExplorerContent';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ToolExplorerContent />', () => {
   const exploreToolsConfigApi: jest.Mocked<typeof exploreToolsConfigRef.T> = {

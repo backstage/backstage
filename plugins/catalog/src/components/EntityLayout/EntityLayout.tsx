@@ -20,16 +20,10 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
+  useElementFilter,
   attachComponentData,
-  Content,
-  Header,
-  HeaderLabel,
   IconComponent,
-  Page,
-  Progress,
-  RoutedTabs,
-} from '@backstage/core';
-import { useElementFilter } from '@backstage/core-plugin-api';
+} from '@backstage/core-plugin-api';
 import {
   EntityContext,
   EntityRefLinks,
@@ -43,6 +37,14 @@ import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import {
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+  Progress,
+  RoutedTabs,
+} from '@backstage/core-components';
 
 type SubRoute = {
   path: string;

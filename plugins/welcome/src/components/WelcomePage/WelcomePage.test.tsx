@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  configApiRef,
-  ConfigReader,
-  errorApiRef,
-} from '@backstage/core';
 import { renderInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import WelcomePage from './WelcomePage';
+
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 
 describe('WelcomePage', () => {
   it('should render', async () => {

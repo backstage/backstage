@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Content, useApi } from '@backstage/core';
 import { ScmIntegration, ScmIntegrationsGroup } from '@backstage/integration';
 import { Typography } from '@material-ui/core';
 import React from 'react';
 import { scmIntegrationsApiRef } from '../src/ScmIntegrationsApi';
+
+import { Content } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const Integrations = (props: {
   group: ScmIntegrationsGroup<ScmIntegration>;

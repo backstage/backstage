@@ -15,13 +15,13 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createRouteRef } from '@backstage/core';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { RegisterComponentResultDialog } from './RegisterComponentResultDialog';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
   <MemoryRouter>

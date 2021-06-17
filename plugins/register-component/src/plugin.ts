@@ -18,7 +18,7 @@ import {
   createPlugin,
   createRoutableExtension,
   createRouteRef,
-} from '@backstage/core';
+} from '@backstage/core-plugin-api';
 
 const rootRouteRef = createRouteRef({
   title: 'Register Component',

@@ -16,15 +16,15 @@
 
 import React from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
+import RadarComponent from '../components/RadarComponent';
+import { TechRadarComponentProps } from '../api';
 import {
   Content,
   ContentHeader,
   Page,
   Header,
   SupportButton,
-} from '@backstage/core';
-import RadarComponent from '../components/RadarComponent';
-import { TechRadarComponentProps } from '../api';
+} from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {

@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import { Button, Grid } from '@material-ui/core';
-import { EmptyState } from '@backstage/core';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -50,6 +49,7 @@ import {
   EntityOwnershipCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import { EmptyState } from '@backstage/core-components';
 
 const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.

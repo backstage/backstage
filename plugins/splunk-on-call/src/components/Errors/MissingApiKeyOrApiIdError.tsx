@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EmptyState } from '@backstage/core';
 import { Button } from '@material-ui/core';
+import { EmptyState } from '@backstage/core-components';
 
 export const MissingApiKeyOrApiIdError = () => (
   <EmptyState

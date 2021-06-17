@@ -20,14 +20,6 @@ import {
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  IdentityApi,
-  identityApiRef,
-  ProfileInfo,
-  storageApiRef,
-} from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   MockStorageApi,
@@ -38,6 +30,14 @@ import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogPage } from './CatalogPage';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import {
+  IdentityApi,
+  identityApiRef,
+  ProfileInfo,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
 
 describe('CatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
