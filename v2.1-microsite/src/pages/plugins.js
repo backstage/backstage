@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const fs = require('fs');
+// const fs = require('fs');
 const yaml = require('js-yaml');
 const React = require('react');
 const Components = props => <div {...props}></div>;
@@ -14,13 +14,15 @@ const {
   BulletLine,
 } = Components;
 
-const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
-const pluginMetadata = fs
-  .readdirSync(pluginsDirectory)
-  .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
-  .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
-const truncate = text =>
-  text.length > 170 ? text.substr(0, 170) + '...' : text;
+// const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
+// const pluginMetadata = fs
+//   .readdirSync(pluginsDirectory)
+//   .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
+//   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+// const truncate = text =>
+//   text.length > 170 ? text.substr(0, 170) + '...' : text;
+
+const pluginMetadata = [];
 
 const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
