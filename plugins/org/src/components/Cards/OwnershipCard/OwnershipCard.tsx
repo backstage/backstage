@@ -232,7 +232,7 @@ export const OwnershipCard = ({
     ] as Array<{
       counter: number;
       className: EntitiesTypes;
-      entities: string[];
+      entities: Entity[];
       name: string;
     }>;
   }, [catalogApi, entity]);
