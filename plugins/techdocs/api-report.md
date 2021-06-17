@@ -44,6 +44,9 @@ export const Reader: ({ entityId, onReady }: Props_2) => JSX.Element;
 export const Router: () => JSX.Element;
 
 // @public (undocumented)
+export type SyncResult = 'cached' | 'updated' | 'timeout';
+
+// @public (undocumented)
 export interface TechDocsApi {
     // (undocumented)
     getApiOrigin(): Promise<string>;
@@ -109,7 +112,7 @@ export interface TechDocsStorageApi {
     // (undocumented)
     getStorageUrl(): Promise<string>;
     // (undocumented)
-    syncEntityDocs(entityId: EntityName): Promise<boolean>;
+    syncEntityDocs(entityId: EntityName): Promise<SyncResult>;
 }
 
 // @public (undocumented)
@@ -137,7 +140,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     getStorageUrl(): Promise<string>;
     // (undocumented)
     identityApi: IdentityApi;
-    syncEntityDocs(entityId: EntityName): Promise<boolean>;
+    syncEntityDocs(entityId: EntityName): Promise<SyncResult>;
 }
 
 

@@ -6,12 +6,14 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JSONWebKey } from 'jose';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export type AuthProviderFactory = (options: AuthProviderFactoryOptions) => AuthProviderRouteHandlers;
@@ -47,7 +49,12 @@ export type AuthResponse<ProviderInfo> = {
 export type BackstageIdentity = {
     id: string;
     idToken?: string;
+    token?: string;
+    entity?: Entity;
 };
+
+// @public (undocumented)
+export const createGoogleProvider: (options?: GoogleProviderOptions | undefined) => AuthProviderFactory;
 
 // @public (undocumented)
 export function createRouter({ logger, config, discovery, database, providerFactories, }: RouterOptions): Promise<express.Router>;
@@ -62,6 +69,20 @@ export const encodeState: (state: OAuthState) => string;
 
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
+
+// @public (undocumented)
+export const googleDefaultSignInResolver: SignInResolver<OAuthResult>;
+
+// @public (undocumented)
+export const googleEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// @public (undocumented)
+export type GoogleProviderOptions = {
+    authHandler?: AuthHandler<OAuthResult>;
+    signIn?: {
+        resolver?: SignInResolver<OAuthResult>;
+    };
+};
 
 // @public
 export class IdentityClient {
