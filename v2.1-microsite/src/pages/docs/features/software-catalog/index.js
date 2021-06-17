@@ -1,5 +1,5 @@
 const React = require('react');
-const Redirect = require('../../../../../core/Redirect.js');
+const { Redirect } = require('@docusaurus/router');
 
 const siteConfig = require(process.cwd() + '/siteConfig.js');
 
@@ -8,7 +8,7 @@ import Layout from "@theme/Layout";
 function Docs() {
   return (
     <Redirect
-      redirect="/docs/features/software-catalog/software-catalog-overview"
+      to="/docs/features/software-catalog/software-catalog-overview"
       config={siteConfig}
     />
   );
