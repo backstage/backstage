@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-search': minor
+'@backstage/plugin-search': patch
 ---
 
-add IdentityApi support
+Use the `identityApi` to forward authorization headers to the `search-backend`
