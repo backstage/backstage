@@ -3,4 +3,4 @@
 '@backstage/core-api': patch
 ---
 
-Catch unhandled promise rejections & forward them to the ErrorApi to align with general error handling
+Introducing new UnhandledErrorForwarder installed by default. For catchin unhandled promise rejections you can override the API to align with general error handling.

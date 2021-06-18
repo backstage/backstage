@@ -47,7 +47,6 @@ import {
   oneloginAuthApiRef,
   OneLoginAuth,
   oidcAuthApiRef,
-  UnhandledErrorForwarder,
 } from '@backstage/core-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
@@ -65,11 +64,8 @@ export const defaultApis = [
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) => {
-      const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
-      UnhandledErrorForwarder.forward(errorApi);
-      return errorApi;
-    },
+    factory: ({ alertApi }) =>
+      new ErrorAlerter(alertApi, new ErrorApiForwarder()),
   }),
   createApiFactory({
     api: storageApiRef,

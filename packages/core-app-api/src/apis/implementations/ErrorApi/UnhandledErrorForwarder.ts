@@ -16,21 +16,11 @@ import { ErrorApi } from '../../definitions';
  * limitations under the License.
  */
 export class UnhandledErrorForwarder {
-  static forward(errorApi: ErrorApi) {
+  static forward(errorApi: ErrorApi, hidden = false) {
     window.addEventListener(
       'unhandledrejection',
       (e: PromiseRejectionEvent) => {
-        errorApi.post(
-          {
-            name: `Unhandled Rejection: ${e.reason.message}`,
-            message: e.reason.message,
-            stack: e.reason.stack,
-          },
-          { hidden: true },
-        );
-        // eslint-disable-next-line no-console
-        console.error(e.reason);
-        e.preventDefault();
+        errorApi.post(e.reason as Error, { hidden });
       },
     );
   }

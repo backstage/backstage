@@ -30,6 +30,7 @@ import {
   UrlPatternDiscovery,
   SamlAuth,
   OneLoginAuth,
+  UnhandledErrorForwarder,
 } from '../apis';
 
 import {
@@ -67,8 +68,11 @@ export const defaultApis = [
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) =>
-      new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+    factory: ({ alertApi }) => {
+      const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+      UnhandledErrorForwarder.forward(errorApi);
+      return errorApi;
+    },
   }),
   createApiFactory({
     api: storageApiRef,
