@@ -75,8 +75,9 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
-      - Azure DevOps:
+      - Azure:
           - Locations: 'integrations/azure/locations.md'
+          - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
           - Discovery: 'integrations/bitbucket/discovery.md'
