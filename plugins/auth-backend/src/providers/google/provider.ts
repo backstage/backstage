@@ -198,7 +198,7 @@ export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
+const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   info,
   ctx,
 ) => {
