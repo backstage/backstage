@@ -5536,6 +5536,20 @@
     lz-string "^1.4.4"
     pretty-format "^26.6.2"
 
+"@testing-library/dom@^8.0.0-alpha.6":
+  version "8.0.0-alpha.6"
+  resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-8.0.0-alpha.6.tgz#197676d31646faa18bf87e7e805440b093e5db25"
+  integrity sha512-j1N6GcTViG1Kezh+/Uu95rKL4swLlufMuv65nqGr7R5SuTwgn0Rz/7zk6lARHz85rLZ7EjLmtmjXhuF3ceGgPw==
+  dependencies:
+    "@babel/code-frame" "^7.10.4"
+    "@babel/runtime" "^7.12.5"
+    "@types/aria-query" "^4.2.0"
+    aria-query "^4.2.2"
+    chalk "^4.1.0"
+    dom-accessibility-api "^0.5.6"
+    lz-string "^1.4.4"
+    pretty-format "^27.0.2"
+
 "@testing-library/jest-dom@^5.10.1":
   version "5.11.9"
   resolved "https://registry.npmjs.org/@testing-library/jest-dom/-/jest-dom-5.11.9.tgz#e6b3cd687021f89f261bd53cbe367041fbd3e975"
@@ -5566,13 +5580,13 @@
     "@babel/runtime" "^7.5.4"
     "@types/testing-library__react-hooks" "^3.4.0"
 
-"@testing-library/react@^11.2.5":
-  version "11.2.6"
-  resolved "https://registry.npmjs.org/@testing-library/react/-/react-11.2.6.tgz#586a23adc63615985d85be0c903f374dab19200b"
-  integrity sha512-TXMCg0jT8xmuU8BkKMtp8l7Z50Ykew5WNX8UoIKTaLFwKkP2+1YDhOLA2Ga3wY4x29jyntk7EWfum0kjlYiSjQ==
+"@testing-library/react@12.0.0-alpha.2", "@testing-library/react@^12.0.0-alpha.2":
+  version "12.0.0-alpha.2"
+  resolved "https://registry.npmjs.org/@testing-library/react/-/react-12.0.0-alpha.2.tgz#812d8683c9ee334880dc12f7a24562189c2b138a"
+  integrity sha512-tk5MF5Vo9IE7XcEPkwX1d7eBp8l6CsBQKTdT0VQ4jlrEYSm+z8oxnr/Aa2UTTR7GpdBujV54oOZj69ntQXOreQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@testing-library/dom" "^7.28.1"
+    "@testing-library/dom" "^8.0.0-alpha.6"
 
 "@testing-library/user-event@^13.1.8":
   version "13.1.8"
@@ -11745,6 +11759,11 @@ dom-accessibility-api@^0.5.4:
   version "0.5.4"
   resolved "https://registry.npmjs.org/dom-accessibility-api/-/dom-accessibility-api-0.5.4.tgz#b06d059cdd4a4ad9a79275f9d414a5c126241166"
   integrity sha512-TvrjBckDy2c6v6RLxPv5QXOnU+SmF9nBII5621Ve5fu6Z/BDrENurBEvlC1f44lKEUVqOpK4w9E5Idc5/EgkLQ==
+
+dom-accessibility-api@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.npmjs.org/dom-accessibility-api/-/dom-accessibility-api-0.5.6.tgz#3f5d43b52c7a3bd68b5fb63fa47b4e4c1fdf65a9"
+  integrity sha512-DplGLZd8L1lN64jlT27N9TVSESFR5STaEJvX+thCby7fuCHonfPpAlodYc3vuUYbDuDec5w8AMP7oCM5TWFsqw==
 
 dom-converter@^0.2:
   version "0.2.0"
