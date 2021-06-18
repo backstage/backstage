@@ -35,6 +35,7 @@ describe('CookieCutter Templater', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    commandExists.mockRejectedValue(null);
   });
 
   it('should write a cookiecutter.json file with the values from the entity', async () => {
@@ -228,7 +229,7 @@ describe('CookieCutter Templater', () => {
       };
 
       jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
-      commandExists.mockImplementationOnce(() => () => true);
+      commandExists.mockResolvedValueOnce(true);
 
       const templater = new CookieCutter({ containerRunner });
       await templater.run({
