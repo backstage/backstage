@@ -8,6 +8,7 @@
       "overview/background",
       "overview/adopting",
       "overview/stability-index",
+      "overview/support",
       "overview/logos"
     ],
     "Getting Started": [
@@ -259,7 +260,7 @@
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011"
     ],
-    "Support": ["support/support", "support/project-structure"],
+    "Support": ["support/project-structure"],
     "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
   }
