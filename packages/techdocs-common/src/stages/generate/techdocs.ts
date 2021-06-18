@@ -89,7 +89,7 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
-    await validateMkdocsYaml(mkdocsYmlPath);
+    await validateMkdocsYaml(inputDir, mkdocsYmlPath);
 
     // Directories to bind on container
     const mountDirs = {
