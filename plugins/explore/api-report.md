@@ -5,8 +5,10 @@
 ```ts
 
 import { BackstagePlugin } from '@backstage/core';
+import { default } from 'react';
 import { ExternalRouteRef } from '@backstage/core';
 import { RouteRef } from '@backstage/core';
+import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)
 export const catalogEntityRouteRef: ExternalRouteRef<{
@@ -16,10 +18,21 @@ export const catalogEntityRouteRef: ExternalRouteRef<{
 }, false>;
 
 // @public (undocumented)
+export const DomainExplorerContent: ({ title, }: {
+    title?: string | undefined;
+}) => JSX.Element;
+
+// @public
+export const ExploreLayout: {
+    ({ title, subtitle, children, }: ExploreLayoutProps): JSX.Element;
+    Route: (props: SubRoute) => null;
+};
+
+// @public (undocumented)
 export const ExplorePage: () => JSX.Element;
 
 // @public (undocumented)
-export const explorePlugin: BackstagePlugin<{
+const explorePlugin: BackstagePlugin<{
     explore: RouteRef<undefined>;
 }, {
     catalogEntity: ExternalRouteRef<{
@@ -29,8 +42,22 @@ export const explorePlugin: BackstagePlugin<{
     }, false>;
 }>;
 
+export { explorePlugin }
+
+export { explorePlugin as plugin }
+
 // @public (undocumented)
 export const exploreRouteRef: RouteRef<undefined>;
+
+// @public (undocumented)
+export const GroupsExplorerContent: ({ title, }: {
+    title?: string | undefined;
+}) => JSX.Element;
+
+// @public (undocumented)
+export const ToolExplorerContent: ({ title }: {
+    title?: string | undefined;
+}) => JSX.Element;
 
 
 // (No @packageDocumentation comment for this package)
