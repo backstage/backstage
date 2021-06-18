@@ -26,6 +26,7 @@ nav:
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
       - Contributors: 'getting-started/contributors.md'
+      - Project Structure: 'getting-started/project-structure.md'
   - CLI:
       - Overview: 'cli/index.md'
       - Commands: 'cli/commands.md'

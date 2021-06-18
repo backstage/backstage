@@ -26,7 +26,8 @@
       },
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
-      "getting-started/contributors"
+      "getting-started/contributors",
+      "getting-started/project-structure"
     ],
     "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
@@ -261,7 +262,6 @@
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011"
     ],
-    "Support": ["support/project-structure"],
     "FAQ": ["FAQ"]
   }
 }
