@@ -11,7 +11,7 @@ services:
     image: backstage-backend
     container_name: backend
     build:
-      dockerfile: ./packages/backend/Dockerfile
+      dockerfile: ./packages/backend/Dockerfile.dockerbuild
       context: ../
       args:
         - app_config_file=app-config.production.yaml
