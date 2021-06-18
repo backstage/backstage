@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './google';
 export { factories as defaultAuthProviderFactories } from './factories';
 
 // Export the minimal interface required for implementing a

@@ -16,12 +16,11 @@
 
 import { ContainerRunner } from '@backstage/backend-common';
 import { JsonValue } from '@backstage/config';
+import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path from 'path';
 import { runCommand } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from './types';
-
-const commandExists = require('command-exists-promise');
 
 export class CookieCutter implements TemplaterBase {
   private readonly containerRunner: ContainerRunner;

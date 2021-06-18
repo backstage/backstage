@@ -40,6 +40,12 @@ describe('<GroupsExplorerContent />', () => {
     </ApiProvider>
   );
 
+  const mountedRoutes = {
+    mountedRoutes: {
+      '/catalog/:namespace/:kind/:name': entityRouteRef,
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
 
@@ -69,16 +75,25 @@ describe('<GroupsExplorerContent />', () => {
       <Wrapper>
         <GroupsExplorerContent />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     await waitFor(() => {
       expect(getByText('my-namespace/group-a')).toBeInTheDocument();
     });
+  });
+
+  it('renders a custom title', async () => {
+    catalogApi.getEntities.mockResolvedValue({ items: [] });
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <GroupsExplorerContent title="Our Teams" />
+      </Wrapper>,
+      mountedRoutes,
+    );
+
+    await waitFor(() => expect(getByText('Our Teams')).toBeInTheDocument());
   });
 
   it('renders a friendly error if it cannot collect domains', async () => {
@@ -89,11 +104,7 @@ describe('<GroupsExplorerContent />', () => {
       <Wrapper>
         <GroupsExplorerContent />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     await waitFor(() =>

@@ -92,10 +92,8 @@ const siteConfig = {
   cleanUrl: true,
 
   // Open Graph and Twitter card images.
-  ogImage:
-    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
-  twitterImage:
-    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
+  ogImage: 'img/sharing-opengraph.png',
+  twitterImage: 'img/twitter-summary.png',
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.

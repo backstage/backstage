@@ -341,6 +341,72 @@ describe('publish:github', () => {
     ]);
   });
 
+  it('should add topics when provided', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    mockGithubClient.repos.replaceAllTopics.mockResolvedValue({
+      data: {
+        names: ['node.js'],
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        topics: ['node.js'],
+      },
+    });
+
+    expect(mockGithubClient.repos.replaceAllTopics).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      names: ['node.js'],
+    });
+  });
+
+  it('should lowercase topics when provided', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    mockGithubClient.repos.replaceAllTopics.mockResolvedValue({
+      data: {
+        names: ['backstage'],
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        topics: ['BACKSTAGE'],
+      },
+    });
+
+    expect(mockGithubClient.repos.replaceAllTopics).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      names: ['backstage'],
+    });
+  });
+
   it('should call output with the remoteUrl and the repoContentsUrl', async () => {
     mockGithubClient.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },

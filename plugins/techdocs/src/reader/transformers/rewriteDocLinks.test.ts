@@ -82,6 +82,7 @@ describe('normalizeUrl', () => {
     ['http://example.org/folder#intro', 'http://example.org/folder/#intro'],
     ['http://example.org/folder/#intro', 'http://example.org/folder/#intro'],
     ['http://example.org/folder#', 'http://example.org/folder/#'],
+    ['http://example.org/page.html', 'http://example.org/page.html'],
   ])('should handle %s', (url, expected) => {
     expect(normalizeUrl(url)).toEqual(expected);
   });

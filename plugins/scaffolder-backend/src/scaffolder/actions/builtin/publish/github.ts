@@ -48,6 +48,7 @@ export function createPublishGithubAction(options: {
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
+    topics?: string[];
   }>({
     id: 'publish:github',
     description:
@@ -59,6 +60,7 @@ export function createPublishGithubAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
             type: 'string',
           },
           description: {
@@ -67,6 +69,7 @@ export function createPublishGithubAction(options: {
           },
           access: {
             title: 'Repository Access',
+            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
           },
           repoVisibility: {
@@ -81,7 +84,7 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
-            description: 'Provide users with permissions',
+            description: 'Provide additional users with permissions',
             type: 'array',
             items: {
               type: 'object',
@@ -97,6 +100,13 @@ export function createPublishGithubAction(options: {
                   description: 'The username or group',
                 },
               },
+            },
+          },
+          topics: {
+            title: 'Topics',
+            type: 'array',
+            items: {
+              type: 'string',
             },
           },
         },
@@ -122,6 +132,7 @@ export function createPublishGithubAction(options: {
         access,
         repoVisibility = 'private',
         collaborators,
+        topics,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
@@ -212,6 +223,18 @@ export function createPublishGithubAction(options: {
               `Skipping ${permission} access for ${team_slug}, ${e.message}`,
             );
           }
+        }
+      }
+
+      if (topics) {
+        try {
+          await client.repos.replaceAllTopics({
+            owner,
+            repo,
+            names: topics.map(t => t.toLowerCase()),
+          });
+        } catch (e) {
+          ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
         }
       }
 

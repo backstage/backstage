@@ -17,9 +17,10 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
+import {
+  createProxyMiddleware,
+  Options,
+  RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import http from 'http';
@@ -52,7 +53,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
 }
 
-export interface ProxyConfig extends ProxyMiddlewareConfig {
+export interface ProxyConfig extends Options {
   allowedMethods?: string[];
   allowedHeaders?: string[];
 }
@@ -64,14 +65,17 @@ export function buildMiddleware(
   logger: Logger,
   route: string,
   config: string | ProxyConfig,
-): Proxy {
+): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
 
   // Validate that target is a valid URL.
+  if (typeof fullConfig.target !== 'string') {
+    throw new Error(`Proxy target must be a string`);
+  }
   try {
     // eslint-disable-next-line no-new
-    new URL(fullConfig.target!);
+    new URL(fullConfig.target! as string);
   } catch {
     throw new Error(
       `Proxy target is not a valid URL: ${fullConfig.target ?? ''}`,
@@ -131,7 +135,7 @@ export function buildMiddleware(
   //  2. Only permit the allowed HTTP methods if configured
   //
   // We are filtering the proxy request headers here rather than in
-  // `onProxyReq` becuase when global-agent is enabled then `onProxyReq`
+  // `onProxyReq` because when global-agent is enabled then `onProxyReq`
   // fires _after_ the agent has already sent the headers to the proxy
   // target, causing a ERR_HTTP_HEADERS_SENT crash
   const filter = (_pathname: string, req: http.IncomingMessage): boolean => {

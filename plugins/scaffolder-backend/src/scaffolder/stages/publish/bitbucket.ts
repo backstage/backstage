@@ -174,7 +174,7 @@ export class BitbucketPublisher implements PublisherBase {
       body: JSON.stringify({
         name: name,
         description: description,
-        is_private: this.config.repoVisibility === 'private',
+        public: this.config.repoVisibility === 'public',
       }),
       headers: {
         Authorization: this.getAuthorizationHeader(),

@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.1.3
+
+### Patch Changes
+
+- d2c31b132: Add title prop in SupportButton component
+- d4644f592: Use the Backstage `Link` component in the `Button`
+
 ## 0.1.2
 
 ### Patch Changes

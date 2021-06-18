@@ -30,7 +30,6 @@ nav:
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
-          - Installing in your Backstage App: 'features/software-catalog/installation.md'
           - Catalog Configuration: 'features/software-catalog/configuration.md'
           - System Model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
@@ -49,7 +48,7 @@ nav:
           - Troubleshooting: 'features/kubernetes/troubleshooting.md'
       - Software Templates:
           - Overview: 'features/software-templates/index.md'
-          - Installing in your Backstage App: 'features/software-templates/installation.md'
+          - Configuration: 'features/software-templates/configuration.md'
           - Adding your own Templates: 'features/software-templates/adding-templates.md'
           - Writing Templates: 'features/software-templates/writing-templates.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
@@ -76,8 +75,9 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
-      - Azure DevOps:
+      - Azure:
           - Locations: 'integrations/azure/locations.md'
+          - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
           - Discovery: 'integrations/bitbucket/discovery.md'
@@ -133,6 +133,7 @@ nav:
           - OneLogin: 'auth/onelogin/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'
+      - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Auth backend classes: 'auth/auth-backend-classes.md'

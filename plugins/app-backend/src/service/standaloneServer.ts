@@ -38,7 +38,9 @@ export async function startStandaloneServer(
     appPackageName: 'example-app',
   });
 
-  const service = createServiceBuilder(module).addRouter('', router);
+  const service = createServiceBuilder(module)
+    .setPort(options.port)
+    .addRouter('', router);
 
   return await service.start().catch(err => {
     logger.error(err);

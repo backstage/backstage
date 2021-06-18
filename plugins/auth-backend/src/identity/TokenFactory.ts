@@ -67,13 +67,14 @@ export class TokenFactory implements TokenIssuer {
 
     const iss = this.issuer;
     const sub = params.claims.sub;
+    const ent = params.claims.ent;
     const aud = 'backstage';
     const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDurationSeconds;
 
-    this.logger.info(`Issuing token for ${sub}`);
+    this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
 
-    return JWS.sign({ iss, sub, aud, iat, exp }, key, {
+    return JWS.sign({ iss, sub, aud, iat, exp, ent }, key, {
       alg: key.alg,
       kid: key.kid,
     });

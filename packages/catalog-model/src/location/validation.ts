@@ -17,6 +17,7 @@
 import * as yup from 'yup';
 import { LocationSpec, Location } from './types';
 
+/** @deprecated */
 export const locationSpecSchema = yup
   .object<LocationSpec>({
     type: yup.string().required(),
@@ -26,6 +27,7 @@ export const locationSpecSchema = yup
   .noUnknown()
   .required();
 
+/** @deprecated */
 export const locationSchema = yup
   .object<Location>({
     id: yup.string().required(),
@@ -35,6 +37,7 @@ export const locationSchema = yup
   .noUnknown()
   .required();
 
+/** @deprecated */
 export const analyzeLocationSchema = yup
   .object<{ location: LocationSpec }>({
     location: locationSpecSchema,
