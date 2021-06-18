@@ -70,7 +70,10 @@ export class CookieCutter implements TemplaterBase {
       [intermediateDir]: '/output',
     };
 
-    const cookieCutterInstalled = await commandExists('cookiecutter');
+    // the command-exists package returns `true` or throws an error
+    const cookieCutterInstalled = await commandExists('cookiecutter').catch(
+      () => false,
+    );
     if (cookieCutterInstalled) {
       await runCommand({
         command: 'cookiecutter',
