@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  createGoogleProvider,
-  googleDefaultSignInResolver,
-  googleEmailSignInResolver,
-} from './provider';
+export { createGoogleProvider, googleEmailSignInResolver } from './provider';
 export type { GoogleProviderOptions } from './provider';

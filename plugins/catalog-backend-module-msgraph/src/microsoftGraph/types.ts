@@ -1,5 +1,5 @@
 /*
- * Copyright <%= YEAR %> <%= NAME %>
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+
+export type UserTransformer = (
+  user: MicrosoftGraph.User,
+  userPhoto?: string,
+) => Promise<UserEntity | undefined>;
+
+export type OrganizationTransformer = (
+  organization: MicrosoftGraph.Organization,
+) => Promise<GroupEntity | undefined>;
+
+export type GroupTransformer = (
+  group: MicrosoftGraph.Group,
+  groupPhoto?: string,
+) => Promise<GroupEntity | undefined>;

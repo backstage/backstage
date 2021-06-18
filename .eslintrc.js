@@ -25,6 +25,12 @@ module.exports = {
       {
         // eslint-disable-next-line no-restricted-syntax
         templateFile: path.resolve(__dirname, './scripts/copyright-header.txt'),
+        templateVars: {
+          NAME: 'The Backstage Authors',
+        },
+        varRegexps: {
+          NAME: /(The Backstage Authors)|(Spotify AB)/,
+        },
         onNonMatchingHeader: 'replace',
       },
     ],

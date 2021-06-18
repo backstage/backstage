@@ -13,95 +13,117 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import limiterFactory from 'p-limit';
-import { buildMemberOf, buildOrgHierarchy } from '../util/org';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
 } from './constants';
+import { normalizeEntityName } from './helper';
+import { buildMemberOf, buildOrgHierarchy } from './org';
+import {
+  GroupTransformer,
+  OrganizationTransformer,
+  UserTransformer,
+} from './types';
 
-export function normalizeEntityName(name: string): string {
-  return name
-    .trim()
-    .toLocaleLowerCase()
-    .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+export async function defaultUserTransformer(
+  user: MicrosoftGraph.User,
+  userPhoto?: string,
+): Promise<UserEntity | undefined> {
+  if (!user.id || !user.displayName || !user.mail) {
+    return undefined;
+  }
+
+  const name = normalizeEntityName(user.mail);
+  const entity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name,
+      annotations: {
+        [MICROSOFT_GRAPH_USER_ID_ANNOTATION]: user.id!,
+      },
+    },
+    spec: {
+      profile: {
+        displayName: user.displayName!,
+        email: user.mail!,
+
+        // TODO: Additional fields?
+        // jobTitle: user.jobTitle || undefined,
+        // officeLocation: user.officeLocation || undefined,
+        // mobilePhone: user.mobilePhone || undefined,
+      },
+      memberOf: [],
+    },
+  };
+
+  if (userPhoto) {
+    entity.spec.profile!.picture = userPhoto;
+  }
+
+  return entity;
 }
 
 export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
-  options?: { userFilter?: string },
+  options?: { userFilter?: string; transformer?: UserTransformer },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
-  const entities: UserEntity[] = [];
-  const promises: Promise<void>[] = [];
+  const users: UserEntity[] = [];
   const limiter = limiterFactory(10);
+
+  const transformer = options?.transformer ?? defaultUserTransformer;
+  const promises: Promise<void>[] = [];
 
   for await (const user of client.getUsers({
     filter: options?.userFilter,
-    select: ['id', 'displayName', 'mail'],
   })) {
-    if (!user.id || !user.displayName || !user.mail) {
-      continue;
-    }
+    // Process all users in parallel, otherwise it can take quite some time
+    promises.push(
+      limiter(async () => {
+        const userPhoto = await client.getUserPhotoWithSizeLimit(
+          user.id!,
+          // We are limiting the photo size, as users with full resolution photos
+          // can make the Backstage API slow
+          120,
+        );
 
-    const name = normalizeEntityName(user.mail);
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name,
-        annotations: {
-          [MICROSOFT_GRAPH_USER_ID_ANNOTATION]: user.id!,
-        },
-      },
-      spec: {
-        profile: {
-          displayName: user.displayName!,
-          email: user.mail!,
+        const entity = await transformer(user, userPhoto);
 
-          // TODO: Additional fields?
-          // jobTitle: user.jobTitle || undefined,
-          // officeLocation: user.officeLocation || undefined,
-          // mobilePhone: user.mobilePhone || undefined,
-        },
-        memberOf: [],
-      },
-    };
+        if (!entity) {
+          return;
+        }
 
-    // Download the photos in parallel, otherwise it can take quite some time
-    const loadPhoto = limiter(async () => {
-      entity.spec.profile!.picture = await client.getUserPhotoWithSizeLimit(
-        user.id!,
-        // We are limiting the photo size, as users with full resolution photos
-        // can make the Backstage API slow
-        120,
-      );
-    });
-
-    promises.push(loadPhoto);
-    entities.push(entity);
+        users.push(entity);
+      }),
+    );
   }
 
-  // Wait for all photos to be downloaded
+  // Wait for all users and photos to be downloaded
   await Promise.all(promises);
 
-  return { users: entities };
+  return { users };
 }
 
-export async function readMicrosoftGraphOrganization(
-  client: MicrosoftGraphClient,
-  tenantId: string,
-): Promise<{
-  rootGroup: GroupEntity; // With all relations empty
-}> {
-  // For now we expect a single root organization
-  const organization = await client.getOrganization(tenantId);
+export async function defaultOrganizationTransformer(
+  organization: MicrosoftGraph.Organization,
+): Promise<GroupEntity | undefined> {
+  if (!organization.id || !organization.displayName) {
+    return undefined;
+  }
+
   const name = normalizeEntityName(organization.displayName!);
-  const rootGroup: GroupEntity = {
+  return {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
@@ -119,14 +141,68 @@ export async function readMicrosoftGraphOrganization(
       children: [],
     },
   };
+}
+
+export async function readMicrosoftGraphOrganization(
+  client: MicrosoftGraphClient,
+  tenantId: string,
+  options?: { transformer?: OrganizationTransformer },
+): Promise<{
+  rootGroup?: GroupEntity; // With all relations empty
+}> {
+  // For now we expect a single root organization
+  const organization = await client.getOrganization(tenantId);
+  const transformer = options?.transformer ?? defaultOrganizationTransformer;
+  const rootGroup = await transformer(organization);
 
   return { rootGroup };
+}
+
+export async function defaultGroupTransformer(
+  group: MicrosoftGraph.Group,
+  groupPhoto?: string,
+): Promise<GroupEntity | undefined> {
+  if (!group.id || !group.displayName) {
+    return undefined;
+  }
+
+  const name = normalizeEntityName(group.mailNickname || group.displayName);
+  const entity: GroupEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: name,
+      annotations: {
+        [MICROSOFT_GRAPH_GROUP_ID_ANNOTATION]: group.id,
+      },
+    },
+    spec: {
+      type: 'team',
+      profile: {},
+      children: [],
+    },
+  };
+
+  if (group.description) {
+    entity.metadata.description = group.description;
+  }
+  if (group.displayName) {
+    entity.spec.profile!.displayName = group.displayName;
+  }
+  if (group.mail) {
+    entity.spec.profile!.email = group.mail;
+  }
+  if (groupPhoto) {
+    entity.spec.profile!.picture = groupPhoto;
+  }
+
+  return entity;
 }
 
 export async function readMicrosoftGraphGroups(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { groupFilter?: string },
+  options?: { groupFilter?: string; transformer?: GroupTransformer },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
   rootGroup: GroupEntity | undefined; // With all relations empty
@@ -139,78 +215,52 @@ export async function readMicrosoftGraphGroups(
   const limiter = limiterFactory(10);
 
   const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId);
-  groupMember.set(rootGroup.metadata.name, new Set<string>());
-  groups.push(rootGroup);
+  if (rootGroup) {
+    groupMember.set(rootGroup.metadata.name, new Set<string>());
+    groups.push(rootGroup);
+  }
 
+  const transformer = options?.transformer ?? defaultGroupTransformer;
   const promises: Promise<void>[] = [];
 
   for await (const group of client.getGroups({
     filter: options?.groupFilter,
-    select: ['id', 'displayName', 'description', 'mail', 'mailNickname'],
   })) {
-    if (!group.id || !group.displayName) {
-      continue;
-    }
+    // Process all groups in parallel, otherwise it can take quite some time
+    promises.push(
+      limiter(async () => {
+        // TODO: Loading groups photos doesn't work right now as Microsoft Graph
+        // doesn't allows this yet: https://microsoftgraph.uservoice.com/forums/920506-microsoft-graph-feature-requests/suggestions/37884922-allow-application-to-set-or-update-a-group-s-photo
+        /* const groupPhoto = await client.getGroupPhotoWithSizeLimit(
+          group.id!,
+          // We are limiting the photo size, as groups with full resolution photos
+          // can make the Backstage API slow
+          120,
+        );*/
 
-    const name = normalizeEntityName(group.mailNickname || group.displayName);
-    const entity: GroupEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: name,
-        annotations: {
-          [MICROSOFT_GRAPH_GROUP_ID_ANNOTATION]: group.id,
-        },
-      },
-      spec: {
-        type: 'team',
-        profile: {},
-        children: [],
-      },
-    };
+        const entity = await transformer(group /* , groupPhoto*/);
 
-    if (group.description) {
-      entity.metadata.description = group.description;
-    }
-    if (group.displayName) {
-      entity.spec.profile!.displayName = group.displayName;
-    }
-    if (group.mail) {
-      entity.spec.profile!.email = group.mail;
-    }
-
-    // Download the members in parallel, otherwise it can take quite some time
-    const loadGroupMembers = limiter(async () => {
-      for await (const member of client.getGroupMembers(group.id!)) {
-        if (!member.id) {
-          continue;
+        if (!entity) {
+          return;
         }
 
-        if (member['@odata.type'] === '#microsoft.graph.user') {
-          ensureItem(groupMemberOf, member.id, group.id!);
+        for await (const member of client.getGroupMembers(group.id!)) {
+          if (!member.id) {
+            continue;
+          }
+
+          if (member['@odata.type'] === '#microsoft.graph.user') {
+            ensureItem(groupMemberOf, member.id, group.id!);
+          }
+
+          if (member['@odata.type'] === '#microsoft.graph.group') {
+            ensureItem(groupMember, group.id!, member.id);
+          }
         }
 
-        if (member['@odata.type'] === '#microsoft.graph.group') {
-          ensureItem(groupMember, group.id!, member.id);
-        }
-      }
-    });
-
-    // TODO: Loading groups doesn't work right now as Microsoft Graph doesn't
-    // allows this yet: https://microsoftgraph.uservoice.com/forums/920506-microsoft-graph-feature-requests/suggestions/37884922-allow-application-to-set-or-update-a-group-s-photo
-    /*/ / Download the photos in parallel, otherwise it can take quite some time
-    const loadPhoto = limiter(async () => {
-      entity.spec.profile!.picture = await client.getGroupPhotoWithSizeLimit(
-        group.id!,
-        // We are limiting the photo size, as groups with full resolution photos
-        // can make the Backstage API slow
-        120,
-      );
-    });
-
-    promises.push(loadPhoto);*/
-    promises.push(loadGroupMembers);
-    groups.push(entity);
+        groups.push(entity);
+      }),
+    );
   }
 
   // Wait for all group members and photos to be loaded
@@ -286,7 +336,7 @@ export function resolveRelations(
     retrieveItems(groupMember, id).forEach(m => {
       const childGroup = groupMap.get(m);
       if (childGroup) {
-        group.spec.children.push(childGroup.metadata.name);
+        group.spec.children.push(stringifyEntityRef(childGroup));
       }
     });
 
@@ -294,7 +344,7 @@ export function resolveRelations(
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
         // TODO: Only having a single parent group might not match every companies model, but fine for now.
-        group.spec.parent = parentGroup.metadata.name;
+        group.spec.parent = stringifyEntityRef(parentGroup);
       }
     });
   });
@@ -309,7 +359,7 @@ export function resolveRelations(
     retrieveItems(groupMemberOf, id).forEach(p => {
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
-        user.spec.memberOf.push(parentGroup.metadata.name);
+        user.spec.memberOf.push(stringifyEntityRef(parentGroup));
       }
     });
   });
@@ -321,7 +371,11 @@ export function resolveRelations(
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { userFilter?: string; groupFilter?: string },
+  options?: {
+    userFilter?: string;
+    groupFilter?: string;
+    groupTransformer?: GroupTransformer;
+  },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
     userFilter: options?.userFilter,
@@ -333,6 +387,7 @@ export async function readMicrosoftGraphOrg(
     groupMemberOf,
   } = await readMicrosoftGraphGroups(client, tenantId, {
     groupFilter: options?.groupFilter,
+    transformer: options?.groupTransformer,
   });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);

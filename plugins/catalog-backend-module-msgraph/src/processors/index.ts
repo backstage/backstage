@@ -13,12 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { MicrosoftGraphClient } from './client';
-export type { MicrosoftGraphProviderConfig } from './config';
-export { readMicrosoftGraphConfig } from './config';
-export { readMicrosoftGraphOrg } from './read';
-export {
-  MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
-  MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
-  MICROSOFT_GRAPH_USER_ID_ANNOTATION,
-} from './constants';
+
+export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';

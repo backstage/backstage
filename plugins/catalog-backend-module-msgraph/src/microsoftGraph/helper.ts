@@ -1,5 +1,5 @@
 /*
- * Copyright <%= YEAR %> <%= NAME %>
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export function normalizeEntityName(name: string): string {
+  return name
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+}

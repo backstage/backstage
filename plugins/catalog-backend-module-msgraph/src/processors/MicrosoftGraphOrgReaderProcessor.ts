@@ -16,24 +16,32 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  results,
+} from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
+  GroupTransformer,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
-} from './microsoftGraph';
-import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+} from '../microsoftGraph';
 
 /**
- * Extracts teams and users out of an LDAP server.
+ * Extracts teams and users out of a the Microsoft Graph API.
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
   private readonly logger: Logger;
+  private readonly groupTransformer?: GroupTransformer;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; groupTransformer?: GroupTransformer },
+  ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
       ...options,
@@ -44,9 +52,11 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger;
+    groupTransformer?: GroupTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.groupTransformer = options.groupTransformer;
   }
 
   async readLocation(
@@ -79,6 +89,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       {
         userFilter: provider.userFilter,
         groupFilter: provider.groupFilter,
+        groupTransformer: this.groupTransformer,
       },
     );
 

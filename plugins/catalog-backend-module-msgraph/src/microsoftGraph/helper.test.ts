@@ -1,5 +1,5 @@
 /*
- * Copyright <%= YEAR %> <%= NAME %>
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { normalizeEntityName } from './helper';
+
+describe('normalizeEntityName', () => {
+  it('should normalize name to valid entity name', () => {
+    expect(normalizeEntityName('User Name')).toBe('user_name');
+  });
+
+  it('should normalize e-mail to valid entity name', () => {
+    expect(normalizeEntityName('user.name@example.com')).toBe(
+      'user.name_example.com',
+    );
+  });
+});

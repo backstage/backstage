@@ -16,17 +16,15 @@
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import merge from 'lodash/merge';
-import { RecursivePartial } from '../../../util';
 import { GroupMember, MicrosoftGraphClient } from './client';
 import {
-  normalizeEntityName,
   readMicrosoftGraphGroups,
   readMicrosoftGraphOrganization,
   readMicrosoftGraphUsers,
   resolveRelations,
 } from './read';
 
-function user(data: RecursivePartial<UserEntity>): UserEntity {
+function user(data: Partial<UserEntity>): UserEntity {
   return merge(
     {},
     {
@@ -39,7 +37,7 @@ function user(data: RecursivePartial<UserEntity>): UserEntity {
   );
 }
 
-function group(data: RecursivePartial<GroupEntity>): GroupEntity {
+function group(data: Partial<GroupEntity>): GroupEntity {
   return merge(
     {},
     {
@@ -68,18 +66,6 @@ describe('read microsoft graph', () => {
   } as any;
 
   afterEach(() => jest.resetAllMocks());
-
-  describe('normalizeEntityName', () => {
-    it('should normalize name to valid entity name', () => {
-      expect(normalizeEntityName('User Name')).toBe('user_name');
-    });
-
-    it('should normalize e-mail to valid entity name', () => {
-      expect(normalizeEntityName('user.name@example.com')).toBe(
-        'user.name_example.com',
-      );
-    });
-  });
 
   describe('readMicrosoftGraphUsers', () => {
     it('should read users', async () => {
@@ -114,6 +100,7 @@ describe('read microsoft graph', () => {
               email: 'user.name@example.com',
               picture: 'data:image/jpeg;base64,...',
             },
+            memberOf: [],
           },
         }),
       ]);
@@ -121,7 +108,6 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toBeCalledTimes(1);
       expect(client.getUsers).toBeCalledWith({
         filter: 'accountEnabled eq true',
-        select: ['id', 'displayName', 'mail'],
       });
       expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
@@ -154,9 +140,28 @@ describe('read microsoft graph', () => {
             profile: {
               displayName: 'Organization Name',
             },
+            children: [],
           },
         }),
       );
+
+      expect(client.getOrganization).toBeCalledTimes(1);
+      expect(client.getOrganization).toBeCalledWith('tenantid');
+    });
+
+    it('should read organization with custom transformer', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      const { rootGroup } = await readMicrosoftGraphOrganization(
+        client,
+        'tenantid',
+        { transformer: async _ => undefined },
+      );
+
+      expect(rootGroup).toEqual(undefined);
 
       expect(client.getOrganization).toBeCalledTimes(1);
       expect(client.getOrganization).toBeCalledWith('tenantid');
@@ -217,6 +222,7 @@ describe('read microsoft graph', () => {
           profile: {
             displayName: 'Organization Name',
           },
+          children: [],
         },
       });
       expect(groups).toEqual([
@@ -234,10 +240,11 @@ describe('read microsoft graph', () => {
             profile: {
               displayName: 'Group Name',
               email: 'group@example.com',
-              // TODO: Loading groups doesn't work right now as Microsoft Graph
-              // doesn't allows this yet
+              // TODO: Loading groups photos doesn't work right now as Microsoft
+              // Graph doesn't allows this yet
               /* picture: 'data:image/jpeg;base64,...',*/
             },
+            children: [],
           },
         }),
       ]);
@@ -249,11 +256,10 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toBeCalledTimes(1);
       expect(client.getGroups).toBeCalledWith({
         filter: 'securityEnabled eq false',
-        select: ['id', 'displayName', 'description', 'mail', 'mailNickname'],
       });
       expect(client.getGroupMembers).toBeCalledTimes(1);
       expect(client.getGroupMembers).toBeCalledWith('groupid');
-      // TODO: Loading groups doesn't work right now as Microsoft Graph
+      // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
@@ -271,6 +277,7 @@ describe('read microsoft graph', () => {
         },
         spec: {
           type: 'root',
+          children: [],
         },
       });
       const groupA = group({
@@ -328,20 +335,26 @@ describe('read microsoft graph', () => {
 
       expect(rootGroup.spec.parent).toBeUndefined();
       expect(rootGroup.spec.children).toEqual(
-        expect.arrayContaining(['a', 'b']),
+        expect.arrayContaining(['group:default/a', 'group:default/b']),
       );
 
-      expect(groupA.spec.parent).toEqual('root');
+      expect(groupA.spec.parent).toEqual('group:default/root');
       expect(groupA.spec.children).toEqual(expect.arrayContaining([]));
 
-      expect(groupB.spec.parent).toEqual('root');
-      expect(groupB.spec.children).toEqual(expect.arrayContaining(['c']));
+      expect(groupB.spec.parent).toEqual('group:default/root');
+      expect(groupB.spec.children).toEqual(
+        expect.arrayContaining(['group:default/c']),
+      );
 
-      expect(groupC.spec.parent).toEqual('b');
+      expect(groupC.spec.parent).toEqual('group:default/b');
       expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
 
-      expect(user1.spec.memberOf).toEqual(expect.arrayContaining(['a']));
-      expect(user2.spec.memberOf).toEqual(expect.arrayContaining(['b', 'c']));
+      expect(user1.spec.memberOf).toEqual(
+        expect.arrayContaining(['group:default/a']),
+      );
+      expect(user2.spec.memberOf).toEqual(
+        expect.arrayContaining(['group:default/c']),
+      );
     });
   });
 });
