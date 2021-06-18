@@ -7,6 +7,11 @@
 
 /* your custom css */
 
+/* makes scroll bars, inputs etc match the dark theme better */
+html {
+  color-scheme: dark;
+}
+
 /* override font color for new dark tech docs styling */
 table {
   color: white;
