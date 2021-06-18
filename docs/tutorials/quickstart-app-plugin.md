@@ -146,11 +146,9 @@ import {
 } from '@backstage/core';
 import { graphql } from '@octokit/graphql';
 
-const ExampleFetchComponent = () => {
+export const ExampleFetchComponent = () => {
   return <div>Nothing to see yet</div>;
 };
-
-export default ExampleFetchComponent;
 ```
 
 3. Save that and ensure you see no errors. Comment out the unused imports if
