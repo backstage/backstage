@@ -42,4 +42,3 @@ export {
   EntitySystemDiagramCard,
 } from './plugin';
 export * from './components/CatalogTable/columns';
-export * from './components/CatalogTable/actions';

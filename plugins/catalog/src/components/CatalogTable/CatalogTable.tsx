@@ -23,14 +23,21 @@ import {
 } from '@backstage/core';
 import {
   formatEntityRefTitle,
+  getEntityMetadataEditUrl,
+  getEntityMetadataViewUrl,
   getEntityRelations,
   useEntityListProvider,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
+import Edit from '@material-ui/icons/Edit';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import React from 'react';
+import {
+  favouriteEntityIcon,
+  favouriteEntityTooltip,
+} from '../FavouriteEntity/FavouriteEntity';
 import * as columnFactories from './columns';
-import * as actionFactories from './actions';
 import { EntityRow } from './types';
 
 const defaultColumns: TableColumn<EntityRow>[] = [
@@ -70,14 +77,39 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   }
 
   const defaultActions: TableProps<EntityRow>['actions'] = [
-    ({ entity }) => actionFactories.createViewUrlAction(entity),
-    ({ entity }) => actionFactories.createEditUrlAction(entity),
-    ({ entity }) =>
-      actionFactories.createStarredAction(
-        entity,
-        isStarredEntity,
-        toggleStarredEntity,
-      ),
+    ({ entity }) => {
+      const url = getEntityMetadataViewUrl(entity);
+      return {
+        icon: () => <OpenInNew fontSize="small" />,
+        tooltip: 'View',
+        disabled: !url,
+        onClick: () => {
+          if (!url) return;
+          window.open(url, '_blank');
+        },
+      };
+    },
+    ({ entity }) => {
+      const url = getEntityMetadataEditUrl(entity);
+      return {
+        icon: () => <Edit fontSize="small" />,
+        tooltip: 'Edit',
+        disabled: !url,
+        onClick: () => {
+          if (!url) return;
+          window.open(url, '_blank');
+        },
+      };
+    },
+    ({ entity }) => {
+      const isStarred = isStarredEntity(entity);
+      return {
+        cellStyle: { paddingLeft: '1em' },
+        icon: () => favouriteEntityIcon(isStarred),
+        tooltip: favouriteEntityTooltip(isStarred),
+        onClick: () => toggleStarredEntity(entity),
+      };
+    },
   ];
 
   const rows = entities.map(entity => {
