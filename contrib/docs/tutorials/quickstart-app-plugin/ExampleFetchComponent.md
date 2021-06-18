@@ -76,7 +76,7 @@ export const DenseTable = ({ viewer }: DenseTableProps) => {
   );
 };
 
-const ExampleFetchComponent = () => {
+export const ExampleFetchComponent = () => {
   const auth = useApi(githubAuthApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<any> => {
@@ -106,6 +106,4 @@ const ExampleFetchComponent = () => {
     />
   );
 };
-
-export default ExampleFetchComponent;
 ```
