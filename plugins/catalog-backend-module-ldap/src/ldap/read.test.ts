@@ -17,7 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
-import { RecursivePartial } from '../../../util';
+import { RecursivePartial } from '@backstage/plugin-catalog-backend';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
 import {

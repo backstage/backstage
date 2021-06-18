@@ -17,7 +17,7 @@
 import { Config, JsonValue } from '@backstage/config';
 import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
-import { RecursivePartial } from '../../../util';
+import { RecursivePartial } from '@backstage/plugin-catalog-backend';
 
 /**
  * The configuration parameters for a single LDAP provider.
