@@ -36,7 +36,7 @@ Please ensure the appropriate database drivers are installed in your `backend`
 package. If you intend to use both `postgres` and `sqlite3`, you can install
 both of them.
 
-```shell
+```sh
 cd packages/backend
 
 # install pg if you need postgres
@@ -184,4 +184,21 @@ configuration do not have permissions to create databases, you must ensure they
 exist before starting the service. The service will not be able to create them,
 it can only use them.
 
-Good luck!
+### Privileges
+
+As Backstage attempts to check if the database exists, you may need to grant
+privileges to list or show databases for a given user. For PostgreSQL, you would
+grant the following:
+
+```postgres
+GRANT SELECT ON pg_database TO some_user;
+```
+
+MySQL:
+
+```mysql
+GRANT SHOW DATABASES ON *.* TO some_user;
+```
+
+The mechanisms in this guide should help you tackle different database
+deployment situations. Good luck!
