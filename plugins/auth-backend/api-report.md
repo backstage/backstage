@@ -71,9 +71,6 @@ export const encodeState: (state: OAuthState) => string;
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
 // @public (undocumented)
-export const googleDefaultSignInResolver: SignInResolver<OAuthResult>;
-
-// @public (undocumented)
 export const googleEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // @public (undocumented)
