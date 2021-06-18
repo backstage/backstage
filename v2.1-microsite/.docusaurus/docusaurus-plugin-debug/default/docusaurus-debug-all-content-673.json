@@ -5413,7 +5413,7 @@
             "date": "2021-05-20T00:00:00.000Z",
             "formattedDate": "May 20, 2021",
             "tags": [],
-            "readingTime": 9.58,
+            "readingTime": 9.595,
             "truncated": true,
             "nextItem": {
               "title": "New Backstage feature: Kubernetes for Service owners",
@@ -5585,7 +5585,7 @@
             "date": "2020-08-05T00:00:00.000Z",
             "formattedDate": "August 5, 2020",
             "tags": [],
-            "readingTime": 3.88,
+            "readingTime": 3.885,
             "truncated": true,
             "prevItem": {
               "title": "Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage",
@@ -5875,13 +5875,13 @@
       },
       {
         "type": "jsx",
-        "permalink": "/docs/features/techdocs/",
-        "source": "@site/src/pages/docs/features/techdocs/index.js"
+        "permalink": "/docs/features/software-templates/",
+        "source": "@site/src/pages/docs/features/software-templates/index.js"
       },
       {
         "type": "jsx",
-        "permalink": "/docs/features/software-templates/",
-        "source": "@site/src/pages/docs/features/software-templates/index.js"
+        "permalink": "/docs/features/techdocs/",
+        "source": "@site/src/pages/docs/features/techdocs/index.js"
       }
     ]
   },

@@ -7,7 +7,7 @@ authorURL: "https://twitter.com/stalund"
 **TL;DR** Today we are announcing a new Backstage feature: Software Templates. Simplify setup, standardize tooling, and deploy with the click of a button. Using automated templates, your engineers can spin up a new microservice, website, or other software component with your organization’s best practices built-in, right from the start.
 
 <video width="100%" height="100%" controls>
-  <source src="/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
+  <source src="/blog/assets/2020-08-05/feature.mp4" type="video/mp4" />
 </video>
 
 <!--truncate-->
