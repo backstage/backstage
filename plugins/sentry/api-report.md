@@ -4,12 +4,12 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
-import { DiscoveryApi } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
+import { InfoCardVariants } from '@backstage/core-components';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntitySentryCard: () => JSX.Element;

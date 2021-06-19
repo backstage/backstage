@@ -4,9 +4,9 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core';
+import { InfoCardVariants } from '@backstage/core-components';
 
 // @public (undocumented)
 export const EntitySonarQubeCard: ({ variant, duplicationRatings, }: {

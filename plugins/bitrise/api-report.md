@@ -4,7 +4,7 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
 // @public (undocumented)

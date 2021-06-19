@@ -4,16 +4,16 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { IdentityApi } from '@backstage/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { Location as Location_2 } from '@backstage/catalog-model';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const DocsCardGrid: ({ entities, }: {

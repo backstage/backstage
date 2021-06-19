@@ -4,9 +4,9 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const codeCoveragePlugin: BackstagePlugin<{
