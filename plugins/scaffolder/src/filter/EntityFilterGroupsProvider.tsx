@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -50,7 +50,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     const response = await catalogApi.getEntities({
       filter: { kind: 'Template' },
     });
-    return response.items as TemplateEntityV1alpha1[];
+    return response.items as TemplateEntityV1beta2[];
   });
 
   const filterGroups = useRef<{
@@ -64,7 +64,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     [filterGroupId: string]: FilterGroupStates;
   }>({});
   const [filteredEntities, setFilteredEntities] = useState<
-    TemplateEntityV1alpha1[]
+    TemplateEntityV1beta2[]
   >([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isCatalogEmpty, setCatalogEmpty] = useState<boolean>(false);
@@ -161,7 +161,7 @@ function buildStates(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
   selectedCategories: string[],
-  entities?: TemplateEntityV1alpha1[],
+  entities?: TemplateEntityV1beta2[],
   error?: Error,
 ): { [filterGroupId: string]: FilterGroupStates } {
   // On error - all entries are an error state
@@ -208,7 +208,7 @@ function buildStates(
 }
 
 // Given all entites, find all possible categories and provide them in a sorted list.
-function collectCategories(entities?: TemplateEntityV1alpha1[]): string[] {
+function collectCategories(entities?: TemplateEntityV1beta2[]): string[] {
   const categories = new Set<string>();
   (entities || []).forEach(e => {
     if (e.spec?.type) {
@@ -224,9 +224,9 @@ function buildMatchingEntities(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
   selectedCategories: string[],
-  entities?: TemplateEntityV1alpha1[],
+  entities?: TemplateEntityV1beta2[],
   excludeFilterGroupId?: string,
-): TemplateEntityV1alpha1[] {
+): TemplateEntityV1beta2[] {
   // Build one filter fn per filter group
   const allFilters: EntityFilterFn[] = [];
   for (const [filterGroupId, filterGroup] of Object.entries(filterGroups)) {

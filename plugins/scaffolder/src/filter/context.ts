@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { createContext } from 'react';
 import { FilterGroup, FilterGroupStates } from './types';
 
@@ -32,7 +32,7 @@ export type FilterGroupsContext = {
   loading: boolean;
   error?: Error;
   filterGroupStates: { [filterGroupId: string]: FilterGroupStates };
-  filteredEntities: TemplateEntityV1alpha1[];
+  filteredEntities: TemplateEntityV1beta2[];
   availableCategories: string[];
   isCatalogEmpty: boolean;
 };
