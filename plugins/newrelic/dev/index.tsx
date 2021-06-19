@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { newRelicPlugin } from '../src/plugin';
+import { newRelicPlugin, NewRelicPage } from '../src/plugin';
 
-createDevApp().registerPlugin(newRelicPlugin).render();
+createDevApp()
+  .registerPlugin(newRelicPlugin)
+  .addPage({
+    title: 'New Relic',
+    element: <NewRelicPage />,
+  })
+  .render();

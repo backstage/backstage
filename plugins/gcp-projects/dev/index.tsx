@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { gcpProjectsPlugin } from '../src/plugin';
+import { gcpProjectsPlugin, GcpProjectsPage } from '../src/plugin';
 
-createDevApp().registerPlugin(gcpProjectsPlugin).render();
+createDevApp()
+  .registerPlugin(gcpProjectsPlugin)
+  .addPage({
+    title: 'GCP Projects',
+    element: <GcpProjectsPage />,
+  })
+  .render();
