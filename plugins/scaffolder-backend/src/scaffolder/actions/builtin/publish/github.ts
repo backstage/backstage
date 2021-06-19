@@ -22,7 +22,7 @@ import { Octokit } from '@octokit/rest';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
-} from '../../../stages/publish/helpers';
+} from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 

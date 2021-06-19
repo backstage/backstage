@@ -265,6 +265,7 @@ export class LocationReaders implements LocationReader {
           )}, ${e}`;
           emit(result.inputError(item.location, message));
           logger.warn(message);
+          logger.debug(e.stack);
           return undefined;
         }
       }

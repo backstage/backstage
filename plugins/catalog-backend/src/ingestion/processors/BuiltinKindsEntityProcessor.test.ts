@@ -21,7 +21,7 @@ import {
   GroupEntity,
   ResourceEntity,
   SystemEntity,
-  TemplateEntity,
+  TemplateEntityV1beta2,
   UserEntity,
 } from '@backstage/catalog-model';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
@@ -522,22 +522,13 @@ describe('BuiltinKindsEntityProcessor', () => {
       });
     });
     it('generates relations for template entities', async () => {
-      const entity: TemplateEntity = {
-        apiVersion: 'backstage.io/v1alpha1',
+      const entity: TemplateEntityV1beta2 = {
+        apiVersion: 'backstage.io/v1beta2',
         kind: 'Template',
         metadata: { name: 'n' },
         spec: {
-          schema: {
-            properties: {
-              description: {
-                title: 'd',
-                type: 'string',
-                description: 'des',
-              },
-            },
-          },
-          templater: 'cookiecutter',
-          path: '.',
+          parameters: {},
+          steps: [],
           type: 'service',
           owner: 'o',
         },
