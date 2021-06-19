@@ -30,4 +30,4 @@ export {
 } from './components';
 export * from './api';
 export * from './route-refs';
-export const ILertIcon: IconComponent = ILertIconComponent;
+export const ILertIcon: IconComponent = ILertIconComponent as IconComponent;

@@ -25,4 +25,4 @@ export {
 export { GraphiQLPage as Router } from './components';
 export * from './lib/api';
 export * from './route-refs';
-export const GraphiQLIcon: IconComponent = GraphiQLIconComponent;
+export const GraphiQLIcon: IconComponent = GraphiQLIconComponent as IconComponent;
