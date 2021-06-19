@@ -21,10 +21,7 @@ import {
   googleAuthApiRef,
 } from '@backstage/core';
 import { gcpApiRef, GcpClient } from './api';
-import { NewProjectPage } from './components/NewProjectPage';
-import { ProjectDetailsPage } from './components/ProjectDetailsPage';
-import { ProjectListPage } from './components/ProjectListPage';
-import { rootRouteRef, projectRouteRef, newProjectRouteRef } from './routes';
+import { rootRouteRef } from './routes';
 
 export const gcpProjectsPlugin = createPlugin({
   id: 'gcp-projects',
@@ -40,11 +37,6 @@ export const gcpProjectsPlugin = createPlugin({
       },
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, ProjectListPage);
-    router.addRoute(projectRouteRef, ProjectDetailsPage);
-    router.addRoute(newProjectRouteRef, NewProjectPage);
-  },
 });
 
 export const GcpProjectsPage = gcpProjectsPlugin.provide(

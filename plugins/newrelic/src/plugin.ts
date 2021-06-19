@@ -22,7 +22,6 @@ import {
   createRoutableExtension,
 } from '@backstage/core';
 import { NewRelicClient, newRelicApiRef } from './api';
-import NewRelicComponent from './components/NewRelicComponent';
 
 export const rootRouteRef = createRouteRef({
   path: '/newrelic',
@@ -38,9 +37,6 @@ export const newRelicPlugin = createPlugin({
       factory: ({ discoveryApi }) => new NewRelicClient({ discoveryApi }),
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, NewRelicComponent);
-  },
   routes: {
     root: rootRouteRef,
   },

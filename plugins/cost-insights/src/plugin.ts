@@ -19,9 +19,6 @@ import {
   createRouteRef,
   createRoutableExtension,
 } from '@backstage/core';
-import { CostInsightsPage as CostInsightsPageComponent } from './components/CostInsightsPage';
-import { ProjectGrowthInstructionsPage as ProjectGrowthInstructionsPageComponent } from './components/ProjectGrowthInstructionsPage';
-import { LabelDataflowInstructionsPage as LabelDataflowInstructionsPageComponent } from './components/LabelDataflowInstructionsPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',
@@ -40,16 +37,7 @@ export const unlabeledDataflowAlertRef = createRouteRef({
 
 export const costInsightsPlugin = createPlugin({
   id: 'cost-insights',
-  register({ router, featureFlags }) {
-    router.addRoute(rootRouteRef, CostInsightsPageComponent);
-    router.addRoute(
-      projectGrowthAlertRef,
-      ProjectGrowthInstructionsPageComponent,
-    );
-    router.addRoute(
-      unlabeledDataflowAlertRef,
-      LabelDataflowInstructionsPageComponent,
-    );
+  register({ featureFlags }) {
     featureFlags.register('cost-insights-currencies');
   },
   routes: {
