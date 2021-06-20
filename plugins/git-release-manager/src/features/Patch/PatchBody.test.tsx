@@ -29,8 +29,8 @@ import {
 import { PatchBody } from './PatchBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('@backstage/core', () => ({
-  ...jest.requireActual('@backstage/core'),
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
   useApi: () => mockApiClient,
 }));
 jest.mock('../../contexts/ProjectContext', () => ({

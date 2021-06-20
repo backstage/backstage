@@ -22,8 +22,8 @@ import { SearchContextProvider } from '../SearchContext';
 import { SearchBar } from './SearchBar';
 import { useApi } from '@backstage/core-plugin-api';
 
-jest.mock('@backstage/core', () => ({
-  ...jest.requireActual('@backstage/core'),
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
   useApi: jest.fn().mockReturnValue({}),
 }));
 

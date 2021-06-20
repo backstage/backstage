@@ -28,8 +28,8 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { usePatch } from './usePatch';
 
-jest.mock('@backstage/core', () => ({
-  ...jest.requireActual('@backstage/core'),
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
   useApi: () => mockApiClient,
 }));
 jest.mock('../../../contexts/UserContext', () => ({
