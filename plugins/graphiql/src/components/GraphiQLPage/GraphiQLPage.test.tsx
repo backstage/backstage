@@ -21,7 +21,12 @@ import { lightTheme } from '@backstage/theme';
 import { act } from 'react-dom/test-utils';
 import { renderWithEffects } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',
@@ -38,7 +43,12 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [graphQlBrowseApiRef, loadingApi],
+          [configApiRef, new ConfigReader({})],
+        ])}
+      >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
@@ -61,7 +71,12 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [graphQlBrowseApiRef, loadingApi],
+          [configApiRef, new ConfigReader({})],
+        ])}
+      >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
@@ -80,7 +95,12 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [graphQlBrowseApiRef, loadingApi],
+          [configApiRef, new ConfigReader({})],
+        ])}
+      >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
