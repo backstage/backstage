@@ -1,4 +1,4 @@
-import { ErrorApi } from '../../definitions';
+import { ErrorApi } from '@backstage/core-plugin-api';
 
 /*
  * Copyright 2020 Spotify AB
