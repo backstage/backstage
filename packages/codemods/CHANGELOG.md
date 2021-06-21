@@ -1,5 +1,9 @@
 # @backstage/codemods
 
+## 0.1.2
+
+Fixed a publish issue, making this package available to the public.
+
 ## 0.1.1
 
 ### Patch Changes
