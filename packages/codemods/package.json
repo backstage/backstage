@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "private": false,
   "homepage": "https://backstage.io",
   "repository": {
