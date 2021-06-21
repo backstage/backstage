@@ -40,6 +40,13 @@ export type EntityFilter = {
    * @param env
    */
   filterEntity?: (entity: Entity) => boolean;
+
+  /**
+   * Serialize the filter value to a string for query params. The UI component responsible for
+   * handling this filter should retrieve this from useEntityListProvider.queryParameters. The
+   * value restored should be in the precedence: queryParameters > initialValue prop > default.
+   */
+  toQueryValue?: () => string | string[];
 };
 
 export class EntityKindFilter implements EntityFilter {
@@ -47,6 +54,10 @@ export class EntityKindFilter implements EntityFilter {
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
+  }
+
+  toQueryValue(): string {
+    return this.value;
   }
 }
 
