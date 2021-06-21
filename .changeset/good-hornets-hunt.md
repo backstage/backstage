@@ -57,6 +57,12 @@ jenkins:
   apiKey: ${JENKINS_PASSWORD}
 ```
 
+## Change javascript API
+
+As part of the above change, the javascript API exposed by the plugin as a possible place for customisation has changed.
+The ApiRef now has an id of `plugin.jenkins.service2` and has entity-based functions to match the nedpoints exposed by
+the new backend plugin
+
 ## Change BuildWithStepsPage route
 
 The plugin originally provided a route to view a particular build of a particular branch so that if you wanted to view
