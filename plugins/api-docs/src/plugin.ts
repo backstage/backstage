@@ -22,7 +22,6 @@ import {
   createRoutableExtension,
 } from '@backstage/core';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
-import { ApiExplorerPage as Page } from './components/ApiExplorerPage/ApiExplorerPage';
 import { apiDocsConfigRef } from './config';
 import { createComponentRouteRef, rootRoute } from './routes';
 
@@ -47,9 +46,6 @@ export const apiDocsPlugin = createPlugin({
   ],
   externalRoutes: {
     createComponent: createComponentRouteRef,
-  },
-  register({ router }) {
-    router.addRoute(rootRoute, Page);
   },
 });
 

@@ -30,6 +30,13 @@ import graphqlApiEntity from './graphql-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 
+const mockEntities = ([
+  openapiApiEntity,
+  asyncapiApiEntity,
+  graphqlApiEntity,
+  otherApiEntity,
+] as unknown) as Entity[];
+
 createDevApp()
   .registerApi({
     api: catalogApiRef,
@@ -38,13 +45,11 @@ createDevApp()
       (({
         async getEntities() {
           return {
-            items: [
-              openapiApiEntity,
-              asyncapiApiEntity,
-              graphqlApiEntity,
-              otherApiEntity,
-            ],
+            items: mockEntities.slice(),
           };
+        },
+        async getEntityByName(name: string) {
+          return mockEntities.find(e => e.metadata.name === name);
         },
       } as unknown) as typeof catalogApiRef.T),
   })
