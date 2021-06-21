@@ -2,4 +2,4 @@
 '@backstage/plugin-search-backend-node': patch
 ---
 
-Escape : characters in the query
+Fixed bug preventing searches with filter values containing `:` from returning results.

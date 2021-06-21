@@ -339,6 +339,46 @@ describe('LunrSearchEngine', () => {
       });
     });
 
+    it('should perform search query and return search results on match with filters that include a : character', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test:location',
+        },
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test:location2',
+        },
+      ];
+
+      // Mock indexing of 2 documents
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitle',
+        filters: { location: 'test:location2' },
+        pageCursor: '',
+      });
+
+      // Should return 1 of 2 results as we are
+      // 1. Mocking the indexing of 2 documents
+      // 2. Matching on the location field with the filter { location: 'test:location2' }
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test:location2',
+            },
+          },
+        ],
+      });
+    });
+
     it('should perform search query and return search results on match, scoped to specific index', async () => {
       const mockDocuments = [
         {
