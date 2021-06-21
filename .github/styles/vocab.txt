@@ -92,7 +92,6 @@ haproxy
 Helidon
 Heroku
 hoc
-href
 horizontalpodautoscalers
 Hostname
 hotspots

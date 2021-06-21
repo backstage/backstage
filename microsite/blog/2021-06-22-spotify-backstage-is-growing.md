@@ -4,7 +4,7 @@ author: Austin Lamon, Spotify
 authorURL: https://www.linkedin.com/in/austinlamon
 ---
 
-<a href="https://backstage.spotify.com/">![Spotify Backstage: Proven at Spotify. Made just for you.](assets/21-06-22/spotify-backstage-header.gif)</a>
+[![Spotify Backstage: Proven at Spotify. Made just for you.](assets/21-06-22/spotify-backstage-header.gif)](https://backstage.spotify.com/)
 _[backstage.spotify.com](https://backstage.spotify.com)_
 
 The Backstage community is growing! In just over [a year](https://engineering.atspotify.com/2021/03/16/happy-birthday-backstage-spotifys-biggest-open-source-project-grows-up-fast/), Backstage has gone from a few open source building blocks to a thriving platform used by engineering orgs with thousands of developers. But even with 30+ [adopting companies](https://github.com/backstage/backstage/blob/master/ADOPTERS.md) and 400+ contributors, we are still in the very early stages of reaching the platform’s potential.
@@ -43,7 +43,7 @@ So, let’s get to it.
 
 ## Consulting support (and a new website) for adopters
 
-<a href="https://backstage.spotify.com/"![Who else is using Backstage? Netflix, Zalando, TELUS, DoorDash, more](assets/21-06-22/spotify-backstage-adopters.png)</a>
+[![Who else is using Backstage? Netflix, Zalando, TELUS, DoorDash, more](assets/21-06-22/spotify-backstage-adopters.png)](https://backstage.spotify.com/)
 
 We’ve launched a new website at: [backstage.spotify.com](https://backstage.spotify.com). It’s a hub for new and potential adopters to receive support from Spotify and our Preferred Partners. The site is focused on helping organizations get up and running with Backstage by addressing their unique needs and use cases.
 
@@ -53,7 +53,7 @@ We will continue to post important product announcements, technical documentatio
 
 ## Separate community sessions for adopters and contributors
 
-<a href="https://github.com/backstage/community/#backstage-community">![Backstage Community Sessions, hosted by Spotify](assets/21-06-22/backstage-community-sessions.png)</a>
+[![Backstage Community Sessions, hosted by Spotify](assets/21-06-22/backstage-community-sessions.png)](https://github.com/backstage/community/#backstage-community)
 
 Earlier this year, we began hosting [Backstage Community Sessions](https://github.com/backstage/community/#backstage-community) — official meetups for anyone who wanted to join them. Since [the very first one](https://youtu.be/4-VX9tDdJYY), the Backstage team has been inspired and humbled by the community’s participation in these sessions — from hearing the [Expedia Group team share their journey adopting Backstage](https://youtu.be/rRphwXeq33Q?t=1509) to discussions about TypeScript and Material-UI. It’s great collaborating through code — but it’s also a lot of fun when you can see each other’s faces and have a conversation.
 
@@ -66,7 +66,7 @@ Speaking of reviewers and maintainers…
 
 ## Adding reviewers and maintainers
 
-<a href="https://github.com/backstage/backstage/blob/master/GOVERNANCE.md#reviewers">![GitHub logo](assets/21-06-22/gh-reviewers.png)</a>
+[![GitHub logo](assets/21-06-22/gh-reviewers.png)](https://github.com/backstage/backstage/blob/master/GOVERNANCE.md#reviewers)
 
 We have introduced [reviewers](https://github.com/backstage/backstage/blob/master/GOVERNANCE.md#reviewers) to the project! By adding this new role, we’ve expanded the number of people who are permitted to approve and merge pull requests. This will offload some of the review work from the maintainers, simplifying and speeding up the review process for contributors.
 
