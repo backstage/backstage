@@ -77,6 +77,11 @@ export type EntityListContextProps<
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
 
+  /**
+   * Filter values from query parameters.
+   */
+  queryParameters: Record<keyof EntityFilters, string | string[]>;
+
   loading: boolean;
   error?: Error;
 };
@@ -89,6 +94,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
   entities: Entity[];
   backendEntities: Entity[];
+  queryParameters: Record<string, string | string[]>;
 };
 
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
@@ -102,6 +108,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     appliedFilters: {} as EntityFilters,
     entities: [],
     backendEntities: [],
+    queryParameters: {}, // TODO: Load (once!!) from query parameters
   });
 
   // The main async filter worker. Note that while it has a lot of dependencies
@@ -116,6 +123,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         compact(Object.values(outputState.appliedFilters)),
       );
 
+      const queryParams = Object.keys(requestedFilters).reduce((params, key) => {
+        const filter: EntityFilter | undefined =
+          requestedFilters[key as keyof EntityFilters];
+        if (filter?.toQueryValue) {
+          params[key] = filter.toQueryValue();
+        }
+        return params;
+      }, {} as Record<string, string | string[]>);
+
       // TODO(mtlewis): currently entities will never be requested unless
       // there's at least one filter, we should allow an initial request
       // to happen with no filters.
@@ -129,14 +145,18 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
           appliedFilters: requestedFilters,
           backendEntities: response.items,
           entities: response.items.filter(entityFilter),
+          queryParameters: queryParams,
         });
       } else {
         setOutputState({
           appliedFilters: requestedFilters,
           backendEntities: outputState.backendEntities,
           entities: outputState.backendEntities.filter(entityFilter),
+          queryParameters: queryParams,
         });
       }
+
+      // TODO: write queryParams to query string
     },
     [catalogApi, requestedFilters, outputState],
     { loading: true },
@@ -168,6 +188,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         entities: outputState.entities,
         backendEntities: outputState.backendEntities,
         updateFilters,
+        queryParameters: outputState.queryParameters,
         loading,
         error,
       }}

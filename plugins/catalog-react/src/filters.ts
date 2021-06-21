@@ -29,6 +29,10 @@ export class EntityKindFilter implements EntityFilter {
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
   }
+
+  toQueryValue(): string {
+    return this.value;
+  }
 }
 
 export class EntityTypeFilter implements EntityFilter {

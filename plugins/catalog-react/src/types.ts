@@ -34,6 +34,13 @@ export type EntityFilter = {
    * @param env
    */
   filterEntity?: (entity: Entity) => boolean;
+
+  /**
+   * Serialize the filter value to a string for query params. The UI component responsible for
+   * handling this filter should retrieve this from useEntityListProvider.queryParameters. The
+   * value restored should be in the precedence: queryParameters > initialValue prop > default.
+   */
+  toQueryValue?: () => string | string[];
 };
 
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
