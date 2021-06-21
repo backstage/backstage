@@ -101,13 +101,13 @@ repository itself. If the URL points to a folder, it is important that it is
 suffixed with a `'/'` in order for relative path resolution to work
 consistently.
 
-### jenkins.io/folder-slug
+### jenkins.io/job-slug
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    jenkins.io/folder-slug: folder-name/job-name
+    jenkins.io/job-slug: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this
@@ -310,7 +310,7 @@ instead.
 
 ### jenkins.io/github-folder
 
-Use the `jenkins.io/folder-slug` instead.
+Use the `jenkins.io/job-slug` instead.
 
 ## Links
 
