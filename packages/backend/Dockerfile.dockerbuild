@@ -21,8 +21,6 @@ RUN yarn install && yarn tsc
 #RUN yarn workspace example-backend build --config ../../$app_config_file
 RUN yarn workspace example-backend build --build-dependencies
 
-RUN ls
-
 FROM node:14-buster-slim
 ARG app_config_file=app-config.yaml
 
@@ -38,13 +36,11 @@ RUN mkdir ca && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem
 
 COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz /app/packages/backend/dist/bundle.tar.gz /app/$app_config_file ./
 
-# COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
-# COPY packages/backend/dist/bundle.tar.gz $app_config_file ./ 
 RUN mv $app_config_file app-config-current.yaml
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 

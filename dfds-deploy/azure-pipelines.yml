@@ -23,14 +23,6 @@ stages:
   jobs:
   - job: BuildBackend
     steps:
-      # - script: npm install yarn
-      #   displayName: Install Yarn        
-      # - script: yarn install
-      #   displayName: Yarn install        
-      # - script: yarn tsc
-      #   displayName: Yarn tsc        
-      # - script: yarn build
-      #   displayName: Yarn Build        
       - task: DockerCompose@0
         displayName: 'Build image'
         inputs:
@@ -53,14 +45,6 @@ stages:
 
   - job: BuildFrontend
     steps:
-      # - script: npm install yarn
-      #   displayName: Install Yarn        
-      # - script: yarn install
-      #   displayName: Yarn install        
-      # - script: yarn tsc
-      #   displayName: Yarn tsc        
-      # - script: yarn build
-      #   displayName: Yarn Build        
       - task: DockerCompose@0
         displayName: 'Build image'
         inputs:
