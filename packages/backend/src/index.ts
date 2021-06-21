@@ -71,9 +71,11 @@ function makeCreateEnv(config: Config) {
 }
 
 async function main() {
+  const logger = getRootLogger();
+
   const config = await loadBackendConfig({
     argv: process.argv,
-    logger: getRootLogger(),
+    logger,
   });
   const createEnv = makeCreateEnv(config);
 
@@ -118,7 +120,7 @@ async function main() {
     .addRouter('', await app(appEnv));
 
   await service.start().catch(err => {
-    console.log(err);
+    logger.error(err);
     process.exit(1);
   });
 }
