@@ -1,8 +1,12 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -16,8 +20,12 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
+    "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"
@@ -43,6 +51,7 @@
     "ext": "ts"
   },
   "files": [
+    "bin",
     "dist",
     "transforms"
   ]
