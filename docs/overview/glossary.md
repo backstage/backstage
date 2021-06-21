@@ -11,7 +11,7 @@ terminology below for clarity and consistency when discussing Backstage.
 
 ### Authentication Glossary
 
-This [page](./auth/glossary.md) directs to the terms and phrases related to
+This [page](../auth/glossary.md) directs to the terms and phrases related to
 authentication and identity section of Backstage.
 
 ### Backstage User Profiles
