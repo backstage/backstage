@@ -73,6 +73,11 @@ function makeCreateEnv(config: Config) {
 async function main() {
   const logger = getRootLogger();
 
+  logger.info(
+    `You are running an example backend, which is supposed to be mainly used for contributing back to Backstage. ` +
+      `Do NOT deploy this to production. Read more here https://backstage.io/docs/getting-started/`,
+  );
+
   const config = await loadBackendConfig({
     argv: process.argv,
     logger,
