@@ -66,7 +66,7 @@ describe('<DependencyOfComponentsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Components')).toBeInTheDocument();
+    expect(getByText('Dependency of components')).toBeInTheDocument();
     expect(
       getByText(/No component depends on this component/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<DependencyOfComponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Components')).toBeInTheDocument();
+      expect(getByText('Dependency of components')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

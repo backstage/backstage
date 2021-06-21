@@ -30,7 +30,7 @@ type Props = {
 
 export const DependencyOfComponentsCard = ({
   variant = 'gridItem',
-  title = 'Components',
+  title = 'Dependency of components',
 }: Props) => {
   return (
     <RelatedEntitiesCard
