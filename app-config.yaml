@@ -100,6 +100,11 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
+  '/capsvc/capabilities':
+    target: https://api.hellman.oxygen.dfds.cloud/capability/api/v1/capabilities/
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
 organization:
   name: DFDS
 
