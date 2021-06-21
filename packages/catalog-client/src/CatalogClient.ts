@@ -20,6 +20,7 @@ import {
   Location,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  stringifyEntityRef,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
@@ -89,7 +90,20 @@ export class CatalogClient implements CatalogApi {
       `/entities${query}`,
       options,
     );
-    return { items: entities };
+
+    const refCompare = (a: Entity, b: Entity) => {
+      const aRef = stringifyEntityRef(a);
+      const bRef = stringifyEntityRef(b);
+      if (aRef < bRef) {
+        return -1;
+      }
+      if (aRef > bRef) {
+        return 1;
+      }
+      return 0;
+    };
+
+    return { items: entities.sort(refCompare) };
   }
 
   async getEntityByName(
