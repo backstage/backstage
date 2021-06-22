@@ -43,11 +43,21 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
-      - name: Run Prettier
+      - name: Run Prettier on docs
         uses: creyD/prettier_action@v3.1
         with:
           # Modifies commit only if prettier autofixed a Markdown file
           prettier_options: --config docs/prettier.config.js --write docs/**/*.md
+          only_changed: true
+          commit_message: "Autofix documentation Markdown files using Prettier"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Prettier on root
+        uses: creyD/prettier_action@v3.1
+        with:
+          # Modifies commit only if prettier autofixed a Markdown file
+          prettier_options: --write *.md
           only_changed: true
           commit_message: "Autofix Markdown files using Prettier"
         env:
