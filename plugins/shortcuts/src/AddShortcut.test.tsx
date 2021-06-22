@@ -19,7 +19,7 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddShortcut } from './AddShortcut';
 import { LocalStoredShortcuts } from './api';
 import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
-import { AlertDisplay } from '@backstage/core';
+import { AlertDisplay } from '@backstage/core-components';
 
 describe('AddShortcut', () => {
   const api = new LocalStoredShortcuts(MockStorageApi.create());

@@ -16,7 +16,7 @@
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { githubActionsApiRef } from '../api/GithubActionsApi';
-import { useApi, errorApiRef } from '@backstage/core';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export type WorkflowRun = {
   workflowName: string;

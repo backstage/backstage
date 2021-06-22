@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef, Observable } from '@backstage/core';
 import { Shortcut } from '../types';
+import { createApiRef, Observable } from '@backstage/core-plugin-api';
 
 export const shortcutsApiRef = createApiRef<ShortcutApi>({
   id: 'plugin.shortcuts.api',

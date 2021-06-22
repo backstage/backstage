@@ -15,7 +15,6 @@
  */
 
 import { Entity, RELATION_API_CONSUMED_BY } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
   catalogApiRef,
@@ -25,6 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ConsumingComponentsCard } from './ConsumingComponentsCard';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ConsumingComponentsCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {

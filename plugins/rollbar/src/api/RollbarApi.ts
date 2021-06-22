@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import {
   RollbarItemsResponse,
   RollbarProject,
   RollbarTopActiveItem,
 } from './types';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const rollbarApiRef = createApiRef<RollbarApi>({
   id: 'plugin.rollbar.service',

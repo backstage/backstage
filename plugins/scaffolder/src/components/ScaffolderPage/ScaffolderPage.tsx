@@ -15,20 +15,6 @@
  */
 
 import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  configApiRef,
-  Content,
-  ContentHeader,
-  Header,
-  ItemCardGrid,
-  Lifecycle,
-  Page,
-  Progress,
-  SupportButton,
-  useApi,
-  useRouteRef,
-  WarningPanel,
-} from '@backstage/core';
 import { useStarredEntities } from '@backstage/plugin-catalog-react';
 import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
@@ -41,6 +27,20 @@ import { ScaffolderFilter } from '../ScaffolderFilter';
 import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
 import { TemplateCard } from '../TemplateCard';
+
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+
+import {
+  Content,
+  ContentHeader,
+  Header,
+  ItemCardGrid,
+  Lifecycle,
+  Page,
+  Progress,
+  SupportButton,
+  WarningPanel,
+} from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

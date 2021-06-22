@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { IconComponent } from '@backstage/core';
 import {
   Card,
   List,
@@ -35,6 +34,7 @@ import React, {
   useState,
 } from 'react';
 import { FilterGroup, useEntityFilterGroup } from '../../filter';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 export type ButtonGroup = {
   name: string;

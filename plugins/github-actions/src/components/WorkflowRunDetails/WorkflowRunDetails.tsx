@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { configApiRef, Breadcrumbs, Link, useApi } from '@backstage/core';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
@@ -45,6 +44,9 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { WorkflowRunLogs } from '../WorkflowRunLogs';
+
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Breadcrumbs, Link } from '@backstage/core-components';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {

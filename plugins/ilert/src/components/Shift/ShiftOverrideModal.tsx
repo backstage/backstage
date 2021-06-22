@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, useApi } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -29,6 +28,7 @@ import { useShiftOverride } from '../../hooks/useShiftOverride';
 import { Shift } from '../../types';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(() => ({
   container: {

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
+import { GithubDeployment } from '../../api';
+import { DateTime } from 'luxon';
+import { Box, Typography } from '@material-ui/core';
 import {
   StatusPending,
   StatusRunning,
@@ -22,10 +25,7 @@ import {
   StatusAborted,
   StatusError,
   Link,
-} from '@backstage/core';
-import { GithubDeployment } from '../../api';
-import { DateTime } from 'luxon';
-import { Box, Typography } from '@material-ui/core';
+} from '@backstage/core-components';
 
 export const GithubStateIndicator = ({ state }: { state: string }) => {
   switch (state) {

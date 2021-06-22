@@ -15,13 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  InfoCard,
-  Link,
-  Progress,
-  ResponseErrorPanel,
-  TableColumn,
-} from '@backstage/core';
 import { Typography } from '@material-ui/core';
 import {
   EntityTable,
@@ -29,6 +22,13 @@ import {
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
+import {
+  InfoCard,
+  Link,
+  Progress,
+  ResponseErrorPanel,
+  TableColumn,
+} from '@backstage/core-components';
 
 type Props<T extends Entity> = {
   variant?: 'gridItem';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   catalogApiRef,
   CatalogApi,
@@ -25,6 +24,7 @@ import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { SystemDiagramCard } from './SystemDiagramCard';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<SystemDiagramCard />', () => {
   beforeAll(() => {

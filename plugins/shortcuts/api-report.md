@@ -4,11 +4,11 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
-import { Observable } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
-import { StorageApi } from '@backstage/core';
+import { StorageApi } from '@backstage/core-plugin-api';
 
 // @public
 export class LocalStoredShortcuts implements ShortcutApi {

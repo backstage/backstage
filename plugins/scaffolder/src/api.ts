@@ -16,17 +16,17 @@
 
 import { EntityName } from '@backstage/catalog-model';
 import { JsonObject, JsonValue } from '@backstage/config';
-import {
-  createApiRef,
-  DiscoveryApi,
-  IdentityApi,
-  Observable,
-} from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Field, FieldValidation } from '@rjsf/core';
 import ObservableImpl from 'zen-observable';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
+import {
+  createApiRef,
+  DiscoveryApi,
+  IdentityApi,
+  Observable,
+} from '@backstage/core-plugin-api';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',

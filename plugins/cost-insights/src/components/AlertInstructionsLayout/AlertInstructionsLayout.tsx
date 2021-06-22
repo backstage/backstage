@@ -17,9 +17,9 @@
 import React, { PropsWithChildren } from 'react';
 import { Box, Button, Container, makeStyles } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { Header, Page } from '@backstage/core';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 import { ConfigProvider, CurrencyProvider } from '../../hooks';
+import { Header, Page } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -4,20 +4,20 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ConfigApi } from '@backstage/core';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { Control } from 'react-hook-form';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { FieldErrors } from 'react-hook-form';
-import { IdentityApi } from '@backstage/core';
-import { InfoCardVariants } from '@backstage/core';
-import { OAuthApi } from '@backstage/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { InfoCardVariants } from '@backstage/core-components';
+import { OAuthApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';

@@ -21,7 +21,7 @@ import { rootRouteRef, buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { CLOUDBUILD_ANNOTATION } from './useProjectName';
-import { MissingAnnotationEmptyState } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const isCloudbuildAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION]);

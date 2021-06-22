@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
-  ApiProvider,
-  ApiRegistry,
   createExternalRouteRef,
   createRouteRef,
   createSubRouteRef,
   errorApiRef,
   useApi,
   useRouteRef,
-} from '@backstage/core-api';
+} from '@backstage/core-plugin-api';
 import { withLogCollector } from '@backstage/test-utils-core';
 import { render } from '@testing-library/react';
 import React, { useEffect } from 'react';
@@ -50,6 +49,9 @@ describe('wrapInTestApp', () => {
     });
 
     expect(error).toEqual([
+      expect.stringMatching(
+        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
+      ),
       expect.stringMatching(
         /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
       ),

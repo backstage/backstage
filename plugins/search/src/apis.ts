@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import qs from 'qs';
+import {
+  createApiRef,
+  DiscoveryApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 
 export const searchApiRef = createApiRef<SearchApi>({
   id: 'plugin.search.queryservice',

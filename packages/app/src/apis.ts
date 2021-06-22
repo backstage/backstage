@@ -15,13 +15,6 @@
  */
 
 import {
-  AnyApiFactory,
-  configApiRef,
-  createApiFactory,
-  errorApiRef,
-  githubAuthApiRef,
-} from '@backstage/core';
-import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
@@ -33,6 +26,13 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
+import {
+  AnyApiFactory,
+  configApiRef,
+  createApiFactory,
+  errorApiRef,
+  githubAuthApiRef,
+} from '@backstage/core-plugin-api';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({

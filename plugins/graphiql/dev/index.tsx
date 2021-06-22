@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { githubAuthApiRef, errorApiRef } from '@backstage/core-plugin-api';
+import {
+  githubAuthApiRef,
+  errorApiRef,
+  IconComponent,
+} from '@backstage/core-plugin-api';
 import GraphiQLIcon from '../src/assets/graphiql.icon.svg';
 import {
   graphiqlPlugin,
@@ -56,7 +60,7 @@ createDevApp()
   })
   .addPage({
     title: 'GraphiQL',
-    icon: GraphiQLIcon,
+    icon: GraphiQLIcon as IconComponent,
     element: <GraphiQLPage />,
   })
   .render();

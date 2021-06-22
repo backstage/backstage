@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { Table, TableColumn, TrendLine, useApi } from '@backstage/core';
 import { Website, lighthouseApiRef } from '../../api';
 import { useInterval } from 'react-use';
 import {
@@ -25,6 +24,9 @@ import {
 } from '../../utils';
 import { Link, generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
+
+import { Table, TableColumn, TrendLine } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const columns: TableColumn[] = [
   {

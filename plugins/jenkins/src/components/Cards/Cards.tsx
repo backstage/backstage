@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  InfoCard,
-  InfoCardVariants,
-  StructuredMetadataTable,
-  WarningPanel,
-} from '@backstage/core';
 import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
@@ -26,6 +20,12 @@ import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import { ErrorType, useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
+import {
+  InfoCard,
+  InfoCardVariants,
+  StructuredMetadataTable,
+  WarningPanel,
+} from '@backstage/core-components';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

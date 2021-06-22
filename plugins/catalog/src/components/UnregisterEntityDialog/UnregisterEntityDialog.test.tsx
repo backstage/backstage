@@ -20,18 +20,18 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import {
-  AlertApi,
-  alertApiRef,
-  ApiProvider,
-  ApiRegistry,
-  DiscoveryApi,
-} from '@backstage/core';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';
+
+import {
+  AlertApi,
+  alertApiRef,
+  DiscoveryApi,
+} from '@backstage/core-plugin-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('UnregisterEntityDialog', () => {
   const discoveryApi: DiscoveryApi = {

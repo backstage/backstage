@@ -15,7 +15,7 @@
  */
 
 import { MovedState } from './utils/types';
-import { createApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const techRadarApiRef = createApiRef<TechRadarApi>({
   id: 'plugin.techradar.service',

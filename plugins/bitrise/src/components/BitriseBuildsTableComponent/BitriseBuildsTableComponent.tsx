@@ -15,17 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import {
-  Table,
-  TableColumn,
-  Link,
-  SubvalueCell,
-  StatusOK,
-  StatusWarning,
-  StatusAborted,
-  StatusError,
-  StatusRunning,
-} from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { Button } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -36,6 +25,17 @@ import {
 } from '../../api/bitriseApi.model';
 import { BitriseBuildDetailsDialog } from '../BitriseBuildDetailsDialog';
 import { DateTime } from 'luxon';
+import {
+  Table,
+  TableColumn,
+  Link,
+  SubvalueCell,
+  StatusOK,
+  StatusWarning,
+  StatusAborted,
+  StatusError,
+  StatusRunning,
+} from '@backstage/core-components';
 
 type BitriseBuildsProps = {
   appName: string;

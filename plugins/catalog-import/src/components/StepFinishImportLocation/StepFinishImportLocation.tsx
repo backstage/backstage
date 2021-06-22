@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core';
 import { Grid, Typography } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
 import { BackButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
+import { Link } from '@backstage/core-components';
 
 type Props = {
   prepareResult: PrepareResult;

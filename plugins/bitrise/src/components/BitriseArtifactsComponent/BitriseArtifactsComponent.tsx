@@ -17,7 +17,6 @@
 import React from 'react';
 import { BitriseBuildResult } from '../../api/bitriseApi.model';
 import { Alert } from '@material-ui/lab';
-import { Progress } from '@backstage/core';
 import { BitriseDownloadArtifactComponent } from '../BitriseDownloadArtifactComponent';
 import { useBitriseArtifacts } from '../useBitriseArtifacts';
 import {
@@ -26,6 +25,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
+import { Progress } from '@backstage/core-components';
 
 type BitriseArtifactsComponentComponentProps = {
   build: BitriseBuildResult;

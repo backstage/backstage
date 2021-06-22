@@ -15,13 +15,13 @@
  */
 
 import { DomainEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { catalogEntityRouteRef } from '../../routes';
 import { DomainExplorerContent } from './DomainExplorerContent';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<DomainExplorerContent />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {

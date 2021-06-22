@@ -4,9 +4,9 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export interface RadarEntry {

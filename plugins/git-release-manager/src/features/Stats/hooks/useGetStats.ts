@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
-
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
+
 import { useProjectContext } from '../../../contexts/ProjectContext';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const useGetStats = () => {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);

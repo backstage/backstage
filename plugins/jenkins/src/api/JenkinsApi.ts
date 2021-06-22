@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
+import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 const jenkins = require('jenkins');
 

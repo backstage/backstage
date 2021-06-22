@@ -16,7 +16,7 @@
 
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class ProductionSentryApi implements SentryApi {
   constructor(

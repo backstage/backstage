@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',

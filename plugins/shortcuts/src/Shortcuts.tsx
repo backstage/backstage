@@ -16,12 +16,14 @@
 
 import React, { useMemo } from 'react';
 import { useObservable } from 'react-use';
-import { Progress, SidebarItem, useApi } from '@backstage/core';
 import { makeStyles } from '@material-ui/core';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
 import { shortcutsApiRef } from './api';
+
+import { Progress, SidebarItem } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   root: {

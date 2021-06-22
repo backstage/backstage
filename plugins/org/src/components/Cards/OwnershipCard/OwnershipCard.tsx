@@ -16,13 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
-  InfoCard,
-  InfoCardVariants,
-  Progress,
-  ResponseErrorPanel,
-  useApi,
-} from '@backstage/core';
-import {
   catalogApiRef,
   isOwnerOf,
   useEntity,
@@ -37,6 +30,14 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
+
+import {
+  InfoCard,
+  InfoCardVariants,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 type EntitiesKinds = 'Component' | 'API';
 type EntitiesTypes =

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
 import React, { Suspense } from 'react';
+import { Progress } from '@backstage/core-components';
 
 const GraphiQL = React.lazy(() => import('graphiql'));
 

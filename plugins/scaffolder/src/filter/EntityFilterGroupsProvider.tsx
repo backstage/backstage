@@ -15,7 +15,6 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
@@ -26,6 +25,7 @@ import {
   FilterGroupState,
   FilterGroupStates,
 } from './types';
+import { useApi } from '@backstage/core-plugin-api';
 
 /**
  * Implementation of the shared filter groups state.

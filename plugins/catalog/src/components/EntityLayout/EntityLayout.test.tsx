@@ -15,12 +15,6 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import {
-  AlertApi,
-  alertApiRef,
-  ApiProvider,
-  ApiRegistry,
-} from '@backstage/core';
 import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
@@ -28,6 +22,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
+
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const mockEntityData = {
   loading: false,

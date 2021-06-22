@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import {
   StatusPending,
   StatusRunning,
   StatusOK,
   StatusAborted,
   StatusError,
-} from '@backstage/core';
-import React from 'react';
+} from '@backstage/core-components';
 
 export const WorkflowRunStatus = ({
   status,

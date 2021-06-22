@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export interface KubernetesAuthProvider {
   decorateRequestBodyForAuth(

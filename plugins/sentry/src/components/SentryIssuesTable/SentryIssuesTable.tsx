@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
 import { SentryIssue } from '../../api';
 import { DateTime } from 'luxon';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const columns: TableColumn[] = [
   {

@@ -16,7 +16,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router';
 import { RegisterComponentPage } from './RegisterComponentPage';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // As we don't know which path the catalog's router mounted on
 // We need to inject this from the app

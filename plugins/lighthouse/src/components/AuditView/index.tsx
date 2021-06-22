@@ -15,16 +15,6 @@
  */
 
 import {
-  Content,
-  ContentHeader,
-  Header,
-  HeaderLabel,
-  InfoCard,
-  Page,
-  Progress,
-  useApi,
-} from '@backstage/core';
-import {
   Button,
   Grid,
   List,
@@ -47,6 +37,17 @@ import { Audit, lighthouseApiRef, Website } from '../../api';
 import { formatTime } from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
+
+import {
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  InfoCard,
+  Page,
+  Progress,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 // TODO(freben): move all of this out of index
 

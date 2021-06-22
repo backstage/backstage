@@ -22,7 +22,7 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import { FeatureFlag } from '@backstage/core';
+import { FeatureFlag } from '@backstage/core-plugin-api';
 
 type Props = {
   flag: FeatureFlag;

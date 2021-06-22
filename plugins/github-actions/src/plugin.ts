@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { githubActionsApiRef, GithubActionsClient } from './api';
+import { rootRouteRef } from './routes';
 import {
   configApiRef,
   createPlugin,
@@ -21,9 +23,7 @@ import {
   githubAuthApiRef,
   createRoutableExtension,
   createComponentExtension,
-} from '@backstage/core';
-import { githubActionsApiRef, GithubActionsClient } from './api';
-import { rootRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const githubActionsPlugin = createPlugin({
   id: 'github-actions',

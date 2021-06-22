@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { MetricKey, SonarUrlProcessorFunc } from './types';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 /**
  * Define a type to make sure that all metrics are used

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, identityApiRef, useApi } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
@@ -29,6 +28,11 @@ import { Typography } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { ilertApiRef } from '../../api';
 import { AlertSource } from '../../types';
+import {
+  alertApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(() => ({
   container: {

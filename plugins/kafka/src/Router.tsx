@@ -21,7 +21,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { rootCatalogKafkaRouteRef } from './plugin';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
 import { KafkaTopicsForConsumer } from './components/ConsumerGroupOffsets/ConsumerGroupOffsets';
-import { MissingAnnotationEmptyState } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION]);

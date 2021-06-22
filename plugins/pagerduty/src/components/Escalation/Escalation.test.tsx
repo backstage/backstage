@@ -18,8 +18,8 @@ import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { User } from '../types';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
   getOnCallByPolicyId: () => [],

@@ -4,18 +4,18 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BuildStepAction } from 'circleci-api';
 import { BuildSummary } from 'circleci-api';
 import { BuildSummaryResponse } from 'circleci-api';
 import { BuildWithSteps } from 'circleci-api';
 import { CircleCIOptions } from 'circleci-api';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GitType } from 'circleci-api';
 import { Me } from 'circleci-api';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 export { BuildStepAction }
 

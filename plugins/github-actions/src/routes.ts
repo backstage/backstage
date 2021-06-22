@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
-// TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
   path: '',
   title: 'GitHub Actions',

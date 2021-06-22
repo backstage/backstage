@@ -16,14 +16,14 @@
 
 import React from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
+import { EntitySplunkOnCallCard } from './EntitySplunkOnCallCard';
 import {
   Content,
   ContentHeader,
   Page,
   Header,
   SupportButton,
-} from '@backstage/core';
-import { EntitySplunkOnCallCard } from './EntitySplunkOnCallCard';
+} from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {

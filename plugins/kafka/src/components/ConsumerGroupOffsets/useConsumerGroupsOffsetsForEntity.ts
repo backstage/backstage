@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
 import { kafkaApiRef } from '../../api/types';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const useConsumerGroupsOffsetsForEntity = () => {
   const consumers = useConsumerGroupsForEntity();

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { BitriseBuildArtifact } from '../api/bitriseApi.model';
 import { bitriseApiRef } from '../plugin';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const useBitriseArtifacts = (appSlug: string, buildSlug: string) => {
   const bitriseApi = useApi(bitriseApiRef);

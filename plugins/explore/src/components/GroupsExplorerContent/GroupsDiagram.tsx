@@ -25,21 +25,20 @@ import {
   getEntityRelations,
   formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
-import {
-  DependencyGraph,
-  DependencyGraphTypes,
-  Progress,
-  useApi,
-  ResponseErrorPanel,
-  Link,
-  useRouteRef,
-  configApiRef,
-} from '@backstage/core';
 import { makeStyles, Typography } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { BackstageTheme } from '@backstage/theme';
+
+import {
+  DependencyGraph,
+  DependencyGraphTypes,
+  Progress,
+  ResponseErrorPanel,
+  Link,
+} from '@backstage/core-components';
+import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   organizationNode: {

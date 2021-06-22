@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TableColumn } from '@backstage/core';
 import { GithubDeployment } from '../../api';
 import {
   createEnvironmentColumn,
@@ -22,6 +21,7 @@ import {
   createLastUpdatedColumn,
   createCreatorColumn,
 } from './columns';
+import { TableColumn } from '@backstage/core-components';
 
 export const defaultDeploymentColumns: TableColumn<GithubDeployment>[] = [
   createEnvironmentColumn(),

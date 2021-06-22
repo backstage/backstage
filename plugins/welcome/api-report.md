@@ -4,7 +4,7 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const WelcomePage: () => JSX.Element;

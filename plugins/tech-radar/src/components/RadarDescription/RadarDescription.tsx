@@ -19,7 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button, DialogActions, DialogContent } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
-import { MarkdownContent } from '@backstage/core';
+import { MarkdownContent } from '@backstage/core-components';
 
 export type Props = {
   open: boolean;

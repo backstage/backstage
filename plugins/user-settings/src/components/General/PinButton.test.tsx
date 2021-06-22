@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { SidebarPinStateContext } from '@backstage/core';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { PinButton } from './PinButton';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 describe('<PinButton />', () => {
   it('toggles the pin sidebar button', async () => {

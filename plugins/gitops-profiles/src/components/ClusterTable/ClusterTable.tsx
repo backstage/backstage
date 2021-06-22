@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import { ClusterStatus } from '../../api';
 import { transformStatus } from '../ProfileCatalog/ProfileCatalog';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const columns: TableColumn[] = [
   {

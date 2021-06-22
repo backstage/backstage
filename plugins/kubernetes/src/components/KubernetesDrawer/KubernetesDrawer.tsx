@@ -30,8 +30,11 @@ import {
 import Close from '@material-ui/icons/Close';
 import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
-import { CodeSnippet, StructuredMetadataTable } from '@backstage/core';
 import jsYaml from 'js-yaml';
+import {
+  CodeSnippet,
+  StructuredMetadataTable,
+} from '@backstage/core-components';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({

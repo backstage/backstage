@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
 import {
@@ -23,6 +22,7 @@ import {
   containerStatuses,
   totalRestarts,
 } from '../../utils/pod';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const columns: TableColumn<V1Pod>[] = [
   {

@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  configApiRef,
-  discoveryApiRef,
-  Header,
-  identityApiRef,
-  Page,
-  TabbedLayout,
-} from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
 import React from 'react';
@@ -31,6 +23,13 @@ import {
   TechDocsStorageApi,
   techdocsStorageApiRef,
 } from '../src';
+
+import {
+  configApiRef,
+  discoveryApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 // used so each route can provide it's own implementation in the constructor of the react component
 let apiHolder: TechDocsStorageApi | undefined = undefined;

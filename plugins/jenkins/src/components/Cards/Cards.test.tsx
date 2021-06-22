@@ -18,8 +18,8 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { LatestRunCard } from './Cards';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { JenkinsApi, jenkinsApiRef } from '../../api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<LatestRunCard />', () => {
   const entity = {

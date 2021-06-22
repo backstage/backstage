@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createExternalRouteRef } from '@backstage/core';
+import { createExternalRouteRef } from '@backstage/core-plugin-api';
 
 export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',

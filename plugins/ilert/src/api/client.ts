@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core';
 import { AuthenticationError, ResponseError } from '@backstage/errors';
 import {
   AlertSource,
@@ -34,6 +33,11 @@ import {
   EventRequest,
 } from './types';
 import { DateTime as dt } from 'luxon';
+import {
+  ConfigApi,
+  createApiRef,
+  DiscoveryApi,
+} from '@backstage/core-plugin-api';
 
 export const ilertApiRef = createApiRef<ILertApi>({
   id: 'plugin.ilert.service',

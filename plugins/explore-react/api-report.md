@@ -4,7 +4,7 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export type ExploreTool = {

@@ -29,7 +29,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-api": "^0.2.22",
+    "@backstage/core-app-api": "^0.1.2",
+    "@backstage/core-plugin-api": "^0.1.2",
     "@backstage/test-utils-core": "^0.1.1",
     "@backstage/theme": "^0.2.8",
     "@material-ui/core": "^4.11.0",

@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 import { JsonObject, JsonValue } from '@backstage/config';
-import {
-  Content,
-  errorApiRef,
-  Header,
-  InfoCard,
-  Lifecycle,
-  Page,
-  useApi,
-  useRouteRef,
-} from '@backstage/core';
 import { LinearProgress } from '@material-ui/core';
 import { FieldValidation, FormValidation, IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
@@ -35,6 +25,15 @@ import { scaffolderApiRef } from '../../api';
 import { FieldExtensionOptions } from '../../extensions';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
+
+import {
+  Content,
+  Header,
+  InfoCard,
+  Lifecycle,
+  Page,
+} from '@backstage/core-components';
+import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);

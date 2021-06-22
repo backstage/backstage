@@ -4,10 +4,10 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default } from 'react';
-import { ExternalRouteRef } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)

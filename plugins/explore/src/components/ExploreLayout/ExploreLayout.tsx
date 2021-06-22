@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { attachComponentData, Header, Page, RoutedTabs } from '@backstage/core';
 import { TabProps } from '@material-ui/core';
 import { Children, default as React, Fragment, isValidElement } from 'react';
+
+import { attachComponentData } from '@backstage/core-plugin-api';
+import { Header, Page, RoutedTabs } from '@backstage/core-components';
 
 // TODO: This layout could be a shared based component if it was possible to create custom TabbedLayouts
 //    A generalized version of createSubRoutesFromChildren, etc. would be required

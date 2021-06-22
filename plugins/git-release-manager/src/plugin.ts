@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { gitReleaseManagerApiRef } from './api/serviceApiRef';
+
+import { GitReleaseClient } from './api/GitReleaseClient';
+import { rootRouteRef } from './routes';
 import {
   configApiRef,
   createPlugin,
   createApiFactory,
   githubAuthApiRef,
   createRoutableExtension,
-} from '@backstage/core';
-
-import { gitReleaseManagerApiRef } from './api/serviceApiRef';
-import { GitReleaseClient } from './api/GitReleaseClient';
-import { rootRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export { gitReleaseManagerApiRef };
 

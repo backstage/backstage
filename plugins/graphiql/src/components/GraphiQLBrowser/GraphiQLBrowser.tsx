@@ -19,8 +19,8 @@ import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
 import { StorageBucket } from '../../lib/storage';
 import { GraphQLEndpoint } from '../../lib/api';
-import { Progress } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
+import { Progress } from '@backstage/core-components';
 
 const GraphiQL = React.lazy(() => import('graphiql'));
 

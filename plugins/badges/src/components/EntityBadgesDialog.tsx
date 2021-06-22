@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  CodeSnippet,
-  Progress,
-  ResponseErrorPanel,
-  useApi,
-} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -35,6 +29,13 @@ import {
 import React from 'react';
 import { useAsync } from 'react-use';
 import { badgesApiRef } from '../api';
+
+import {
+  CodeSnippet,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 type Props = {
   open: boolean;

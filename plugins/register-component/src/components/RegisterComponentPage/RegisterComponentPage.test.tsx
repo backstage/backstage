@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  createRouteRef,
-  errorApiRef,
-} from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { RegisterComponentPage } from './RegisterComponentPage';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { createRouteRef, errorApiRef } from '@backstage/core-plugin-api';
 
 const errorApi: jest.Mocked<typeof errorApiRef.T> = {
   post: jest.fn(),

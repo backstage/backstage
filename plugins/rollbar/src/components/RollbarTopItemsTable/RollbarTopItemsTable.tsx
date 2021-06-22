@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Table, TableColumn } from '@backstage/core';
 import { Box, Link, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
@@ -25,6 +24,7 @@ import {
 } from '../../api/types';
 import { buildItemUrl } from '../../utils';
 import { TrendGraph } from '../TrendGraph/TrendGraph';
+import { Table, TableColumn } from '@backstage/core-components';
 
 const columns: TableColumn[] = [
   {

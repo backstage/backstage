@@ -20,16 +20,7 @@ import {
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  IdentityApi,
-  identityApiRef,
-  ProfileInfo,
-  storageApiRef,
-  TableColumn,
-  TableProps,
-} from '@backstage/core';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   MockStorageApi,
@@ -42,6 +33,14 @@ import { createComponentRouteRef } from '../../routes';
 import { EntityRow } from '../CatalogTable/types';
 import { CatalogPage } from './CatalogPage';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import {
+  IdentityApi,
+  identityApiRef,
+  ProfileInfo,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
 
 describe('CatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {

@@ -25,9 +25,9 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { V1Service } from '@kubernetes/client-node';
-import { StructuredMetadataTable } from '@backstage/core';
 import { ServiceDrawer } from './ServiceDrawer';
 import { GroupedResponsesContext } from '../../hooks';
+import { StructuredMetadataTable } from '@backstage/core-components';
 
 type ServiceSummaryProps = {
   service: V1Service;

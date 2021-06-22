@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigApi, OAuthApi } from '@backstage/core';
 import { Octokit } from '@octokit/rest';
 import { GitHubIntegration, ScmIntegrations } from '@backstage/integration';
-
 import { DISABLE_CACHE } from '../constants/constants';
+
 import { Project } from '../contexts/ProjectContext';
 import { UnboxArray, UnboxReturnedPromise } from '../types/helpers';
 import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
+import { ConfigApi, OAuthApi } from '@backstage/core-plugin-api';
 
 export class GitReleaseClient implements GitReleaseApi {
   private readonly githubAuthApi: OAuthApi;

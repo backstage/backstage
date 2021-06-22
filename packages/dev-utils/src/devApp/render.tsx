@@ -15,25 +15,6 @@
  */
 
 import {
-  AlertDisplay,
-  AnyApiFactory,
-  ApiFactory,
-  attachComponentData,
-  configApiRef,
-  createApiFactory,
-  createApp,
-  createPlugin,
-  createRouteRef,
-  FlatRoutes,
-  IconComponent,
-  OAuthRequestDialog,
-  RouteRef,
-  Sidebar,
-  SidebarItem,
-  SidebarPage,
-  SidebarSpacer,
-} from '@backstage/core';
-import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
@@ -43,6 +24,29 @@ import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { hot } from 'react-hot-loader';
 import { Route } from 'react-router';
+
+import {
+  AlertDisplay,
+  OAuthRequestDialog,
+  Sidebar,
+  SidebarItem,
+  SidebarPage,
+  SidebarSpacer,
+} from '@backstage/core-components';
+
+import {
+  AnyApiFactory,
+  ApiFactory,
+  attachComponentData,
+  configApiRef,
+  createApiFactory,
+  createPlugin,
+  createRouteRef,
+  IconComponent,
+  RouteRef,
+} from '@backstage/core-plugin-api';
+
+import { createApp, FlatRoutes } from '@backstage/core-app-api';
 
 const GatheringRoute: (props: {
   path: string;

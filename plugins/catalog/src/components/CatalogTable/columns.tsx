@@ -15,9 +15,9 @@
  */
 import React from 'react';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
-import { OverflowTooltip, TableColumn } from '@backstage/core';
 import { Chip } from '@material-ui/core';
 import { EntityRow } from './types';
+import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 
 type NameColumnProps = {
   defaultKind?: string;
