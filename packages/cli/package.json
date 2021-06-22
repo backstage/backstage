@@ -39,7 +39,7 @@
     "@octokit/request": "^5.4.12",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config-base": "^9.0.0",
     "@spotify/eslint-config-react": "^10.0.0",
