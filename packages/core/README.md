@@ -1,20 +1,10 @@
 # @backstage/core
 
-This package provides the core API used by Backstage plugins and apps.
+**NOTE: This package is deprecated**
 
-## Installation
+See the [migration documentation](https://backstage.io/docs/tutorials/migrating-away-from-core) for details on how to move to using the newer packages, [`@backstage/core-app-api`](https://www.npmjs.com/package/@backstage/core-app-api), [`@backstage/core-components`](https://www.npmjs.com/package/@backstage/core-components), and [`@backstage/core-plugin-api`](https://www.npmjs.com/package/@backstage/core-plugin-api)
 
-Install the package via npm or Yarn:
-
-```sh
-npm install --save @backstage/core
-```
-
-or
-
-```sh
-yarn add @backstage/core
-```
+This package used to provide the core API and components used by Backstage plugins and apps.
 
 ## Documentation
 
