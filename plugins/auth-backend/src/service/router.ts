@@ -140,7 +140,7 @@ export async function createRouter({
   router.use('/:provider/', req => {
     const { provider } = req.params;
     if (providers.includes(provider)) {
-      // If they added the provider under auth.providers but the clientId and clientSecret etc. were not found.
+      // If the user added the provider under auth.providers but the clientId and clientSecret etc. were not found.
       throw new NotFoundError(
         `Auth provider registered for '${provider}' is misconfigured. This could mean the configs under ` +
           `auth.providers.${provider} are missing or the environment variables used are not defined. ` +
