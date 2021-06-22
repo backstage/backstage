@@ -141,7 +141,7 @@
     "@types/webpack": "^4.41.7",
     "@types/webpack-dev-server": "^3.11.0",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "del": "^5.1.0",
+    "del": "^6.0.0",
     "mock-fs": "^4.13.0",
     "nodemon": "^2.0.2",
     "ts-node": "^9.1.1"
