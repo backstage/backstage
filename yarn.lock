@@ -1844,31 +1844,32 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
-"@gitbeaker/core@^30.2.0":
-  version "30.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-30.2.0.tgz#662f3c5b011d51d06ac990ff9b08fc59cd771f1f"
-  integrity sha512-W3pPSS0siaL/cOqxxsS9D6J4sdEtdiKBaEp/C9QRkLoF56V7UyRKMzzapFqXFwbpDR33z5mweGrkK/yLMXmaUg==
+"@gitbeaker/core@^30.2.0", "@gitbeaker/core@^30.3.0":
+  version "30.3.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-30.3.0.tgz#d005891d47cfacb41d4a3cc8bf3ee8c68c53d378"
+  integrity sha512-j7GHsFo6AOuRmLaK4F4Kx967jTy6LFZh5vjmRxjlRvX0qlfl3NJKiQIl30fZz1rPXWdQLAq+kwl1i0BKrWhOpA==
   dependencies:
-    "@gitbeaker/requester-utils" "^30.2.0"
+    "@gitbeaker/requester-utils" "^30.3.0"
     form-data "^4.0.0"
     li "^1.3.0"
+    query-string "^7.0.0"
     xcase "^2.0.1"
 
 "@gitbeaker/node@^30.2.0":
-  version "30.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-30.2.0.tgz#3fc9fe22d45b59d05996ee0bb04e88f8ac6af142"
-  integrity sha512-IEBMeLPUb2opXyyRSYkzbdl65aypYARcH7r6Vgl5ypWwjw3QzGti2IoCsZCM7rBcC4LNdQfiu+Bckozui2CoUw==
+  version "30.3.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-30.3.0.tgz#ceebde08a13d3f655fa614a4ced56eb1f0a71ec1"
+  integrity sha512-Ythbadb1+yMO2hSgvp3nvaroHTkI4+mdLg1rdV3YNIF1n+kUYXQD2GY7wpAjH0KjAnBAmgxw/JsFmlfnRu3KAg==
   dependencies:
-    "@gitbeaker/core" "^30.2.0"
-    "@gitbeaker/requester-utils" "^30.2.0"
+    "@gitbeaker/core" "^30.3.0"
+    "@gitbeaker/requester-utils" "^30.3.0"
     delay "^5.0.0"
     got "^11.8.2"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^30.2.0":
-  version "30.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-30.2.0.tgz#0d8633707d0fe2eb6d1e37bbc2da90f43ceea100"
-  integrity sha512-orXTa5TgVkPZTsnqdflz2uWne857jrwk79/6WGbcjxaVbdlG5hFa1efsJVwpbZcNjXrIzkOdE+gVrCFvPQ3SDw==
+"@gitbeaker/requester-utils@^30.3.0":
+  version "30.3.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-30.3.0.tgz#fbbaae20263ff90952da116d8782f74f47b29c81"
+  integrity sha512-b5vCaUqP2Jrqdpt5CkmFET4VFHwJYjnIovwZGYd5H0aKmiPw4NmeW1JtP+65J4xf0c4AOQQj6XSf7TZLuPNAqw==
   dependencies:
     form-data "^4.0.0"
     query-string "^7.0.0"
