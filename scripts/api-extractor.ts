@@ -74,8 +74,6 @@ const SKIPPED_PACKAGES = [
   'packages/techdocs-cli',
 
   // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  'packages/core',
-  'packages/core-api',
   'packages/core-components',
   'plugins/catalog',
   'plugins/catalog-backend',

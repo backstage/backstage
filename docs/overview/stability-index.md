@@ -106,16 +106,6 @@ Used to load in static configuration, mainly for use by the CLI and
 
 Stability: `1`. Mainly intended for internal use.
 
-### `core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/core/)
-
-The `@backstage/core` and `@backstage/core-api` packages are being phased out
-and replaced by other `@backstage/core-*` packages. They are still in use but
-will not receive any breaking changes.
-
-### `core-api` [GitHub](https://github.com/backstage/backstage/tree/master/packages/core-api/)
-
-Stability: See `@backstage/core` above
-
 ### `core-app-api` [GitHub](https://github.com/backstage/backstage/tree/master/packages/core-app-api/)
 
 The APIs used exclusively in the app, such as `createApp` and the system icons.

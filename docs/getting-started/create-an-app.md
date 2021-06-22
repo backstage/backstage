@@ -147,7 +147,7 @@ globs. For example:
 "packages": [
   "packages/*",
   "plugins/*",
-  "../backstage/packages/core", // New path added to work on @backstage/core
+  "../backstage/packages/core-plugin-api", // New path added to work on @backstage/core-plugin-api
 ],
 ```
 

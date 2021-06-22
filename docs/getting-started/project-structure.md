@@ -127,18 +127,17 @@ are separated out into their own folder, see further down.
   used by the backend, we chose to separate `config` and `config-loader` into
   two different packages.
 
-- [`core/`](https://github.com/backstage/backstage/tree/master/packages/core) -
+- [`core-app-api/`](https://github.com/backstage/backstage/tree/master/packages/core-app-api) -
+  This package contains the core APIs that are used to wire together Backstage
+  apps.
+
+- [`core-components/`](https://github.com/backstage/backstage/tree/master/packages/core-components) -
   This package contains our visual React components, some of which you can find
   in
   [plugin examples](https://backstage.io/storybook/?path=/story/plugins-examples--plugin-with-data).
-  Apart from that it re-exports everything from [`core-api`] so that users only
-  need to rely on one package.
 
-- [`core-api/`](https://github.com/backstage/backstage/tree/master/packages/core-api) -
-  This package contains APIs and definitions of such. It is it's own package
-  because we needed to split our `test-utils` package. It's an implementation
-  detail that we try to hide from our users, and no one should have to depend on
-  it directly.
+- [`core-plugin-api/`](https://github.com/backstage/backstage/tree/master/packages/core-plugin-api) -
+  This package contains the core APIs that are used to build Backstage plugins.
 
 - [`create-app/`](https://github.com/backstage/backstage/tree/master/packages/create-app) -
   An CLI to specifically scaffold a new Backstage App. It does so by using a
