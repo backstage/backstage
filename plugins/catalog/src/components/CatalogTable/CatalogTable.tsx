@@ -52,9 +52,10 @@ const defaultColumns: TableColumn<EntityRow>[] = [
 
 type CatalogTableProps = {
   columns?: TableColumn<EntityRow>[];
+  actions?: TableProps<EntityRow>['actions'];
 };
 
-export const CatalogTable = ({ columns }: CatalogTableProps) => {
+export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityListProvider();
 
@@ -75,7 +76,7 @@ export const CatalogTable = ({ columns }: CatalogTableProps) => {
     );
   }
 
-  const actions: TableProps<EntityRow>['actions'] = [
+  const defaultActions: TableProps<EntityRow>['actions'] = [
     ({ entity }) => {
       const url = getEntityMetadataViewUrl(entity);
       return {
@@ -159,7 +160,7 @@ export const CatalogTable = ({ columns }: CatalogTableProps) => {
       }}
       title={`${titlePreamble} (${entities.length})`}
       data={rows}
-      actions={actions}
+      actions={actions || defaultActions}
     />
   );
 };

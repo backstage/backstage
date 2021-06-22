@@ -41,7 +41,7 @@ const SearchResultComponent = ({ children }: Props) => {
     );
   }
 
-  if (!value) {
+  if (!value?.results.length) {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 

@@ -71,8 +71,11 @@ For example, this is the default `ApiFactory` for the `ErrorApi`:
 createApiFactory({
   api: errorApiRef,
   deps: { alertApi: alertApiRef },
-  factory: ({ alertApi }) =>
-    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+  factory: ({ alertApi }) => {
+    const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+    UnhandledErrorForwarder.forward(errorApi, { hidden: false });
+    return errorApi;
+  },
 });
 ```
 

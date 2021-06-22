@@ -48,6 +48,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const defaultColumns: TableColumn<CatalogTableRow>[] = [
+  CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
+  CatalogTable.columns.createSystemColumn(),
+  CatalogTable.columns.createOwnerColumn(),
+  CatalogTable.columns.createSpecTypeColumn(),
+  CatalogTable.columns.createSpecLifecycleColumn(),
+  CatalogTable.columns.createMetadataDescriptionColumn(),
+  CatalogTable.columns.createTagsColumn(),
+];
+
 export type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
@@ -80,13 +90,13 @@ export const ApiExplorerPage = ({
           <EntityListProvider>
             <div>
               <EntityKindPicker initialFilter="api" hidden />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTypePicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </div>
-            <CatalogTable columns={columns} />
+            <CatalogTable columns={columns || defaultColumns} />
           </EntityListProvider>
         </div>
       </Content>

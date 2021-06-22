@@ -36,6 +36,7 @@ import {
   ContentHeader,
   SupportButton,
   TableColumn,
+  TableProps,
 } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
@@ -53,11 +54,13 @@ const useStyles = makeStyles(theme => ({
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<EntityRow>[];
+  actions?: TableProps<EntityRow>['actions'];
 };
 
 export const CatalogPage = ({
   initiallySelectedFilter = 'owned',
   columns,
+  actions,
 }: CatalogPageProps) => {
   const styles = useStyles();
 
@@ -78,7 +81,7 @@ export const CatalogPage = ({
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </div>
-            <CatalogTable columns={columns} />
+            <CatalogTable columns={columns} actions={actions} />
           </EntityListProvider>
         </div>
       </Content>

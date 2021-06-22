@@ -394,6 +394,11 @@ export type SignInResult = {
     signOut?: () => Promise<void>;
 };
 
+// @public (undocumented)
+export class UnhandledErrorForwarder {
+    static forward(errorApi: ErrorApi, errorContext: ErrorContext): void;
+}
+
 // @public
 export class UrlPatternDiscovery implements DiscoveryApi {
     static compile(pattern: string): UrlPatternDiscovery;

@@ -1,5 +1,7 @@
+import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
+
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +16,16 @@
  * limitations under the License.
  */
 
-export { ErrorAlerter } from './ErrorAlerter';
-export { ErrorApiForwarder } from './ErrorApiForwarder';
-export { UnhandledErrorForwarder } from './UnhandledErrorForwarder';
+export class UnhandledErrorForwarder {
+  /**
+   * Add event listener, such that unhandled errors can be forwarded using an given `ErrorApi` instance
+   */
+  static forward(errorApi: ErrorApi, errorContext: ErrorContext) {
+    window.addEventListener(
+      'unhandledrejection',
+      (e: PromiseRejectionEvent) => {
+        errorApi.post(e.reason as Error, errorContext);
+      },
+    );
+  }
+}
