@@ -57,6 +57,9 @@ export class LunrSearchEngine implements SearchEngine {
         .map(([field, value]) => {
           // Require that the given field has the given value (with +).
           if (['string', 'number', 'boolean'].includes(typeof value)) {
+            if (typeof value === 'string') {
+              return ` +${field}:${value.replace(':', '\\:')}`;
+            }
             return ` +${field}:${value}`;
           }
 
