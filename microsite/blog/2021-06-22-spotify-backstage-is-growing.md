@@ -4,7 +4,7 @@ author: Austin Lamon, Spotify
 authorURL: https://www.linkedin.com/in/austinlamon
 ---
 
-[![Spotify Backstage: Proven at Spotify. Made just for you.](assets/21-06-22/spotify-backstage-header.gif)](https://backstage.spotify.com/)
+[![The Backstage community is growing! In just over a year, Backstage has gone from a few open source building blocks to a thriving platform used by engineering orgs with thousands of developers. But even with 30+ adopting companies and 400+ contributors, we are still in the very early stages of reaching the platform’s potential.](assets/21-06-22/spotify-backstage-header.gif)](https://backstage.spotify.com/)
 _[backstage.spotify.com](https://backstage.spotify.com)_
 
 The Backstage community is growing! In just over [a year](https://engineering.atspotify.com/2021/03/16/happy-birthday-backstage-spotifys-biggest-open-source-project-grows-up-fast/), Backstage has gone from a few open source building blocks to a thriving platform used by engineering orgs with thousands of developers. But even with 30+ [adopting companies](https://github.com/backstage/backstage/blob/master/ADOPTERS.md) and 400+ contributors, we are still in the very early stages of reaching the platform’s potential.
