@@ -66,7 +66,7 @@ describe('<DependsOnResourcesCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Resources')).toBeInTheDocument();
+    expect(getByText('Depends on resources')).toBeInTheDocument();
     expect(
       getByText(/No resource is a dependency of this component/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<DependsOnResourcesCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Resources')).toBeInTheDocument();
+      expect(getByText('Depends on resources')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });
