@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
+import {
+  DocumentCollator,
+  DocumentDecorator,
+  IndexableDocument,
+} from '@backstage/search-common';
 import { Logger } from 'winston';
 import { Scheduler } from './index';
 import {
@@ -105,12 +109,29 @@ export class IndexBuilder {
         this.logger.debug(
           `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
         );
-        let documents = await this.collators[type].collate.execute();
+        let documents: IndexableDocument[];
+
+        try {
+          documents = await this.collators[type].collate.execute();
+        } catch (e) {
+          this.logger.error(
+            `Collating documents for ${type} via ${this.collators[type].collate.constructor.name} failed: ${e}`,
+          );
+          return;
+        }
+
         for (let i = 0; i < decorators.length; i++) {
           this.logger.debug(
             `Decorating ${type} documents via ${decorators[i].constructor.name}`,
           );
-          documents = await decorators[i].execute(documents);
+          try {
+            documents = await decorators[i].execute(documents);
+          } catch (e) {
+            this.logger.error(
+              `Decorating ${type} documents via ${decorators[i].constructor.name} failed: ${e}`,
+            );
+            return;
+          }
         }
 
         if (!documents || documents.length === 0) {
