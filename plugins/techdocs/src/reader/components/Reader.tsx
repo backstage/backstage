@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,9 +64,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   const updateSidebarPosition = useCallback(() => {
     if (!!shadowDomRef.current && !!sidebars) {
-      const mdTabs = shadowDomRef.current!.querySelector(
-        '.md-container > .md-tabs',
-      );
+      const shadowDiv: HTMLElement = shadowDomRef.current!;
+      const shadowRoot =
+        shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+      const mdTabs = shadowRoot.querySelector('.md-container > .md-tabs');
       sidebars!.forEach(sidebar => {
         const newTop = Math.max(
           shadowDomRef.current!.getBoundingClientRect().top,

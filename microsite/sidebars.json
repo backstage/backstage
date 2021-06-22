@@ -8,6 +8,8 @@
       "overview/background",
       "overview/adopting",
       "overview/stability-index",
+      "overview/support",
+      "overview/glossary",
       "overview/logos"
     ],
     "Getting Started": [
@@ -24,7 +26,8 @@
       },
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
-      "getting-started/contributors"
+      "getting-started/contributors",
+      "getting-started/project-structure"
     ],
     "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
@@ -243,8 +246,9 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
-      "tutorials/switching-sqlite-postgres",
-      "tutorials/migrating-away-from-core"
+      "tutorials/migrating-away-from-core",
+      "tutorials/configuring-plugin-databases",
+      "tutorials/switching-sqlite-postgres"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
@@ -260,8 +264,6 @@
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011"
     ],
-    "Support": ["support/support", "support/project-structure"],
-    "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
   }
 }
