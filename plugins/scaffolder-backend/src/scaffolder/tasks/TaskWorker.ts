@@ -33,6 +33,7 @@ type Options = {
   taskBroker: TaskBroker;
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
+  integrations: ScmIntegrations;
 };
 
 export class TaskWorker {
@@ -45,7 +46,7 @@ export class TaskWorker {
     // scary right now, so we're going to lock it off like the component API is
     // in the frontend until we can work out a nice way to do it.
     this.handlebars.registerHelper('parseRepoUrl', repoUrl => {
-      return JSON.stringify(parseRepoUrl(repoUrl));
+      return JSON.stringify(parseRepoUrl(repoUrl, options.integrations));
     });
 
     this.handlebars.registerHelper('projectSlug', repoUrl => {

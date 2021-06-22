@@ -16,6 +16,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { FieldProps } from '@rjsf/core';
 import { scaffolderApiRef } from '../../../api';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { useAsync } from 'react-use';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -28,7 +29,6 @@ import { Progress } from '@backstage/core-components';
 
 function splitFormData(url: string | undefined) {
   let host = undefined;
-  let type = undefined;
   let owner = undefined;
   let repo = undefined;
   let organization = undefined;
@@ -39,7 +39,6 @@ function splitFormData(url: string | undefined) {
     if (url) {
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
-      type = parsed.searchParams.get('type') || undefined;
       owner = parsed.searchParams.get('owner') || undefined;
       repo = parsed.searchParams.get('repo') || undefined;
       // This is azure dev ops specific. not used for any other provider.
@@ -52,12 +51,11 @@ function splitFormData(url: string | undefined) {
     /* ok */
   }
 
-  return { host, type, owner, repo, organization, workspace, project };
+  return { host, owner, repo, organization, workspace, project };
 }
 
 function serializeFormData(data: {
   host?: string;
-  type?: string;
   owner?: string;
   repo?: string;
   organization?: string;
@@ -69,9 +67,6 @@ function serializeFormData(data: {
   }
 
   const params = new URLSearchParams();
-  if (data.type) {
-    params.set('type', data.type);
-  }
   if (data.owner) {
     params.set('owner', data.owner);
   }
@@ -97,11 +92,12 @@ export const RepoUrlPicker = ({
   rawErrors,
   formData,
 }: FieldProps<string>) => {
-  const api = useApi(scaffolderApiRef);
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const integrationApi = useApi(scmIntegrationsApiRef);
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
 
   const { value: integrations, loading } = useAsync(async () => {
-    return await api.getIntegrationsList({ allowedHosts });
+    return await scaffolderApi.getIntegrationsList({ allowedHosts });
   });
 
   const { host, type, owner, repo, organization, workspace, project } = splitFormData(formData);
@@ -119,7 +115,7 @@ export const RepoUrlPicker = ({
         }),
       )
     },
-    [onChange, integrations, owner, repo, organization, workspace, project],
+    [onChange, owner, repo, organization, workspace, project],
   );
 
   const updateOwner = useCallback(
@@ -127,7 +123,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
-          type,
           owner: evt.target.value as string,
           repo,
           organization,
@@ -135,7 +130,7 @@ export const RepoUrlPicker = ({
           project,
         }),
       ),
-    [onChange, host, type, repo, organization, workspace, project],
+    [onChange, host, repo, organization, workspace, project],
   );
 
   const updateRepo = useCallback(
@@ -143,7 +138,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
-          type,
           owner,
           repo: evt.target.value as string,
           organization,
@@ -151,7 +145,7 @@ export const RepoUrlPicker = ({
           project,
         }),
       ),
-    [onChange, host, type, owner, organization, workspace, project],
+    [onChange, host, owner, organization, workspace, project],
   );
 
   const updateOrganization = useCallback(
@@ -159,7 +153,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
-          type,
           owner,
           repo,
           organization: evt.target.value as string,
@@ -175,7 +168,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
-          type,
           owner,
           repo,
           organization,
@@ -183,7 +175,7 @@ export const RepoUrlPicker = ({
           project,
         }),
       ),
-    [onChange, host, type, owner, repo, organization, project],
+    [onChange, host, owner, repo, organization, project],
   );
 
   const updateProject = useCallback(
@@ -191,7 +183,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
-          type,
           owner,
           repo,
           organization,
@@ -199,7 +190,7 @@ export const RepoUrlPicker = ({
           project: evt.target.value as string,
         }),
       ),
-    [onChange, host, type, owner, repo, organization, workspace],
+    [onChange, host, owner, repo, organization, workspace],
   );
 
   useEffect(() => {
@@ -207,7 +198,6 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host: integrations[0].host,
-          type: integrations[0].type,
           owner,
           repo,
           organization,
@@ -263,9 +253,9 @@ export const RepoUrlPicker = ({
           <FormHelperText>The name of the organization</FormHelperText>
         </FormControl>
       )}
-      {/* Show this for bitbucket.org only */}
-      {type === 'bitbucket' && (
+      {host && integrationApi.byHost(host)?.type === 'bitbucket' && (
         <>
+          {/* Show this for bitbucket.org only */}
           {host === 'bitbucket.org' && (
             <FormControl
               margin="normal"
@@ -293,7 +283,7 @@ export const RepoUrlPicker = ({
         </>
       )}
       {/* Show this for all hosts except bitbucket */}
-      {type !== 'bitbucket' && (
+      {host && integrationApi.byHost(host)?.type !== 'bitbucket' && (
         <>
           <FormControl
             margin="normal"

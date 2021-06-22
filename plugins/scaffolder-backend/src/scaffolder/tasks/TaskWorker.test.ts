@@ -41,6 +41,14 @@ describe('TaskWorker', () => {
   let storage: DatabaseTaskStore;
   let actionRegistry = new TemplateActionRegistry();
 
+  const integrations = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: {
+        github: [{ host: 'github.com', token: 'token' }],
+      },
+    }),
+  );
+
   beforeAll(async () => {
     storage = await createStore();
   });
@@ -65,6 +73,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
     const { taskId } = await broker.dispatch({
       steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
@@ -90,6 +99,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
@@ -142,6 +152,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
@@ -331,6 +342,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
@@ -388,6 +400,12 @@ describe('TaskWorker', () => {
                 organization: {
                   type: 'string',
                 },
+                workspace: {
+                  type: 'string',
+                },
+                project: {
+                  type: 'string',
+                },
               },
             },
           },
@@ -396,7 +414,10 @@ describe('TaskWorker', () => {
       async handler(ctx) {
         ctx.output('host', ctx.input.destination.host);
         ctx.output('repo', ctx.input.destination.repo);
-        ctx.output('owner', ctx.input.destination.owner);
+
+        if (ctx.input.destination.owner) {
+          ctx.output('owner', ctx.input.destination.owner);
+        }
 
         if (ctx.input.destination.host !== 'github.com') {
           throw new Error(
@@ -410,7 +431,10 @@ describe('TaskWorker', () => {
           );
         }
 
-        if (ctx.input.destination.owner !== 'owner') {
+        if (
+          ctx.input.destination.owner &&
+          ctx.input.destination.owner !== 'owner'
+        ) {
           throw new Error(
             `expected repo to be "owner" got ${ctx.input.destination.owner}`,
           );
@@ -425,6 +449,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
