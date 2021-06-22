@@ -13,6 +13,8 @@ nav:
       - The Spotify Story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
       - Stability Index: 'overview/stability-index.md'
+      - Support and community: 'overview/support.md'
+      - Glossary: 'overview/glossary.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
       - Getting Started: 'getting-started/index.md'
@@ -24,6 +26,7 @@ nav:
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
       - Contributors: 'getting-started/contributors.md'
+      - Project Structure: 'getting-started/project-structure.md'
   - CLI:
       - Overview: 'cli/index.md'
       - Commands: 'cli/commands.md'
@@ -174,7 +177,6 @@ nav:
       - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
   - Support:
-      - Support and community: 'support/support.md'
       - Backstage Project Structure: 'support/project-structure.md'
   - Glossary: glossary.md
   - FAQ: FAQ.md
