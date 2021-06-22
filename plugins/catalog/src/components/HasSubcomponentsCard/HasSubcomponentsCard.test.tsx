@@ -66,7 +66,7 @@ describe('<HasSubcomponentsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Subcomponents')).toBeInTheDocument();
+    expect(getByText('Has subcomponents')).toBeInTheDocument();
     expect(
       getByText(/No subcomponent is part of this component/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<HasSubcomponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Subcomponents')).toBeInTheDocument();
+      expect(getByText('Has subcomponents')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });
