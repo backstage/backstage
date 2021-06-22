@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.8.3
+
+### Patch Changes
+
+- 1d2ed7844: Removed unused `typescript-json-schema` dependency.
+
 ## 0.8.2
 
 ### Patch Changes

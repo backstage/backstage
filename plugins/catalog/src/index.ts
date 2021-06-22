@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ export * from './components/AboutCard';
 export { CatalogLayout } from './components/CatalogPage';
 export { CatalogResultListItem } from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
+export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
 export { CreateComponentButton } from './components/CreateComponentButton';
 export { EntityLayout } from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';

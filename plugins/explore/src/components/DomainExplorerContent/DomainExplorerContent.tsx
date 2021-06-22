@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,10 +79,16 @@ const Body = () => {
   );
 };
 
-export const DomainExplorerContent = () => {
+type DomainExplorerContentProps = {
+  title?: string;
+};
+
+export const DomainExplorerContent = ({
+  title,
+}: DomainExplorerContentProps) => {
   return (
     <Content noPadding>
-      <ContentHeader title="Domains">
+      <ContentHeader title={title ?? 'Domains'}>
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
       <Body />

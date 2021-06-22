@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import {
   createRoutableExtension,
 } from '@backstage/core';
 import { NewRelicClient, newRelicApiRef } from './api';
-import NewRelicComponent from './components/NewRelicComponent';
 
 export const rootRouteRef = createRouteRef({
   path: '/newrelic',
@@ -38,9 +37,6 @@ export const newRelicPlugin = createPlugin({
       factory: ({ discoveryApi }) => new NewRelicClient({ discoveryApi }),
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, NewRelicComponent);
-  },
   routes: {
     root: rootRouteRef,
   },

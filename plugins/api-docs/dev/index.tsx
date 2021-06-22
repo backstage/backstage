@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,13 @@ import graphqlApiEntity from './graphql-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 
+const mockEntities = ([
+  openapiApiEntity,
+  asyncapiApiEntity,
+  graphqlApiEntity,
+  otherApiEntity,
+] as unknown) as Entity[];
+
 createDevApp()
   .registerApi({
     api: catalogApiRef,
@@ -38,13 +45,11 @@ createDevApp()
       (({
         async getEntities() {
           return {
-            items: [
-              openapiApiEntity,
-              asyncapiApiEntity,
-              graphqlApiEntity,
-              otherApiEntity,
-            ],
+            items: mockEntities.slice(),
           };
+        },
+        async getEntityByName(name: string) {
+          return mockEntities.find(e => e.metadata.name === name);
         },
       } as unknown) as typeof catalogApiRef.T),
   })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,6 +184,72 @@ describe('LunrSearchEngine', () => {
             document: {
               title: 'testTitle',
               text: 'testText',
+              location: 'test/location',
+            },
+          },
+        ],
+      });
+    });
+
+    it('should perform search query with trailing punctuation and return search results on match (trimming)', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'Hello World.',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'World',
+        filters: {},
+        pageCursor: '',
+      });
+
+      // Should return 1 result as we are mocking the indexing of 1 document with match on the title field
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'Hello World.',
+              location: 'test/location',
+            },
+          },
+        ],
+      });
+    });
+
+    it('should perform search query by similar words and return search results on match (stemming)', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'Searching',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'Search',
+        filters: {},
+        pageCursor: '',
+      });
+
+      // Should return 1 result as we are mocking the indexing of 1 document with match on the title field
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'Searching',
               location: 'test/location',
             },
           },

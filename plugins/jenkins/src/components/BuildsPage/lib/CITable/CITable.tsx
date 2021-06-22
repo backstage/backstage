@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ const generatedColumns: TableColumn[] = [
         <Link
           component={RouterLink}
           to={generatePath(buildRouteRef.path, {
-            branch: row.source.branchName,
+            branch: encodeURIComponent(row.source.branchName),
             buildNumber: row.buildNumber.toString(),
           })}
         >

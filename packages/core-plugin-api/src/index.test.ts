@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ describe('index', () => {
       useApi: expect.any(Function),
       useApiHolder: expect.any(Function),
       useApp: expect.any(Function),
+      useElementFilter: expect.any(Function),
       useRouteRef: expect.any(Function),
       useRouteRefParams: expect.any(Function),
       withApis: expect.any(Function),

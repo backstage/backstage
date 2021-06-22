@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,18 @@ describe('<ToolExplorerContent />', () => {
       expect(getByText('Lighthouse')).toBeInTheDocument();
       expect(getByText('Tech Radar')).toBeInTheDocument();
     });
+  });
+
+  it('renders a custom title', async () => {
+    exploreToolsConfigApi.getTools.mockResolvedValue([]);
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ToolExplorerContent title="Our Tools" />
+      </Wrapper>,
+    );
+
+    await waitFor(() => expect(getByText('Our Tools')).toBeInTheDocument());
   });
 
   it('renders empty state', async () => {

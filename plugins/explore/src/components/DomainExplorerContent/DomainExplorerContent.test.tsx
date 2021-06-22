@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,12 @@ describe('<DomainExplorerContent />', () => {
     </ApiProvider>
   );
 
+  const mountedRoutes = {
+    mountedRoutes: {
+      '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -74,17 +80,26 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     await waitFor(() => {
       expect(getByText('artists')).toBeInTheDocument();
       expect(getByText('playback')).toBeInTheDocument();
     });
+  });
+
+  it('renders a custom title', async () => {
+    catalogApi.getEntities.mockResolvedValue({ items: [] });
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <DomainExplorerContent title="Our Areas" />
+      </Wrapper>,
+      mountedRoutes,
+    );
+
+    await waitFor(() => expect(getByText('Our Areas')).toBeInTheDocument());
   });
 
   it('renders empty state', async () => {
@@ -94,11 +109,7 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     await waitFor(() =>
@@ -114,11 +125,7 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     await waitFor(() =>

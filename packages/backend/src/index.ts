@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import {
   getRootLogger,
   loadBackendConfig,
   notFoundHandler,
-  SingleConnectionDatabaseManager,
+  DatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
@@ -59,7 +59,7 @@ function makeCreateEnv(config: Config) {
 
   root.info(`Created UrlReader ${reader}`);
 
-  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  const databaseManager = DatabaseManager.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {

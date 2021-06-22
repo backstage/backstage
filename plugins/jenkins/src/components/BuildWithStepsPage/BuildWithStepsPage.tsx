@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,9 @@ const BuildWithStepsView = () => {
   const projectName = useProjectSlugFromEntity();
   const { branch, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
-  const buildPath = `${projectName}/${branch}/${buildNumber}`;
+  const buildPath = `${projectName}/${encodeURIComponent(
+    branch,
+  )}/${buildNumber}`;
   const [{ value }] = useBuildWithSteps(buildPath);
 
   return (

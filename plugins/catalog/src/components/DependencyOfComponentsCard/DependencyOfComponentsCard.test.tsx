@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ describe('<DependencyOfComponentsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Components')).toBeInTheDocument();
+    expect(getByText('Dependency of components')).toBeInTheDocument();
     expect(
       getByText(/No component depends on this component/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<DependencyOfComponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Components')).toBeInTheDocument();
+      expect(getByText('Dependency of components')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

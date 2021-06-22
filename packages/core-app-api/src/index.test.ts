@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ describe('index', () => {
       ConfigReader: expect.any(Function),
       ErrorAlerter: expect.any(Function),
       ErrorApiForwarder: expect.any(Function),
+      FeatureFlagged: expect.any(Function),
       GithubAuth: expect.any(Function),
       GitlabAuth: expect.any(Function),
       GoogleAuth: expect.any(Function),

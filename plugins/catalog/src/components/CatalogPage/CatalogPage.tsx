@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import {
 } from '@backstage/core';
 import {
   EntityKindPicker,
+  EntityLifecyclePicker,
   EntityListProvider,
+  EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
@@ -72,6 +74,8 @@ export const CatalogPage = ({
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
+              <EntityOwnerPicker />
+              <EntityLifecyclePicker />
               <EntityTagPicker />
             </div>
             <CatalogTable columns={columns} />

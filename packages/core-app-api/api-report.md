@@ -235,6 +235,18 @@ export type ErrorBoundaryFallbackProps = {
 };
 
 // @public (undocumented)
+export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
+
+// @public (undocumented)
+export type FeatureFlaggedProps = {
+    children: ReactNode;
+} & ({
+    with: string;
+} | {
+    without: string;
+});
+
+// @public (undocumented)
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 
 // @public (undocumented)
