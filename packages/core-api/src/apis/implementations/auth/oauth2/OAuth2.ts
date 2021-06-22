@@ -34,10 +34,13 @@ import { OAuthExtendedApi } from '../../../definitions/oauthExtendedApi';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 import * as msal from "@azure/msal-browser";
+import { configApiRef, OAuth2Config } from '@backstage/core';
+import jwtDecoder from 'jwt-decode';
 
 type Options = {
   sessionManager: SessionManager<OAuth2Session>;
   scopeTransform: (scopes: string[]) => string[];
+  config : OAuth2Config;
 };
 
 type CreateOptions = OAuthApiCreateOptions & {
@@ -76,6 +79,7 @@ class OAuth2
     oauthRequestApi,
     defaultScopes = [],
     scopeTransform = x => x,
+    oauthConfig,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -111,15 +115,17 @@ class OAuth2
       },
     });
 
-    return new OAuth2({ sessionManager, scopeTransform });
+    return new OAuth2({ sessionManager, scopeTransform, config: oauthConfig });
   }
 
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
+  private readonly config : OAuth2Config;
 
   constructor(options: Options) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
+    this.config = options.config;
   }
 
   async signIn() {
@@ -147,38 +153,45 @@ class OAuth2
   }
 
   async GetAccessTokenClientSide(scopes? : string[]) {
+    let profile = await this.getIdToken();
+    let tokenDecoded : any = jwtDecoder(profile);
+
     console.log("Acquiring clientside token");
-    //TODO using useApi directly here doesn't seem to gel with React? Find a way to pipe in configuration
-    //let conf = useApi(configApiRef);
-    //let tenantId = conf.getString("auth.providers.microsoft.development.tenantId");
-    //console.log(tenantId);
-    let tenantId = "";
-    let clientId = "";
+
+    let tenantId = tokenDecoded.tid;
+    let clientId = tokenDecoded.aud;
     let returnToken = null;
 
     const msalConfig = {
       auth: {
         clientId: clientId,
         authority: "https://login.microsoftonline.com/" + tenantId
+      },
+      cache: {
+        cacheLocation: "localStorage"
+      },
+      system: {
+        iframeHashTimeout: 10000
       }
     };
 
     const msalInstance = new msal.PublicClientApplication(msalConfig);
-    let currentAccount = msalInstance.getAllAccounts()[0];
-    if (currentAccount == null) {
-      // login first
-      console.log("No current acc");
-      let resp = await msalInstance.acquireTokenPopup({
-        scopes: scopes ? scopes : []
-      });
-      returnToken = resp.accessToken;      
-    } else {
-      console.log(currentAccount);
-      let resp = await msalInstance.ssoSilent({
+
+    let resp : msal.AuthenticationResult;
+    try {
+      resp = await msalInstance.ssoSilent({
         scopes: scopes,
-        account: currentAccount
+        loginHint: tokenDecoded.preferred_username
       })
       returnToken = resp.accessToken;
+    } catch (e) {
+      console.log(returnToken);
+      console.log(e);
+      let resp = await msalInstance.acquireTokenPopup({
+        scopes: scopes ? scopes : [],
+        loginHint: tokenDecoded.preferred_username
+      });
+      returnToken = resp.accessToken;    
     }
 
     return returnToken;

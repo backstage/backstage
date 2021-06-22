@@ -47,6 +47,7 @@ import {
   oneloginAuthApiRef,
   OneLoginAuth,
   oidcAuthApiRef,
+  OAuth2Config,
 } from '@backstage/core-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
@@ -85,6 +86,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth.clientside.providers")),
       }),
   }),
   createApiFactory({
@@ -99,6 +101,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth")),
       }),
   }),
   createApiFactory({
@@ -114,6 +117,7 @@ export const defaultApis = [
         oauthRequestApi,
         defaultScopes: ['read:user'],
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth.clientside.providers")),
       }),
   }),
   createApiFactory({
@@ -128,6 +132,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth.clientside.providers")),
       }),
   }),
   createApiFactory({
@@ -142,6 +147,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth.clientside.providers")),
       }),
   }),
   createApiFactory({
@@ -156,6 +162,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth.clientside.providers")),
       }),
   }),
   createApiFactory({
@@ -170,6 +177,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth")),
       }),
   }),
   createApiFactory({
@@ -215,6 +223,7 @@ export const defaultApis = [
           icon: OAuth2Icon,
         },
         environment: configApi.getOptionalString('auth.environment'),
+        oauthConfig: new OAuth2Config(configApi.getOptionalConfig("auth")),
       }),
   }),
 ];

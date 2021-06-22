@@ -38,6 +38,7 @@ class MicrosoftAuth {
       'email',
       'User.Read',
     ],
+    oauthConfig
   }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
@@ -45,6 +46,7 @@ class MicrosoftAuth {
       provider,
       environment,
       defaultScopes,
+      oauthConfig,
     });
   }
 }

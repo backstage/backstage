@@ -31,6 +31,15 @@ export interface Config {
       secret?: string;
     };
 
+    clientside?: {
+      providers?: {
+        azure?: {
+          /** @visibility frontend */
+          [authEnv: string]: { [key: string]: string };
+        }
+      }
+    }
+
     /**
      * The available auth-provider options and attributes
      */

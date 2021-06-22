@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
 export type OAuth2Session = {
@@ -26,3 +27,15 @@ export type OAuth2Session = {
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
 };
+
+export class OAuth2Config {
+  conf: Config | undefined;
+
+  constructor(c: Config | undefined) {
+    this.conf = c;
+  }
+
+  getString(provider : string, path : string) {
+    return this.conf?.getOptionalString(`${provider}.${path}`);
+  };
+}
