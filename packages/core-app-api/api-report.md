@@ -396,8 +396,7 @@ export type SignInResult = {
 
 // @public (undocumented)
 export class UnhandledErrorForwarder {
-    // (undocumented)
-    static forward(errorApi: ErrorApi, hidden?: boolean): void;
+    static forward(errorApi: ErrorApi, errorContext: ErrorContext): void;
 }
 
 // @public
