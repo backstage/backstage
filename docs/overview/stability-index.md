@@ -184,8 +184,9 @@ Stability: `2`
 ### `test-utils-core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
 
 Internal testing utilities that are separated out for usage in
-@backstage/core-api. All exports are re-exported by @backstage/test-utils. This
-package should not be depended on directly.
+@backstage/core-app-api and @backstage/core-plugin-api. All exports are
+re-exported by @backstage/test-utils. This package should not be depended on
+directly.
 
 Stability: See @backstage/test-utils
 
@@ -207,9 +208,6 @@ color could be considered a breaking change.
 Stability: `1`
 
 ## Plugins
-
-Plugins are rarely marked as stable as the `@backstage/core` plugin API is under
-heavy development.
 
 Many backend plugins are split into "REST API" and "TypeScript Interface"
 sections. The "TypeScript Interface" refers to the API used to integrate the

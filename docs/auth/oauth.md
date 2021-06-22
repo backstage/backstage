@@ -38,7 +38,7 @@ choose an account to log in with, and accept or reject the request. If the user
 accepts the login request, a token is issued, and any holder of the token can
 use it to make authenticated requests towards the third party service.
 
-## OAuth in @backstage/core-api and auth-backend
+## OAuth in @backstage/core-app-api and auth-backend
 
 The default OAuth implementation in Backstage is based on an OAuth server-side
 offline access flow, which means that it uses the backend as a helper in order
@@ -60,7 +60,7 @@ The following describes the OAuth flow implemented by the
 [auth-backend](https://github.com/backstage/backstage/tree/master/plugins/auth-backend)
 and
 [DefaultAuthConnector](https://github.com/backstage/backstage/blob/master/packages/core-app-api/src/lib/AuthConnector/DefaultAuthConnector.ts)
-in `@backstage/core-api`.
+in `@backstage/core-app-api`.
 
 Component and APIs can request Access or ID Tokens from any available Auth
 provider. If there already exists a cached fresh token that covers (at least)
