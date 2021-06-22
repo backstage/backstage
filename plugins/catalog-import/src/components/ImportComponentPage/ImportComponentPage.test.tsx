@@ -19,7 +19,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
-import { catalogImportApiRef, CatalogImportClient } from '../api';
+import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportComponentPage } from './ImportComponentPage';
 
 import {
@@ -78,7 +78,7 @@ describe('<ImportComponentPage />', () => {
       );
 
       expect(
-        await getByText('Start tracking your component in Backstage'),
+        getByText('Start tracking your component in Backstage'),
       ).toBeInTheDocument();
     });
   });
