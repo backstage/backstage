@@ -1,4 +1,4 @@
-import { ErrorApi } from '@backstage/core-plugin-api';
+import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
 
 /*
  * Copyright 2020 Spotify AB
@@ -15,12 +15,16 @@ import { ErrorApi } from '@backstage/core-plugin-api';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export class UnhandledErrorForwarder {
-  static forward(errorApi: ErrorApi, hidden = false) {
+  /**
+   * Add event listener, such that unhandled errors can be forwarded using an given `ErrorApi` instance
+   */
+  static forward(errorApi: ErrorApi, errorContext: ErrorContext) {
     window.addEventListener(
       'unhandledrejection',
       (e: PromiseRejectionEvent) => {
-        errorApi.post(e.reason as Error, { hidden });
+        errorApi.post(e.reason as Error, errorContext);
       },
     );
   }

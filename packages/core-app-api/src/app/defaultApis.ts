@@ -70,7 +70,7 @@ export const defaultApis = [
     deps: { alertApi: alertApiRef },
     factory: ({ alertApi }) => {
       const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
-      UnhandledErrorForwarder.forward(errorApi);
+      UnhandledErrorForwarder.forward(errorApi, { hidden: false });
       return errorApi;
     },
   }),
