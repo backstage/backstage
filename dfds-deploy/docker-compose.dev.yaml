@@ -1,0 +1,47 @@
+version: '3.9'
+services:
+  database:
+    image: postgres:latest
+    container_name: backstage-db
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env  
+  backstage-backend:
+    depends_on:
+      - database
+    build:
+      context: ../
+      dockerfile: ./dfds-deploy/Dockerfile.backend
+    volumes:
+      - ../:/app
+    env_file:
+      - .env
+    ports:
+      - '7000:7000'
+    links:
+      - database
+      - kafka
+  backstage-frontend:
+    depends_on:
+      - backstage-backend
+    image: backstage-frontend
+    container_name: frontend
+    build:
+      context: ../
+      dockerfile: ./dfds-deploy/Dockerfile.frontend
+    volumes:
+      - ../:/app
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+  kafka:
+    image: spotify/kafka
+    ports:
+      - '2181:2181'
+      - '9092:9092'
+    environment:
+      - 'ADVERTISED_HOST=localhost'
+      - 'ADVERTISED_PORT=9092'
+      - 'AUTO_CREATE_TOPICS=true'

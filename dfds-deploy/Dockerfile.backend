@@ -1,0 +1,8 @@
+FROM node:14
+
+WORKDIR app
+
+# CMD yarn tsc && yarn start
+CMD ["yarn", "start-backend"]
+
+

@@ -1,13 +1,7 @@
 app:
   title: DFDS Backstage
-  baseUrl: http://0.0.0.0:3000
+  baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
-  #datadogRum:
-  #  clientToken: '123456789'
-  #  applicationId: qwerty
-  #   site: # datadoghq.eu default = datadoghq.com
-  #   env: # optional
-
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
@@ -23,7 +17,7 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://172.29.142.24:7000
+  baseUrl: http://localhost:7000
   listen:
     port: 7000
   database:
@@ -143,7 +137,7 @@ kafka:
   clusters:
     - name: cluster
       brokers:
-        - $env: kafka:9092
+        - $env: KAFKA_CLUSTER
       ssl: false
 
 integrations:

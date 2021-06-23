@@ -1,0 +1,7 @@
+FROM node:14
+
+WORKDIR app
+
+# CMD ["sh", "-c", "yarn tsc && yarn start"]
+CMD ["yarn", "start"]
+
