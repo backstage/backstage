@@ -1417,7 +1417,7 @@
   dependencies:
     "@backstage/catalog-client" "^0.3.13"
     "@backstage/catalog-model" "^0.8.3"
-    "@backstage/core" "^0.7.13"
+    "@backstage/core-components" "^0.1.3"
     "@backstage/core-plugin-api" "^0.1.2"
     "@backstage/errors" "^0.1.1"
     "@backstage/integration" "^0.5.6"
@@ -7225,10 +7225,10 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
-anafanafo@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/anafanafo/-/anafanafo-1.0.0.tgz#2e67190aed5dc67f5f0043b710146e7276c1afb8"
-  integrity sha512-pDPbI7SFRHu0byMXHAf+v74+LCcHSxnLYkcbfiV91XRlE+NSLpFCpEQdVUy9ZxZw/LuhTrOin4r8wlR3OFrKBA==
+anafanafo@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/anafanafo/-/anafanafo-2.0.0.tgz#43f56274680bc553dd67a9625a920f88d0057b5c"
+  integrity sha512-Nlfq7NC4AOkTJerWRIZcOAiMNtIDVIGWGvQ98O7Jl6Kr2Dk0dX5u4MqN778kSRTy5KRqchpLdF2RtLFEz9FVkQ==
   dependencies:
     char-width-table-consumer "^1.0.0"
 
@@ -8378,11 +8378,11 @@ backoff@^2.5.0:
     precond "0.2"
 
 badge-maker@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/badge-maker/-/badge-maker-3.3.0.tgz#996cb2beeb458cbc9f559c4276f0d285758e5106"
-  integrity sha512-jYOlYss1BqwrjHnV6cIFD7G6XDdJ6rbZrzXxJulee3WhUjmXmHWOBm4xhtq10C6rrM5vEeWOB8WpZCD/LfI9CA==
+  version "3.3.1"
+  resolved "https://registry.npmjs.org/badge-maker/-/badge-maker-3.3.1.tgz#df1cb2d5943f25740672f37a95598d9ba2b109c9"
+  integrity sha512-OO/PS7Zg2E6qaUWzHEHt21Q5VjcFBAJVA8ztgT/fIdSZFBUwoyeo0ZhA6V5tUM8Vcjq8DJl6jfGhpjESssyqMQ==
   dependencies:
-    anafanafo "^1.0.0"
+    anafanafo "2.0.0"
     css-color-converter "^2.0.0"
 
 bail@^1.0.0:
