@@ -45,7 +45,6 @@ backend:
       - host: example.com
       - host: '*.mozilla.org'
       - host: private-aa6799-zaradardfds.apiary-mock.com
-      - host: 172.31.54.115
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
