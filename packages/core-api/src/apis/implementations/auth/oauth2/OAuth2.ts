@@ -34,13 +34,11 @@ import { OAuthExtendedApi } from '../../../definitions/oauthExtendedApi';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 import * as msal from "@azure/msal-browser";
-import { configApiRef, OAuth2Config } from '@backstage/core';
 import jwtDecoder from 'jwt-decode';
 
 type Options = {
   sessionManager: SessionManager<OAuth2Session>;
   scopeTransform: (scopes: string[]) => string[];
-  config : OAuth2Config;
 };
 
 type CreateOptions = OAuthApiCreateOptions & {
@@ -79,7 +77,6 @@ class OAuth2
     oauthRequestApi,
     defaultScopes = [],
     scopeTransform = x => x,
-    oauthConfig,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -115,17 +112,15 @@ class OAuth2
       },
     });
 
-    return new OAuth2({ sessionManager, scopeTransform, config: oauthConfig });
+    return new OAuth2({ sessionManager, scopeTransform });
   }
 
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
-  private readonly config : OAuth2Config;
 
   constructor(options: Options) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
-    this.config = options.config;
   }
 
   async signIn() {

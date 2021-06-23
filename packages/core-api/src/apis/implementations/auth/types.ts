@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { OAuth2Config } from '@backstage/core';
 import { AuthProvider, DiscoveryApi, OAuthRequestApi } from '../../definitions';
 
 export type OAuthApiCreateOptions = AuthApiCreateOptions & {
   oauthRequestApi: OAuthRequestApi;
   defaultScopes?: string[];
-  oauthConfig : OAuth2Config
 };
 
 export type AuthApiCreateOptions = {

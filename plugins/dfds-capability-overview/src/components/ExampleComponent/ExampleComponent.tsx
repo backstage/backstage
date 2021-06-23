@@ -178,6 +178,28 @@ const CapabilitiesListBase = () => {
     [backendEntities],
   );
 
+  const [capData, setCapData] = React.useState({items: []});
+  /* tslint:disable:no-unused-variable */
+  var authApi = useApi(microsoftAuthApiRef);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      let token = await authApi.GetAccessTokenClientSide(["api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user"]);
+      console.log(token);
+      let resp = await fetch("http://localhost:7000/api/proxy/capsvc/capabilities/", {
+        method: 'GET',
+        headers: {
+          'Authorization': "Bearer " + token
+        }
+      });
+      let deserialised = await resp.json();
+      console.log(deserialised);
+
+      setCapData(deserialised);
+    };
+    fetchData();
+  }, []);
+
   return (
     <Page themeId="tool">
       <Header title="Welcome to Capability Discoverability!">
@@ -278,16 +300,6 @@ const CapabilitiesListBase = () => {
 };
 
 export const ExampleComponent = () => {
-  var authApi = useApi(microsoftAuthApiRef);
-  React.useEffect(() => {
-    const fetchData = async () => {
-      // let resp = await authApi.getAccessToken();
-      let resp = await authApi.GetAccessTokenClientSide(["api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user"]);
-      console.log(resp);
-    };
-    fetchData();
-  }, []);
-
   return (
     <EntityListProvider>
       <EntityKindPicker initialFilter="capability" hidden />
