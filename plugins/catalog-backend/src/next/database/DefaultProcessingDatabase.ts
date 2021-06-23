@@ -22,6 +22,7 @@ import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
 import { Transaction } from '../../database';
+import { DeferredEntity } from '../processing/types';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
@@ -63,15 +64,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       errors,
       relations,
       deferredEntities,
+      emitKey,
     } = options;
-
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
         cache: JSON.stringify(state),
         errors,
+        emit_key: emitKey,
       })
-      .where('entity_id', id);
+      .where('entity_id', id)
+      .andWhere('emit_key', emitKey)
+      .orWhere('emit_key', '');
     if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
@@ -129,11 +133,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   private async createDelta(
     tx: Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
-  ): Promise<{ toAdd: Entity[]; toRemove: string[] }> {
+  ): Promise<{ toAdd: DeferredEntity[]; toRemove: string[] }> {
     if (options.type === 'delta') {
       return {
         toAdd: options.added,
-        toRemove: options.removed.map(e => stringifyEntityRef(e)),
+        toRemove: options.removed.map(e => stringifyEntityRef(e.entity)),
       };
     }
 
@@ -146,7 +150,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     const items = options.items.map(entity => ({
       entity,
-      ref: stringifyEntityRef(entity),
+      ref: stringifyEntityRef(entity.entity),
     }));
 
     const oldRefsSet = new Set(oldRefs);
@@ -281,19 +285,22 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
 
     if (toAdd.length) {
-      const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(entity => ({
-        entity_id: uuid(),
-        entity_ref: stringifyEntityRef(entity),
-        unprocessed_entity: JSON.stringify(entity),
-        errors: '',
-        next_update_at: tx.fn.now(),
-        last_discovery_at: tx.fn.now(),
-      }));
+      const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(
+        ({ entity, emitKey }) => ({
+          entity_id: uuid(),
+          entity_ref: stringifyEntityRef(entity),
+          unprocessed_entity: JSON.stringify(entity),
+          emit_key: emitKey,
+          errors: '',
+          next_update_at: tx.fn.now(),
+          last_discovery_at: tx.fn.now(),
+        }),
+      );
 
       const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
         entity => ({
           source_key: options.sourceKey,
-          target_entity_ref: stringifyEntityRef(entity),
+          target_entity_ref: stringifyEntityRef(entity.entity),
         }),
       );
       // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
@@ -313,12 +320,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
 
     const stateRows = options.entities.map(
-      entity =>
+      ({ entity, emitKey }) =>
         ({
           entity_id: uuid(),
           entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
           errors: '',
+          emit_key: emitKey,
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
         } as Knex.DbRecord<DbRefreshStateRow>),
@@ -406,6 +414,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               ? JSON.parse(i.cache)
               : new Map<string, JsonObject>(),
             errors: i.errors,
+            emitKey: i.emit_key,
           } as RefreshStateItem),
       ),
     };

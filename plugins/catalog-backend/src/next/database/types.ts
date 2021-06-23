@@ -17,10 +17,11 @@
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Transaction } from '../../database/types';
+import { DeferredEntity } from '../processing/types';
 
 export type AddUnprocessedEntitiesOptions = {
   entityRef: string;
-  entities: Entity[];
+  entities: DeferredEntity[];
 };
 
 export type AddUnprocessedEntitiesResult = {};
@@ -31,7 +32,8 @@ export type UpdateProcessedEntityOptions = {
   state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
-  deferredEntities: Entity[];
+  deferredEntities: DeferredEntity[];
+  emitKey: string;
 };
 
 export type UpdateProcessedEntityErrorsOptions = {
@@ -48,6 +50,7 @@ export type RefreshStateItem = {
   lastDiscoveryAt: string; // remove?
   state: Map<string, JsonObject>;
   errors?: string;
+  emitKey: string;
 };
 
 export type GetProcessableEntitiesResult = {
@@ -57,13 +60,13 @@ export type GetProcessableEntitiesResult = {
 export type ReplaceUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
-      items: Entity[];
+      items: DeferredEntity[];
       type: 'full';
     }
   | {
       sourceKey: string;
-      added: Entity[];
-      removed: Entity[];
+      added: DeferredEntity[];
+      removed: DeferredEntity[];
       type: 'delta';
     };
 
