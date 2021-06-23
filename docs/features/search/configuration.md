@@ -9,7 +9,7 @@ reference to all the available configuration options for Search.
 For the
 [StackOverflowCollator](https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/collators/StackOverflowCollator.ts)
 to get questions to index into Backstage Search it needs a baseUrl. You can
-configure this adding the following yaml to your app-config.
+configure this by adding the following lines to your app-config.
 
 ```yml
 # File: app-config.yaml
