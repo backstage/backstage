@@ -79,7 +79,7 @@
     "@types/passport-saml": "^1.1.2",
     "@types/passport-strategy": "^0.2.35",
     "@types/xml2js": "^0.4.7",
-    "msw": "^0.21.2"
+    "msw": "^0.29.0"
   },
   "files": [
     "dist",
