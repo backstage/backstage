@@ -15,19 +15,29 @@
  */
 
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
+import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
 
 export interface StackOverflowDocument extends IndexableDocument {
   answers: number;
-  tags: Array<string>
+  tags: Array<string>;
 }
 
 export class StackOverflowCollator implements DocumentCollator {
+  protected baseUrl: string;
   public readonly type: string = 'stack-overflow';
 
+  constructor({ config }: { config: Config }) {
+    this.baseUrl = config.getString(
+      'search.integrations.stackoverflow.baseUrl',
+    );
+  }
+
   async execute() {
-    const baseUrl = 'https://api.stackexchange.com/2.2';
-    const res = await fetch(`${baseUrl}/questions?order=desc&sort=votes&site=stackoverflow`);
+    // TODO(emmaindal): configurable params?
+    const res = await fetch(
+      `${this.baseUrl}/questions?tagged=backstage&site=stackoverflow`,
+    );
     const data = await res.json();
     return data.items.map(
       // @ts-ignore
@@ -37,7 +47,7 @@ export class StackOverflowCollator implements DocumentCollator {
           location: question.link,
           text: question.owner.display_name,
           tags: question.tags,
-          answers: question.answer_count
+          answers: question.answer_count,
         };
       },
     );

@@ -22,3 +22,4 @@ export * from './SearchResult';
 export * from './DefaultResultListItem';
 export * from './SidebarSearch';
 export * from './SearchContext';
+export * from './StackOverflowResultListItem';

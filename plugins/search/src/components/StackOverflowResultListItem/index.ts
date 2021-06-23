@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRoutableExtension } from '@backstage/core';
-
-import { rootRouteRef } from './routes';
-
-export const stackoverflowPlugin = createPlugin({
-  id: 'stackoverflow',
-  routes: {
-    root: rootRouteRef,
-  },
-});
-
-export const StackoverflowPage = stackoverflowPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
+export { StackOverflowResultListItem } from './StackOverflowResultListItem';

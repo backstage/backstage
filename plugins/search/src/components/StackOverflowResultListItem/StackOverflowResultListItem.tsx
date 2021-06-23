@@ -44,11 +44,14 @@ export const StackOverflowResultListItem = ({ result }: any) => {
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
           primary={result.title}
-          secondary={result.text}
+          secondary={`Author: ${result.text}`}
         />
         <Box>
           <Chip label={`Answer(s): ${result.answers}`} size="small" />
-          {result.tags && result.tags.map((tag: string) =>  <Chip label={`Tag: ${tag}`} size="small" />)}
+          {result.tags &&
+            result.tags.map((tag: string) => (
+              <Chip label={`Tag: ${tag}`} size="small" />
+            ))}
         </Box>
       </ListItem>
       <Divider component="li" />
