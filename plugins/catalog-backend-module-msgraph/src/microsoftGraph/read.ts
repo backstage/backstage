@@ -33,6 +33,7 @@ import {
   OrganizationTransformer,
   UserTransformer,
 } from './types';
+import { Logger } from 'winston';
 
 export async function defaultUserTransformer(
   user: MicrosoftGraph.User,
@@ -74,6 +75,7 @@ export async function defaultUserTransformer(
 }
 
 export async function readMicrosoftGraphUsers(
+  logger: Logger,
   client: MicrosoftGraphClient,
   options?: { userFilter?: string; transformer?: UserTransformer },
 ): Promise<{
@@ -91,12 +93,17 @@ export async function readMicrosoftGraphUsers(
     // Process all users in parallel, otherwise it can take quite some time
     promises.push(
       limiter(async () => {
-        const userPhoto = await client.getUserPhotoWithSizeLimit(
-          user.id!,
-          // We are limiting the photo size, as users with full resolution photos
-          // can make the Backstage API slow
-          120,
-        );
+        let userPhoto;
+        try {
+          userPhoto = await client.getUserPhotoWithSizeLimit(
+            user.id!,
+            // We are limiting the photo size, as users with full resolution photos
+            // can make the Backstage API slow
+            120,
+          );
+        } catch (e) {
+          logger.warn(`Unable to load photo for ${user.id}`);
+        }
 
         const entity = await transformer(user, userPhoto);
 
@@ -369,6 +376,7 @@ export function resolveRelations(
 }
 
 export async function readMicrosoftGraphOrg(
+  logger: Logger,
   client: MicrosoftGraphClient,
   tenantId: string,
   options?: {
@@ -377,7 +385,7 @@ export async function readMicrosoftGraphOrg(
     groupTransformer?: GroupTransformer;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  const { users } = await readMicrosoftGraphUsers(client, {
+  const { users } = await readMicrosoftGraphUsers(logger, client, {
     userFilter: options?.userFilter,
   });
   const {

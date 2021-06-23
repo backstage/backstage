@@ -84,6 +84,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     // We create a client each time as we need one that matches the specific provider
     const client = MicrosoftGraphClient.create(provider);
     const { users, groups } = await readMicrosoftGraphOrg(
+      this.logger,
       client,
       provider.tenantId,
       {
