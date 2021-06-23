@@ -16,6 +16,7 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
+import { OAuthExtendedApi } from './oauthExtendedApi';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -288,6 +289,7 @@ export const auth0AuthApiRef: ApiRef<
  */
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
+    OAuthExtendedApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
@@ -295,6 +297,26 @@ export const microsoftAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.microsoft',
   description: 'Provides authentication towards Microsoft APIs and identities',
+});
+
+/**
+ * Provides authentication towards via Azure-Msal-Browser
+ *
+ * For more info and a full list of supported scopes, see:
+ * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
+ * - https://docs.microsoft.com/en-us/graph/permissions-reference
+ * - https://www.npmjs.com/package/@azure/msal-browser
+ */
+export const azureAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.azure',
+  description:
+    'Provides authentication towards Azure AD via MSAL Browser package',
 });
 
 /**

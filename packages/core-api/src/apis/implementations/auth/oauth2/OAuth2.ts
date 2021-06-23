@@ -30,8 +30,10 @@ import {
   SessionApi,
   BackstageIdentityApi,
 } from '../../../definitions/auth';
+import { OAuthExtendedApi } from '../../../definitions/oauthExtendedApi';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
+import * as msal from "@azure/msal-browser";
 
 type Options = {
   sessionManager: SessionManager<OAuth2Session>;
@@ -62,6 +64,7 @@ const DEFAULT_PROVIDER = {
 class OAuth2
   implements
     OAuthApi,
+    OAuthExtendedApi,
     OpenIdConnectApi,
     ProfileInfoApi,
     BackstageIdentityApi,
@@ -141,6 +144,44 @@ class OAuth2
       scopes: normalizedScopes,
     });
     return session?.providerInfo.accessToken ?? '';
+  }
+
+  async GetAccessTokenClientSide(scopes? : string[]) {
+    console.log("Acquiring clientside token");
+    //TODO using useApi directly here doesn't seem to gel with React? Find a way to pipe in configuration
+    //let conf = useApi(configApiRef);
+    //let tenantId = conf.getString("auth.providers.microsoft.development.tenantId");
+    //console.log(tenantId);
+    let tenantId = "";
+    let clientId = "";
+    let returnToken = null;
+
+    const msalConfig = {
+      auth: {
+        clientId: clientId,
+        authority: "https://login.microsoftonline.com/" + tenantId
+      }
+    };
+
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    let currentAccount = msalInstance.getAllAccounts()[0];
+    if (currentAccount == null) {
+      // login first
+      console.log("No current acc");
+      let resp = await msalInstance.acquireTokenPopup({
+        scopes: scopes ? scopes : []
+      });
+      returnToken = resp.accessToken;      
+    } else {
+      console.log(currentAccount);
+      let resp = await msalInstance.ssoSilent({
+        scopes: scopes,
+        account: currentAccount
+      })
+      returnToken = resp.accessToken;
+    }
+
+    return returnToken;
   }
 
   async getIdToken(options: AuthRequestOptions = {}) {

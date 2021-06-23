@@ -67,7 +67,7 @@ const app = createApp({
       return (
         <SignInPage
           {...props}
-          providers={['guest', 'custom', ...providers]}
+          providers={['guest', 'custom', 'azure', ...providers]}
           title="Select a sign-in method"
           align="center"
         />
