@@ -1,0 +1,10 @@
+
+Run:
+
+docker-compose -f docker-compose.base.yaml -f docker-compose.dev.yaml up
+
+or this to force new rebuild of images:
+
+docker-compose -f docker-compose.base.yaml -f docker-compose.dev.yaml up --build
+
+
