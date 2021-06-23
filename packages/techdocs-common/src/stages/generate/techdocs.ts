@@ -142,6 +142,29 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
+    // copy markdown file source for client side reader
+    try {
+      await runCommand({
+        command: 'cp',
+        args: ['-R', '.', `${outputDir}/_src`],
+        options: {
+          cwd: inputDir,
+        },
+        logStream,
+      });
+      this.logger.info(
+        `Successfully copied source from ${inputDir} into ${outputDir}`,
+      );
+    } catch (error) {
+      this.logger.debug(
+        `Failed to copy source from ${inputDir} into ${outputDir}`,
+      );
+      this.logger.error(`Build failed with error: ${log}`);
+      throw new Error(
+        `Failed to copy source from ${inputDir} into ${outputDir} with error ${error.message}`,
+      );
+    }
+
     /**
      * Post Generate steps
      */

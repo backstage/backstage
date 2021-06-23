@@ -159,12 +159,9 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
     const token = await this.identityApi.getIdToken();
 
-    const request = await fetch(
-      `${url.endsWith('/') ? url : `${url}/`}index.html`,
-      {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      },
-    );
+    const request = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
 
     let errorMessage = '';
     switch (request.status) {

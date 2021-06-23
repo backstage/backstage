@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
+import { NotFoundError } from '@backstage/errors';
+import yaml from 'js-yaml';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
-import { techdocsStorageApiRef } from '../../api';
+import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
 
 /**
  * A state representation that is used to configure the UI of <Reader />
@@ -145,6 +148,9 @@ type ReducerActions =
   | {
       type: 'content';
       content?: string;
+      raw?: string;
+      toc?: object;
+      baseUrl?: string;
       contentLoading?: true;
       contentError?: Error;
     }
@@ -169,6 +175,9 @@ type ReducerState = {
    * The content that has been downloaded and should be displayed.
    */
   content?: string;
+  raw?: string;
+  toc?: object;
+  baseUrl?: string;
 
   contentError?: Error;
   syncError?: Error;
@@ -188,6 +197,9 @@ export function reducer(
 
     case 'content':
       newState.content = action.content;
+      newState.raw = action.raw;
+      newState.toc = action.toc;
+      newState.baseUrl = action.baseUrl;
       newState.contentLoading = action.contentLoading ?? false;
       newState.contentError = action.contentError;
       break;
@@ -211,12 +223,32 @@ export function reducer(
   return newState;
 }
 
+const tryMdSource = (api: TechDocsStorageApi, entity: EntityName) => async (
+  path: string,
+) => {
+  try {
+    return await api.getEntityDocs(entity, `_src/docs/${path}`);
+  } catch (error) {
+    if (!(error instanceof NotFoundError)) {
+      throw error;
+    }
+    return undefined;
+  }
+};
+
 export function useReaderState(
   kind: string,
   namespace: string,
   name: string,
   path: string,
-): { state: ContentStateTypes; content?: string; errorMessage?: string } {
+): {
+  state: ContentStateTypes;
+  content?: string;
+  raw?: string;
+  toc?: object;
+  baseUrl?: string;
+  errorMessage?: string;
+} {
   const [state, dispatch] = useReducer(reducer, {
     activeSyncState: 'CHECKING',
     path,
@@ -240,7 +272,30 @@ export function useReaderState(
         path,
       );
 
-      dispatch({ type: 'content', content: entityDocs });
+      // hacky way to get navigation
+      const entityToc = await techdocsStorageApi.getEntityDocs(
+        { kind, namespace, name },
+        '_src/mkdocs.yml',
+      );
+      const toc = yaml.load(entityToc);
+
+      // hacky way to get MD source file, or index
+      const tryMd = tryMdSource(techdocsStorageApi, { kind, namespace, name });
+      const entityRaw =
+        (await tryMd(`${path}.md`)) ||
+        (await tryMd('index.md')) ||
+        (await tryMd('README.md'));
+
+      // while we're at it, get the base URL
+      const baseUrl = `/docs/${namespace}/${kind}/${name}/`;
+
+      dispatch({
+        type: 'content',
+        content: entityDocs,
+        raw: entityRaw,
+        toc,
+        baseUrl,
+      });
 
       return entityDocs;
     } catch (e) {
@@ -252,11 +307,22 @@ export function useReaderState(
 
   // create a ref that holds the latest content. This provides a useAsync hook
   // with the latest content without restarting the useAsync hook.
-  const contentRef = useRef<{ content?: string; reload: () => void }>({
+  const contentRef = useRef<{
+    content?: string;
+    raw?: string;
+    reload: () => void;
+  }>({
+    raw: undefined,
     content: undefined,
     reload: () => {},
   });
-  contentRef.current = { content: state.content, reload: contentReload };
+  contentRef.current = {
+    content: state.content,
+    raw: state.raw,
+    toc: state.toc,
+    baseUrl: state.baseUrl,
+    reload: contentReload,
+  };
 
   // try to derive the state. the function will fire events and we don't care for the return values
   useAsync(async () => {
@@ -318,6 +384,9 @@ export function useReaderState(
   return {
     state: displayState,
     content: state.content,
+    raw: state.raw,
+    toc: state.toc,
+    baseUrl: state.baseUrl,
     errorMessage,
   };
 }
