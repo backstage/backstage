@@ -90,7 +90,7 @@ describe('GitlabUrlReader', () => {
             ctx.status(200),
             ctx.json({
               url: req.url.toString(),
-              headers: req.headers.getAllHeaders(),
+              headers: req.headers.all(),
             }),
           ),
         ),
