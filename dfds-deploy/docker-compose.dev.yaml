@@ -10,9 +10,10 @@ services:
   backstage-backend:
     depends_on:
       - database
-    build:      
-      dockerfile: ./dfds-deploy/Dockerfile.backend
-      context: ../
+    image: node:14
+    working_dir: /app
+    command: >
+        yarn start-backend
     volumes:
       - ../:/app
     env_file:
@@ -25,9 +26,10 @@ services:
   backstage-frontend:
     depends_on:
       - backstage-backend
-    build:
-      context: ../
-      dockerfile: ./dfds-deploy/Dockerfile.frontend
+    image: node:14
+    working_dir: /app
+    command: >
+        yarn start
     volumes:
       - ../:/app
     ports:
