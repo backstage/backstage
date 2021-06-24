@@ -27,8 +27,8 @@ stages:
         displayName: 'Build image'
         inputs:
           containerregistrytype: 'Container Registry'
-          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
-          additionalDockerComposeFiles: 'docker-compose.production.yaml'
+          dockerComposeFile:  './dfds-deploy/docker-compose.production.yaml' # './dfds-deploy/docker-compose.base.yaml'
+          # additionalDockerComposeFiles: 'docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-backend' 
@@ -50,8 +50,8 @@ stages:
         displayName: 'Build image'
         inputs:
           containerregistrytype: 'Container Registry'
-          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
-          additionalDockerComposeFiles: 'docker-compose.production.yaml'          
+          dockerComposeFile:  './dfds-deploy/docker-compose.production.yaml' # './dfds-deploy/docker-compose.base.yaml'
+          # additionalDockerComposeFiles: 'docker-compose.production.yaml'          
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-frontend' 
