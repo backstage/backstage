@@ -16,7 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { ResolvePlugin } from 'webpack';
-import { isChildPath } from './paths';
+import { isChildPath } from '@backstage/cli-common';
 import { LernaPackage } from './types';
 
 // Enables proper resolution of packages when linking in external packages.
