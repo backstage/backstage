@@ -17,6 +17,9 @@ export const AuthProviders: ({ providerSettings }: Props_2) => JSX.Element;
 export const DefaultProviderSettings: ({ configuredProviders }: Props_3) => JSX.Element;
 
 // @public (undocumented)
+export const General: () => JSX.Element;
+
+// @public (undocumented)
 export const ProviderSettingsItem: ({ title, description, icon: Icon, apiRef, }: Props_4) => JSX.Element;
 
 // @public (undocumented)
