@@ -26,6 +26,7 @@ import {
   createStyles,
   Grid,
   makeStyles,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -95,39 +96,60 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
   }),
 );
 
-const countEntitiesBy = (
+const listEntitiesBy = (
   entities: Array<Entity>,
   kind: EntitiesKinds,
   type?: EntitiesTypes,
 ) =>
   entities.filter(
     e => e.kind === kind && (type ? e?.spec?.type === type : true),
-  ).length;
+  );
+
+const countEntitiesBy = (
+  entities: Array<Entity>,
+  kind: EntitiesKinds,
+  type?: EntitiesTypes,
+) => listEntitiesBy(entities, kind, type).length;
 
 const EntityCountTile = ({
   counter,
   className,
+  entities,
   name,
 }: {
   counter: number;
   className: EntitiesTypes;
+  entities: Entity[];
   name: string;
 }) => {
+  let entityNames;
   const classes = useStyles();
+
+  if (entities.length < 20) {
+    entityNames = entities.map(e => e.metadata.name).join(', ');
+  } else {
+    entityNames = `${entities
+      .map(e => e.metadata.name)
+      .slice(0, 20)
+      .join(', ')}, ...`;
+  }
+
   return (
-    <Box
-      className={`${classes.card} ${classes[className]}`}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-    >
-      <Typography className={classes.bold} variant="h6">
-        {counter}
-      </Typography>
-      <Typography className={classes.bold} variant="h6">
-        {name}
-      </Typography>
-    </Box>
+    <Tooltip title={entityNames} arrow>
+      <Box
+        className={`${classes.card} ${classes[className]}`}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
+        <Typography className={classes.bold} variant="h6">
+          {counter}
+        </Typography>
+        <Typography className={classes.bold} variant="h6">
+          {name}
+        </Typography>
+      </Box>
+    </Tooltip>
   );
 };
 
@@ -167,6 +189,7 @@ export const OwnershipCard = ({
       {
         counter: countEntitiesBy(ownedEntitiesList, 'Component', 'service'),
         className: 'service',
+        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'service'),
         name: 'Services',
       },
       {
@@ -176,29 +199,43 @@ export const OwnershipCard = ({
           'documentation',
         ),
         className: 'documentation',
+        entities: listEntitiesBy(
+          ownedEntitiesList,
+          'Component',
+          'documentation',
+        ),
         name: 'Documentation',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'API'),
         className: 'api',
+        entities: listEntitiesBy(ownedEntitiesList, 'API'),
         name: 'APIs',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'Component', 'library'),
         className: 'library',
+        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'library'),
         name: 'Libraries',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'Component', 'website'),
         className: 'website',
+        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'website'),
         name: 'Websites',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'Component', 'tool'),
         className: 'tool',
+        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'tool'),
         name: 'Tools',
       },
-    ] as Array<{ counter: number; className: EntitiesTypes; name: string }>;
+    ] as Array<{
+      counter: number;
+      className: EntitiesTypes;
+      entities: Entity[];
+      name: string;
+    }>;
   }, [catalogApi, entity]);
 
   if (loading) {
@@ -215,6 +252,7 @@ export const OwnershipCard = ({
             <EntityCountTile
               counter={c.counter}
               className={c.className}
+              entities={c.entities}
               name={c.name}
             />
           </Grid>
