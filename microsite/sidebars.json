@@ -246,6 +246,7 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres"
     ],
