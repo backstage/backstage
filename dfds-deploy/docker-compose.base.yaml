@@ -3,9 +3,15 @@ services:
   backstage-backend:
     image: backstage-backend
     container_name: backend
+    build:
+      dockerfile: ./packages/backend/Dockerfile.dockerbuild
+      context: ../
   backstage-frontend:
     depends_on:
       - backstage-backend
     image: backstage-frontend
     container_name: frontend
+    build:
+      dockerfile: ./contrib/docker/frontend-with-nginx/Dockerfile.dockerbuild
+      context: ../
 
