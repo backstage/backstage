@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
 import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
@@ -41,7 +42,7 @@ export function createCatalogWriteAction() {
       const { entity } = ctx.input;
 
       await fs.writeFile(
-        `${ctx.workspacePath}/catalog-info.yaml`,
+        resolvePath(ctx.workspacePath, 'catalog-info.yaml'),
         yaml.stringify(entity),
       );
     },

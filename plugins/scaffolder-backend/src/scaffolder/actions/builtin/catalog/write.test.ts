@@ -37,6 +37,7 @@ describe('catalog:write', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
