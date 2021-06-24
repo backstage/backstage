@@ -205,6 +205,8 @@ repo
 Repo
 repos
 rerender
+Reusability
+reusability
 rollbar
 Rollbar
 Rollup
@@ -222,6 +224,7 @@ seb
 semlas
 semver
 Serverless
+siloed
 Sinon
 Snyk
 sourcemaps
