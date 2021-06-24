@@ -1,10 +1,19 @@
 
-Run:
+Run in the root folder:
 
-docker-compose -f docker-compose.base.yaml -f docker-compose.dev.yaml up
+```
+yarn docker-compose:start
+```
 
 or this to force new rebuild of images:
 
-docker-compose -f docker-compose.base.yaml -f docker-compose.dev.yaml up --build
+```
+docker-compose:start-rebuild
+```
 
+to stop docker compose, open new terminal window and run this in the root of the project folder
+
+```
+docker-compose:stop
+```
 
