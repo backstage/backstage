@@ -88,15 +88,12 @@ export async function createRouter({
   const providersConfig = config.getConfig('auth.providers');
   const configuredProviders = providersConfig.keys();
 
-  for (const providerId of Object.keys(allProviderFactories)) {
+  for (const [providerId, providerFactory] of Object.entries(
+    allProviderFactories,
+  )) {
     if (configuredProviders.includes(providerId)) {
       logger.info(`Configuring provider, ${providerId}`);
       try {
-        const providerFactory = allProviderFactories[providerId];
-        if (!providerFactory) {
-          throw Error(`No auth provider available for '${providerId}'`);
-        }
-
         const provider = providerFactory({
           providerId,
           globalConfig: { baseUrl: authUrl, appUrl },
