@@ -144,6 +144,11 @@ export async function createRouter({
     }
   }
 
+  router.use('/:provider/', req => {
+    const { provider } = req.params;
+    throw new NotFoundError(`Unknown auth provider '${provider}'`);
+  });
+
   router.use(
     createOidcRouter({
       tokenIssuer,
