@@ -11,7 +11,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import express from 'express';
 import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -23,7 +23,7 @@ import { Writable } from 'stream';
 // @public (undocumented)
 export type ActionContext<Input extends InputBase> = {
     baseUrl?: string;
-    logger: Logger;
+    logger: Logger_2;
     logStream: Writable;
     token?: string | undefined;
     workspacePath: string;
@@ -131,7 +131,7 @@ export interface RouterOptions {
     // (undocumented)
     database: PluginDatabaseManager;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
     // (undocumented)
     reader: UrlReader;
     // (undocumented)

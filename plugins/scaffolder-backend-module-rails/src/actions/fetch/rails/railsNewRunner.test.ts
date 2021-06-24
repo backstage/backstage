@@ -16,7 +16,7 @@
 const runCommand = jest.fn();
 const commandExists = jest.fn();
 
-jest.mock('../helpers', () => ({ runCommand }));
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({ runCommand }));
 jest.mock('command-exists', () => commandExists);
 jest.mock('fs-extra');
 
@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { PassThrough } from 'stream';
 
-import { Rails } from './index';
+import { RailsNewRunner } from './railsNewRunner';
 
 describe('Rails Templater', () => {
   const containerRunner: jest.Mocked<ContainerRunner> = {
@@ -39,6 +39,7 @@ describe('Rails Templater', () => {
 
   describe('when running on docker', () => {
     it('should run the correct bindings for the volumes', async () => {
+      const logStream = new PassThrough();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -51,10 +52,11 @@ describe('Rails Templater', () => {
         .spyOn(fs, 'realpath')
         .mockImplementation(x => Promise.resolve(x.toString()));
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
+        logStream,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith({
@@ -67,11 +69,12 @@ describe('Rails Templater', () => {
           [path.join('tempdir', 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logStream: undefined,
+        logStream: logStream,
       });
     });
 
     it('should use the provided imageName', async () => {
+      const logStream = new PassThrough();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -81,10 +84,11 @@ describe('Rails Templater', () => {
 
       jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
+        logStream,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith(
@@ -106,7 +110,7 @@ describe('Rails Templater', () => {
 
       jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
@@ -128,6 +132,7 @@ describe('Rails Templater', () => {
     });
 
     it('update the template path to correct location', async () => {
+      const logStream = new PassThrough();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -141,10 +146,11 @@ describe('Rails Templater', () => {
         .spyOn(fs, 'realpath')
         .mockImplementation(x => Promise.resolve(x.toString()));
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
+        logStream,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith({
@@ -162,7 +168,7 @@ describe('Rails Templater', () => {
           [path.join('tempdir', 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logStream: undefined,
+        logStream: logStream,
       });
     });
   });
@@ -181,7 +187,7 @@ describe('Rails Templater', () => {
       jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
       commandExists.mockImplementationOnce(() => () => true);
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
@@ -211,7 +217,7 @@ describe('Rails Templater', () => {
       jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
       commandExists.mockImplementationOnce(() => () => true);
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await templater.run({
         workspacePath: 'tempdir',
         values,
@@ -239,7 +245,7 @@ describe('Rails Templater', () => {
         .spyOn(fs, 'readdir')
         .mockImplementationOnce(() => Promise.resolve([]));
 
-      const templater = new Rails({ containerRunner });
+      const templater = new RailsNewRunner({ containerRunner });
       await expect(
         templater.run({
           workspacePath: 'tempdir',

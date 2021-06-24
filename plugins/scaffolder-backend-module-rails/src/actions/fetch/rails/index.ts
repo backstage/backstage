@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import { DockerContainerRunner, UrlReader } from '@backstage/backend-common';
+import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-backend';
+
 import { resolve as resolvePath } from 'path';
-import { Rails, TemplaterValues } from '../../../stages/templater';
-import { createTemplateAction } from '../../createTemplateAction';
-import { fetchContents } from './helpers';
-import Docker from 'dockerode';
+import { RailsNewRunner } from './railsNewRunner';
 
 export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  containerRunner: ContainerRunner;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, containerRunner } = options;
 
   return createTemplateAction<{
     url: string;
@@ -39,7 +42,7 @@ export function createFetchRailsAction(options: {
   }>({
     id: 'fetch:rails',
     description:
-      'Downloads a template from the given URL into the workspace, and runs a rails generator on it.',
+      'Downloads a template from the given URL into the workspace, and runs a rails new generator on it.',
     schema: {
       input: {
         type: 'object',
@@ -152,12 +155,10 @@ export function createFetchRailsAction(options: {
         outputPath: workDir,
       });
 
-      const dockerClient = new Docker();
-      const containerRunner = new DockerContainerRunner({ dockerClient });
-      const templateRunner = new Rails({ containerRunner });
+      const templateRunner = new RailsNewRunner({ containerRunner });
 
       const values = {
-        ...(ctx.input.values as TemplaterValues),
+        ...ctx.input.values,
         imageName: ctx.input.imageName,
       };
 

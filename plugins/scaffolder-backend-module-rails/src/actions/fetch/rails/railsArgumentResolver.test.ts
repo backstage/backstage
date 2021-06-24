@@ -15,7 +15,6 @@
  */
 
 import { railsArgumentResolver } from './railsArgumentResolver';
-import { TemplaterValues } from '../types';
 
 describe('railsArgumentResolver', () => {
   describe('when provide the parameter', () => {
@@ -33,7 +32,7 @@ describe('railsArgumentResolver', () => {
       'should include the argument to execution %p ->  %p',
       (passedArguments: object, expected: Array<string>) => {
         // that step is to ensure the validation between the TemplaterValues and the resolver
-        const values: TemplaterValues = {
+        const values = {
           owner: 'r',
           storePath: '',
           railsArguments: passedArguments,

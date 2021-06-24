@@ -15,24 +15,31 @@
  */
 
 const mockRailsTemplater = { run: jest.fn() };
-jest.mock('./helpers');
-jest.mock('../../../stages/templater', () => {
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents: jest.fn(),
+}));
+jest.mock('./railsNewRunner', () => {
   return {
-    Rails: jest.fn().mockImplementation(() => {
+    RailsNewRunner: jest.fn().mockImplementation(() => {
       return mockRailsTemplater;
     }),
   };
 });
 
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import {
+  ContainerRunner,
+  getVoidLogger,
+  UrlReader,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import mock from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { PassThrough } from 'stream';
-import { createFetchRailsAction } from './rails';
-import { fetchContents } from './helpers';
+import { createFetchRailsAction } from './index';
+import { fetchContents } from '@backstage/plugin-scaffolder-backend';
 
 describe('fetch:rails', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -68,10 +75,14 @@ describe('fetch:rails', () => {
     readTree: jest.fn(),
     search: jest.fn(),
   };
+  const containerRunner: ContainerRunner = {
+    runContainer: jest.fn(),
+  };
 
   const action = createFetchRailsAction({
     integrations,
     reader: mockReader,
+    containerRunner,
   });
 
   beforeEach(() => {

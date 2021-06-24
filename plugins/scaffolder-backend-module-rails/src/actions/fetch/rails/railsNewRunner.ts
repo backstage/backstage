@@ -17,12 +17,16 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import path from 'path';
-import { runCommand } from '../helpers';
+import { runCommand } from '@backstage/plugin-scaffolder-backend';
 import commandExists from 'command-exists';
-import { TemplaterBase, TemplaterRunOptions } from '../types';
-import { railsArgumentResolver } from './railsArgumentResolver';
+import {
+  railsArgumentResolver,
+  RailsRunOptions,
+} from './railsArgumentResolver';
+import { JsonObject } from '@backstage/config';
+import { Writable } from 'stream';
 
-export class Rails implements TemplaterBase {
+export class RailsNewRunner {
   private readonly containerRunner: ContainerRunner;
 
   constructor({ containerRunner }: { containerRunner: ContainerRunner }) {
@@ -33,7 +37,11 @@ export class Rails implements TemplaterBase {
     workspacePath,
     values,
     logStream,
-  }: TemplaterRunOptions): Promise<void> {
+  }: {
+    workspacePath: string;
+    values: JsonObject;
+    logStream: Writable;
+  }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
@@ -53,7 +61,7 @@ export class Rails implements TemplaterBase {
     if (commandExistsToRun) {
       const arrayExtraArguments = railsArgumentResolver(
         workspacePath,
-        railsArguments,
+        railsArguments as RailsRunOptions,
       );
 
       await runCommand({
@@ -68,10 +76,10 @@ export class Rails implements TemplaterBase {
     } else {
       const arrayExtraArguments = railsArgumentResolver(
         '/input',
-        railsArguments,
+        railsArguments as RailsRunOptions,
       );
       await this.containerRunner.runContainer({
-        imageName: imageName,
+        imageName: imageName as string,
         command: baseCommand,
         args: [...baseArguments, `/output/${name}`, ...arrayExtraArguments],
         mountDirs,
