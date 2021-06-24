@@ -35,7 +35,7 @@ import {
   ContentHeader,
   HeaderLabel,
   microsoftAuthApiRef,
-  useApi
+  useApi,
 } from '@backstage/core';
 
 // import DoneIcon from '@material-ui/icons/Done';
@@ -178,27 +178,33 @@ const CapabilitiesListBase = () => {
     [backendEntities],
   );
 
-  const [capData, setCapData] = React.useState({items: []});
+  const [capData, setCapData] = React.useState<{ items: [] }>({
+    items: [],
+  });
   /* tslint:disable:no-unused-variable */
-  var authApi = useApi(microsoftAuthApiRef);
+  const authApi = useApi(microsoftAuthApiRef);
 
   React.useEffect(() => {
     const fetchData = async () => {
-      let token = await authApi.GetAccessTokenClientSide(["api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user"]);
-      console.log(token);
-      let resp = await fetch("http://localhost:7000/api/proxy/capsvc/capabilities/", {
-        method: 'GET',
-        headers: {
-          'Authorization': "Bearer " + token
-        }
-      });
-      let deserialised = await resp.json();
-      console.log(deserialised);
+      // eslint-disable-next-line new-cap
+      const token = await authApi.GetAccessTokenClientSide([
+        'api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user',
+      ]);
+      const resp = await fetch(
+        'http://localhost:7000/api/proxy/capsvc/capabilities/',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const deserialised = await resp.json();
 
       setCapData(deserialised);
     };
     fetchData();
-  }, []);
+  }, [authApi]);
 
   return (
     <Page themeId="tool">
@@ -207,6 +213,7 @@ const CapabilitiesListBase = () => {
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       {entities.length}
+      {capData.items.length}
       <Content>
         <Grid container spacing={3} direction="column">
           <Container maxWidth="lg" style={{ padding: 0 }}>
