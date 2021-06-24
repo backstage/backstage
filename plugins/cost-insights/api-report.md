@@ -346,7 +346,7 @@ export type DateAggregation = {
 };
 
 // @public (undocumented)
-export const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+export const DEFAULT_DATE_FORMAT = "yyyy-LL-dd";
 
 // @public
 export enum Duration {

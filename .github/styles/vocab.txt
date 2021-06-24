@@ -52,6 +52,7 @@ cookiecutter
 css
 Datadog
 dataflow
+dayjs
 deadnaming
 debounce
 Debounce

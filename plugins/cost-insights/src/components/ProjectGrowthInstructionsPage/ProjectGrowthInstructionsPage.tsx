@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Box, Typography } from '@material-ui/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import { ProductInsightsChart } from '../ProductInsightsCard';
@@ -30,7 +30,7 @@ import {
 import { ProjectGrowthAlert } from '../../alerts';
 import { InfoCard } from '@backstage/core-components';
 
-const today = moment().format(DEFAULT_DATE_FORMAT);
+const today = DateTime.now().toFormat(DEFAULT_DATE_FORMAT);
 
 export const ProjectGrowthInstructionsPage = () => {
   const alertData: ProjectGrowthData = {
