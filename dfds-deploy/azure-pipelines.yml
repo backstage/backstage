@@ -27,11 +27,12 @@ stages:
         displayName: 'Build image'
         inputs:
           containerregistrytype: 'Container Registry'
-          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml' #'./dfds-deploy/docker-compose.production.yaml'
+          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
+          additionalDockerComposeFiles: './dfds-deploy/docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-backend' 
-          # arguments: '--build-arg PAT=$(System.AccessToken)' 
+          # arguments: '--build-arg PAT=$(System.AccessToken)'
 
       - task: ECRPushImage@1
         displayName: 'Push backend image to Shared ECR'
@@ -49,7 +50,8 @@ stages:
         displayName: 'Build image'
         inputs:
           containerregistrytype: 'Container Registry'
-          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml' #'./dfds-deploy/docker-compose.production.yaml'
+          dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
+          additionalDockerComposeFiles: './dfds-deploy/docker-compose.production.yaml'          
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-frontend' 
