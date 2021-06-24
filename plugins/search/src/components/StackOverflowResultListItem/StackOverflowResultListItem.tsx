@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Link } from '@backstage/core';
+import { Link } from '@backstage/core-components';
 import {
   Box,
   Chip,
