@@ -21,6 +21,7 @@ import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
+  join,
 } from 'path';
 import fs from 'fs-extra';
 import {
@@ -93,6 +94,13 @@ async function findPackageDirs() {
 
       const stat = await fs.stat(fullPackageDir);
       if (!stat.isDirectory()) {
+        continue;
+      }
+
+      try {
+        const packageJsonPath = join(fullPackageDir, 'package.json');
+        await fs.access(packageJsonPath);
+      } catch (_) {
         continue;
       }
 
