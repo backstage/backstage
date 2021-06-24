@@ -1,5 +1,13 @@
 # @backstage/core
 
+## 0.7.14
+
+### Patch Changes
+
+- a1c30d7ea: Add deprecation warning to package README.
+- Updated dependencies
+  - @backstage/core-api@0.2.23
+
 ## 0.7.13
 
 ### Patch Changes

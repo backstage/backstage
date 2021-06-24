@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.3
+  - @backstage/core-plugin-api@0.1.3
+
 ## 0.1.2
 
 Fixed a publish issue, making this package available to the public.

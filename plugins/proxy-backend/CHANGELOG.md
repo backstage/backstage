@@ -1,5 +1,11 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.11
+
+### Patch Changes
+
+- 13da7be3c: Clean up proxy creation log messages and make them include the mount path.
+
 ## 0.2.10
 
 ### Patch Changes

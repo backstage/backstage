@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend
 
+## 0.10.4
+
+### Patch Changes
+
+- 127048f92: Move `MicrosoftGraphOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
+  to `@backstage/plugin-catalog-backend-module-msgraph`.
+
+  The `MicrosoftGraphOrgReaderProcessor` isn't registered by default anymore, if
+  you want to continue using it you have to register it manually at the catalog
+  builder:
+
+  1. Add dependency to `@backstage/plugin-catalog-backend-module-msgraph` to the `package.json` of your backend.
+  2. Add the processor to the catalog builder:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
+      logger,
+    }),
+  );
+  ```
+
+  For more configuration details, see the [README of the `@backstage/plugin-catalog-backend-module-msgraph` package](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md).
+
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/plugin-search-backend-node@0.2.2
+  - @backstage/catalog-model@0.8.4
+
 ## 0.10.3
 
 ### Patch Changes
