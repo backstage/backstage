@@ -1,5 +1,12 @@
 # @backstage/plugin-search-backend-node
 
+## 0.2.2
+
+### Patch Changes
+
+- 9c8ea7e24: Handle errors in collators and decorators and log them.
+- 7e7cec86a: Fixed bug preventing searches with filter values containing `:` from returning results.
+
 ## 0.2.1
 
 ### Patch Changes

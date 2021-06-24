@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.28
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+
 ## 0.3.27
 
 ### Patch Changes

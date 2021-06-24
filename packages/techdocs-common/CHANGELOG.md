@@ -1,5 +1,13 @@
 # @backstage/techdocs-common
 
+## 0.6.5
+
+### Patch Changes
+
+- c17c0fcf9: Adding additional checks on tech docs to prevent folder traversal via mkdocs.yml docs_dir value.
+- Updated dependencies
+  - @backstage/catalog-model@0.8.4
+
 ## 0.6.4
 
 ### Patch Changes
