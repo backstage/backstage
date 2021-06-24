@@ -8,6 +8,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
+import { ClassNameMap } from '@material-ui/styles';
 import { ContentRenderer } from 'recharts';
 import { Dispatch } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -18,8 +19,15 @@ import { RechartsFunction } from 'recharts';
 import { RefAttributes } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
+import { TooltipPayload } from 'recharts';
 import { TooltipProps } from 'recharts';
 import { TypographyProps } from '@material-ui/core';
+
+// @public (undocumented)
+export const aggregationSort: (a: DateAggregation, b: DateAggregation) => number;
+
+// @public (undocumented)
+export const aggregationSum: (aggregation: DateAggregation[]) => number;
 
 // @public
 export type Alert = {
@@ -126,6 +134,12 @@ export enum AlertStatus {
 }
 
 // @public (undocumented)
+export function assertAlways<T>(argument: T | undefined): T;
+
+// @public (undocumented)
+export function assertNever(x: never): never;
+
+// @public (undocumented)
 export const BarChart: ({ resources, responsive, displayAmount, options, tooltip, onClick, onMouseMove, }: BarChartProps) => JSX.Element;
 
 // @public
@@ -195,6 +209,9 @@ export type BarChartTooltipProps = {
 };
 
 // @public (undocumented)
+export function brighten(color: string, coefficient?: number): string;
+
+// @public (undocumented)
 export interface ChangeStatistic {
     // (undocumented)
     amount: number;
@@ -219,6 +236,9 @@ export type ChartData = {
 };
 
 // @public (undocumented)
+export function choose<T>([savings, excess]: [T, T], change: ChangeStatistic): T;
+
+// @public (undocumented)
 export interface Cost {
     // (undocumented)
     aggregation: DateAggregation[];
@@ -231,6 +251,9 @@ export interface Cost {
     // (undocumented)
     trendline?: Trendline;
 }
+
+// @public (undocumented)
+export const costFormatter: Intl.NumberFormat;
 
 // @public (undocumented)
 export const CostGrowth: ({ change, duration }: CostGrowthProps) => JSX.Element;
@@ -266,7 +289,13 @@ export type CostInsightsApi = {
 export const costInsightsApiRef: ApiRef<CostInsightsApi>;
 
 // @public (undocumented)
+export const costInsightsDarkTheme: CostInsightsThemeOptions;
+
+// @public (undocumented)
 export const CostInsightsLabelDataflowInstructionsPage: () => JSX.Element;
+
+// @public (undocumented)
+export const costInsightsLightTheme: CostInsightsThemeOptions;
 
 // @public (undocumented)
 export const CostInsightsPage: () => JSX.Element;
@@ -318,6 +347,9 @@ export interface Currency {
 }
 
 // @public (undocumented)
+export const currencyFormatter: Intl.NumberFormat;
+
+// @public (undocumented)
 export enum CurrencyType {
     // (undocumented)
     Beers = "BEERS",
@@ -346,7 +378,40 @@ export type DateAggregation = {
 };
 
 // @public (undocumented)
-export const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+export const dateFormatter: Intl.DateTimeFormat;
+
+// @public (undocumented)
+export const DEFAULT_DATE_FORMAT = "yyyy-LL-dd";
+
+// @public (undocumented)
+export const DEFAULT_DURATION = Duration.P30D;
+
+// @public (undocumented)
+export const defaultCurrencies: Currency[];
+
+// @public (undocumented)
+export enum DefaultLoadingAction {
+    // (undocumented)
+    CostInsightsAlerts = "cost-insights-alerts",
+    // (undocumented)
+    CostInsightsInitial = "cost-insights-initial",
+    // (undocumented)
+    CostInsightsPage = "cost-insights-page",
+    // (undocumented)
+    CostInsightsProducts = "cost-insights-products",
+    // (undocumented)
+    LastCompleteBillingDate = "billing-date",
+    // (undocumented)
+    UserGroups = "user-groups"
+}
+
+// @public (undocumented)
+export enum DefaultNavigation {
+    // (undocumented)
+    AlertInsightsHeader = "alert-insights-header",
+    // (undocumented)
+    CostOverviewCard = "cost-overview-card"
+}
 
 // @public
 export enum Duration {
@@ -396,9 +461,80 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     }
 
 // @public (undocumented)
+export function exclusiveEndDateOf(duration: Duration, inclusiveEndDate: string): string;
+
+// @public (undocumented)
+export function findAlways<T>(collection: T[], callback: (el: T) => boolean): T;
+
+// @public (undocumented)
+export function findAnyKey<T>(record: Record<string, T> | undefined): string | undefined;
+
+// @public (undocumented)
+export function formatChange(change: ChangeStatistic): string;
+
+// @public (undocumented)
+export function formatCurrency(amount: number, currency?: string): string;
+
+// @public (undocumented)
+export function formatGraphValue(value: number, format?: string): string;
+
+// @public (undocumented)
+export function formatLastTwoLookaheadQuarters(inclusiveEndDate: string): string;
+
+// @public (undocumented)
+export function formatPercent(n: number): string;
+
+// @public (undocumented)
+export function formatPeriod(duration: Duration, date: string, isEndDate: boolean): string;
+
+// @public (undocumented)
+export function getComparedChange(dailyCost: Cost, metricData: MetricData, duration: Duration, lastCompleteBillingDate: string): ChangeStatistic;
+
+// @public (undocumented)
+export const getDefaultNavigationItems: (alerts: number) => NavigationItem[];
+
+// @public (undocumented)
+export function getDefaultPageFilters(groups: Group[]): PageFilters;
+
+// @public (undocumented)
+export const getDefaultState: (loadingActions: string[]) => Loading;
+
+// @public (undocumented)
+export function getIcon(icon?: string): JSX.Element;
+
+// @public (undocumented)
+export const getInitialPageState: (groups: Group[], queryParams?: Partial<PageFilters>) => {
+    group: Maybe<string>;
+    project: Maybe<string>;
+    duration: Duration;
+    metric: string | null;
+};
+
+// @public (undocumented)
+export const getInitialProductState: (config: ConfigContextProps) => {
+    productType: string;
+    duration: Duration;
+}[];
+
+// @public (undocumented)
+export function getPreviousPeriodTotalCost(aggregation: DateAggregation[], duration: Duration, inclusiveEndDate: string): number;
+
+// @public (undocumented)
+export const getResetState: (loadingActions: string[]) => Loading;
+
+// @public (undocumented)
+export const getResetStateWithoutInitial: (loadingActions: string[]) => Loading;
+
+// @public (undocumented)
 export type Group = {
     id: string;
 };
+
+// @public (undocumented)
+export function groupByDate(acc: Record<string, number>, entry: DateAggregation): Record<string, number>;
+
+// @public (undocumented)
+export function growthOf(change: ChangeStatistic): GrowthType;
 
 // @public (undocumented)
 export enum GrowthType {
@@ -433,6 +569,39 @@ export enum IconType {
 }
 
 // @public (undocumented)
+export function inclusiveEndDateOf(duration: Duration, inclusiveEndDate: string): string;
+
+// @public
+export function inclusiveStartDateOf(duration: Duration, inclusiveEndDate: string): string;
+
+// @public (undocumented)
+export const indefiniteArticleOf: (articles: [string, string], word: string) => string;
+
+// @public (undocumented)
+export const INITIAL_LOADING_ACTIONS: DefaultLoadingAction[];
+
+// @public (undocumented)
+export const initialStatesOf: (products: Product[], responses: Array<Maybe<Entity>>) => ProductState[];
+
+// @public (undocumented)
+export function intervalsOf(duration: Duration, inclusiveEndDate: string, repeating?: number): string;
+
+// @public (undocumented)
+export const isInvalid: ({ label, payload }: TooltipProps) => boolean;
+
+// @public (undocumented)
+export const isLabeled: (data?: Record<"activeLabel", string | undefined> | undefined) => boolean | "" | undefined;
+
+// @public (undocumented)
+export function isNull(value: any): boolean;
+
+// @public (undocumented)
+export function isUndefined(value: any): value is undefined;
+
+// @public (undocumented)
+export const isUnlabeled: (data?: Record<"activeLabel", string | undefined> | undefined) => boolean;
+
+// @public (undocumented)
 export const LegendItem: ({ title, tooltipText, markerColor, children, }: PropsWithChildren<LegendItemProps>) => JSX.Element;
 
 // @public (undocumented)
@@ -441,6 +610,9 @@ export type LegendItemProps = {
     tooltipText?: string;
     markerColor?: string;
 };
+
+// @public (undocumented)
+export const lengthyCurrencyFormatter: Intl.NumberFormat;
 
 // @public (undocumented)
 export type Loading = Record<string, boolean>;
@@ -474,6 +646,28 @@ export const MockConfigProvider: ({ children, ...context }: MockConfigProviderPr
 export const MockCurrencyProvider: ({ children, ...context }: MockCurrencyProviderProps) => JSX.Element;
 
 // @public (undocumented)
+export const monthFormatter: Intl.DateTimeFormat;
+
+// @public (undocumented)
+export const monthOf: (date: string) => string;
+
+// @public (undocumented)
+export type NavigationItem = {
+    navigation: string;
+    icon: JSX.Element;
+    title: string;
+};
+
+// @public (undocumented)
+export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue;
+
+// @public (undocumented)
+export const numberFormatter: Intl.NumberFormat;
+
+// @public (undocumented)
+export const overviewGraphTickFormatter: (millis: string | number) => string;
+
+// @public (undocumented)
 export interface PageFilters {
     // (undocumented)
     duration: Duration;
@@ -484,6 +678,15 @@ export interface PageFilters {
     // (undocumented)
     project: Maybe<string>;
 }
+
+// @public (undocumented)
+export const parse: (queryString: string) => Partial<PageFilters>;
+
+// @public (undocumented)
+export type Period = {
+    periodStart: string;
+    periodEnd: string;
+};
 
 // @public (undocumented)
 export interface Product {
@@ -511,6 +714,13 @@ export interface ProductPeriod {
     // (undocumented)
     productType: string;
 }
+
+// @public (undocumented)
+export type ProductState = {
+    product: Product;
+    entity: Maybe<Entity>;
+    duration: Duration;
+};
 
 // @public (undocumented)
 export interface Project {
@@ -552,6 +762,15 @@ export interface ProjectGrowthData {
 }
 
 // @public (undocumented)
+export function quarterEndDate(inclusiveEndDate: string): string;
+
+// @public (undocumented)
+export const quarterOf: (date: string) => string;
+
+// @public (undocumented)
+export const rateOf: (cost: number, duration: Duration) => number;
+
+// @public (undocumented)
 export interface ResourceData {
     // (undocumented)
     current: number;
@@ -562,11 +781,58 @@ export interface ResourceData {
 }
 
 // @public (undocumented)
+export const resourceOf: (entity: Entity | AlertCost) => ResourceData;
+
+// @public (undocumented)
+export const resourceSort: (a: ResourceData, b: ResourceData) => number;
+
+// @public (undocumented)
+export const ScrollAnchor: ({ id, left, top, block, inline, behavior, }: ScrollAnchorProps) => JSX.Element;
+
+// @public (undocumented)
+export interface ScrollAnchorProps extends ScrollIntoViewOptions {
+    // (undocumented)
+    id: ScrollTo;
+    // (undocumented)
+    left?: number;
+    // (undocumented)
+    top?: number;
+}
+
+// @public (undocumented)
+export const settledResponseOf: (responses: PromiseSettledResult<Entity | any>[]) => Array<Maybe<Entity>>;
+
+// @public (undocumented)
+export const stringify: (queryParams: Partial<PageFilters>) => string;
+
+// @public (undocumented)
+export const titleOf: (label?: string | number | undefined) => string;
+
+// @public (undocumented)
+export function toDataMax(metric: string, data: ChartData[]): number;
+
+// @public (undocumented)
+export function toMaxCost(acc: ChartData, entry: ChartData): ChartData;
+
+// @public (undocumented)
 export type TooltipItem = {
     fill: string;
     label: string;
     value: string;
 };
+
+// @public (undocumented)
+export const tooltipItemOf: (payload: TooltipPayload) => {
+    label: string;
+    value: string;
+    fill: string;
+} | null;
+
+// @public (undocumented)
+export function totalAggregationSort(a: ProductState, b: ProductState): number;
+
+// @public (undocumented)
+export function trendFrom(trendline: Trendline, date: number): number;
 
 // @public (undocumented)
 export type Trendline = {
@@ -614,6 +880,132 @@ export interface UnlabeledDataflowData {
     // (undocumented)
     unlabeledCost: number;
 }
+
+// @public (undocumented)
+export const useActionItemCardStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useAlertCardActionHeaderStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useAlertDialogStyles: (props?: any) => ClassNameMap<"radio" | "icon" | "content" | "actions">;
+
+// @public (undocumented)
+export const useAlertInsightsSectionStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useAlertStatusSummaryButtonStyles: (props?: any) => ClassNameMap<"icon" | "clicked">;
+
+// @public (undocumented)
+export const useBackdropStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useBarChartLabelStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useBarChartLayoutStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useBarChartStepperButtonStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useBarChartStepperStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useBarChartStyles: (theme: CostInsightsTheme) => {
+    axis: {
+        fill: string;
+    };
+    barChart: {
+        margin: {
+            left: number;
+            right: number;
+        };
+    };
+    cartesianGrid: {
+        stroke: string;
+    };
+    cursor: {
+        fill: string;
+        fillOpacity: number;
+    };
+    container: {
+        height: number;
+        width: number;
+    };
+    infoIcon: {
+        marginLeft: number;
+        fontSize: string;
+    };
+    xAxis: {
+        height: number;
+    };
+};
+
+// @public (undocumented)
+export const useCostGrowthLegendStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useCostGrowthStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useCostInsightsStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useCostInsightsTabsStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useCostOverviewStyles: (theme: CostInsightsTheme) => {
+    axis: {
+        fill: string;
+    };
+    container: {
+        height: number;
+        width: number;
+    };
+    cartesianGrid: {
+        stroke: string;
+    };
+    chart: {
+        margin: {
+            right: number;
+            top: number;
+        };
+    };
+    yAxis: {
+        width: number;
+    };
+};
+
+// @public (undocumented)
+export const useEntityDialogStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useNavigationStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useOverviewTabsStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useProductInsightsCardStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useProductInsightsChartStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useSelectStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useSubtleTypographyStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const useTooltipStyles: (props?: any) => ClassNameMap<string>;
+
+// @public (undocumented)
+export const validate: (queryString: string) => Promise<PageFilters>;
+
+// @public (undocumented)
+export function validateMetrics(metrics: Metric[]): void;
 
 
 // (No @packageDocumentation comment for this package)
