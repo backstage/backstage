@@ -2,10 +2,14 @@ version: '3.9'
 services:
   backstage-backend:
     build:
+      dockerfile: ./packages/backend/Dockerfile.dockerbuild
+      context: ../
       args:
         - app_config_file=app-config.production.yaml
   backstage-frontend:
     build:
+      dockerfile: ./contrib/docker/frontend-with-nginx/Dockerfile.dockerbuild
+      context: ../
       args:
         - app_config_file=app-config.production.yaml
 

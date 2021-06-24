@@ -28,7 +28,7 @@ stages:
         inputs:
           containerregistrytype: 'Container Registry'
           dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
-          additionalDockerComposeFiles: './dfds-deploy/docker-compose.production.yaml'
+          additionalDockerComposeFiles: 'docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-backend' 
@@ -51,7 +51,7 @@ stages:
         inputs:
           containerregistrytype: 'Container Registry'
           dockerComposeFile: './dfds-deploy/docker-compose.base.yaml'
-          additionalDockerComposeFiles: './dfds-deploy/docker-compose.production.yaml'          
+          additionalDockerComposeFiles: 'docker-compose.production.yaml'          
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           arguments: 'backstage-frontend' 
