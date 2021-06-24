@@ -50,7 +50,7 @@ export const IconLink = ({
           {Icon ? <Icon /> : <LanguageIcon />}
         </Typography>
       </Box>
-      <Box flex>
+      <Box flexGrow="1">
         <Link to={href} target="_blank" rel="noopener">
           {text || href}
         </Link>
