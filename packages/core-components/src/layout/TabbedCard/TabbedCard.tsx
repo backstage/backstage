@@ -32,8 +32,7 @@ import {
   TabProps,
 } from '@material-ui/core';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
-import { ErrorBoundary } from '../ErrorBoundary';
-import { slackChannel as defaultSlackChannel } from '../constants';
+import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
 const useTabsStyles = makeStyles(theme => ({
   root: {
@@ -53,7 +52,9 @@ const BoldHeader = withStyles(theme => ({
 }))(CardHeader);
 
 type Props = {
-  slackChannel?: typeof defaultSlackChannel;
+  /** @deprecated Use errorBoundaryProps instead */
+  slackChannel?: string;
+  errorBoundaryProps?: ErrorBoundaryProps;
   children?: ReactElement<TabProps>[];
   onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
   title?: string;
@@ -62,7 +63,8 @@ type Props = {
 };
 
 const TabbedCard = ({
-  slackChannel = defaultSlackChannel,
+  slackChannel,
+  errorBoundaryProps,
   children,
   title,
   deepLink,
@@ -88,9 +90,12 @@ const TabbedCard = ({
     });
   }
 
+  const errProps: ErrorBoundaryProps =
+    errorBoundaryProps || (slackChannel ? { slackChannel } : {});
+
   return (
     <Card>
-      <ErrorBoundary slackChannel={slackChannel}>
+      <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
         <Tabs
           classes={tabsClasses}

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { Button, CardContent, CardHeader } from '@material-ui/core';
-import React, { ComponentClass, Component, ErrorInfo, useState } from 'react';
-import { slackChannel as defaultSlackChannel } from '../constants';
+import React, { ComponentClass, Component, ErrorInfo } from 'react';
+import { Button } from '../../components/Button';
+import { ErrorPanel } from '../../components/ErrorPanel';
 
-type Props = {
-  slackChannel?: typeof defaultSlackChannel;
+type SlackChannel = {
+  name: string;
+  href?: string;
+};
+
+export type ErrorBoundaryProps = {
+  slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 };
 
@@ -28,71 +33,30 @@ type State = {
   errorInfo?: ErrorInfo;
 };
 
-type EProps = {
-  error?: Error;
-  slackChannel?: typeof defaultSlackChannel;
-  children?: React.ReactNode;
-};
+const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
+  const { slackChannel } = props;
 
-const Error = ({ slackChannel, error }: EProps) => {
-  const [isShowingTrace, setIsShowingTrace] = useState(false);
+  if (!slackChannel) {
+    return null;
+  } else if (typeof slackChannel === 'string') {
+    return <>Please contact {slackChannel} for help.</>;
+  } else if (!slackChannel.href) {
+    return <>Please contact {slackChannel.name} for help.</>;
+  }
+
   return (
-    <div role="alert">
-      <CardHeader title="Something Went Wrong" />
-      <CardContent>
-        <p>
-          <strong>Error:</strong> {error?.message ?? 'No Further Info'}
-        </p>
-        <div>
-          <Button
-            onClick={() => setIsShowingTrace(!isShowingTrace)}
-            variant="contained"
-            color="primary"
-          >
-            {isShowingTrace ? 'Hide' : 'Show'} Details
-          </Button>
-        </div>
-        {isShowingTrace && (
-          <pre style={{ overflow: 'auto' }}>
-            <code>
-              {error?.stack?.split('\n').map(line => (
-                <>
-                  {line}
-                  <br />
-                </>
-              )) ?? ''}
-            </code>
-          </pre>
-        )}
-        {slackChannel && (
-          <p>
-            Please contact{' '}
-            {slackChannel.href ? (
-              <a
-                href={slackChannel.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <u>{slackChannel.name}</u>
-              </a>
-            ) : (
-              slackChannel.name
-            )}{' '}
-            for help.
-          </p>
-        )}
-      </CardContent>
-    </div>
+    <Button to={slackChannel.href} variant="contained">
+      {slackChannel.name}
+    </Button>
   );
 };
 
 export const ErrorBoundary: ComponentClass<
-  Props,
+  ErrorBoundaryProps,
   State
-> = class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+> = class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
-
     this.state = {
       error: undefined,
       errorInfo: undefined,
@@ -106,13 +70,17 @@ export const ErrorBoundary: ComponentClass<
   }
 
   render() {
-    const { slackChannel } = this.props;
-    const { error, errorInfo } = this.state;
+    const { slackChannel, children } = this.props;
+    const { error } = this.state;
 
-    if (!errorInfo) {
-      return this.props.children;
+    if (!error) {
+      return children;
     }
 
-    return <Error error={error} slackChannel={slackChannel} />;
+    return (
+      <ErrorPanel title="Something Went Wrong" error={error}>
+        <SlackLink slackChannel={slackChannel} />
+      </ErrorPanel>
+    );
   }
 };

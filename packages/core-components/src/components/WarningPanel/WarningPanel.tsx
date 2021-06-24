@@ -107,6 +107,7 @@ export const WarningPanel = (props: Props) => {
     <Accordion
       defaultExpanded={defaultExpanded ?? false}
       className={classes.panel}
+      role="alert"
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIconStyled />}
