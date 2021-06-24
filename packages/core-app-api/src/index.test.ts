@@ -21,6 +21,7 @@ describe('index', () => {
     expect(index).toEqual({
       // Public API
       createApp: expect.any(Function),
+      defaultConfigLoader: expect.any(Function),
       ApiProvider: expect.any(Function),
       // TODO(Rugvip): Figure out if we need these
       ApiFactoryRegistry: expect.any(Function),
