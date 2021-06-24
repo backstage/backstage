@@ -1,48 +1,14 @@
 version: '3.9'
 services:
-  database:
-    image: postgres:latest
-    container_name: backstage-db
-    ports:
-      - "5432:5432"
   backstage-backend:
-    depends_on:
-      - database         
-    image: backstage-backend
-    container_name: backend
     build:
       dockerfile: ./packages/backend/Dockerfile.dockerbuild
       context: ../
       args:
         - app_config_file=app-config.production.yaml
-    ports:
-      - '7000:7000'
-    links:
-      - database
   backstage-frontend:
-    depends_on:
-      - backstage-backend     
-    image: backstage-frontend
-    container_name: frontend
     build:
       dockerfile: ./contrib/docker/frontend-with-nginx/Dockerfile.dockerbuild
       context: ../
       args:
         - app_config_file=app-config.production.yaml
-    ports:
-      - '3000:80'
-# version: '3.9'
-# services:
-#   backstage-backend:
-#     build:
-#       dockerfile: ./packages/backend/Dockerfile.dockerbuild
-#       context: ../
-#       args:
-#         - app_config_file=app-config.production.yaml
-#   backstage-frontend:
-#     build:
-#       dockerfile: ./contrib/docker/frontend-with-nginx/Dockerfile.dockerbuild
-#       context: ../
-#       args:
-#         - app_config_file=app-config.production.yaml
-
