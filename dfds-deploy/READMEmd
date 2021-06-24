@@ -8,12 +8,12 @@ yarn docker-compose:start
 or this to force new rebuild of images:
 
 ```
-docker-compose:start-rebuild
+yarn docker-compose:start-rebuild
 ```
 
 to stop docker compose, open new terminal window and run this in the root of the project folder
 
 ```
-docker-compose:stop
+yarn docker-compose:stop
 ```
 
