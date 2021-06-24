@@ -18,9 +18,17 @@ import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
 
+type StackOverflowQuestion = {
+  title: string;
+  link: string;
+  owner: Record<string, string>;
+  tags: string[];
+  answer_count: number;
+};
+
 export interface StackOverflowDocument extends IndexableDocument {
   answers: number;
-  tags: Array<string>;
+  tags: string[];
 }
 
 export class StackOverflowCollator implements DocumentCollator {
@@ -40,14 +48,19 @@ export class StackOverflowCollator implements DocumentCollator {
     );
     const data = await res.json();
     return data.items.map(
-      // @ts-ignore
-      (question): StackOverflowDocument => {
+      ({
+        title,
+        link,
+        owner: { display_name },
+        tags,
+        answer_count,
+      }: StackOverflowQuestion): StackOverflowDocument => {
         return {
-          title: question.title,
-          location: question.link,
-          text: question.owner.display_name,
-          tags: question.tags,
-          answers: question.answer_count,
+          title: title,
+          location: link,
+          text: display_name,
+          tags: tags,
+          answers: answer_count,
         };
       },
     );
