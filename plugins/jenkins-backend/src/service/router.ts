@@ -66,7 +66,7 @@ export async function createRouter(
       });
       const projects = await jenkinsApi.getProjects(jenkinsInfo, branchStr);
 
-      response.send({
+      response.json({
         projects: projects,
       });
     },
@@ -92,7 +92,7 @@ export async function createRouter(
         parseInt(buildNumber, 10),
       );
 
-      response.send({
+      response.json({
         build: build,
       });
     },
@@ -115,7 +115,7 @@ export async function createRouter(
       await jenkinsApi.buildProject(jenkinsInfo, jobName);
 
       // TODO: return the buildNumber which was started.
-      response.send({});
+      response.json({});
     },
   );
 
