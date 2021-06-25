@@ -14,7 +14,65 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { githubActionsPlugin } from '../src/plugin';
+import { EntityGithubActionsContent, githubActionsPlugin } from '../src/plugin';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
+import { GithubActionsApi, githubActionsApiRef } from '../src';
+import getWorkflowRunResponse from './getWorkflowRun.json';
+import listJobsForWorkflowRunResponse from './listJobsForWorkflowRun.json';
 
-createDevApp().registerPlugin(githubActionsPlugin).render();
+const mockEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'backstage',
+    description: 'backstage.io',
+    annotations: {
+      'github.com/project-slug': 'backstage/backstage',
+    },
+  },
+  spec: {
+    lifecycle: 'production',
+    type: 'website',
+    owner: 'user:guest',
+  },
+};
+
+const mockGithubActionsApi: GithubActionsApi = {
+  async downloadJobLogsForWorkflowRun() {},
+  async getWorkflow() {
+    return {} as any;
+  },
+  async getWorkflowRun() {
+    return getWorkflowRunResponse;
+  },
+  async listJobsForWorkflowRun() {
+    return listJobsForWorkflowRunResponse as any;
+  },
+  async listWorkflowRuns() {
+    return {} as any;
+  },
+  async reRunWorkflow() {
+    return {} as any;
+  },
+};
+
+createDevApp()
+  .registerApi({
+    api: githubActionsApiRef,
+    deps: {},
+    factory: () => mockGithubActionsApi,
+  })
+  .registerPlugin(githubActionsPlugin)
+  .addPage({
+    path: '/github-actions',
+    title: 'Github Actions',
+    element: (
+      <EntityProvider entity={mockEntity}>
+        <EntityGithubActionsContent />
+      </EntityProvider>
+    ),
+  })
+  .render();
