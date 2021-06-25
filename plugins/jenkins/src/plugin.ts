@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JenkinsApi, jenkinsApiRef } from './api';
 import {
   createApiFactory,
   createComponentExtension,
