@@ -262,6 +262,8 @@ export function SystemDiagramCard() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
         renderNode={RenderNode}
+        paddingX={50}
+        paddingY={50}
       />
       <Box m={1} />
       <Typography

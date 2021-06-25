@@ -262,7 +262,7 @@ export function DependencyGraph({
     <svg
       ref={containerRef}
       {...svgProps}
-      width={maxWidth}
+      width="100%"
       height={maxHeight}
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
     >
