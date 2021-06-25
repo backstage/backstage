@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { EntityName, EntityRef } from '@backstage/catalog-model';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
