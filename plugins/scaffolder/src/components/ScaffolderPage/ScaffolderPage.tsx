@@ -95,7 +95,6 @@ export const ScaffolderPageContents = () => {
               availableFilters={['all', 'starred']}
             />
             {/* TODO(mtlewis) replace with custom checkbox list? maybe multiselect */}
-            {/* TODO(mtlewis) delete removed components since they're no longer used  */}
             <EntityTypePicker />
             {/* TODO(mtlewis) consider adding tag picker?  */}
           </div>
