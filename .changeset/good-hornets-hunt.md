@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-jenkins': major
+'@backstage/plugin-jenkins': minor
 ---
 
 ## Extract an entity-oriented Jenkins Backend
