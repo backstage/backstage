@@ -40,22 +40,6 @@ export interface JenkinsInfo {
   jobName: string; // TODO: make this an array
 }
 
-export class DummyJenkinsInfoProvider implements JenkinsInfoProvider {
-  async getInstance(_: {
-    entityRef: EntityName;
-    jobName?: string;
-  }): Promise<JenkinsInfo> {
-    return {
-      baseUrl: 'https://jenkins.internal.example.com/',
-      headers: {
-        Authorization:
-          'Basic YWRtaW46MTFlYzI1NmU0Mzg1MDFjM2Y1Yzc2Yjc1MWE3ZTQ3YWY4Mw==',
-      },
-      jobName: 'department-A/team-1/project-foo',
-    };
-  }
-}
-
 /**
  * Use default config and annotations.
  *

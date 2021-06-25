@@ -28,15 +28,6 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
 }
 
 // @public (undocumented)
-export class DummyJenkinsInfoProvider implements JenkinsInfoProvider {
-    // (undocumented)
-    getInstance(_: {
-        entityRef: EntityName;
-        jobName?: string;
-    }): Promise<JenkinsInfo>;
-}
-
-// @public (undocumented)
 export interface JenkinsInfo {
     // (undocumented)
     baseUrl: string;
