@@ -41,7 +41,7 @@ export interface JenkinsInfo {
     // (undocumented)
     baseUrl: string;
     // (undocumented)
-    headers?: any;
+    headers?: Record<string, string | string[]>;
     // (undocumented)
     jobName: string;
 }

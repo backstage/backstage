@@ -36,7 +36,7 @@ export interface JenkinsInfoProvider {
 
 export interface JenkinsInfo {
   baseUrl: string;
-  headers?: any;
+  headers?: Record<string, string | string[]>;
   jobName: string; // TODO: make this an array
 }
 
