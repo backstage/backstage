@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
   Header,
-  ItemCardGrid,
   Lifecycle,
   Page,
-  Progress,
   SupportButton,
-  WarningPanel,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -32,14 +28,13 @@ import {
   EntityListProvider,
   EntitySearchBar,
   EntityTypePicker,
-  useEntityListProvider,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { registerComponentRouteRef } from '../../routes';
-import { TemplateCard } from '../TemplateCard';
+import { TemplateList } from '../TemplateList';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -52,7 +47,6 @@ const useStyles = makeStyles(theme => ({
 
 export const ScaffolderPageContents = () => {
   const styles = useStyles();
-  const { loading, error, entities } = useEntityListProvider();
 
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
 
@@ -99,37 +93,7 @@ export const ScaffolderPageContents = () => {
             {/* TODO(mtlewis) consider adding tag picker?  */}
           </div>
           <div>
-            {/* TODO(mtlewis) figure out flash of error state when entities are loading */}
-            {/* TODO(mtlewis) move loading, error handling etc. inside card list */}
-            {loading && <Progress />}
-
-            {error && (
-              <WarningPanel title="Oops! Something went wrong loading the templates">
-                {error.message}
-              </WarningPanel>
-            )}
-
-            {!error && !loading && entities && !entities.length && (
-              <Typography variant="body2">
-                No templates found that match your filter. Learn more about{' '}
-                <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
-                  adding templates
-                </Link>
-                .
-              </Typography>
-            )}
-
-            <ItemCardGrid>
-              {entities &&
-                entities?.length > 0 &&
-                entities.map((template, i) => (
-                  <TemplateCard
-                    key={i}
-                    template={template as TemplateEntityV1alpha1}
-                    deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
-                  />
-                ))}
-            </ItemCardGrid>
+            <TemplateList />
           </div>
         </div>
       </Content>
