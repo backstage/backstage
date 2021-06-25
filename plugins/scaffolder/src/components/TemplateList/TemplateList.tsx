@@ -29,7 +29,6 @@ export const TemplateList = () => {
   const { loading, error, entities } = useEntityListProvider();
   return (
     <>
-      {/* TODO(mtlewis) figure out flash of error state when entities are loading */}
       {loading && <Progress />}
 
       {error && (
@@ -38,7 +37,7 @@ export const TemplateList = () => {
         </WarningPanel>
       )}
 
-      {!error && !loading && entities && !entities.length && (
+      {!error && !loading && !entities.length && (
         <Typography variant="body2">
           No templates found that match your filter. Learn more about{' '}
           <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
