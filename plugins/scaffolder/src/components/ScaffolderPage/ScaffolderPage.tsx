@@ -27,6 +27,7 @@ import {
   EntityKindPicker,
   EntityListProvider,
   EntitySearchBar,
+  EntityTagPicker,
   EntityTypePicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
@@ -90,7 +91,7 @@ export const ScaffolderPageContents = () => {
             />
             {/* TODO(mtlewis) replace with custom checkbox list? maybe multiselect */}
             <EntityTypePicker />
-            {/* TODO(mtlewis) consider adding tag picker?  */}
+            <EntityTagPicker />
           </div>
           <div>
             <TemplateList />
