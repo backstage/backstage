@@ -40,7 +40,7 @@
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^13.0.0",
-    "@rollup/plugin-yaml": "^2.1.1",
+    "@rollup/plugin-yaml": "^3.0.0",
     "@spotify/eslint-config-base": "^9.0.0",
     "@spotify/eslint-config-react": "^10.0.0",
     "@spotify/eslint-config-typescript": "^10.0.0",

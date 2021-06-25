@@ -4232,16 +4232,16 @@
     is-module "^1.0.0"
     resolve "^1.19.0"
 
-"@rollup/plugin-yaml@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@rollup/plugin-yaml/-/plugin-yaml-2.1.1.tgz#6c864adee22004eb325d53bc4ee5553828e056d8"
-  integrity sha512-CnGD3dbDhP+JeKFX7kJuaBOa7jVzXpl3G8lXp1hasB87cDYOz7qNWd4cFPmYbxMsT/8OCVsceIpRtQ+cj9uxBw==
+"@rollup/plugin-yaml@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@rollup/plugin-yaml/-/plugin-yaml-3.0.0.tgz#632af397a6faaea10c885680c575ae01f4556c1d"
+  integrity sha512-nXYI3WsfG7Oq5K5k7evGQ1ZABGCPhHxMaMX4T3GRSDi9VyhkaU1+8R1RzTRFXITFJHx0QEGn8jR+P9pux5FuBQ==
   dependencies:
-    "@rollup/pluginutils" "^3.0.1"
-    js-yaml "^3.13.1"
+    "@rollup/pluginutils" "^3.1.0"
+    js-yaml "^3.14.0"
     tosource "^1.0.0"
 
-"@rollup/pluginutils@^3.0.1", "@rollup/pluginutils@^3.0.8", "@rollup/pluginutils@^3.1.0":
+"@rollup/pluginutils@^3.0.8", "@rollup/pluginutils@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
   integrity sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
