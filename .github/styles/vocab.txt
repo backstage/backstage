@@ -272,6 +272,7 @@ transpilation
 transpiled
 truthy
 ui
+unbreak
 unmanaged
 unregister
 unregistration
