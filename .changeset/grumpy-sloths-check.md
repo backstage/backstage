@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-System Diagram was getting clipped when it was wider than the container.
+Fixed sizing of the System diagram when the rendered graph was wider than the container.
