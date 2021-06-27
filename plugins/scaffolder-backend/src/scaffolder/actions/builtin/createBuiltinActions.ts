@@ -23,7 +23,11 @@ import {
   createCatalogWriteAction,
 } from './catalog';
 import { createDebugLogAction } from './debug';
-import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
+import {
+  createFetchCookiecutterAction,
+  createFetchPlainAction,
+  createFetchTemplateAction,
+} from './fetch';
 import {
   createPublishAzureAction,
   createPublishBitbucketAction,
@@ -49,6 +53,10 @@ export const createBuiltinActions = (options: {
       reader,
       integrations,
       templaters,
+    }),
+    createFetchTemplateAction({
+      integrations,
+      reader,
     }),
     createPublishGithubAction({
       integrations,
