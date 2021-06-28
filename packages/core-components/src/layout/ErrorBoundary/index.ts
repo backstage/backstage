@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export type { ErrorBoundaryProps } from './ErrorBoundary';
 export { ErrorBoundary } from './ErrorBoundary';
