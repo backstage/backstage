@@ -157,7 +157,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
-      "plugins/integrating-plugin-into-service-catalog",
+      "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
       {
         "type": "subcategory",
