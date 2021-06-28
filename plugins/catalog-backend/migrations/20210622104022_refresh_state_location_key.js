@@ -21,7 +21,13 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('refresh_state', table => {
-    table.text('location_key').nullable().comment('').alter();
+    table
+      .text('location_key')
+      .nullable()
+      .comment(
+        'An opaque key that uniquely identifies the location of an entity in order to support conflict resolution',
+      );
+    // table.index(['location_key'], 'refresh_state_location_key_idx');
   });
 };
 
@@ -31,5 +37,6 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table.dropColumn('location_key');
+    // table.dropIndex([], 'refresh_state_location_key_idx');
   });
 };
