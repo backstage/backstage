@@ -133,8 +133,14 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
+    const dbResponse = rows.map(e => JSON.parse(e.final_entity!));
+
+    const entities = dbResponse.map(e =>
+      request?.fields ? request.fields(e) : e,
+    );
+
     return {
-      entities: rows.map(e => JSON.parse(e.final_entity!)),
+      entities,
       pageInfo,
     };
   }
