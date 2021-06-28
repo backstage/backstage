@@ -95,9 +95,9 @@ export class CatalogClient implements CatalogApi {
       // in case field filtering is used, these fields might not be part of the response
       if (
         a.metadata?.name === undefined ||
-        a.metadata?.kind === undefined ||
+        a.kind === undefined ||
         b.metadata?.name === undefined ||
-        b.metadata?.kind === undefined
+        b.kind === undefined
       ) {
         return 0;
       }
