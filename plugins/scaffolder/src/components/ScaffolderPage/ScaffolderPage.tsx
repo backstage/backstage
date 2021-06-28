@@ -28,7 +28,6 @@ import {
   EntityListProvider,
   EntitySearchBar,
   EntityTagPicker,
-  EntityTypePicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { Button, makeStyles } from '@material-ui/core';
@@ -36,6 +35,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
+import { TemplateTypePicker } from '../TemplateTypePicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -89,8 +89,7 @@ export const ScaffolderPageContents = () => {
               initialFilter="all"
               availableFilters={['all', 'starred']}
             />
-            {/* TODO(mtlewis) replace with custom checkbox list? maybe multiselect */}
-            <EntityTypePicker />
+            <TemplateTypePicker />
             <EntityTagPicker />
           </div>
           <div>
