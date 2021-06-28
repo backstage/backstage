@@ -64,7 +64,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const entity = locationSpecToLocationEntity(location);
     await this.connection.applyMutation({
       type: 'delta',
-      added: [{ entity, emitKey: getEntityLocationRef(entity) }],
+      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
       removed: [],
     });
 
@@ -107,7 +107,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
-      removed: [{ entity, emitKey: getEntityLocationRef(entity) }],
+      removed: [{ entity, locationKey: getEntityLocationRef(entity) }],
     });
   }
 
@@ -126,7 +126,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
     const entities = locations.map(location => {
       const entity = locationSpecToLocationEntity(location);
-      return { entity, emitKey: getEntityLocationRef(entity) };
+      return { entity, locationKey: getEntityLocationRef(entity) };
     });
 
     await this.connection.applyMutation({

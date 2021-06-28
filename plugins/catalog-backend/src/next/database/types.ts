@@ -33,7 +33,7 @@ export type UpdateProcessedEntityOptions = {
   errors?: string;
   relations: EntityRelationSpec[];
   deferredEntities: DeferredEntity[];
-  emitKey: string;
+  locationKey?: string;
 };
 
 export type UpdateProcessedEntityErrorsOptions = {
@@ -50,7 +50,7 @@ export type RefreshStateItem = {
   lastDiscoveryAt: string; // remove?
   state: Map<string, JsonObject>;
   errors?: string;
-  emitKey: string;
+  locationKey?: string;
 };
 
 export type GetProcessableEntitiesResult = {

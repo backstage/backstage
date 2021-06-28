@@ -101,14 +101,14 @@ export class ProcessorOutputCollector {
         };
       }
 
-      this.deferredEntities.push({ entity, emitKey: location });
+      this.deferredEntities.push({ entity, locationKey: location });
     } else if (i.type === 'location') {
       const entity = locationSpecToLocationEntity(
         i.location,
         this.parentEntity,
       );
-      const emitKey = getEntityLocationRef(entity);
-      this.deferredEntities.push({ entity, emitKey });
+      const locationKey = getEntityLocationRef(entity);
+      this.deferredEntities.push({ entity, locationKey });
     } else if (i.type === 'relation') {
       this.relations.push(i.relation);
     } else if (i.type === 'error') {

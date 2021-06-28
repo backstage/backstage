@@ -125,7 +125,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       },
       processTask: async item => {
         try {
-          const { id, state, unprocessedEntity, entityRef, emitKey } = item;
+          const { id, state, unprocessedEntity, entityRef, locationKey } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
             state,
@@ -171,7 +171,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               errors: errorsString,
               relations: result.relations,
               deferredEntities: result.deferredEntities,
-              emitKey,
+              locationKey,
             });
           });
 

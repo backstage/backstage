@@ -42,5 +42,5 @@ export interface CatalogProcessingOrchestrator {
 
 export type DeferredEntity = {
   entity: Entity;
-  emitKey: string;
+  locationKey?: string;
 };

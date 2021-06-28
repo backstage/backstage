@@ -29,7 +29,7 @@ export type DbRefreshStateRow = {
   next_update_at: string;
   last_discovery_at: string; // remove?
   errors?: string;
-  emit_key: string;
+  location_key?: string;
 };
 
 export type DbRefreshStateReferencesRow = {

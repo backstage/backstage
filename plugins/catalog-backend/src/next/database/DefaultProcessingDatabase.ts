@@ -64,18 +64,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       errors,
       relations,
       deferredEntities,
-      emitKey,
+      locationKey,
     } = options;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
         cache: JSON.stringify(state),
         errors,
-        emit_key: emitKey,
+        location_key: locationKey,
       })
       .where('entity_id', id)
-      .andWhere('emit_key', emitKey)
-      .orWhere('emit_key', '');
+      .andWhere('location_key', locationKey)
+      .orWhere('location_key', '');
     if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
@@ -286,11 +286,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     if (toAdd.length) {
       const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(
-        ({ entity, emitKey }) => ({
+        ({ entity, locationKey }) => ({
           entity_id: uuid(),
           entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
-          emit_key: emitKey,
+          location_key: locationKey,
           errors: '',
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
@@ -320,13 +320,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
 
     const stateRows = options.entities.map(
-      ({ entity, emitKey }) =>
+      ({ entity, locationKey }) =>
         ({
           entity_id: uuid(),
           entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
           errors: '',
-          emit_key: emitKey,
+          location_key: locationKey,
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
         } as Knex.DbRecord<DbRefreshStateRow>),
@@ -414,7 +414,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               ? JSON.parse(i.cache)
               : new Map<string, JsonObject>(),
             errors: i.errors,
-            emitKey: i.emit_key,
+            locationKey: i.location_key,
           } as RefreshStateItem),
       ),
     };
