@@ -17,7 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import lodashSet from 'lodash/set';
-import { buildOrgHierarchy } from '../util/org';
+import { buildOrgHierarchy } from './org';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
 import {
