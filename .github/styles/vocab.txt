@@ -57,6 +57,7 @@ deadnaming
 debounce
 Debounce
 declaratively
+deduplicated
 deps
 destructured
 dev
