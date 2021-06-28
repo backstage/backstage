@@ -32,10 +32,14 @@ export class EntityKindFilter implements EntityFilter {
 }
 
 export class EntityTypeFilter implements EntityFilter {
-  constructor(readonly value: string) {}
+  constructor(readonly value: string | string[]) {}
+
+  getTypes() {
+    return Array.isArray(this.value) ? this.value : [this.value];
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
-    return { 'spec.type': this.value };
+    return { 'spec.type': this.getTypes() };
   }
 }
 
