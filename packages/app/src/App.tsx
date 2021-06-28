@@ -56,6 +56,7 @@ import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { XcmetricsPage } from '@backstage/plugin-xcmetrics';
 
 const app = createApp({
   apis,
@@ -133,6 +134,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/xcmetrics" element={<XcmetricsPage />} />
   </FlatRoutes>
 );
 
