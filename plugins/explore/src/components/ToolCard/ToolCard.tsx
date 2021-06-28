@@ -63,6 +63,7 @@ export const ToolCard = ({ card, objectFit }: Props) => {
   const classes = useStyles();
 
   const { title, description, url, image, lifecycle, tags } = card;
+  const isExternalUrl = url.startsWith('https://') || url.startsWith('http://');
 
   return (
     <Card key={title}>
@@ -97,7 +98,12 @@ export const ToolCard = ({ card, objectFit }: Props) => {
         )}
       </CardContent>
       <CardActions>
-        <Button color="primary" href={url} disabled={!url}>
+        <Button
+          {...(isExternalUrl ? { target: '_blank' } : {})}
+          color="primary"
+          href={url}
+          disabled={!url}
+        >
           Explore
         </Button>
       </CardActions>
