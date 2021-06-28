@@ -22,18 +22,14 @@ import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
 import { shortcutsApiRef } from './api';
 
-import { Progress, SidebarItem } from '@backstage/core-components';
+import {
+  Progress,
+  SidebarItem,
+  SidebarScrollWrapper,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles({
-  root: {
-    flex: '1 1 auto',
-    overflowY: 'scroll',
-  },
-});
-
 export const Shortcuts = () => {
-  const classes = useStyles();
   const shortcutApi = useApi(shortcutsApiRef);
   const shortcuts = useObservable(
     useMemo(() => shortcutApi.shortcut$(), [shortcutApi]),
@@ -50,7 +46,7 @@ export const Shortcuts = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <SidebarScrollWrapper>
       <SidebarItem
         icon={PlayListAddIcon}
         text="Add Shortcuts"
@@ -72,6 +68,6 @@ export const Shortcuts = () => {
           />
         ))
       )}
-    </div>
+    </SidebarScrollWrapper>
   );
 };

@@ -290,3 +290,11 @@ export const SidebarDivider = styled('hr')({
   border: 'none',
   margin: '12px 0px',
 });
+
+export const SidebarScrollWrapper = styled('div')({
+  flex: '0 1 auto',
+  overflowY: 'scroll',
+  // Display at least one item in the container
+  // Question: Can this be a config/theme variable - if so, which? :/
+  minHeight: '48px',
+});
