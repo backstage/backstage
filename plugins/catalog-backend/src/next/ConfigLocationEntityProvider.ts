@@ -42,8 +42,8 @@ export class ConfigLocationEntityProvider implements EntityProvider {
         type,
         target: type === 'file' ? path.resolve(target) : target,
       });
-      const emitKey = getEntityLocationRef(entity);
-      return { entity, emitKey };
+      const locationKey = getEntityLocationRef(entity);
+      return { entity, locationKey };
     });
 
     await this.connection.applyMutation({
