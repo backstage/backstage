@@ -34,7 +34,8 @@ export class EntityKindFilter implements EntityFilter {
 export class EntityTypeFilter implements EntityFilter {
   constructor(readonly value: string | string[]) {}
 
-  getTypes() {
+  // Simplify `string | string[]` for consumers, always returns an array
+  getTypes(): string[] {
     return Array.isArray(this.value) ? this.value : [this.value];
   }
 

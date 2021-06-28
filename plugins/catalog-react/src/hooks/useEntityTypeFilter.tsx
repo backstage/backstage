@@ -27,10 +27,9 @@ import { EntityTypeFilter } from '../filters';
 type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
-  types: string[];
-  selectedType: string | undefined;
-  setType: (type: string | undefined) => void;
-  setTypes: (types: string[]) => void;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
 };
 
 /**
@@ -44,7 +43,7 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     updateFilters,
   } = useEntityListProvider();
 
-  const [allTypes, setAllTypes] = useState<string[]>([]);
+  const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
 
   // Load all valid spec.type values straight from the catalogApi, paying attention to only the
@@ -65,12 +64,23 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   useEffect(() => {
     // Resolve the unique set of types from returned entities; could be optimized by a new endpoint
     // in the catalog-backend that does this, rather than loading entities with redundant types.
-    const newTypes = [
-      ...new Set(
-        (entities ?? []).map(e => e.spec?.type).filter(Boolean) as string[],
-      ),
-    ].sort();
-    setAllTypes(newTypes);
+    if (!entities) return;
+
+    // Sort by entity count descending, so the most common types appear on top
+    const countByType = entities.reduce((acc, entity) => {
+      if (typeof entity.spec?.type !== 'string') return acc;
+
+      if (!acc[entity.spec.type]) {
+        acc[entity.spec.type] = 0;
+      }
+      acc[entity.spec.type] += 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const newTypes = Object.entries(countByType)
+      .sort(([, count1], [, count2]) => count2 - count1)
+      .map(([type]) => type);
+    setAvailableTypes(newTypes);
 
     // Update type filter to only valid values when the list of available types has changed
     updateFilters((oldFilters: DefaultEntityFilters) => {
@@ -89,25 +99,19 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     });
   }, [updateFilters, entities]);
 
-  const setTypes = useCallback(
+  const setSelectedTypes = useCallback(
     (types: string[]) =>
       updateFilters({
-        type: types.length ? undefined : new EntityTypeFilter(types),
+        type: types.length ? new EntityTypeFilter(types) : undefined,
       }),
     [updateFilters],
   );
 
-  const setType = (type: string | undefined) =>
-    setTypes(type === undefined ? [] : [type]);
-
-  // TODO(timbonicus): selectedType should be selectedTypes
-  // TODO(timbonicus): remove setType, make this only array-based
   return {
     loading,
     error,
-    types: allTypes,
-    selectedType: typeFilter?.value,
-    setType,
-    setTypes,
+    availableTypes,
+    selectedTypes: typeFilter?.getTypes() ?? [],
+    setSelectedTypes,
   };
 }

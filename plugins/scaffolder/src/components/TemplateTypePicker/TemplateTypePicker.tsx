@@ -15,31 +15,40 @@
  */
 
 import React from 'react';
+import capitalize from 'lodash/capitalize';
+import { Progress } from '@backstage/core-components';
 import {
-  Typography,
-  List,
-  ListItem,
+  Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   makeStyles,
   Theme,
-  Checkbox,
-  ListItemText,
+  Typography,
 } from '@material-ui/core';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   checkbox: {
-    padding: theme.spacing(0, 1, 0, 1),
+    padding: theme.spacing(1, 1, 1, 2),
   },
 }));
 
 export const TemplateTypePicker = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  // TODO(timbonicus): Use new setTypes returned from the hook
-  const { error, types, selectedType } = useEntityTypeFilter();
+  const {
+    error,
+    loading,
+    availableTypes,
+    selectedTypes,
+    setSelectedTypes,
+  } = useEntityTypeFilter();
 
-  if (!types) return null;
+  if (loading) return <Progress />;
+
+  if (!availableTypes) return null;
 
   if (error) {
     alertApi.post({
@@ -49,49 +58,33 @@ export const TemplateTypePicker = () => {
     return null;
   }
 
+  function toggleSelection(type: string) {
+    setSelectedTypes(
+      selectedTypes.includes(type)
+        ? selectedTypes.filter(t => t !== type)
+        : [...selectedTypes, type],
+    );
+  }
+
   return (
-    <>
+    <Box pb={1} pt={1}>
       <Typography variant="button">Categories</Typography>
-      <List disablePadding dense>
-        {types.map(type => {
-          const labelId = `checkbox-list-label-${type}`;
-          return (
-            <ListItem
-              key={type}
-              dense
-              button
-              onClick={() => {}}
-              // TODO(timbonicus): Update to use setTypes
-              // setSelectedCategories(
-              //   selectedCategories.includes(type)
-              //     ? selectedCategories.filter(
-              //         selectedCategory => selectedCategory !== type,
-              //       )
-              //     : [...selectedCategories, type],
-              // )
-              // }
-            >
+      <FormGroup>
+        {availableTypes.map(type => (
+          <FormControlLabel
+            control={
               <Checkbox
-                edge="start"
-                color="primary"
-                // TODO: Fix me
-                // checked={selectedTypes.includes(type)}
-                checked={type === selectedType}
-                tabIndex={-1}
-                disableRipple
+                checked={selectedTypes.includes(type)}
+                onChange={() => toggleSelection(type)}
+                name={`entity-type-option-${type}`}
                 className={classes.checkbox}
-                inputProps={{ 'aria-labelledby': labelId }}
               />
-              <ListItemText
-                id={labelId}
-                primary={
-                  type.charAt(0).toLocaleUpperCase('en-US') + type.slice(1)
-                }
-              />
-            </ListItem>
-          );
-        })}
-      </List>
-    </>
+            }
+            label={capitalize(type)}
+            key={type}
+          />
+        ))}
+      </FormGroup>
+    </Box>
   );
 };

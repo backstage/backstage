@@ -178,7 +178,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 };
 
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)
