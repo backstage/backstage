@@ -30,6 +30,7 @@ type EntityTypeReturn = {
   types: string[];
   selectedType: string | undefined;
   setType: (type: string | undefined) => void;
+  setTypes: (types: string[]) => void;
 };
 
 /**
@@ -43,7 +44,7 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     updateFilters,
   } = useEntityListProvider();
 
-  const [types, setTypes] = useState<string[]>([]);
+  const [allTypes, setAllTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
 
   // Load all valid spec.type values straight from the catalogApi, paying attention to only the
@@ -69,29 +70,44 @@ export function useEntityTypeFilter(): EntityTypeReturn {
         (entities ?? []).map(e => e.spec?.type).filter(Boolean) as string[],
       ),
     ].sort();
-    setTypes(newTypes);
+    setAllTypes(newTypes);
 
-    // Reset type filter if no longer applicable
-    updateFilters((oldFilters: DefaultEntityFilters) =>
-      oldFilters.type && !newTypes.includes(oldFilters.type.value)
-        ? { type: undefined }
-        : {},
-    );
+    // Update type filter to only valid values when the list of available types has changed
+    updateFilters((oldFilters: DefaultEntityFilters) => {
+      // No filter previously set; no-op
+      if (!oldFilters.type) {
+        return {};
+      }
+      const stillValidTypes = oldFilters.type
+        .getTypes()
+        .filter(value => newTypes.includes(value));
+      if (!stillValidTypes.length) {
+        // None of the previously selected types are present any more; clear the filter
+        return { type: undefined };
+      }
+      return { type: new EntityTypeFilter(stillValidTypes) };
+    });
   }, [updateFilters, entities]);
 
-  const setType = useCallback(
-    (type: string | undefined) =>
+  const setTypes = useCallback(
+    (types: string[]) =>
       updateFilters({
-        type: type === undefined ? undefined : new EntityTypeFilter(type),
+        type: types.length ? undefined : new EntityTypeFilter(types),
       }),
     [updateFilters],
   );
 
+  const setType = (type: string | undefined) =>
+    setTypes(type === undefined ? [] : [type]);
+
+  // TODO(timbonicus): selectedType should be selectedTypes
+  // TODO(timbonicus): remove setType, make this only array-based
   return {
     loading,
     error,
-    types,
+    types: allTypes,
     selectedType: typeFilter?.value,
     setType,
+    setTypes,
   };
 }
