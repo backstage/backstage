@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ import { UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplaterBuilder } from '../../stages';
-import { createCatalogRegisterAction } from './catalog';
+import {
+  createCatalogRegisterAction,
+  createCatalogWriteAction,
+} from './catalog';
 import { createDebugLogAction } from './debug';
 import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
 import {
@@ -64,5 +67,6 @@ export const createBuiltinActions = (options: {
     }),
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
+    createCatalogWriteAction(),
   ];
 };

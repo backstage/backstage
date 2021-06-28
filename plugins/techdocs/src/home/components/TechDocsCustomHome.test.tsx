@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,39 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+
+jest.mock('@backstage/plugin-catalog-react', () => {
+  const actual = jest.requireActual('@backstage/plugin-catalog-react');
+  return {
+    ...actual,
+    useOwnUser: () => 'test-user',
+  };
+});
+
+const mockCatalogApi = {
+  getEntityByName: jest.fn(),
+  getEntities: async () => ({
+    items: [
+      {
+        apiVersion: 'version',
+        kind: 'User',
+        metadata: {
+          name: 'owned',
+          namespace: 'default',
+        },
+      },
+    ],
+  }),
+} as Partial<CatalogApi>;
 
 describe('TechDocsCustomHome', () => {
-  const catalogApi: Partial<CatalogApi> = {
-    getEntities: async () => ({ items: [] }),
-  };
-
-  const apiRegistry = ApiRegistry.with(catalogApiRef, catalogApi);
+  const apiRegistry = ApiRegistry.with(catalogApiRef, mockCatalogApi);
 
   it('should render a TechDocs home page', async () => {
     const tabsConfig = [

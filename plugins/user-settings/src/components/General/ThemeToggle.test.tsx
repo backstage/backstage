@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  appThemeApiRef,
-  AppThemeSelector,
-} from '@backstage/core';
+import { AppTheme, appThemeApiRef } from '@backstage/core-plugin-api';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { ThemeToggle } from './ThemeToggle';
+import {
+  ApiProvider,
+  ApiRegistry,
+  AppThemeSelector,
+} from '@backstage/core-app-api';
 
-const mockTheme = {
-  id: 'light',
+const mockTheme: AppTheme = {
+  id: 'light-theme',
   title: 'Mock Theme',
-  variant: 'light' as 'light', // wut?
+  variant: 'light',
   theme: lightTheme,
 };
 
@@ -53,6 +53,6 @@ describe('<ThemeToggle />', () => {
     const themeButton = rendered.getByTitle('Select Mock Theme');
     expect(themeApi?.getActiveThemeId()).toBe(undefined);
     fireEvent.click(themeButton);
-    expect(themeApi?.getActiveThemeId()).toBe('light');
+    expect(themeApi?.getActiveThemeId()).toBe('light-theme');
   });
 });

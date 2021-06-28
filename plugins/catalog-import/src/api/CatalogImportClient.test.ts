@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ jest.mock('./GitHub', () => ({
   getGithubIntegrationConfig: jest.fn(),
 }));
 
-import { ConfigReader, OAuthApi, UrlPatternDiscovery } from '@backstage/core';
 import {
   GitHubIntegrationConfig,
   ScmIntegrations,
@@ -63,6 +62,9 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
 import { getGithubIntegrationConfig } from './GitHub';
+
+import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
+import { OAuthApi } from '@backstage/core-plugin-api';
 
 const server = setupServer();
 

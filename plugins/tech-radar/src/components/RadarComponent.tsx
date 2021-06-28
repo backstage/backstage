@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import { Progress, useApi, errorApiRef } from '@backstage/core';
 import { useAsync } from 'react-use';
 import Radar from '../components/Radar';
 import {
@@ -24,6 +23,9 @@ import {
   TechRadarLoaderResponse,
 } from '../api';
 import { Entry } from '../utils/types';
+
+import { Progress } from '@backstage/core-components';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 const useTechRadarLoader = () => {
   const errorApi = useApi(errorApiRef);

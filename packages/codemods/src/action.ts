@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import { relative as relativePath } from 'path';
 import { spawn } from 'child_process';
 import { Command } from 'commander';
 import { findPaths } from '@backstage/cli-common';
+import { platform } from 'os';
 import { ExitCodeError } from './errors';
 
 // eslint-disable-next-line no-restricted-syntax
@@ -50,8 +51,18 @@ export function createCodemodAction(name: string) {
 
     console.log(`Running jscodeshift with these arguments: ${args.join(' ')}`);
 
-    const jscodeshiftScript = require.resolve('.bin/jscodeshift');
-    const child = spawn(process.argv0, [jscodeshiftScript, ...args], {
+    let command;
+    if (platform() === 'win32') {
+      command = 'jscodeshift';
+    } else {
+      // jscodeshift ships a slightly broken bin script with windows
+      // line endings so we need to execute it using node rather than
+      // letting the `#!/usr/bin/env node` take care of it
+      command = process.argv0;
+      args.unshift(require.resolve('.bin/jscodeshift'));
+    }
+
+    const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
       env: {

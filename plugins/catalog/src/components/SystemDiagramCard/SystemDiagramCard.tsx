@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,21 +29,22 @@ import {
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import {
-  DependencyGraph,
-  DependencyGraphTypes,
-  InfoCard,
-  Progress,
-  useApi,
-  ResponseErrorPanel,
-  Link,
-  useRouteRef,
-} from '@backstage/core';
 import { Box, makeStyles, Typography } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { BackstageTheme } from '@backstage/theme';
+
+import {
+  DependencyGraph,
+  DependencyGraphTypes,
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+  Link,
+} from '@backstage/core-components';
+
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   domainNode: {
@@ -89,6 +90,11 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const kind = props.node.kind || 'Component';
   const ref = parseEntityRef(props.node.id);
+  const MAX_NAME_LENGTH = 20;
+  const truncatedNodeName =
+    props.node.name.length < MAX_NAME_LENGTH
+      ? props.node.name
+      : `${props.node.name.slice(0, MAX_NAME_LENGTH)}...`;
   let nodeClass = classes.componentNode;
 
   switch (kind) {
@@ -128,7 +134,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           alignmentBaseline="baseline"
           style={{ fontWeight: 'bold' }}
         >
-          {props.node.name}
+          {truncatedNodeName}
         </text>
       </Link>
 
@@ -157,7 +163,9 @@ export function SystemDiagramCard() {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
         'spec.system': [
           currentSystemName,
-          `${ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
+          `${
+            entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+          }/${currentSystemName}`,
         ],
       },
     });

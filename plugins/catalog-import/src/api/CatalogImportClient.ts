@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
-import { DiscoveryApi, IdentityApi, OAuthApi } from '@backstage/core';
 import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
@@ -26,6 +25,11 @@ import { Octokit } from '@octokit/rest';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
+import {
+  DiscoveryApi,
+  IdentityApi,
+  OAuthApi,
+} from '@backstage/core-plugin-api';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;

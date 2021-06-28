@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-extraneous-dependencies */
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,11 @@ async function main() {
     'diff',
     '--name-only',
     parentRef,
-    "'packages/*/package.json'",
-    "'plugins/*/package.json'",
+    "'*/package.json'", // Git treats this as what would usually be **/package.json
   );
-  const packageList = diff.split(/^(.*)$/gm).filter(s => s.trim());
+  const packageList = diff
+    .split('\n')
+    .filter(path => path.match(/^(packages|plugins)\/[^/]+\/package\.json$/));
 
   const packageVersions = await Promise.all(
     packageList.map(async path => {

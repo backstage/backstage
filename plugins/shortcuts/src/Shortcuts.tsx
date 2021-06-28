@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 import React, { useMemo } from 'react';
 import { useObservable } from 'react-use';
-import { Progress, SidebarItem, useApi } from '@backstage/core';
 import { makeStyles } from '@material-ui/core';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
 import { shortcutsApiRef } from './api';
+
+import { Progress, SidebarItem } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   root: {

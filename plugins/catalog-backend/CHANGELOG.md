@@ -1,5 +1,101 @@
 # @backstage/plugin-catalog-backend
 
+## 0.10.4
+
+### Patch Changes
+
+- 127048f92: Move `MicrosoftGraphOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
+  to `@backstage/plugin-catalog-backend-module-msgraph`.
+
+  The `MicrosoftGraphOrgReaderProcessor` isn't registered by default anymore, if
+  you want to continue using it you have to register it manually at the catalog
+  builder:
+
+  1. Add dependency to `@backstage/plugin-catalog-backend-module-msgraph` to the `package.json` of your backend.
+  2. Add the processor to the catalog builder:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
+      logger,
+    }),
+  );
+  ```
+
+  For more configuration details, see the [README of the `@backstage/plugin-catalog-backend-module-msgraph` package](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md).
+
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/plugin-search-backend-node@0.2.2
+  - @backstage/catalog-model@0.8.4
+
+## 0.10.3
+
+### Patch Changes
+
+- b45e29410: This release enables the new catalog processing engine which is a major milestone for the catalog!
+
+  This update makes processing more scalable across multiple instances, adds support for deletions and ui flagging of entities that are no longer referenced by a location.
+
+  **Changes Required** to `catalog.ts`
+
+  ```diff
+  -import { useHotCleanup } from '@backstage/backend-common';
+   import {
+     CatalogBuilder,
+  -  createRouter,
+  -  runPeriodically
+  +  createRouter
+   } from '@backstage/plugin-catalog-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
+  -  const builder = new CatalogBuilder(env);
+  +  const builder = await CatalogBuilder.create(env);
+     const {
+       entitiesCatalog,
+       locationsCatalog,
+  -    higherOrderOperation,
+  +    locationService,
+  +    processingEngine,
+       locationAnalyzer,
+     } = await builder.build();
+
+  -  useHotCleanup(
+  -    module,
+  -    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
+  -  );
+  +  await processingEngine.start();
+
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+  -    higherOrderOperation,
+  +    locationService,
+       locationAnalyzer,
+       logger: env.logger,
+       config: env.config,
+  ```
+
+  As this is a major internal change we have taken some precaution by still allowing the old catalog to be enabled by keeping your `catalog.ts` in it's current state.
+  If you encounter any issues and have to revert to the previous catalog engine make sure to raise an issue immediately as the old catalog engine is deprecated and will be removed in a future release.
+
+- 72fbf4372: Switches the default catalog processing engine to use a batched streaming task execution strategy for higher parallelism.
+- 18ab535c8: Rely on `SELECT ... FOR UPDATE SKIP LOCKED` where available in order to speed up processing item acquisition and reduce work duplication.
+- db17fd734: Make refresh interval configurable for the `NextCatalogBuilder` using `.setRefreshIntervalSeconds()`.
+
+  Change `DefaultProcessingDatabase` constructor to accept an options object instead of individual arguments.
+
+- cb09e445e: Implement `NextCatalogBuilder.addEntityProvider`
+- 3108ff7bf: Make `yarn dev` respect the `PLUGIN_PORT` environment variable.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.2.1
+  - @backstage/backend-common@0.8.3
+  - @backstage/catalog-model@0.8.3
+
 ## 0.10.2
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   catalogApiRef,
   CatalogApi,
@@ -24,6 +23,7 @@ import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { GroupsDiagram } from './GroupsDiagram';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<GroupsDiagram />', () => {
   beforeAll(() => {

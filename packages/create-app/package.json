@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.25",
+  "version": "0.3.28",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -49,7 +49,9 @@
     "@backstage/catalog-model": "*",
     "@backstage/cli": "*",
     "@backstage/config": "*",
-    "@backstage/core": "*",
+    "@backstage/core-app-api": "*",
+    "@backstage/core-components": "*",
+    "@backstage/core-plugin-api": "*",
     "@backstage/errors": "*",
     "@backstage/plugin-api-docs": "*",
     "@backstage/plugin-app-backend": "*",

@@ -1,5 +1,41 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.12.3
+
+### Patch Changes
+
+- a7f5fe7d7: created an action to write a catalog-info file
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- c18a3c2ae: Correctly recognize whether the cookiecutter command exists
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/catalog-model@0.8.4
+
+## 0.12.2
+
+### Patch Changes
+
+- b49222176: Keep the empty string as empty string in `input` rather than replacing with `undefined` to make empty values ok for `cookiecutter`
+
+## 0.12.1
+
+### Patch Changes
+
+- 55a834f3c: Use the correct parameter to create a public repository in Bitbucket Server for the v2 templates
+- 745351190: Describe `publish:github` scaffolder action fields
+
+  This change adds a description to the fields with examples of what to input. The
+  `collaborators` description is also expanded a bit to make it more clear that
+  these are additional compared to access and owner.
+
+- 090dfe65d: Adds support to enable LFS for hosted Bitbucket
+- 878c1851d: Add a `topics` input to `publish:github` action that can be used to set topics on the repository upon creation.
+- 4ca322826: Migrate from the `command-exists-promise` dependency to `command-exists`.
+- df3ac03cf: Use the correct parameter to create a public repository in Bitbucket Server.
+- Updated dependencies
+  - @backstage/backend-common@0.8.3
+  - @backstage/catalog-model@0.8.3
+
 ## 0.12.0
 
 ### Minor Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ function runTransform(source: string) {
     stats: () => undefined,
     report: () => undefined,
   };
-  return coreImportTransform({ source, file: 'test.ts' }, api);
+  const result = coreImportTransform({ source, file: 'test.ts' }, api);
+  return result?.split('\r\n').join('\n');
 }
 
 describe('core-imports', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,7 @@ export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
-export { LdapOrgReaderProcessor } from './LdapOrgReaderProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';
-export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';

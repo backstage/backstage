@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,9 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { useOwnUser } from '../hooks';
-import { isOwnerOf } from '@backstage/plugin-catalog-react';
 import { PanelType, TechDocsCustomHome } from './TechDocsCustomHome';
 
 export const TechDocsHome = () => {
-  const { value: user } = useOwnUser();
-
   const tabsConfig = [
     {
       label: 'Overview',
@@ -34,6 +29,13 @@ export const TechDocsHome = () => {
           panelType: 'DocsCardGrid' as PanelType,
           filterPredicate: () => true,
         },
+        // uncomment this if you would like to have a secondary panel with owned documents
+        // {
+        //   title: 'Owned',
+        //   description: 'Explore your owned internal documentation.',
+        //   panelType: 'DocsCardGrid' as PanelType,
+        //   filterPredicate: 'ownedByUser',
+        // },
       ],
     },
     {
@@ -43,12 +45,8 @@ export const TechDocsHome = () => {
           title: 'Owned documents',
           description: 'Access your documentation.',
           panelType: 'DocsTable' as PanelType,
-          filterPredicate: (entity: Entity) => {
-            if (!user) {
-              return false;
-            }
-            return isOwnerOf(user, entity);
-          },
+          // ownedByUser filters out entities owned by signed in user
+          filterPredicate: 'ownedByUser',
         },
       ],
     },
