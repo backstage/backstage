@@ -74,8 +74,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         location_key: locationKey,
       })
       .where('entity_id', id)
-      .andWhere('location_key', locationKey)
-      .orWhere('location_key', '');
+      .andWhere(inner => {
+        if (!locationKey) {
+          return inner.whereNull('location_key');
+        }
+        return inner
+          .where('location_key', locationKey)
+          .orWhereNull('location_key');
+      });
     if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
@@ -319,34 +325,69 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const stateRows = options.entities.map(
-      ({ entity, locationKey }) =>
-        ({
-          entity_id: uuid(),
-          entity_ref: stringifyEntityRef(entity),
-          unprocessed_entity: JSON.stringify(entity),
-          errors: '',
-          location_key: locationKey,
-          next_update_at: tx.fn.now(),
-          last_discovery_at: tx.fn.now(),
-        } as Knex.DbRecord<DbRefreshStateRow>),
-    );
-    const stateReferenceRows = stateRows.map(
-      stateRow =>
-        ({
-          source_entity_ref: options.entityRef,
-          target_entity_ref: stateRow.entity_ref,
-        } as Knex.DbRecord<DbRefreshStateReferencesRow>),
-    );
+    const stateReferenceRows = new Array<
+      Knex.DbRecord<DbRefreshStateReferencesRow>
+    >();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
     // TODO(freben): Can this be batched somehow?
-    for (const row of stateRows) {
-      await tx<DbRefreshStateRow>('refresh_state')
-        .insert(row)
-        .onConflict('entity_ref')
-        .merge(['unprocessed_entity', 'last_discovery_at']);
+    for (const { entity, locationKey } of options.entities) {
+      const entityRef = stringifyEntityRef(entity);
+      const serializedEntity = JSON.stringify(entity);
+
+      const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
+        .update({
+          unprocessed_entity: serializedEntity,
+          location_key: locationKey,
+          last_discovery_at: tx.fn.now(),
+        })
+        .where('entity_ref', entityRef)
+        .andWhere(inner => {
+          if (!locationKey) {
+            return inner.whereNull('location_key');
+          }
+          return inner
+            .where('location_key', locationKey)
+            .orWhereNull('location_key');
+        });
+
+      if (refreshResult === 0) {
+        const result = await tx<DbRefreshStateRow>('refresh_state')
+          .insert({
+            entity_id: uuid(),
+            entity_ref: entityRef,
+            unprocessed_entity: serializedEntity,
+            errors: '',
+            location_key: locationKey,
+            next_update_at: tx.fn.now(),
+            last_discovery_at: tx.fn.now(),
+          })
+          .onConflict('entity_ref')
+          .ignore();
+
+        if (result.length === 0) {
+          // Detected conflicting entity with same entityRef but different locationKey
+          const [conflictingEntity] = await tx<DbRefreshStateRow>(
+            'refresh_state',
+          )
+            .where({ entity_ref: entityRef })
+            .select();
+
+          if (conflictingEntity.location_key !== locationKey) {
+            this.options.logger.warn(
+              `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingEntity.location_key} and now also ${locationKey}`,
+            );
+            continue;
+          }
+        }
+      }
+
+      // Skipped on locationKey conflict
+      stateReferenceRows.push({
+        source_entity_ref: options.entityRef,
+        target_entity_ref: entityRef,
+      });
     }
 
     // Replace all references for the originating entity before creating new ones
