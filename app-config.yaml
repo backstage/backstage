@@ -92,6 +92,9 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
+  '/xcmetrics':
+    target: http://127.0.0.1:8080/v1
+
 organization:
   name: My Company
 
