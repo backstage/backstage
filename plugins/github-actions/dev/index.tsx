@@ -20,8 +20,8 @@ import { EntityGithubActionsContent, githubActionsPlugin } from '../src/plugin';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { GithubActionsApi, githubActionsApiRef } from '../src';
-import getWorkflowRunResponse from './getWorkflowRun.json';
-import listJobsForWorkflowRunResponse from './listJobsForWorkflowRun.json';
+import getWorkflowRunResponse from '../src/__fixtures__/get-workflow-run.json';
+import listJobsForWorkflowRunResponse from '../src/__fixtures__/list-jobs-for-workflow-run.json';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
