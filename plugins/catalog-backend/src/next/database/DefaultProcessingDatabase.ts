@@ -325,6 +325,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
     const stateReferences = new Array<string>();
+    const conflictingStateReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -352,8 +353,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
       if (refreshResult === 0) {
         // In the event that we can't update an existing refresh state, we first try to insert a new row
-        const result = await tx<DbRefreshStateRow>('refresh_state')
-          .insert({
+        try {
+          await tx<DbRefreshStateRow>('refresh_state').insert({
             entity_id: uuid(),
             entity_ref: entityRef,
             unprocessed_entity: serializedEntity,
@@ -361,14 +362,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             location_key: locationKey,
             next_update_at: tx.fn.now(),
             last_discovery_at: tx.fn.now(),
-          })
-          .onConflict('entity_ref')
-          .ignore();
-
-        // If the row can't be inserted, we have a conflict, but it could be either
-        // because of a conflicting locationKey or a race with another instance, so check for that too
-        if (result.length === 0) {
-          // Check for conflicting entity with same entityRef but different locationKey
+          });
+        } catch (error) {
+          // If the row can't be inserted, we have a conflict, but it could be either
+          // because of a conflicting locationKey or a race with another instance, so check
+          // whether the conflicting entity has the same entityRef but a different locationKey
           const [conflictingEntity] = await tx<DbRefreshStateRow>(
             'refresh_state',
           )
@@ -380,6 +378,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             this.options.logger.warn(
               `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingEntity.location_key} and now also ${locationKey}`,
             );
+            conflictingStateReferences.push(entityRef);
             continue;
           }
         }
@@ -392,7 +391,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // Replace all references for the originating entity or source and then create new ones
     if ('sourceKey' in options) {
       await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-        .where({ source_key: options.sourceKey })
+        .whereNotIn('target_entity_ref', conflictingStateReferences)
+        .andWhere({ source_key: options.sourceKey })
         .delete();
       await tx.batchInsert(
         'refresh_state_references',
@@ -404,7 +404,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       );
     } else {
       await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-        .where({ source_entity_ref: options.sourceEntityRef })
+        .whereNotIn('target_entity_ref', conflictingStateReferences)
+        .andWhere({ source_entity_ref: options.sourceEntityRef })
         .delete();
       await tx.batchInsert(
         'refresh_state_references',

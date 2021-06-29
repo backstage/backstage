@@ -19,6 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 import * as uuid from 'uuid';
 import { DatabaseManager } from './DatabaseManager';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
@@ -29,12 +30,15 @@ import {
 } from './tables';
 
 describe('Default Processing Database', () => {
-  const logger = getVoidLogger();
+  const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
-  async function createDatabase(databaseId: TestDatabaseId) {
+  async function createDatabase(
+    databaseId: TestDatabaseId,
+    logger: Logger = defaultLogger,
+  ) {
     const knex = await databases.init(databaseId);
     await DatabaseManager.createDatabase(knex);
     return {
@@ -74,7 +78,11 @@ describe('Default Processing Database', () => {
     it.each(databases.eachSupportedId())(
       'updates refresh state with varying location keys, %p',
       async databaseId => {
-        const { db } = await createDatabase(databaseId);
+        const mockWarn = jest.fn();
+        const { db } = await createDatabase(databaseId, ({
+          debug: jest.fn(),
+          warn: mockWarn,
+        } as unknown) as Logger);
         await db.transaction(async tx => {
           const knexTx = tx as Knex.Transaction;
 
@@ -102,12 +110,14 @@ describe('Default Processing Database', () => {
               expectedLocationKey: 'x',
               type: 'd',
               expectedType: 'c',
+              expectConflict: true,
             },
             {
               locationKey: undefined,
               expectedLocationKey: 'x',
               type: 'e',
               expectedType: 'c',
+              expectConflict: true,
             },
             {
               locationKey: 'x',
@@ -117,6 +127,8 @@ describe('Default Processing Database', () => {
             },
           ];
           for (const step of steps) {
+            mockWarn.mockClear();
+
             await db.addUnprocessedEntities(tx, {
               sourceKey: 'testing',
               entities: [
@@ -126,6 +138,16 @@ describe('Default Processing Database', () => {
                 },
               ],
             });
+
+            if (step.expectConflict) {
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect(mockWarn).toHaveBeenCalledWith(
+                expect.stringMatching(/^Detected conflicting entityRef/),
+              );
+            } else {
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect(mockWarn).not.toHaveBeenCalled();
+            }
 
             const entities = await knexTx<DbRefreshStateRow>(
               'refresh_state',
@@ -447,7 +469,7 @@ describe('Default Processing Database', () => {
                   },
                   kind: 'Location',
                 } as Entity,
-                locationKey: 'file:/tmp/foobar',
+                locationKey: 'file:///tmp/foobar',
               },
             ],
           }),
@@ -666,7 +688,7 @@ describe('Default Processing Database', () => {
                   },
                   kind: 'Location',
                 } as Entity,
-                locationKey: 'file:/tmp/foobar',
+                locationKey: 'file:///tmp/foobar',
               },
             ],
           });
@@ -800,6 +822,73 @@ describe('Default Processing Database', () => {
               t.target_entity_ref === 'location:default/new-root',
           ),
         ).toBeFalsy();
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should update the location key during full replace, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+        await createLocations(knex, ['location:default/removed']);
+        await insertRefreshStateRow(knex, {
+          entity_id: uuid.v4(),
+          entity_ref: 'location:default/replaced',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+          location_key: 'file:///tmp/old',
+        });
+
+        await insertRefRow(knex, {
+          source_key: 'lols',
+          target_entity_ref: 'location:default/removed',
+        });
+        await insertRefRow(knex, {
+          source_key: 'lols',
+          target_entity_ref: 'location:default/replaced',
+        });
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1.0.0',
+                  metadata: {
+                    name: 'replaced',
+                  },
+                  kind: 'Location',
+                } as Entity,
+                locationKey: 'file:///tmp/foobar',
+              },
+            ],
+          });
+        });
+
+        const currentRefreshState = await knex<DbRefreshStateRow>(
+          'refresh_state',
+        ).select();
+        expect(currentRefreshState).toEqual([
+          expect.objectContaining({
+            entity_ref: 'location:default/replaced',
+            location_key: 'file:///tmp/foobar',
+          }),
+        ]);
+
+        const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        expect(currentRefRowState).toEqual([
+          expect.objectContaining({
+            source_key: 'lols',
+            target_entity_ref: 'location:default/replaced',
+          }),
+        ]);
       },
       60_000,
     );
