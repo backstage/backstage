@@ -103,10 +103,11 @@ export type OrganizationTransformer = (organization: MicrosoftGraph.Organization
 export function readMicrosoftGraphConfig(config: Config): MicrosoftGraphProviderConfig[];
 
 // @public (undocumented)
-export function readMicrosoftGraphOrg(client: MicrosoftGraphClient, tenantId: string, options?: {
+export function readMicrosoftGraphOrg(client: MicrosoftGraphClient, tenantId: string, options: {
     userFilter?: string;
     groupFilter?: string;
     groupTransformer?: GroupTransformer;
+    logger: Logger;
 }): Promise<{
     users: UserEntity[];
     groups: GroupEntity[];

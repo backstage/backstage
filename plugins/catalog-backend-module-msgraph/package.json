@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.1.0",
-    "@backstage/backend-common": "^0.8.3",
     "@backstage/catalog-model": "^0.8.4",
     "@backstage/config": "^0.1.5",
     "@backstage/plugin-catalog-backend": "^0.10.4",
@@ -41,6 +40,7 @@
     "qs": "^6.9.4"
   },
   "devDependencies": {
+    "@backstage/backend-common": "^0.8.3",
     "@backstage/cli": "^0.7.2",
     "@backstage/test-utils": "^0.1.14",
     "@types/lodash": "^4.14.151",

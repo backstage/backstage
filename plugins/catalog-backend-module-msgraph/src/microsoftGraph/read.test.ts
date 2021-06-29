@@ -83,8 +83,9 @@ describe('read microsoft graph', () => {
         'data:image/jpeg;base64,...',
       );
 
-      const { users } = await readMicrosoftGraphUsers(getVoidLogger(), client, {
+      const { users } = await readMicrosoftGraphUsers(client, {
         userFilter: 'accountEnabled eq true',
+        logger: getVoidLogger(),
       });
 
       expect(users).toEqual([

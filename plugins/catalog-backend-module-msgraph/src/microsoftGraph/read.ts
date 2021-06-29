@@ -75,9 +75,12 @@ export async function defaultUserTransformer(
 }
 
 export async function readMicrosoftGraphUsers(
-  logger: Logger,
   client: MicrosoftGraphClient,
-  options?: { userFilter?: string; transformer?: UserTransformer },
+  options: {
+    userFilter?: string;
+    transformer?: UserTransformer;
+    logger: Logger;
+  },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
@@ -88,7 +91,7 @@ export async function readMicrosoftGraphUsers(
   const promises: Promise<void>[] = [];
 
   for await (const user of client.getUsers({
-    filter: options?.userFilter,
+    filter: options.userFilter,
   })) {
     // Process all users in parallel, otherwise it can take quite some time
     promises.push(
@@ -102,7 +105,7 @@ export async function readMicrosoftGraphUsers(
             120,
           );
         } catch (e) {
-          logger.warn(`Unable to load photo for ${user.id}`);
+          options.logger.warn(`Unable to load photo for ${user.id}`);
         }
 
         const entity = await transformer(user, userPhoto);
@@ -376,17 +379,18 @@ export function resolveRelations(
 }
 
 export async function readMicrosoftGraphOrg(
-  logger: Logger,
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: {
+  options: {
     userFilter?: string;
     groupFilter?: string;
     groupTransformer?: GroupTransformer;
+    logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  const { users } = await readMicrosoftGraphUsers(logger, client, {
-    userFilter: options?.userFilter,
+  const { users } = await readMicrosoftGraphUsers(client, {
+    userFilter: options.userFilter,
+    logger: options.logger,
   });
   const {
     groups,
