@@ -16,6 +16,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import * as http from 'http';
+import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
@@ -252,6 +253,8 @@ export class GitlabUrlReader implements UrlReader {
     toString(): string;
 }
 
+export { isChildPath }
+
 // @public
 export function loadBackendConfig(options: Options): Promise<Config>;
 
@@ -293,6 +296,9 @@ export function requestLoggingHandler(logger?: Logger): RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
+
+// @public
+export function resolveSafeChildPath(base: string, path: string): string;
 
 // @public (undocumented)
 export type RunContainerOptions = {
