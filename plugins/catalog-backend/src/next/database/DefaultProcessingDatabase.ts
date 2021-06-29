@@ -354,7 +354,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       if (refreshResult === 0) {
         // In the event that we can't update an existing refresh state, we first try to insert a new row
         try {
-          await tx<DbRefreshStateRow>('refresh_state').insert({
+          let query = tx('refresh_state').insert<any>({
             entity_id: uuid(),
             entity_ref: entityRef,
             unprocessed_entity: serializedEntity,
@@ -363,7 +363,28 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             next_update_at: tx.fn.now(),
             last_discovery_at: tx.fn.now(),
           });
+
+          // TODO(Rugvip): only tested towards Postgres and SQLite
+          // We have to do this because the only way to detect if there was a conflict with
+          // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
+          // break the ongoing transaction.
+          if (tx.client.config.client !== 'sqlite3') {
+            query = query.onConflict('entity_ref').ignore();
+          }
+
+          const result = await query;
+          if (result.rowCount === 0) {
+            throw new ConflictError(
+              'Insert failed due to conflicting entity_ref',
+            );
+          }
         } catch (error) {
+          if (
+            !error.message.contains('UNIQUE constraint failed') &&
+            error.name !== 'ConflictError'
+          ) {
+            throw error;
+          }
           // If the row can't be inserted, we have a conflict, but it could be either
           // because of a conflicting locationKey or a race with another instance, so check
           // whether the conflicting entity has the same entityRef but a different locationKey
