@@ -92,7 +92,6 @@ export class DefaultLocationService implements LocationService {
       });
 
       if (processed.ok) {
-        // todo
         unprocessedEntities.push(...processed.deferredEntities);
         entities.push(processed.completedEntity);
       } else {
