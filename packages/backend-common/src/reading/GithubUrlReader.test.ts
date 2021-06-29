@@ -118,7 +118,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/?ref=main',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
