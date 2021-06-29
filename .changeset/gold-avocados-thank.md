@@ -2,4 +2,4 @@
 '@backstage/backend-common': patch
 ---
 
-Download archives as compressed tar files for Gitlab to fix the readtree bug in TODO Plugin.
+Download archives as compressed tar files for GitLab to fix the `readTree` bug in TODO Plugin.
