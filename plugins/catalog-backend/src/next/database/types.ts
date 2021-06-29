@@ -78,11 +78,6 @@ export type ReplaceUnprocessedEntitiesOptions =
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
-  addUnprocessedEntities(
-    tx: Transaction,
-    options: AddUnprocessedEntitiesOptions,
-  ): Promise<void>;
-
   replaceUnprocessedEntities(
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
