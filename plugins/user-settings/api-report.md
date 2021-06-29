@@ -12,9 +12,6 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const AuthProviders: ({ providerSettings }: Props_2) => JSX.Element;
-
-// @public (undocumented)
 export const DefaultProviderSettings: ({ configuredProviders }: Props_3) => JSX.Element;
 
 // @public (undocumented)
@@ -28,6 +25,12 @@ export const Settings: () => JSX.Element;
 
 // @public (undocumented)
 export const UserSettingsAppearanceCard: () => JSX.Element;
+
+// @public (undocumented)
+export const UserSettingsAuthProviders: ({ providerSettings }: Props_2) => JSX.Element;
+
+// @public (undocumented)
+export const UserSettingsFeatureFlags: () => JSX.Element;
 
 // @public (undocumented)
 export const UserSettingsGeneral: () => JSX.Element;

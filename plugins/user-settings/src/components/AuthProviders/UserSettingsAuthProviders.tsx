@@ -26,7 +26,7 @@ type Props = {
   providerSettings?: JSX.Element;
 };
 
-export const AuthProviders = ({ providerSettings }: Props) => {
+export const UserSettingsAuthProviders = ({ providerSettings }: Props) => {
   const configApi = useApi(configApiRef);
   const providersConfig = configApi.getOptionalConfig('auth.providers');
   const configuredProviders = providersConfig?.keys() || [];

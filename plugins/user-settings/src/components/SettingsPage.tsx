@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { AuthProviders } from './AuthProviders';
-import { FeatureFlags } from './FeatureFlags';
+import { UserSettingsAuthProviders } from './AuthProviders';
+import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
@@ -37,10 +37,10 @@ export const SettingsPage = ({ providerSettings }: Props) => {
           path="auth-providers"
           title="Authentication Providers"
         >
-          <AuthProviders providerSettings={providerSettings} />
+          <UserSettingsAuthProviders providerSettings={providerSettings} />
         </TabbedLayout.Route>
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
-          <FeatureFlags />
+          <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
       </TabbedLayout>
     </Page>

@@ -17,7 +17,7 @@
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { AuthProviders } from './AuthProviders';
+import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 
 import {
   ApiProvider,
@@ -52,12 +52,12 @@ const apiRegistry = ApiRegistry.from([
   [googleAuthApiRef, mockGoogleAuth],
 ]);
 
-describe('<AuthProviders />', () => {
+describe('<UserSettingsAuthProviders />', () => {
   it('displays a provider and calls its sign-in handler on click', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <AuthProviders />
+          <UserSettingsAuthProviders />
         </ApiProvider>,
       ),
     );
