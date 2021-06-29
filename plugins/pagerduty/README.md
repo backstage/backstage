@@ -8,11 +8,21 @@ There is also an easy way to trigger an alarm directly to the person who is curr
 
 This plugin requires that entities are annotated with an [integration key](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service). See more further down in this document.
 
-This plugin provides:
+## Features
 
-- A list of incidents
-- A way to trigger an alarm to the person on-call
-- Information details about the person on-call
+### View any open incidents
+
+![View Open Incidents](doc/pd1.png "PagerDuty plugin showing no incidents and the on-call rotation")
+
+### Email link, and view contact information for staff on call
+
+![On-Call Contact Information](doc/pd2.png "PagerDuty plugin showing on-call rotation contact information")
+
+### Trigger an incident for a service
+
+![Trigger an Incident](doc/pd3.png "PagerDuty plugin popup modal for creating an incident")
+
+![Active Incidents](doc/pd4.png "PagerDuty plugin showing an active incident")
 
 ## Setup instructions
 
