@@ -96,7 +96,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           alignmentBaseline="baseline"
           style={{ fontWeight: 'bold' }}
         >
-          {props.node.name}
+          {props.node.profile?.displayName
+            ? props.node.profile?.displayName
+            : props.node.name}
         </text>
       </Link>
     </g>
@@ -107,7 +109,12 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
  * Dynamically generates a diagram of groups registered in the catalog.
  */
 export function GroupsDiagram() {
-  const nodes = new Array<{ id: string; kind: string; name: string }>();
+  const nodes = new Array<{
+    id: string;
+    kind: string;
+    name: string;
+    profile?: any;
+  }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 
   const configApi = useApi(configApiRef);
@@ -142,6 +149,7 @@ export function GroupsDiagram() {
       id: stringifyEntityRef(catalogItem),
       kind: catalogItem.kind,
       name: formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
+      profile: catalogItem.spec?.profile,
     });
 
     // Edge to parent
