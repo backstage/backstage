@@ -89,7 +89,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      entityRef: stringifyEntityRef(processedEntity),
+      sourceEntityRef: stringifyEntityRef(processedEntity),
     });
 
     // Update fragments
@@ -147,24 +147,43 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       };
     }
 
+    // Grab all of the existing references from the same source, and their locationKeys as well
     const oldRefs = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
       .where({ source_key: options.sourceKey })
-      .select('target_entity_ref')
-      .then(rows => rows.map(r => r.target_entity_ref));
+      .leftJoin<DbRefreshStateRow>('refresh_state', {
+        target_entity_ref: 'entity_ref',
+      })
+      .select(['target_entity_ref', 'location_key']);
 
-    const items = options.items.map(entity => ({
-      entity,
-      ref: stringifyEntityRef(entity.entity),
+    const items = options.items.map(deferred => ({
+      deferred,
+      ref: stringifyEntityRef(deferred.entity),
     }));
 
-    const oldRefsSet = new Set(oldRefs);
+    const oldRefsSet = new Map(
+      oldRefs.map(r => [r.target_entity_ref, r.location_key]),
+    );
     const newRefsSet = new Set(items.map(item => item.ref));
-    const toAdd = items.filter(item => !oldRefsSet.has(item.ref));
-    const toRemove = oldRefs.filter(ref => !newRefsSet.has(ref));
 
-    return { toAdd: toAdd.map(({ entity }) => entity), toRemove };
+    const toAdd = new Array<DeferredEntity>();
+    const toRemove = oldRefs
+      .map(row => row.target_entity_ref)
+      .filter(ref => !newRefsSet.has(ref));
+
+    for (const item of items) {
+      if (!oldRefsSet.has(item.ref)) {
+        // Add any entity that does not exist in the database
+        toAdd.push(item.deferred);
+      } else if (oldRefsSet.get(item.ref) !== item.deferred.locationKey) {
+        // Remove and then re-add any entity that exists, but with a different location key
+        toRemove.push(item.ref);
+        toAdd.push(item.deferred);
+      }
+    }
+
+    return { toAdd, toRemove };
   }
 
   async replaceUnprocessedEntities(
@@ -291,31 +310,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
 
     if (toAdd.length) {
-      const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(
-        ({ entity, locationKey }) => ({
-          entity_id: uuid(),
-          entity_ref: stringifyEntityRef(entity),
-          unprocessed_entity: JSON.stringify(entity),
-          location_key: locationKey,
-          errors: '',
-          next_update_at: tx.fn.now(),
-          last_discovery_at: tx.fn.now(),
-        }),
-      );
-
-      const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
-        entity => ({
-          source_key: options.sourceKey,
-          target_entity_ref: stringifyEntityRef(entity.entity),
-        }),
-      );
-      // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
-      await tx.batchInsert('refresh_state', state, BATCH_SIZE);
-      await tx.batchInsert(
-        'refresh_state_references',
-        stateReferences,
-        BATCH_SIZE,
-      );
+      await this.addUnprocessedEntities(tx, {
+        sourceKey: options.sourceKey,
+        entities: toAdd,
+      });
     }
   }
 
@@ -325,17 +323,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const stateReferenceRows = new Array<
-      Knex.DbRecord<DbRefreshStateReferencesRow>
-    >();
+    // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
+    const stateReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
-    // TODO(freben): Can this be batched somehow?
     for (const { entity, locationKey } of options.entities) {
       const entityRef = stringifyEntityRef(entity);
       const serializedEntity = JSON.stringify(entity);
 
+      // We optimistically try to update any existing refresh state first, as this is by far
+      // the most common case.
       const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
         .update({
           unprocessed_entity: serializedEntity,
@@ -353,6 +351,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         });
 
       if (refreshResult === 0) {
+        // In the event that we can't update an existing refresh state, we first try to insert a new row
         const result = await tx<DbRefreshStateRow>('refresh_state')
           .insert({
             entity_id: uuid(),
@@ -366,14 +365,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           .onConflict('entity_ref')
           .ignore();
 
+        // If the row can't be inserted, we have a conflict, but it could be either
+        // because of a conflicting locationKey or a race with another instance, so check for that too
         if (result.length === 0) {
-          // Detected conflicting entity with same entityRef but different locationKey
+          // Check for conflicting entity with same entityRef but different locationKey
           const [conflictingEntity] = await tx<DbRefreshStateRow>(
             'refresh_state',
           )
             .where({ entity_ref: entityRef })
             .select();
 
+          // If the location key matches it means we just had a race trigger, which we can safely ignore
           if (conflictingEntity.location_key !== locationKey) {
             this.options.logger.warn(
               `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingEntity.location_key} and now also ${locationKey}`,
@@ -384,21 +386,35 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
 
       // Skipped on locationKey conflict
-      stateReferenceRows.push({
-        source_entity_ref: options.entityRef,
-        target_entity_ref: entityRef,
-      });
+      stateReferences.push(entityRef);
     }
 
-    // Replace all references for the originating entity before creating new ones
-    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      .where({ source_entity_ref: options.entityRef })
-      .delete();
-    await tx.batchInsert(
-      'refresh_state_references',
-      stateReferenceRows,
-      BATCH_SIZE,
-    );
+    // Replace all references for the originating entity or source and then create new ones
+    if ('sourceKey' in options) {
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where({ source_key: options.sourceKey })
+        .delete();
+      await tx.batchInsert(
+        'refresh_state_references',
+        stateReferences.map(entityRef => ({
+          source_key: options.sourceKey,
+          target_entity_ref: entityRef,
+        })),
+        BATCH_SIZE,
+      );
+    } else {
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where({ source_entity_ref: options.sourceEntityRef })
+        .delete();
+      await tx.batchInsert(
+        'refresh_state_references',
+        stateReferences.map(entityRef => ({
+          source_entity_ref: options.sourceEntityRef,
+          target_entity_ref: entityRef,
+        })),
+        BATCH_SIZE,
+      );
+    }
   }
 
   async getProcessableEntities(
