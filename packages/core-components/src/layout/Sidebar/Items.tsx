@@ -293,7 +293,7 @@ export const SidebarDivider = styled('hr')({
 
 export const SidebarScrollWrapper = styled('div')({
   flex: '0 1 auto',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   // Display at least one item in the container
   // Question: Can this be a config/theme variable - if so, which? :/
   minHeight: '48px',
