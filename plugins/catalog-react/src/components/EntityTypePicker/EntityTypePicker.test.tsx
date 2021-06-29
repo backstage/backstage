@@ -123,7 +123,7 @@ describe('<EntityTypePicker/>', () => {
     fireEvent.click(rendered.getByText('Service'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      type: new EntityTypeFilter('service'),
+      type: new EntityTypeFilter(['service']),
     });
 
     fireEvent.click(input);

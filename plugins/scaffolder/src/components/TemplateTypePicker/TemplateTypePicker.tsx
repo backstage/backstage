@@ -76,7 +76,6 @@ export const TemplateTypePicker = () => {
               <Checkbox
                 checked={selectedTypes.includes(type)}
                 onChange={() => toggleSelection(type)}
-                name={`entity-type-option-${type}`}
                 className={classes.checkbox}
               />
             }

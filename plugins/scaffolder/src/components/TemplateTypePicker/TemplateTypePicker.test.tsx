@@ -15,24 +15,26 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { EntityTypePicker } from './EntityTypePicker';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { catalogApiRef } from '../../api';
-import { EntityKindFilter, EntityTypeFilter } from '../../filters';
-
+import { TemplateTypePicker } from './TemplateTypePicker';
+import {
+  catalogApiRef,
+  EntityKindFilter,
+  MockEntityListContextProvider,
+} from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderWithEffects } from '../../../../../packages/test-utils-core/src';
 
 const entities: Entity[] = [
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Template',
     metadata: {
-      name: 'component-1',
+      name: 'template-1',
     },
     spec: {
       type: 'service',
@@ -40,9 +42,9 @@ const entities: Entity[] = [
   },
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Template',
     metadata: {
-      name: 'component-2',
+      name: 'template-2',
     },
     spec: {
       type: 'website',
@@ -50,9 +52,9 @@ const entities: Entity[] = [
   },
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Template',
     metadata: {
-      name: 'component-3',
+      name: 'template-3',
     },
     spec: {
       type: 'library',
@@ -77,58 +79,60 @@ const apis = ApiRegistry.from([
   ],
 ]);
 
-describe('<EntityTypePicker/>', () => {
+describe('<TemplateTypePicker/>', () => {
   it('renders available entity types', async () => {
-    const rendered = render(
+    const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ filters: { kind: new EntityKindFilter('component') } }}
+          value={{
+            filters: { kind: new EntityKindFilter('template') },
+            backendEntities: entities,
+          }}
         >
-          <EntityTypePicker />
+          <TemplateTypePicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(rendered.getByText('Type')).toBeInTheDocument();
-
-    const input = rendered.getByTestId('select');
-    fireEvent.click(input);
-
-    await waitFor(() => rendered.getByText('Service'));
+    expect(rendered.getByText('Categories')).toBeInTheDocument();
 
     entities.forEach(entity => {
       expect(
-        rendered.getByText(capitalize(entity.spec!.type as string)),
+        rendered.getByLabelText(capitalize(entity.spec!.type as string)),
       ).toBeInTheDocument();
     });
   });
 
-  it('sets the selected type filter', async () => {
-    const updateFilters = jest.fn();
-    const rendered = render(
+  it('sets the selected type filters', async () => {
+    const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('component') },
-            updateFilters,
+            filters: { kind: new EntityKindFilter('template') },
+            backendEntities: entities,
           }}
         >
-          <EntityTypePicker />
+          <TemplateTypePicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = rendered.getByTestId('select');
-    fireEvent.click(input);
 
-    await waitFor(() => rendered.getByText('Service'));
-    fireEvent.click(rendered.getByText('Service'));
+    expect(rendered.getByLabelText('Service')).not.toBeChecked();
+    expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      type: new EntityTypeFilter('service'),
-    });
+    fireEvent.click(rendered.getByLabelText('Service'));
+    expect(rendered.getByLabelText('Service')).toBeChecked();
+    expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
-    fireEvent.click(input);
-    fireEvent.click(rendered.getByText('All'));
+    fireEvent.click(rendered.getByLabelText('Website'));
+    expect(rendered.getByLabelText('Service')).toBeChecked();
+    expect(rendered.getByLabelText('Website')).toBeChecked();
 
-    expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
+    fireEvent.click(rendered.getByLabelText('Service'));
+    expect(rendered.getByLabelText('Service')).not.toBeChecked();
+    expect(rendered.getByLabelText('Website')).toBeChecked();
+
+    fireEvent.click(rendered.getByLabelText('Website'));
+    expect(rendered.getByLabelText('Service')).not.toBeChecked();
+    expect(rendered.getByLabelText('Website')).not.toBeChecked();
   });
 });
