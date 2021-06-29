@@ -5,7 +5,7 @@
 ```ts
 
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 // @public (undocumented)

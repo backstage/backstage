@@ -19,7 +19,7 @@ import * as http from 'http';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -129,7 +129,7 @@ export function errorHandler(options?: ErrorHandlerOptions): ErrorRequestHandler
 // @public (undocumented)
 export type ErrorHandlerOptions = {
     showStackTraces?: boolean;
-    logger?: Logger_2;
+    logger?: Logger;
     logClientErrors?: boolean;
 };
 
@@ -185,7 +185,7 @@ export class Git {
     static fromAuth: ({ username, password, logger, }: {
         username?: string | undefined;
         password?: string | undefined;
-        logger?: Logger_2 | undefined;
+        logger?: Logger | undefined;
     }) => Git;
     // (undocumented)
     init({ dir, defaultBranch, }: {
@@ -301,7 +301,7 @@ export type ReadTreeResponseFile = {
 };
 
 // @public
-export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
+export function requestLoggingHandler(logger?: Logger): RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -337,7 +337,7 @@ export type ServiceBuilder = {
     loadConfig(config: ConfigReader): ServiceBuilder;
     setPort(port: number): ServiceBuilder;
     setHost(host: string): ServiceBuilder;
-    setLogger(logger: Logger_2): ServiceBuilder;
+    setLogger(logger: Logger): ServiceBuilder;
     enableCors(options: cors.CorsOptions): ServiceBuilder;
     setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
     addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;

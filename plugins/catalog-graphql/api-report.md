@@ -6,7 +6,7 @@
 
 import { Config } from '@backstage/config';
 import { GraphQLModule } from '@graphql-modules/core';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // @public (undocumented)
 export function createModule(options: ModuleOptions): Promise<GraphQLModule>;
@@ -16,7 +16,7 @@ export interface ModuleOptions {
     // (undocumented)
     config: Config;
     // (undocumented)
-    logger: Logger_2;
+    logger: Logger;
 }
 
 
