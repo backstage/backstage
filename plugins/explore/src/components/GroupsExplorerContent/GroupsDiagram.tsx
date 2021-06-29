@@ -96,9 +96,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           alignmentBaseline="baseline"
           style={{ fontWeight: 'bold' }}
         >
-          {props.node.profile?.displayName
-            ? props.node.profile?.displayName
-            : props.node.name}
+          {props.node.profile?.displayName ?? props.node.name}
         </text>
       </Link>
     </g>
