@@ -66,7 +66,7 @@ describe('<HasComponentsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Components')).toBeInTheDocument();
+    expect(getByText('Has components')).toBeInTheDocument();
     expect(
       getByText(/No component is part of this system/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<HasComponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Components')).toBeInTheDocument();
+      expect(getByText('Has components')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

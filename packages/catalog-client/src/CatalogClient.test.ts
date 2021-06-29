@@ -151,6 +151,26 @@ describe('CatalogClient', () => {
 
       expect(response.items).toEqual([]);
     });
+
+    it('handles field filtered entities', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([{ apiVersion: '1' }, { apiVersion: '2' }]));
+        }),
+      );
+
+      const response = await client.getEntities(
+        {
+          fields: ['apiVersion'],
+        },
+        { token },
+      );
+
+      expect(response.items).toEqual([
+        { apiVersion: '1' },
+        { apiVersion: '2' },
+      ]);
+    });
   });
 
   describe('getLocationById', () => {

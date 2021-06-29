@@ -139,7 +139,7 @@ export class GitlabUrlReader implements UrlReader {
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         full_name,
-      )}/repository/archive.zip?sha=${branch}`,
+      )}/repository/archive?sha=${branch}`,
       getGitLabRequestOptions(this.integration.config),
     );
     if (!archiveGitLabResponse.ok) {
@@ -150,7 +150,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    return await this.deps.treeResponseFactory.fromZipArchive({
+    return await this.deps.treeResponseFactory.fromTarArchive({
       stream: (archiveGitLabResponse.body as unknown) as Readable,
       subpath: filepath,
       etag: commitSha,

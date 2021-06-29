@@ -72,7 +72,7 @@ Our first modification will be to extract information from the Identity API.
 
 ```tsx
 // Add identityApiRef to the list of imported from core
-import { identityApiRef, useApi } from '@backstage/core';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 ```
 
 3. Adjust the ExampleComponent from inline to block
@@ -137,13 +137,8 @@ changes, let's start by wiping this component clean.
 import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
-import {
-  Table,
-  TableColumn,
-  Progress,
-  githubAuthApiRef,
-  useApi,
-} from '@backstage/core';
+import { Table, TableColumn, Progress } from '@backstage/core-components';
+import { githubAuthApiRef, useApi } from '@backstage/core-plugin-api';
 import { graphql } from '@octokit/graphql';
 
 export const ExampleFetchComponent = () => {

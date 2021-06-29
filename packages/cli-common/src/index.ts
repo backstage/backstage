@@ -15,4 +15,5 @@
  */
 
 export { findPaths } from './paths';
+export { isChildPath } from './isChildPath';
 export type { Paths } from './paths';

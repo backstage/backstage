@@ -1,5 +1,13 @@
 # @backstage/catalog-client
 
+## 0.3.14
+
+### Patch Changes
+
+- 45ef515d0: Return entities sorted alphabetically by ref
+- Updated dependencies
+  - @backstage/catalog-model@0.8.4
+
 ## 0.3.13
 
 ### Patch Changes

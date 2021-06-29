@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.12.3
+
+### Patch Changes
+
+- a7f5fe7d7: created an action to write a catalog-info file
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- c18a3c2ae: Correctly recognize whether the cookiecutter command exists
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/catalog-model@0.8.4
+
 ## 0.12.2
 
 ### Patch Changes

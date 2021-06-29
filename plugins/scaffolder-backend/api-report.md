@@ -124,6 +124,9 @@ export function createCatalogRegisterAction(options: {
     integrations: ScmIntegrations;
 }): TemplateAction<any>;
 
+// @public (undocumented)
+export function createCatalogWriteAction(): TemplateAction<any>;
+
 // @public
 export function createDebugLogAction(): TemplateAction<any>;
 
