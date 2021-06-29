@@ -90,24 +90,26 @@ export function createFetchTemplateAction(options: {
         ctx.input.values,
       );
 
+      // Grab some files
       const allFilesInTemplates = await globby(`*`, { cwd: templateDir });
+
+      // Nice for Cookiecutter compat
       nunjucks.installJinjaCompat();
+
+      // Create a templater
       const templater = nunjucks.configure({
         tags: {
-          variableStart: '${',
-          variableEnd: '}',
+          variableStart: '${{',
+          variableEnd: '}}',
         },
         autoescape: false,
       });
 
+      // Need to work out how to autoescape but not this
       templater.addFilter('jsonify', s => JSON.stringify(s));
 
       for (const location of allFilesInTemplates) {
-        console.log(location);
-
         const filepath = templater.renderString(location, ctx.input.values);
-        console.log(filepath);
-        console.log('is', resolvePath(outputPath, filepath));
         await fs.writeFile(
           resolvePath(outputPath, filepath),
           templater.renderString(
