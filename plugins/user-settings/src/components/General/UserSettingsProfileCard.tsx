@@ -15,19 +15,19 @@
  */
 import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { SignInAvatar } from './SignInAvatar';
+import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
-export const Profile = () => {
+export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
 
   return (
     <InfoCard title="Profile">
       <Grid container spacing={6}>
         <Grid item>
-          <SignInAvatar size={96} />
+          <UserSettingsSignInAvatar size={96} />
         </Grid>
         <Grid item xs={12} sm container>
           <Grid item xs container direction="column" spacing={2}>

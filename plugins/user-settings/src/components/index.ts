@@ -16,4 +16,5 @@
 export { Settings } from './Settings';
 export { SettingsPage as Router } from './SettingsPage';
 export * from './AuthProviders';
-export { General } from './General';
+export * from './General';
+export { useUserProfile } from './useUserProfileInfo';

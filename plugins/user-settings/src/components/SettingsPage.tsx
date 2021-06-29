@@ -17,7 +17,7 @@
 import React from 'react';
 import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
-import { General } from './General';
+import { UserSettingsGeneral } from './General';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
@@ -31,7 +31,7 @@ export const SettingsPage = ({ providerSettings }: Props) => {
 
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
-          <General />
+          <UserSettingsGeneral />
         </TabbedLayout.Route>
         <TabbedLayout.Route
           path="auth-providers"

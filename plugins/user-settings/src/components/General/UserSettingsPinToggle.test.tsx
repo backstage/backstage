@@ -17,10 +17,10 @@
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { PinButton } from './PinButton';
+import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { SidebarPinStateContext } from '@backstage/core-components';
 
-describe('<PinButton />', () => {
+describe('<UserSettingsPinToggle />', () => {
   it('toggles the pin sidebar button', async () => {
     const mockToggleFn = jest.fn();
     const rendered = await renderWithEffects(
@@ -28,7 +28,7 @@ describe('<PinButton />', () => {
         <SidebarPinStateContext.Provider
           value={{ isPinned: false, toggleSidebarPinState: mockToggleFn }}
         >
-          <PinButton />
+          <UserSettingsPinToggle />
         </SidebarPinStateContext.Provider>,
       ),
     );
