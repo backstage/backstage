@@ -16,7 +16,6 @@
 
 import React, { useMemo } from 'react';
 import { useObservable } from 'react-use';
-import { makeStyles } from '@material-ui/core';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
