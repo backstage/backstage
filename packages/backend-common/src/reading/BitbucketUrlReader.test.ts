@@ -142,7 +142,7 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&prefix=mock&path=docs',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -366,7 +366,7 @@ describe('BitbucketUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&prefix=mock&path=docs',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),

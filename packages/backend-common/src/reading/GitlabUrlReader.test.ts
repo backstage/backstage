@@ -205,7 +205,7 @@ describe('GitlabUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive?sha=main',
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -283,7 +283,7 @@ describe('GitlabUrlReader', () => {
           },
         ),
         rest.get(
-          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive?sha=main',
+          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -318,7 +318,7 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -375,7 +375,7 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/backstage/mock/tree/main/docs',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),
@@ -471,7 +471,7 @@ describe('GitlabUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive?sha=main',
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
