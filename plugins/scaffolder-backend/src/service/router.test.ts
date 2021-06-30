@@ -33,12 +33,13 @@ import {
   PluginDatabaseManager,
   DatabaseManager,
   UrlReaders,
+  DockerContainerRunner,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import { Preparers, Publishers, Templaters } from '../scaffolder';
+import { TemplateEntityV1beta2 } from '../../../../packages/catalog-model/src';
 import { createRouter } from './router';
 
 const createCatalogClient = (templates: any[] = []) =>
@@ -66,8 +67,8 @@ const mockUrlReader = UrlReaders.default({
 
 describe('createRouter', () => {
   let app: express.Express;
-  const template = {
-    apiVersion: 'backstage.io/v1alpha1',
+  const template: TemplateEntityV1beta2 = {
+    apiVersion: 'backstage.io/v1beta2',
     kind: 'Template',
     metadata: {
       description: 'Create a new CRA website project',
@@ -80,42 +81,19 @@ describe('createRouter', () => {
     },
     spec: {
       owner: 'web@example.com',
-      path: '.',
-      schema: {
-        properties: {
-          component_id: {
-            description: 'Unique name of the component',
-            title: 'Name',
-            type: 'string',
-          },
-          description: {
-            description: 'Description of the component',
-            title: 'Description',
-            type: 'string',
-          },
-          use_typescript: {
-            default: true,
-            description: 'Include TypeScript',
-            title: 'Use TypeScript',
-            type: 'boolean',
-          },
-        },
-        required: ['component_id', 'use_typescript'],
-      },
-      templater: 'cra',
       type: 'website',
+      steps: [],
+      parameters: [],
     },
   };
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      preparers: new Preparers(),
-      templaters: new Templaters(),
-      publishers: new Publishers(),
       config: new ConfigReader({}),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
+      containerRunner: new DockerContainerRunner({} as any),
       reader: mockUrlReader,
     });
     app = express().use(router);
