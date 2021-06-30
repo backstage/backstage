@@ -112,7 +112,6 @@ export function GroupsDiagram() {
     id: string;
     kind: string;
     name: string;
-    profile?: any;
   }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 
