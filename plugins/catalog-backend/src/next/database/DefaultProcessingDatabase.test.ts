@@ -210,7 +210,9 @@ describe('Default Processing Database', () => {
               relations: [],
               deferredEntities: [],
             }),
-          ).rejects.toThrow(`Processing state not found for ${id}`);
+          ).rejects.toThrow(
+            `Conflicting write of processing result for ${id} with location key 'undefined'`,
+          );
         });
       },
       60_000,
@@ -249,7 +251,9 @@ describe('Default Processing Database', () => {
         await db.transaction(tx =>
           expect(
             db.updateProcessedEntity(tx, { ...options, locationKey: 'fail' }),
-          ).rejects.toThrow(`Processing state not found for ${id}`),
+          ).rejects.toThrow(
+            `Conflicting write of processing result for ${id} with location key 'fail'`,
+          ),
         );
       },
       60_000,

@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -83,7 +83,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           .orWhereNull('location_key');
       });
     if (refreshResult === 0) {
-      throw new NotFoundError(`Processing state not found for ${id}`);
+      throw new ConflictError(
+        `Conflicting write of processing result for ${id} with location key '${locationKey}'`,
+      );
     }
 
     // Schedule all deferred entities for future processing.
@@ -372,7 +374,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             query = query.onConflict('entity_ref').ignore();
           }
 
-          const result = await query;
+          const result: { /* postgres */ rowCount?: number } = await query;
           if (result.rowCount === 0) {
             throw new ConflictError(
               'Insert failed due to conflicting entity_ref',
@@ -395,7 +397,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             .select();
 
           // If the location key matches it means we just had a race trigger, which we can safely ignore
-          if (conflictingEntity.location_key !== locationKey) {
+          if (
+            !conflictingEntity ||
+            conflictingEntity.location_key !== locationKey
+          ) {
             this.options.logger.warn(
               `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingEntity.location_key} and now also ${locationKey}`,
             );
