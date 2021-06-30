@@ -16,18 +16,24 @@
 import React from 'react';
 import { createRouteRef } from '@backstage/core';
 import { Route, Routes } from 'react-router';
-import { ExampleComponent } from './components/ExampleComponent';
-import { EntityComponent } from './components/EntityComponent';
+import { TechDocsXHome } from './components/TechDocsXHome';
+import { TechDocsXPage } from './components/TechDocsXPage';
 
 export const rootRouteRef = createRouteRef({
+  path: '',
   title: 'techdocs-next',
+});
+
+export const rootDocsRouteRef = createRouteRef({
+  path: ':namespace/:kind/:name/*',
+  title: 'DocsX',
 });
 
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/`} element={<ExampleComponent />} />
-      <Route path={`/*`} element={<EntityComponent />} />
+      <Route path={`/${rootRouteRef.path}`} element={<TechDocsXHome />} />
+      <Route path={`/${rootDocsRouteRef.path}`} element={<TechDocsXPage />} />
     </Routes>
   );
 };

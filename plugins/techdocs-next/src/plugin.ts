@@ -15,7 +15,7 @@
  */
 import { createPlugin, createRoutableExtension } from '@backstage/core';
 
-import { rootRouteRef, Router } from './routes';
+import { rootRouteRef, rootDocsRouteRef, Router } from './routes';
 
 export const techdocsNextPlugin = createPlugin({
   id: 'techdocs-next',
@@ -27,8 +27,16 @@ export const techdocsNextPlugin = createPlugin({
 export const TechdocsNextPage = techdocsNextPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/TechDocsXHome').then(m => m.TechDocsXHome),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const TechDocsXReaderPage = techdocsNextPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/TechDocsXPage').then(m => m.TechDocsXPage),
+    mountPoint: rootDocsRouteRef,
   }),
 );
 

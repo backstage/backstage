@@ -15,12 +15,14 @@
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ExampleFetchComponent } from './ExampleFetchComponent';
+import { TechDocsXHome } from './TechDocsXHome';
+import { ThemeProvider } from '@material-ui/core';
+import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
 
-describe('ExampleFetchComponent', () => {
+describe('TechDocsXHome', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   msw.setupDefaultHandlers(server);
@@ -28,13 +30,16 @@ describe('ExampleFetchComponent', () => {
   // setup mock response
   beforeEach(() => {
     server.use(
-      rest.get('https://randomuser.me/*', (_, res, ctx) =>
-        res(ctx.status(200), ctx.delay(2000), ctx.json({})),
-      ),
+      rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))),
     );
   });
-  it('should render', async () => {
-    const rendered = render(<ExampleFetchComponent />);
-    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
+
+  it('should render', () => {
+    const rendered = render(
+      <ThemeProvider theme={lightTheme}>
+        <TechDocsXHome />
+      </ThemeProvider>,
+    );
+    expect(rendered.getByText('Welcome to techdocs-next!')).toBeInTheDocument();
   });
 });

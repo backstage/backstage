@@ -15,14 +15,12 @@
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ExampleComponent } from './ExampleComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { TechDocsXPage } from './TechDocsXPage';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
 
-describe('ExampleComponent', () => {
+describe('TechDocsXPage', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   msw.setupDefaultHandlers(server);
@@ -30,16 +28,13 @@ describe('ExampleComponent', () => {
   // setup mock response
   beforeEach(() => {
     server.use(
-      rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))),
+      rest.get('https://randomuser.me/*', (_, res, ctx) =>
+        res(ctx.status(200), ctx.delay(2000), ctx.json({})),
+      ),
     );
   });
-
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Welcome to techdocs-next!')).toBeInTheDocument();
+  it('should render', async () => {
+    const rendered = render(<TechDocsXPage />);
+    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
   });
 });
