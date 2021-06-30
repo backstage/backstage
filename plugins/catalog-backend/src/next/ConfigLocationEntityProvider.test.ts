@@ -51,9 +51,7 @@ describe('ConfigLocationEntityProvider', () => {
               type: 'file',
             },
           }),
-          locationKey: expect.stringMatching(
-            /plugins\/catalog-backend\/lols\.yaml$/,
-          ),
+          locationKey: expect.stringMatching(/lols\.yaml$/),
         },
       ]),
     });
