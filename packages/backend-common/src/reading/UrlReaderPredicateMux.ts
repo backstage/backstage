@@ -18,6 +18,8 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   ReadTreeOptions,
   ReadTreeResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchOptions,
   SearchResponse,
   UrlReader,
@@ -35,12 +37,33 @@ export class UrlReaderPredicateMux implements UrlReader {
     this.readers.push(tuple);
   }
 
-  read(url: string): Promise<Buffer> {
+  async read(url: string): Promise<Buffer> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
         return reader.read(url);
+      }
+    }
+
+    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    const parsed = new URL(url);
+
+    for (const { predicate, reader } of this.readers) {
+      if (predicate(parsed)) {
+        if (reader.readUrl) {
+          return reader.readUrl(url, options);
+        }
+        const buffer = await reader.read(url);
+        return {
+          buffer: async () => buffer,
+        };
       }
     }
 
