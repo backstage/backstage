@@ -12,17 +12,17 @@ This plugin requires that entities are annotated with an [integration key](https
 
 ### View any open incidents
 
-![View Open Incidents](doc/pd1.png "PagerDuty plugin showing no incidents and the on-call rotation")
+![PagerDuty plugin showing no incidents and the on-call rotation](doc/pd1.png)
 
 ### Email link, and view contact information for staff on call
 
-![On-Call Contact Information](doc/pd2.png "PagerDuty plugin showing on-call rotation contact information")
+![PagerDuty plugin showing on-call rotation contact information](doc/pd2.png)
 
 ### Trigger an incident for a service
 
-![Trigger an Incident](doc/pd3.png "PagerDuty plugin popup modal for creating an incident")
+![PagerDuty plugin popup modal for creating an incident](doc/pd3.png)
 
-![Active Incidents](doc/pd4.png "PagerDuty plugin showing an active incident")
+![PagerDuty plugin showing an active incident](doc/pd4.png)
 
 ## Setup instructions
 
