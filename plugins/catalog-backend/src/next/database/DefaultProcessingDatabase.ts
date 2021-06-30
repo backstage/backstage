@@ -380,7 +380,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           }
         } catch (error) {
           if (
-            !error.message.contains('UNIQUE constraint failed') &&
+            !error.message.includes('UNIQUE constraint failed') &&
             error.name !== 'ConflictError'
           ) {
             throw error;
