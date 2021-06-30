@@ -18,7 +18,6 @@ import { ExploreTool } from '@backstage/plugin-explore-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -27,6 +26,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import { Button } from '@backstage/core-components';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -63,7 +63,6 @@ export const ToolCard = ({ card, objectFit }: Props) => {
   const classes = useStyles();
 
   const { title, description, url, image, lifecycle, tags } = card;
-  const isExternalUrl = url.startsWith('https://') || url.startsWith('http://');
 
   return (
     <Card key={title}>
@@ -99,9 +98,9 @@ export const ToolCard = ({ card, objectFit }: Props) => {
       </CardContent>
       <CardActions>
         <Button
-          {...(isExternalUrl ? { target: '_blank' } : {})}
+          externalLinkTarget="_blank"
           color="primary"
-          href={url}
+          to={url}
           disabled={!url}
         >
           Explore

@@ -29,6 +29,7 @@ export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {
     component?: ElementType<any>;
+    externalLinkTarget?: undefined | '_blank';
   };
 
 /**
@@ -39,7 +40,14 @@ export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
   const to = String(props.to);
   return isExternalUri(to) ? (
     // External links
-    <MaterialLink ref={ref} href={to} {...props} />
+    <MaterialLink
+      ref={ref}
+      href={to}
+      {...(props.externalLinkTarget
+        ? { target: props.externalLinkTarget }
+        : {})}
+      {...props}
+    />
   ) : (
     // Interact with React Router for internal links
     <MaterialLink ref={ref} component={RouterLink} {...props} />
