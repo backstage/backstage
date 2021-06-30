@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD:plugins/scaffolder-backend/src/scaffolder/stages/publish/helpers.ts
- * Copyright 2020 The Backstage Authors
-=======
  * Copyright 2021 The Backstage Authors
->>>>>>> breaking: removing alphav1 support for templates:plugins/scaffolder-backend/src/scaffolder/actions/builtin/helpers.ts
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
