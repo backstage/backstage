@@ -64,7 +64,7 @@ export const addBaseUrl = ({
           const apiOrigin = await techdocsStorageApi.getApiOrigin();
           if (isSvgNeedingInlining(attributeName, elemAttribute, apiOrigin)) {
             try {
-              const svg = await fetch(newValue);
+              const svg = await fetch(newValue, { credentials: 'include' });
               const svgContent = await svg.text();
               elem.setAttribute(
                 attributeName,
