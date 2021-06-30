@@ -44,7 +44,7 @@ export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
       ref={ref}
       href={to}
       {...(props.externalLinkTarget
-        ? { target: props.externalLinkTarget }
+        ? { target: props.externalLinkTarget, rel: 'noopener' }
         : {})}
       {...props}
     />
