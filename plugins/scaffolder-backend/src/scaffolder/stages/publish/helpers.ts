@@ -25,12 +25,14 @@ export async function initRepoAndPush({
   auth,
   logger,
   defaultBranch = 'master',
+  gitAuthorInfo,
 }: {
   dir: string;
   remoteUrl: string;
   auth: { username: string; password: string };
   logger: Logger;
   defaultBranch?: string;
+  gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<void> {
   const git = Git.fromAuth({
     username: auth.username,
@@ -53,11 +55,17 @@ export async function initRepoAndPush({
     await git.add({ dir, filepath });
   }
 
+  // use provided info if possible, otherwise use fallbacks
+  const authorInfo = {
+    name: gitAuthorInfo?.name ?? 'Scaffolder',
+    email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
+  };
+
   await git.commit({
     dir,
     message: 'Initial commit',
-    author: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
-    committer: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
+    author: authorInfo,
+    committer: authorInfo,
   });
 
   await git.addRemote({

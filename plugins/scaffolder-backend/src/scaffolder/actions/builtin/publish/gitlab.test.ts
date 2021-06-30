@@ -24,24 +24,24 @@ import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
 describe('publish:gitlab', () => {
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-          {
-            host: 'hosted.gitlab.com',
-            apiBaseUrl: 'https://api.hosted.gitlab.com',
-          },
-        ],
-      },
-    }),
-  );
-  const action = createPublishGitlabAction({ integrations });
+  const config = new ConfigReader({
+    integrations: {
+      gitlab: [
+        {
+          host: 'gitlab.com',
+          token: 'tokenlols',
+          apiBaseUrl: 'https://api.gitlab.com',
+        },
+        {
+          host: 'hosted.gitlab.com',
+          apiBaseUrl: 'https://api.hosted.gitlab.com',
+        },
+      ],
+    },
+  });
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createPublishGitlabAction({ integrations, config });
   const mockContext = {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
@@ -166,6 +166,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 

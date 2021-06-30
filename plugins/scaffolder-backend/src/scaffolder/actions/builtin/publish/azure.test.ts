@@ -28,17 +28,17 @@ import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
 describe('publish:azure', () => {
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
-          { host: 'myazurehostnotoken.com' },
-        ],
-      },
-    }),
-  );
-  const action = createPublishAzureAction({ integrations });
+  const config = new ConfigReader({
+    integrations: {
+      azure: [
+        { host: 'dev.azure.com', token: 'tokenlols' },
+        { host: 'myazurehostnotoken.com' },
+      ],
+    },
+  });
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createPublishAzureAction({ integrations, config });
   const mockContext = {
     input: {
       repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org',
@@ -187,6 +187,7 @@ describe('publish:azure', () => {
       defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 

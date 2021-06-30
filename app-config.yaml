@@ -250,6 +250,11 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
+  # Use to customize commit author info used when new components are created
+  # git:
+  #   author:
+  #     name: Scaffolder
+  #     email: scaffolder@backstage.io
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'

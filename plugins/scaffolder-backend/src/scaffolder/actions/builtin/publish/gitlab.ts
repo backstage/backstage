@@ -20,11 +20,13 @@ import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -121,6 +123,11 @@ export function createPublishGitlabAction(options: {
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/master`;
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.git.author.name'),
+        email: config.getOptionalString('scaffolder.git.author.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
@@ -130,6 +137,7 @@ export function createPublishGitlabAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       ctx.output('remoteUrl', remoteUrl);

@@ -25,14 +25,16 @@ import {
 } from '../../../stages/publish/helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   const credentialsProviders = new Map(
     integrations.github.list().map(integration => {
@@ -248,6 +250,11 @@ export function createPublishGithubAction(options: {
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.git.author.name'),
+        email: config.getOptionalString('scaffolder.git.author.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
@@ -257,6 +264,7 @@ export function createPublishGithubAction(options: {
           password: token,
         },
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       try {

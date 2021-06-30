@@ -25,17 +25,17 @@ import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { when } from 'jest-when';
 
 describe('publish:github', () => {
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        github: [
-          { host: 'github.com', token: 'tokenlols' },
-          { host: 'ghe.github.com' },
-        ],
-      },
-    }),
-  );
-  const action = createPublishGithubAction({ integrations });
+  const config = new ConfigReader({
+    integrations: {
+      github: [
+        { host: 'github.com', token: 'tokenlols' },
+        { host: 'ghe.github.com' },
+      ],
+    },
+  });
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createPublishGithubAction({ integrations, config });
   const mockContext = {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
@@ -178,6 +178,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
@@ -207,6 +208,7 @@ describe('publish:github', () => {
       defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 

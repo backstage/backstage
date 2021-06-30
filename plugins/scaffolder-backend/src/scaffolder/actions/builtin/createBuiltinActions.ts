@@ -17,6 +17,7 @@
 import { UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ScmIntegrations } from '@backstage/integration';
+import { Config } from '@backstage/config';
 import { TemplaterBuilder } from '../../stages';
 import {
   createCatalogRegisterAction,
@@ -41,8 +42,9 @@ export const createBuiltinActions = (options: {
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
   templaters: TemplaterBuilder;
+  config: Config;
 }) => {
-  const { reader, integrations, templaters, catalogClient } = options;
+  const { reader, integrations, templaters, catalogClient, config } = options;
 
   return [
     createFetchPlainAction({
@@ -56,18 +58,22 @@ export const createBuiltinActions = (options: {
     }),
     createPublishGithubAction({
       integrations,
+      config,
     }),
     createPublishGithubPullRequestAction({
       integrations,
     }),
     createPublishGitlabAction({
       integrations,
+      config,
     }),
     createPublishBitbucketAction({
       integrations,
+      config,
     }),
     createPublishAzureAction({
       integrations,
+      config,
     }),
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),

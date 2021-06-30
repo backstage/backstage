@@ -26,27 +26,27 @@ import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
 describe('publish:bitbucket', () => {
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        bitbucket: [
-          {
-            host: 'bitbucket.org',
-            token: 'tokenlols',
-          },
-          {
-            host: 'hosted.bitbucket.com',
-            token: 'thing',
-            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
-          },
-          {
-            host: 'notoken.bitbucket.com',
-          },
-        ],
-      },
-    }),
-  );
-  const action = createPublishBitbucketAction({ integrations });
+  const config = new ConfigReader({
+    integrations: {
+      bitbucket: [
+        {
+          host: 'bitbucket.org',
+          token: 'tokenlols',
+        },
+        {
+          host: 'hosted.bitbucket.com',
+          token: 'thing',
+          apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
+        },
+        {
+          host: 'notoken.bitbucket.com',
+        },
+      ],
+    },
+  });
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createPublishBitbucketAction({ integrations, config });
   const mockContext = {
     input: {
       repoUrl: 'bitbucket.org?repo=repo&owner=owner',
@@ -331,6 +331,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'main',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
