@@ -23,6 +23,7 @@ import {
   EntityRefLinks,
   getEntityRelations,
   useEntity,
+  getEntityMetadataEditUrl,
 } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -74,6 +75,8 @@ export const GroupProfileCard = ({
     kind: 'group',
   });
 
+  const entityMetadataEditUrl = getEntityMetadataEditUrl(group);
+
   const displayName = profile?.displayName ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
 
@@ -85,10 +88,10 @@ export const GroupProfileCard = ({
       action={
         <IconButton
           aria-label="Edit"
-          // disabled={!entityMetadataEditUrl}
+          disabled={!entityMetadataEditUrl}
           title="Edit Metadata"
           onClick={() => {
-            // window.open(entityMetadataEditUrl ?? '#', '_blank');
+            window.open(entityMetadataEditUrl ?? '#', '_blank');
           }}
         >
           <EditIcon />
