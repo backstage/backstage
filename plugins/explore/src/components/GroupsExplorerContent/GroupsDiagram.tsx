@@ -18,6 +18,7 @@ import {
   RELATION_CHILD_OF,
   stringifyEntityRef,
   parseEntityRef,
+  GroupEntity,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -107,7 +108,11 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
  * Dynamically generates a diagram of groups registered in the catalog.
  */
 export function GroupsDiagram() {
-  const nodes = new Array<{ id: string; kind: string; name: string }>();
+  const nodes = new Array<{
+    id: string;
+    kind: string;
+    name: string;
+  }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 
   const configApi = useApi(configApiRef);
@@ -141,7 +146,9 @@ export function GroupsDiagram() {
     nodes.push({
       id: stringifyEntityRef(catalogItem),
       kind: catalogItem.kind,
-      name: formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
+      name:
+        (catalogItem as GroupEntity).spec?.profile?.displayName ||
+        formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
     });
 
     // Edge to parent
