@@ -58,7 +58,7 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "use-immer": "^0.5.1",
+    "use-immer": "^0.6.0",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
