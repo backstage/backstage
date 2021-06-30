@@ -18,6 +18,7 @@ import {
   RELATION_CHILD_OF,
   stringifyEntityRef,
   parseEntityRef,
+  GroupEntity,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -96,7 +97,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           alignmentBaseline="baseline"
           style={{ fontWeight: 'bold' }}
         >
-          {props.node.profile?.displayName ?? props.node.name}
+          {props.node.name}
         </text>
       </Link>
     </g>
@@ -146,8 +147,9 @@ export function GroupsDiagram() {
     nodes.push({
       id: stringifyEntityRef(catalogItem),
       kind: catalogItem.kind,
-      name: formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
-      profile: catalogItem.spec?.profile,
+      name:
+        (catalogItem as GroupEntity).spec?.profile?.displayName ||
+        formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
     });
 
     // Edge to parent
