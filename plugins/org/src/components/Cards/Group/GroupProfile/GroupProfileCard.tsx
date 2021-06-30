@@ -33,10 +33,12 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  IconButton,
 } from '@material-ui/core';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
+import EditIcon from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core-components';
@@ -80,6 +82,18 @@ export const GroupProfileCard = ({
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={variant}
+      action={
+        <IconButton
+          aria-label="Edit"
+          // disabled={!entityMetadataEditUrl}
+          title="Edit Metadata"
+          onClick={() => {
+            // window.open(entityMetadataEditUrl ?? '#', '_blank');
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+      }
     >
       <Grid container spacing={3}>
         <Grid item xs={12} sm={2} xl={1}>
