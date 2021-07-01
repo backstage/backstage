@@ -83,10 +83,10 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      const etag = response.headers.get('ETag')
-        ? response.headers.get('ETag')!
-        : undefined;
-      return { buffer: async () => Buffer.from(await response.text()), etag };
+      return {
+        buffer: async () => Buffer.from(await response.text()),
+        etag: response.headers.get('ETag') ?? undefined,
+      };
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;

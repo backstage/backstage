@@ -109,12 +109,9 @@ export class GithubUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      const etag = response.headers.get('ETag')
-        ? response.headers.get('ETag')!
-        : undefined;
       return {
         buffer: async () => Buffer.from(await response.text()),
-        etag,
+        etag: response.headers.get('ETag') ?? undefined,
       };
     }
 

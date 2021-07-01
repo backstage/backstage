@@ -213,7 +213,7 @@ describe('GitlabUrlReader', () => {
         rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-        rest.get('*', (req, res, ctx) => {
+        rest.get('*', (_req, res, ctx) => {
           return res(ctx.status(200), ctx.set('ETag', '999'), ctx.body('foo'));
         }),
       );
