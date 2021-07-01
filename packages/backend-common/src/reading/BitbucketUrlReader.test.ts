@@ -119,14 +119,14 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://bitbucket.org/backstage/mock/get/master.tgz',
+          'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
               ctx.set(
                 'content-disposition',
-                'attachment; filename=backstage-mock-12ab34cd56ef.tgz',
+                'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
               ctx.body(repoBuffer),
             ),
@@ -304,14 +304,14 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://bitbucket.org/backstage/mock/get/master.tgz',
+          'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
               ctx.set(
                 'content-disposition',
-                'attachment; filename=backstage-mock-12ab34cd56ef.tgz',
+                'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
               ctx.body(repoBuffer),
             ),
