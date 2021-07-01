@@ -97,12 +97,7 @@ export const ToolCard = ({ card, objectFit }: Props) => {
         )}
       </CardContent>
       <CardActions>
-        <Button
-          externalLinkTarget="_blank"
-          color="primary"
-          to={url}
-          disabled={!url}
-        >
+        <Button color="primary" to={url} disabled={!url}>
           Explore
         </Button>
       </CardActions>
