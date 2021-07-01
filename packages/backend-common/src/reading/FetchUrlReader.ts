@@ -19,6 +19,8 @@ import { NotFoundError } from '@backstage/errors';
 import {
   ReaderFactory,
   ReadTreeResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchResponse,
   UrlReader,
 } from './types';
@@ -71,6 +73,15 @@ export class FetchUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  async readUrl(
+    url: string,
+    _options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO etag is not implemented yet.
+    const buffer = await this.read(url);
+    return { buffer: async () => buffer };
   }
 
   async readTree(): Promise<ReadTreeResponse> {

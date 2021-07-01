@@ -36,6 +36,8 @@ import {
   SearchOptions,
   SearchResponse,
   UrlReader,
+  ReadUrlOptions,
+  ReadUrlResponse,
 } from './types';
 
 export class AzureUrlReader implements UrlReader {
@@ -76,6 +78,15 @@ export class AzureUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  async readUrl(
+    url: string,
+    _options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO etag is not implemented yet.
+    const buffer = await this.read(url);
+    return { buffer: async () => buffer };
   }
 
   async readTree(
