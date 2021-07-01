@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
-
+import { xcmetricsApiRef, XCMetricsClient } from './api';
 import { rootRouteRef } from './routes';
 
 export const xcmetricsPlugin = createPlugin({
@@ -25,12 +27,23 @@ export const xcmetricsPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: xcmetricsApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+      },
+      factory({ discoveryApi }) {
+        return new XCMetricsClient({ discoveryApi });
+      },
+    }),
+  ],
 });
 
 export const XcmetricsPage = xcmetricsPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/XCMetricsPage').then(m => m.XCMetricsPage),
     mountPoint: rootRouteRef,
   }),
 );

@@ -13,4 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleComponent } from './ExampleComponent';
+import React from 'react';
+import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import { OverviewComponent } from '../OverviewComponent';
+
+export const XCMetricsPage = () => (
+  <Page themeId="tool">
+    <Header title="XCMetrics" subtitle="Dashboard">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <OverviewComponent />
+    </Content>
+  </Page>
+);

@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
-  title: 'XCMetrics',
-});
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { XCMetricsApi } from './types';
+
+interface Options {
+  discoveryApi: DiscoveryApi;
+}
+
+export class XCMetricsClient implements XCMetricsApi {
+  private readonly discoveryApi: DiscoveryApi;
+
+  constructor(options: Options) {
+    this.discoveryApi = options.discoveryApi;
+  }
+
+  async getBuilds(): Promise<string> {
+    const backendUrl = `${await this.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/xcmetrics/build`;
+    const response = await fetch(backendUrl);
+    return JSON.stringify(await response.json(), null, 2);
+  }
+}

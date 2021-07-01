@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleFetchComponent } from './ExampleFetchComponent';
+
+import { createApiRef } from '@backstage/core-plugin-api';
+
+export interface XCMetricsApi {
+  getBuilds(): Promise<string>;
+}
+
+export const xcmetricsApiRef = createApiRef<XCMetricsApi>({
+  id: 'plugin.xcmetrics.api',
+  description: 'Used by the XCMetrics plugin to make requests',
+});
