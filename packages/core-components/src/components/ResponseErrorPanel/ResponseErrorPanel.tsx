@@ -76,7 +76,7 @@ export const ResponseErrorPanel = ({
           <ListItemText
             classes={{ secondary: classes.text }}
             primary="Request"
-            secondary={request ? `${request.method} ${request.url}` : undefined}
+            secondary={request ? `${requestString}` : undefined}
           />
           <CopyTextButton text={requestString} />
         </ListItem>
