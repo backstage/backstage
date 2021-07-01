@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 0.2.5
+
+### Patch Changes
+
+- 35a3e4e4c: Fix repetitive error reporting in EntityTypePicker
+- Updated dependencies
+  - @backstage/core-app-api@0.1.4
+  - @backstage/core-components@0.1.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
 ## 0.2.4
 
 ### Patch Changes
