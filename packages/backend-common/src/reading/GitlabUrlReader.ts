@@ -34,6 +34,8 @@ import {
   SearchOptions,
   SearchResponse,
   UrlReader,
+  ReadUrlResponse,
+  ReadUrlOptions,
 } from './types';
 
 export class GitlabUrlReader implements UrlReader {
@@ -54,20 +56,37 @@ export class GitlabUrlReader implements UrlReader {
   ) {}
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
     const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
 
     let response: Response;
     try {
-      response = await fetch(
-        builtUrl,
-        getGitLabRequestOptions(this.integration.config),
-      );
+      response = await fetch(builtUrl, {
+        headers: {
+          ...getGitLabRequestOptions(this.integration.config).headers,
+          ...(options?.etag && { 'If-None-Match': options.etag }),
+        },
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
+    if (response.status === 304) {
+      throw new NotModifiedError();
+    }
+
     if (response.ok) {
-      return Buffer.from(await response.text());
+      const etag = response.headers.get('ETag')
+        ? response.headers.get('ETag')!
+        : undefined;
+      return { buffer: async () => Buffer.from(await response.text()), etag };
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
