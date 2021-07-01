@@ -109,7 +109,13 @@ export class GithubUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return { buffer: async () => Buffer.from(await response.text()) };
+      const etag = response.headers.get('ETag')
+        ? response.headers.get('ETag')!
+        : undefined;
+      return {
+        buffer: async () => Buffer.from(await response.text()),
+        etag,
+      };
     }
 
     const message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
