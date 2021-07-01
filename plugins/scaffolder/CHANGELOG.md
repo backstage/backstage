@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.10
+
+### Patch Changes
+
+- 9e60a728e: Upgrade `rjsf` to 3.0.0.
+- a94587cad: Update dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
 ## 0.9.9
 
 ### Patch Changes
