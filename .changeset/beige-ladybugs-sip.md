@@ -1,6 +1,4 @@
 ---
-'example-app': patch
-'@backstage/core': patch
 '@backstage/core-components': patch
 ---
 
