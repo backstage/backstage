@@ -149,7 +149,8 @@
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
-      }
+      },
+      "integrations/url-reader"
     ],
     "Plugins": [
       "plugins/index",

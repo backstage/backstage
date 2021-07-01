@@ -98,6 +98,7 @@ nav:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:
           - Org Data: 'integrations/ldap/org.md'
+      - URL Reader: 'integrations/url-reader.md'
   - Plugins:
       - Intro to plugins: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'
