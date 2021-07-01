@@ -57,6 +57,7 @@ deadnaming
 debounce
 Debounce
 declaratively
+deduplicated
 deps
 destructured
 dev
@@ -121,6 +122,7 @@ Knex
 kubectl
 kubernetes
 kubernetes
+ldap
 learnings
 Leasot
 lerna
@@ -272,6 +274,7 @@ transpilation
 transpiled
 truthy
 ui
+unbreak
 unmanaged
 unregister
 unregistration

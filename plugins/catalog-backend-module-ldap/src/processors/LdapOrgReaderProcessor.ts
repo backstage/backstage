@@ -22,9 +22,12 @@ import {
   LdapProviderConfig,
   readLdapConfig,
   readLdapOrg,
-} from './ldap';
-import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+} from '../ldap';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  results,
+} from '@backstage/plugin-catalog-backend';
 
 /**
  * Extracts teams and users out of an LDAP server.

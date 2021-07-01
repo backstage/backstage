@@ -182,7 +182,7 @@ describe('GitlabUrlReader', () => {
 
   describe('readTree', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.zip'),
+      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {
@@ -205,7 +205,7 @@ describe('GitlabUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -283,7 +283,7 @@ describe('GitlabUrlReader', () => {
           },
         ),
         rest.get(
-          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
+          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -306,8 +306,8 @@ describe('GitlabUrlReader', () => {
       const files = await response.files();
       expect(files.length).toBe(2);
 
-      const mkDocsFile = await files[0].content();
-      const indexMarkdownFile = await files[1].content();
+      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
@@ -318,7 +318,7 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -331,7 +331,7 @@ describe('GitlabUrlReader', () => {
     it('returns the wanted files from hosted gitlab', async () => {
       worker.use(
         rest.get(
-          'https://gitlab.mycompany.com/backstage/mock/-/archive/main.zip',
+          'https://gitlab.mycompany.com/backstage/mock/-/archive/main.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -375,7 +375,7 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/backstage/mock/tree/main/docs',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),
@@ -454,7 +454,7 @@ describe('GitlabUrlReader', () => {
 
   describe('search', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.zip'),
+      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {
@@ -471,7 +471,7 @@ describe('GitlabUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
               ctx.status(200),

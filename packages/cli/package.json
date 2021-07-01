@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/core": "^7.4.4",
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
-    "@backstage/cli-common": "^0.1.1",
+    "@backstage/cli-common": "^0.1.2",
     "@backstage/config": "^0.1.5",
     "@backstage/config-loader": "^0.6.4",
     "@hot-loader/react-dom": "^16.13.0",
@@ -40,7 +40,7 @@
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^13.0.0",
-    "@rollup/plugin-yaml": "^2.1.1",
+    "@rollup/plugin-yaml": "^3.0.0",
     "@spotify/eslint-config-base": "^9.0.0",
     "@spotify/eslint-config-react": "^10.0.0",
     "@spotify/eslint-config-typescript": "^10.0.0",
@@ -61,7 +61,7 @@
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^6.1.0",
-    "css-loader": "^3.5.3",
+    "css-loader": "^5.2.6",
     "dashify": "^2.0.0",
     "diff": "^5.0.0",
     "esbuild": "^0.8.56",
@@ -118,11 +118,11 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.8.3",
+    "@backstage/backend-common": "^0.8.4",
     "@backstage/config": "^0.1.5",
-    "@backstage/core-components": "^0.1.3",
+    "@backstage/core-components": "^0.1.4",
     "@backstage/core-plugin-api": "^0.1.3",
-    "@backstage/core-app-api": "^0.1.3",
+    "@backstage/core-app-api": "^0.1.4",
     "@backstage/dev-utils": "^0.2.0",
     "@backstage/test-utils": "^0.1.14",
     "@backstage/theme": "^0.2.8",
@@ -146,7 +146,7 @@
     "del": "^6.0.0",
     "mock-fs": "^4.13.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^9.1.1"
+    "ts-node": "^10.0.0"
   },
   "files": [
     "asset-types",

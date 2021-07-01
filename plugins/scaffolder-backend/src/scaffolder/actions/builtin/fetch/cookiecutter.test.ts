@@ -180,7 +180,7 @@ describe('fetch:cookiecutter', () => {
         },
       }),
     ).rejects.toThrow(
-      /targetPath may not specify a path outside the working directory/,
+      /Relative path is not allowed to refer to a directory outside its parent/,
     );
   });
 });

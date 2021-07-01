@@ -33,6 +33,7 @@ import {
   OrganizationTransformer,
   UserTransformer,
 } from './types';
+import { Logger } from 'winston';
 
 export async function defaultUserTransformer(
   user: MicrosoftGraph.User,
@@ -75,7 +76,11 @@ export async function defaultUserTransformer(
 
 export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
-  options?: { userFilter?: string; transformer?: UserTransformer },
+  options: {
+    userFilter?: string;
+    transformer?: UserTransformer;
+    logger: Logger;
+  },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
@@ -86,17 +91,22 @@ export async function readMicrosoftGraphUsers(
   const promises: Promise<void>[] = [];
 
   for await (const user of client.getUsers({
-    filter: options?.userFilter,
+    filter: options.userFilter,
   })) {
     // Process all users in parallel, otherwise it can take quite some time
     promises.push(
       limiter(async () => {
-        const userPhoto = await client.getUserPhotoWithSizeLimit(
-          user.id!,
-          // We are limiting the photo size, as users with full resolution photos
-          // can make the Backstage API slow
-          120,
-        );
+        let userPhoto;
+        try {
+          userPhoto = await client.getUserPhotoWithSizeLimit(
+            user.id!,
+            // We are limiting the photo size, as users with full resolution photos
+            // can make the Backstage API slow
+            120,
+          );
+        } catch (e) {
+          options.logger.warn(`Unable to load photo for ${user.id}`);
+        }
 
         const entity = await transformer(user, userPhoto);
 
@@ -371,14 +381,16 @@ export function resolveRelations(
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: {
+  options: {
     userFilter?: string;
     groupFilter?: string;
     groupTransformer?: GroupTransformer;
+    logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
-    userFilter: options?.userFilter,
+    userFilter: options.userFilter,
+    logger: options.logger,
   });
   const {
     groups,

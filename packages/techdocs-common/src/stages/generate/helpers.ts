@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { isChildPath } from '@backstage/backend-common';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
@@ -23,7 +24,6 @@ import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { RemoteProtocol } from '../prepare/types';
 import { SupportedGeneratorKey } from './types';
-import { resolve as resolvePath } from 'path';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -178,10 +178,7 @@ export const validateMkdocsYaml = async (
     schema: MKDOCS_SCHEMA,
   });
 
-  if (
-    mkdocsYml.docs_dir &&
-    !resolvePath(inputDir, mkdocsYml.docs_dir).startsWith(inputDir)
-  ) {
+  if (mkdocsYml.docs_dir && !isChildPath(inputDir, mkdocsYml.docs_dir)) {
     throw new Error(
       `docs_dir configuration value in mkdocs can't be an absolute directory or start with ../ for security reasons.
        Use relative paths instead which are resolved relative to your mkdocs.yml file location.`,
