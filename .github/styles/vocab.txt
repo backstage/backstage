@@ -137,6 +137,7 @@ maintainership
 makefile
 md
 memcache
+memoized
 microservice
 microservices
 microsite

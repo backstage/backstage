@@ -51,7 +51,7 @@ function makeCreateEnv(config: Config) {
 
 This instance contains all
 [the default URL Reader providers](https://github.com/backstage/backstage/blob/master/packages/backend-common/src/reading/UrlReaders.ts)
-in the backend-common package including GitHub, Gitlab, Bitbucket, Azure, Google
+in the backend-common package including GitHub, GitLab, Bitbucket, Azure, Google
 GCS. As the need arises, more URL Readers are being written to support different
 providers.
 
