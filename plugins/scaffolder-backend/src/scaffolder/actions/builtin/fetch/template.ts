@@ -82,9 +82,9 @@ export function createFetchTemplateAction(options: {
       const templateDir = resolvePath(workDir, 'template');
 
       const targetPath = ctx.input.targetPath ?? './';
-      const outputPath = path.resolve(ctx.workspacePath, targetPath);
+      const outputDir = path.resolve(ctx.workspacePath, targetPath);
 
-      if (!outputPath.startsWith(ctx.workspacePath)) {
+      if (!outputDir.startsWith(ctx.workspacePath)) {
         throw new InputError(
           `Fetch action targetPath may not specify a path outside the working directory`,
         );
@@ -115,17 +115,22 @@ export function createFetchTemplateAction(options: {
       );
 
       // Grab some files
-      //
-      // TODO(mtlewis/orkohunter) test whether empty directories are templated
-      const allFilesInTemplates = await globby(`**/*`, {
+      const allEntriesInTemplate = await globby(`**/*`, {
         cwd: templateDir,
         dot: true,
+        onlyFiles: false,
+        markDirectories: true,
       });
-      const nonTemplatedFiles = new Set(
+      const nonTemplatedEntries = new Set(
         (
           await Promise.all(
             (ctx.input.copyWithoutRender || []).map(pattern =>
-              globby(pattern, { cwd: templateDir, dot: true }),
+              globby(pattern, {
+                cwd: templateDir,
+                dot: true,
+                onlyFiles: false,
+                markDirectories: true,
+              }),
             ),
           )
         ).flat(),
@@ -155,26 +160,30 @@ export function createFetchTemplateAction(options: {
       // (other than `autoescape` inside `configure` which escapes strings as HTML, which isn't right.).
       templater.addFilter('jsonify', s => JSON.stringify(s));
 
-      for (const location of allFilesInTemplates) {
-        const isTemplated = !nonTemplatedFiles.has(location);
-        const outputFilePath = resolvePath(
-          outputPath,
+      for (const location of allEntriesInTemplate) {
+        const isTemplated = !nonTemplatedEntries.has(location);
+        const outputPath = resolvePath(
+          outputDir,
           isTemplated
             ? templater.renderString(location, ctx.input.values)
             : location,
         );
 
-        const inputFileContents = await fs.readFile(
-          resolvePath(templateDir, location),
-          'utf-8',
-        );
+        if (location.endsWith('/')) {
+          await fs.ensureDir(outputPath);
+        } else {
+          const inputFileContents = await fs.readFile(
+            resolvePath(templateDir, location),
+            'utf-8',
+          );
 
-        await fs.outputFile(
-          outputFilePath,
-          isTemplated
-            ? templater.renderString(inputFileContents, ctx.input.values)
-            : inputFileContents,
-        );
+          await fs.outputFile(
+            outputPath,
+            isTemplated
+              ? templater.renderString(inputFileContents, ctx.input.values)
+              : inputFileContents,
+          );
+        }
       }
     },
   });
