@@ -268,8 +268,8 @@ export function createPublishGithubAction(options: {
           defaultBranch,
         });
       } catch (e) {
-        throw new Error(
-          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        ctx.logger.warn(
+          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );
       }
 
