@@ -108,14 +108,19 @@ export function createFetchTemplateAction(options: {
 
       // Create a templater
       const templater = nunjucks.configure({
+        // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
         tags: {
           variableStart: '${{',
           variableEnd: '}}',
         },
+        // We don't want this builtin auto-escaping since it is escaping as HTML which will often be incorrect e.g. adds things like &quot;
         autoescape: false,
       });
 
-      // TODO(mtlewis/orkohunter) Need to work out how to autoescape but not this
+      // TODO(mtlewis/orkohunter) Evaluate whether this behavior is still appropriate when using nunjucks.
+      // As of now jsonify seems to be the most reliable way to do escaping,
+      // but is there a builtin filter to do this inside nunjucks
+      // (other than `autoescape` inside `configure` which escapes strings as HTML, which isn't right.).
       templater.addFilter('jsonify', s => JSON.stringify(s));
 
       for (const location of allFilesInTemplates) {
@@ -131,8 +136,6 @@ export function createFetchTemplateAction(options: {
           ),
         );
       }
-
-      // TODO(mtlewis/orkohunter) log success
     },
   });
 }
