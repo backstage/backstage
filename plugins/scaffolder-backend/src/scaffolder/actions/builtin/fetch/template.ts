@@ -98,8 +98,8 @@ export function createFetchTemplateAction(options: {
 
       // Grab some files
       //
-      // TODO(mtlewis/orkohunter) handle subdirectories
-      const allFilesInTemplates = await globby(`*`, { cwd: templateDir });
+      // TODO(mtlewis/orkohunter) test whether empty directories are templated
+      const allFilesInTemplates = await globby(`**/*`, { cwd: templateDir });
 
       // Nice for Cookiecutter compat
       //
@@ -123,7 +123,7 @@ export function createFetchTemplateAction(options: {
         const filepath = templater.renderString(location, ctx.input.values);
 
         // write file
-        await fs.writeFile(
+        await fs.outputFile(
           resolvePath(outputPath, filepath),
           templater.renderString(
             await fs.readFile(resolvePath(templateDir, location), 'utf-8'),
