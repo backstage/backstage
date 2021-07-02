@@ -164,6 +164,7 @@ export async function createRouter(
       });
 
       let taskSpec;
+
       if (isBeta2Template(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);

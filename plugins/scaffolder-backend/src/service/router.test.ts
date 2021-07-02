@@ -83,7 +83,16 @@ describe('createRouter', () => {
       owner: 'web@example.com',
       type: 'website',
       steps: [],
-      parameters: [],
+      parameters: {
+        type: 'object',
+        required: ['required'],
+        properties: {
+          required: {
+            type: 'string',
+            description: 'Required parameter',
+          },
+        },
+      },
     },
   };
 
@@ -117,7 +126,7 @@ describe('createRouter', () => {
       const response = await request(app)
         .post('/v2/tasks')
         .send({
-          templateName: '',
+          templateName: 'create-react-app-template',
           values: {
             storePath: 'https://github.com/backstage/backstage',
           },
