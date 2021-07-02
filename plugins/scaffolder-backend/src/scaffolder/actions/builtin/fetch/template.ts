@@ -139,6 +139,8 @@ export function createFetchTemplateAction(options: {
       // Nice for Cookiecutter compat
       //
       // TODO(mtlewis/orkohunter): parameterize all jinja2/cookiecutter compat
+      // TODO(mtlewis): introduce "cookiecutter" prefix for input variables when
+      // compat is enabled?
       nunjucks.installJinjaCompat();
 
       // Create a templater
