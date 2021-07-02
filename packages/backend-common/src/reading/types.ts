@@ -63,7 +63,7 @@ export type ReadUrlOptions = {
    * of the data, usually the commit SHA or etag from the target.
    *
    * When an etag is given in ReadUrlOptions, readUrl will first compare the etag against the etag
-   * on the target branch. If they match, readUrl will throw a NotModifiedError indicating that the readUrl
+   * on the target. If they match, readUrl will throw a NotModifiedError indicating that the readUrl
    * response will not differ from the previous response which included this particular etag. If they
    * do not match, readUrl will return the rest of ReadUrlResponse along with a new etag.
    */
