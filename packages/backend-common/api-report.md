@@ -184,8 +184,9 @@ export class Git {
         logger?: Logger | undefined;
     }) => Git;
     // (undocumented)
-    init({ dir }: {
+    init({ dir, defaultBranch, }: {
         dir: string;
+        defaultBranch?: string;
     }): Promise<void>;
     // (undocumented)
     merge({ dir, theirs, ours, author, committer, }: {
