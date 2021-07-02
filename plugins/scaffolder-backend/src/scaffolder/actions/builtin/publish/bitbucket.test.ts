@@ -335,6 +335,75 @@ describe('publish:bitbucket', () => {
     });
   });
 
+  it('should call initAndPush with the configured defaultAuthor', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        bitbucket: [
+          {
+            host: 'bitbucket.org',
+            token: 'tokenlols',
+          },
+          {
+            host: 'hosted.bitbucket.com',
+            token: 'thing',
+            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
+          },
+          {
+            host: 'notoken.bitbucket.com',
+          },
+        ],
+      },
+      scaffolder: {
+        defaultAuthor: {
+          name: 'Test',
+          email: 'example@example.com',
+        },
+      },
+    });
+
+    const customAuthorIntegrations = ScmIntegrations.fromConfig(
+      customAuthorConfig,
+    );
+    const customAuthorAction = createPublishBitbucketAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/owner/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/owner/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
+      logger: mockContext.logger,
+      gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
+    });
+  });
+
   it('should call outputs with the correct urls', async () => {
     server.use(
       rest.post(

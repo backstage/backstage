@@ -251,8 +251,8 @@ export function createPublishGithubAction(options: {
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.git.author.name'),
-        email: config.getOptionalString('scaffolder.git.author.email'),
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       await initRepoAndPush({

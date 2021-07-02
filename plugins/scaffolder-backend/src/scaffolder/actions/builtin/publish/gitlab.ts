@@ -124,8 +124,8 @@ export function createPublishGitlabAction(options: {
       const repoContentsUrl = `${remoteUrl}/-/blob/master`;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.git.author.name'),
-        email: config.getOptionalString('scaffolder.git.author.email'),
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       await initRepoAndPush({
