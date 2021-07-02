@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import capitalize from 'lodash/capitalize';
 import { Box } from '@material-ui/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
@@ -31,15 +31,16 @@ export const EntityTypePicker = () => {
     setSelectedTypes,
   } = useEntityTypeFilter();
 
-  if (!availableTypes) return null;
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load entity types`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
 
-  if (error) {
-    alertApi.post({
-      message: `Failed to load entity types`,
-      severity: 'error',
-    });
-    return null;
-  }
+  if (!availableTypes || error) return null;
 
   const items = [
     { value: 'all', label: 'All' },
