@@ -34,6 +34,7 @@ export function createFetchTemplateAction(options: {
     url: string;
     targetPath?: string;
     values: any;
+    copyWithoutRender?: string[];
   }>({
     id: 'fetch:template',
     description:
@@ -60,8 +61,15 @@ export function createFetchTemplateAction(options: {
             description: 'Values to pass on to the templating engine',
             type: 'object',
           },
-          // TODO(mtlewis/orkohunter): add copyWithoutRender support
-          //
+          copyWithoutRender: {
+            title: 'Copy Without Render',
+            description:
+              'Avoid rendering directories and files in the template',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
           // TODO(mtlewis/orkohunter): do we need to replicate the template extensions support
           // from fetch:cookiecutter?
         },
@@ -69,15 +77,25 @@ export function createFetchTemplateAction(options: {
     },
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
+
       const workDir = await ctx.createTemporaryDirectory();
       const templateDir = resolvePath(workDir, 'template');
 
-      // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
       const outputPath = path.resolve(ctx.workspacePath, targetPath);
+
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(
           `Fetch action targetPath may not specify a path outside the working directory`,
+        );
+      }
+
+      if (
+        ctx.input.copyWithoutRender &&
+        !Array.isArray(ctx.input.copyWithoutRender)
+      ) {
+        throw new InputError(
+          'Fetch action input copyWithoutRender must be an Array',
         );
       }
 
@@ -103,6 +121,15 @@ export function createFetchTemplateAction(options: {
         cwd: templateDir,
         dot: true,
       });
+      const nonTemplatedFiles = new Set(
+        (
+          await Promise.all(
+            (ctx.input.copyWithoutRender || []).map(pattern =>
+              globby(pattern, { cwd: templateDir, dot: true }),
+            ),
+          )
+        ).flat(),
+      );
 
       // Nice for Cookiecutter compat
       //
@@ -116,7 +143,9 @@ export function createFetchTemplateAction(options: {
           variableStart: '${{',
           variableEnd: '}}',
         },
-        // We don't want this builtin auto-escaping since it is escaping as HTML which will often be incorrect e.g. adds things like &quot;
+        // We don't want this builtin auto-escaping, since uses HTML escape sequences
+        // like `&quot;` - the correct way to escape strings in our case depends on
+        // the file type.
         autoescape: false,
       });
 
@@ -127,16 +156,24 @@ export function createFetchTemplateAction(options: {
       templater.addFilter('jsonify', s => JSON.stringify(s));
 
       for (const location of allFilesInTemplates) {
-        // handle variables in filenames
-        const filepath = templater.renderString(location, ctx.input.values);
+        const isTemplated = !nonTemplatedFiles.has(location);
+        const outputFilePath = resolvePath(
+          outputPath,
+          isTemplated
+            ? templater.renderString(location, ctx.input.values)
+            : location,
+        );
 
-        // write file
+        const inputFileContents = await fs.readFile(
+          resolvePath(templateDir, location),
+          'utf-8',
+        );
+
         await fs.outputFile(
-          resolvePath(outputPath, filepath),
-          templater.renderString(
-            await fs.readFile(resolvePath(templateDir, location), 'utf-8'),
-            ctx.input.values,
-          ),
+          outputFilePath,
+          isTemplated
+            ? templater.renderString(inputFileContents, ctx.input.values)
+            : inputFileContents,
         );
       }
     },
