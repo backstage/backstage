@@ -52,7 +52,7 @@ export function createFetchTemplateAction(options: {
           targetPath: {
             title: 'Target Path',
             description:
-              'Target path within the working directory to download the contents to.',
+              'Target path within the working directory to download the contents to. Defaults to the working directory root.',
             type: 'string',
           },
           values: {
@@ -60,6 +60,10 @@ export function createFetchTemplateAction(options: {
             description: 'Values to pass on to the templating engine',
             type: 'object',
           },
+          // TODO(mtlewis/orkohunter): add copyWithoutRender support
+          //
+          // TODO(mtlewis/orkohunter): do we need to replicate the template extensions support
+          // from fetch:cookiecutter?
         },
       },
     },
@@ -85,15 +89,21 @@ export function createFetchTemplateAction(options: {
         outputPath: templateDir,
       });
 
+      // at this point the templateDir contains the unprocessed contents of the skeleton directory
+
       ctx.logger.info(
         'Fetched template, beginning templating process with values',
         ctx.input.values,
       );
 
       // Grab some files
+      //
+      // TODO(mtlewis/orkohunter) handle subdirectories
       const allFilesInTemplates = await globby(`*`, { cwd: templateDir });
 
       // Nice for Cookiecutter compat
+      //
+      // TODO(mtlewis/orkohunter): parameterize all jinja2/cookiecutter compat
       nunjucks.installJinjaCompat();
 
       // Create a templater
@@ -105,11 +115,14 @@ export function createFetchTemplateAction(options: {
         autoescape: false,
       });
 
-      // Need to work out how to autoescape but not this
+      // TODO(mtlewis/orkohunter) Need to work out how to autoescape but not this
       templater.addFilter('jsonify', s => JSON.stringify(s));
 
       for (const location of allFilesInTemplates) {
+        // handle variables in filenames
         const filepath = templater.renderString(location, ctx.input.values);
+
+        // write file
         await fs.writeFile(
           resolvePath(outputPath, filepath),
           templater.renderString(
@@ -118,6 +131,8 @@ export function createFetchTemplateAction(options: {
           ),
         );
       }
+
+      // TODO(mtlewis/orkohunter) log success
     },
   });
 }
