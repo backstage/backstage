@@ -213,6 +213,23 @@ describe('Git', () => {
     });
   });
 
+  describe('init-custom-branch', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const dir = '/some/mock/dir';
+      const defaultBranch = 'main';
+
+      const git = Git.fromAuth({});
+
+      await git.init({ dir, defaultBranch });
+
+      expect(isomorphic.init).toHaveBeenCalledWith({
+        fs,
+        dir,
+        defaultBranch,
+      });
+    });
+  });
+
   describe('merge', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const dir = '/some/mock/dir';
