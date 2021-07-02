@@ -52,7 +52,7 @@ const BuildWithStepsView = () => {
   const { jobName, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
 
-  const [{ value }] = useBuildWithSteps(jobName, buildNumber);
+  const [{ value }] = useBuildWithSteps({ jobName, buildNumber });
 
   return (
     <div className={classes.root}>

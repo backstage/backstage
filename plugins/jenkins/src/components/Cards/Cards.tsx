@@ -100,7 +100,7 @@ export const LatestRunCard = ({
   branch: string;
   variant?: InfoCardVariants;
 }) => {
-  const [{ projects, loading, error }] = useBuilds(branch);
+  const [{ projects, loading, error }] = useBuilds({ branch });
   const latestRun = projects?.[0];
   return (
     <InfoCard title={`Latest ${branch} build`} variant={variant}>

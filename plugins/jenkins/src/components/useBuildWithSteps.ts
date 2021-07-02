@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
@@ -28,20 +28,26 @@ const INTERVAL_AMOUNT = 1500;
  * @param jobName the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
  * @param buildNumber the number of the build. e.g. "13"
  */
-export function useBuildWithSteps(jobName: string, buildNumber: string) {
+export function useBuildWithSteps({
+  jobName,
+  buildNumber,
+}: {
+  jobName: string;
+  buildNumber: string;
+}) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
   const { entity } = useEntity();
-  const entityName = useMemo(() => getEntityName(entity), [entity]);
 
   const getBuildWithSteps = useCallback(async () => {
     try {
+      const entityName = await getEntityName(entity);
       return api.getBuild(entityName, jobName, buildNumber);
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [buildNumber, jobName, entityName, api, errorApi]);
+  }, [buildNumber, jobName, entity, api, errorApi]);
 
   const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
     getBuildWithSteps,

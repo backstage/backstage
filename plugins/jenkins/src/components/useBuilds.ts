@@ -31,7 +31,7 @@ export enum ErrorType {
  *
  * TODO: deprecate branch and add a generic filter concept.
  */
-export function useBuilds(branch?: string) {
+export function useBuilds({ branch }: { branch?: string } = {}) {
   const { entity } = useEntity();
   const entityName = getEntityName(entity);
   const api = useApi(jenkinsApiRef);
