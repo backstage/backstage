@@ -141,10 +141,7 @@ describe('createRouter', () => {
         .send({
           templateName: 'create-react-app-template',
           values: {
-            storePath: 'https://github.com/backstage/backstage',
-            component_id: '123',
-            name: 'test',
-            use_typescript: false,
+            required: 'required-value',
           },
         });
 
@@ -161,10 +158,7 @@ describe('createRouter', () => {
         .send({
           templateName: 'create-react-app-template',
           values: {
-            storePath: 'https://github.com/backstage/backstage',
-            component_id: '123',
-            name: 'test',
-            use_typescript: false,
+            required: 'required-value',
           },
         });
 
