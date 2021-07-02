@@ -133,3 +133,6 @@ site
 
 # Sensitive credentials
 *-credentials.yaml
+
+# Docker Data
+data/
