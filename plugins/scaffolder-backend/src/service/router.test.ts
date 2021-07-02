@@ -39,7 +39,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import { TemplateEntityV1beta2 } from '../../../../packages/catalog-model/src';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { createRouter } from './router';
 
 const createCatalogClient = (templates: any[] = []) =>
