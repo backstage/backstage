@@ -99,7 +99,10 @@ export function createFetchTemplateAction(options: {
       // Grab some files
       //
       // TODO(mtlewis/orkohunter) test whether empty directories are templated
-      const allFilesInTemplates = await globby(`**/*`, { cwd: templateDir });
+      const allFilesInTemplates = await globby(`**/*`, {
+        cwd: templateDir,
+        dot: true,
+      });
 
       // Nice for Cookiecutter compat
       //
