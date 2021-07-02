@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { sep as separatorPath } from 'path';
 
 enum Webpacker {
   react = 'react',
@@ -99,7 +100,12 @@ export const railsArgumentResolver = (
 
   if (options?.template) {
     argumentsToRun.push('--template');
-    argumentsToRun.push(options.template.replace('./', `${projectRoot}/`));
+    argumentsToRun.push(
+      options.template.replace(
+        `.${separatorPath}`,
+        `${projectRoot}${separatorPath}`,
+      ),
+    );
   }
 
   return argumentsToRun;

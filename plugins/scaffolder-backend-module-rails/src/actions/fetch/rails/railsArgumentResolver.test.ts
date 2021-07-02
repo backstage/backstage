@@ -15,9 +15,12 @@
  */
 
 import { railsArgumentResolver } from './railsArgumentResolver';
+import { sep as separatorPath } from 'path';
+import os from 'os';
 
 describe('railsArgumentResolver', () => {
   describe('when provide the parameter', () => {
+    const root = os.platform() === 'win32' ? 'C:\\' : '/';
     test.each([
       [{}, []],
       [{ minimal: true }, ['--minimal']],
@@ -27,7 +30,10 @@ describe('railsArgumentResolver', () => {
       [{ webpacker: 'vue' }, ['--webpack', 'vue']],
       [{ database: 'postgresql' }, ['--database', 'postgresql']],
       [{ railsVersion: 'dev' }, ['--dev']],
-      [{ template: './rails.rb' }, ['--template', '/tmp/rails.rb']],
+      [
+        { template: `.${separatorPath}rails.rb` },
+        ['--template', `${root}${separatorPath}rails.rb`],
+      ],
     ])(
       'should include the argument to execution %p ->  %p',
       (passedArguments: object, expected: Array<string>) => {
@@ -40,7 +46,7 @@ describe('railsArgumentResolver', () => {
 
         const { railsArguments } = values;
 
-        const argumentsToRun = railsArgumentResolver('/tmp', railsArguments);
+        const argumentsToRun = railsArgumentResolver(root, railsArguments);
 
         expect(argumentsToRun).toEqual(expected);
       },

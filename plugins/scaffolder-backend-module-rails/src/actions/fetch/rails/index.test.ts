@@ -34,7 +34,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import mock from 'mock-fs';
+import mockFs from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { PassThrough } from 'stream';
@@ -86,12 +86,12 @@ describe('fetch:rails', () => {
   });
 
   beforeEach(() => {
-    mock({ [`${mockContext.workspacePath}/result`]: {} });
+    mockFs({ [`${mockContext.workspacePath}/result`]: {} });
     jest.restoreAllMocks();
   });
 
   afterEach(() => {
-    mock.restore();
+    mockFs.restore();
   });
 
   it('should call fetchContents with the correct values', async () => {

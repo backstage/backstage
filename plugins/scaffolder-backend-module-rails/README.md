@@ -11,7 +11,10 @@ Here you can find all Rails related features to improve your scaffolder:
 
 You need to configure the action in your backend:
 
+## From your Backstage root directory
+
 ```
+cd packages/backend
 yarn add @backstage/plugin-scaffolder-backend-module-rails
 ```
 
@@ -222,4 +225,25 @@ spec:
         entityRef: '{{ steps.register.output.entityRef }}'
 ```
 
-We have a [Docker image](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-rails/Rails.dockerfile) you can use to build your own.
+### What you need to run that action
+
+The environment need to have a [rails](https://github.com/rails/rails#getting-started) installation, or you can build and provide a docker image in your template.
+
+We have a [Dockerfile](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-rails/Rails.dockerfile) that you can use to build your image.
+
+If you choose to provide a docker image, you need to update your template with `imageName` parameter:
+
+```yaml
+steps:
+  - id: fetch-base
+    name: Fetch Base
+    action: fetch:rails
+    input:
+      url: ./template
+      imageName: repository/rails:tag
+      values:
+        name: '{{ parameters.name }}'
+        owner: '{{ parameters.owner }}'
+        system: '{{ parameters.system }}'
+        railsArguments: '{{ json parameters.railsArguments }}'
+```

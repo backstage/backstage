@@ -10,5 +10,4 @@ spec:
     - ./create-react-app/template.yaml
     - ./springboot-grpc-template/template.yaml
     - ./v1beta2-demo/template.yaml
-    - ./rails-demo/template.yaml
     - ./pull-request/template.yaml

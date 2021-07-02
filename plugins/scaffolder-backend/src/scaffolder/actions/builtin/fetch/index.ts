@@ -16,4 +16,4 @@
 
 export { createFetchPlainAction } from './plain';
 export { createFetchCookiecutterAction } from './cookiecutter';
-export * from './helpers';
+export { fetchContents } from './helpers';
