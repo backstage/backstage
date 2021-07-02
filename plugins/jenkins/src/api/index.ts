@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { JenkinsApiImpl, jenkinsApiRef } from './JenkinsApi';
+export { JenkinsClient, jenkinsApiRef } from './JenkinsApi';
 
 export type { JenkinsApi } from './JenkinsApi';

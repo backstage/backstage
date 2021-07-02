@@ -109,7 +109,7 @@ export interface JenkinsApi {
   ): Promise<void>;
 }
 
-export class JenkinsApiImpl implements JenkinsApi {
+export class JenkinsClient implements JenkinsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
 

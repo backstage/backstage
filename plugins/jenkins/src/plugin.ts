@@ -23,7 +23,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { JenkinsApiImpl, jenkinsApiRef } from './api';
+import { JenkinsClient, jenkinsApiRef } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -43,7 +43,7 @@ export const jenkinsPlugin = createPlugin({
       api: jenkinsApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
       factory: ({ discoveryApi, identityApi }) =>
-        new JenkinsApiImpl({ discoveryApi, identityApi }),
+        new JenkinsClient({ discoveryApi, identityApi }),
     }),
   ],
   routes: {
