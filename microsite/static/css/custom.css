@@ -137,6 +137,15 @@ td {
   color: $navigatorItemTextColor;
 }
 
+/* search */
+[aria-expanded="true"] ~ .aa-without-1 {
+  display: block !important;
+}
+
+[aria-expanded="true"] ~ .aa-without-1 .aa-dataset-1:after {
+  content: "No results"
+}
+
 /* header */
 .fixedHeaderContainer {
   position: fixed;
