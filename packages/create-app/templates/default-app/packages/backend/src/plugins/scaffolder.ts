@@ -24,23 +24,11 @@ export default async function createPlugin({
   const dockerClient = new Docker();
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
-  const cookiecutterTemplater = new CookieCutter({ containerRunner });
-  const craTemplater = new CreateReactAppTemplater({ containerRunner });
-  const templaters = new Templaters();
-
-  templaters.register('cookiecutter', cookiecutterTemplater);
-  templaters.register('cra', craTemplater);
-
-  const preparers = await Preparers.fromConfig(config, { logger });
-  const publishers = await Publishers.fromConfig(config, { logger });
-
   const discovery = SingleHostDiscovery.fromConfig(config);
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
   return await createRouter({
-    preparers,
-    templaters,
-    publishers,
+    containerRunner,
     logger,
     config,
     database,
