@@ -4,12 +4,7 @@ import {
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
-  CookieCutter,
-  CreateReactAppTemplater,
   createRouter,
-  Preparers,
-  Publishers,
-  Templaters,
 } from '@backstage/plugin-scaffolder-backend';
 import Docker from 'dockerode';
 import { Router } from 'express';
