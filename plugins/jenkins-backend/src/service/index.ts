@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export * from './service';
+export type { RouterOptions } from './router';
+export { createRouter } from './router';
+export type { JenkinsInfo, JenkinsInfoProvider } from './jenkinsInfoProvider';
+export { DefaultJenkinsInfoProvider } from './jenkinsInfoProvider';
