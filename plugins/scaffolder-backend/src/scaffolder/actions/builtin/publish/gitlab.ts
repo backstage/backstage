@@ -28,6 +28,7 @@ export function createPublishGitlabAction(options: {
 
   return createTemplateAction<{
     repoUrl: string;
+    defaultBranch?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     sourcePath?: string;
   }>({
@@ -47,6 +48,11 @@ export function createPublishGitlabAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -70,7 +76,11 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, repoVisibility = 'private' } = ctx.input;
+      const {
+        repoUrl,
+        repoVisibility = 'private',
+        defaultBranch = 'master',
+      } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -114,6 +124,7 @@ export function createPublishGitlabAction(options: {
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
+        defaultBranch,
         auth: {
           username: 'oauth2',
           password: integrationConfig.config.token,
