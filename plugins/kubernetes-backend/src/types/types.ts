@@ -76,4 +76,6 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  kubeConfigContext: string;
+  kubeConfigFile: string;
 }
