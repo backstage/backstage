@@ -144,6 +144,12 @@ export function createFetchPlainAction(options: {
 }): TemplateAction<any>;
 
 // @public (undocumented)
+export const createFilesystemDeleteAction: () => TemplateAction<any>;
+
+// @public (undocumented)
+export const createFilesystemRenameAction: () => TemplateAction<any>;
+
+// @public (undocumented)
 export function createLegacyActions(options: Options): TemplateAction<any>[];
 
 // @public (undocumented)
