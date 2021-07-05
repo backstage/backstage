@@ -24,8 +24,8 @@ package provides a dedicated API for reading from such URL based remote
 locations like GitHub, GitLab, Bitbucket, Google Cloud Storage, etc. This is
 commonly referred to as "URL Reader". It takes care of making authenticated
 requests to the remote host so that private files can be read securely. If users
-have [GitHub App based authentication](../plugins/github-apps.md) set up, URL
-Reader even refreshes the token, to avoid reaching the GitHub API rate limit.
+have [GitHub App based authentication](github-apps.md) set up, URL Reader even
+refreshes the token, to avoid reaching the GitHub API rate limit.
 
 As a result, plugin authors do not have to worry about any of these problems
 when trying to read files.
@@ -61,6 +61,14 @@ The generic interface of a URL Reader instance looks like this.
 export type UrlReader = {
   /* Used to read a single file and return its content. */
   read(url: string): Promise<Buffer>;
+  /**
+   * A replacement for the read method that supports options and complex responses.
+   *
+   * Use this whenever it is available, as the read method will be deprecated and
+   * eventually removed in the future.
+   */
+  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+
   /* Used to read a file tree and download as a directory. */
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   /* Used to search a file in a tree. */
