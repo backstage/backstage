@@ -15,14 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  EmptyState,
-  InfoCard,
-  InfoCardVariants,
-  MissingAnnotationEmptyState,
-  Progress,
-  useApi,
-} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -41,6 +33,16 @@ import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';
 import { Value } from './Value';
+
+import {
+  EmptyState,
+  InfoCard,
+  InfoCardVariants,
+  MissingAnnotationEmptyState,
+  Progress,
+} from '@backstage/core-components';
+
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   badgeLabel: {

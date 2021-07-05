@@ -20,13 +20,6 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import {
-  Avatar,
-  InfoCard,
-  Progress,
-  ResponseErrorPanel,
-  useApi,
-} from '@backstage/core';
-import {
   catalogApiRef,
   entityRouteParams,
   useEntity,
@@ -44,6 +37,14 @@ import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
+
+import {
+  Avatar,
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export { readGithubConfig } from './config';
-export type { ProviderConfig } from './config';
+export { readGithubConfig, readGithubMultiOrgConfig } from './config';
+export type { GithubMultiOrgConfig, ProviderConfig } from './config';
 export {
   getOrganizationTeams,
   getOrganizationUsers,

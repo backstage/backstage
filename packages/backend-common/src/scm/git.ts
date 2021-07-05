@@ -150,12 +150,19 @@ export class Git {
     });
   }
 
-  async init({ dir }: { dir: string }): Promise<void> {
+  async init({
+    dir,
+    defaultBranch = 'master',
+  }: {
+    dir: string;
+    defaultBranch?: string;
+  }): Promise<void> {
     this.config.logger?.info(`Init git repository {dir=${dir}}`);
 
     return git.init({
       fs,
       dir,
+      defaultBranch,
     });
   }
 

@@ -20,15 +20,15 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
+import ExternalLinkIcon from '@material-ui/icons/Launch';
+import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
+
 import {
   InfoCard,
   StructuredMetadataTable,
-  errorApiRef,
-  useApi,
   WarningPanel,
-} from '@backstage/core';
-import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
+} from '@backstage/core-components';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

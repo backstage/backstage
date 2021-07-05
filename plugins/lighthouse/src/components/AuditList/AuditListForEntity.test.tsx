@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { EntityContext } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
@@ -30,6 +29,9 @@ import {
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { AuditListForEntity } from './AuditListForEntity';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),

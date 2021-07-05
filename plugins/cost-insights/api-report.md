@@ -4,9 +4,9 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ContentRenderer } from 'recharts';
 import { Dispatch } from 'react';
@@ -16,7 +16,7 @@ import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RechartsFunction } from 'recharts';
 import { RefAttributes } from 'react';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
 import { TooltipProps } from 'recharts';
 import { TypographyProps } from '@material-ui/core';
@@ -346,7 +346,7 @@ export type DateAggregation = {
 };
 
 // @public (undocumented)
-export const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+export const DEFAULT_DATE_FORMAT = "yyyy-LL-dd";
 
 // @public
 export enum Duration {

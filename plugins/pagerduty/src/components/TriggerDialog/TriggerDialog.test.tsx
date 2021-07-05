@@ -16,18 +16,18 @@
 import React from 'react';
 import { fireEvent, act } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import {
-  ApiRegistry,
-  alertApiRef,
-  createApiRef,
-  ApiProvider,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerDialog } from './TriggerDialog';
+
+import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import {
+  alertApiRef,
+  createApiRef,
+  IdentityApi,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 
 describe('TriggerDialog', () => {
   const mockIdentityApi: Partial<IdentityApi> = {

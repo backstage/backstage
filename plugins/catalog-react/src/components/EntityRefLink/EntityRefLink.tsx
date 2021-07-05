@@ -18,11 +18,11 @@ import {
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
-import { Link, LinkProps } from '@backstage/core';
 import React, { forwardRef } from 'react';
 import { generatePath } from 'react-router';
 import { entityRoute } from '../../routes';
 import { formatEntityRefTitle } from './format';
+import { Link, LinkProps } from '@backstage/core-components';
 
 export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;

@@ -28,7 +28,7 @@ import { Stats } from '../Stats/Stats';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import flowImage from './flow.png';
-import { Link } from '@backstage/core';
+import { Link } from '@backstage/core-components';
 
 interface InfoCardProps {
   releaseBranch: GetBranchResult['branch'] | null;

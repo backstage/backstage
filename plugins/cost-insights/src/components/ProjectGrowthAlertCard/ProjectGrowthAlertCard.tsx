@@ -16,9 +16,9 @@
 
 import React from 'react';
 import pluralize from 'pluralize';
-import { InfoCard } from '@backstage/core';
 import { ProjectGrowthAlertChart } from './ProjectGrowthAlertChart';
 import { ProjectGrowthData } from '../../types';
+import { InfoCard } from '@backstage/core-components';
 
 type ProjectGrowthAlertProps = {
   alert: ProjectGrowthData;

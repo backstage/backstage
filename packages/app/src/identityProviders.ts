@@ -24,7 +24,7 @@ import {
   oneloginAuthApiRef,
   oauth2ApiRef,
   oidcAuthApiRef,
-} from '@backstage/core';
+} from '@backstage/core-plugin-api';
 
 export const providers = [
   {

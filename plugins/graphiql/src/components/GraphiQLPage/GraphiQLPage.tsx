@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Content, Header, HeaderLabel, Page, Progress } from '@backstage/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import 'graphiql/graphiql.css';
 import { graphQlBrowseApiRef } from '../../lib/api';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
 import { Typography } from '@material-ui/core';
+import {
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+  Progress,
+} from '@backstage/core-components';
 
 export const GraphiQLPage = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);

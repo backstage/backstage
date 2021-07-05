@@ -4,9 +4,9 @@
 
 ```ts
 
-import { BackstagePlugin } from '@backstage/core';
-import { InfoCardVariants } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { InfoCardVariants } from '@backstage/core-components';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityFossaCard: ({ variant }: {

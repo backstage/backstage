@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScaffolderClient } from './api';
+import { ConfigReader } from '@backstage/core-app-api';
 
 describe('api', () => {
   const discoveryApi = {} as any;

@@ -92,6 +92,16 @@ export class CatalogClient implements CatalogApi {
     );
 
     const refCompare = (a: Entity, b: Entity) => {
+      // in case field filtering is used, these fields might not be part of the response
+      if (
+        a.metadata?.name === undefined ||
+        a.kind === undefined ||
+        b.metadata?.name === undefined ||
+        b.kind === undefined
+      ) {
+        return 0;
+      }
+
       const aRef = stringifyEntityRef(a);
       const bRef = stringifyEntityRef(b);
       if (aRef < bRef) {

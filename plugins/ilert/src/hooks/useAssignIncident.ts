@@ -15,10 +15,10 @@
  */
 import React from 'react';
 import { ilertApiRef } from '../api';
-import { useApi, errorApiRef } from '@backstage/core';
 import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import { Incident, IncidentResponder } from '../types';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export const useAssignIncident = (incident: Incident | null, open: boolean) => {
   const ilertApi = useApi(ilertApiRef);

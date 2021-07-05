@@ -23,13 +23,6 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import {
-  Content,
-  Page,
-  Progress,
-  StatusError,
-  StatusOK,
-} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { ErrorPanel } from './ErrorPanel';
@@ -42,12 +35,19 @@ import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
 import { CustomResources } from '../CustomResources';
 import EmptyStateImage from '../../assets/emptystate.svg';
-
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
   useKubernetesObjects,
 } from '../../hooks';
+
+import {
+  Content,
+  Page,
+  Progress,
+  StatusError,
+  StatusOK,
+} from '@backstage/core-components';
 
 type ClusterSummaryProps = {
   clusterName: string;

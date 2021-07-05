@@ -19,7 +19,7 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
 } from '../api/types';
-import { OAuthApi } from '@backstage/core';
+import { OAuthApi } from '@backstage/core-plugin-api';
 
 export class CloudbuildClient implements CloudbuildApi {
   constructor(private readonly googleAuthApi: OAuthApi) {}

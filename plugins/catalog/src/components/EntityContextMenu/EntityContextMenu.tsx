@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core';
 import {
   Divider,
   IconButton,
@@ -28,6 +27,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 // TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
 const useStyles = makeStyles({

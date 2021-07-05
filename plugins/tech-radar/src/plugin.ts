@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { techRadarApiRef } from './api';
+
+import { SampleTechRadarApi } from './sample';
 import {
   createPlugin,
   createRouteRef,
   createRoutableExtension,
   createApiFactory,
-} from '@backstage/core';
-
-import { techRadarApiRef } from './api';
-import { SampleTechRadarApi } from './sample';
+} from '@backstage/core-plugin-api';
 
 const rootRouteRef = createRouteRef({
   title: 'Tech Radar',

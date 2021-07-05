@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
 import { KafkaApi, ConsumerGroupOffsetsResponse } from './types';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class KafkaBackendClient implements KafkaApi {
   private readonly discoveryApi: DiscoveryApi;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { OAuthApi } from '@backstage/core';
 import { GcpApi } from './GcpApi';
 import { Operation, Project } from './types';
+import { OAuthApi } from '@backstage/core-plugin-api';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';

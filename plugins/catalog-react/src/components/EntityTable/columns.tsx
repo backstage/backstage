@@ -20,7 +20,6 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { OverflowTooltip, TableColumn } from '@backstage/core';
 import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
@@ -28,6 +27,7 @@ import {
   EntityRefLinks,
   formatEntityRefTitle,
 } from '../EntityRefLink';
+import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 
 export function createEntityRefColumn<T extends Entity>({
   defaultKind,

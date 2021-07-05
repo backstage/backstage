@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import {
   BitriseApp,
@@ -23,6 +22,7 @@ import {
 } from '../api/bitriseApi.model';
 import { bitriseApiRef } from '../plugin';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const useBitriseBuilds = (
   appName: string,

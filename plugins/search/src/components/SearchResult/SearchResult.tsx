@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { EmptyState, Progress } from '@backstage/core';
 import { SearchResult } from '@backstage/search-common';
 import { Alert } from '@material-ui/lab';
-
 import { useSearch } from '../SearchContext';
+
+import { EmptyState, Progress } from '@backstage/core-components';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
@@ -41,7 +41,7 @@ const SearchResultComponent = ({ children }: Props) => {
     );
   }
 
-  if (!value) {
+  if (!value?.results.length) {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 

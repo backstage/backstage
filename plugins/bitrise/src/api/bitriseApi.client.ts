@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
 import { BitriseApi } from './bitriseApi';
 import {
   BitriseBuildResponseItem,
@@ -28,6 +27,7 @@ import {
 import qs from 'qs';
 import { DateTime, Interval } from 'luxon';
 import { pickBy, identity } from 'lodash';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class BitriseClientApi implements BitriseApi {
   constructor(private readonly discoveryApi: DiscoveryApi) {}

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { NewRelicClient, newRelicApiRef } from './api';
 import {
   createApiFactory,
   createPlugin,
   createRouteRef,
   discoveryApiRef,
   createRoutableExtension,
-} from '@backstage/core';
-import { NewRelicClient, newRelicApiRef } from './api';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '/newrelic',

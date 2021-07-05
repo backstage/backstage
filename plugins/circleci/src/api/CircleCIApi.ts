@@ -26,7 +26,7 @@ import {
   BuildSummary,
   GitType,
 } from 'circleci-api';
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 export { GitType };
 export type { BuildWithSteps, BuildStepAction, BuildSummary };

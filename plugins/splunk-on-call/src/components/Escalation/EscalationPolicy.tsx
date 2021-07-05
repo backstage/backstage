@@ -26,9 +26,11 @@ import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
 import { useAsync } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
-import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { User } from '../types';
+
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress } from '@backstage/core-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

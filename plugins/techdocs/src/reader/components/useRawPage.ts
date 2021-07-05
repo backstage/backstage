@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { techdocsStorageApiRef } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
 
 export type RawPage = {
   content: string;

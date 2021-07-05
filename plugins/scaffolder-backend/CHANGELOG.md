@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.12.4
+
+### Patch Changes
+
+- 1627daac2: Fix `catalog:write` on windows systems
+- ab5cc376f: Use new utilities from `@backstage/backend-common` for safely resolving child paths
+- Updated dependencies
+  - @backstage/backend-common@0.8.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
+## 0.12.3
+
+### Patch Changes
+
+- a7f5fe7d7: created an action to write a catalog-info file
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- c18a3c2ae: Correctly recognize whether the cookiecutter command exists
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/catalog-model@0.8.4
+
 ## 0.12.2
 
 ### Patch Changes

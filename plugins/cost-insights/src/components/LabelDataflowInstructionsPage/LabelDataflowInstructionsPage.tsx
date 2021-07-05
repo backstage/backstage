@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { CodeSnippet, Link } from '@backstage/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
+import { CodeSnippet, Link } from '@backstage/core-components';
 
 export const LabelDataflowInstructionsPage = () => {
   return (

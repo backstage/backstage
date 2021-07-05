@@ -41,26 +41,32 @@ describe('ConfigLocationEntityProvider', () => {
     expect(mockConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expect.arrayContaining([
-        expect.objectContaining({
-          spec: {
-            target: path.join(
-              resolvePackagePath('@backstage/plugin-catalog-backend'),
-              './lols.yaml',
-            ),
-            type: 'file',
-          },
-        }),
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: path.join(
+                resolvePackagePath('@backstage/plugin-catalog-backend'),
+                './lols.yaml',
+              ),
+              type: 'file',
+            },
+          }),
+          locationKey: expect.stringMatching(/lols\.yaml$/),
+        },
       ]),
     });
     expect(mockConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expect.arrayContaining([
-        expect.objectContaining({
-          spec: {
-            target: 'https://github.com/backstage/backstage',
-            type: 'url',
-          },
-        }),
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: 'https://github.com/backstage/backstage',
+              type: 'url',
+            },
+          }),
+          locationKey: 'url:https://github.com/backstage/backstage',
+        },
       ]),
     });
   });

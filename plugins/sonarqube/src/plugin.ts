@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { sonarQubeApiRef, SonarQubeClient } from './api';
 import {
   configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
   discoveryApiRef,
-} from '@backstage/core';
-import { sonarQubeApiRef, SonarQubeClient } from './api';
+} from '@backstage/core-plugin-api';
 
 export const sonarQubePlugin = createPlugin({
   id: 'sonarqube',

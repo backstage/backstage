@@ -15,10 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { CodeSnippet } from '@backstage/core';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 import YAML from 'yaml';
+import { CodeSnippet } from '@backstage/core-components';
 
 type Props = {
   repositoryUrl: string;

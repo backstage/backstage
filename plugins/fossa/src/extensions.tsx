@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { fossaPlugin } from './plugin';
+import { rootRoute } from './routes';
 import {
   createComponentExtension,
   createRoutableExtension,
-} from '@backstage/core';
-import { fossaPlugin } from './plugin';
-import { rootRoute } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const EntityFossaCard = fossaPlugin.provide(
   createComponentExtension({

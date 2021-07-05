@@ -20,8 +20,10 @@ import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
 import { useAsync } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
-import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
+
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress } from '@backstage/core-components';
 
 type Props = {
   policyId: string;

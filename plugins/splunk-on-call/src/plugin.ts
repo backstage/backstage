@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { splunkOnCallApiRef, SplunkOnCallClient } from './api';
 import {
   createApiFactory,
   createPlugin,
@@ -21,8 +22,7 @@ import {
   configApiRef,
   createRoutableExtension,
   createComponentExtension,
-} from '@backstage/core';
-import { splunkOnCallApiRef, SplunkOnCallClient } from './api';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   title: 'splunk-on-call',

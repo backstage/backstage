@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { configApiRef, useApi } from '@backstage/core';
 import { DomainExplorerContent } from '../DomainExplorerContent';
 import { ExploreLayout } from '../ExploreLayout';
 import { GroupsExplorerContent } from '../GroupsExplorerContent';
 import { ToolExplorerContent } from '../ToolExplorerContent';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const DefaultExplorePage = () => {
   const configApi = useApi(configApiRef);

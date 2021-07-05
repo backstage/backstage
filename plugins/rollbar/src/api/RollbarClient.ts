@@ -20,7 +20,7 @@ import {
   RollbarProject,
   RollbarTopActiveItem,
 } from './types';
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class RollbarClient implements RollbarApi {
   private readonly discoveryApi: DiscoveryApi;

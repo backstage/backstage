@@ -15,16 +15,16 @@
  */
 
 import {
-  createPlugin,
-  createApiFactory,
-  createRoutableExtension,
-} from '@backstage/core';
-import {
   gitOpsClusterListRoute,
   gitOpsClusterDetailsRoute,
   gitOpsClusterCreateRoute,
 } from './routes';
 import { gitOpsApiRef, GitOpsRestApi } from './api';
+import {
+  createPlugin,
+  createApiFactory,
+  createRoutableExtension,
+} from '@backstage/core-plugin-api';
 
 export const gitopsProfilesPlugin = createPlugin({
   id: 'gitops-profiles',

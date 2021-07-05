@@ -4,12 +4,12 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
+import { InfoCardVariants } from '@backstage/core-components';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export type Audit = AuditRunning | AuditFailed | AuditCompleted;

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 import { DomainEntity } from '@backstage/catalog-model';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { Button } from '@material-ui/core';
+import React from 'react';
+import { useAsync } from 'react-use';
+import { DomainCard } from '../DomainCard';
+
 import {
   Content,
   ContentHeader,
@@ -21,14 +27,10 @@ import {
   ItemCardGrid,
   Progress,
   SupportButton,
-  useApi,
   WarningPanel,
-} from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Button } from '@material-ui/core';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { DomainCard } from '../DomainCard';
+} from '@backstage/core-components';
+
+import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const catalogApi = useApi(catalogApiRef);

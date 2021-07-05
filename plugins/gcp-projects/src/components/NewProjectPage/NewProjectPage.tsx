@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Button, Grid, TextField } from '@material-ui/core';
+import React, { useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -25,9 +27,7 @@ import {
   SimpleStepperStep,
   StructuredMetadataTable,
   SupportButton,
-} from '@backstage/core';
-import { Button, Grid, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+} from '@backstage/core-components';
 
 export const Project = () => {
   const [projectName, setProjectName] = useState('');

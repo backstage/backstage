@@ -24,9 +24,9 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
-import { StructuredMetadataTable } from '@backstage/core';
 import { IngressDrawer } from './IngressDrawer';
 import { GroupedResponsesContext } from '../../hooks';
+import { StructuredMetadataTable } from '@backstage/core-components';
 
 type IngressesAccordionsProps = {};
 

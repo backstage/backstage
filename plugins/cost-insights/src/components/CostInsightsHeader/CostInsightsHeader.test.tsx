@@ -16,13 +16,10 @@
 
 import { CostInsightsHeader } from './CostInsightsHeader';
 import { renderInTestApp } from '@backstage/test-utils';
-import {
-  ApiProvider,
-  ApiRegistry,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core';
 import React from 'react';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
 describe('<CostInsightsHeader/>', () => {
   const identityApi: Partial<IdentityApi> = {

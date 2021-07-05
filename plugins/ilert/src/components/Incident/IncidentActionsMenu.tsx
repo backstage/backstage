@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  alertApiRef,
-  Progress,
-  useApi,
-  identityApiRef,
-  Link,
-} from '@backstage/core';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ilertApiRef } from '../../api';
 import { Incident, IncidentAction } from '../../types';
 import { IncidentAssignModal } from './IncidentAssignModal';
 import { useIncidentActions } from '../../hooks/useIncidentActions';
+
+import {
+  alertApiRef,
+  useApi,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import { Progress, Link } from '@backstage/core-components';
 
 export const IncidentActionsMenu = ({
   incident,

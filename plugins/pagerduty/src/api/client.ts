@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, ConfigApi } from '@backstage/core';
 import { Service, Incident, OnCall } from '../components/types';
 import {
   PagerDutyApi,
@@ -25,6 +24,11 @@ import {
   ClientApiConfig,
   RequestOptions,
 } from './types';
+import {
+  createApiRef,
+  DiscoveryApi,
+  ConfigApi,
+} from '@backstage/core-plugin-api';
 
 export class UnauthorizedError extends Error {}
 

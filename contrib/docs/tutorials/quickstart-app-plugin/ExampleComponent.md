@@ -5,6 +5,7 @@ ExampleComponent.tsx reference
 ```tsx
 import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InfoCard,
   Header,
@@ -13,9 +14,7 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
-  identityApiRef,
-  useApi,
-} from '@backstage/core';
+} from '@backstage/core-components';
 import { ExampleFetchComponent } from '../ExampleFetchComponent';
 
 export const ExampleComponent = () => {

@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { createRouteRef } from '@backstage/core';
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 const CircleCIIcon = (props: SvgIconProps) => (
   <SvgIcon

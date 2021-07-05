@@ -148,6 +148,8 @@ export function buildMiddleware(
 
     return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
   };
+  // Makes http-proxy-middleware logs look nicer and include the mount path
+  filter.toString = () => route;
 
   // Only forward the allowed HTTP headers to not forward unwanted secret headers
   const responseHeaderAllowList = new Set<string>(

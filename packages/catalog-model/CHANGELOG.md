@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.8.4
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+
 ## 0.8.3
 
 ### Patch Changes

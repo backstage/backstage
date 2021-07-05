@@ -16,20 +16,20 @@
 
 import { CatalogClient } from '@backstage/catalog-client';
 import {
-  createApiFactory,
-  createComponentExtension,
-  createPlugin,
-  createRoutableExtension,
-  discoveryApiRef,
-  identityApiRef,
-} from '@backstage/core';
-import {
   catalogApiRef,
   catalogRouteRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
 import { createComponentRouteRef } from './routes';
+import {
+  createApiFactory,
+  createComponentExtension,
+  createPlugin,
+  createRoutableExtension,
+  discoveryApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',

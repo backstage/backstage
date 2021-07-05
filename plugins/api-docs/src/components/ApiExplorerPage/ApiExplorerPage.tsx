@@ -15,13 +15,6 @@
  */
 
 import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  TableColumn,
-  useRouteRef,
-} from '@backstage/core';
-import {
   EntityKindPicker,
   EntityLifecyclePicker,
   EntityListProvider,
@@ -38,6 +31,14 @@ import { Link as RouterLink } from 'react-router-dom';
 import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  TableColumn,
+} from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: 'grid',
@@ -46,6 +47,16 @@ const useStyles = makeStyles(theme => ({
     gridColumnGap: theme.spacing(2),
   },
 }));
+
+const defaultColumns: TableColumn<CatalogTableRow>[] = [
+  CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
+  CatalogTable.columns.createSystemColumn(),
+  CatalogTable.columns.createOwnerColumn(),
+  CatalogTable.columns.createSpecTypeColumn(),
+  CatalogTable.columns.createSpecLifecycleColumn(),
+  CatalogTable.columns.createMetadataDescriptionColumn(),
+  CatalogTable.columns.createTagsColumn(),
+];
 
 export type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -79,13 +90,13 @@ export const ApiExplorerPage = ({
           <EntityListProvider>
             <div>
               <EntityKindPicker initialFilter="api" hidden />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTypePicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </div>
-            <CatalogTable columns={columns} />
+            <CatalogTable columns={columns || defaultColumns} />
           </EntityListProvider>
         </div>
       </Content>

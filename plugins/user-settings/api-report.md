@@ -4,11 +4,11 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
-import { IconComponent } from '@backstage/core';
-import { RouteRef } from '@backstage/core';
-import { SessionApi } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { SessionApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const AuthProviders: ({ providerSettings }: Props_2) => JSX.Element;

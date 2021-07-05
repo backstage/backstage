@@ -15,7 +15,6 @@
  */
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry, ConfigReader } from '@backstage/core';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -25,6 +24,11 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { AboutCard } from './AboutCard';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
 
 describe('<AboutCard />', () => {
   it('renders info', async () => {

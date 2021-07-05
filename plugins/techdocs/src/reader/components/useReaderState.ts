@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
 
 /**
  * A state representation that is used to configure the UI of <Reader />

@@ -17,18 +17,15 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { capitalize } from 'lodash';
-import {
-  AlertApi,
-  alertApiRef,
-  ApiProvider,
-  ApiRegistry,
-} from '@backstage/core';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { catalogApiRef } from '../../api';
 import { EntityKindFilter, EntityTypeFilter } from '../../types';
+
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const entities: Entity[] = [
   {

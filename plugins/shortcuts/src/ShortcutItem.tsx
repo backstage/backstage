@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { SidebarItem } from '@backstage/core';
 import { IconButton, makeStyles } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import { ShortcutIcon } from './ShortcutIcon';
 import { EditShortcut } from './EditShortcut';
 import { ShortcutApi } from './api';
 import { Shortcut } from './types';
+import { SidebarItem } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   root: {

@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { capitalize } from 'lodash';
 import { Box } from '@material-ui/core';
-import { alertApiRef, Select, useApi } from '@backstage/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
+
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Select } from '@backstage/core-components';
 
 export const EntityTypePicker = () => {
   const alertApi = useApi(alertApiRef);
   const { error, types, selectedType, setType } = useEntityTypeFilter();
 
-  if (!types) return null;
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load entity types`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
 
-  if (error) {
-    alertApi.post({
-      message: `Failed to load entity types`,
-      severity: 'error',
-    });
+  if (!types || error) {
     return null;
   }
 

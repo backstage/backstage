@@ -157,7 +157,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
-      "plugins/integrating-plugin-into-service-catalog",
+      "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
       {
         "type": "subcategory",
@@ -246,6 +246,7 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres"
     ],

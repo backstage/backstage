@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import { UrlPatternDiscovery } from '@backstage/core';
 import { TechDocsStorageClient } from './client';
+import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 const mockEntity = {
   kind: 'Component',

@@ -29,21 +29,22 @@ import {
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
+import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import React from 'react';
+import { useAsync } from 'react-use';
+import { BackstageTheme } from '@backstage/theme';
+
 import {
   DependencyGraph,
   DependencyGraphTypes,
   InfoCard,
   Progress,
-  useApi,
   ResponseErrorPanel,
   Link,
-  useRouteRef,
-} from '@backstage/core';
-import { Box, makeStyles, Typography } from '@material-ui/core';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { BackstageTheme } from '@backstage/theme';
+} from '@backstage/core-components';
+
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   domainNode: {
@@ -150,6 +151,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
  */
 export function SystemDiagramCard() {
   const { entity } = useEntity();
+  const theme = useTheme();
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = stringifyEntityRef(entity);
   const systemNodes = new Array<{ id: string; kind: string; name: string }>();
@@ -261,6 +263,8 @@ export function SystemDiagramCard() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
         renderNode={RenderNode}
+        paddingX={theme.spacing(4)}
+        paddingY={theme.spacing(4)}
       />
       <Box m={1} />
       <Typography

@@ -5,14 +5,14 @@
 ```ts
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import { ExternalRouteRef } from '@backstage/core';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/core';
-import { TableColumn } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { TableColumn } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public (undocumented)

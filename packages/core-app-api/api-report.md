@@ -201,6 +201,9 @@ export { ConfigReader }
 export function createApp(options?: AppOptions): PrivateAppImpl;
 
 // @public
+export const defaultConfigLoader: AppConfigLoader;
+
+// @public
 export class ErrorAlerter implements ErrorApi {
     constructor(alertApi: AlertApi, errorApi: ErrorApi);
     // (undocumented)
@@ -393,6 +396,11 @@ export type SignInResult = {
     getIdToken?: () => Promise<string>;
     signOut?: () => Promise<void>;
 };
+
+// @public (undocumented)
+export class UnhandledErrorForwarder {
+    static forward(errorApi: ErrorApi, errorContext: ErrorContext): void;
+}
 
 // @public
 export class UrlPatternDiscovery implements DiscoveryApi {

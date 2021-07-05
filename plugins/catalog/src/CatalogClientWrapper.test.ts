@@ -15,8 +15,8 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/catalog-client');
 const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;

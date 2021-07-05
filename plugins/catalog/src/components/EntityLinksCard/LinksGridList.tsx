@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core';
 import { GridList, GridListTile } from '@material-ui/core';
 import React from 'react';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 export type LinksGridListItem = {
   href: string;

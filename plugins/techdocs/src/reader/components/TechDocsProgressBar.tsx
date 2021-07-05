@@ -16,8 +16,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMountedState } from 'react-use';
-import { Progress } from '@backstage/core';
 import { Typography } from '@material-ui/core';
+import { Progress } from '@backstage/core-components';
 
 const TechDocsProgressBar = () => {
   const isMounted = useMountedState();

@@ -4,21 +4,21 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
-import { BackstagePlugin } from '@backstage/core';
-import { DiscoveryApi } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EntityName } from '@backstage/catalog-model';
-import { Extension } from '@backstage/core';
-import { ExternalRouteRef } from '@backstage/core';
+import { Extension } from '@backstage/core-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
-import { IdentityApi } from '@backstage/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/config';
 import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
-import { Observable } from '@backstage/core';
+import { Observable } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 // @public (undocumented)

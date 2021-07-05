@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { badgesApiRef, BadgesClient } from './api';
 import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
   discoveryApiRef,
   identityApiRef,
-} from '@backstage/core';
-import { badgesApiRef, BadgesClient } from './api';
+} from '@backstage/core-plugin-api';
 
 export const badgesPlugin = createPlugin({
   id: 'badges',

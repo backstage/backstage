@@ -21,7 +21,7 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
-import { StatusWarning } from '@backstage/core';
+import { StatusWarning } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   denseListIcon: {

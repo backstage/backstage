@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { LocalStoredShortcuts, shortcutsApiRef } from './api';
 import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
   storageApiRef,
-} from '@backstage/core';
-import { LocalStoredShortcuts, shortcutsApiRef } from './api';
+} from '@backstage/core-plugin-api';
 
 export const shortcutsPlugin = createPlugin({
   id: 'shortcuts',

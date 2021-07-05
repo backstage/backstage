@@ -68,7 +68,6 @@ export class DefaultCatalogProcessingOrchestrator
   async process(
     request: EntityProcessingRequest,
   ): Promise<EntityProcessingResult> {
-    // TODO: implement dryRun/eager
     return this.processSingleEntity(request.entity);
   }
 

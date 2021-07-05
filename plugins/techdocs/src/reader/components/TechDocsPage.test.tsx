@@ -22,13 +22,13 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core';
 import {
   techdocsApiRef,
   TechDocsApi,
   techdocsStorageApiRef,
   TechDocsStorageApi,
 } from '../../api';
+import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');

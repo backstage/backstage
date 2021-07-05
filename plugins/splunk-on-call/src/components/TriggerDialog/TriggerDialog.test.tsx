@@ -16,14 +16,11 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import {
-  ApiRegistry,
-  alertApiRef,
-  createApiRef,
-  ApiProvider,
-} from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
+
+import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { alertApiRef, createApiRef } from '@backstage/core-plugin-api';
 
 describe('TriggerDialog', () => {
   const mockTriggerAlarmFn = jest.fn();

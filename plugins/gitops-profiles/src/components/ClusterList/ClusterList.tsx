@@ -15,6 +15,13 @@
  */
 
 import React, { useState } from 'react';
+
+import ClusterTable from '../ClusterTable/ClusterTable';
+import { Button } from '@material-ui/core';
+import { useAsync } from 'react-use';
+import { gitOpsApiRef } from '../../api';
+import { Alert } from '@material-ui/lab';
+
 import {
   Content,
   ContentHeader,
@@ -23,15 +30,8 @@ import {
   Page,
   Progress,
   HeaderLabel,
-  useApi,
-  githubAuthApiRef,
-} from '@backstage/core';
-
-import ClusterTable from '../ClusterTable/ClusterTable';
-import { Button } from '@material-ui/core';
-import { useAsync } from 'react-use';
-import { gitOpsApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+} from '@backstage/core-components';
+import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
 
 const ClusterList = () => {
   const api = useApi(gitOpsApiRef);

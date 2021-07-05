@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRegistry, ApiProvider } from '@backstage/core';
 import React from 'react';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { ActionsPage } from './ActionsPage';
 import { rootRouteRef } from '../../routes';
 import { renderInTestApp } from '@backstage/test-utils';
+import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),

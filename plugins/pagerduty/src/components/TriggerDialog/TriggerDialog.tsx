@@ -25,11 +25,15 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import { usePagerdutyEntity } from '../../hooks';
+import {
+  useApi,
+  alertApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 
 type Props = {
   showDialog: boolean;

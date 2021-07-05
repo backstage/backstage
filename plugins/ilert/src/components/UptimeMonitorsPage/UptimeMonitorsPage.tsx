@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
+import { AuthenticationError } from '@backstage/errors';
+import { UptimeMonitorsTable } from './UptimeMonitorsTable';
+import { MissingAuthorizationHeaderError } from '../Errors';
+import { useUptimeMonitors } from '../../hooks/useUptimeMonitors';
 import {
   Content,
   ContentHeader,
   SupportButton,
   ResponseErrorPanel,
-} from '@backstage/core';
-import { AuthenticationError } from '@backstage/errors';
-import { UptimeMonitorsTable } from './UptimeMonitorsTable';
-import { MissingAuthorizationHeaderError } from '../Errors';
-import { useUptimeMonitors } from '../../hooks/useUptimeMonitors';
+} from '@backstage/core-components';
 
 export const UptimeMonitorsPage = () => {
   const [

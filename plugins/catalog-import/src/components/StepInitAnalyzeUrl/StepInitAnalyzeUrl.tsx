@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi } from '@backstage/core';
 import { FormHelperText, Grid, TextField } from '@material-ui/core';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { NextButton } from '../Buttons';
 import { ImportFlows, PrepareResult } from '../useImportState';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 type FormData = {
   url: string;

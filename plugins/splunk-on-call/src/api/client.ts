@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, ConfigApi } from '@backstage/core';
 import {
   Incident,
   OnCall,
@@ -32,6 +31,11 @@ import {
   ListUserResponse,
   EscalationPolicyResponse,
 } from './types';
+import {
+  createApiRef,
+  DiscoveryApi,
+  ConfigApi,
+} from '@backstage/core-plugin-api';
 
 export class UnauthorizedError extends Error {}
 

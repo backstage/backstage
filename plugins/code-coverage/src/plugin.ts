@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { codeCoverageApiRef, CodeCoverageRestApi } from './api';
+import { rootRouteRef } from './routes';
+
 import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-} from '@backstage/core';
-import { codeCoverageApiRef, CodeCoverageRestApi } from './api';
-
-import { rootRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const codeCoveragePlugin = createPlugin({
   id: 'code-coverage',

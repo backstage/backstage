@@ -15,17 +15,26 @@
  */
 import React from 'react';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
-import { OverflowTooltip, TableColumn } from '@backstage/core';
 import { Chip } from '@material-ui/core';
 import { EntityRow } from './types';
+import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 
-export function createNameColumn(): TableColumn<EntityRow> {
+type NameColumnProps = {
+  defaultKind?: string;
+};
+
+export function createNameColumn(
+  props?: NameColumnProps,
+): TableColumn<EntityRow> {
   return {
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
-      <EntityRefLink entityRef={entity} defaultKind="Component" />
+      <EntityRefLink
+        entityRef={entity}
+        defaultKind={props?.defaultKind || 'Component'}
+      />
     ),
   };
 }

@@ -4,14 +4,14 @@
 
 ```ts
 
-import { ApiRef } from '@backstage/core';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { BackstagePlugin } from '@backstage/core';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/config';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
-import { RouteRef } from '@backstage/core';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';

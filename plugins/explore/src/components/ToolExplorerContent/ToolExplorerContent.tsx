@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
+import React from 'react';
+import { useAsync } from 'react-use';
+import { ToolCard } from '../ToolCard';
+
 import {
   Content,
   ContentHeader,
@@ -21,13 +26,10 @@ import {
   ItemCardGrid,
   Progress,
   SupportButton,
-  useApi,
   WarningPanel,
-} from '@backstage/core';
-import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { ToolCard } from '../ToolCard';
+} from '@backstage/core-components';
+
+import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);

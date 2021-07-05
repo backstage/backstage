@@ -75,7 +75,7 @@ export class DocsBuilder {
   public async build(): Promise<boolean> {
     if (!this.entity.metadata.uid) {
       throw new Error(
-        'Trying to build documentation for entity not in service catalog',
+        'Trying to build documentation for entity not in software catalog',
       );
     }
 

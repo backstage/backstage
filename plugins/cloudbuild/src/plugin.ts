@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { cloudbuildApiRef, CloudbuildClient } from './api';
+import { rootRouteRef } from './routes';
 import {
   createPlugin,
   createApiFactory,
   googleAuthApiRef,
   createRoutableExtension,
   createComponentExtension,
-} from '@backstage/core';
-import { cloudbuildApiRef, CloudbuildClient } from './api';
-import { rootRouteRef } from './routes';
+} from '@backstage/core-plugin-api';
 
 export const cloudbuildPlugin = createPlugin({
   id: 'cloudbuild',

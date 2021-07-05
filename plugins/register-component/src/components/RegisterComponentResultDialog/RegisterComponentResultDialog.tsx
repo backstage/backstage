@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { RouteRef, StructuredMetadataTable } from '@backstage/core';
 import {
   entityRoute,
   entityRouteParams,
@@ -35,6 +34,9 @@ import {
 import React, { useState } from 'react';
 import { generatePath, resolvePath } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+
+import { RouteRef } from '@backstage/core-plugin-api';
+import { StructuredMetadataTable } from '@backstage/core-components';
 
 type Props = {
   onClose: () => void;

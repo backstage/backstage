@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Extension, attachComponentData } from '@backstage/core';
 import React from 'react';
 import { FieldExtensionOptions } from './types';
+import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';

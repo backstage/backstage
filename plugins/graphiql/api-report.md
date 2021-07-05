@@ -7,7 +7,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/core';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 

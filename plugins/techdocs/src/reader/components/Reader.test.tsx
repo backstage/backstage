@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -25,6 +24,7 @@ import { act, render } from '@testing-library/react';
 import React from 'react';
 import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
 import { Reader } from './Reader';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');

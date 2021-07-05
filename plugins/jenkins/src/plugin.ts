@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JenkinsApi, jenkinsApiRef } from './api';
 import {
   createApiFactory,
   createComponentExtension,
@@ -21,8 +22,7 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
-} from '@backstage/core';
-import { JenkinsApi, jenkinsApiRef } from './api';
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   path: '',

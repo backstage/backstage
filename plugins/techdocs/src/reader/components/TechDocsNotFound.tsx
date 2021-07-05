@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { ErrorPage, useApi, configApiRef } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { ErrorPage } from '@backstage/core-components';
 
 type Props = {
   errorMessage?: string;

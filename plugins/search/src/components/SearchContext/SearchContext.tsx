@@ -22,11 +22,11 @@ import React, {
   useEffect,
 } from 'react';
 import { useAsync, usePrevious } from 'react-use';
-import { useApi } from '@backstage/core';
 import { SearchResultSet } from '@backstage/search-common';
 import { searchApiRef } from '../../apis';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { JsonObject } from '@backstage/config';
+import { useApi } from '@backstage/core-plugin-api';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;

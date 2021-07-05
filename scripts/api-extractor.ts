@@ -21,6 +21,7 @@ import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
+  join,
 } from 'path';
 import fs from 'fs-extra';
 import {
@@ -74,8 +75,6 @@ const SKIPPED_PACKAGES = [
   'packages/techdocs-cli',
 
   // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  'packages/core',
-  'packages/core-api',
   'packages/core-components',
   'plugins/catalog',
   'plugins/catalog-backend',
@@ -95,6 +94,13 @@ async function findPackageDirs() {
 
       const stat = await fs.stat(fullPackageDir);
       if (!stat.isDirectory()) {
+        continue;
+      }
+
+      try {
+        const packageJsonPath = join(fullPackageDir, 'package.json');
+        await fs.access(packageJsonPath);
+      } catch (_) {
         continue;
       }
 

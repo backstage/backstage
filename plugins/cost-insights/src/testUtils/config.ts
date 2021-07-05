@@ -15,8 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core';
 import { MockProductTypes } from './products';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 export const MockProductsConfig: Partial<ConfigApi> = {
   keys: () => Object.keys(MockProductTypes),

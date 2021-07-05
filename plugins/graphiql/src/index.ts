@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core';
 import GraphiQLIconComponent from './assets/graphiql.icon.svg';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 export {
   graphiqlPlugin,
@@ -25,4 +25,4 @@ export {
 export { GraphiQLPage as Router } from './components';
 export * from './lib/api';
 export * from './route-refs';
-export const GraphiQLIcon: IconComponent = GraphiQLIconComponent;
+export const GraphiQLIcon: IconComponent = GraphiQLIconComponent as IconComponent;

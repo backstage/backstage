@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { KafkaBackendClient } from './api/KafkaBackendClient';
+import { kafkaApiRef } from './api/types';
 import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
-} from '@backstage/core';
-import { KafkaBackendClient } from './api/KafkaBackendClient';
-import { kafkaApiRef } from './api/types';
+} from '@backstage/core-plugin-api';
 
 export const rootCatalogKafkaRouteRef = createRouteRef({
   path: '*',
