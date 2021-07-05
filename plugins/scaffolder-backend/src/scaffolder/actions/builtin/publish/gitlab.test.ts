@@ -139,6 +139,30 @@ describe('publish:gitlab', () => {
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
+      defaultBranch: 'master',
+      remoteUrl: 'http://mockurl.git',
+      auth: { username: 'oauth2', password: 'tokenlols' },
+      logger: mockContext.logger,
+    });
+  });
+
+  it('should call initRepoAndPush with the correct default branch', async () => {
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      defaultBranch: 'main',
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
