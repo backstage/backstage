@@ -108,6 +108,7 @@ export class CookiecutterRunner {
 
     // if cookiecutter was successful, intermediateDir will contain
     // exactly one directory.
+
     const [generated] = await fs.readdir(intermediateDir);
 
     if (generated === undefined) {
