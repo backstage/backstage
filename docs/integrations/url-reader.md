@@ -242,6 +242,23 @@ HTTP headers.
 When debugging one of the URL Readers, you can straightforward use the
 [`reader` instance created](https://github.com/backstage/backstage/blob/ebbe91dbe79038a61d35cf6ed2d96e0e0d5a15f3/packages/backend/src/index.ts#L57)
 when the backend starts and call one of the methods with your debugging URL.
+
+```ts
+// File: packages/backend/src/index.ts
+
+async function main() {
+  // ...
+  const createEnv = makeCreateEnv(config);
+
+  const testReader = createEnv('test-url-reader').reader;
+  const response = await testReader.readUrl(
+    'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  );
+  console.log((await response.buffer()).toString());
+  // ...
+}
+```
+
 This will be run every time you restart the backend. Note that after any change
 in the URL Reader code, you need to kill the backend and restart, since the
 `reader` instance is memoized and does not update on hot module reloading. Also,
