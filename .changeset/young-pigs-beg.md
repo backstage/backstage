@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Add custom styles to Scrollbar of the Sidebar Wrapper to fix flaky behaviour
+Add custom styles to scroll bar of the sidebar wrapper to fix flaky behaviour
