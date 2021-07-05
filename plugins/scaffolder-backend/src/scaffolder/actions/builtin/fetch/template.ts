@@ -42,7 +42,7 @@ export type FetchTemplateInput = {
   targetPath?: string;
   values: any;
   copyWithoutRender?: string[];
-  cookieCutterCompat?: boolean;
+  cookiecutterCompat?: boolean;
 };
 
 export function createFetchTemplateAction(options: {
@@ -86,7 +86,7 @@ export function createFetchTemplateAction(options: {
               type: 'string',
             },
           },
-          cookieCutterCompat: {
+          cookiecutterCompat: {
             title: 'Cookiecutter compatibility mode',
             // TODO(mtlewis): documentation for cookiecutter compat mode
             description:
@@ -160,7 +160,7 @@ export function createFetchTemplateAction(options: {
       // Create a templater
       const templater = nunjucks.configure({
         // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
-        ...(ctx.input.cookieCutterCompat
+        ...(ctx.input.cookiecutterCompat
           ? {}
           : {
               tags: {
@@ -174,7 +174,7 @@ export function createFetchTemplateAction(options: {
         autoescape: false,
       });
 
-      if (ctx.input.cookieCutterCompat) {
+      if (ctx.input.cookiecutterCompat) {
         // The "jsonify" filter built into cookiecutter is common
         // in fetch:cookiecutter templates, so when compat mode
         // is enabled we alias the "dump" filter from nunjucks as
@@ -191,7 +191,7 @@ export function createFetchTemplateAction(options: {
       // `cookiecutter.`. To replicate this, we wrap our parameters
       // in an object with a `cookiecutter` property when compat
       // mode is enabled.
-      const parameters = ctx.input.cookieCutterCompat
+      const parameters = ctx.input.cookiecutterCompat
         ? { cookiecutter: ctx.input.values }
         : ctx.input.values;
 

@@ -229,7 +229,7 @@ describe('fetch:template', () => {
           count: 1234,
           itemList: ['first', 'second', 'third'],
         },
-        cookieCutterCompat: true,
+        cookiecutterCompat: true,
       });
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
