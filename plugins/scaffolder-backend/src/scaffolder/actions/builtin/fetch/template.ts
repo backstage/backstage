@@ -24,18 +24,20 @@ import globby from 'globby';
 import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 
+export type FetchTemplateInput = {
+  url: string;
+  targetPath?: string;
+  values: any;
+  copyWithoutRender?: string[];
+};
+
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
 }) {
   const { reader, integrations } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    values: any;
-    copyWithoutRender?: string[];
-  }>({
+  return createTemplateAction<FetchTemplateInput>({
     id: 'fetch:template',
     description:
       "Downloads a skeleton and will template variables into the skeleton and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
