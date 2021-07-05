@@ -68,7 +68,7 @@ export type UrlReader = {
 };
 ```
 
-## Using inside a plugin
+## Using a URL Reader inside a plugin
 
 The `reader` instance is available in the backend plugin environment and passed
 on to all the backend plugins. You can see an
@@ -116,7 +116,7 @@ Feel free to use the
 [GitHub URL Reader](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/GithubUrlReader.ts)
 as a source of inspiration.
 
-### Add an integration
+### 1. Add an integration
 
 The provider for your new URL Reader can also be called an "integration" in
 Backstage. The `integrations:` section of your Backstage `app-config.yaml`
@@ -130,7 +130,7 @@ integrations config and process it", "construct headers for authenticated
 requests to the host" or "convert a plain file URL into its API URL for
 downloading the file" would live in this package.
 
-### Create the URL Reader
+### 2. Create the URL Reader
 
 Create a new class which implements the
 [`UrlReader` type](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/types.ts#L21-L28)
@@ -140,7 +140,7 @@ should be used for. See the
 [GitHub URL Reader](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/GithubUrlReader.ts#L50-L63)
 for example.
 
-### Implement the methods
+### 3. Implement the methods
 
 We want to make sure all URL Readers behave in the same way. Hence if possible,
 all the methods of the `UrlReader` interface should be implemented. However it
@@ -204,7 +204,29 @@ matching the query.
 The core logic of `readTree` can be used here to extract all the files inside
 the tree and return the files matching the pattern in the `url`.
 
-### Caching
+### 4. Add to available URL Readers
+
+There are two ways to make your new URL Reader available for use.
+
+You can choose to make it open source, by updating the
+[`default` factory](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/UrlReaders.ts#L62-L81)
+method of URL Readers.
+
+But for something internal which you don't want to make open source, you can
+update your `packages/backend/src/index.ts` file and update how the `reader`
+instance is created.
+
+```ts
+// File: packages/backend/src/index.ts
+const reader = UrlReaders.default({
+  logger: root,
+  config,
+  // This is where your internal URL Readers would go.
+  factories: [myCustomReader.factory],
+});
+```
+
+### 5. Caching
 
 All of the methods above support an ETag based caching. If the method is called
 without an `etag`, the response contains an ETag of the resource (should ideally
@@ -215,7 +237,7 @@ resource has not been modified. This approach is very similar to the actual
 [If-None-Match](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
 HTTP headers.
 
-### Debugging
+### 6. Debugging
 
 When debugging one of the URL Readers, you can straightforward use the
 [`reader` instance created](https://github.com/backstage/backstage/blob/ebbe91dbe79038a61d35cf6ed2d96e0e0d5a15f3/packages/backend/src/index.ts#L57)
