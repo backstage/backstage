@@ -37,6 +37,10 @@ describe('fs:rename', () => {
       from: 'unit-test-b.js',
       to: 'new-b.js',
     },
+    {
+      from: 'a-folder',
+      to: 'brand-new-folder',
+    },
   ];
   const mockContext = {
     input: {
@@ -57,6 +61,9 @@ describe('fs:rename', () => {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
         'unit-test-c.js': 'i will be overwritten :-(',
+        'a-folder': {
+          'file.md': 'content',
+        },
       },
     });
   });
@@ -124,14 +131,18 @@ describe('fs:rename', () => {
         ...mockContext,
         input: { files: [{ from: 'index.js', to: '/core/../../../index.js' }] },
       }),
-    ).rejects.toThrow(/Relative path is not allowed to refer to a directory outside its parent/);
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
 
     await expect(
       action.handler({
         ...mockContext,
         input: { files: [{ from: '/core/../../../index.js', to: 'index.js' }] },
       }),
-    ).rejects.toThrow(/Relative path is not allowed to refer to a directory outside its parent/);
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
   });
 
   it('should throw is trying to override by mistake', async () => {
@@ -184,7 +195,6 @@ describe('fs:rename', () => {
     const destBeforeContent = fs.readFileSync(destFilePath, 'utf-8');
 
     expect(sourceBeforeContent).not.toEqual(destBeforeContent);
-    
 
     await action.handler({
       ...mockContext,

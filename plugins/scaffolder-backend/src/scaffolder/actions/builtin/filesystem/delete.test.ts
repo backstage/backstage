@@ -46,6 +46,9 @@ describe('fs:delete', () => {
       [workspacePath]: {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
+        'a-folder': {
+          'unit-test-in-a-folder.js2': 'content',
+        },
       },
     });
   });
@@ -90,14 +93,18 @@ describe('fs:delete', () => {
         ...mockContext,
         input: { files: ['/foo/../../../index.js'] },
       }),
-    ).rejects.toThrow(/Relative path is not allowed to refer to a directory outside its parent/);
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
 
     await expect(
       action.handler({
         ...mockContext,
         input: { files: ['../../../index.js'] },
       }),
-    ).rejects.toThrow(/Relative path is not allowed to refer to a directory outside its parent/);
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
   });
 
   it('should call fs.rm with the correct values', async () => {

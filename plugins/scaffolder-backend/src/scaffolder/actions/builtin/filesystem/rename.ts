@@ -28,6 +28,7 @@ interface FilesToRename extends JsonObject {
 export const createFilesystemRenameAction = () => {
   return createTemplateAction<{ files: FilesToRename }>({
     id: 'fs:rename',
+    description: 'Renames files and directories within the workspace',
     schema: {
       input: {
         required: ['files'],
@@ -35,7 +36,8 @@ export const createFilesystemRenameAction = () => {
         properties: {
           files: {
             title: 'Files',
-            description: 'A list of file names that will be renamed',
+            description:
+              'A list of file and directory names that will be renamed',
             type: 'array',
             items: {
               type: 'object',
@@ -70,12 +72,15 @@ export const createFilesystemRenameAction = () => {
           throw new InputError('each file must have a from and to property');
         }
 
-        const sourceFilepath = resolveSafeChildPath(ctx.workspacePath, file.from);
+        const sourceFilepath = resolveSafeChildPath(
+          ctx.workspacePath,
+          file.from,
+        );
         const destFilepath = resolveSafeChildPath(ctx.workspacePath, file.to);
 
         try {
           await fs.move(sourceFilepath, destFilepath, {
-            overwrite: file.overwrite || false,
+            overwrite: file.overwrite ?? false,
           });
           ctx.logger.info(
             `File ${sourceFilepath} renamed to ${destFilepath} successfully`,

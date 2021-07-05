@@ -21,6 +21,7 @@ import fs from 'fs-extra';
 export const createFilesystemDeleteAction = () => {
   return createTemplateAction<{ files: string[] }>({
     id: 'fs:delete',
+    description: 'Deletes files and directories from the workspace',
     schema: {
       input: {
         required: ['files'],
@@ -28,7 +29,7 @@ export const createFilesystemDeleteAction = () => {
         properties: {
           files: {
             title: 'Files',
-            description: 'A list of files or directories that will be deleted',
+            description: 'A list of files and directories that will be deleted',
             type: 'array',
             items: {
               type: 'string',
