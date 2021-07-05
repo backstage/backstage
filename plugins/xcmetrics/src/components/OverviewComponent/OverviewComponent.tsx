@@ -42,7 +42,8 @@ const formatStatus = (status: BuildStatus, warningCount: number) => {
   return (
     <>
       {statusIcons[status]} {status[0].toUpperCase() + status.slice(1)}
-      {warningCount > 0 && ` with ${warningCount} warnings`}
+      {warningCount > 0 && ` with ${warningCount} warning`}
+      {warningCount > 1 && 's'}
     </>
   );
 };
