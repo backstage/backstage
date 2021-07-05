@@ -259,6 +259,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -268,6 +269,7 @@ describe('useReaderState', () => {
           content: 'my content',
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
@@ -312,6 +314,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -321,6 +324,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: ' Load error: NotFoundError: Page Not Found',
           buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -330,6 +334,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -339,6 +344,7 @@ describe('useReaderState', () => {
           content: 'my content',
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
@@ -359,7 +365,12 @@ describe('useReaderState', () => {
     });
 
     it('should handle stale content', async () => {
-      techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
+      techdocsStorageApi.getEntityDocs
+        .mockResolvedValueOnce('my content')
+        .mockImplementationOnce(async () => {
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'my new content';
+        });
       techdocsStorageApi.syncEntityDocs.mockImplementation(
         async (_, logHandler) => {
           logHandler?.call(this, 'Line 1');
@@ -380,6 +391,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         // the content is returned but the sync is in progress
@@ -389,6 +401,7 @@ describe('useReaderState', () => {
           content: 'my content',
           errorMessage: '',
           buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
         // the sync takes longer than 1 seconds so the refreshing state starts
@@ -398,17 +411,43 @@ describe('useReaderState', () => {
           content: 'my content',
           errorMessage: '',
           buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
-        // the content is up-to-date
+        // the content is updated but not yet displayed
         await waitForValueToChange(() => result.current.state);
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_READY',
           content: 'my content',
           errorMessage: '',
           buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
+        // reload the content
+        result.current.contentReload();
+
+        // the new content refresh is triggered
+        await waitForValueToChange(() => result.current.state);
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          content: undefined,
+          errorMessage: '',
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
+
+        // the new content is loaded
+        await waitForValueToChange(() => result.current.state);
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          content: 'my new content',
+          errorMessage: '',
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
+
+        expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
@@ -441,6 +480,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: '',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         // the content loading threw an error
@@ -450,6 +490,7 @@ describe('useReaderState', () => {
           content: undefined,
           errorMessage: ' Load error: NotFoundError: Some error description',
           buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(

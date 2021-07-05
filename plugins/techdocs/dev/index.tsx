@@ -148,6 +148,11 @@ createDevApp()
 
           <TabbedLayout.Route path="/stale" title="Stale">
             {createPage({
+              entityDocs: ({ called, content }) => {
+                return called === 0
+                  ? content
+                  : content.replace(/World/, 'New World');
+              },
               syncDocs: () => 'updated',
               syncDocsDelay: 2000,
             })}

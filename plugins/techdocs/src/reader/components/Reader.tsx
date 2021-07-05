@@ -19,7 +19,7 @@ import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import { CircularProgress, useTheme } from '@material-ui/core';
+import { Button, CircularProgress, useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -50,12 +50,13 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
 
-  const { state, content: rawPage, errorMessage, buildLog } = useReaderState(
-    kind,
-    namespace,
-    name,
-    path,
-  );
+  const {
+    state,
+    contentReload,
+    content: rawPage,
+    errorMessage,
+    buildLog,
+  } = useReaderState(kind, namespace, name, path);
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
@@ -338,7 +339,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
         </Alert>
       )}
       {state === 'CONTENT_STALE_READY' && (
-        <Alert variant="outlined" severity="success">
+        <Alert
+          variant="outlined"
+          severity="success"
+          action={
+            <Button color="inherit" onClick={() => contentReload()}>
+              Refresh
+            </Button>
+          }
+        >
           A newer version of this documentation is now available, please refresh
           to view.
         </Alert>

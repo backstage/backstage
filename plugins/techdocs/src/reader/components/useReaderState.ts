@@ -223,6 +223,7 @@ export function useReaderState(
   path: string,
 ): {
   state: ContentStateTypes;
+  contentReload: () => void;
   content?: string;
   errorMessage?: string;
   buildLog: string[];
@@ -342,6 +343,7 @@ export function useReaderState(
 
   return {
     state: displayState,
+    contentReload,
     content: state.content,
     errorMessage,
     buildLog: state.buildLog,
