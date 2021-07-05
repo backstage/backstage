@@ -1,13 +1,38 @@
-# xcmetrics
+# XCMetrics
 
-Welcome to the xcmetrics plugin!
+[XCMetrics](https://xcmetrics.io) is a tool for collecting build metrics from XCode.  
+With this plugin, you can view data from XCMetrics directly in Backstage.
 
-_This plugin was created through the Backstage CLI_
+![XCMetrics-overview](./docs/XCMetrics-overview.png)
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/xcmetrics](http://localhost:3000/xcmetrics).
+From `packages/app`:
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+```bash
+yarn add @backstage/plugin-xcmetrics
+```
+
+In `packages/app/src/App.tsx`, add the following:
+
+```ts
+import { XcmetricsPage } from '@backstage/plugin-xcmetrics';
+```
+
+```tsx
+<FlatRoutes>
+  {/* Other routes... */}
+  <Route path="/xcmetrics" element={<XcmetricsPage />} />
+</FlatRoutes>
+```
+
+Add the URL to your XCMetrics backend instance in `app-config.yml` like so:
+
+```yaml
+proxy:
+  ...
+  '/xcmetrics':
+    target: http://127.0.0.1:8080/v1
+```
+
+Start Backstage and navigate to `/xcmetrics` to view your build metrics!
