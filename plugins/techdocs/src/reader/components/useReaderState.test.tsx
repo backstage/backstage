@@ -82,6 +82,7 @@ describe('useReaderState', () => {
       activeSyncState: 'CHECKING',
       contentLoading: false,
       path: '',
+      buildLog: ['1', '2'],
     };
 
     it('should return a copy of the state', () => {
@@ -89,12 +90,14 @@ describe('useReaderState', () => {
         activeSyncState: 'CHECKING',
         contentLoading: false,
         path: '/',
+        buildLog: ['1', '2'],
       });
 
       expect(oldState).toEqual({
         activeSyncState: 'CHECKING',
         contentLoading: false,
         path: '',
+        buildLog: ['1', '2'],
       });
     });
 
@@ -208,6 +211,33 @@ describe('useReaderState', () => {
           activeSyncState: 'BUILDING',
         });
       });
+
+      it('should clear buildLog on "CHECKING"', () => {
+        expect(
+          reducer(oldState, {
+            type: 'sync',
+            state: 'CHECKING',
+          }),
+        ).toEqual({
+          ...oldState,
+          activeSyncState: 'CHECKING',
+          buildLog: [],
+        });
+      });
+    });
+
+    describe('"buildLog" action', () => {
+      it('should work', () => {
+        expect(
+          reducer(oldState, {
+            type: 'buildLog',
+            log: 'Another Line',
+          }),
+        ).toEqual({
+          ...oldState,
+          buildLog: ['1', '2', 'Another Line'],
+        });
+      });
     });
   });
 
@@ -228,6 +258,7 @@ describe('useReaderState', () => {
           state: 'CHECKING',
           content: undefined,
           errorMessage: '',
+          buildLog: [],
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -236,17 +267,21 @@ describe('useReaderState', () => {
           state: 'CONTENT_FRESH',
           content: 'my content',
           errorMessage: '',
+          buildLog: [],
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
@@ -257,10 +292,14 @@ describe('useReaderState', () => {
           await new Promise(resolve => setTimeout(resolve, 500));
           return 'my content';
         });
-      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 1100));
-        return 'updated';
-      });
+      techdocsStorageApi.syncEntityDocs.mockImplementation(
+        async (_, logHandler) => {
+          logHandler?.call(this, 'Line 1');
+          logHandler?.call(this, 'Line 2');
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'updated';
+        },
+      );
 
       await act(async () => {
         const { result, waitForValueToChange } = await renderHook(
@@ -272,6 +311,7 @@ describe('useReaderState', () => {
           state: 'CHECKING',
           content: undefined,
           errorMessage: '',
+          buildLog: [],
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -280,6 +320,7 @@ describe('useReaderState', () => {
           state: 'INITIAL_BUILD',
           content: undefined,
           errorMessage: ' Load error: NotFoundError: Page Not Found',
+          buildLog: ['Line 1', 'Line 2'],
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -288,6 +329,7 @@ describe('useReaderState', () => {
           state: 'CHECKING',
           content: undefined,
           errorMessage: '',
+          buildLog: [],
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -296,6 +338,7 @@ describe('useReaderState', () => {
           state: 'CONTENT_FRESH',
           content: 'my content',
           errorMessage: '',
+          buildLog: [],
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
@@ -304,20 +347,27 @@ describe('useReaderState', () => {
           '/example',
         );
         expect(techdocsStorageApi.syncEntityDocs).toBeCalledTimes(1);
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
     it('should handle stale content', async () => {
       techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
-      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 1100));
-        return 'updated';
-      });
+      techdocsStorageApi.syncEntityDocs.mockImplementation(
+        async (_, logHandler) => {
+          logHandler?.call(this, 'Line 1');
+          logHandler?.call(this, 'Line 2');
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'updated';
+        },
+      );
 
       await act(async () => {
         const { result, waitForValueToChange } = await renderHook(
@@ -329,6 +379,7 @@ describe('useReaderState', () => {
           state: 'CHECKING',
           content: undefined,
           errorMessage: '',
+          buildLog: [],
         });
 
         // the content is returned but the sync is in progress
@@ -337,6 +388,7 @@ describe('useReaderState', () => {
           state: 'CONTENT_FRESH',
           content: 'my content',
           errorMessage: '',
+          buildLog: ['Line 1', 'Line 2'],
         });
 
         // the sync takes longer than 1 seconds so the refreshing state starts
@@ -345,6 +397,7 @@ describe('useReaderState', () => {
           state: 'CONTENT_STALE_REFRESHING',
           content: 'my content',
           errorMessage: '',
+          buildLog: ['Line 1', 'Line 2'],
         });
 
         // the content is up-to-date
@@ -353,17 +406,21 @@ describe('useReaderState', () => {
           state: 'CONTENT_STALE_READY',
           content: 'my content',
           errorMessage: '',
+          buildLog: ['Line 1', 'Line 2'],
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
@@ -383,6 +440,7 @@ describe('useReaderState', () => {
           state: 'CHECKING',
           content: undefined,
           errorMessage: '',
+          buildLog: [],
         });
 
         // the content loading threw an error
@@ -391,17 +449,21 @@ describe('useReaderState', () => {
           state: 'CONTENT_NOT_FOUND',
           content: undefined,
           errorMessage: ' Load error: NotFoundError: Some error description',
+          buildLog: [],
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
   });

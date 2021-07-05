@@ -15,10 +15,11 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
+import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core';
+import { CircularProgress, useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -35,8 +36,8 @@ import {
   simplifyMkdocsFooter,
   transform as transformer,
 } from '../transformers';
+import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import TechDocsProgressBar from './TechDocsProgressBar';
 import { useReaderState } from './useReaderState';
 
 type Props = {
@@ -49,7 +50,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
 
-  const { state, content: rawPage, errorMessage } = useReaderState(
+  const { state, content: rawPage, errorMessage, buildLog } = useReaderState(
     kind,
     namespace,
     name,
@@ -313,11 +314,25 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   return (
     <>
-      {(state === 'CHECKING' || state === 'INITIAL_BUILD') && (
-        <TechDocsProgressBar />
+      {state === 'CHECKING' && <Progress />}
+      {state === 'INITIAL_BUILD' && (
+        <Alert
+          variant="outlined"
+          severity="info"
+          icon={<CircularProgress size="24px" />}
+          action={<TechDocsBuildLogs buildLog={buildLog} />}
+        >
+          Documentation is accessed for the first time and is being prepared.
+          The subsequent loads are much faster.
+        </Alert>
       )}
       {state === 'CONTENT_STALE_REFRESHING' && (
-        <Alert variant="outlined" severity="info">
+        <Alert
+          variant="outlined"
+          severity="info"
+          icon={<CircularProgress size="24px" />}
+          action={<TechDocsBuildLogs buildLog={buildLog} />}
+        >
           A newer version of this documentation is being prepared and will be
           available shortly.
         </Alert>
@@ -329,7 +344,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
         </Alert>
       )}
       {state === 'CONTENT_STALE_ERROR' && (
-        <Alert variant="outlined" severity="error">
+        <Alert
+          variant="outlined"
+          severity="error"
+          action={<TechDocsBuildLogs buildLog={buildLog} />}
+        >
           Building a newer version of this documentation failed. {errorMessage}
         </Alert>
       )}

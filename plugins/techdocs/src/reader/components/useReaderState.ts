@@ -137,7 +137,8 @@ type ReducerActions =
       contentLoading?: true;
       contentError?: Error;
     }
-  | { type: 'navigate'; path: string };
+  | { type: 'navigate'; path: string }
+  | { type: 'buildLog'; log: string };
 
 type ReducerState = {
   /**
@@ -161,6 +162,11 @@ type ReducerState = {
 
   contentError?: Error;
   syncError?: Error;
+
+  /**
+   * A list of log messages that were emitted by the build process.
+   */
+  buildLog: string[];
 };
 
 export function reducer(
@@ -171,6 +177,11 @@ export function reducer(
 
   switch (action.type) {
     case 'sync':
+      // reset the build log when a new check starts
+      if (action.state === 'CHECKING') {
+        newState.buildLog = [];
+      }
+
       newState.activeSyncState = action.state;
       newState.syncError = action.syncError;
       break;
@@ -185,6 +196,10 @@ export function reducer(
       newState.path = action.path;
       break;
 
+    case 'buildLog':
+      newState.buildLog = newState.buildLog.concat(action.log);
+      break;
+
     default:
       throw new Error();
   }
@@ -195,6 +210,7 @@ export function reducer(
     ['content', 'navigate'].includes(action.type)
   ) {
     newState.activeSyncState = 'UP_TO_DATE';
+    newState.buildLog = [];
   }
 
   return newState;
@@ -205,11 +221,17 @@ export function useReaderState(
   namespace: string,
   name: string,
   path: string,
-): { state: ContentStateTypes; content?: string; errorMessage?: string } {
+): {
+  state: ContentStateTypes;
+  content?: string;
+  errorMessage?: string;
+  buildLog: string[];
+} {
   const [state, dispatch] = useReducer(reducer, {
     activeSyncState: 'CHECKING',
     path,
     contentLoading: true,
+    buildLog: [],
   });
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
@@ -257,11 +279,16 @@ export function useReaderState(
     }, 1000);
 
     try {
-      const result = await techdocsStorageApi.syncEntityDocs({
-        kind,
-        namespace,
-        name,
-      });
+      const result = await techdocsStorageApi.syncEntityDocs(
+        {
+          kind,
+          namespace,
+          name,
+        },
+        log => {
+          dispatch({ type: 'buildLog', log });
+        },
+      );
 
       switch (result) {
         case 'updated':
@@ -317,5 +344,6 @@ export function useReaderState(
     state: displayState,
     content: state.content,
     errorMessage,
+    buildLog: state.buildLog,
   };
 }
