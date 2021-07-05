@@ -218,4 +218,58 @@ describe('fetch:template', () => {
       });
     });
   });
+
+  describe('cookiecutter compatibility mode', () => {
+    let context: ActionContext<FetchTemplateInput>;
+
+    beforeEach(async () => {
+      context = mockContext({
+        values: {
+          name: 'test-project',
+          count: 1234,
+          itemList: ['first', 'second', 'third'],
+        },
+        cookieCutterCompat: true,
+      });
+
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockFs({
+          [outputPath]: {
+            '{{ cookiecutter.name }}.txt': 'static content',
+            subdir: {
+              'templated-content.txt':
+                '{{ cookiecutter.name }}: {{ cookiecutter.count }}',
+            },
+            '{{ cookiecutter.name }}.json':
+              '{{ cookiecutter.itemList | jsonify }}',
+          },
+        });
+
+        return Promise.resolve();
+      });
+
+      await action.handler(context);
+    });
+
+    it('copies files with cookiecutter-style templated names successfully', async () => {
+      await expect(
+        fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
+      ).resolves.toEqual('static content');
+    });
+
+    it('copies files with cookiecutter-style templated content successfully', async () => {
+      await expect(
+        fs.readFile(
+          `${workspacePath}/target/subdir/templated-content.txt`,
+          'utf-8',
+        ),
+      ).resolves.toEqual('test-project: 1234');
+    });
+
+    it('includes the jsonify filter', async () => {
+      await expect(
+        fs.readFile(`${workspacePath}/target/test-project.json`, 'utf-8'),
+      ).resolves.toEqual('["first","second","third"]');
+    });
+  });
 });
