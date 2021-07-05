@@ -15,6 +15,7 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
@@ -37,7 +38,6 @@ import {
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';
 import { useReaderState } from './useReaderState';
-import { useApi } from '@backstage/core-plugin-api';
 
 type Props = {
   entityId: EntityName;
@@ -326,12 +326,6 @@ export const Reader = ({ entityId, onReady }: Props) => {
         <Alert variant="outlined" severity="success">
           A newer version of this documentation is now available, please refresh
           to view.
-        </Alert>
-      )}
-      {state === 'CONTENT_STALE_TIMEOUT' && (
-        <Alert variant="outlined" severity="warning">
-          Building a newer version of this documentation took longer than
-          expected. Please refresh to try again.
         </Alert>
       )}
       {state === 'CONTENT_STALE_ERROR' && (

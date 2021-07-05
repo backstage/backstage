@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { useApi } from '@backstage/core-plugin-api';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
 
 /**
  * A state representation that is used to configure the UI of <Reader />
@@ -34,9 +34,6 @@ type ContentStateTypes =
 
   /** There is content, but after a reload, the content will be different */
   | 'CONTENT_STALE_READY'
-
-  /** There is content, the backend tried to update it, but it took too long */
-  | 'CONTENT_STALE_TIMEOUT'
 
   /** There is content, the backend tried to update it, but failed */
   | 'CONTENT_STALE_ERROR'
@@ -93,11 +90,6 @@ export function calculateDisplayState({
     return 'CONTENT_STALE_READY';
   }
 
-  // the build timed out, but the content is still stale
-  if (activeSyncState === 'BUILD_TIMED_OUT') {
-    return 'CONTENT_STALE_TIMEOUT';
-  }
-
   // the build failed, but the content is still stale
   if (activeSyncState === 'ERROR') {
     return 'CONTENT_STALE_ERROR';
@@ -126,9 +118,6 @@ type SyncStates =
    * This state is left toward UP_TO_DATE when the content loading has finished.
    */
   | 'BUILD_READY_RELOAD'
-
-  /** Building the documentation timed out */
-  | 'BUILD_TIMED_OUT'
 
   /** No need for a sync. The content was already up-to-date. */
   | 'UP_TO_DATE'
@@ -274,18 +263,27 @@ export function useReaderState(
         name,
       });
 
-      if (result === 'updated') {
-        // if there was no content prior to building, retry the loading
-        if (!contentRef.current.content) {
-          contentRef.current.reload();
-          dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
-        } else {
-          dispatch({ type: 'sync', state: 'BUILD_READY' });
-        }
-      } else if (result === 'cached') {
-        dispatch({ type: 'sync', state: 'UP_TO_DATE' });
-      } else {
-        dispatch({ type: 'sync', state: 'BUILD_TIMED_OUT' });
+      switch (result) {
+        case 'updated':
+          // if there was no content prior to building, retry the loading
+          if (!contentRef.current.content) {
+            contentRef.current.reload();
+            dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
+          } else {
+            dispatch({ type: 'sync', state: 'BUILD_READY' });
+          }
+          break;
+        case 'cached':
+          dispatch({ type: 'sync', state: 'UP_TO_DATE' });
+          break;
+
+        default:
+          dispatch({
+            type: 'sync',
+            state: 'ERROR',
+            syncError: new Error('Unexpected return state'),
+          });
+          break;
       }
     } catch (e) {
       dispatch({ type: 'sync', state: 'ERROR', syncError: e });

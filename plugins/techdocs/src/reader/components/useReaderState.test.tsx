@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
@@ -23,7 +24,6 @@ import {
   reducer,
   useReaderState,
 } from './useReaderState';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('useReaderState', () => {
   let Wrapper: React.ComponentType;
@@ -55,14 +55,12 @@ describe('useReaderState', () => {
       ${false}       | ${undefined} | ${'BUILDING'}           | ${'INITIAL_BUILD'}
       ${false}       | ${undefined} | ${'BUILD_READY'}        | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
-      ${false}       | ${undefined} | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'UP_TO_DATE'}         | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'ERROR'}              | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${'asdf'}    | ${'CHECKING'}           | ${'CONTENT_FRESH'}
       ${false}       | ${'asdf'}    | ${'BUILDING'}           | ${'CONTENT_STALE_REFRESHING'}
       ${false}       | ${'asdf'}    | ${'BUILD_READY'}        | ${'CONTENT_STALE_READY'}
       ${false}       | ${'asdf'}    | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
-      ${false}       | ${'asdf'}    | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_STALE_TIMEOUT'}
       ${false}       | ${'asdf'}    | ${'UP_TO_DATE'}         | ${'CONTENT_FRESH'}
       ${false}       | ${'asdf'}    | ${'ERROR'}              | ${'CONTENT_STALE_ERROR'}
     `(
@@ -353,42 +351,6 @@ describe('useReaderState', () => {
         await waitForValueToChange(() => result.current.state);
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_READY',
-          content: 'my content',
-          errorMessage: '',
-        });
-
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
-      });
-    });
-
-    it('should handle timed-out refresh', async () => {
-      techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
-      techdocsStorageApi.syncEntityDocs.mockResolvedValue('timeout');
-
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
-
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          content: undefined,
-          errorMessage: '',
-        });
-
-        // the content is returned but the sync is in progress
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_STALE_TIMEOUT',
           content: 'my content',
           errorMessage: '',
         });
