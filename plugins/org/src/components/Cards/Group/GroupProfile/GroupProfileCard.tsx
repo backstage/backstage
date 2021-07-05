@@ -28,7 +28,6 @@ import {
 import {
   Box,
   Grid,
-  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -42,7 +41,12 @@ import GroupIcon from '@material-ui/icons/Group';
 import EditIcon from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core-components';
+import {
+  Avatar,
+  InfoCard,
+  InfoCardVariants,
+  Link,
+} from '@backstage/core-components';
 
 const CardTitle = ({ title }: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -75,10 +79,10 @@ export const GroupProfileCard = ({
     kind: 'group',
   });
 
-  const entityMetadataEditUrl = getEntityMetadataEditUrl(group);
+  const entityMetadataEditUrl = getEntityMetadataEditUrl(group) ?? '#';
 
   const displayName = profile?.displayName ?? name;
-  const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
+  const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
 
   return (
     <InfoCard
@@ -90,9 +94,9 @@ export const GroupProfileCard = ({
           aria-label="Edit"
           disabled={!entityMetadataEditUrl}
           title="Edit Metadata"
-          onClick={() => {
-            window.open(entityMetadataEditUrl ?? '#', '_blank');
-          }}
+          component={Link}
+          target="_blank"
+          to={entityMetadataEditUrl}
         >
           <EditIcon />
         </IconButton>
@@ -112,7 +116,7 @@ export const GroupProfileCard = ({
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText>
-                  <Link href={emailHref}>{profile.email}</Link>
+                  <Link to={emailHref}>{profile.email}</Link>
                 </ListItemText>
               </ListItem>
             )}
