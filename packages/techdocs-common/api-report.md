@@ -47,6 +47,15 @@ export type GeneratorBuilder = {
     get(entity: Entity): GeneratorBase;
 };
 
+// @public
+export type GeneratorRunOptions = {
+    inputDir: string;
+    outputDir: string;
+    parsedLocationAnnotation?: ParsedLocationAnnotation;
+    etag?: string;
+    logStream?: Writable;
+};
+
 // @public (undocumented)
 export class Generators implements GeneratorBuilder {
     // (undocumented)
@@ -158,7 +167,7 @@ export class TechdocsGenerator implements GeneratorBase {
         config: Config;
     });
     // (undocumented)
-    run({ inputDir, outputDir, parsedLocationAnnotation, etag, }: GeneratorRunOptions): Promise<void>;
+    run({ inputDir, outputDir, parsedLocationAnnotation, etag, logStream: callerLogStream, }: GeneratorRunOptions): Promise<void>;
 }
 
 // @public
