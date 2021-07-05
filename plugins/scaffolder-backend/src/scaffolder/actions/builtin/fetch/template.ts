@@ -93,8 +93,6 @@ export function createFetchTemplateAction(options: {
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
           },
-          // TODO(mtlewis/orkohunter): do we need to replicate the template extensions support
-          // from fetch:cookiecutter?
         },
       },
     },
