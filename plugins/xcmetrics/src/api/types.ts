@@ -16,8 +16,43 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+export type BuildItem = {
+  userid: string;
+  warningCount: number;
+  duration: number;
+  startTimestamp: string;
+  isCi: boolean;
+  startTimestampMicroseconds: number;
+  category: string;
+  endTimestampMicroseconds: number;
+  day: string;
+  compilationEndTimestamp: string;
+  tag: string;
+  projectName: string;
+  compilationEndTimestampMicroseconds: number;
+  errorCount: number;
+  id: string;
+  buildStatus: 'succeeded' | 'failed' | 'stopped';
+  compilationDuration: number;
+  schema: string;
+  compiledCount: number;
+  endTimestamp: string;
+  userid256: string;
+  machineName: string;
+  wasSuspended: boolean;
+};
+
+export type BuildsResult = {
+  items: BuildItem[];
+  metadata: {
+    per: number;
+    total: number;
+    page: number;
+  };
+};
+
 export interface XCMetricsApi {
-  getBuilds(): Promise<string>;
+  getBuilds(): Promise<BuildItem[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XCMetricsApi>({

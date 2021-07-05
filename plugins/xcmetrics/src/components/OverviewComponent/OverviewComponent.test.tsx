@@ -21,8 +21,19 @@ import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('OverviewComponent', () => {
   it('should render', async () => {
+    const mockUserId = 'mockUser';
     const mockApi: jest.Mocked<XCMetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue(''),
+      getBuilds: jest.fn().mockResolvedValue([
+        {
+          userid: mockUserId,
+          warningCount: 1,
+          duration: 123.45,
+          isCi: false,
+          projectName: 'App',
+          buildStatus: 'succeeded',
+          schema: 'AppSchema',
+        },
+      ]),
     };
 
     const rendered = await renderInTestApp(
@@ -31,5 +42,34 @@ describe('OverviewComponent', () => {
       </ApiProvider>,
     );
     expect(rendered.getByText('XCMetrics Dashboard')).toBeInTheDocument();
+    expect(rendered.getByText(mockUserId)).toBeInTheDocument();
+    expect(rendered.queryByText('CI')).toBeNull();
+  });
+
+  it('should render an empty state when no builds exist', async () => {
+    const mockApi: jest.Mocked<XCMetricsApi> = {
+      getBuilds: jest.fn().mockResolvedValue([]),
+    };
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+        <OverviewComponent />
+      </ApiProvider>,
+    );
+    expect(rendered.getByText('No builds to show')).toBeInTheDocument();
+  });
+
+  it('should show an error when API not responding', async () => {
+    const errorMessage = 'MockErrorMessage';
+    const mockApi: jest.Mocked<XCMetricsApi> = {
+      getBuilds: jest.fn().mockRejectedValue({ message: errorMessage }),
+    };
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+        <OverviewComponent />
+      </ApiProvider>,
+    );
+    expect(rendered.getByText(errorMessage)).toBeInTheDocument();
   });
 });
