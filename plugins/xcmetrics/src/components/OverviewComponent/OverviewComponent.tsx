@@ -26,16 +26,13 @@ import {
   EmptyState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { BuildItem, xcmetricsApiRef } from '../../api';
+import { BuildItem, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Duration } from 'luxon';
 import { Chip } from '@material-ui/core';
 
-const formatStatus = (
-  status: 'succeeded' | 'failed' | 'stopped',
-  warningCount: number,
-) => {
+const formatStatus = (status: BuildStatus, warningCount: number) => {
   const statusIcons = {
     succeeded: <StatusOK />,
     failed: <StatusError />,

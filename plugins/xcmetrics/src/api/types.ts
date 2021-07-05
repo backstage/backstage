@@ -16,6 +16,8 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+export type BuildStatus = 'succeeded' | 'failed' | 'stopped';
+
 export type BuildItem = {
   userid: string;
   warningCount: number;
@@ -32,7 +34,7 @@ export type BuildItem = {
   compilationEndTimestampMicroseconds: number;
   errorCount: number;
   id: string;
-  buildStatus: 'succeeded' | 'failed' | 'stopped';
+  buildStatus: BuildStatus;
   compilationDuration: number;
   schema: string;
   compiledCount: number;
