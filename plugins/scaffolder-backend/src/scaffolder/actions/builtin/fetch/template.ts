@@ -128,18 +128,14 @@ export function createFetchTemplateAction(options: {
         outputPath: templateDir,
       });
 
-      ctx.logger.info(
-        'Fetched template, beginning templating process with values',
-        ctx.input.values,
-      );
-
-      // Grab some files
+      ctx.logger.info('Listing files and directories in template');
       const allEntriesInTemplate = await globby(`**/*`, {
         cwd: templateDir,
         dot: true,
         onlyFiles: false,
         markDirectories: true,
       });
+
       const nonTemplatedEntries = new Set(
         (
           await Promise.all(
@@ -155,15 +151,13 @@ export function createFetchTemplateAction(options: {
         ).flat(),
       );
 
-      ctx.logger.info(allEntriesInTemplate);
-
       // Create a templater
       const templater = nunjucks.configure({
-        // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
         ...(ctx.input.cookiecutterCompat
           ? {}
           : {
               tags: {
+                // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
                 variableStart: '${{',
                 variableEnd: '}}',
               },
@@ -195,11 +189,22 @@ export function createFetchTemplateAction(options: {
         ? { cookiecutter: ctx.input.values }
         : ctx.input.values;
 
+      ctx.logger.info(
+        `Processing ${allEntriesInTemplate.length} template files/directories with input values`,
+        ctx.input.values,
+      );
+
       for (const location of allEntriesInTemplate) {
         const isTemplated = !nonTemplatedEntries.has(location);
         const outputPath = resolvePath(
           outputDir,
           isTemplated ? templater.renderString(location, parameters) : location,
+        );
+
+        ctx.logger.info(
+          `Writing${isTemplated ? ' ' : ' un-templated '}${
+            location.endsWith('/') ? 'directory' : 'file'
+          } ${location} to template output path`,
         );
 
         if (location.endsWith('/')) {
@@ -218,6 +223,8 @@ export function createFetchTemplateAction(options: {
           );
         }
       }
+
+      ctx.logger.info(`Template result written to ${outputDir}`);
     },
   });
 }
