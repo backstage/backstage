@@ -15,7 +15,7 @@
  */
 
 import path, { resolve as resolvePath } from 'path';
-import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
@@ -104,13 +104,7 @@ export function createFetchTemplateAction(options: {
       const templateDir = resolvePath(workDir, 'template');
 
       const targetPath = ctx.input.targetPath ?? './';
-      const outputDir = path.resolve(ctx.workspacePath, targetPath);
-
-      if (!outputDir.startsWith(ctx.workspacePath)) {
-        throw new InputError(
-          `Fetch action targetPath may not specify a path outside the working directory`,
-        );
-      }
+      const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
 
       if (
         ctx.input.copyWithoutRender &&

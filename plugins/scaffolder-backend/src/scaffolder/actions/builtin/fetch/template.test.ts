@@ -92,7 +92,9 @@ describe('fetch:template', () => {
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),
-      ).rejects.toThrowError(/outside the working directory/i);
+      ).rejects.toThrowError(
+        /relative path is not allowed to refer to a directory outside its parent/i,
+      );
     });
 
     it('throws if copyWithoutRender parameter is not an array', async () => {
