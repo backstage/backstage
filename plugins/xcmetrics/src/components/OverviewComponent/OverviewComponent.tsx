@@ -31,6 +31,7 @@ import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Duration } from 'luxon';
 import { Chip } from '@material-ui/core';
+import { StatusMatrixComponent } from '../StatusMatrixComponent';
 
 const formatStatus = (status: BuildStatus, warningCount: number) => {
   const statusIcons = {
@@ -113,7 +114,12 @@ export const OverviewComponent = () => {
         options={{ paging: false, search: false }}
         data={builds}
         columns={columns}
-        title="Latest Builds"
+        title={
+          <>
+            Latest Builds
+            <StatusMatrixComponent />
+          </>
+        }
       />
     </>
   );
