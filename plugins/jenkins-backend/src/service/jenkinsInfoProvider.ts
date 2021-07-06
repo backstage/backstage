@@ -41,7 +41,7 @@ export interface JenkinsInfo {
 }
 
 /**
- * Use default config and annotations.
+ * Use default config and annotations, build using fromConfig static function.
  *
  * This will fallback through various deprecated config and annotation schemes.
  */
@@ -49,10 +49,25 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
   static readonly NEW_JENKINS_ANNOTATION = 'jenkins.io/job-slug';
 
-  constructor(
+  private constructor(
+    private readonly config: {
+      name: string;
+      baseUrl: string;
+      username: string;
+      apiKey: string;
+    }[],
     private readonly catalog: CatalogClient,
-    private readonly config: Config,
   ) {}
+
+  static fromConfig(options: {
+    config: Config;
+    catalog: CatalogClient;
+  }): DefaultJenkinsInfoProvider {
+    return new DefaultJenkinsInfoProvider(
+      this.loadConfig(options.config),
+      options.catalog,
+    );
+  }
 
   async getInstance(opt: {
     entityRef: EntityName;
@@ -99,15 +114,13 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       this.config,
     );
 
-    const baseUrl = instanceConfig.getString('baseUrl');
-    const username = instanceConfig.getString('username');
-    const apiKey = instanceConfig.getString('apiKey');
-    const creds = Buffer.from(`${username}:${apiKey}`, 'binary').toString(
-      'base64',
-    );
+    const creds = Buffer.from(
+      `${instanceConfig.username}:${instanceConfig.apiKey}`,
+      'binary',
+    ).toString('base64');
 
     return {
-      baseUrl,
+      baseUrl: instanceConfig.baseUrl,
       headers: {
         Authorization: `Basic ${creds}`,
       },
@@ -128,48 +141,92 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
 
   private static getInstanceConfig(
     jenkinsName: string | undefined,
-    rootConfig: Config,
-  ): Config {
+    config: {
+      name: string;
+      baseUrl: string;
+      username: string;
+      apiKey: string;
+    }[],
+  ): { name: string; baseUrl: string; username: string; apiKey: string } {
     const DEFAULT_JENKINS_NAME = 'default';
 
-    const jenkinsConfig = rootConfig.getConfig('jenkins');
-
     if (!jenkinsName || jenkinsName === DEFAULT_JENKINS_NAME) {
-      // no name provided, this could be
-      // (jenkins.baseUrl, jenkins.username, jenkins.apiKey) or
-      // the entry with default name in jenkins.instances
-      const namedInstanceConfig = jenkinsConfig
-        .getOptionalConfigArray('instances')
-        ?.filter(c => c.getString('name') === DEFAULT_JENKINS_NAME)[0];
-      if (namedInstanceConfig) {
-        return namedInstanceConfig;
-      }
+      // no name provided, use default
+      const instanceConfig = config.find(c => c.name === DEFAULT_JENKINS_NAME);
 
-      // Get these as optional strings and check to give a better error message
-      const baseUrl = jenkinsConfig.getOptionalString('baseUrl');
-      const username = jenkinsConfig.getOptionalString('username');
-      const apiKey = jenkinsConfig.getOptionalString('apiKey');
-
-      if (!baseUrl || !username || !apiKey) {
+      if (!instanceConfig) {
         throw new Error(
           `Couldn't find a default jenkins instance in the config. Either configure an instance with name ${DEFAULT_JENKINS_NAME} or add a prefix to your annotation value.`,
         );
       }
 
-      return jenkinsConfig;
+      return instanceConfig;
     }
 
     // A name is provided, look it up.
+    const instanceConfig = config.find(c => c.name === jenkinsName);
 
-    const namedInstanceConfig = jenkinsConfig
-      .getConfigArray('instances')
-      .filter(c => c.getString('name') === jenkinsName)[0];
-
-    if (!namedInstanceConfig) {
+    if (!instanceConfig) {
       throw new Error(
         `Couldn't find a jenkins instance in the config with name ${jenkinsName}`,
       );
     }
+    return instanceConfig;
+  }
+
+  private static loadConfig(
+    rootConfig: Config,
+  ): { name: string; baseUrl: string; username: string; apiKey: string }[] {
+    const DEFAULT_JENKINS_NAME = 'default';
+
+    const jenkinsConfig = rootConfig.getConfig('jenkins');
+
+    // load all named instance config
+    const namedInstanceConfig =
+      jenkinsConfig.getOptionalConfigArray('instances')?.map(c => ({
+        name: c.getString('name'),
+        baseUrl: c.getString('baseUrl'),
+        username: c.getString('username'),
+        apiKey: c.getString('apiKey'),
+      })) || [];
+
+    // load unnamed default config
+    const hasNamedDefault = namedInstanceConfig.some(
+      x => x.name === DEFAULT_JENKINS_NAME,
+    );
+
+    // Get these as optional strings and check to give a better error message
+    const baseUrl = jenkinsConfig.getOptionalString('baseUrl');
+    const username = jenkinsConfig.getOptionalString('username');
+    const apiKey = jenkinsConfig.getOptionalString('apiKey');
+
+    if (hasNamedDefault && (baseUrl || username || apiKey)) {
+      throw new Error(
+        `Found both a named jenkins instance with name ${DEFAULT_JENKINS_NAME} and top level baseUrl, username or apiKey config. Use only one style of config.`,
+      );
+    }
+
+    const unnamedNonePresent = !baseUrl && !username && !apiKey;
+    const unnamedAllPresent = baseUrl && username && apiKey;
+    if (!(unnamedAllPresent || unnamedNonePresent)) {
+      throw new Error(
+        `Found partial default jenkins config. All (or none) of  baseUrl, username ans apiKey must be provided.`,
+      );
+    }
+
+    if (unnamedAllPresent) {
+      const unnamedInstanceConfig = [
+        { name: DEFAULT_JENKINS_NAME, baseUrl, username, apiKey },
+      ] as {
+        name: string;
+        baseUrl: string;
+        username: string;
+        apiKey: string;
+      }[];
+
+      return [...namedInstanceConfig, ...unnamedInstanceConfig];
+    }
+
     return namedInstanceConfig;
   }
 }

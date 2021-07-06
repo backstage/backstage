@@ -15,7 +15,11 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
 export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
-    constructor(catalog: CatalogClient, config: Config);
+    // (undocumented)
+    static fromConfig(options: {
+        config: Config;
+        catalog: CatalogClient;
+    }): DefaultJenkinsInfoProvider;
     // (undocumented)
     getInstance(opt: {
         entityRef: EntityName;

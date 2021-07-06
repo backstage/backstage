@@ -30,11 +30,14 @@ export default async function createPlugin({
   config,
   discovery,
 }: PluginEnvironment): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const catalog = new CatalogClient({ discoveryApi: discovery });
 
   return await createRouter({
     logger,
-    jenkinsInfoProvider: new DefaultJenkinsInfoProvider(catalogClient, config),
+    jenkinsInfoProvider: DefaultJenkinsInfoProvider.fromConfig({
+      config,
+      catalog,
+    }),
   });
 }
 ```

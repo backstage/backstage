@@ -36,11 +36,14 @@ describe('DefaultJenkinsInfoProvider', () => {
       Promise.resolve(entityData as Entity),
     );
 
-    return new DefaultJenkinsInfoProvider(mockCatalog, config);
+    return DefaultJenkinsInfoProvider.fromConfig({
+      config,
+      catalog: mockCatalog,
+    });
   }
 
   it('Handles entity not found', async () => {
-    const provider = configureProvider({}, undefined);
+    const provider = configureProvider({ jenkins: {} }, undefined);
     await expect(provider.getInstance({ entityRef })).rejects.toThrowError();
 
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
