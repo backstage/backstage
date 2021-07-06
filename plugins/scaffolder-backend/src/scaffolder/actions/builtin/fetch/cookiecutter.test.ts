@@ -16,24 +16,26 @@
 const runCommand = jest.fn();
 const commandExists = jest.fn();
 const fetchContents = jest.fn();
-jest.mock('./helpers', () => ({ runCommand, fetchContents }));
-jest.mock('command-exists', () => commandExists);
-jest.mock('./helpers');
-jest.mock('fs-extra');
 
-import fs from 'fs-extra';
+jest.mock('./helpers', () => ({ fetchContents }));
+jest.mock('command-exists', () => commandExists);
+jest.mock('../helpers', () => ({ runCommand }));
+
 import {
   getVoidLogger,
   UrlReader,
   ContainerRunner,
 } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { ConfigReader, JsonObject } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import mock from 'mock-fs';
 import os from 'os';
-import { resolve as resolvePath } from 'path';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
+import { join } from 'path';
+import { ActionContext } from '../../types';
+
+import fs from 'fs-extra';
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -48,21 +50,15 @@ describe('fetch:cookiecutter', () => {
   );
 
   const mockTmpDir = os.tmpdir();
-  const mockContext = {
-    input: {
-      url: 'https://google.com/cookie/cutter',
-      targetPath: 'something',
-      values: {
-        help: 'me',
-      },
-    },
-    baseUrl: 'somebase',
-    workspacePath: mockTmpDir,
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-  };
+
+  let mockContext: ActionContext<{
+    url: string;
+    targetPath?: string;
+    values: JsonObject;
+    copyWithoutRender?: string[];
+    extensions?: string[];
+    imageName?: string;
+  }>;
 
   const containerRunner: jest.Mocked<ContainerRunner> = {
     runContainer: jest.fn(),
@@ -81,114 +77,142 @@ describe('fetch:cookiecutter', () => {
   });
 
   beforeEach(() => {
-    (fs.readdir as jest.Mock).mockReturnValueOnce(['cookiecutter.json']);
+    jest.resetAllMocks();
 
-    mock({
-      [`${mockContext.workspacePath}/template`]: { 'cookiecutter.json': '{}' },
+    mockContext = {
+      input: {
+        url: 'https://google.com/cookie/cutter',
+        targetPath: 'something',
+        values: {
+          help: 'me',
+        },
+      },
+      baseUrl: 'somebase',
+      workspacePath: mockTmpDir,
+      logger: getVoidLogger(),
+      logStream: new PassThrough(),
+      output: jest.fn(),
+      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    };
+
+    // mock the temp directory
+    mock({ [mockTmpDir]: {} });
+    mock({ [`${join(mockTmpDir, 'template')}`]: {} });
+
+    commandExists.mockResolvedValue(null);
+
+    // Mock when run container is called it creates some new files in the mock filesystem
+    containerRunner.runContainer.mockImplementation(async () => {
+      mock({
+        [`${join(mockTmpDir, 'intermediate')}`]: {
+          'testfile.json': '{}',
+        },
+      });
     });
-    mock({ [`${mockContext.workspacePath}/result`]: {} });
-    mock({
-      [`${mockContext.workspacePath}/intermediate`]: {},
+
+    // Mock when runCommand is called it creats some new files in the mock filesystem
+    runCommand.mockImplementation(async () => {
+      mock({
+        [`${join(mockTmpDir, 'intermediate')}`]: {
+          'testfile.json': '{}',
+        },
+      });
     });
-    jest.restoreAllMocks();
-    commandExists.mockRejectedValue(null);
   });
 
   afterEach(() => {
     mock.restore();
   });
 
-  it('should call fetchContents with the correct values', async () => {
+  it('should throw an error when copyWithoutRender is not an array', async () => {
+    (mockContext.input as any).copyWithoutRender = 'not an array';
+
+    await expect(
+      action.handler(mockContext),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Fetch action input copyWithoutRender must be an Array"`,
+    );
+  });
+
+  it('should throw an error when extensions is not an array', async () => {
+    (mockContext.input as any).extensions = 'not an array';
+
+    await expect(
+      action.handler(mockContext),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Fetch action input extensions must be an Array"`,
+    );
+  });
+
+  it('should call fetchContents with the correct variables', async () => {
+    fetchContents.mockImplementation(() => Promise.resolve());
+    await action.handler(mockContext);
+    expect(fetchContents).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reader: mockReader,
+        integrations,
+        baseUrl: mockContext.baseUrl,
+        fetchUrl: mockContext.input.url,
+        outputPath: join(
+          mockTmpDir,
+          'template',
+          "{{cookiecutter and 'contents'}}",
+        ),
+      }),
+    );
+  });
+
+  it('should call out to cookiecutter using runCommand when cookiecutter is installed', async () => {
+    commandExists.mockResolvedValue(true);
+
     await action.handler(mockContext);
 
-    expect(fetchContents).toHaveBeenCalledWith({
-      reader: mockReader,
-      integrations,
-      baseUrl: mockContext.baseUrl,
-      fetchUrl: mockContext.input.url,
-      outputPath: resolvePath(
-        mockContext.workspacePath,
-        `template/{{cookiecutter and 'contents'}}`,
-      ),
-    });
+    expect(runCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'cookiecutter',
+        args: [
+          '--no-input',
+          '-o',
+          join(mockTmpDir, 'intermediate'),
+          join(mockTmpDir, 'template'),
+          '--verbose',
+        ],
+        logStream: mockContext.logStream,
+      }),
+    );
   });
 
-  it('should execute the cookiecutter templater with optional inputs if they are present and valid', async () => {
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        copyWithoutRender: ['goreleaser.yml'],
-        extensions: [
-          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
-        ],
-        imageName: 'foo/cookiecutter-image-with-extensions',
-      },
-    });
+  it('should call out to the containerRunner when there is no cookiecutter installed', async () => {
+    commandExists.mockResolvedValue(false);
 
-    expect(cookiecutterTemplater.run).toHaveBeenCalledWith({
-      workspacePath: mockTmpDir,
-      logStream: mockContext.logStream,
-      values: {
-        ...mockContext.input.values,
-        _copy_without_render: ['goreleaser.yml'],
-        _extensions: [
-          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
-        ],
-        imageName: 'foo/cookiecutter-image-with-extensions',
-      },
-    });
+    await action.handler(mockContext);
+
+    expect(containerRunner.runContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName: 'spotify/backstage-cookiecutter',
+        command: 'cookiecutter',
+        args: ['--no-input', '-o', '/output', '/input', '--verbose'],
+        mountDirs: {
+          [join(mockTmpDir, 'intermediate')]: '/output',
+          [join(mockTmpDir, 'template')]: '/input',
+        },
+        workingDir: '/input',
+        envVars: { HOME: '/tmp' },
+        logStream: mockContext.logStream,
+      }),
+    );
   });
 
-  // it('should throw if copyWithoutRender is not an Array', async () => {
-  //   await expect(
-  //     action.handler({
-  //       ...mockContext,
-  //       input: {
-  //         ...mockContext.input,
-  //         copyWithoutRender: 'xyz',
-  //       },
-  //     }),
-  //   ).rejects.toThrow(/copyWithoutRender must be an Array/);
-  // });
+  it('should use a custom imageName when there is an image supplied to the context', async () => {
+    const imageName = 'test-image';
+    mockContext.input.imageName = imageName;
 
-  // it('should throw if extensions is not an Array', async () => {
-  //   await expect(
-  //     action.handler({
-  //       ...mockContext,
-  //       input: {
-  //         ...mockContext.input,
-  //         extensions: 'xyz',
-  //       },
-  //     }),
-  //   ).rejects.toThrow(/extensions must be an Array/);
-  // });
+    await action.handler(mockContext);
 
-  // it('should throw if there is no cookiecutter templater initialized', async () => {
-  //   const templatersWithoutCookiecutter = new Templaters();
-
-  //   const newAction = createFetchCookiecutterAction({
-  //     integrations,
-  //     templaters: templatersWithoutCookiecutter,
-  //     reader: mockReader,
-  //   });
-
-  //   await expect(newAction.handler(mockContext)).rejects.toThrow(
-  //     /No templater registered/,
-  //   );
-  // });
-
-  // it('should throw if the target directory is outside of the workspace path', async () => {
-  //   await expect(
-  //     action.handler({
-  //       ...mockContext,
-  //       input: {
-  //         ...mockContext.input,
-  //         targetPath: '/foo',
-  //       },
-  //     }),
-  //   ).rejects.toThrow(
-  //     /Relative path is not allowed to refer to a directory outside its parent/,
-  //   );
-  // });
+    expect(containerRunner.runContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName,
+      }),
+    );
+  });
 });
