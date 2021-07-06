@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: artist-lookup
   description: Artist Lookup
+  annotations:
+     github.com/project-slug: aishwariyajay/backstageazurepublic
   tags:
     - java
     - data
