@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="cypress" />
-import 'os';
 
-describe('Catalog', () => {
-  describe('default entities', () => {
-    it('displays the correct amount of entities from default config', () => {
-      cy.loginAsGuest();
-
-      cy.visit('/catalog');
-
-      cy.contains('Owned (10)').should('be.visible');
-    });
-  });
-});
+export { createFilesystemDeleteAction } from './delete';
+export { createFilesystemRenameAction } from './rename';

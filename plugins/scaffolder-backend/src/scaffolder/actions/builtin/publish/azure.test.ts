@@ -162,6 +162,29 @@ describe('publish:azure', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+    });
+  });
+
+  it('should call initRepoAndPush with the correct default branch', async () => {
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+    }));
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
     });

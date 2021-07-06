@@ -16,6 +16,15 @@ import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { UserEntity } from '@backstage/catalog-model';
 
+// @public (undocumented)
+export function defaultGroupTransformer(vendor: LdapVendor, config: GroupConfig, entry: SearchEntry): Promise<GroupEntity | undefined>;
+
+// @public (undocumented)
+export function defaultUserTransformer(vendor: LdapVendor, config: UserConfig, entry: SearchEntry): Promise<UserEntity | undefined>;
+
+// @public
+export type GroupTransformer = (vendor: LdapVendor, config: GroupConfig, group: SearchEntry) => Promise<GroupEntity | undefined>;
+
 // @public
 export const LDAP_DN_ANNOTATION = "backstage.io/ldap-dn";
 
@@ -40,14 +49,18 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     constructor(options: {
         providers: LdapProviderConfig[];
         logger: Logger;
+        groupTransformer?: GroupTransformer;
+        userTransformer?: UserTransformer;
     });
     // (undocumented)
     static fromConfig(config: Config, options: {
         logger: Logger;
+        groupTransformer?: GroupTransformer;
+        userTransformer?: UserTransformer;
     }): LdapOrgReaderProcessor;
     // (undocumented)
     readLocation(location: LocationSpec, _optional: boolean, emit: CatalogProcessorEmit): Promise<boolean>;
-}
+    }
 
 // @public
 export type LdapProviderConfig = {
@@ -58,13 +71,23 @@ export type LdapProviderConfig = {
 };
 
 // @public
+export function mapStringAttr(entry: SearchEntry, vendor: LdapVendor, attributeName: string | undefined, setter: (value: string) => void): void;
+
+// @public
 export function readLdapConfig(config: Config): LdapProviderConfig[];
 
 // @public
-export function readLdapOrg(client: LdapClient, userConfig: UserConfig, groupConfig: GroupConfig): Promise<{
+export function readLdapOrg(client: LdapClient, userConfig: UserConfig, groupConfig: GroupConfig, options: {
+    groupTransformer?: GroupTransformer;
+    userTransformer?: UserTransformer;
+    logger: Logger;
+}): Promise<{
     users: UserEntity[];
     groups: GroupEntity[];
 }>;
+
+// @public
+export type UserTransformer = (vendor: LdapVendor, config: UserConfig, user: SearchEntry) => Promise<UserEntity | undefined>;
 
 
 // (No @packageDocumentation comment for this package)

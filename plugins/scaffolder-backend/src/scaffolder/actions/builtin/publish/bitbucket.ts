@@ -190,6 +190,7 @@ export function createPublishBitbucketAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description: string;
+    defaultBranch?: string;
     repoVisibility: 'private' | 'public';
     sourcePath?: string;
     enableLFS: boolean;
@@ -214,6 +215,11 @@ export function createPublishBitbucketAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -245,6 +251,7 @@ export function createPublishBitbucketAction(options: {
       const {
         repoUrl,
         description,
+        defaultBranch = 'master',
         repoVisibility = 'private',
         enableLFS = false,
       } = ctx.input;
@@ -288,6 +295,7 @@ export function createPublishBitbucketAction(options: {
             ? integrationConfig.config.appPassword
             : integrationConfig.config.token ?? '',
         },
+        defaultBranch,
         logger: ctx.logger,
       });
 

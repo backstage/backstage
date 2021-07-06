@@ -286,6 +286,49 @@ describe('publish:bitbucket', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      defaultBranch: 'master',
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
+      logger: mockContext.logger,
+    });
+  });
+
+  it('should call initAndPush with the correct default branch', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/owner/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/owner/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      defaultBranch: 'main',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
     });
