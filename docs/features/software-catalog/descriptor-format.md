@@ -654,7 +654,7 @@ spec:
   steps:
     - id: fetch-base
       name: Fetch Base
-      action: fetch:cookiecutter
+      action: fetch:template
       input:
         url: ./template
         values:

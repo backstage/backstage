@@ -41,7 +41,7 @@ export function createFetchCookiecutterAction(options: {
   }>({
     id: 'fetch:cookiecutter',
     description:
-      'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
+      "Downloads a template from the given URL into the workspace, and runs cookiecutter on it. This action is deprecated in favor of 'fetch:template'. See https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetch-cookiecutter-to-fetch-template for more details.",
     schema: {
       input: {
         type: 'object',

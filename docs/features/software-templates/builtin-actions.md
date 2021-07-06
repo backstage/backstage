@@ -14,3 +14,39 @@ Azure, GitLab and Bitbucket.
 A list of all registered actions can be found under `/create/actions`. For local
 development you should be able to reach them at
 `http://localhost:3000/create/actions`.
+
+### Migrating from `fetch:cookiecutter` to `fetch:template`
+
+The `fetch:template` action is a new action with a similar API to
+`fetch:cookiecutter` but no dependency on `cookiecutter`. There are two options
+for migrating templates that use `fetch:cookiecutter` to use `fetch:template`:
+
+#### Using `cookiecutterCompat` mode
+
+The new `fetch:template` action has a `cookiecutterCompat` flag which should
+allow most templates built for `fetch:cookiecutter` to work without any changes.
+
+1. Update action name in `template.yaml`. The name should be changed from
+   `fetch:cookiecutter` to `fetch:template`.
+2. Set `cookieCutterCompat` to `true` in the `fetch:template` step input in
+   `template.yaml`.
+
+#### Manual migration
+
+If you prefer, you can manually migrate your templates to avoid the need for
+enabling cookiecutter compatibility mode, which will result in slightly less
+verbose template variables expressions.
+
+1. Update action name in `template.yaml`. The name should be changed from
+   `fetch:cookiecutter` to `fetch:template`.
+2. Update variable syntax in file names and content. `fetch:cookiecutter`
+   expects variables to be enclosed in `{{` `}}` and prefixed with
+   `cookiecutter.`, while `fetch:template` doesn't require prefixing and expects
+   variables to be enclosed in `${{` `}}`. For example, a reference to variable
+   `myInputVariable` would need to be migrated from
+   `{{ cookiecutter.myInputVariable }}` to `${{ myInputVariable }}`.
+3. Replace uses of `jsonify` with `dump`. The `jsonify` filter is built in to
+   `cookiecutter`, and is not available by default when using `fetch:template`.
+   The `dump` filter is equivalent, so an expression like
+   `{{ myAwesomeList | jsonify }}` should be migrated to
+   `${{ myAwesomeList | dump }}`.
