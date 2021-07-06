@@ -35,8 +35,6 @@ import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
 import { ActionContext } from '../../types';
 
-import fs from 'fs-extra';
-
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
