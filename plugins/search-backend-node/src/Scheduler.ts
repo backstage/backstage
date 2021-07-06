@@ -37,8 +37,9 @@ export class Scheduler {
   }
 
   /**
-   * Adds each task and interval to the schedule
-   *
+   * Adds each task and interval to the schedule.
+   * When running the tasks, the scheduler waits at least for the time specified
+   * in the interval once the task was completed, before running it again.
    */
   addToSchedule(task: Function, interval: number) {
     if (this.runningTasks.length) {
@@ -55,8 +56,6 @@ export class Scheduler {
   start() {
     this.logger.info('Starting all scheduled search tasks.');
     this.schedule.forEach(({ task, interval }) => {
-      // Fire the task immediately, then schedule it.
-      task();
       this.runningTasks.push(runPeriodically(() => task(), interval));
     });
   }
