@@ -15,6 +15,7 @@
  */
 
 import os from 'os';
+import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
@@ -24,11 +25,16 @@ import { fetchContents } from './helpers';
 import { ActionContext, TemplateAction } from '../../types';
 import { createFetchTemplateAction, FetchTemplateInput } from './template';
 
-// TODO(mtlewis/orkohunter): Test handling binary files
-
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
+
+const aBinaryFile = fs.readFileSync(
+  resolvePath(
+    'src',
+    '../fixtures/test-nested-template/public/react-logo192.png',
+  ),
+);
 
 const mockFetchContents = fetchContents as jest.MockedFunction<
   typeof fetchContents
@@ -119,6 +125,7 @@ describe('fetch:template', () => {
                 'templated-content.txt': '${{ name }}: ${{ count }}',
               },
               '.${{ name }}': '${{ itemList | dump }}',
+              'a-binary-file.png': aBinaryFile,
             },
           });
 
@@ -168,6 +175,12 @@ describe('fetch:template', () => {
         await expect(
           fs.readdir(`${workspacePath}/target/empty-dir-1234`, 'utf-8'),
         ).resolves.toEqual([]);
+      });
+
+      it('copies binary files as it-is without processing them', async () => {
+        await expect(
+          fs.readFile(`${workspacePath}/target/a-binary-file.png`),
+        ).resolves.toEqual(aBinaryFile);
       });
     });
 
