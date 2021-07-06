@@ -5442,9 +5442,9 @@
   integrity sha512-/+CRPXpBDpo2RK9C68N3b2cOvO0Cf5B9aPijHsoDQTHivnGSObdOF2BRQOYjojWTDy6nQvMjmqRXIxH55VjxxA==
 
 "@types/archiver@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.1.0.tgz#869f4ce4028e49cf9a0243cf914415f4cc3d1f3d"
-  integrity sha512-baFOhanb/hxmcOd1Uey2TfFg43kTSmM6py1Eo7Rjbv/ivcl7PXLhY0QgXGf50Hx/eskGCFqPfhs/7IZLb15C5g==
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.3.0.tgz#2b34ba56d4d7102d256b922c7e91e09eab79db6f"
+  integrity sha512-qJ79qsmq7O/k9FYwsF6O1xVA1PeLV+9Bh3TYkVCu3VzMR6vN9JQkgEOh/rrQ0R+F4Ta+R3thHGewxQtFglwVfg==
   dependencies:
     "@types/glob" "*"
 
