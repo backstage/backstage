@@ -299,12 +299,17 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
   // Display at least one item in the container
   // Question: Can this be a config/theme variable - if so, which? :/
   minHeight: '48px',
-  '&::-webkit-scrollbar': {
+  overflowY: 'hidden',
+
+  '&:hover': {
+    overflowY: 'auto',
+  },
+  '&:hover::-webkit-scrollbar': {
     backgroundColor: theme.palette.background.default,
     width: '5px',
     borderRadius: '5px',
   },
-  '&::-webkit-scrollbar-thumb': {
+  '&:hover::-webkit-scrollbar-thumb': {
     backgroundColor: theme.palette.text.hint,
     borderRadius: '5px',
   },
