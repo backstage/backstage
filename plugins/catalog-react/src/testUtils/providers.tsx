@@ -55,6 +55,7 @@ export const MockEntityListContextProvider = ({
     updateFilters: updateFilters,
     filters: filters,
     loading: false,
+    queryParameters: {},
   };
 
   // Extract value.filters to avoid overwriting it; some tests exercise filter updates. The value

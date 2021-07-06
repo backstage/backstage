@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
-import {
-  DefaultEntityFilters,
-  useEntityListProvider,
-} from './useEntityListProvider';
+import { useEntityListProvider } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
 type EntityTypeReturn = {
@@ -40,8 +37,16 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   const catalogApi = useApi(catalogApiRef);
   const {
     filters: { kind: kindFilter, type: typeFilter },
+    queryParameters,
     updateFilters,
   } = useEntityListProvider();
+
+  const queryParamTypes = [queryParameters.type]
+    .flat()
+    .filter(Boolean) as string[];
+  const [selectedTypes, setSelectedTypes] = useState(
+    queryParamTypes.length ? queryParamTypes : typeFilter?.getTypes() ?? [],
+  );
 
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
@@ -61,7 +66,18 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     return [];
   }, [kind, catalogApi]);
 
+  const entitiesRef = useRef(entities);
   useEffect(() => {
+    const oldEntities = entitiesRef.current;
+    entitiesRef.current = entities;
+    // Delay processing hook until kind and entity load updates have settled to generate list of types;
+    // This prevents reseting the type filter due to saved type value from query params not matching the
+    // empty set of type values while values are still being loaded; also only run this hook on changes
+    // to entities
+    if (loading || !kind || oldEntities === entities) {
+      return;
+    }
+
     // Resolve the unique set of types from returned entities; could be optimized by a new endpoint
     // in the catalog-backend that does this, rather than loading entities with redundant types.
     if (!entities) return;
@@ -83,35 +99,25 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     setAvailableTypes(newTypes);
 
     // Update type filter to only valid values when the list of available types has changed
-    updateFilters((oldFilters: DefaultEntityFilters) => {
-      // No filter previously set; no-op
-      if (!oldFilters.type) {
-        return {};
-      }
-      const stillValidTypes = oldFilters.type
-        .getTypes()
-        .filter(value => newTypes.includes(value));
-      if (!stillValidTypes.length) {
-        // None of the previously selected types are present any more; clear the filter
-        return { type: undefined };
-      }
-      return { type: new EntityTypeFilter(stillValidTypes) };
-    });
-  }, [updateFilters, entities]);
+    const stillValidTypes = selectedTypes.filter(value =>
+      newTypes.includes(value),
+    );
+    setSelectedTypes(stillValidTypes);
+  }, [loading, kind, selectedTypes, setSelectedTypes, entities]);
 
-  const setSelectedTypes = useCallback(
-    (types: string[]) =>
-      updateFilters({
-        type: types.length ? new EntityTypeFilter(types) : undefined,
-      }),
-    [updateFilters],
-  );
+  useEffect(() => {
+    updateFilters({
+      type: selectedTypes.length
+        ? new EntityTypeFilter(selectedTypes)
+        : undefined,
+    });
+  }, [selectedTypes, updateFilters]);
 
   return {
     loading,
     error,
     availableTypes,
-    selectedTypes: typeFilter?.getTypes() ?? [],
+    selectedTypes,
     setSelectedTypes,
   };
 }

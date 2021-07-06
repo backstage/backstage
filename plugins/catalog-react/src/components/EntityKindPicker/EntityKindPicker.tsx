@@ -30,8 +30,7 @@ export const EntityKindPicker = ({
 }: EntityKindFilterProps) => {
   const { updateFilters, queryParameters } = useEntityListProvider();
   const [selectedKind] = useState(
-    // TODO Cast here is not great 🤔
-    (queryParameters.kind as string) ?? initialFilter,
+    [queryParameters.kind].flat()[0] ?? initialFilter,
   );
 
   useEffect(() => {
