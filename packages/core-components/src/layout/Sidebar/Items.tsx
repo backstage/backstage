@@ -291,10 +291,21 @@ export const SidebarDivider = styled('hr')({
   margin: '12px 0px',
 });
 
-export const SidebarScrollWrapper = styled('div')({
+export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
   flex: '0 1 auto',
-  overflowY: 'auto',
+  overflowX: 'hidden',
+  // 5px space to the right of the scrollbar
+  width: 'calc(100% - 5px)',
   // Display at least one item in the container
   // Question: Can this be a config/theme variable - if so, which? :/
   minHeight: '48px',
-});
+  '&::-webkit-scrollbar': {
+    backgroundColor: theme.palette.background.default,
+    width: '5px',
+    borderRadius: '5px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.text.hint,
+    borderRadius: '5px',
+  },
+}));
