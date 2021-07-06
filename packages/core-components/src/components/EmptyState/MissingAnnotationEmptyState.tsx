@@ -76,6 +76,8 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
             variant="contained"
             color="primary"
             href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Read more
           </Button>
