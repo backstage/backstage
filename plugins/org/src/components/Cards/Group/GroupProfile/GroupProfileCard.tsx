@@ -79,28 +79,31 @@ export const GroupProfileCard = ({
     kind: 'group',
   });
 
-  const entityMetadataEditUrl = getEntityMetadataEditUrl(group) ?? '#';
+  const entityMetadataEditUrl = getEntityMetadataEditUrl(group);
 
   const displayName = profile?.displayName ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
+  const infoCardAction = entityMetadataEditUrl ? (
+    <IconButton
+      aria-label="Edit"
+      title="Edit Metadata"
+      component={Link}
+      to={entityMetadataEditUrl}
+    >
+      <EditIcon />
+    </IconButton>
+  ) : (
+    <IconButton aria-label="Edit" disabled title="Edit Metadata">
+      <EditIcon />
+    </IconButton>
+  );
 
   return (
     <InfoCard
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={variant}
-      action={
-        <IconButton
-          aria-label="Edit"
-          disabled={!entityMetadataEditUrl}
-          title="Edit Metadata"
-          component={Link}
-          target="_blank"
-          to={entityMetadataEditUrl}
-        >
-          <EditIcon />
-        </IconButton>
-      }
+      action={infoCardAction}
     >
       <Grid container spacing={3}>
         <Grid item xs={12} sm={2} xl={1}>
