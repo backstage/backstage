@@ -79,7 +79,7 @@ describe('GitlabUrlReader', () => {
   const worker = setupServer();
   msw.setupDefaultHandlers(worker);
 
-  describe('implementation', () => {
+  describe('read', () => {
     beforeEach(() => {
       worker.use(
         rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
@@ -177,6 +177,53 @@ describe('GitlabUrlReader', () => {
         });
         await reader.read(url);
       }).rejects.toThrow(error);
+    });
+  });
+
+  describe('readUrl', () => {
+    const [{ reader }] = GitlabUrlReader.factory({
+      config: new ConfigReader({}),
+      logger,
+      treeResponseFactory,
+    });
+
+    it('should throw NotModified on HTTP 304', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+          res(ctx.status(200), ctx.json({ id: 12345 })),
+        ),
+        rest.get('*', (req, res, ctx) => {
+          expect(req.headers.get('If-None-Match')).toBe('999');
+          return res(ctx.status(304));
+        }),
+      );
+
+      await expect(
+        reader.readUrl!(
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+          {
+            etag: '999',
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should return etag in response', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+          res(ctx.status(200), ctx.json({ id: 12345 })),
+        ),
+        rest.get('*', (_req, res, ctx) => {
+          return res(ctx.status(200), ctx.set('ETag', '999'), ctx.body('foo'));
+        }),
+      );
+
+      const result = await reader.readUrl!(
+        'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+      );
+      expect(result.etag).toBe('999');
+      const content = await result.buffer();
+      expect(content.toString()).toBe('foo');
     });
   });
 

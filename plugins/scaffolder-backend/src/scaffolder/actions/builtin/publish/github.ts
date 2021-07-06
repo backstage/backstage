@@ -45,6 +45,7 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
+    defaultBranch?: string;
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
@@ -76,6 +77,11 @@ export function createPublishGithubAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -131,6 +137,7 @@ export function createPublishGithubAction(options: {
         description,
         access,
         repoVisibility = 'private',
+        defaultBranch = 'master',
         collaborators,
         topics,
       } = ctx.input;
@@ -239,11 +246,12 @@ export function createPublishGithubAction(options: {
       }
 
       const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/master`;
+      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
+        defaultBranch,
         auth: {
           username: 'x-access-token',
           password: token,
@@ -257,10 +265,11 @@ export function createPublishGithubAction(options: {
           client,
           repoName: newRepo.name,
           logger: ctx.logger,
+          defaultBranch,
         });
       } catch (e) {
-        throw new Error(
-          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        ctx.logger.warn(
+          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );
       }
 

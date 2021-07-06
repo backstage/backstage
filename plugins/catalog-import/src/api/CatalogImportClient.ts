@@ -77,6 +77,12 @@ export class CatalogImportClient implements CatalogImportApi {
 
     const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
     if (!ghConfig) {
+      const other = this.scmIntegrationsApi.byUrl(url);
+      if (other) {
+        throw new Error(
+          `The ${other.title} integration only supports full URLs to catalog-info.yaml files. Did you try to pass in the URL of a directory instead?`,
+        );
+      }
       throw new Error(
         'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
       );

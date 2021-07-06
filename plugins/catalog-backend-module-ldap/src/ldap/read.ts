@@ -26,74 +26,97 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { LdapVendor } from './vendors';
+import { Logger } from 'winston';
+import { GroupTransformer, UserTransformer } from './types';
+import { mapStringAttr } from './util';
+
+export async function defaultUserTransformer(
+  vendor: LdapVendor,
+  config: UserConfig,
+  entry: SearchEntry,
+): Promise<UserEntity | undefined> {
+  const { set, map } = config;
+
+  const entity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: '',
+      annotations: {},
+    },
+    spec: {
+      profile: {},
+      memberOf: [],
+    },
+  };
+
+  if (set) {
+    for (const [path, value] of Object.entries(set)) {
+      lodashSet(entity, path, value);
+    }
+  }
+
+  mapStringAttr(entry, vendor, map.name, v => {
+    entity.metadata.name = v;
+  });
+  mapStringAttr(entry, vendor, map.description, v => {
+    entity.metadata.description = v;
+  });
+  mapStringAttr(entry, vendor, map.rdn, v => {
+    entity.metadata.annotations![LDAP_RDN_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, vendor.uuidAttributeName, v => {
+    entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
+    entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, map.displayName, v => {
+    entity.spec.profile!.displayName = v;
+  });
+  mapStringAttr(entry, vendor, map.email, v => {
+    entity.spec.profile!.email = v;
+  });
+  mapStringAttr(entry, vendor, map.picture, v => {
+    entity.spec.profile!.picture = v;
+  });
+
+  return entity;
+}
 
 /**
  * Reads users out of an LDAP provider.
  *
  * @param client The LDAP client
  * @param config The user data configuration
+ * @param opts
  */
 export async function readLdapUsers(
   client: LdapClient,
   config: UserConfig,
+  opts?: { transformer?: UserTransformer },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
 }> {
-  const { dn, options, set, map } = config;
+  const { dn, options, map } = config;
   const vendor = await client.getVendor();
-
-  const entries = await client.search(dn, options);
 
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
 
-  for (const entry of entries) {
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: '',
-        annotations: {},
-      },
-      spec: {
-        profile: {},
-        memberOf: [],
-      },
-    };
+  const transformer = opts?.transformer ?? defaultUserTransformer;
 
-    if (set) {
-      for (const [path, value] of Object.entries(set)) {
-        lodashSet(entity, path, value);
-      }
+  const entries = await client.search(dn, options);
+
+  for (const user of entries) {
+    const entity = await transformer(vendor, config, user);
+
+    if (!entity) {
+      continue;
     }
 
-    mapStringAttr(entry, vendor, map.name, v => {
-      entity.metadata.name = v;
-    });
-    mapStringAttr(entry, vendor, map.description, v => {
-      entity.metadata.description = v;
-    });
-    mapStringAttr(entry, vendor, map.rdn, v => {
-      entity.metadata.annotations![LDAP_RDN_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, vendor.uuidAttributeName, v => {
-      entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
-      entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, map.displayName, v => {
-      entity.spec.profile!.displayName = v;
-    });
-    mapStringAttr(entry, vendor, map.email, v => {
-      entity.spec.profile!.email = v;
-    });
-    mapStringAttr(entry, vendor, map.picture, v => {
-      entity.spec.profile!.picture = v;
-    });
-
-    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
+    mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
 
@@ -103,82 +126,103 @@ export async function readLdapUsers(
   return { users: entities, userMemberOf };
 }
 
+export async function defaultGroupTransformer(
+  vendor: LdapVendor,
+  config: GroupConfig,
+  entry: SearchEntry,
+): Promise<GroupEntity | undefined> {
+  const { set, map } = config;
+  const entity: GroupEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: '',
+      annotations: {},
+    },
+    spec: {
+      type: 'unknown',
+      profile: {},
+      children: [],
+    },
+  };
+
+  if (set) {
+    for (const [path, value] of Object.entries(set)) {
+      lodashSet(entity, path, value);
+    }
+  }
+
+  mapStringAttr(entry, vendor, map.name, v => {
+    entity.metadata.name = v;
+  });
+  mapStringAttr(entry, vendor, map.description, v => {
+    entity.metadata.description = v;
+  });
+  mapStringAttr(entry, vendor, map.rdn, v => {
+    entity.metadata.annotations![LDAP_RDN_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, vendor.uuidAttributeName, v => {
+    entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
+    entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
+  });
+  mapStringAttr(entry, vendor, map.type, v => {
+    entity.spec.type = v;
+  });
+  mapStringAttr(entry, vendor, map.displayName, v => {
+    entity.spec.profile!.displayName = v;
+  });
+  mapStringAttr(entry, vendor, map.email, v => {
+    entity.spec.profile!.email = v;
+  });
+  mapStringAttr(entry, vendor, map.picture, v => {
+    entity.spec.profile!.picture = v;
+  });
+
+  return entity;
+}
+
 /**
  * Reads groups out of an LDAP provider.
  *
  * @param client The LDAP client
  * @param config The group data configuration
+ * @param opts
  */
 export async function readLdapGroups(
   client: LdapClient,
   config: GroupConfig,
+  opts?: {
+    transformer?: GroupTransformer;
+  },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
   groupMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
   groupMember: Map<string, Set<string>>; // DN -> DN or UUID of groups & users
 }> {
-  const { dn, options, set, map } = config;
-  const vendor = await client.getVendor();
-
-  const entries = await client.search(dn, options);
-
   const groups: GroupEntity[] = [];
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const groupMember: Map<string, Set<string>> = new Map();
 
-  for (const entry of entries) {
-    const entity: GroupEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: '',
-        annotations: {},
-      },
-      spec: {
-        type: 'unknown',
-        profile: {},
-        children: [],
-      },
-    };
+  const { dn, map, options } = config;
+  const vendor = await client.getVendor();
 
-    if (set) {
-      for (const [path, value] of Object.entries(set)) {
-        lodashSet(entity, path, value);
-      }
+  const transformer = opts?.transformer ?? defaultGroupTransformer;
+
+  const entries = await client.search(dn, options);
+
+  for (const group of entries) {
+    const entity = await transformer(vendor, config, group);
+
+    if (!entity) {
+      continue;
     }
 
-    mapStringAttr(entry, vendor, map.name, v => {
-      entity.metadata.name = v;
-    });
-    mapStringAttr(entry, vendor, map.description, v => {
-      entity.metadata.description = v;
-    });
-    mapStringAttr(entry, vendor, map.rdn, v => {
-      entity.metadata.annotations![LDAP_RDN_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, vendor.uuidAttributeName, v => {
-      entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
-      entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
-    });
-    mapStringAttr(entry, vendor, map.type, v => {
-      entity.spec.type = v;
-    });
-    mapStringAttr(entry, vendor, map.displayName, v => {
-      entity.spec.profile!.displayName = v;
-    });
-    mapStringAttr(entry, vendor, map.email, v => {
-      entity.spec.profile!.email = v;
-    });
-    mapStringAttr(entry, vendor, map.picture, v => {
-      entity.spec.profile!.picture = v;
-    });
-
-    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
+    mapReferencesAttr(group, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(groupMemberOf, myDn, vs);
     });
-    mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
+    mapReferencesAttr(group, vendor, map.members, (myDn, vs) => {
       ensureItems(groupMember, myDn, vs);
     });
 
@@ -199,22 +243,30 @@ export async function readLdapGroups(
  * with all relations etc filled in.
  *
  * @param client The LDAP client
- * @param logger A logger instance
  * @param userConfig The user data configuration
  * @param groupConfig The group data configuration
+ * @param options
  */
 export async function readLdapOrg(
   client: LdapClient,
   userConfig: UserConfig,
   groupConfig: GroupConfig,
+  options: {
+    groupTransformer?: GroupTransformer;
+    userTransformer?: UserTransformer;
+    logger: Logger;
+  },
 ): Promise<{
   users: UserEntity[];
   groups: GroupEntity[];
 }> {
-  const { users, userMemberOf } = await readLdapUsers(client, userConfig);
+  const { users, userMemberOf } = await readLdapUsers(client, userConfig, {
+    transformer: options?.userTransformer,
+  });
   const { groups, groupMemberOf, groupMember } = await readLdapGroups(
     client,
     groupConfig,
+    { transformer: options?.groupTransformer },
   );
 
   resolveRelations(groups, users, userMemberOf, groupMemberOf, groupMember);
@@ -227,21 +279,6 @@ export async function readLdapOrg(
 //
 // Helpers
 //
-
-// Maps a single-valued attribute to a consumer
-function mapStringAttr(
-  entry: SearchEntry,
-  vendor: LdapVendor,
-  attributeName: string | undefined,
-  setter: (value: string) => void,
-) {
-  if (attributeName) {
-    const values = vendor.decodeStringAttribute(entry, attributeName);
-    if (values && values.length === 1) {
-      setter(values[0]);
-    }
-  }
-}
 
 // Maps a multi-valued attribute of references to other objects, to a consumer
 function mapReferencesAttr(

@@ -46,29 +46,19 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
-// Mock the value to control which integrations are activated
-jest.mock('./GitHub', () => ({
-  getGithubIntegrationConfig: jest.fn(),
-}));
-
-import {
-  GitHubIntegrationConfig,
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
-import { getGithubIntegrationConfig } from './GitHub';
 
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 
-const server = setupServer();
-
 describe('CatalogImportClient', () => {
+  const server = setupServer();
   msw.setupDefaultHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
@@ -92,7 +82,19 @@ describe('CatalogImportClient', () => {
     },
   };
 
-  const scmIntegrationsApi = ScmIntegrations.fromConfig(new ConfigReader({}));
+  const scmIntegrationsApi = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: {
+        github: [{ host: 'example.com' }],
+        gitlab: [
+          {
+            host: 'registered-but-not-github.com',
+            apiBaseUrl: 'https://registered-but-not-github.com',
+          },
+        ],
+      },
+    }),
+  );
 
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
@@ -106,7 +108,6 @@ describe('CatalogImportClient', () => {
   };
 
   let catalogImportClient: CatalogImportClient;
-  let getGithubIntegrationConfigFn: jest.Mock;
 
   beforeEach(() => {
     catalogImportClient = new CatalogImportClient({
@@ -116,9 +117,6 @@ describe('CatalogImportClient', () => {
       identityApi,
       catalogApi,
     });
-
-    getGithubIntegrationConfigFn = getGithubIntegrationConfig as jest.Mock;
-    getGithubIntegrationConfigFn.mockReset();
   });
 
   describe('analyzeUrl', () => {
@@ -169,10 +167,22 @@ describe('CatalogImportClient', () => {
       });
     });
 
-    it('should ignore missing github integration', async () => {
+    it('should reject for integrations that are not github ones', async () => {
       await expect(
         catalogImportClient.analyzeUrl(
-          'https://github.com/backstage/backstage',
+          'https://registered-but-not-github.com/backstage/backstage',
+        ),
+      ).rejects.toThrow(
+        new Error(
+          'The registered-but-not-github.com integration only supports full URLs to catalog-info.yaml files. Did you try to pass in the URL of a directory instead?',
+        ),
+      );
+    });
+
+    it('should reject when unable to match with any integration', async () => {
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'https://not-registered-as-integration.com/foo/bar',
         ),
       ).rejects.toThrow(
         new Error(
@@ -182,12 +192,6 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find locations from github', async () => {
-      getGithubIntegrationConfigFn.mockReturnValue({
-        repo: 'backstage',
-        owner: 'backstage',
-        githubIntegrationConfig: {} as GitHubIntegrationConfig,
-      });
-
       ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
         data: {
           total_count: 2,
@@ -244,12 +248,6 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find repository from github', async () => {
-      getGithubIntegrationConfigFn.mockReturnValue({
-        repo: 'backstage',
-        owner: 'backstage',
-        githubIntegrationConfig: {} as GitHubIntegrationConfig,
-      });
-
       ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
         data: { total_count: 0, items: [] },
       });
@@ -300,14 +298,6 @@ describe('CatalogImportClient', () => {
 
   describe('submitPullRequest', () => {
     it('should create GitHub pull request', async () => {
-      getGithubIntegrationConfigFn.mockReturnValue({
-        repo: 'backstage',
-        owner: 'backstage',
-        githubIntegrationConfig: {
-          host: 'github.com',
-        } as GitHubIntegrationConfig,
-      });
-
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',

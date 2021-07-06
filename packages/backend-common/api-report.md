@@ -42,6 +42,8 @@ export class AzureUrlReader implements UrlReader {
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     // (undocumented)
+    readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+    // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
     toString(): string;
@@ -58,6 +60,8 @@ export class BitbucketUrlReader implements UrlReader {
     read(url: string): Promise<Buffer>;
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+    // (undocumented)
+    readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
     // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
@@ -184,8 +188,9 @@ export class Git {
         logger?: Logger | undefined;
     }) => Git;
     // (undocumented)
-    init({ dir }: {
+    init({ dir, defaultBranch, }: {
         dir: string;
+        defaultBranch?: string;
     }): Promise<void>;
     // (undocumented)
     merge({ dir, theirs, ours, author, committer, }: {
@@ -231,6 +236,8 @@ export class GithubUrlReader implements UrlReader {
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     // (undocumented)
+    readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+    // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
     toString(): string;
@@ -247,6 +254,8 @@ export class GitlabUrlReader implements UrlReader {
     read(url: string): Promise<Buffer>;
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+    // (undocumented)
+    readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
     // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
@@ -277,7 +286,7 @@ export type PluginEndpointDiscovery = {
     getExternalBaseUrl(pluginId: string): Promise<string>;
 };
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponse = {
     files(): Promise<ReadTreeResponseFile[]>;
     archive(): Promise<NodeJS.ReadableStream>;
@@ -366,6 +375,7 @@ export interface StatusCheckHandlerOptions {
 // @public
 export type UrlReader = {
     read(url: string): Promise<Buffer>;
+    readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };

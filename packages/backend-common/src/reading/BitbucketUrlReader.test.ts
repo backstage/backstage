@@ -74,7 +74,24 @@ describe('BitbucketUrlReader', () => {
   const worker = setupServer();
   msw.setupDefaultHandlers(worker);
 
-  describe('implementation', () => {
+  describe('readUrl', () => {
+    worker.use(
+      rest.get(
+        'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+        (_, res, ctx) => res(ctx.status(200), ctx.body('foo')),
+      ),
+    );
+
+    it('should be able to readUrl', async () => {
+      const result = await bitbucketProcessor.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe('foo');
+    });
+  });
+
+  describe('read', () => {
     it('rejects unknown targets', async () => {
       await expect(
         bitbucketProcessor.read('https://not.bitbucket.com/apa'),
@@ -119,14 +136,14 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://bitbucket.org/backstage/mock/get/master.tgz',
+          'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
               ctx.set(
                 'content-disposition',
-                'attachment; filename=backstage-mock-12ab34cd56ef.tgz',
+                'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
               ctx.body(repoBuffer),
             ),
@@ -304,14 +321,14 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://bitbucket.org/backstage/mock/get/master.tgz',
+          'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
               ctx.set(
                 'content-disposition',
-                'attachment; filename=backstage-mock-12ab34cd56ef.tgz',
+                'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
               ctx.body(repoBuffer),
             ),
