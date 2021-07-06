@@ -52,6 +52,7 @@
     "globby": "^11.0.0",
     "handlebars": "^4.7.6",
     "helmet": "^4.0.0",
+    "isbinaryfile": "^4.0.8",
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",
     "knex": "^0.95.1",

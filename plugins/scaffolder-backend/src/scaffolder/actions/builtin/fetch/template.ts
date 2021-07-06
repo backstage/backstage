@@ -23,6 +23,7 @@ import { createTemplateAction } from '../../createTemplateAction';
 import globby from 'globby';
 import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
+import { isBinaryFile } from 'isbinaryfile';
 
 /*
  * Maximise compatibility with Jinja (and therefore cookiecutter)
@@ -196,6 +197,7 @@ export function createFetchTemplateAction(options: {
 
       for (const location of allEntriesInTemplate) {
         const isTemplated = !nonTemplatedEntries.has(location);
+
         const outputPath = resolvePath(
           outputDir,
           isTemplated ? templater.renderString(location, parameters) : location,
@@ -215,9 +217,16 @@ export function createFetchTemplateAction(options: {
             'utf-8',
           );
 
+          const isBinary = await isBinaryFile(Buffer.from(inputFileContents));
+          if (isBinary) {
+            ctx.logger.info(
+              `Not running templater on contents of ${location} since it is a binary file.`,
+            );
+          }
+
           await fs.outputFile(
             outputPath,
-            isTemplated
+            isTemplated && !isBinary
               ? templater.renderString(inputFileContents, parameters)
               : inputFileContents,
           );
