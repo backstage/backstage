@@ -82,10 +82,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   useEffect(() => {
     updateSidebarPosition();
-    window.addEventListener('scroll', updateSidebarPosition);
+    window.addEventListener('scroll', updateSidebarPosition, true);
     window.addEventListener('resize', updateSidebarPosition);
     return () => {
-      window.removeEventListener('scroll', updateSidebarPosition);
+      window.removeEventListener('scroll', updateSidebarPosition, true);
       window.removeEventListener('resize', updateSidebarPosition);
     };
     // an update to "state" might lead to an updated UI so we include it as a trigger
