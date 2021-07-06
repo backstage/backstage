@@ -100,7 +100,7 @@ export const createCacheMiddleware = ({
     // Monkey-patch the response's socket to keep track of chunks as they are
     // written over the wire.
     socket.write = (
-      data,
+      data: string | Uint8Array,
       encoding?: BufferEncoding | ErrorCallback,
       callback?: ErrorCallback,
     ) => {
