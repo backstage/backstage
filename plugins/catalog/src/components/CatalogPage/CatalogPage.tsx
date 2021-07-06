@@ -58,18 +58,20 @@ export const CatalogPage = ({
       </ContentHeader>
       <Grid container spacing={2}>
         <EntityListProvider>
-          <Grid container item sm={12} lg={2} alignContent="flex-start">
-            <Grid item xs={12} sm={4} lg={12}>
-              <EntityKindPicker initialFilter="component" hidden />
-              <EntityTypePicker />
-            </Grid>
-            <Grid item xs={12} sm={4} lg={12}>
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-            </Grid>
-            <Grid item xs={12} sm={4} lg={12}>
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
+          <Grid item sm={12} lg={2} alignContent="flex-start">
+            <Grid container>
+              <Grid item xs={12} sm={4} lg={12}>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={12}>
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={12}>
+                <EntityOwnerPicker />
+                <EntityLifecyclePicker />
+                <EntityTagPicker />
+              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12} sm={12} lg={10}>
