@@ -196,14 +196,16 @@ export function createFetchTemplateAction(options: {
       );
 
       for (const location of allEntriesInTemplate) {
-        const isTemplated = !nonTemplatedEntries.has(location);
+        const shouldCopyWithoutRender = nonTemplatedEntries.has(location);
 
         const outputPath = resolvePath(
           outputDir,
-          isTemplated ? templater.renderString(location, parameters) : location,
+          shouldCopyWithoutRender
+            ? location
+            : templater.renderString(location, parameters),
         );
 
-        if (isTemplated) {
+        if (shouldCopyWithoutRender) {
           ctx.logger.info(
             `Copying file/directory ${location} without processing since it matches a pattern in "copyWithoutRender".`,
           );
@@ -229,9 +231,9 @@ export function createFetchTemplateAction(options: {
             const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
             await fs.outputFile(
               outputPath,
-              isTemplated
-                ? templater.renderString(inputFileContents, parameters)
-                : inputFileContents,
+              shouldCopyWithoutRender
+                ? inputFileContents
+                : templater.renderString(inputFileContents, parameters),
             );
           }
         }

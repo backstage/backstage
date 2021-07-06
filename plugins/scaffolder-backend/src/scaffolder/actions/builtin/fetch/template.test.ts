@@ -24,6 +24,8 @@ import { fetchContents } from './helpers';
 import { ActionContext, TemplateAction } from '../../types';
 import { createFetchTemplateAction, FetchTemplateInput } from './template';
 
+// TODO(mtlewis/orkohunter): Test handling binary files
+
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
