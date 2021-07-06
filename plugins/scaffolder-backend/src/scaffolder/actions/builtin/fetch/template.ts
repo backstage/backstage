@@ -81,7 +81,7 @@ export function createFetchTemplateAction(options: {
           copyWithoutRender: {
             title: 'Copy Without Render',
             description:
-              'Avoid rendering directories and files in the template',
+              'An array of glob patterns. Any files or directories which match are copied without being processed as templates.',
             type: 'array',
             items: {
               type: 'string',
@@ -203,33 +203,37 @@ export function createFetchTemplateAction(options: {
           isTemplated ? templater.renderString(location, parameters) : location,
         );
 
-        ctx.logger.info(
-          `Writing${isTemplated ? ' ' : ' un-templated '}${
-            location.endsWith('/') ? 'directory' : 'file'
-          } ${location} to template output path`,
-        );
+        if (isTemplated) {
+          ctx.logger.info(
+            `Copying file/directory ${location} without processing since it matches a pattern in "copyWithoutRender".`,
+          );
+        }
 
         if (location.endsWith('/')) {
+          ctx.logger.info(
+            `Writing directory ${location} to template output path.`,
+          );
           await fs.ensureDir(outputPath);
         } else {
-          const inputFileContents = await fs.readFile(
-            resolvePath(templateDir, location),
-            'utf-8',
-          );
+          const inputFilePath = resolvePath(templateDir, location);
 
-          const isBinary = await isBinaryFile(Buffer.from(inputFileContents));
-          if (isBinary) {
+          if (await isBinaryFile(inputFilePath)) {
             ctx.logger.info(
-              `Not running templater on contents of ${location} since it is a binary file.`,
+              `Copying binary file ${location} to template output path.`,
+            );
+            await fs.copy(inputFilePath, outputPath);
+          } else {
+            ctx.logger.info(
+              `Writing file ${location} to template output path.`,
+            );
+            const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
+            await fs.outputFile(
+              outputPath,
+              isTemplated
+                ? templater.renderString(inputFileContents, parameters)
+                : inputFileContents,
             );
           }
-
-          await fs.outputFile(
-            outputPath,
-            isTemplated && !isBinary
-              ? templater.renderString(inputFileContents, parameters)
-              : inputFileContents,
-          );
         }
       }
 
