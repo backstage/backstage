@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path, { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
