@@ -20,34 +20,24 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
-import express from 'express';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import express, { Response } from 'express';
 import request from 'supertest';
-import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
-import { createRouter } from './router';
+import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
+import { createEventStream, createHttpResponse, createRouter } from './router';
 
-jest.mock('@backstage/config');
-jest.mock('../DocsBuilder');
+jest.mock('./DocsSynchronizer');
 
-const MockedConfigReader = ConfigReader as jest.MockedClass<
-  typeof ConfigReader
+const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
+  typeof DocsSynchronizer
 >;
-const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
-
-const server = setupServer();
 
 describe('createRouter', () => {
-  // the calls from supertest should not be handled by msw so we only warn onUnhandledRequest
-  beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
-
   const preparers: jest.Mocked<PreparerBuilder> = {
     register: jest.fn(),
     get: jest.fn(),
@@ -95,53 +85,124 @@ describe('createRouter', () => {
   });
 
   describe('GET /sync/:namespace/:kind/:name', () => {
-    it('should execute an update', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      MockedConfigReader.prototype.getString.mockReturnValue('local');
+    describe('accept application/json', () => {
+      it('should execute synchronization', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => handler().finish({ updated: true }),
+        );
 
-      const entity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          uid: '0',
-          name: 'test',
-          namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
+        await request(app).get('/sync/default/Component/test').send();
+
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith(
+          expect.any(Function),
+          {
+            kind: 'Component',
+            name: 'test',
+            namespace: 'default',
+            token: undefined,
           },
-        },
-      };
-
-      server.use(
-        rest.get(
-          'http://backstage.local/api/catalog/entities/by-name/Component/default/test',
-          (_req, res, ctx) => {
-            return res(ctx.json(entity));
-          },
-        ),
-      );
-
-      MockedDocsBuilder.prototype.build.mockImplementation(async () => {
-        // extract the logStream from the constructor call
-        const logStream = MockedDocsBuilder.mock.calls[0][0].logStream;
-
-        logStream?.write('Some log');
-        logStream?.write('Another log');
-
-        return true;
+        );
       });
 
-      publisher.hasDocsBeenGenerated.mockResolvedValue(true);
+      it('should return on updated', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => {
+            const { log, finish } = handler();
 
-      const response = await request(app)
-        .get('/sync/default/Component/test')
-        .send();
+            log('Some log');
 
-      expect(response.status).toBe(200);
-      expect(response.get('content-type')).toBe('text/event-stream');
-      expect(response.text).toEqual(
-        `event: log
+            finish({ updated: true });
+          },
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(201);
+        expect(response.get('content-type')).toMatch(/application\/json/);
+        expect(response.text).toEqual(
+          '{"message":"Docs updated or did not need updating"}',
+        );
+      });
+
+      it('should return error', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => {
+            const { log, error } = handler();
+
+            log('Some log');
+
+            error(new Error('Some Error'));
+          },
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(500);
+        expect(response.text).toMatch(/Some Error/);
+      });
+
+      it('should return not found', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockRejectedValue(
+          new NotFoundError(),
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(404);
+      });
+    });
+
+    describe('accept text/event-stream', () => {
+      it('should execute synchronization', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => handler().finish({ updated: true }),
+        );
+
+        await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith(
+          expect.any(Function),
+          {
+            kind: 'Component',
+            name: 'test',
+            namespace: 'default',
+            token: undefined,
+          },
+        );
+      });
+
+      it('should return an event-stream', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => {
+            const { log, finish } = handler();
+
+            log('Some log');
+            log('Another log');
+
+            finish({ updated: true });
+          },
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: log
 data: "Some log"
 
 event: log
@@ -151,117 +212,170 @@ event: finish
 data: {"updated":true}
 
 `,
-      );
+        );
+      });
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
-    });
+      it('should return error', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async handler => {
+            const { log, error } = handler();
 
-    it('should not check for an update too often', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
+            log('Some log');
 
-      const entity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          uid: '0',
-          name: 'test',
-          namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
+            error(new Error('Some Error'));
           },
-        },
-      };
+        );
 
-      server.use(
-        rest.get(
-          'http://backstage.local/api/catalog/entities/by-name/Component/default/test',
-          (_req, res, ctx) => {
-            return res(ctx.json(entity));
-          },
-        ),
-      );
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
 
-      const response = await request(app)
-        .get('/sync/default/Component/test')
-        .send();
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: log
+data: "Some log"
 
-      expect(response.status).toBe(200);
-      expect(response.get('content-type')).toBe('text/event-stream');
-      expect(response.text).toEqual(
-        `event: finish
-data: {"updated":false}
+event: error
+data: "Some Error"
 
 `,
-      );
+        );
+      });
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(0);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
+      it('should return not found', async () => {
+        MockDocsSynchronizer.prototype.doSync.mockRejectedValue(
+          new NotFoundError(),
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(404);
+      });
     });
+  });
+});
 
-    it('should not check for an update without local builder', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      MockedConfigReader.prototype.getString.mockReturnValue('external');
+describe('createEventStream', () => {
+  const res: jest.Mocked<Response> = {
+    writeHead: jest.fn(),
+    write: jest.fn(),
+    end: jest.fn(),
+  } as any;
 
-      const entity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          uid: '0',
-          name: 'test',
-          namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
-          },
-        },
-      };
+  let handlers: DocsSynchronizerSyncOpts;
 
-      server.use(
-        rest.get(
-          'http://backstage.local/api/catalog/entities/by-name/Component/default/test',
-          (_req, res, ctx) => {
-            return res(ctx.json(entity));
-          },
-        ),
-      );
+  beforeEach(() => {
+    handlers = createEventStream(res);
+  });
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
-      const response = await request(app)
-        .get('/sync/default/Component/test')
-        .send();
+  it('should return correct event stream', async () => {
+    // called in beforeEach
 
-      expect(response.status).toBe(200);
-      expect(response.get('content-type')).toBe('text/event-stream');
-      expect(response.text).toEqual(
-        `event: finish
-data: {"updated":false}
-
-`,
-      );
-
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
+    expect(res.writeHead).toBeCalledTimes(1);
+    expect(res.writeHead).toBeCalledWith(200, {
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'Content-Type': 'text/event-stream',
     });
+  });
 
-    it('rejects when entity is not found', async () => {
-      server.use(
-        rest.get(
-          'http://backstage.local/api/catalog/entities/by-name/Component/default/test',
-          (_req, res, ctx) => {
-            return res(ctx.status(404));
-          },
-        ),
-      );
+  it('should flush after write if defined', async () => {
+    res.flush = jest.fn();
 
-      const response = await request(app)
-        .get('/sync/default/Component/test')
-        .send();
+    handlers.log('A Message');
 
-      expect(response.status).toBe(404);
+    expect(res.write).toBeCalledTimes(1);
+    expect(res.write).toBeCalledWith(`event: log
+data: "A Message"
+
+`);
+    expect(res.flush).toBeCalledTimes(1);
+  });
+
+  it('should write log', async () => {
+    handlers.log('A Message');
+
+    expect(res.write).toBeCalledTimes(1);
+    expect(res.write).toBeCalledWith(`event: log
+data: "A Message"
+
+`);
+    expect(res.end).toBeCalledTimes(0);
+  });
+
+  it('should write error and end the connection', async () => {
+    handlers.error(new Error('Some Error'));
+
+    expect(res.write).toBeCalledTimes(1);
+    expect(res.write).toBeCalledWith(`event: error
+data: "Some Error"
+
+`);
+    expect(res.end).toBeCalledTimes(1);
+  });
+
+  it('should finish and end the connection', async () => {
+    handlers.finish({ updated: true });
+
+    expect(res.write).toBeCalledTimes(1);
+    expect(res.write).toBeCalledWith(`event: finish
+data: {"updated":true}
+
+`);
+
+    expect(res.end).toBeCalledTimes(1);
+  });
+});
+
+describe('createHttpResponse', () => {
+  const res: jest.Mocked<Response> = {
+    status: jest.fn(),
+    json: jest.fn(),
+  } as any;
+
+  let handlers: DocsSynchronizerSyncOpts;
+
+  beforeEach(() => {
+    res.status.mockImplementation(() => res);
+    handlers = createHttpResponse(res);
+  });
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should return CREATED if updated', async () => {
+    handlers.finish({ updated: true });
+
+    expect(res.status).toBeCalledTimes(1);
+    expect(res.status).toBeCalledWith(201);
+
+    expect(res.json).toBeCalledTimes(1);
+    expect(res.json).toBeCalledWith({
+      message: 'Docs updated or did not need updating',
     });
+  });
+
+  it('should return NOT_MODIFIED if not updated', async () => {
+    expect(() => handlers.finish({ updated: false })).toThrowError(
+      NotModifiedError,
+    );
+  });
+
+  it('should throw custom error', async () => {
+    expect(() => handlers.error(new Error('Some Error'))).toThrowError(
+      /Some Error/,
+    );
+  });
+
+  it('should ignore logs', async () => {
+    expect(() => handlers.log('Some Message')).not.toThrow();
   });
 });

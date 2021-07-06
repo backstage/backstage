@@ -17,7 +17,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
@@ -28,9 +28,8 @@ import fetch from 'cross-fetch';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
-import { PassThrough } from 'stream';
 import { Logger } from 'winston';
-import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
+import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -52,6 +51,14 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const docsSynchronizer = new DocsSynchronizer({
+    preparers: preparers,
+    generators: generators,
+    publisher: publisher,
+    logger: logger,
+    config: config,
+    catalogClient: catalogClient,
+  });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
@@ -117,80 +124,21 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(
-      { kind, namespace, name },
-      { token },
+    await docsSynchronizer.doSync(
+      () => {
+        if (req.header('accept') !== 'text/event-stream') {
+          return createHttpResponse(res);
+        }
+
+        return createEventStream(res);
+      },
+      {
+        kind,
+        namespace,
+        name,
+        token,
+      },
     );
-
-    if (!entity?.metadata?.uid) {
-      throw new NotFoundError('Entity metadata UID missing');
-    }
-
-    // open the event-stream
-    const { log, error, finish } = createEventStream(res);
-
-    // create an in-memory stream to forward logs to the event-stream
-    const logStream = new PassThrough();
-    logStream.on('data', async data => {
-      log(data.toString().trim());
-    });
-
-    // check if the last update check was too recent
-    if (!shouldCheckForUpdate(entity.metadata.uid)) {
-      finish({ updated: false });
-      return;
-    }
-
-    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
-      finish({ updated: false });
-      return;
-    }
-
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher,
-      logger,
-      entity,
-      config,
-      logStream,
-    });
-
-    let foundDocs = false;
-
-    const updated = await docsBuilder.build();
-
-    if (!updated) {
-      finish({ updated: false });
-      return;
-    }
-
-    // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-    // on the user's page. If not, respond with a message asking them to check back later.
-    // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
-    for (let attempt = 0; attempt < 5; attempt++) {
-      if (await publisher.hasDocsBeenGenerated(entity)) {
-        foundDocs = true;
-        break;
-      }
-      await new Promise(r => setTimeout(r, 1000));
-    }
-    if (!foundDocs) {
-      logger.error(
-        'Published files are taking longer to show up in storage. Something went wrong.',
-      );
-      error(
-        new NotFoundError(
-          'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
-        ),
-      );
-      return;
-    }
-
-    finish({ updated: true });
   });
 
   // Route middleware which serves files from the storage set in the publisher.
@@ -210,13 +158,9 @@ function getBearerToken(header?: string): string | undefined {
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */
-function createEventStream(
+export function createEventStream(
   res: Response<any, any>,
-): {
-  log: (message: string) => void;
-  error: (e: Error) => void;
-  finish: (result: { updated: boolean }) => void;
-} {
+): DocsSynchronizerSyncOpts {
   // Mandatory headers and http status to keep connection open
   res.writeHead(200, {
     Connection: 'keep-alive',
@@ -252,6 +196,33 @@ function createEventStream(
     finish: result => {
       send('finish', result);
       res.end();
+    },
+  };
+}
+
+/**
+ * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
+ *
+ * @param res the response to write the event-stream to
+ * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
+ *          will close the event-stream.
+ */
+export function createHttpResponse(
+  res: Response<any, any>,
+): DocsSynchronizerSyncOpts {
+  return {
+    log: () => {},
+    error: e => {
+      throw e;
+    },
+    finish: ({ updated }) => {
+      if (!updated) {
+        throw new NotModifiedError();
+      }
+
+      res
+        .status(201)
+        .json({ message: 'Docs updated or did not need updating' });
     },
   };
 }
