@@ -81,7 +81,7 @@ export type SentryIssue = {
 // @public (undocumented)
 export const SentryIssuesWidget: ({ entity, statsFor, variant, }: {
     entity: Entity;
-    statsFor?: "24h" | "12h" | undefined;
+    statsFor?: "12h" | "24h" | undefined;
     variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
