@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JSONWebKey } from 'jose';
+import { JWKS } from 'jose';
 import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -159,7 +160,7 @@ export class IdentityClient {
 // Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
+export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>
 
 // Warning: (ae-missing-release-tag) "MicrosoftProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
