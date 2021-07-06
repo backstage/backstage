@@ -21,8 +21,10 @@ import {
   makeStyles,
   styled,
   TextField,
+  Theme,
   Typography,
 } from '@material-ui/core';
+import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
@@ -291,14 +293,8 @@ export const SidebarDivider = styled('hr')({
   margin: '12px 0px',
 });
 
-export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
-  flex: '0 1 auto',
-  overflowX: 'hidden',
-  // 5px space to the right of the scrollbar
-  width: 'calc(100% - 5px)',
-  // Display at least one item in the container
-  // Question: Can this be a config/theme variable - if so, which? :/
-  minHeight: '48px',
+const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
+  overflowY: 'auto',
   '&::-webkit-scrollbar': {
     backgroundColor: theme.palette.background.default,
     width: '5px',
@@ -308,4 +304,20 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.text.hint,
     borderRadius: '5px',
   },
-}));
+});
+
+export const SidebarScrollWrapper = styled('div')(({ theme }) => {
+  const scrollbarStyles = styledScrollbar(theme);
+  return {
+    flex: '0 1 auto',
+    overflowX: 'hidden',
+    // 5px space to the right of the scrollbar
+    width: 'calc(100% - 5px)',
+    // Display at least one item in the container
+    // Question: Can this be a config/theme variable - if so, which? :/
+    minHeight: '48px',
+    overflowY: 'hidden',
+    '@media (hover: none)': scrollbarStyles,
+    '&:hover': scrollbarStyles,
+  };
+});
