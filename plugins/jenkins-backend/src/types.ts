@@ -15,9 +15,9 @@
  */
 
 export interface ScmDetails {
-  url?: String;
-  displayName?: String;
-  author?: String;
+  url?: string;
+  displayName?: string;
+  author?: string;
 }
 
 interface CommonBuild {

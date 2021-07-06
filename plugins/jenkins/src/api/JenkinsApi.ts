@@ -124,7 +124,7 @@ export class JenkinsClient implements JenkinsApi {
   async getProjects(
     entity: EntityName,
     filter: { branch?: string },
-  ): Promise<any> {
+  ): Promise<Project[]> {
     const url = new URL(
       `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
         entity.namespace
@@ -157,7 +157,7 @@ export class JenkinsClient implements JenkinsApi {
     entity: EntityName,
     jobName: string,
     buildNumber: string,
-  ): Promise<any> {
+  ): Promise<Build> {
     const url = `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
       entity.namespace
     }/${entity.kind}/${entity.name}/job/${encodeURIComponent(
