@@ -5459,9 +5459,9 @@
   integrity sha512-iIgQNzCm0v7QMhhe4Jjn9uRh+I6GoPmt03CbEtwx3ao8/EfoQcmgtqH4vQ5Db/lxiIGaWDv6nwvunuh0RyX0+A==
 
 "@types/aws4@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.npmjs.org/@types/aws4/-/aws4-1.5.1.tgz#361fadab198a030ab398269183ae3fa86e958ed9"
-  integrity sha1-Nh+tqxmKAwqzmCaRg64/qG6Vjtk=
+  version "1.5.2"
+  resolved "https://registry.npmjs.org/@types/aws4/-/aws4-1.5.2.tgz#34e35b4405a619b9205be3e7678963bc7c8a47db"
+  integrity sha512-r8+XOv0BKw3Br0oU6w9cfu21PaQq/5ZeXvMOivNQYJLc9WcPCpEFDaQu72QNEQjYv5Otu48VhjjnbtwrSmk/rg==
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
