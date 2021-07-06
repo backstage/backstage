@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Authorize scaffolder list actions request
+Pass through the `idToken` in `Authorization` Header for `listActions` request
