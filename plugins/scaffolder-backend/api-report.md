@@ -116,6 +116,7 @@ export const createBuiltinActions: (options: {
     integrations: ScmIntegrations;
     catalogClient: CatalogApi;
     templaters: TemplaterBuilder;
+    config: Config;
 }) => TemplateAction<any>[];
 
 // @public (undocumented)
@@ -155,11 +156,13 @@ export function createLegacyActions(options: Options): TemplateAction<any>[];
 // @public (undocumented)
 export function createPublishAzureAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public (undocumented)
 export function createPublishBitbucketAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public
@@ -168,6 +171,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 // @public (undocumented)
 export function createPublishGithubAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public (undocumented)
@@ -176,6 +180,7 @@ export const createPublishGithubPullRequestAction: ({ integrations, clientFactor
 // @public (undocumented)
 export function createPublishGitlabAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public (undocumented)

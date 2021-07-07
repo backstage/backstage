@@ -28,17 +28,17 @@ import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
 describe('publish:azure', () => {
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
-          { host: 'myazurehostnotoken.com' },
-        ],
-      },
-    }),
-  );
-  const action = createPublishAzureAction({ integrations });
+  const config = new ConfigReader({
+    integrations: {
+      azure: [
+        { host: 'dev.azure.com', token: 'tokenlols' },
+        { host: 'myazurehostnotoken.com' },
+      ],
+    },
+  });
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createPublishAzureAction({ integrations, config });
   const mockContext = {
     input: {
       repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org',
@@ -165,6 +165,7 @@ describe('publish:azure', () => {
       defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
@@ -187,6 +188,47 @@ describe('publish:azure', () => {
       defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
+    });
+  });
+
+  it('should call initRepoAndPush with the configured defaultAuthor', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        azure: [
+          { host: 'dev.azure.com', token: 'tokenlols' },
+          { host: 'myazurehostnotoken.com' },
+        ],
+      },
+      scaffolder: {
+        defaultAuthor: {
+          name: 'Test',
+          email: 'example@example.com',
+        },
+      },
+    });
+
+    const customAuthorIntegrations = ScmIntegrations.fromConfig(
+      customAuthorConfig,
+    );
+    const customAuthorAction = createPublishAzureAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+    }));
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
 

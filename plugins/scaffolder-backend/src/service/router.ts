@@ -129,6 +129,7 @@ export async function createRouter(
           catalogClient,
           templaters,
           reader,
+          config,
         }),
       ];
 
