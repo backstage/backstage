@@ -16,12 +16,11 @@
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type { ScaffolderApi } from './api';
-export { createScaffolderFieldExtension } from './extensions';
-export type {
+export {
+  createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
-  CustomFieldValidator,
-  FieldExtensionOptions,
 } from './extensions';
+export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
 export {
   EntityPickerFieldExtension,
   OwnerPickerFieldExtension,
