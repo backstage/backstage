@@ -205,7 +205,8 @@ const CapabilitiesListBase = () => {
     };
     fetchData();
   }, [authApi]);
-
+  // @ts-ignore
+  console.log(capData); // eslint-disable-line
   return (
     <Page themeId="tool">
       <Header title="Welcome to Capability Discoverability!">
