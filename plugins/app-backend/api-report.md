@@ -6,7 +6,7 @@
 
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -18,7 +18,7 @@ export interface RouterOptions {
     config: Config;
     disableConfigInjection?: boolean;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
     staticFallbackHandler?: express.Handler;
 }
 

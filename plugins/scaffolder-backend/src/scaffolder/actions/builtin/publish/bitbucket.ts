@@ -20,9 +20,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import { Config } from '@backstage/config';
 
 const createBitbucketCloudRepository = async (opts: {
   owner: string;
@@ -184,8 +185,9 @@ const performEnableLFS = async (opts: {
 
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -284,6 +286,11 @@ export function createPublishBitbucketAction(options: {
         apiBaseUrl,
       });
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
@@ -297,6 +304,7 @@ export function createPublishBitbucketAction(options: {
         },
         defaultBranch,
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       if (enableLFS && host !== 'bitbucket.org') {

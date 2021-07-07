@@ -15,6 +15,7 @@
  */
 
 export { LdapClient } from './client';
+export { mapStringAttr } from './util';
 export { readLdapConfig } from './config';
 export type { LdapProviderConfig } from './config';
 export {
@@ -22,4 +23,9 @@ export {
   LDAP_RDN_ANNOTATION,
   LDAP_UUID_ANNOTATION,
 } from './constants';
-export { readLdapOrg } from './read';
+export {
+  defaultGroupTransformer,
+  defaultUserTransformer,
+  readLdapOrg,
+} from './read';
+export type { GroupTransformer, UserTransformer } from './types';
