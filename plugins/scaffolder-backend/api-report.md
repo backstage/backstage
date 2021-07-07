@@ -119,6 +119,15 @@ export const createTemplateAction: <Input extends Partial<{
 }>>(templateAction: TemplateAction<Input>) => TemplateAction<any>;
 
 // @public (undocumented)
+export function fetchContents({ reader, integrations, baseUrl, fetchUrl, outputPath, }: {
+    reader: UrlReader;
+    integrations: ScmIntegrations;
+    baseUrl?: string;
+    fetchUrl?: JsonValue;
+    outputPath: string;
+}): Promise<void>;
+
+// @public (undocumented)
 export interface RouterOptions {
     // (undocumented)
     actions?: TemplateAction<any>[];
@@ -137,6 +146,9 @@ export interface RouterOptions {
     // (undocumented)
     taskWorkers?: number;
 }
+
+// @public (undocumented)
+export const runCommand: ({ command, args, logStream, }: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export type TemplateAction<Input extends InputBase> = {
