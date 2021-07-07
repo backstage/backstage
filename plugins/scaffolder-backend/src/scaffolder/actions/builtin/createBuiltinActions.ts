@@ -25,10 +25,10 @@ import {
 
 import { createDebugLogAction } from './debug';
 import {
-  createFetchCookiecutterAction,
   createFetchPlainAction,
   createFetchTemplateAction,
 } from './fetch';
+import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,

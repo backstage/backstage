@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { createFetchPlainAction } from './plain';
-export { createFetchTemplateAction } from './template';
-export { fetchContents } from './helpers';
+export { createFetchCookiecutterAction } from './actions';
