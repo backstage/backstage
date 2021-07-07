@@ -20,8 +20,13 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@backstage/backend-common": "^0.8.6",
     "@backstage/plugin-scaffolder-backend": "^0.14.0",
+=======
+    "@backstage/backend-common": "^0.8.4",
+    "@backstage/plugin-scaffolder-backend": "^0.12.2",
+>>>>>>> chore: update some packages
     "@backstage/config": "^0.1.5",
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.8",
