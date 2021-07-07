@@ -120,13 +120,14 @@ describe('fetch:template', () => {
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
             [outputPath]: {
-              'empty-dir-${{ count }}': {},
+              'empty-dir-${{ values.count }}': {},
               'static.txt': 'static content',
-              '${{ name }}.txt': 'static content',
+              '${{ values.name }}.txt': 'static content',
               subdir: {
-                'templated-content.txt': '${{ name }}: ${{ count }}',
+                'templated-content.txt':
+                  '${{ values.name }}: ${{ values.count }}',
               },
-              '.${{ name }}': '${{ itemList | dump }}',
+              '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
             },
           });
@@ -202,10 +203,12 @@ describe('fetch:template', () => {
           mockFs({
             [outputPath]: {
               processed: {
-                'templated-content-${{ name }}.txt': '${{ count }}',
+                'templated-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
               },
               '.unprocessed': {
-                'templated-content-${{ name }}.txt': '${{ count }}',
+                'templated-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
               },
             },
           });
@@ -219,10 +222,10 @@ describe('fetch:template', () => {
       it('ignores template syntax in files matched in copyWithoutRender', async () => {
         await expect(
           fs.readFile(
-            `${workspacePath}/target/.unprocessed/templated-content-\${{ name }}.txt`,
+            `${workspacePath}/target/.unprocessed/templated-content-\${{ values.name }}.txt`,
             'utf-8',
           ),
-        ).resolves.toEqual('${{ count }}');
+        ).resolves.toEqual('${{ values.count }}');
       });
 
       it('processes files not matched in copyWithoutRender', async () => {

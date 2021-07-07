@@ -41,10 +41,10 @@ verbose template variables expressions.
    `fetch:cookiecutter` to `fetch:template`.
 2. Update variable syntax in file names and content. `fetch:cookiecutter`
    expects variables to be enclosed in `{{` `}}` and prefixed with
-   `cookiecutter.`, while `fetch:template` doesn't require prefixing and expects
-   variables to be enclosed in `${{` `}}`. For example, a reference to variable
+   `cookiecutter.`, while `fetch:template` expects variables to be enclosed in
+   `${{` `}}` and prefixed with `values.`. For example, a reference to variable
    `myInputVariable` would need to be migrated from
-   `{{ cookiecutter.myInputVariable }}` to `${{ myInputVariable }}`.
+   `{{ cookiecutter.myInputVariable }}` to `${{ values.myInputVariable }}`.
 3. Replace uses of `jsonify` with `dump`. The `jsonify` filter is built in to
    `cookiecutter`, and is not available by default when using `fetch:template`.
    The `dump` filter is equivalent, so an expression like

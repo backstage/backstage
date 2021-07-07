@@ -180,9 +180,10 @@ export function createFetchTemplateAction(options: {
       // `cookiecutter.`. To replicate this, we wrap our parameters
       // in an object with a `cookiecutter` property when compat
       // mode is enabled.
-      const parameters = ctx.input.cookiecutterCompat
-        ? { cookiecutter: ctx.input.values }
-        : ctx.input.values;
+      const { cookiecutterCompat, values } = ctx.input;
+      const context = {
+        [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
+      };
 
       ctx.logger.info(
         `Processing ${allEntriesInTemplate.length} template files/directories with input values`,
@@ -196,7 +197,7 @@ export function createFetchTemplateAction(options: {
           outputDir,
           shouldCopyWithoutRender
             ? location
-            : templater.renderString(location, parameters),
+            : templater.renderString(location, context),
         );
 
         if (shouldCopyWithoutRender) {
@@ -227,7 +228,7 @@ export function createFetchTemplateAction(options: {
               outputPath,
               shouldCopyWithoutRender
                 ? inputFileContents
-                : templater.renderString(inputFileContents, parameters),
+                : templater.renderString(inputFileContents, context),
             );
           }
         }
