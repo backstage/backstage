@@ -89,7 +89,6 @@ export function createFetchTemplateAction(options: {
           },
           cookiecutterCompat: {
             title: 'Cookiecutter compatibility mode',
-            // TODO(mtlewis): documentation for cookiecutter compat mode
             description:
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
