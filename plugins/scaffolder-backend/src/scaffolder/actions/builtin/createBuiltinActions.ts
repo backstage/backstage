@@ -24,7 +24,8 @@ import {
 } from './catalog';
 
 import { createDebugLogAction } from './debug';
-import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
+import { createFetchPlainAction } from './fetch';
+import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
