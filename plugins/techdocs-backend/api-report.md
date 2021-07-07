@@ -8,7 +8,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';

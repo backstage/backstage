@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import {
   ItemCardGrid,
   Progress,
@@ -53,8 +53,7 @@ export const TemplateList = () => {
           entities.map((template, i) => (
             <TemplateCard
               key={i}
-              template={template as TemplateEntityV1alpha1}
-              deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
+              template={template as TemplateEntityV1beta2}
             />
           ))}
       </ItemCardGrid>

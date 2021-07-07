@@ -11,7 +11,7 @@ import { Config } from '@backstage/config';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import { LocationSpec } from '@backstage/catalog-model';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { UserEntity } from '@backstage/catalog-model';
@@ -38,7 +38,7 @@ export const LDAP_UUID_ANNOTATION = "backstage.io/ldap-uuid";
 export class LdapClient {
     constructor(client: Client);
     // (undocumented)
-    static create(logger: Logger, target: string, bind?: BindConfig): Promise<LdapClient>;
+    static create(logger: Logger_2, target: string, bind?: BindConfig): Promise<LdapClient>;
     getRootDSE(): Promise<SearchEntry | undefined>;
     getVendor(): Promise<LdapVendor>;
     search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
@@ -48,13 +48,13 @@ export class LdapClient {
 export class LdapOrgReaderProcessor implements CatalogProcessor {
     constructor(options: {
         providers: LdapProviderConfig[];
-        logger: Logger;
+        logger: Logger_2;
         groupTransformer?: GroupTransformer;
         userTransformer?: UserTransformer;
     });
     // (undocumented)
     static fromConfig(config: Config, options: {
-        logger: Logger;
+        logger: Logger_2;
         groupTransformer?: GroupTransformer;
         userTransformer?: UserTransformer;
     }): LdapOrgReaderProcessor;
@@ -80,7 +80,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[];
 export function readLdapOrg(client: LdapClient, userConfig: UserConfig, groupConfig: GroupConfig, options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
-    logger: Logger;
+    logger: Logger_2;
 }): Promise<{
     users: UserEntity[];
     groups: GroupEntity[];

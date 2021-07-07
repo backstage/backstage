@@ -6,7 +6,7 @@
 
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -32,7 +32,7 @@ export interface RouterOptions {
     // (undocumented)
     discovery: PluginEndpointDiscovery;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
     // (undocumented)
     urlReader: UrlReader;
 }
