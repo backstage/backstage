@@ -28,7 +28,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader, JsonObject } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import mock from 'mock-fs';
+import mockFs from 'mock-fs';
 import os from 'os';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
@@ -94,14 +94,14 @@ describe('fetch:cookiecutter', () => {
     };
 
     // mock the temp directory
-    mock({ [mockTmpDir]: {} });
-    mock({ [`${join(mockTmpDir, 'template')}`]: {} });
+    mockFs({ [mockTmpDir]: {} });
+    mockFs({ [`${join(mockTmpDir, 'template')}`]: {} });
 
     commandExists.mockResolvedValue(null);
 
     // Mock when run container is called it creates some new files in the mock filesystem
     containerRunner.runContainer.mockImplementation(async () => {
-      mock({
+      mockFs({
         [`${join(mockTmpDir, 'intermediate')}`]: {
           'testfile.json': '{}',
         },
@@ -110,7 +110,7 @@ describe('fetch:cookiecutter', () => {
 
     // Mock when runCommand is called it creats some new files in the mock filesystem
     runCommand.mockImplementation(async () => {
-      mock({
+      mockFs({
         [`${join(mockTmpDir, 'intermediate')}`]: {
           'testfile.json': '{}',
         },
@@ -119,26 +119,22 @@ describe('fetch:cookiecutter', () => {
   });
 
   afterEach(() => {
-    mock.restore();
+    mockFs.restore();
   });
 
   it('should throw an error when copyWithoutRender is not an array', async () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    await expect(
-      action.handler(mockContext),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Fetch action input copyWithoutRender must be an Array"`,
+    await expect(action.handler(mockContext)).rejects.toThrowError(
+      /Fetch action input copyWithoutRender must be an Array/,
     );
   });
 
   it('should throw an error when extensions is not an array', async () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    await expect(
-      action.handler(mockContext),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Fetch action input extensions must be an Array"`,
+    await expect(action.handler(mockContext)).rejects.toThrowError(
+      /Fetch action input extensions must be an Array/,
     );
   });
 
