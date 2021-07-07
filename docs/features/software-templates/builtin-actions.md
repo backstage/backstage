@@ -28,7 +28,7 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
 
 1. Update action name in `template.yaml`. The name should be changed from
    `fetch:cookiecutter` to `fetch:template`.
-2. Set `cookieCutterCompat` to `true` in the `fetch:template` step input in
+2. Set `cookiecutterCompat` to `true` in the `fetch:template` step input in
    `template.yaml`.
 
 #### Manual migration
