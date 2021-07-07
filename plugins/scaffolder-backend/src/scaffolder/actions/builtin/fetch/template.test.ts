@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { resolve as resolvePath } from 'path';
+import { join as joinPath, resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
@@ -48,7 +48,9 @@ describe('fetch:template', () => {
     ActionContext<FetchTemplateInput>['createTemporaryDirectory']
   > = jest.fn(() =>
     Promise.resolve(
-      `${workspacePath}/${createTemporaryDirectory.mock.calls.length}`,
+      joinPath(
+        `${workspacePath}/${createTemporaryDirectory.mock.calls.length}`,
+      ),
     ),
   );
 
