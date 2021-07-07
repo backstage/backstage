@@ -11,7 +11,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import express from 'express';
 import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -23,7 +23,7 @@ import { Writable } from 'stream';
 // @public (undocumented)
 export type ActionContext<Input extends InputBase> = {
     baseUrl?: string;
-    logger: Logger;
+    logger: Logger_2;
     logStream: Writable;
     token?: string | undefined;
     workspacePath: string;
@@ -119,6 +119,15 @@ export const createTemplateAction: <Input extends Partial<{
 }>>(templateAction: TemplateAction<Input>) => TemplateAction<any>;
 
 // @public (undocumented)
+export function fetchContents({ reader, integrations, baseUrl, fetchUrl, outputPath, }: {
+    reader: UrlReader;
+    integrations: ScmIntegrations;
+    baseUrl?: string;
+    fetchUrl?: JsonValue;
+    outputPath: string;
+}): Promise<void>;
+
+// @public (undocumented)
 export interface RouterOptions {
     // (undocumented)
     actions?: TemplateAction<any>[];
@@ -131,12 +140,15 @@ export interface RouterOptions {
     // (undocumented)
     database: PluginDatabaseManager;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
     // (undocumented)
     reader: UrlReader;
     // (undocumented)
     taskWorkers?: number;
 }
+
+// @public (undocumented)
+export const runCommand: ({ command, args, logStream, }: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export type TemplateAction<Input extends InputBase> = {

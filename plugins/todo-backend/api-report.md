@@ -8,7 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 

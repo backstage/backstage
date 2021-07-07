@@ -6,7 +6,7 @@
 
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -20,7 +20,7 @@ export function getRequestHeaders(token: string): {
 
 // @public (undocumented)
 export class RollbarApi {
-    constructor(accessToken: string, logger: Logger);
+    constructor(accessToken: string, logger: Logger_2);
     // (undocumented)
     getActivatedCounts(projectName: string, options?: {
         environment: string;
@@ -49,7 +49,7 @@ export interface RouterOptions {
     // (undocumented)
     config: Config;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
     // (undocumented)
     rollbarApi?: RollbarApi;
 }

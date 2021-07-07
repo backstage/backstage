@@ -9,7 +9,7 @@ import express from 'express';
 import { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 
 // @public (undocumented)
 export interface ClusterDetails {
@@ -68,7 +68,7 @@ export interface KubernetesServiceLocator {
 }
 
 // @public (undocumented)
-export const makeRouter: (logger: Logger, kubernetesFanOutHandler: KubernetesFanOutHandler, clusterDetails: ClusterDetails[]) => express.Router;
+export const makeRouter: (logger: Logger_2, kubernetesFanOutHandler: KubernetesFanOutHandler, clusterDetails: ClusterDetails[]) => express.Router;
 
 // @public (undocumented)
 export interface ObjectFetchParams {
@@ -91,7 +91,7 @@ export interface RouterOptions {
     // (undocumented)
     config: Config;
     // (undocumented)
-    logger: Logger;
+    logger: Logger_2;
 }
 
 // @public (undocumented)
