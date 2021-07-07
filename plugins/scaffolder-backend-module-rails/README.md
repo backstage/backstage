@@ -32,9 +32,7 @@ const actions = [
 ];
 
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,
