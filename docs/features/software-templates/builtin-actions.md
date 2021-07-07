@@ -57,8 +57,11 @@ verbose template variables expressions.
    `${{` `}}` and prefixed with `values.`. For example, a reference to variable
    `myInputVariable` would need to be migrated from
    `{{ cookiecutter.myInputVariable }}` to `${{ values.myInputVariable }}`.
-3. Replace uses of `jsonify` with `dump`. The `jsonify` filter is built in to
-   `cookiecutter`, and is not available by default when using `fetch:template`.
-   The `dump` filter is equivalent, so an expression like
-   `{{ myAwesomeList | jsonify }}` should be migrated to
-   `${{ myAwesomeList | dump }}`.
+3. Replace uses of `jsonify` with `dump`. The
+   [`jsonify` filter](https://cookiecutter.readthedocs.io/en/latest/advanced/template_extensions.html#jsonify-extension)
+   is built in to `cookiecutter`, and is not available by default when using
+   `fetch:template`. The
+   [`dump` filter](https://mozilla.github.io/nunjucks/templating.html#dump) is
+   the equivalent filter in nunjucks, so an expression like
+   `{{ cookiecutter.myAwesomeList | jsonify }}` should be migrated to
+   `${{ values.myAwesomeList | dump }}`.
