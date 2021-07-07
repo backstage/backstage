@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ScmIntegrations } from '@backstage/integration';
 import { Config } from '@backstage/config';
-import { TemplaterBuilder } from '../../stages';
 import {
-  createCatalogRegisterAction,
   createCatalogWriteAction,
+  createCatalogRegisterAction,
 } from './catalog';
+
 import { createDebugLogAction } from './debug';
 import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
 import {
@@ -41,10 +41,16 @@ export const createBuiltinActions = (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  templaters: TemplaterBuilder;
+  containerRunner: ContainerRunner;
   config: Config;
 }) => {
-  const { reader, integrations, templaters, catalogClient, config } = options;
+  const {
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+  } = options;
 
   return [
     createFetchPlainAction({
@@ -54,7 +60,7 @@ export const createBuiltinActions = (options: {
     createFetchCookiecutterAction({
       reader,
       integrations,
-      templaters,
+      containerRunner,
     }),
     createPublishGithubAction({
       integrations,

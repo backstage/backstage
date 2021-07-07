@@ -20,7 +20,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';

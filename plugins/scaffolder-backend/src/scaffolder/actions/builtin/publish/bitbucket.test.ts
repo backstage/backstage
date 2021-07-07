@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('../../../stages/publish/helpers');
+
+jest.mock('../helpers');
 
 import { createPublishBitbucketAction } from './bitbucket';
 import { rest } from 'msw';
@@ -23,7 +24,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 
 describe('publish:bitbucket', () => {
   const config = new ConfigReader({

@@ -16,7 +16,6 @@
 import { JsonObject, JsonValue } from '@backstage/config';
 import { LinearProgress } from '@material-ui/core';
 import { FieldValidation, FormValidation, IChangeEvent } from '@rjsf/core';
-import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
@@ -99,39 +98,6 @@ export const createValidator = (
   };
 };
 
-const storePathValidator = (
-  formData: { storePath?: string },
-  errors: FormValidation,
-) => {
-  const { storePath } = formData;
-  if (!storePath) {
-    errors.storePath.addError('Store path is required and not present');
-    return errors;
-  }
-
-  try {
-    const parsedUrl = parseGitUrl(storePath);
-
-    if (!parsedUrl.resource || !parsedUrl.owner || !parsedUrl.name) {
-      if (parsedUrl.resource === 'dev.azure.com') {
-        errors.storePath.addError(
-          "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
-        );
-      } else {
-        errors.storePath.addError(
-          'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
-        );
-      }
-    }
-  } catch (ex) {
-    errors.storePath.addError(
-      `Failed validation of the store path with message ${ex.message}`,
-    );
-  }
-
-  return errors;
-};
-
 export const TemplatePage = ({
   customFieldExtensions = [],
 }: {
@@ -203,15 +169,6 @@ export const TemplatePage = ({
               onReset={handleFormReset}
               onFinish={handleCreate}
               steps={schema.steps.map(step => {
-                // TODO: Can delete this function when the migration from v1 to v2 beta is completed
-                // And just have the default validator for all fields.
-                if ((step.schema as any)?.properties?.storePath) {
-                  return {
-                    ...step,
-                    validate: (a, b) => storePathValidator(a, b),
-                  };
-                }
-
                 return {
                   ...step,
                   validate: createValidator(step.schema, customFieldValidators),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,47 @@
  * limitations under the License.
  */
 
+import { spawn } from 'child_process';
+import { PassThrough, Writable } from 'stream';
 import globby from 'globby';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
 import { Octokit } from '@octokit/rest';
+
+export type RunCommandOptions = {
+  command: string;
+  args: string[];
+  logStream?: Writable;
+};
+
+export const runCommand = async ({
+  command,
+  args,
+  logStream = new PassThrough(),
+}: RunCommandOptions) => {
+  await new Promise<void>((resolve, reject) => {
+    const process = spawn(command, args);
+
+    process.stdout.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.stderr.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.on('error', error => {
+      return reject(error);
+    });
+
+    process.on('close', code => {
+      if (code !== 0) {
+        return reject(`Command ${command} failed, exit code: ${code}`);
+      }
+      return resolve();
+    });
+  });
+};
 
 export async function initRepoAndPush({
   dir,
