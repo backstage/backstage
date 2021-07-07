@@ -180,7 +180,6 @@ class OAuth2
       })
       returnToken = resp.accessToken;
     } catch (e) {
-      console.log(returnToken);
       console.log(e);
       let resp = await msalInstance.acquireTokenPopup({
         scopes: scopes ? scopes : [],
@@ -188,7 +187,8 @@ class OAuth2
       });
       returnToken = resp.accessToken;    
     }
-
+    
+    console.log(returnToken);
     return returnToken;
   }
 

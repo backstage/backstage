@@ -29,6 +29,9 @@ spec:
         - containerPort: 7000
           name: backend
           protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: backstage-proxy-endpoints
         env:
         - name: AUTH_MICROSOFT_CLIENT_ID
           value: #(AUTH_MICROSOFT_CLIENT_ID)

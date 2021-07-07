@@ -191,7 +191,7 @@ const CapabilitiesListBase = () => {
         'api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user',
       ]);
       const resp = await fetch(
-        'http://localhost:7000/api/proxy/capsvc/capabilities/',
+        'http://localhost:7000/api/proxy/dfds-api/capsvc/capabilities/',
         {
           method: 'GET',
           headers: {

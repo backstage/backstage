@@ -94,10 +94,26 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
-  '/capsvc/capabilities':
-    target: https://api.hellman.oxygen.dfds.cloud/capability/api/v1/capabilities/
+  '/dfds-api/capsvc':
+    target: ${DFDS_API_CAPSVC_ENDPOINT}
     allowedMethods: ['GET', 'POST', 'PUT']
     allowedHeaders: ['Authorization']
+
+  '/dfds-api/inventa':
+    target: ${DFDS_API_INVENTA_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
+  '/dfds-api/cost-janitor':
+    target: ${DFDS_API_COST_JANITOR_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
+  '/dfds-api/azure-devops-janitor':
+    target: ${DFDS_API_AZURE_DEVOPS_JANITOR_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
 
 organization:
   name: DFDS
