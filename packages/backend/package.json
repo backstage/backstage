@@ -48,7 +48,7 @@
     "@backstage/plugin-todo-backend": "^0.1.6",
     "@gitbeaker/node": "^30.2.0",
     "@octokit/rest": "^18.5.3",
-    "azure-devops-node-api": "^10.1.1",
+    "azure-devops-node-api": "^10.2.2",
     "dockerode": "^3.2.1",
     "example-app": "^0.2.32",
     "express": "^4.17.1",
