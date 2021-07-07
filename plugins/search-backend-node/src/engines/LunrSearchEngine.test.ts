@@ -15,8 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LunrSearchEngine } from './LunrSearchEngine';
+import { ConcreteLunrQuery, LunrSearchEngine } from './LunrSearchEngine';
 import { SearchEngine } from '../types';
+import lunr from 'lunr';
 
 /**
  * Just used to test the default translator shipped with LunrSearchEngine.
@@ -68,11 +69,35 @@ describe('LunrSearchEngine', () => {
         term: 'testTerm',
         filters: {},
         pageCursor: '',
-      });
+      }) as ConcreteLunrQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
-        documentTypes: ['*'],
-        lunrQueryString: '+testTerm',
+        documentTypes: undefined,
+        lunrQueryBuilder: expect.any(Function),
+      });
+
+      const query: jest.Mocked<lunr.Query> = {
+        allFields: [],
+        clauses: [],
+        term: jest.fn(),
+        clause: jest.fn(),
+      };
+
+      actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
+
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 100,
+        usePipeline: true,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 10,
+        usePipeline: false,
+        wildcard: lunr.Query.wildcard.TRAILING,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 1,
+        usePipeline: false,
+        editDistance: 2,
       });
     });
 
@@ -86,11 +111,39 @@ describe('LunrSearchEngine', () => {
         term: 'testTerm',
         filters: { kind: 'testKind' },
         pageCursor: '',
-      });
+      }) as ConcreteLunrQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
-        documentTypes: ['*'],
-        lunrQueryString: '+testTerm +kind:testKind',
+        documentTypes: undefined,
+        lunrQueryBuilder: expect.any(Function),
+      });
+
+      const query: jest.Mocked<lunr.Query> = {
+        allFields: ['kind'],
+        clauses: [],
+        term: jest.fn(),
+        clause: jest.fn(),
+      };
+
+      actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
+
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 100,
+        usePipeline: true,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 10,
+        usePipeline: false,
+        wildcard: lunr.Query.wildcard.TRAILING,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 1,
+        usePipeline: false,
+        editDistance: 2,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+        fields: ['kind'],
+        presence: lunr.Query.presence.REQUIRED,
       });
     });
 
@@ -104,17 +157,78 @@ describe('LunrSearchEngine', () => {
         term: 'testTerm',
         filters: { kind: 'testKind', namespace: 'testNameSpace' },
         pageCursor: '',
-      });
+      }) as ConcreteLunrQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
-        documentTypes: ['*'],
-        lunrQueryString: '+testTerm +kind:testKind +namespace:testNameSpace',
+        documentTypes: undefined,
+        lunrQueryBuilder: expect.any(Function),
       });
+
+      const query: jest.Mocked<lunr.Query> = {
+        allFields: ['kind', 'namespace'],
+        clauses: [],
+        term: jest.fn(),
+        clause: jest.fn(),
+      };
+
+      actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
+
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 100,
+        usePipeline: true,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 10,
+        usePipeline: false,
+        wildcard: lunr.Query.wildcard.TRAILING,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+        boost: 1,
+        usePipeline: false,
+        editDistance: 2,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+        fields: ['kind'],
+        presence: lunr.Query.presence.REQUIRED,
+      });
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testNameSpace'), {
+        fields: ['namespace'],
+        presence: lunr.Query.presence.REQUIRED,
+      });
+    });
+
+    it('should throw if translated query references missing field', async () => {
+      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+        logger: getVoidLogger(),
+      });
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        term: 'testTerm',
+        filters: { kind: 'testKind' },
+        pageCursor: '',
+      }) as ConcreteLunrQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: undefined,
+        lunrQueryBuilder: expect.any(Function),
+      });
+
+      const query: jest.Mocked<lunr.Query> = {
+        allFields: [],
+        clauses: [],
+        term: jest.fn(),
+        clause: jest.fn(),
+      };
+
+      expect(() =>
+        actualTranslatedQuery.lunrQueryBuilder.bind(query)(query),
+      ).toThrow();
     });
   });
 
   describe('query', () => {
-    it('should perform search query', async () => {
+    it('should perform search query and return 0 results on empty index', async () => {
       const querySpy = jest.spyOn(testLunrSearchEngine, 'query');
 
       // Perform search query and ensure the query func was invoked.
@@ -149,13 +263,46 @@ describe('LunrSearchEngine', () => {
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
-        term: 'testTerm',
+        term: 'unknown',
         filters: {},
         pageCursor: '',
       });
 
       // Should return 0 results as we are mocking the indexing of 1 document but with no match on the fields
       expect(mockedSearchResult).toMatchObject({ results: [] });
+    });
+
+    it('should perform search query and return all results on empty term', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: '',
+        filters: {},
+        pageCursor: '',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test/location',
+            },
+            type: 'test-index',
+          },
+        ],
+      });
     });
 
     it('should perform search query and return search results on match', async () => {
@@ -173,6 +320,70 @@ describe('LunrSearchEngine', () => {
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
         term: 'testTitle',
+        filters: {},
+        pageCursor: '',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test/location',
+            },
+          },
+        ],
+      });
+    });
+
+    it('should perform search query and return search results on partial match', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitle',
+        filters: {},
+        pageCursor: '',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test/location',
+            },
+          },
+        ],
+      });
+    });
+
+    it('should perform search query and return search results on fuzzy match', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      testLunrSearchEngine.index('test-index', mockDocuments);
+
+      // Perform search query
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitel', // Intentional typo
         filters: {},
         pageCursor: '',
       });
