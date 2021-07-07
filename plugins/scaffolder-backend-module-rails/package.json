@@ -20,7 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.8.3",
+    "@backstage/backend-common": "^0.8.4",
     "@backstage/plugin-scaffolder-backend": "^0.12.2",
     "@backstage/config": "^0.1.5",
     "@backstage/errors": "^0.1.1",
