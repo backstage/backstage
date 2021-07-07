@@ -180,7 +180,7 @@ describe('fetch:template', () => {
         ).resolves.toEqual([]);
       });
 
-      it('copies binary files as it-is without processing them', async () => {
+      it('copies binary files as-is without processing them', async () => {
         await expect(
           fs.readFile(`${workspacePath}/target/a-binary-file.png`),
         ).resolves.toEqual(aBinaryFile);
