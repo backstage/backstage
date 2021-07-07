@@ -26,6 +26,7 @@ import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
 import { createApp as createApp_2 } from '@backstage/app-defaults';
+import crossFetch from 'cross-fetch';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
@@ -34,6 +35,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -289,6 +291,14 @@ export type BackstagePluginWithAnyOutput = Omit<
 };
 
 // @public
+export class BackstageProtocolResolverFetchMiddleware
+  implements FetchMiddleware
+{
+  constructor(discovery: (pluginId: string) => Promise<string>);
+  apply(next: FetchFunction): FetchFunction;
+}
+
+// @public
 export class BitbucketAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
@@ -370,6 +380,24 @@ export type FeatureFlaggedProps = {
 );
 
 // @public
+export class FetchApiBuilder {
+  // (undocumented)
+  build(): FetchApi;
+  // (undocumented)
+  static create(): FetchApiBuilder;
+  // (undocumented)
+  with(middleware: FetchMiddleware): FetchApiBuilder;
+}
+
+// @public
+export type FetchFunction = typeof crossFetch;
+
+// @public
+export interface FetchMiddleware {
+  apply(next: FetchFunction): FetchFunction;
+}
+
+// @public
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 
 // @public
@@ -424,6 +452,13 @@ export class GitlabAuth {
 export class GoogleAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
+}
+
+// @public
+export class IdentityAwareFetchMiddleware implements FetchMiddleware {
+  constructor(tokenFunction: () => Promise<string | undefined>);
+  apply(next: FetchFunction): FetchFunction;
+  setHeaderName(name: string): IdentityAwareFetchMiddleware;
 }
 
 // @public

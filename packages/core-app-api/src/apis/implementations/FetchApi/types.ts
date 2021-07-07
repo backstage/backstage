@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+import crossFetch from 'cross-fetch';
 
-export * from './auth';
+/**
+ * The type of a fetch call.
+ *
+ * @public
+ */
+export type FetchFunction = typeof crossFetch;
 
-export * from './AlertApi';
-export * from './AnalyticsApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './DiscoveryApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './FetchApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
+/**
+ * A middleware that modifies the behavior of an ongoing fetch.
+ *
+ * @public
+ */
+export interface FetchMiddleware {
+  /**
+   * Applies this middleware to an inner implementation.
+   *
+   * @param next - The next, inner, implementation, that this middleware shall
+   *               call out to as part of the request cycle.
+   */
+  apply(next: FetchFunction): FetchFunction;
+}

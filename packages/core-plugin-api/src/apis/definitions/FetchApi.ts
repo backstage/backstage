@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import fetch from 'cross-fetch';
+import { ApiRef, createApiRef } from '../system';
+
 /**
- * This is a copy of the DiscoveryApi, to avoid importing core-plugin-api.
+ * A wrapper for the fetch API, that has additional behaviors such as the
+ * ability to automatically inject auth information where necessary.
  *
  * @public
  */
-export type DiscoveryApi = {
-  getBaseUrl(pluginId: string): Promise<string>;
+export type FetchApi = {
+  fetch: typeof fetch;
 };
+
+/**
+ * A wrapper for the fetch API, that has additional behaviors such as the
+ * ability to automatically inject auth information where necessary.
+ *
+ * @public
+ */
+export const fetchApiRef: ApiRef<FetchApi> = createApiRef({
+  id: 'core.fetch',
+});

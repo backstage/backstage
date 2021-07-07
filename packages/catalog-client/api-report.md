@@ -5,6 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
+import { default as fetch_2 } from 'cross-fetch';
 import { Location as Location_2 } from '@backstage/catalog-model';
 
 // @public
@@ -71,7 +72,7 @@ export interface CatalogApi {
 
 // @public
 export class CatalogClient implements CatalogApi {
-  constructor(options: { discoveryApi: DiscoveryApi });
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi });
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -155,4 +156,9 @@ export type DiscoveryApi = {
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
+
+// @public
+export type FetchApi = {
+  fetch: typeof fetch_2;
+};
 ```

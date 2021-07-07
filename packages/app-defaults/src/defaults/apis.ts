@@ -34,6 +34,9 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  FetchApiBuilder,
+  IdentityAwareFetchMiddleware,
+  BackstageProtocolResolverFetchMiddleware,
 } from '@backstage/core-app-api';
 
 import {
@@ -42,6 +45,8 @@ import {
   analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
   oauthRequestApiRef,
   googleAuthApiRef,
   githubAuthApiRef,
@@ -91,6 +96,24 @@ export const apis = [
     api: storageApiRef,
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
+  }),
+  createApiFactory({
+    api: fetchApiRef,
+    deps: { identityApi: identityApiRef, discoveryApi: discoveryApiRef },
+    factory: ({ identityApi, discoveryApi }) => {
+      return FetchApiBuilder.create()
+        .with(
+          new IdentityAwareFetchMiddleware(() => {
+            return identityApi.getCredentials().then(r => r.token);
+          }),
+        )
+        .with(
+          new BackstageProtocolResolverFetchMiddleware(plugin => {
+            return discoveryApi.getBaseUrl(plugin);
+          }),
+        )
+        .build();
+    },
   }),
   createApiFactory({
     api: oauthRequestApiRef,
