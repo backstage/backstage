@@ -289,6 +289,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'master',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
@@ -400,6 +401,7 @@ describe('publish:bitbucket', () => {
       remoteUrl: 'https://bitbucket.org/owner/cloneurl',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });

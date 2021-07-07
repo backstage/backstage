@@ -165,6 +165,7 @@ describe('publish:azure', () => {
       defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
@@ -226,6 +227,7 @@ describe('publish:azure', () => {
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
+      defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });

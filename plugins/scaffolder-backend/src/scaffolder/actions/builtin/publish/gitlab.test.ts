@@ -143,6 +143,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      gitAuthorInfo: {},
     });
   });
 
@@ -213,6 +214,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
