@@ -169,6 +169,7 @@ nohoist
 nonces
 noop
 npm
+nunjucks
 nvarchar
 nvm
 OAuth
