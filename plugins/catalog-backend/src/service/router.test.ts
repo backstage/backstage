@@ -50,13 +50,23 @@ describe('createRouter readonly disabled', () => {
     higherOrderOperation = {
       addLocation: jest.fn(),
       refreshAllLocations: jest.fn(),
+      refreshSingleLocation: jest.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,
       locationsCatalog,
       higherOrderOperation,
       logger: getVoidLogger(),
-      config: new ConfigReader(undefined),
+      config: new ConfigReader({
+        catalog: {
+          locations: [
+            {
+              type: 'somelocation',
+              target: 'sometarget',
+            },
+          ],
+        },
+      }),
     });
     app = express().use(router);
   });
@@ -289,6 +299,24 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('GET /locations/:location/refresh', () => {
+    it('happy path: calls refresh function, returns 200', async () => {
+      const response = await request(app).get(
+        '/locations/somelocation/refresh',
+      );
+
+      expect(higherOrderOperation.refreshSingleLocation).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(higherOrderOperation.refreshSingleLocation).toHaveBeenCalledWith({
+        type: 'somelocation',
+        target: 'sometarget',
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual('somelocation refresh started');
+    });
+  });
+
   describe('POST /locations', () => {
     it('rejects malformed locations', async () => {
       const spec = ({
@@ -380,6 +408,7 @@ describe('createRouter readonly enabled', () => {
     higherOrderOperation = {
       addLocation: jest.fn(),
       refreshAllLocations: jest.fn(),
+      refreshSingleLocation: jest.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,

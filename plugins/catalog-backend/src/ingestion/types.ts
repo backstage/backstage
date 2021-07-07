@@ -20,6 +20,7 @@ import {
   Location,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { Logger } from 'winston';
 import { RecursivePartial } from '../util/RecursivePartial';
 
 //
@@ -32,6 +33,10 @@ export type HigherOrderOperation = {
     options?: { dryRun?: boolean },
   ): Promise<AddLocationResult>;
   refreshAllLocations(): Promise<void>;
+  refreshSingleLocation(
+    location: Location,
+    optionalLogger?: Logger,
+  ): Promise<void>;
 };
 
 export type AddLocationResult = {

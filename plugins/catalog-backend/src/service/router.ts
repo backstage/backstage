@@ -183,19 +183,41 @@ export async function createRouter(
   }
 
   if (higherOrderOperation) {
-    router.post('/locations', async (req, res) => {
-      const input = await validateRequestBody(req, locationSpecSchema);
-      const dryRun = yn(req.query.dryRun, { default: false });
+    router
+      .post('/locations', async (req, res) => {
+        const input = await validateRequestBody(req, locationSpecSchema);
+        const dryRun = yn(req.query.dryRun, { default: false });
 
-      // when in dryRun addLocation is effectively a read operation so we don't
-      // need to disallow readonly
-      if (!dryRun) {
-        disallowReadonlyMode(readonlyEnabled);
-      }
+        // when in dryRun addLocation is effectively a read operation so we don't
+        // need to disallow readonly
+        if (!dryRun) {
+          disallowReadonlyMode(readonlyEnabled);
+        }
 
-      const output = await higherOrderOperation.addLocation(input, { dryRun });
-      res.status(201).json(output);
-    });
+        const output = await higherOrderOperation.addLocation(input, {
+          dryRun,
+        });
+        res.status(201).json(output);
+      })
+      .get('/locations/:type/refresh', async (req, res) => {
+        const { type } = req.params;
+        const couldNotRefreshText = `Could not refresh location ${type}:`;
+        let locationData;
+        try {
+          locationData = config
+            .getConfigArray('catalog.locations')
+            // @ts-ignore
+            .map(({ data }) => data)
+            .find(location => location.type === type);
+        } catch {
+          res
+            .status(500)
+            .json(`${couldNotRefreshText} location not found or malformed`)
+            .end();
+        }
+        await higherOrderOperation.refreshSingleLocation(locationData, logger);
+        res.status(200).json(`${type} refresh started`).end();
+      });
   }
 
   if (locationsCatalog) {

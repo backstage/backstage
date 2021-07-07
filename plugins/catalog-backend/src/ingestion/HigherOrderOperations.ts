@@ -156,10 +156,10 @@ export class HigherOrderOperations implements HigherOrderOperation {
   }
 
   // Performs a full refresh of a single location
-  private async refreshSingleLocation(
+  async refreshSingleLocation(
     location: Location,
     optionalLogger?: Logger,
-  ) {
+  ): Promise<void> {
     let startTimestamp = process.hrtime();
     const logger = optionalLogger || this.logger;
 
