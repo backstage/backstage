@@ -48,9 +48,7 @@ describe('fetch:template', () => {
     ActionContext<FetchTemplateInput>['createTemporaryDirectory']
   > = jest.fn(() =>
     Promise.resolve(
-      joinPath(
-        `${workspacePath}/${createTemporaryDirectory.mock.calls.length}`,
-      ),
+      joinPath(workspacePath, `${createTemporaryDirectory.mock.calls.length}`),
     ),
   );
 
