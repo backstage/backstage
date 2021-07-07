@@ -15,13 +15,13 @@
  */
 import { JsonObject, JsonValue } from '@backstage/config';
 import { LinearProgress } from '@material-ui/core';
-import { FieldValidation, FormValidation, IChangeEvent } from '@rjsf/core';
+import { FormValidation, IChangeEvent } from '@rjsf/core';
 import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { FieldExtensionOptions } from '../../extensions';
+import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
@@ -32,7 +32,13 @@ import {
   Lifecycle,
   Page,
 } from '@backstage/core-components';
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  ApiHolder,
+  errorApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -54,10 +60,10 @@ function isObject(obj: unknown): obj is JsonObject {
 
 export const createValidator = (
   rootSchema: JsonObject,
-  validators: Record<
-    string,
-    undefined | ((value: JsonValue, validation: FieldValidation) => void)
-  >,
+  validators: Record<string, undefined | CustomFieldValidator<unknown>>,
+  context: {
+    apiHolder: ApiHolder;
+  },
 ) => {
   function validate(
     schema: JsonObject,
@@ -86,7 +92,11 @@ export const createValidator = (
         const fieldName =
           isObject(propSchema) && (propSchema['ui:field'] as string);
         if (fieldName && typeof validators[fieldName] === 'function') {
-          validators[fieldName]!(propData as JsonValue, propValidation);
+          validators[fieldName]!(
+            propData as JsonValue,
+            propValidation,
+            context,
+          );
         }
       }
     }
@@ -103,6 +113,7 @@ export const TemplatePage = ({
 }: {
   customFieldExtensions?: FieldExtensionOptions[];
 }) => {
+  const apiHolder = useApiHolder();
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
@@ -171,7 +182,11 @@ export const TemplatePage = ({
               steps={schema.steps.map(step => {
                 return {
                   ...step,
-                  validate: createValidator(step.schema, customFieldValidators),
+                  validate: createValidator(
+                    step.schema,
+                    customFieldValidators,
+                    { apiHolder },
+                  ),
                 };
               })}
             />
