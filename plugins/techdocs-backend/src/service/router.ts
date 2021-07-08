@@ -256,7 +256,7 @@ export async function createRouter(
         await publisher.migrateDocsCase({
           // removeOriginal: !!req.query?.removeOriginal,
           concurrency:
-            parseInt((req.query?.concurrency as string) || '', 10) || undefined,
+            parseInt((req.query?.concurrency as string) || '', 25) || undefined,
         });
         res.status(200).send('Good job');
       } catch (e) {
