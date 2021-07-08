@@ -33,7 +33,7 @@ import {
   Page,
   Content,
   ContentHeader,
-  HeaderLabel,
+  // HeaderLabel,
   microsoftAuthApiRef,
   useApi,
 } from '@backstage/core';
