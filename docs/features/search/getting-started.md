@@ -262,9 +262,11 @@ const indexBuilder = new IndexBuilder({ logger, searchEngine });
 ```
 
 Backstage Search can be used to power search of anything! Plugins like the
-Catalog offer default [collators](./concepts.md#collators) which are responsible
-for providing documents [to be indexed](./concepts.md#documents-and-indices).
-You can register any number of collators with the `IndexBuilder` like this:
+Catalog offer default [collators](./concepts.md#collators) (e.g.
+[DefaultCatalogCollator](https://github.com/backstage/backstage/blob/df12cc25aa4934a98bc42ed03c07f64a1a0a9d72/plugins/catalog-backend/src/search/DefaultCatalogCollator.ts))
+which are responsible for providing documents
+[to be indexed](./concepts.md#documents-and-indices). You can register any
+number of collators with the `IndexBuilder` like this:
 
 ```typescript
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
