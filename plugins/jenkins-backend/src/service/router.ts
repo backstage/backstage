@@ -113,8 +113,6 @@ export async function createRouter(
       });
 
       await jenkinsApi.buildProject(jenkinsInfo, jobName);
-
-      // TODO: return the buildNumber which was started.
       response.json({});
     },
   );
