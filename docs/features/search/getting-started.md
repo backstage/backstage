@@ -272,13 +272,11 @@ number of collators with the `IndexBuilder` like this:
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });
 
 indexBuilder.addCollator({
-  type: 'my-custom-stuff',
   defaultRefreshIntervalSeconds: 3600,
   collator: new MyCustomCollator(),
 });
@@ -292,7 +290,6 @@ its `defaultRefreshIntervalSeconds` value, like this:
 
 ```typescript {3}
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });
