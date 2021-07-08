@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 import React from 'react';
-import { StatusMatrixComponent } from './StatusMatrixComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { XCMetricsApi, xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import userEvent from '@testing-library/user-event';
+import { StatusMatrixComponent } from './StatusMatrixComponent';
+import { XCMetricsApi, xcmetricsApiRef } from '../../api';
+import { formatStatus } from '../../utils';
 
 describe('StatusMatrixComponent', () => {
   it('should render', async () => {
+    const mockStatus = 'succeeded';
     const mockApi: jest.Mocked<XCMetricsApi> = {
       getBuilds: jest.fn().mockResolvedValue([
         {
           id: 1,
           startTimestamp: '2020-11-02T16:38:40Z',
           duration: 123.45,
-          buildStatus: 'succeeded',
+          buildStatus: mockStatus,
         },
       ]),
     };
@@ -38,6 +41,12 @@ describe('StatusMatrixComponent', () => {
       </ApiProvider>,
     );
 
-    expect(rendered.getByTestId(1)).toBeInTheDocument();
+    const cell = rendered.getByTestId(1);
+    expect(cell).toBeInTheDocument();
+
+    userEvent.hover(cell);
+    expect(
+      await rendered.findByText(formatStatus(mockStatus)),
+    ).toBeInTheDocument();
   });
 });
