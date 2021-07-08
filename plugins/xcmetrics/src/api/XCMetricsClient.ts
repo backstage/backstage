@@ -29,9 +29,9 @@ export class XCMetricsClient implements XCMetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuilds(): Promise<BuildItem[]> {
+  async getBuilds(limit: number = 10): Promise<BuildItem[]> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build`);
+    const response = await fetch(`${baseUrl}/build?per=${limit}`);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

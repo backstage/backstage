@@ -54,7 +54,7 @@ export type BuildsResult = {
 };
 
 export interface XCMetricsApi {
-  getBuilds(): Promise<BuildItem[]>;
+  getBuilds(limit?: number): Promise<BuildItem[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XCMetricsApi>({
