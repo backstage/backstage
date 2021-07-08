@@ -17,13 +17,13 @@
 import React, { useContext, PropsWithChildren } from 'react';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
-import MapIcon from '@material-ui/icons/MyLocation';
-import LayersIcon from '@material-ui/icons/Layers';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import MoneyIcon from '@material-ui/icons/MonetizationOn';
+// import ExtensionIcon from '@material-ui/icons/Extension';
+// import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
+// import MapIcon from '@material-ui/icons/MyLocation';
+// import LayersIcon from '@material-ui/icons/Layers';
+// import LibraryBooks from '@material-ui/icons/LibraryBooks';
+// import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+// import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import {
@@ -33,14 +33,14 @@ import {
   SidebarContext,
   SidebarItem,
   SidebarDivider,
-  SidebarSpace,
+  // SidebarSpace,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
-import { GraphiQLIcon } from '@backstage/plugin-graphiql';
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearch } from '@backstage/plugin-search';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import { Shortcuts } from '@backstage/plugin-shortcuts';
+// import { GraphiQLIcon } from '@backstage/plugin-graphiql';
+// import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+// import { SidebarSearch } from '@backstage/plugin-search';
+// import VisibilityIcon from '@material-ui/icons/Visibility';
+// import { Shortcuts } from '@backstage/plugin-shortcuts';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
