@@ -15,6 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
+import qs from 'qs';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -96,16 +98,22 @@ const apis = ApiRegistry.from([
 
 const wrapper = ({
   userFilter,
+  queryParams,
   children,
-}: PropsWithChildren<{ userFilter: UserListFilterKind }>) => {
+}: PropsWithChildren<{
+  userFilter?: UserListFilterKind;
+  queryParams?: string;
+}>) => {
   return (
-    <ApiProvider apis={apis}>
-      <EntityListProvider>
-        <EntityKindPicker initialFilter="component" hidden />
-        <UserListPicker initialFilter={userFilter} />
-        {children}
-      </EntityListProvider>
-    </ApiProvider>
+    <Router initialEntries={[`/?${queryParams ?? ''}`]}>
+      <ApiProvider apis={apis}>
+        <EntityListProvider>
+          <EntityKindPicker initialFilter="component" hidden />
+          <UserListPicker initialFilter={userFilter} />
+          {children}
+        </EntityListProvider>
+      </ApiProvider>
+    </Router>
   );
 };
 
@@ -138,6 +146,25 @@ describe('<EntityListProvider/>', () => {
     await waitFor(() => !!result.current.entities.length);
     expect(result.current.backendEntities.length).toBe(2);
     expect(result.current.entities.length).toBe(1);
+  });
+
+  it('resolves query param filter values', async () => {
+    const { result, waitFor } = renderHook(() => useEntityListProvider(), {
+      wrapper,
+      initialProps: {
+        queryParams: qs.stringify({
+          filters: {
+            kind: 'component',
+            type: 'service',
+          },
+        }),
+      },
+    });
+    await waitFor(() => !!result.current.queryParameters);
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      type: 'service',
+    });
   });
 
   it('does not fetch when only frontend filters change', async () => {

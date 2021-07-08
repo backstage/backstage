@@ -29,6 +29,10 @@ export class EntityKindFilter implements EntityFilter {
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
   }
+
+  toQueryValue(): string {
+    return this.value;
+  }
 }
 
 export class EntityTypeFilter implements EntityFilter {
@@ -42,6 +46,10 @@ export class EntityTypeFilter implements EntityFilter {
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'spec.type': this.getTypes() };
   }
+
+  toQueryValue(): string[] {
+    return this.getTypes();
+  }
 }
 
 export class EntityTagFilter implements EntityFilter {
@@ -49,6 +57,10 @@ export class EntityTagFilter implements EntityFilter {
 
   filterEntity(entity: Entity): boolean {
     return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
+  }
+
+  toQueryValue(): string[] {
+    return this.values;
   }
 }
 
@@ -83,6 +95,10 @@ export class EntityOwnerFilter implements EntityFilter {
       ),
     );
   }
+
+  toQueryValue(): string[] {
+    return this.values;
+  }
 }
 
 export class EntityLifecycleFilter implements EntityFilter {
@@ -90,6 +106,10 @@ export class EntityLifecycleFilter implements EntityFilter {
 
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.spec?.lifecycle === v);
+  }
+
+  toQueryValue(): string[] {
+    return this.values;
   }
 }
 
@@ -109,5 +129,9 @@ export class UserListFilter implements EntityFilter {
       default:
         return true;
     }
+  }
+
+  toQueryValue(): string {
+    return this.value;
   }
 }

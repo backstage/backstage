@@ -37,4 +37,23 @@ describe('<EntityKindPicker/>', () => {
       kind: new EntityKindFilter('component'),
     });
   });
+
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { kind: 'API' };
+    render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters,
+        }}
+      >
+        <EntityKindPicker initialFilter="component" hidden />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('API'),
+    });
+  });
 });

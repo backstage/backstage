@@ -79,6 +79,27 @@ describe('<EntityTagPicker/>', () => {
     ]);
   });
 
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { tags: ['tag3'] };
+    render(
+      <MockEntityListContextProvider
+        value={{
+          entities: taggedEntities,
+          backendEntities: taggedEntities,
+          updateFilters,
+          queryParameters,
+        }}
+      >
+        <EntityTagPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: new EntityTagFilter(['tag3']),
+    });
+  });
+
   it('adds tags to filters', () => {
     const updateFilters = jest.fn();
     const rendered = render(
@@ -92,7 +113,9 @@ describe('<EntityTagPicker/>', () => {
         <EntityTagPicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: undefined,
+    });
 
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     fireEvent.click(rendered.getByText('tag1'));
@@ -115,7 +138,9 @@ describe('<EntityTagPicker/>', () => {
         <EntityTagPicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: new EntityTagFilter(['tag1']),
+    });
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     expect(rendered.getByLabelText('tag1')).toBeChecked();
 

@@ -200,6 +200,24 @@ describe('<UserListPicker />', () => {
     ).toEqual(['1', '0', '2']);
   });
 
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { user: 'owned' };
+    render(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ backendEntities, updateFilters, queryParameters }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('owned', mockUser, mockIsStarredEntity),
+    });
+  });
+
   it('updates user filter when a menuitem is selected', () => {
     const updateFilters = jest.fn();
     const { getByText } = render(

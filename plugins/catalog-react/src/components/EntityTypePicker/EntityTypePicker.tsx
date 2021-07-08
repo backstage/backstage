@@ -55,7 +55,7 @@ export const EntityTypePicker = () => {
       <Select
         label="Type"
         items={items}
-        selected={selectedTypes.length ? selectedTypes[0] : 'all'}
+        selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
         onChange={value =>
           setSelectedTypes(value === 'all' ? [] : [String(value)])
         }

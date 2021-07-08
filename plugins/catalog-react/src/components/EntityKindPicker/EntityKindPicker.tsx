@@ -28,8 +28,10 @@ export const EntityKindPicker = ({
   initialFilter,
   hidden,
 }: EntityKindFilterProps) => {
-  const [selectedKind] = useState(initialFilter);
-  const { updateFilters } = useEntityListProvider();
+  const { updateFilters, queryParameters } = useEntityListProvider();
+  const [selectedKind] = useState(
+    [queryParameters.kind].flat()[0] ?? initialFilter,
+  );
 
   useEffect(() => {
     updateFilters({

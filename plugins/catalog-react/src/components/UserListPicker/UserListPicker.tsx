@@ -129,9 +129,18 @@ export const UserListPicker = ({
     }))
     .filter(({ items }) => !!items.length);
 
+  const {
+    filters,
+    updateFilters,
+    backendEntities,
+    queryParameters,
+  } = useEntityListProvider();
+
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
-  const [selectedUserFilter, setSelectedUserFilter] = useState(initialFilter);
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    [queryParameters.user].flat()[0] ?? initialFilter,
+  );
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
@@ -143,12 +152,14 @@ export const UserListPicker = ({
     [user, isStarredEntity],
   );
 
-  const { filters, updateFilters, backendEntities } = useEntityListProvider();
-
   useEffect(() => {
     updateFilters({
       user: selectedUserFilter
-        ? new UserListFilter(selectedUserFilter, user, isStarredEntity)
+        ? new UserListFilter(
+            selectedUserFilter as UserListFilterKind,
+            user,
+            isStarredEntity,
+          )
         : undefined,
     });
   }, [selectedUserFilter, user, isStarredEntity, updateFilters]);
