@@ -19,7 +19,7 @@ import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { ThemeToggle } from './ThemeToggle';
+import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import {
   ApiProvider,
   ApiRegistry,
@@ -37,13 +37,13 @@ const apiRegistry = ApiRegistry.from([
   [appThemeApiRef, AppThemeSelector.createWithStorage([mockTheme])],
 ]);
 
-describe('<ThemeToggle />', () => {
+describe('<UserSettingsThemeToggle />', () => {
   it('toggles the theme select button', async () => {
     const themeApi = apiRegistry.get(appThemeApiRef);
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <ThemeToggle />
+          <UserSettingsThemeToggle />
         </ApiProvider>,
       ),
     );

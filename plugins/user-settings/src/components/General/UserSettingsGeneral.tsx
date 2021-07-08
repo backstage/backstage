@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { UserSettingsProfileCard } from './UserSettingsProfileCard';
+import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 
-export { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
-export { DefaultProviderSettings } from './DefaultProviderSettings';
-export { ProviderSettingsItem } from './ProviderSettingsItem';
+export const UserSettingsGeneral = () => {
+  return (
+    <Grid container direction="row" spacing={3}>
+      <Grid item sm={12} md={6}>
+        <UserSettingsProfileCard />
+      </Grid>
+      <Grid item sm={12} md={6}>
+        <UserSettingsAppearanceCard />
+      </Grid>
+    </Grid>
+  );
+};

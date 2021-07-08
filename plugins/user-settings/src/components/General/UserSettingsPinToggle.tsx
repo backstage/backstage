@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { SidebarPinStateContext } from '@backstage/core-components';
 
-export const PinButton = () => {
+export const UserSettingsPinToggle = () => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );

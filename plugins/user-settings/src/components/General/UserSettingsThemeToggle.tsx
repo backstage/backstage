@@ -87,7 +87,7 @@ const TooltipToggleButton = ({
   </Tooltip>
 );
 
-export const ThemeToggle = () => {
+export const UserSettingsThemeToggle = () => {
   const classes = useStyles();
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(

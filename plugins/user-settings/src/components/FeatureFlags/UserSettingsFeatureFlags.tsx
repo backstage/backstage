@@ -26,7 +26,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
 
-export const FeatureFlags = () => {
+export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
 
