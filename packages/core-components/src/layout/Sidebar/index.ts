@@ -23,6 +23,7 @@ export {
   SidebarSearchField,
   SidebarSpace,
   SidebarSpacer,
+  SidebarScrollWrapper,
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
 export {

@@ -4,6 +4,7 @@
 
 ```ts
 
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -25,7 +26,19 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 export function createScaffolderFieldExtension<T = any>(options: FieldExtensionOptions<T>): Extension<() => null>;
 
 // @public (undocumented)
+export type CustomFieldValidator<T> = ((data: T, field: FieldValidation) => void) | ((data: T, field: FieldValidation, context: {
+    apiHolder: ApiHolder;
+}) => void);
+
+// @public (undocumented)
 export const EntityPickerFieldExtension: () => null;
+
+// @public (undocumented)
+export type FieldExtensionOptions<T = any> = {
+    name: string;
+    component: (props: FieldProps<T>) => JSX.Element | null;
+    validation?: CustomFieldValidator<T>;
+};
 
 // @public (undocumented)
 export const OwnerPickerFieldExtension: () => null;

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.0
+
+### Minor Changes
+
+- 115473c08: Handle error gracefully if failure occurs while loading photos using Microsoft Graph API.
+
+  This includes a breaking change: you now have to pass the `options` object to `readMicrosoftGraphUsers` and `readMicrosoftGraphOrg`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.11.0
+
 ## 0.1.1
 
 ### Patch Changes

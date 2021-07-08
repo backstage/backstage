@@ -27,13 +27,14 @@ import { Entry } from '../utils/types';
 import { Progress } from '@backstage/core-components';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
-const useTechRadarLoader = () => {
+const useTechRadarLoader = (id: string | undefined) => {
   const errorApi = useApi(errorApiRef);
   const techRadarApi = useApi(techRadarApiRef);
 
-  const { error, value, loading } = useAsync(async () => techRadarApi.load(), [
-    techRadarApi,
-  ]);
+  const { error, value, loading } = useAsync(
+    async () => techRadarApi.load(id),
+    [techRadarApi],
+  );
 
   useEffect(() => {
     if (error) {
@@ -45,7 +46,7 @@ const useTechRadarLoader = () => {
 };
 
 const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
-  const { loading, error, value: data } = useTechRadarLoader();
+  const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
     loaderResponse: TechRadarLoaderResponse | undefined,

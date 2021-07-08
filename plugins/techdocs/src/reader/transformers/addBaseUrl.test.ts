@@ -154,6 +154,9 @@ describe('addBaseUrl', () => {
     await waitFor(() => {
       const actualSrc = root.getElementById('x')?.getAttribute('src');
       expect(expectedSrc).toEqual(actualSrc);
+      expect(global.fetch).toHaveBeenCalledWith(`${API_ORIGIN_URL}/test.svg`, {
+        credentials: 'include',
+      });
     });
   });
 

@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 0.9.8
+
+### Patch Changes
+
+- 99a2873c7: Include cookies when making fetch requests for SVG from techdocs plugin
+- a444c7431: Filter fetched entity fields to optimize loading techdocs list
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+  - @backstage/integration@0.5.7
+
 ## 0.9.7
 
 ### Patch Changes

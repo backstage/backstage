@@ -46,7 +46,7 @@ export interface RadarQuadrant {
     name: string;
 }
 
-// @public
+// @public (undocumented)
 export interface RadarRing {
     // (undocumented)
     color: string;
@@ -68,8 +68,7 @@ export const Router: {
 
 // @public (undocumented)
 export interface TechRadarApi {
-    // (undocumented)
-    load: () => Promise<TechRadarLoaderResponse>;
+    load: (id: string | undefined) => Promise<TechRadarLoaderResponse>;
 }
 
 // @public (undocumented)
@@ -78,17 +77,19 @@ export const techRadarApiRef: ApiRef<TechRadarApi>;
 // @public (undocumented)
 export const TechRadarComponent: (props: TechRadarComponentProps) => JSX.Element;
 
-// @public
+// @public (undocumented)
 export interface TechRadarComponentProps {
     // (undocumented)
     height: number;
+    // (undocumented)
+    id?: string;
     // (undocumented)
     svgProps?: object;
     // (undocumented)
     width: number;
 }
 
-// @public
+// @public (undocumented)
 export interface TechRadarLoaderResponse {
     // (undocumented)
     entries: RadarEntry[];

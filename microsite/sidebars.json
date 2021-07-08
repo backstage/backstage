@@ -166,7 +166,8 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/github-apps"
+          "plugins/github-apps",
+          "plugins/url-reader"
         ]
       },
       {

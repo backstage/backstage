@@ -1,5 +1,14 @@
 # @backstage/plugin-explore
 
+## 0.3.8
+
+### Patch Changes
+
+- dd9118574: Using displayName as default value when loading Groups Diagram
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+
 ## 0.3.7
 
 ### Patch Changes

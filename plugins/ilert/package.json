@@ -21,12 +21,12 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.8.4",
-    "@backstage/core-components": "^0.1.3",
+    "@backstage/core-components": "^0.1.4",
     "@backstage/core-plugin-api": "^0.1.3",
     "@backstage/errors": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.2.4",
     "@backstage/theme": "^0.2.8",
-    "@date-io/luxon": "1.x",
+    "@date-io/luxon": "2.x",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -38,8 +38,8 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.2",
-    "@backstage/core-app-api": "^0.1.3",
+    "@backstage/cli": "^0.7.3",
+    "@backstage/core-app-api": "^0.1.4",
     "@backstage/dev-utils": "^0.2.0",
     "@backstage/test-utils": "^0.1.14",
     "@testing-library/jest-dom": "^5.10.1",

@@ -90,6 +90,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
         userFilter: provider.userFilter,
         groupFilter: provider.groupFilter,
         groupTransformer: this.groupTransformer,
+        logger: this.logger,
       },
     );
 

@@ -9,7 +9,7 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';
 import { UserEntity } from '@backstage/catalog-model';
@@ -70,12 +70,12 @@ export class MicrosoftGraphClient {
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     constructor(options: {
         providers: MicrosoftGraphProviderConfig[];
-        logger: Logger;
+        logger: Logger_2;
         groupTransformer?: GroupTransformer;
     });
     // (undocumented)
     static fromConfig(config: Config, options: {
-        logger: Logger;
+        logger: Logger_2;
         groupTransformer?: GroupTransformer;
     }): MicrosoftGraphOrgReaderProcessor;
     // (undocumented)
@@ -103,10 +103,11 @@ export type OrganizationTransformer = (organization: MicrosoftGraph.Organization
 export function readMicrosoftGraphConfig(config: Config): MicrosoftGraphProviderConfig[];
 
 // @public (undocumented)
-export function readMicrosoftGraphOrg(client: MicrosoftGraphClient, tenantId: string, options?: {
+export function readMicrosoftGraphOrg(client: MicrosoftGraphClient, tenantId: string, options: {
     userFilter?: string;
     groupFilter?: string;
     groupTransformer?: GroupTransformer;
+    logger: Logger_2;
 }): Promise<{
     users: UserEntity[];
     groups: GroupEntity[];

@@ -48,11 +48,14 @@ describe('DefaultLocationServiceTest', () => {
         },
         deferredEntities: [
           {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'bar',
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'bar',
+              },
             },
+            locationKey: 'file:///tmp/mock.yaml',
           },
         ],
         relations: [],

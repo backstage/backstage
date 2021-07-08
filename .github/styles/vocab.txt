@@ -137,6 +137,7 @@ maintainership
 makefile
 md
 memcache
+memoized
 microservice
 microservices
 microsite
@@ -281,6 +282,7 @@ unregistration
 untracked
 upvote
 url
+URLs
 utils
 validator
 validators

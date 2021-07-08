@@ -1,5 +1,13 @@
 # @backstage/core-app-api
 
+## 0.1.4
+
+### Patch Changes
+
+- 62abffee4: Reintroduce export of `defaultConfigLoader`.
+- Updated dependencies
+  - @backstage/core-components@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes

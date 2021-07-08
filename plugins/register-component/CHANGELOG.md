@@ -1,5 +1,14 @@
 # @backstage/plugin-register-component
 
+## 0.2.18
+
+### Patch Changes
+
+- b47fc34bc: Update "service catalog" references to "software catalog"
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+
 ## 0.2.17
 
 ### Patch Changes

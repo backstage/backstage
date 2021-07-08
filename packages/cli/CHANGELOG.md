@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.7.3
+
+### Patch Changes
+
+- a93e60fdc: Updated dependencies
+- 55f49fcc7: Update dependencies
+- ab5cc376f: Use new `isChildPath` export from `@backstage/cli-common`
+- Updated dependencies
+  - @backstage/cli-common@0.1.2
+
 ## 0.7.2
 
 ### Patch Changes

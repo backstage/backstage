@@ -22,17 +22,19 @@ import { Octokit } from '@octokit/rest';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
-} from '../../../stages/publish/helpers';
+} from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   const credentialsProviders = new Map(
     integrations.github.list().map(integration => {
@@ -45,6 +47,7 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
+    defaultBranch?: string;
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
@@ -76,6 +79,11 @@ export function createPublishGithubAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -131,6 +139,7 @@ export function createPublishGithubAction(options: {
         description,
         access,
         repoVisibility = 'private',
+        defaultBranch = 'master',
         collaborators,
         topics,
       } = ctx.input;
@@ -239,16 +248,23 @@ export function createPublishGithubAction(options: {
       }
 
       const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/master`;
+      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
+        defaultBranch,
         auth: {
           username: 'x-access-token',
           password: token,
         },
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       try {
@@ -257,10 +273,11 @@ export function createPublishGithubAction(options: {
           client,
           repoName: newRepo.name,
           logger: ctx.logger,
+          defaultBranch,
         });
       } catch (e) {
-        throw new Error(
-          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        ctx.logger.warn(
+          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );
       }
 
