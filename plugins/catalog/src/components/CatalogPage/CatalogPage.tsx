@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid, withWidth } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
   EntityListProvider,
   UserListFilterKind,
@@ -40,29 +40,31 @@ export type CatalogPageProps = {
   actions?: TableProps<EntityRow>['actions'];
 };
 
-export const CatalogPage = withWidth()(
-  ({ columns, actions, initiallySelectedFilter }: CatalogPageProps) => {
-    return (
-      <CatalogLayout>
-        <Content>
-          <ContentHeader title="Components">
-            <CreateComponentButton />
-            <SupportButton>All your software catalog entities</SupportButton>
-          </ContentHeader>
-          <Grid container spacing={2}>
-            <EntityListProvider>
-              <Grid item xs={12} sm={12} lg={2}>
-                <CatalogFilter
-                  initiallySelectedFilter={initiallySelectedFilter}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} lg={10}>
-                <CatalogTable columns={columns} actions={actions} />
-              </Grid>
-            </EntityListProvider>
-          </Grid>
-        </Content>
-      </CatalogLayout>
-    );
-  },
-);
+export const CatalogPage = ({
+  columns,
+  actions,
+  initiallySelectedFilter,
+}: CatalogPageProps) => {
+  return (
+    <CatalogLayout>
+      <Content>
+        <ContentHeader title="Components">
+          <CreateComponentButton />
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <Grid container spacing={2}>
+          <EntityListProvider>
+            <Grid item xs={12} sm={12} lg={2}>
+              <CatalogFilter
+                initiallySelectedFilter={initiallySelectedFilter}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} lg={10}>
+              <CatalogTable columns={columns} actions={actions} />
+            </Grid>
+          </EntityListProvider>
+        </Grid>
+      </Content>
+    </CatalogLayout>
+  );
+};
