@@ -5,5 +5,4 @@ metadata:
   description: A collection of all Backstage example templates
 spec:
   targets:
-    - ./local-templates.yaml
     - ./remote-templates.yaml
