@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityTagFilter } from '../../types';
+import { EntityTagFilter } from '../../filters';
 import { EntityTagPicker } from './EntityTagPicker';
 
 const taggedEntities: Entity[] = [

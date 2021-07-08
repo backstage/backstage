@@ -17,7 +17,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityKindFilter } from '../../types';
+import { EntityKindFilter } from '../../filters';
 import { EntityKindPicker } from './EntityKindPicker';
 
 describe('<EntityKindPicker/>', () => {

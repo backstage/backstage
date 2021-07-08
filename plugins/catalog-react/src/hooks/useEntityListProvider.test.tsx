@@ -24,12 +24,8 @@ import {
   useEntityListProvider,
 } from './useEntityListProvider';
 import { catalogApiRef } from '../api';
-import {
-  EntityKindFilter,
-  EntityTypeFilter,
-  UserListFilter,
-  UserListFilterKind,
-} from '../types';
+import { UserListFilterKind } from '../types';
+import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
 import { EntityKindPicker, UserListPicker } from '../components';
 
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';

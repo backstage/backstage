@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { UserListPicker } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityTagFilter, UserListFilter } from '../../types';
+import { EntityTagFilter, UserListFilter } from '../../filters';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi } from '@backstage/test-utils';

@@ -16,20 +16,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
+import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 import {
   DefaultEntityFilters,
   useEntityListProvider,
 } from './useEntityListProvider';
-import { EntityTypeFilter } from '../types';
-import { useApi } from '@backstage/core-plugin-api';
+import { EntityTypeFilter } from '../filters';
 
 type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
-  types: string[];
-  selectedType: string | undefined;
-  setType: (type: string | undefined) => void;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
 };
 
 /**
@@ -43,7 +43,7 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     updateFilters,
   } = useEntityListProvider();
 
-  const [types, setTypes] = useState<string[]>([]);
+  const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
 
   // Load all valid spec.type values straight from the catalogApi, paying attention to only the
@@ -64,25 +64,45 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   useEffect(() => {
     // Resolve the unique set of types from returned entities; could be optimized by a new endpoint
     // in the catalog-backend that does this, rather than loading entities with redundant types.
-    const newTypes = [
-      ...new Set(
-        (entities ?? []).map(e => e.spec?.type).filter(Boolean) as string[],
-      ),
-    ].sort();
-    setTypes(newTypes);
+    if (!entities) return;
 
-    // Reset type filter if no longer applicable
-    updateFilters((oldFilters: DefaultEntityFilters) =>
-      oldFilters.type && !newTypes.includes(oldFilters.type.value)
-        ? { type: undefined }
-        : {},
-    );
+    // Sort by entity count descending, so the most common types appear on top
+    const countByType = entities.reduce((acc, entity) => {
+      if (typeof entity.spec?.type !== 'string') return acc;
+
+      if (!acc[entity.spec.type]) {
+        acc[entity.spec.type] = 0;
+      }
+      acc[entity.spec.type] += 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const newTypes = Object.entries(countByType)
+      .sort(([, count1], [, count2]) => count2 - count1)
+      .map(([type]) => type);
+    setAvailableTypes(newTypes);
+
+    // Update type filter to only valid values when the list of available types has changed
+    updateFilters((oldFilters: DefaultEntityFilters) => {
+      // No filter previously set; no-op
+      if (!oldFilters.type) {
+        return {};
+      }
+      const stillValidTypes = oldFilters.type
+        .getTypes()
+        .filter(value => newTypes.includes(value));
+      if (!stillValidTypes.length) {
+        // None of the previously selected types are present any more; clear the filter
+        return { type: undefined };
+      }
+      return { type: new EntityTypeFilter(stillValidTypes) };
+    });
   }, [updateFilters, entities]);
 
-  const setType = useCallback(
-    (type: string | undefined) =>
+  const setSelectedTypes = useCallback(
+    (types: string[]) =>
       updateFilters({
-        type: type === undefined ? undefined : new EntityTypeFilter(type),
+        type: types.length ? new EntityTypeFilter(types) : undefined,
       }),
     [updateFilters],
   );
@@ -90,8 +110,8 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   return {
     loading,
     error,
-    types,
-    selectedType: typeFilter?.value,
-    setType,
+    availableTypes,
+    selectedTypes: typeFilter?.getTypes() ?? [],
+    setSelectedTypes,
   };
 }

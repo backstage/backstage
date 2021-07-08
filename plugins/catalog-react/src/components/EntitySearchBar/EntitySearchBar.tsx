@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+
 import {
   FormControl,
+  IconButton,
+  Input,
   InputAdornment,
   makeStyles,
   Toolbar,
-  Input,
-  IconButton,
 } from '@material-ui/core';
-import Search from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';
-
-interface Props {
-  search: string;
-  setSearch: Function;
-}
+import Search from '@material-ui/icons/Search';
+import React, { useState } from 'react';
+import { useDebounce } from 'react-use';
+import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { EntityTextFilter } from '../../filters';
 
 const useStyles = makeStyles(_theme => ({
   searchToolbar: {
@@ -37,8 +36,22 @@ const useStyles = makeStyles(_theme => ({
   },
 }));
 
-const SearchToolbar = ({ search, setSearch }: Props) => {
+export const EntitySearchBar = () => {
   const styles = useStyles();
+
+  const { filters, updateFilters } = useEntityListProvider();
+  const [search, setSearch] = useState(filters.text?.value ?? '');
+
+  useDebounce(
+    () => {
+      updateFilters({
+        text: search.length ? new EntityTextFilter(search) : undefined,
+      });
+    },
+    250,
+    [search, updateFilters],
+  );
+
   return (
     <Toolbar className={styles.searchToolbar}>
       <FormControl>
@@ -70,5 +83,3 @@ const SearchToolbar = ({ search, setSearch }: Props) => {
     </Toolbar>
   );
 };
-
-export default SearchToolbar;

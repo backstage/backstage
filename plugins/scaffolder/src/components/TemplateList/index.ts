@@ -13,25 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useContext } from 'react';
-import { filterGroupsContext } from './context';
-
-/**
- * Hook that exposes the result of applying a set of filter groups.
- */
-export function useFilteredEntities() {
-  const context = useContext(filterGroupsContext);
-  if (!context) {
-    throw new Error(`Must be used inside an EntityFilterGroupsProvider`);
-  }
-
-  return {
-    loading: context.loading,
-    error: context.error,
-    filteredEntities: context.filteredEntities,
-    availableCategories: context.availableCategories,
-    isCatalogEmpty: context.isCatalogEmpty,
-    reload: context.reload,
-  };
-}
+export { TemplateList } from './TemplateList';

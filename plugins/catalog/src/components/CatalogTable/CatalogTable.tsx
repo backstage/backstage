@@ -60,7 +60,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   const { loading, error, entities, filters } = useEntityListProvider();
 
   const showTypeColumn = filters.type === undefined;
-  // TODO(timbonicus): we should show filter chips for all filters instead
+  // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
   if (error) {

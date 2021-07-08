@@ -26,14 +26,15 @@ import React, {
 import { useAsyncFn, useDebounce } from 'react-use';
 import { catalogApiRef } from '../api';
 import {
-  EntityFilter,
   EntityKindFilter,
   EntityLifecycleFilter,
   EntityOwnerFilter,
   EntityTagFilter,
+  EntityTextFilter,
   EntityTypeFilter,
   UserListFilter,
-} from '../types';
+} from '../filters';
+import { EntityFilter } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -44,6 +45,7 @@ export type DefaultEntityFilters = {
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
+  text?: EntityTextFilter;
 };
 
 export type EntityListContextProps<
@@ -105,31 +107,40 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   // The main async filter worker. Note that while it has a lot of dependencies
   // in terms of its implementation, the triggering only happens (debounced)
   // based on the requested filters changing.
-  const [{ loading, error }, refresh] = useAsyncFn(async () => {
-    const compacted = compact(Object.values(requestedFilters));
-    const entityFilter = reduceEntityFilters(compacted);
-    const backendFilter = reduceCatalogFilters(compacted);
-    const previousBackendFilter = reduceCatalogFilters(
-      compact(Object.values(outputState.appliedFilters)),
-    );
+  const [{ loading, error }, refresh] = useAsyncFn(
+    async () => {
+      const compacted = compact(Object.values(requestedFilters));
+      const entityFilter = reduceEntityFilters(compacted);
+      const backendFilter = reduceCatalogFilters(compacted);
+      const previousBackendFilter = reduceCatalogFilters(
+        compact(Object.values(outputState.appliedFilters)),
+      );
 
-    if (!isEqual(previousBackendFilter, backendFilter)) {
-      // TODO(timbonicus): should limit fields here, but would need filter
-      // fields + table columns
-      const response = await catalogApi.getEntities({ filter: backendFilter });
-      setOutputState({
-        appliedFilters: requestedFilters,
-        backendEntities: response.items,
-        entities: response.items.filter(entityFilter),
-      });
-    } else {
-      setOutputState({
-        appliedFilters: requestedFilters,
-        backendEntities: outputState.backendEntities,
-        entities: outputState.backendEntities.filter(entityFilter),
-      });
-    }
-  }, [catalogApi, requestedFilters, outputState]);
+      // TODO(mtlewis): currently entities will never be requested unless
+      // there's at least one filter, we should allow an initial request
+      // to happen with no filters.
+      if (!isEqual(previousBackendFilter, backendFilter)) {
+        // TODO(timbonicus): should limit fields here, but would need filter
+        // fields + table columns
+        const response = await catalogApi.getEntities({
+          filter: backendFilter,
+        });
+        setOutputState({
+          appliedFilters: requestedFilters,
+          backendEntities: response.items,
+          entities: response.items.filter(entityFilter),
+        });
+      } else {
+        setOutputState({
+          appliedFilters: requestedFilters,
+          backendEntities: outputState.backendEntities,
+          entities: outputState.backendEntities.filter(entityFilter),
+        });
+      }
+    },
+    [catalogApi, requestedFilters, outputState],
+    { loading: true },
+  );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
@@ -167,7 +178,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 };
 
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)

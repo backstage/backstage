@@ -16,7 +16,8 @@
 
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { compact } from 'lodash';
-import { UserListFilter, UserListFilterKind } from '../../types';
+import { UserListFilterKind } from '../../types';
+import { UserListFilter } from '../../filters';
 import {
   useEntityListProvider,
   useOwnUser,
@@ -106,13 +107,27 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
 
 type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
+  availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({ initialFilter }: UserListPickerProps) => {
+export const UserListPicker = ({
+  initialFilter,
+  availableFilters,
+}: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const filterGroups = getFilterGroups(orgName);
+
+  // Remove group items that aren't in availableFilters and exclude
+  // any now-empty groups.
+  const filterGroups = getFilterGroups(orgName)
+    .map(filterGroup => ({
+      ...filterGroup,
+      items: filterGroup.items.filter(
+        ({ id }) => !availableFilters || availableFilters.includes(id),
+      ),
+    }))
+    .filter(({ items }) => !!items.length);
 
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();

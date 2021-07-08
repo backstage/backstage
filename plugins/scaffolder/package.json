@@ -51,6 +51,7 @@
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "json-schema": "^0.3.0",
+    "lodash": "^4.17.21",
     "luxon": "^1.25.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
