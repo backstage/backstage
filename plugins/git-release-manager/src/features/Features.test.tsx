@@ -69,6 +69,7 @@ describe('Features', () => {
           <a
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
+            rel="noopener"
             target="_blank"
             to="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
           >

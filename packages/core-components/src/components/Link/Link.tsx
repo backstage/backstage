@@ -37,9 +37,16 @@ export type LinkProps = MaterialLinkProps &
  */
 export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
   const to = String(props.to);
-  return isExternalUri(to) ? (
+  const external = isExternalUri(to);
+  const newWindow = external && !!/^https?:/.exec(to);
+  return external ? (
     // External links
-    <MaterialLink ref={ref} href={to} {...props} />
+    <MaterialLink
+      ref={ref}
+      href={to}
+      {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+      {...props}
+    />
   ) : (
     // Interact with React Router for internal links
     <MaterialLink ref={ref} component={RouterLink} {...props} />

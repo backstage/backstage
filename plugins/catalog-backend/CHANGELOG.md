@@ -1,5 +1,95 @@
 # @backstage/plugin-catalog-backend
 
+## 0.11.0
+
+### Minor Changes
+
+- 45af985df: Handle entity name conflicts in a deterministic way and avoid crashes due to naming conflicts at startup.
+
+  This is a breaking change for the database and entity provider interfaces of the new catalog. The interfaces with breaking changes are `EntityProvider` and `ProcessingDatabase`, and while it's unlikely that these interfaces have much usage yet, a migration guide is provided below.
+
+  The breaking change to the `EntityProvider` interface lies within the items passed in the `EntityProviderMutation` type. Rather than passing along entities directly, they are now wrapped up in a `DeferredEntity` type, which is a tuple of an `entity` and a `locationKey`. The `entity` houses the entity as it was passed on before, while the `locationKey` is a new concept that is used for conflict resolution within the catalog.
+
+  The `locationKey` is an opaque string that should be unique for each location that an entity could be located at, and undefined if the entity does not have a fixed location. In practice it should be set to the serialized location reference if the entity is stored in Git, for example `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`. A conflict between two entity definitions happen when they have the same entity reference, i.e. kind, namespace, and name. In the event of a conflict the location key will be used according to the following rules to resolve the conflict:
+
+  - If the entity is already present in the database but does not have a location key set, the new entity wins and will override the existing one.
+  - If the entity is already present in the database the new entity will only win if the location keys of the existing and new entity are the same.
+  - If the entity is not already present, insert the entity into the database along with the provided location key.
+
+  The breaking change to the `ProcessingDatabase` is similar to the one for the entity provider, as it reflects the switch from `Entity` to `DeferredEntity` in the `ReplaceUnprocessedEntitiesOptions`. In addition, the `addUnprocessedEntities` method has been removed from the `ProcessingDatabase` interface, and the `RefreshStateItem` and `UpdateProcessedEntityOptions` types have received a new optional `locationKey` property.
+
+- 8e533f92c: Move `LdapOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
+  to `@backstage/plugin-catalog-backend-module-ldap`.
+
+  The `LdapOrgReaderProcessor` isn't registered by default anymore, if
+  you want to continue using it you have to register it manually at the catalog
+  builder:
+
+  1. Add dependency to `@backstage/plugin-catalog-backend-module-ldap` to the `package.json` of your backend.
+  2. Add the processor to the catalog builder:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    LdapOrgReaderProcessor.fromConfig(config, {
+      logger,
+    }),
+  );
+  ```
+
+  For more configuration details, see the [README of the `@backstage/plugin-catalog-backend-module-ldap` package](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-ldap/README.md).
+
+### Patch Changes
+
+- 22a60518c: Support ingesting multiple GitHub organizations via a new `GithubMultiOrgReaderProcessor`.
+
+  This new processor handles namespacing created groups according to the org of the associated GitHub team to prevent potential name clashes between organizations. Be aware that this processor is considered alpha and may not be compatible with future org structures in the catalog.
+
+  NOTE: This processor only fully supports auth via GitHub Apps
+
+  To install this processor, import and add it as follows:
+
+  ```typescript
+  // Typically in packages/backend/src/plugins/catalog.ts
+  import { GithubMultiOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
+  // ...
+  export default async function createPlugin(env: PluginEnvironment) {
+    const builder = new CatalogBuilder(env);
+    builder.addProcessor(
+      GithubMultiOrgReaderProcessor.fromConfig(env.config, {
+        logger: env.logger,
+      }),
+    );
+    // ...
+  }
+  ```
+
+  Configure in your `app-config.yaml` by pointing to your GitHub instance and optionally list which GitHub organizations you wish to import. You can also configure what namespace you want to set for teams from each org. If unspecified, the org name will be used as the namespace. If no organizations are listed, by default this processor will import from all organizations accessible by all configured GitHub Apps:
+
+  ```yaml
+  catalog:
+    locations:
+      - type: github-multi-org
+        target: https://github.myorg.com
+
+    processors:
+      githubMultiOrg:
+        orgs:
+          - name: fooOrg
+            groupNamespace: foo
+          - name: barOrg
+            groupNamespace: bar
+          - name: awesomeOrg
+          - name: anotherOrg
+  ```
+
+- d408af872: Only return the selected fields from the new catalog.
+- aa2b15d9d: Ensure that emitted relations are deduplicated
+- Updated dependencies
+  - @backstage/backend-common@0.8.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
 ## 0.10.4
 
 ### Patch Changes

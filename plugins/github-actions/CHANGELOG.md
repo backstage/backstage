@@ -1,5 +1,15 @@
 # @backstage/plugin-github-actions
 
+## 0.4.11
+
+### Patch Changes
+
+- 316530684: Migrate from Moment to Luxon
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+  - @backstage/integration@0.5.7
+
 ## 0.4.10
 
 ### Patch Changes

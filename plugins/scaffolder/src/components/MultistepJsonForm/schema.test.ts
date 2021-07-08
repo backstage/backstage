@@ -286,4 +286,64 @@ describe('transformSchemaToProps', () => {
       uiSchema: expectedUiSchema,
     });
   });
+
+  it('transforms schema with dependencies', () => {
+    const inputSchema = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        credit_card: {
+          type: 'number',
+        },
+      },
+      required: ['name'],
+      dependencies: {
+        credit_card: {
+          properties: {
+            billing_address: {
+              type: 'string',
+              'ui:widget': 'textarea',
+            },
+          },
+          required: ['billing_address'],
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        credit_card: {
+          type: 'number',
+        },
+      },
+      required: ['name'],
+      dependencies: {
+        credit_card: {
+          properties: {
+            billing_address: {
+              type: 'string',
+            },
+          },
+          required: ['billing_address'],
+        },
+      },
+    };
+    const expectedUiSchema = {
+      billing_address: {
+        'ui:widget': 'textarea',
+      },
+      credit_card: {},
+      name: {},
+    };
+
+    expect(transformSchemaToProps(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
 });

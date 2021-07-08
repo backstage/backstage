@@ -43,7 +43,7 @@ export class UrlReaders {
    * Creates a UrlReader without any known types.
    */
   static create({ logger, config, factories }: CreateOptions): UrlReader {
-    const mux = new UrlReaderPredicateMux();
+    const mux = new UrlReaderPredicateMux(logger);
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
     });

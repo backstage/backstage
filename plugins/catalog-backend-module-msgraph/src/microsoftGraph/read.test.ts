@@ -23,6 +23,7 @@ import {
   readMicrosoftGraphUsers,
   resolveRelations,
 } from './read';
+import { getVoidLogger } from '@backstage/backend-common';
 
 function user(data: Partial<UserEntity>): UserEntity {
   return merge(
@@ -84,6 +85,7 @@ describe('read microsoft graph', () => {
 
       const { users } = await readMicrosoftGraphUsers(client, {
         userFilter: 'accountEnabled eq true',
+        logger: getVoidLogger(),
       });
 
       expect(users).toEqual([

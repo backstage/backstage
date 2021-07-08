@@ -16,9 +16,10 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import * as http from 'http';
+import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -41,6 +42,8 @@ export class AzureUrlReader implements UrlReader {
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     // (undocumented)
+    readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+    // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
     toString(): string;
@@ -57,6 +60,8 @@ export class BitbucketUrlReader implements UrlReader {
     read(url: string): Promise<Buffer>;
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+    // (undocumented)
+    readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
     // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
@@ -124,7 +129,7 @@ export function errorHandler(options?: ErrorHandlerOptions): ErrorRequestHandler
 // @public (undocumented)
 export type ErrorHandlerOptions = {
     showStackTraces?: boolean;
-    logger?: Logger;
+    logger?: Logger_2;
     logClientErrors?: boolean;
 };
 
@@ -180,11 +185,12 @@ export class Git {
     static fromAuth: ({ username, password, logger, }: {
         username?: string | undefined;
         password?: string | undefined;
-        logger?: Logger | undefined;
+        logger?: Logger_2 | undefined;
     }) => Git;
     // (undocumented)
-    init({ dir }: {
+    init({ dir, defaultBranch, }: {
         dir: string;
+        defaultBranch?: string;
     }): Promise<void>;
     // (undocumented)
     merge({ dir, theirs, ours, author, committer, }: {
@@ -230,6 +236,8 @@ export class GithubUrlReader implements UrlReader {
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     // (undocumented)
+    readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+    // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
     toString(): string;
@@ -247,10 +255,14 @@ export class GitlabUrlReader implements UrlReader {
     // (undocumented)
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     // (undocumented)
+    readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+    // (undocumented)
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
     // (undocumented)
     toString(): string;
 }
+
+export { isChildPath }
 
 // @public
 export function loadBackendConfig(options: Options): Promise<Config>;
@@ -274,7 +286,7 @@ export type PluginEndpointDiscovery = {
     getExternalBaseUrl(pluginId: string): Promise<string>;
 };
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponse = {
     files(): Promise<ReadTreeResponseFile[]>;
     archive(): Promise<NodeJS.ReadableStream>;
@@ -289,10 +301,13 @@ export type ReadTreeResponseFile = {
 };
 
 // @public
-export function requestLoggingHandler(logger?: Logger): RequestHandler;
+export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
+
+// @public
+export function resolveSafeChildPath(base: string, path: string): string;
 
 // @public (undocumented)
 export type RunContainerOptions = {
@@ -322,7 +337,7 @@ export type ServiceBuilder = {
     loadConfig(config: ConfigReader): ServiceBuilder;
     setPort(port: number): ServiceBuilder;
     setHost(host: string): ServiceBuilder;
-    setLogger(logger: Logger): ServiceBuilder;
+    setLogger(logger: Logger_2): ServiceBuilder;
     enableCors(options: cors.CorsOptions): ServiceBuilder;
     setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
     addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
@@ -360,6 +375,7 @@ export interface StatusCheckHandlerOptions {
 // @public
 export type UrlReader = {
     read(url: string): Promise<Buffer>;
+    readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
     readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
     search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };

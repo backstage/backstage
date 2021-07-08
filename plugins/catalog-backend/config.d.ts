@@ -146,6 +146,27 @@ export interface Config {
       };
 
       /**
+       * GithubMultiOrgReaderProcessor configuration
+       */
+      githubMultiOrg?: {
+        /**
+         * The configuration parameters for each GitHub org to process.
+         */
+        orgs: Array<{
+          /**
+           * The name of the GitHub org to process.
+           */
+          name: string;
+          /**
+           * The namespace of the group created for this org.
+           *
+           * Defaults to org name if omitted.
+           */
+          groupNamespace?: string;
+        }>;
+      };
+
+      /**
        * AwsOrganizationCloudAccountProcessor configuration
        */
       awsOrganization?: {

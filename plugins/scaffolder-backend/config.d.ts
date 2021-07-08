@@ -17,6 +17,13 @@
 export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
+    /**
+     * The commit author info used when new components are created.
+     */
+    defaultAuthor?: {
+      name?: string;
+      email?: string;
+    };
     github?: {
       [key: string]: string;
       /**

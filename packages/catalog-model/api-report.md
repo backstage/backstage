@@ -493,29 +493,6 @@ export { SystemEntityV1alpha1 }
 export const systemEntityV1alpha1Validator: KindValidator;
 
 // @public (undocumented)
-interface TemplateEntityV1alpha1 extends Entity {
-    // (undocumented)
-    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
-    // (undocumented)
-    kind: 'Template';
-    // (undocumented)
-    spec: {
-        type: string;
-        templater: string;
-        path?: string;
-        schema: JSONSchema;
-        owner?: string;
-    };
-}
-
-export { TemplateEntityV1alpha1 as TemplateEntity }
-
-export { TemplateEntityV1alpha1 }
-
-// @public (undocumented)
-export const templateEntityV1alpha1Validator: KindValidator;
-
-// @public (undocumented)
 export interface TemplateEntityV1beta2 extends Entity {
     // (undocumented)
     apiVersion: 'backstage.io/v1beta2';

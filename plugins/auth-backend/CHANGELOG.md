@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.15
+
+### Patch Changes
+
+- 6ca29b66c: Unbreak `.well-known` OIDC routes
+- 72574ac4d: Show better error message when configs defined under auth.providers.<provider> are undefined.
+- Updated dependencies
+  - @backstage/backend-common@0.8.4
+  - @backstage/catalog-client@0.3.15
+
 ## 0.3.14
 
 ### Patch Changes

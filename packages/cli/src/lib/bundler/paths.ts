@@ -15,24 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
 import { paths } from '../paths';
-
-/**
- * Checks if dir is the same as or a child of base.
- */
-export function isChildPath(base: string, dir: string): boolean {
-  const relativePath = path.relative(base, dir);
-  if (relativePath === '') {
-    // The same directory
-    return true;
-  }
-
-  const outsideBase = relativePath.startsWith('..'); // not outside base
-  const differentDrive = path.isAbsolute(relativePath); // on Windows, this means dir is on a different drive from base.
-
-  return !outsideBase && !differentDrive;
-}
 
 export type BundlingPathsOptions = {
   // bundle entrypoint, e.g. 'src/index'

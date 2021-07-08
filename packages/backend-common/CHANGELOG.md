@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.8.4
+
+### Patch Changes
+
+- 88d742eb8: Download archives as compressed tar files for GitLab to fix the `readTree` bug in TODO Plugin.
+- ab5cc376f: Add new `isChildPath` and `resolveSafeChildPath` exports
+- Updated dependencies
+  - @backstage/cli-common@0.1.2
+  - @backstage/integration@0.5.7
+
 ## 0.8.3
 
 ### Patch Changes

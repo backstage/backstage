@@ -46,7 +46,7 @@ class Connection implements EntityProviderConnection {
     const db = this.config.processingDatabase;
 
     if (mutation.type === 'full') {
-      this.check(mutation.entities);
+      this.check(mutation.entities.map(e => e.entity));
       await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
@@ -57,8 +57,8 @@ class Connection implements EntityProviderConnection {
       return;
     }
 
-    this.check(mutation.added);
-    this.check(mutation.removed);
+    this.check(mutation.added.map(e => e.entity));
+    this.check(mutation.removed.map(e => e.entity));
     await db.transaction(async tx => {
       await db.replaceUnprocessedEntities(tx, {
         sourceKey: this.config.id,
@@ -125,7 +125,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       },
       processTask: async item => {
         try {
-          const { id, state, unprocessedEntity, entityRef } = item;
+          const { id, state, unprocessedEntity, entityRef, locationKey } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
             state,
@@ -171,6 +171,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               errors: errorsString,
               relations: result.relations,
               deferredEntities: result.deferredEntities,
+              locationKey,
             });
           });
 
