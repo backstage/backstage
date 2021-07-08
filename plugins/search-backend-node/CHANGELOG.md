@@ -1,5 +1,26 @@
 # @backstage/plugin-search-backend-node
 
+## 0.3.0
+
+### Minor Changes
+
+- 9f3ecb555: Build search queries using the query builder in `LunrSearchEngine`. This removes
+  the support for specifying custom queries with the lunr query syntax, but makes
+  sure that inputs are properly escaped. Supporting the full lunr syntax is still
+  possible by setting a custom query translator.
+  The interface of `LunrSearchEngine.setTranslator()` is changed to support
+  building lunr queries.
+
+### Patch Changes
+
+- 9f3ecb555: Enhance the search results of `LunrSearchEngine` to support a more natural
+  search experience. This is done by allowing typos (by using fuzzy search) and
+  supporting typeahead search (using wildcard queries to match incomplete words).
+- 4176a60e5: Change search scheduler from starting indexing in a fixed interval (for example
+  every 60 seconds), to wait a fixed time between index runs.
+  This makes sure that no second index process for the same document type is
+  started when the previous one is still running.
+
 ## 0.2.2
 
 ### Patch Changes
