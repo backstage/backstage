@@ -42,7 +42,7 @@ export function normalizeCodeOwner(owner: string) {
   if (owner.match(GROUP_PATTERN)) {
     return owner.split('/')[1];
   } else if (owner.match(USER_PATTERN)) {
-    return `user:${owner.substring(1)}`;
+    return `User:${owner.substring(1)}`;
   } else if (owner.match(EMAIL_PATTERN)) {
     return owner.split('@')[0];
   }
