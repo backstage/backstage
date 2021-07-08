@@ -47,12 +47,7 @@ To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 
 - Enable Auto Attach (⌘ + Shift + P > Toggle Auto Attach > Only With Flag)
 - Open a VSCode terminal (Control + `)
-- Run the backend from the VSCode terminal:
-
-```
-$ cd packages/backend
-$ yarn backstage-cli backend:dev --inspect
-```
+- Run the backend from the VSCode terminal: `yarn start-backend --inspect`
 
 ## Populating The Catalog
 
