@@ -126,9 +126,11 @@ export class JenkinsClient implements JenkinsApi {
     filter: { branch?: string },
   ): Promise<Project[]> {
     const url = new URL(
-      `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
-        entity.namespace
-      }/${entity.kind}/${entity.name}/projects`,
+      `${await this.discoveryApi.getBaseUrl(
+        'jenkins',
+      )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
+        entity.kind,
+      )}/${encodeURIComponent(entity.name)}/projects`,
     );
 
     if (filter.branch) {
@@ -158,11 +160,13 @@ export class JenkinsClient implements JenkinsApi {
     jobName: string,
     buildNumber: string,
   ): Promise<Build> {
-    const url = `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
-      entity.namespace
-    }/${entity.kind}/${entity.name}/job/${encodeURIComponent(
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'jenkins',
+    )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
+      entity.kind,
+    )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
       jobName,
-    )}/${buildNumber}`;
+    )}/${encodeURIComponent(buildNumber)}`;
 
     const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
@@ -180,11 +184,13 @@ export class JenkinsClient implements JenkinsApi {
     jobName: string,
     buildNumber: string,
   ): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
-      entity.namespace
-    }/${entity.kind}/${entity.name}/job/${encodeURIComponent(
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'jenkins',
+    )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
+      entity.kind,
+    )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
       jobName,
-    )}/${buildNumber}:rebuild`;
+    )}/${encodeURIComponent(buildNumber)}:rebuild`;
 
     const idToken = await this.identityApi.getIdToken();
     await fetch(url, {
