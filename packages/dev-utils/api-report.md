@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createPlugin } from '@backstage/core-plugin-api';
@@ -19,7 +21,6 @@ export function createDevApp(): DevAppBuilder;
 export const EntityGridItem: ({ entity, classes, ...rest }: Omit<GridProps<"div", {}>, "container" | "item"> & {
     entity: Entity;
 }) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

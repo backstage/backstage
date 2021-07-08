@@ -4,14 +4,16 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
 
 // @public (undocumented)
 export const EntitySonarQubeCard: ({ variant, duplicationRatings, }: {
-    entity?: Entity| undefined;
-    variant?: InfoCardVariants| undefined;
+    entity?: Entity | undefined;
+    variant?: InfoCardVariants | undefined;
     duplicationRatings?: {
         greaterThan: number;
         rating: "1.0" | "2.0" | "3.0" | "4.0" | "5.0";
@@ -29,12 +31,9 @@ export const SonarQubeCard: ({ variant, duplicationRatings, }: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const sonarQubePlugin: BackstagePlugin<{}, {}>;
-
+const sonarQubePlugin: BackstagePlugin<    {}, {}>;
 export { sonarQubePlugin as plugin }
-
 export { sonarQubePlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

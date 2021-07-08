@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import { AzureIntegrationConfig } from '@backstage/integration';
 import { BitbucketIntegrationConfig } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -197,7 +199,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export const createTemplateAction: <Input extends Partial<{
-    [name: string]: JsonValue| Partial<JsonObject> | undefined;
+    [name: string]: JsonValue | Partial<JsonObject> | undefined;
 }>>(templateAction: TemplateAction<Input>) => TemplateAction<any>;
 
 // @public (undocumented)
@@ -294,7 +296,7 @@ export class JobProcessor implements Processor {
     get(id: string): Job | undefined;
     // (undocumented)
     run(job: Job): Promise<void>;
-    }
+}
 
 // @public (undocumented)
 export function joinGitUrlPath(repoUrl: string, path?: string): string;
@@ -521,11 +523,10 @@ export class Templaters implements TemplaterBuilder {
     get(templaterId: string): TemplaterBase;
     // (undocumented)
     register(templaterKey: SupportedTemplatingKey, templater: TemplaterBase): void;
-    }
+}
 
 // @public (undocumented)
 export type TemplaterValues = RequiredTemplateValues & Record<string, any>;
-
 
 // (No @packageDocumentation comment for this package)
 

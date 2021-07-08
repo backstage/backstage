@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -31,14 +33,11 @@ export const UserSettingsPage: ({ providerSettings }: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const userSettingsPlugin: BackstagePlugin<{
-    settingsPage: RouteRef<undefined>;
+const userSettingsPlugin: BackstagePlugin<    {
+settingsPage: RouteRef<undefined>;
 }, {}>;
-
 export { userSettingsPlugin as plugin }
-
 export { userSettingsPlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

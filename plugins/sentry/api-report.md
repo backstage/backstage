@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -28,7 +30,7 @@ export class ProductionSentryApi implements SentryApi {
     constructor(discoveryApi: DiscoveryApi, organization: string);
     // (undocumented)
     fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
-    }
+}
 
 // @public (undocumented)
 export const Router: ({ entity }: {
@@ -86,14 +88,11 @@ export const SentryIssuesWidget: ({ entity, statsFor, variant, }: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const sentryPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const sentryPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { sentryPlugin as plugin }
-
 export { sentryPlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

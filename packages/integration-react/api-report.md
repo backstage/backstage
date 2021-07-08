@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -21,7 +23,6 @@ export class ScmIntegrationsApi {
 
 // @public (undocumented)
 export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry>;
-
 
 // (No @packageDocumentation comment for this package)
 

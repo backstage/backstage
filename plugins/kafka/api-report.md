@@ -4,37 +4,34 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityKafkaContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
-
 export { isPluginApplicableToEntity as isKafkaAvailable }
-
 export { isPluginApplicableToEntity }
 
 // @public (undocumented)
 export const KAFKA_CONSUMER_GROUP_ANNOTATION = "kafka.apache.org/consumer-groups";
 
 // @public (undocumented)
-const kafkaPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const kafkaPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { kafkaPlugin }
-
 export { kafkaPlugin as plugin }
 
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -30,14 +32,12 @@ export type ApiDefinitionWidget = {
 export const apiDocsConfigRef: ApiRef<ApiDocsConfig>;
 
 // @public (undocumented)
-const apiDocsPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const apiDocsPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {
-    createComponent: ExternalRouteRef<undefined, true>;
+createComponent: ExternalRouteRef<undefined, true>;
 }>;
-
 export { apiDocsPlugin }
-
 export { apiDocsPlugin as plugin }
 
 // @public (undocumented)
@@ -67,13 +67,13 @@ export const EntityApiDefinitionCard: (_: {
 
 // @public (undocumented)
 export const EntityConsumedApisCard: ({ variant }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     variant?: "gridItem" | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityConsumingComponentsCard: ({ variant }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     variant?: "gridItem" | undefined;
 }) => JSX.Element;
 
@@ -84,13 +84,13 @@ export const EntityHasApisCard: ({ variant }: {
 
 // @public (undocumented)
 export const EntityProvidedApisCard: ({ variant }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     variant?: "gridItem" | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityProvidingComponentsCard: ({ variant }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     variant?: "gridItem" | undefined;
 }) => JSX.Element;
 
@@ -108,7 +108,6 @@ export const ProvidedApisCard: ({ variant }: Props_4) => JSX.Element;
 
 // @public (undocumented)
 export const ProvidingComponentsCard: ({ variant }: Props_7) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

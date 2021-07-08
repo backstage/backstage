@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import { AzureIntegrationConfig } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
@@ -34,7 +36,7 @@ export class DirectoryPreparer implements PreparerBase {
     constructor(config: Config, logger: Logger, reader: UrlReader);
     // (undocumented)
     prepare(entity: Entity): Promise<PreparerResponse>;
-    }
+}
 
 // @public (undocumented)
 export type GeneratorBase = {
@@ -175,8 +177,7 @@ export class UrlPreparer implements PreparerBase {
     prepare(entity: Entity, options?: {
         etag?: string;
     }): Promise<PreparerResponse>;
-    }
-
+}
 
 // (No @packageDocumentation comment for this package)
 

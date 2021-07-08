@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -27,21 +29,21 @@ export enum BuildStatus {
 
 // @public (undocumented)
 export const EntityGithubActionsContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: ({ branch, variant, }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     branch: string;
-    variant?: InfoCardVariants| undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionsForBranchCard: ({ branch, variant, }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     branch: string;
-    variant?: InfoCardVariants| undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -152,19 +154,15 @@ export class GithubActionsClient implements GithubActionsApi {
 }
 
 // @public (undocumented)
-const githubActionsPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const githubActionsPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { githubActionsPlugin }
-
 export { githubActionsPlugin as plugin }
 
 // @public (undocumented)
 const isGithubActionsAvailable: (entity: Entity) => boolean;
-
 export { isGithubActionsAvailable }
-
 export { isGithubActionsAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -206,7 +204,6 @@ export type Step = {
     started_at: string;
     completed_at: string;
 };
-
 
 // (No @packageDocumentation comment for this package)
 

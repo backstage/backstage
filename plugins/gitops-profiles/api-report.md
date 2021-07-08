@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -113,17 +115,15 @@ export const GitopsProfilesClusterPage: () => JSX.Element;
 export const GitopsProfilesCreatePage: () => JSX.Element;
 
 // @public (undocumented)
-const gitopsProfilesPlugin: BackstagePlugin<{
-    listPage: RouteRef<undefined>;
-    detailsPage: RouteRef<{
-        owner: string;
-        repo: string;
-    }>;
-    createPage: RouteRef<undefined>;
+const gitopsProfilesPlugin: BackstagePlugin<    {
+listPage: RouteRef<undefined>;
+detailsPage: RouteRef<    {
+owner: string;
+repo: string;
+}>;
+createPage: RouteRef<undefined>;
 }, {}>;
-
 export { gitopsProfilesPlugin }
-
 export { gitopsProfilesPlugin as plugin }
 
 // @public (undocumented)
@@ -190,7 +190,6 @@ export interface StatusResponse {
     // (undocumented)
     status: string;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

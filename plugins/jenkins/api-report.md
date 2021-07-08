@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -13,20 +15,18 @@ import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityJenkinsContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLatestJenkinsRunCard: ({ branch, variant, }: {
     branch: string;
-    variant?: InfoCardVariants| undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 const isJenkinsAvailable: (entity: Entity) => boolean;
-
 export { isJenkinsAvailable }
-
 export { isJenkinsAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -60,12 +60,10 @@ export class JenkinsApi {
 export const jenkinsApiRef: ApiRef<JenkinsApi>;
 
 // @public (undocumented)
-const jenkinsPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const jenkinsPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { jenkinsPlugin }
-
 export { jenkinsPlugin as plugin }
 
 // @public (undocumented)
@@ -76,7 +74,6 @@ export const LatestRunCard: ({ branch, variant, }: {
 
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -74,13 +76,11 @@ export const SearchPage: () => JSX.Element;
 export const SearchPageNext: () => JSX.Element;
 
 // @public (undocumented)
-const searchPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
-    nextRoot: RouteRef<undefined>;
+const searchPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
+nextRoot: RouteRef<undefined>;
 }, {}>;
-
 export { searchPlugin as plugin }
-
 export { searchPlugin }
 
 // @public (undocumented)
@@ -95,7 +95,6 @@ export const SidebarSearch: () => JSX.Element;
 
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
-
 
 // (No @packageDocumentation comment for this package)
 

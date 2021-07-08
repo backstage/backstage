@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -100,28 +102,26 @@ export class CloudbuildClient implements CloudbuildApi {
 }
 
 // @public (undocumented)
-const cloudbuildPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const cloudbuildPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { cloudbuildPlugin }
-
 export { cloudbuildPlugin as plugin }
 
 // @public (undocumented)
 export const EntityCloudbuildContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLatestCloudbuildRunCard: ({ branch, }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     branch: string;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLatestCloudbuildsForBranchCard: ({ branch, }: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
     branch: string;
 }) => JSX.Element;
 
@@ -135,9 +135,7 @@ export interface FETCHSOURCE {
 
 // @public (undocumented)
 const isCloudbuildAvailable: (entity: Entity) => boolean;
-
 export { isCloudbuildAvailable }
-
 export { isCloudbuildAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -276,7 +274,6 @@ export interface Volume {
     // (undocumented)
     path: string;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

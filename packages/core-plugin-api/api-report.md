@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
@@ -549,7 +551,6 @@ export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(WrappedCompo
     (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
     displayName: string;
 };
-
 
 // (No @packageDocumentation comment for this package)
 

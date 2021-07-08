@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -110,14 +112,11 @@ export const TechRadarPage: {
 };
 
 // @public (undocumented)
-const techRadarPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const techRadarPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { techRadarPlugin as plugin }
-
 export { techRadarPlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

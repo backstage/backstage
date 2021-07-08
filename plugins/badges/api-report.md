@@ -4,17 +4,18 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const badgesPlugin: BackstagePlugin<{}, {}>;
+export const badgesPlugin: BackstagePlugin<    {}, {}>;
 
 // @public (undocumented)
 export const EntityBadgesDialog: ({ open, onClose }: {
     open: boolean;
     onClose?: (() => any) | undefined;
 }) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

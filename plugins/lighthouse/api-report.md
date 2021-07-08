@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
@@ -46,12 +48,12 @@ export const EmbeddedRouter: (_props: Props) => JSX.Element;
 // @public (undocumented)
 export const EntityLastLighthouseAuditCard: ({ dense, variant, }: {
     dense?: boolean | undefined;
-    variant?: InfoCardVariants| undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLighthouseContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -64,9 +66,7 @@ export class FetchError extends Error {
 
 // @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
-
 export { isLighthouseAvailable }
-
 export { isLighthouseAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -124,13 +124,11 @@ export type LighthouseCategoryId = 'pwa' | 'seo' | 'performance' | 'accessibilit
 export const LighthousePage: () => JSX.Element;
 
 // @public (undocumented)
-const lighthousePlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
-    entityContent: RouteRef<undefined>;
+const lighthousePlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { lighthousePlugin }
-
 export { lighthousePlugin as plugin }
 
 // @public (undocumented)
@@ -179,7 +177,6 @@ export interface Website {
 
 // @public (undocumented)
 export type WebsiteListResponse = LASListResponse<Website>;
-
 
 // (No @packageDocumentation comment for this package)
 

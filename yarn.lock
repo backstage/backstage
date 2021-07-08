@@ -3570,20 +3570,20 @@
   dependencies:
     "@types/whatwg-streams" "^0.0.7"
 
-"@microsoft/api-documenter@^7.12.16":
-  version "7.13.24"
-  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.13.24.tgz#3bae26f7520a993c4009569d8bd229c76d266dc3"
-  integrity sha512-HH8aE7Yo0D+eQuV86lwF4YGW669wNxUevybGMndsTyQEeRqUpnr4wz9ptFi7FGjaUjTKjGWQKH2bm4dt8BZsUg==
+"@microsoft/api-documenter@^7.13.29":
+  version "7.13.29"
+  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.13.29.tgz#7937c236e404377962306b584b25aad3defe32c1"
+  integrity sha512-frEjIM5xXTrilFT/BpidQsNFZzUx+MxVgfAKq2dnytBbEPeZ3iyXNUXvmLH1AyDgJpzwu/zLR4fykgXl5wm8Lw==
   dependencies:
     "@microsoft/api-extractor-model" "7.13.3"
     "@microsoft/tsdoc" "0.13.2"
     "@rushstack/node-core-library" "3.39.0"
-    "@rushstack/ts-command-line" "4.7.10"
+    "@rushstack/ts-command-line" "4.8.0"
     colors "~1.2.1"
     js-yaml "~3.13.1"
     resolve "~1.17.0"
 
-"@microsoft/api-extractor-model@7.13.3", "@microsoft/api-extractor-model@^7.12.5":
+"@microsoft/api-extractor-model@7.13.3", "@microsoft/api-extractor-model@^7.13.3":
   version "7.13.3"
   resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.13.3.tgz#ac01c064c5af520d3661c85d7e5ef95e1ca8ab92"
   integrity sha512-uXilAhu2GcvyY/0NwVRk3AN7TFYjkPnjHLV2UywTTz9uglS+Af0YjNrCy+aaK8qXtfbFWdBzkH9N2XU8/YBeRQ==
@@ -3592,10 +3592,10 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.39.0"
 
-"@microsoft/api-extractor@7.17.1":
-  version "7.17.1"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.17.1.tgz#df6b7aa7cadcb35e2483048ebe5dbaf7af932446"
-  integrity sha512-NqdN627QoDdDtvfqEoX+Z6WbF2yid5URUZVYefC9KuisgwrsfvbSj5QwzOZlMYcufoafTq9jfeVyFAXr4PqGig==
+"@microsoft/api-extractor@^7.18.0":
+  version "7.18.0"
+  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.18.0.tgz#a39ad351269696736737557b839be1eb4b4f6941"
+  integrity sha512-n9vrK5t7ycaO3NSfQFae5resy555b1jBiTN+E4XMpCbuvIz5x0UX5xzIX7xs8Q4F7YmTV3QRe15wpa/gwbyyrA==
   dependencies:
     "@microsoft/api-extractor-model" "7.13.3"
     "@microsoft/tsdoc" "0.13.2"
@@ -4258,16 +4258,6 @@
   dependencies:
     resolve "~1.17.0"
     strip-json-comments "~3.1.1"
-
-"@rushstack/ts-command-line@4.7.10":
-  version "4.7.10"
-  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.7.10.tgz#a2ec6efb1945b79b496671ce90eb1be4f1397d31"
-  integrity sha512-8t042g8eerypNOEcdpxwRA3uCmz0duMo21rG4Z2mdz7JxJeylDmzjlU3wDdef2t3P1Z61JCdZB6fbm1Mh0zi7w==
-  dependencies:
-    "@types/argparse" "1.0.38"
-    argparse "~1.0.9"
-    colors "~1.2.1"
-    string-argv "~0.3.1"
 
 "@rushstack/ts-command-line@4.8.0":
   version "4.8.0"

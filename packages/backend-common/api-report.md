@@ -4,6 +4,9 @@
 
 ```ts
 
+/// <reference types="node" />
+/// <reference types="webpack-env" />
+
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
@@ -79,7 +82,7 @@ export interface CacheClient {
 export class CacheManager {
     forPlugin(pluginId: string): PluginCacheManager;
     static fromConfig(config: Config, options?: CacheManagerOptions): CacheManager;
-    }
+}
 
 // @public (undocumented)
 export const coloredFormat: winston.Logform.Format;
@@ -109,7 +112,7 @@ export function createStatusCheckRouter(options: StatusCheckRouterOptions): Prom
 export class DatabaseManager {
     forPlugin(pluginId: string): PluginDatabaseManager;
     static fromConfig(config: Config): DatabaseManager;
-    }
+}
 
 // @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {
@@ -359,7 +362,7 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
     getBaseUrl(pluginId: string): Promise<string>;
     // (undocumented)
     getExternalBaseUrl(pluginId: string): Promise<string>;
-    }
+}
 
 // @public (undocumented)
 export type StatusCheck = () => Promise<any>;
@@ -391,7 +394,6 @@ export function useHotCleanup(_module: NodeModule, cancelEffect: () => void): vo
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
-
 
 // (No @packageDocumentation comment for this package)
 

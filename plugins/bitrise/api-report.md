@@ -4,18 +4,19 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
 // @public (undocumented)
-export const bitrisePlugin: BackstagePlugin<{}, {}>;
+export const bitrisePlugin: BackstagePlugin<    {}, {}>;
 
 // @public (undocumented)
 export const EntityBitriseContent: () => JSX.Element;
 
 // @public (undocumented)
 export const isBitriseAvailable: (entity: Entity) => boolean;
-
 
 // (No @packageDocumentation comment for this package)
 

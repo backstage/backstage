@@ -4,18 +4,17 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const WelcomePage: () => JSX.Element;
 
 // @public (undocumented)
-const welcomePlugin: BackstagePlugin<{}, {}>;
-
+const welcomePlugin: BackstagePlugin<    {}, {}>;
 export { welcomePlugin as plugin }
-
 export { welcomePlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

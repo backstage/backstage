@@ -4,23 +4,24 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityFossaCard: ({ variant }: {
-    variant?: InfoCardVariants| undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const FossaPage: () => JSX.Element;
 
 // @public (undocumented)
-export const fossaPlugin: BackstagePlugin<{
-    fossaOverview: RouteRef<undefined>;
+export const fossaPlugin: BackstagePlugin<    {
+fossaOverview: RouteRef<undefined>;
 }, {}>;
-
 
 // (No @packageDocumentation comment for this package)
 

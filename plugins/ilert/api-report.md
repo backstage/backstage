@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -172,12 +174,10 @@ export const ILertIcon: IconComponent;
 export const ILertPage: () => JSX.Element;
 
 // @public (undocumented)
-const ilertPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const ilertPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { ilertPlugin }
-
 export { ilertPlugin as plugin }
 
 // @public (undocumented)
@@ -185,9 +185,7 @@ export const iLertRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
-
 export { isPluginApplicableToEntity as isILertAvailable }
-
 export { isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -198,7 +196,6 @@ export type TableState = {
     page: number;
     pageSize: number;
 };
-
 
 // (No @packageDocumentation comment for this package)
 
