@@ -29,11 +29,17 @@ import { useApi } from '@backstage/core-plugin-api';
 import { BuildItem, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { Duration } from 'luxon';
 import { Chip } from '@material-ui/core';
 import { StatusMatrixComponent } from '../StatusMatrixComponent';
+import { formatDuration, formatStatus } from '../../utils';
 
-const formatStatus = (status: BuildStatus, warningCount: number) => {
+const Status = ({
+  status,
+  warningCount,
+}: {
+  status: BuildStatus;
+  warningCount: number;
+}) => {
   const statusIcons = {
     succeeded: <StatusOK />,
     failed: <StatusError />,
@@ -42,7 +48,7 @@ const formatStatus = (status: BuildStatus, warningCount: number) => {
 
   return (
     <>
-      {statusIcons[status]} {status[0].toUpperCase() + status.slice(1)}
+      {statusIcons[status]} {formatStatus(status)}
       {warningCount > 0 && ` with ${warningCount} warning`}
       {warningCount > 1 && 's'}
     </>
@@ -63,7 +69,7 @@ const columns: TableColumn<BuildItem>[] = [
     field: 'duration',
     type: 'time',
     searchable: false,
-    render: data => Duration.fromObject({ seconds: data.duration }).toISOTime(),
+    render: data => formatDuration(data.duration),
   },
   {
     title: 'User',
@@ -72,7 +78,9 @@ const columns: TableColumn<BuildItem>[] = [
   {
     title: 'Status',
     field: 'buildStatus',
-    render: data => formatStatus(data.buildStatus, data.warningCount),
+    render: data => (
+      <Status status={data.buildStatus} warningCount={data.warningCount} />
+    ),
   },
   {
     field: 'isCI',
