@@ -13,5 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './format';
-export * from './classnames';
+
+import { classNames } from './';
+
+describe('utils', () => {
+  describe('classNames', () => {
+    it('should concatinate strings', () => {
+      expect(classNames('class1', 'class2', 'class3')).toEqual(
+        'class1 class2 class3',
+      );
+    });
+
+    it('should not include values null, undefined or empty strings', () => {
+      expect(classNames('class1', undefined, null, '')).toEqual('class1');
+    });
+
+    it('should handle strings with boolean expressions', () => {
+      expect(classNames(true && 'class1', false && 'class2', false)).toEqual(
+        'class1',
+      );
+    });
+  });
+});

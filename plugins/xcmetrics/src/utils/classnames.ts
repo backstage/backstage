@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './format';
-export * from './classnames';
+
+type ClassName = string | false | undefined | null;
+
+export const classNames = (...args: ClassName[]) =>
+  args.filter(c => !!c).join(' ');
+
+export const cn = classNames;

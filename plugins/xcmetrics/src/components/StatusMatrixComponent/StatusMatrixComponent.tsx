@@ -18,7 +18,7 @@ import { makeStyles, Tooltip } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { BuildItem, xcmetricsApiRef } from '../../api';
 import { useAsync, useMeasure } from 'react-use';
-import { formatDuration, formatStatus } from '../../utils';
+import { cn, formatDuration, formatStatus } from '../../utils';
 import { useApi } from '@backstage/core-plugin-api';
 import { Alert } from '@material-ui/lab';
 
@@ -101,12 +101,12 @@ export const StatusMatrixComponent = () => {
 
   return (
     <div
-      className={`${classes.root} ${loading ? classes.loading : ''}`}
+      className={cn(classes.root, loading && classes.loading)}
       ref={measureRef}
     >
       {loading &&
         [...new Array(cols * MAX_ROWS)].map((_, index) => {
-          return <div key={index} className={`${classes.cell}`} />;
+          return <div key={index} className={classes.cell} />;
         })}
 
       {builds &&
@@ -117,7 +117,7 @@ export const StatusMatrixComponent = () => {
               <div
                 data-testid={build.id}
                 key={build.id}
-                className={`${classes.cell} ${classes[trimmedBuildStatus]}`}
+                className={cn(classes.cell, classes[trimmedBuildStatus])}
               />
             </Tooltip>
           );
