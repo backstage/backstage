@@ -274,6 +274,7 @@ touchpoints
 transpilation
 transpiled
 truthy
+typeahead
 ui
 unbreak
 unmanaged
