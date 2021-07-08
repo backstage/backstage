@@ -15,16 +15,10 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, withWidth } from '@material-ui/core';
 import {
-  EntityKindPicker,
-  EntityLifecyclePicker,
   EntityListProvider,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
   UserListFilterKind,
-  UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { CatalogTable } from '../CatalogTable';
 
@@ -38,6 +32,7 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
+import { CatalogFilter } from '../CatalogFilter';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -45,40 +40,29 @@ export type CatalogPageProps = {
   actions?: TableProps<EntityRow>['actions'];
 };
 
-export const CatalogPage = ({
-  initiallySelectedFilter = 'owned',
-  columns,
-  actions,
-}: CatalogPageProps) => (
-  <CatalogLayout>
-    <Content>
-      <ContentHeader title="Components">
-        <CreateComponentButton />
-        <SupportButton>All your software catalog entities</SupportButton>
-      </ContentHeader>
-      <Grid container spacing={2}>
-        <EntityListProvider>
-          <Grid item sm={12} lg={2} alignContent="flex-start">
-            <Grid container>
-              <Grid item xs={12} sm={4} lg={12}>
-                <EntityKindPicker initialFilter="component" hidden />
-                <EntityTypePicker />
+export const CatalogPage = withWidth()(
+  ({ columns, actions, initiallySelectedFilter }: CatalogPageProps) => {
+    return (
+      <CatalogLayout>
+        <Content>
+          <ContentHeader title="Components">
+            <CreateComponentButton />
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
+          <Grid container spacing={2}>
+            <EntityListProvider>
+              <Grid item xs={12} sm={12} lg={2}>
+                <CatalogFilter
+                  initiallySelectedFilter={initiallySelectedFilter}
+                />
               </Grid>
-              <Grid item xs={12} sm={4} lg={12}>
-                <UserListPicker initialFilter={initiallySelectedFilter} />
+              <Grid item xs={12} sm={12} lg={10}>
+                <CatalogTable columns={columns} actions={actions} />
               </Grid>
-              <Grid item xs={12} sm={4} lg={12}>
-                <EntityOwnerPicker />
-                <EntityLifecyclePicker />
-                <EntityTagPicker />
-              </Grid>
-            </Grid>
+            </EntityListProvider>
           </Grid>
-          <Grid item xs={12} sm={12} lg={10}>
-            <CatalogTable columns={columns} actions={actions} />
-          </Grid>
-        </EntityListProvider>
-      </Grid>
-    </Content>
-  </CatalogLayout>
+        </Content>
+      </CatalogLayout>
+    );
+  },
 );
