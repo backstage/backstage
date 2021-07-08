@@ -185,6 +185,17 @@ export const Reader = ({ entityId, onReady }: Props) => {
         `,
       }),
       injectCss({
+        // Properly style code blocks.
+        css: `
+        .md-typeset pre > code::-webkit-scrollbar-thumb {
+          background-color: hsla(0, 0%, 0%, 0.32);
+        }
+        .md-typeset pre > code::-webkit-scrollbar-thumb:hover {
+          background-color: hsla(0, 0%, 0%, 0.87);
+        }
+        `,
+      }),
+      injectCss({
         // Admonitions and others are using SVG masks to define icons. These
         // masks are defined as CSS variables.
         // As the MkDocs output is rendered in shadow DOM, the CSS variable
