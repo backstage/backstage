@@ -53,6 +53,7 @@ export const CapabilityCard = ({
     </>
   ),
   updated = '',
+  id,
 }: any) => {
   return (
     <Grid item>
@@ -72,7 +73,7 @@ export const CapabilityCard = ({
           >
             <Box>
               <Typography variant="h5" color="textPrimary">
-                <Link href={`/dfds-capability-management?id=${name}`}>
+                <Link href={`/dfds-capability-management?id=${id}`}>
                   {name}
                 </Link>
               </Typography>

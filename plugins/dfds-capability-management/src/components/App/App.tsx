@@ -61,8 +61,8 @@ export const App = () => {
   return (
     <Page themeId="">
       <Header title="Welcome to the Capability plugin!" subtitle="@DFDS-SSU">
-        <HeaderLabel label="Owner" value="DevX" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
+        {/* <HeaderLabel label="Owner" value="DevX" />
+        <HeaderLabel label="Lifecycle" value="Alpha" /> */}
       </Header>
       <HeaderTabs
         selectedIndex={selectedTab}

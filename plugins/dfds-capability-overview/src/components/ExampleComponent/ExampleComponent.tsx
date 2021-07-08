@@ -190,15 +190,12 @@ const CapabilitiesListBase = () => {
       const token = await authApi.GetAccessTokenClientSide([
         'api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user',
       ]);
-      const resp = await fetch(
-        'http://localhost:7000/api/proxy/dfds-api/capsvc/capabilities/',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const resp = await fetch('/api/proxy/dfds-api/capsvc/capabilities/', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       const deserialised = await resp.json();
 
       setCapData(deserialised);
@@ -275,6 +272,7 @@ const CapabilitiesListBase = () => {
                       capability?.spec?.rootId ||
                       capability?.spec?.id
                     }
+                    id={capability?.spec?.id}
                     description={capability?.spec?.description}
                   />
                 )
