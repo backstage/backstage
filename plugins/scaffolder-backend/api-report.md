@@ -75,6 +75,12 @@ export function createFetchPlainAction(options: {
 }): TemplateAction<any>;
 
 // @public (undocumented)
+export function createFetchTemplateAction(options: {
+    reader: UrlReader;
+    integrations: ScmIntegrations;
+}): TemplateAction<any>;
+
+// @public (undocumented)
 export const createFilesystemDeleteAction: () => TemplateAction<any>;
 
 // @public (undocumented)
