@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
 import os from 'os';
+import createLimiter from 'p-limit';
 import path from 'path';
 import { Logger } from 'winston';
 import {
@@ -31,7 +32,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
-import { getHeadersForFileExtension } from './helpers';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -163,5 +164,62 @@ export class LocalPublish implements PublisherBase {
     } catch (err) {
       return false;
     }
+  }
+
+  /**
+   * This code will never run in practice. It is merely here to illustrate how
+   * to implement this method for other storage providers.
+   */
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    // Iterate through every file in the root of the publisher.
+    const files = await getFileTreeRecursively(staticDocsDir);
+    const limit = createLimiter(concurrency);
+
+    await Promise.all(
+      files.map(f =>
+        limit(async file => {
+          const relativeFile = file.replace(`${staticDocsDir}${path.sep}`, '');
+          const [namespace, kind, name, ...parts] = relativeFile.split(
+            path.sep,
+          );
+          const lowerNamespace = namespace.toLowerCase();
+          const lowerKind = kind.toLowerCase();
+          const lowerName = name.toLowerCase();
+
+          // If all parts are already lowercase, ignore.
+          if (
+            namespace === lowerNamespace &&
+            kind === lowerKind &&
+            name === lowerName
+          ) {
+            return;
+          }
+
+          // Otherwise, copy or move the file.
+          const newFile = [
+            staticDocsDir,
+            lowerNamespace,
+            lowerKind,
+            lowerName,
+            ...parts,
+          ].join(path.sep);
+          await new Promise<void>(resolve => {
+            const migrate = removeOriginal ? fs.move : fs.copyFile;
+            this.logger.debug(`Migrating ${relativeFile}`);
+            migrate(file, newFile, err => {
+              if (err) {
+                this.logger.warn(
+                  `Unable to migrate ${relativeFile}: ${err.message}`,
+                );
+              }
+              resolve();
+            });
+          });
+        }, f),
+      ),
+    );
   }
 }
