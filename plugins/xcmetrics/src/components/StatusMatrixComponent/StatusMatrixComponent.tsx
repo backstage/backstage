@@ -13,45 +13,115 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core';
 import React from 'react';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
-import { BuildStatus } from '../../api';
+import { BuildItem, xcmetricsApiRef } from '../../api';
+import { useAsync, useMeasure } from 'react-use';
+import { formatDuration, formatStatus } from '../../utils';
+import { useApi } from '@backstage/core-plugin-api';
+import { Alert } from '@material-ui/lab';
+
+const CELL_SIZE = 12;
+const CELL_MARGIN = 4;
+const MAX_ROWS = 4;
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     marginTop: 8,
+    display: 'flex',
+    flexWrap: 'wrap',
+    width: '100%',
   },
-  cell: (props: { status?: BuildStatus }) => {
-    const statusBackgrounds: { [key in BuildStatus]: string } = {
-      succeeded: theme.palette.success.main,
-      failed: theme.palette.error.main,
-      stopped: theme.palette.warning.main,
-    };
-
-    return {
-      width: 12,
-      height: 12,
-      margin: '0 4px 4px 0',
-      float: 'left',
-      backgroundColor: statusBackgrounds[props.status!],
-    };
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    marginRight: CELL_MARGIN,
+    marginBottom: CELL_MARGIN,
+    backgroundColor: theme.palette.grey[600],
+    '&:hover': {
+      transform: 'scale(1.2)',
+    },
+  },
+  succeeded: {
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? theme.palette.success.light
+        : theme.palette.success.main,
+  },
+  failed: {
+    backgroundColor: theme.palette.error[theme.palette.type],
+  },
+  stopped: {
+    backgroundColor: theme.palette.warning[theme.palette.type],
+  },
+  loading: {
+    animation: `$loadingOpacity 900ms ${theme.transitions.easing.easeInOut}`,
+    animationIterationCount: 'infinite',
+  },
+  '@keyframes loadingOpacity': {
+    '0%': { opacity: 0.3 },
+    '100%': { opacity: 0.8 },
   },
 }));
 
-const StatusCell = ({ status }: { status: BuildStatus }) => {
-  const classes = useStyles({ status });
-  return <div className={`${classes.cell} ${status}`} />;
-};
+const TooltipContent = ({ build }: { build: BuildItem }) => (
+  <table>
+    <tbody>
+      <tr>
+        <td>Started</td>
+        <td>{new Date(build.startTimestamp).toLocaleString()}</td>
+      </tr>
+      <tr>
+        <td>Duration</td>
+        <td>{formatDuration(build.duration)}</td>
+      </tr>
+      <tr>
+        <td>Status</td>
+        <td>{formatStatus(build.buildStatus)}</td>
+      </tr>
+    </tbody>
+  </table>
+);
 
 export const StatusMatrixComponent = () => {
   const classes = useStyles();
+  const [measureRef, { width: rootWidth }] = useMeasure<HTMLDivElement>();
+  const client = useApi(xcmetricsApiRef);
+  const { value: builds, loading, error } = useAsync(
+    async (): Promise<BuildItem[]> => client.getBuilds(300),
+    [],
+  );
+
+  if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
+
+  const cols = Math.trunc(rootWidth / (CELL_SIZE + CELL_MARGIN)) || 1;
 
   return (
-    <div className={classes.root}>
-      {[...Array(240).keys()].map(() => (
-        <StatusCell status="succeeded" />
-      ))}
+    <div
+      className={`${classes.root} ${loading ? classes.loading : ''}`}
+      ref={measureRef}
+    >
+      {loading &&
+        [...new Array(cols * MAX_ROWS)].map((_, index) => {
+          return <div key={index} className={`${classes.cell}`} />;
+        })}
+
+      {builds &&
+        builds.slice(0, cols * MAX_ROWS).map((build, index) => {
+          const trimmedBuildStatus = build.buildStatus.split(' ').pop()!;
+          return (
+            <Tooltip key={index} title={<TooltipContent build={build} />} arrow>
+              <div
+                data-testid={build.id}
+                key={build.id}
+                className={`${classes.cell} ${classes[trimmedBuildStatus]}`}
+              />
+            </Tooltip>
+          );
+        })}
     </div>
   );
 };
