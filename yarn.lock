@@ -1360,6 +1360,19 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
+"@backstage/catalog-model@^0.8.4":
+  version "0.9.0"
+  dependencies:
+    "@backstage/config" "^0.1.5"
+    "@backstage/errors" "^0.1.1"
+    "@types/json-schema" "^7.0.5"
+    "@types/yup" "^0.29.8"
+    ajv "^7.0.3"
+    json-schema "^0.3.0"
+    lodash "^4.17.15"
+    uuid "^8.0.0"
+    yup "^0.29.3"
+
 "@backstage/core-api@^0.2.23":
   version "0.2.23"
   resolved "https://registry.npmjs.org/@backstage/core-api/-/core-api-0.2.23.tgz#c0ec13407ff7c78d376eb18e9d8e1490d54d995b"

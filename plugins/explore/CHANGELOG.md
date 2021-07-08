@@ -1,5 +1,16 @@
 # @backstage/plugin-explore
 
+## 0.3.9
+
+### Patch Changes
+
+- f11e50ea7: - Enhanced core `Button` component to open external links in new tab.
+  - Replaced the use of `Button` component from material by `core-components` in tools card.
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.3.8
 
 ### Patch Changes

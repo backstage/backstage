@@ -1,5 +1,13 @@
 # @backstage/backend-test-utils
 
+## 0.1.4
+
+### Patch Changes
+
+- f7134c368: bump sqlite3 to 5.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.8.5
+
 ## 0.1.3
 
 ### Patch Changes
