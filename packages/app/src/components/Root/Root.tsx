@@ -79,21 +79,21 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearch />
+      {/* <SidebarSearch /> */}
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
-      <SidebarItem
+      {/* <SidebarItem
         icon={VisibilityIcon}
         to="/dfds-capability-overview"
         text="Capability Overview"
-      />
-      <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+      /> */}
+      {/* <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" /> */}
+      {/* <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." /> */}
       {/* End global nav */}
-      <SidebarDivider />
+      {/* <SidebarDivider />
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
       <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
@@ -102,7 +102,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <Shortcuts />
       <SidebarSpace />
       <SidebarDivider />
-      <SidebarSettings />
+      <SidebarSettings /> */}
     </Sidebar>
     {children}
   </SidebarPage>

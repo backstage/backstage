@@ -210,8 +210,8 @@ const CapabilitiesListBase = () => {
   return (
     <Page themeId="tool">
       <Header title="Welcome to Capability Discoverability!">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
+        {/* <HeaderLabel label="Owner" value="Team X" />
+        <HeaderLabel label="Lifecycle" value="Alpha" /> */}
       </Header>
       {entities.length}
       {capData.items.length}
