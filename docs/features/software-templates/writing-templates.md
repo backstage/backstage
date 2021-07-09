@@ -227,6 +227,33 @@ spec:
             inputType: tel
 ```
 
+#### Hide or mask sensitive data on Review step
+
+Sometimes, specially in custom fields, you collect some data on Create form that
+must note be shown to the user on Review step. To hide or mask this data, you
+can set some properties of `ui:options`:
+
+```yaml
+- title: Hide or mask values
+  properties:
+    password:
+      title: Password
+      type: string
+      ui:widget: password # will print '******' as value for property 'password' on Review Step
+    masked:
+      title: Masked
+      type: string
+      ui:options:
+        review:
+          mask: '<some-value-to-show>' # will print '<some-value-to-show>' as value for property 'Masked' on Review Step
+    hidden:
+      title: Hidden
+      type: string
+      ui:options:
+        review:
+          show: false # wont print any info about 'hidden' property on Review Step
+```
+
 #### The Repository Picker
 
 So in order to make working with repository providers easier, we've built a
