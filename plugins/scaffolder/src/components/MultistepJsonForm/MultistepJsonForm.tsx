@@ -63,7 +63,6 @@ export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
       }
     }
   });
-
   return uiSchemas;
 }
 
@@ -84,12 +83,12 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
         continue;
       }
 
-      if (!uiSchema['ui:options'] || !uiSchema['ui:options'].review) {
+      if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
         reviewData[key] = formData[key];
         continue;
       }
 
-      const review = uiSchema['ui:options'].review as JsonObject;
+      const review = uiSchema['ui:backstage'].review as JsonObject;
       if (!review.show) {
         continue;
       }

@@ -39,7 +39,7 @@ describe('MultistepJsonForm', () => {
           masked: {
             title: 'Masked',
             type: 'string',
-            'ui:options': {
+            'ui:backstage': {
               review: {
                 show: true,
                 mask: '******',
@@ -61,7 +61,7 @@ describe('MultistepJsonForm', () => {
           hidden: {
             title: 'Hidden',
             type: 'string',
-            'ui:options': {
+            'ui:backstage': {
               review: {
                 show: false,
               },
