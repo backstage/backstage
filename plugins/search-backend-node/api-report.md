@@ -32,7 +32,7 @@ export class LunrSearchEngine implements SearchEngine {
     // (undocumented)
     protected docStore: Record<string, IndexableDocument>;
     // (undocumented)
-    index(type: string, documents: IndexableDocument[]): void;
+    index(type: string, documents: IndexableDocument[]): Promise<void>;
     // (undocumented)
     protected logger: Logger_2;
     // (undocumented)
@@ -57,7 +57,7 @@ export class Scheduler {
 
 // @public
 export interface SearchEngine {
-    index(type: string, documents: IndexableDocument[]): void;
+    index(type: string, documents: IndexableDocument[]): Promise<void>;
     query(query: SearchQuery): Promise<SearchResultSet>;
     setTranslator(translator: QueryTranslator): void;
 }

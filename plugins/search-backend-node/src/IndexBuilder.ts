@@ -140,7 +140,7 @@ export class IndexBuilder {
         }
 
         // pushing documents to index to a configured search engine.
-        this.searchEngine.index(type, documents);
+        await this.searchEngine.index(type, documents);
       }, this.collators[type].refreshInterval * 1000);
     });
 
