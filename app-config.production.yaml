@@ -17,7 +17,7 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: https://backstage.dfds.cloud/backend
+  baseUrl: https://backstage.dfds.cloud
   listen:
     port: 7000
   database:
