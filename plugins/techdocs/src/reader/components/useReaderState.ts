@@ -225,7 +225,8 @@ export function useReaderState(
   state: ContentStateTypes;
   contentReload: () => void;
   content?: string;
-  errorMessage?: string;
+  contentErrorMessage?: string;
+  syncErrorMessage?: string;
   buildLog: string[];
 } {
   const [state, dispatch] = useReducer(reducer, {
@@ -331,21 +332,12 @@ export function useReaderState(
     [state.activeSyncState, state.content, state.contentLoading],
   );
 
-  const errorMessage = useMemo(() => {
-    let errMessage = '';
-    if (state.contentError) {
-      errMessage += ` Load error: ${state.contentError}`;
-    }
-    if (state.syncError) errMessage += ` Build error: ${state.syncError}`;
-
-    return errMessage;
-  }, [state.syncError, state.contentError]);
-
   return {
     state: displayState,
     contentReload,
     content: state.content,
-    errorMessage,
+    contentErrorMessage: state.contentError?.toString(),
+    syncErrorMessage: state.syncError?.toString(),
     buildLog: state.buildLog,
   };
 }

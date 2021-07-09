@@ -54,7 +54,8 @@ export const Reader = ({ entityId, onReady }: Props) => {
     state,
     contentReload,
     content: rawPage,
-    errorMessage,
+    contentErrorMessage,
+    syncErrorMessage,
     buildLog,
   } = useReaderState(kind, namespace, name, path);
 
@@ -358,11 +359,24 @@ export const Reader = ({ entityId, onReady }: Props) => {
           severity="error"
           action={<TechDocsBuildLogs buildLog={buildLog} />}
         >
-          Building a newer version of this documentation failed. {errorMessage}
+          Building a newer version of this documentation failed.{' '}
+          {syncErrorMessage}
         </Alert>
       )}
       {state === 'CONTENT_NOT_FOUND' && (
-        <TechDocsNotFound errorMessage={errorMessage} />
+        <>
+          {syncErrorMessage && (
+            <Alert
+              variant="outlined"
+              severity="error"
+              action={<TechDocsBuildLogs buildLog={buildLog} />}
+            >
+              Building a newer version of this documentation failed.{' '}
+              {syncErrorMessage}
+            </Alert>
+          )}
+          <TechDocsNotFound errorMessage={contentErrorMessage} />
+        </>
       )}
       <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
     </>

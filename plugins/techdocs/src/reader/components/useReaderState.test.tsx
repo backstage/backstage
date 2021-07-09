@@ -257,7 +257,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -267,7 +268,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -312,7 +314,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -322,7 +325,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'INITIAL_BUILD',
           content: undefined,
-          errorMessage: ' Load error: NotFoundError: Page Not Found',
+          contentErrorMessage: 'NotFoundError: Page Not Found',
+          syncErrorMessage: undefined,
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
@@ -332,7 +336,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -342,7 +347,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -389,7 +395,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -399,7 +406,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
@@ -409,7 +417,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_REFRESHING',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
@@ -419,7 +428,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_READY',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
@@ -432,7 +442,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -442,7 +453,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my new content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -478,7 +490,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
@@ -488,7 +501,8 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_NOT_FOUND',
           content: undefined,
-          errorMessage: ' Load error: NotFoundError: Some error description',
+          contentErrorMessage: 'NotFoundError: Some error description',
+          syncErrorMessage: undefined,
           buildLog: [],
           contentReload: expect.any(Function),
         });
