@@ -26,6 +26,7 @@ import {
   MockStorageApi,
   renderWithEffects,
   wrapInTestApp,
+  mockBreakpoint,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
@@ -110,6 +111,8 @@ describe('CatalogPage', () => {
     getUserId: () => 'tools@example.com',
     getProfile: () => testProfile,
   };
+
+  const { set: setBreakpoint } = mockBreakpoint();
 
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
@@ -243,5 +246,11 @@ describe('CatalogPage', () => {
     await expect(
       screen.findByText(/Starred \(1\)/),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should wrap filter in accordion on smaller screens', async () => {
+    setBreakpoint('sm');
+    const { findByText } = await renderWrapped(<CatalogPage />);
+    await expect(findByText(/Filters/)).resolves.toBeInTheDocument();
   });
 });

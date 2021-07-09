@@ -43,28 +43,24 @@ export type CatalogPageProps = {
 export const CatalogPage = ({
   columns,
   actions,
-  initiallySelectedFilter,
-}: CatalogPageProps) => {
-  return (
-    <CatalogLayout>
-      <Content>
-        <ContentHeader title="Components">
-          <CreateComponentButton />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <Grid container spacing={2}>
-          <EntityListProvider>
-            <Grid item xs={12} sm={12} lg={2}>
-              <CatalogFilter
-                initiallySelectedFilter={initiallySelectedFilter}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} lg={10}>
-              <CatalogTable columns={columns} actions={actions} />
-            </Grid>
-          </EntityListProvider>
-        </Grid>
-      </Content>
-    </CatalogLayout>
-  );
-};
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => (
+  <CatalogLayout>
+    <Content>
+      <ContentHeader title="Components">
+        <CreateComponentButton />
+        <SupportButton>All your software catalog entities</SupportButton>
+      </ContentHeader>
+      <Grid container spacing={2}>
+        <EntityListProvider>
+          <Grid item xs={12} sm={12} lg={2}>
+            <CatalogFilter initiallySelectedFilter={initiallySelectedFilter} />
+          </Grid>
+          <Grid item xs={12} sm={12} lg={10}>
+            <CatalogTable columns={columns} actions={actions} />
+          </Grid>
+        </EntityListProvider>
+      </Grid>
+    </Content>
+  </CatalogLayout>
+);
