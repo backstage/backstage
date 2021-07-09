@@ -16,7 +16,7 @@
 import {
   Content,
   Header,
-  HeaderLabel,
+  // HeaderLabel,
   HeaderTabs,
   Page,
 } from '@backstage/core';
