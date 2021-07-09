@@ -15,9 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConcreteLunrQuery, LunrSearchEngine } from './LunrSearchEngine';
-import { SearchEngine } from '../types';
 import lunr from 'lunr';
+import { SearchEngine } from '../types';
+import { ConcreteLunrQuery, LunrSearchEngine } from './LunrSearchEngine';
 
 /**
  * Just used to test the default translator shipped with LunrSearchEngine.
@@ -45,7 +45,7 @@ describe('LunrSearchEngine', () => {
       testLunrSearchEngine.setTranslator(translatorSpy);
 
       // When: querying the search engine
-      testLunrSearchEngine.query({
+      await testLunrSearchEngine.query({
         term: 'testTerm',
         filters: {},
         pageCursor: '',
@@ -259,7 +259,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -282,7 +282,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -315,7 +315,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -347,7 +347,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -379,7 +379,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -412,7 +412,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -445,7 +445,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 1 document
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -483,7 +483,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 2 documents
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -527,8 +527,8 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock 2 indices with 1 document each
-      testLunrSearchEngine.index('test-index', mockDocuments);
-      testLunrSearchEngine.index('test-index-2', mockDocuments2);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index-2', mockDocuments2);
       // Perform search query scoped to "test-index-2" with a filter on the field "extraField"
       const mockedSearchResult = await testLunrSearchEngine.query({
         term: 'testTitle',
@@ -565,7 +565,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock indexing of 2 documents
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
 
       // Perform search query
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -618,8 +618,8 @@ describe('LunrSearchEngine', () => {
       ];
 
       // Mock 2 indices with 2 documents each
-      testLunrSearchEngine.index('test-index', mockDocuments);
-      testLunrSearchEngine.index('test-index-2', mockDocuments2);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index-2', mockDocuments2);
 
       // Perform search query scoped to "test-index-2"
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -661,7 +661,7 @@ describe('LunrSearchEngine', () => {
       ];
 
       // call index func and ensure the index func was invoked.
-      testLunrSearchEngine.index('test-index', mockDocuments);
+      await testLunrSearchEngine.index('test-index', mockDocuments);
       expect(indexSpy).toHaveBeenCalled();
       expect(indexSpy).toHaveBeenCalledWith('test-index', [
         { title: 'testTerm', text: 'testText', location: 'test/location' },
