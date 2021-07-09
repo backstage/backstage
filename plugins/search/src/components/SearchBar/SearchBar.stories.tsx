@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Paper, Grid } from '@material-ui/core';
 import { SearchBar, SearchContext } from '../index';
 import { MemoryRouter } from 'react-router';
 
@@ -36,7 +36,9 @@ export const Default = () => {
       <SearchContext.Provider value={defaultValue}>
         <Grid container direction="row">
           <Grid item xs={12}>
-            <SearchBar />
+            <Paper style={{ padding: '8px 0' }}>
+              <SearchBar />
+            </Paper>
           </Grid>
         </Grid>
       </SearchContext.Provider>

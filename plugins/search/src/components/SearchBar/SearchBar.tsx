@@ -16,14 +16,7 @@
 
 import React, { ChangeEvent, useState } from 'react';
 import { useDebounce } from 'react-use';
-import {
-  Paper,
-  InputBase,
-  InputAdornment,
-  IconButton,
-  Theme,
-  makeStyles,
-} from '@material-ui/core';
+import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
@@ -34,14 +27,7 @@ type Props = {
   debounceTime?: number;
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  searchBar: {
-    padding: theme.spacing(1, 0),
-  },
-}));
-
 export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
-  const classes = useStyles();
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
 
@@ -54,30 +40,28 @@ export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
   const handleClear = () => setValue('');
 
   return (
-    <Paper className={classes.searchBar}>
-      <InputBase
-        className={className}
-        data-testid="search-bar-next"
-        fullWidth
-        placeholder="Search in Backstage"
-        value={value}
-        onChange={handleQuery}
-        inputProps={{ 'aria-label': 'Search term' }}
-        startAdornment={
-          <InputAdornment position="start">
-            <IconButton aria-label="Query term" disabled>
-              <SearchIcon />
-            </IconButton>
-          </InputAdornment>
-        }
-        endAdornment={
-          <InputAdornment position="end">
-            <IconButton aria-label="Clear term" onClick={handleClear}>
-              <ClearButton />
-            </IconButton>
-          </InputAdornment>
-        }
-      />
-    </Paper>
+    <InputBase
+      className={className}
+      data-testid="search-bar-next"
+      fullWidth
+      placeholder="Search in Backstage"
+      value={value}
+      onChange={handleQuery}
+      inputProps={{ 'aria-label': 'Search term' }}
+      startAdornment={
+        <InputAdornment position="start">
+          <IconButton aria-label="Query term" disabled>
+            <SearchIcon />
+          </IconButton>
+        </InputAdornment>
+      }
+      endAdornment={
+        <InputAdornment position="end">
+          <IconButton aria-label="Clear term" onClick={handleClear}>
+            <ClearButton />
+          </IconButton>
+        </InputAdornment>
+      }
+    />
   );
 };

@@ -30,6 +30,14 @@ import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { SearchResultSet } from '@backstage/search-common';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  bar: {
+    padding: theme.spacing(1, 0),
+  },
+  filter: {
+    '& + &': {
+      marginTop: theme.spacing(2.5),
+    },
+  },
   filters: {
     padding: theme.spacing(2),
   },
@@ -97,7 +105,9 @@ const SearchPage = () => {
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
-            <SearchBar debounceTime={100} />
+            <Paper className={classes.bar}>
+              <SearchBar debounceTime={100} />
+            </Paper>
           </Grid>
           <Grid item xs={3}>
             <Paper className={classes.filters}>
@@ -107,10 +117,12 @@ const SearchPage = () => {
                 defaultValue="software-catalog"
               />
               <SearchFilter.Select
+                className={classes.filter}
                 name="kind"
                 values={['Component', 'Template']}
               />
               <SearchFilter.Checkbox
+                className={classes.filter}
                 name="lifecycle"
                 values={['experimental', 'production']}
               />

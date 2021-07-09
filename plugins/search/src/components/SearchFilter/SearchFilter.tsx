@@ -24,21 +24,15 @@ import {
   Select,
   MenuItem,
   FormLabel,
-  Theme,
 } from '@material-ui/core';
 
 import { useSearch } from '../SearchContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({
   label: {
     textTransform: 'capitalize',
   },
-  filter: {
-    '& + &': {
-      marginTop: theme.spacing(2.5),
-    },
-  },
-}));
+});
 
 export type Component = {
   className?: string;
@@ -86,7 +80,7 @@ const CheckboxFilter = ({
 
   return (
     <FormControl
-      className={className || classes.filter}
+      className={className}
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
@@ -144,7 +138,7 @@ const SelectFilter = ({
 
   return (
     <FormControl
-      className={className || classes.filter}
+      className={className}
       variant="filled"
       fullWidth
       data-testid="search-selectfilter-next"
