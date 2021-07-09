@@ -128,7 +128,7 @@ export async function createRouter({
       () => {
         if (req.header('accept') !== 'text/event-stream') {
           console.warn(
-            "The /sync/:namespace/:kind/:name endpoint but the call wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
+            "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
           );
           return createHttpResponse(res);
         }
