@@ -137,6 +137,7 @@ maintainership
 makefile
 md
 memcache
+memoized
 microservice
 microservices
 microsite
@@ -168,6 +169,7 @@ nohoist
 nonces
 noop
 npm
+nunjucks
 nvarchar
 nvm
 OAuth
@@ -273,6 +275,7 @@ touchpoints
 transpilation
 transpiled
 truthy
+typeahead
 ui
 unbreak
 unmanaged

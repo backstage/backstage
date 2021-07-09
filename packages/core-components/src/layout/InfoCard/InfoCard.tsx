@@ -37,7 +37,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   header: {
-    display: 'inline-block',
     padding: theme.spacing(2, 2, 2, 2.5),
   },
   headerTitle: {
@@ -121,6 +120,7 @@ type Props = {
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
+  action?: ReactNode;
   actionsClassName?: string;
   actions?: ReactNode;
   cardClassName?: string;
@@ -141,6 +141,7 @@ export const InfoCard = ({
   children,
   headerStyle,
   headerProps,
+  action,
   actionsClassName,
   actions,
   cardClassName,
@@ -190,6 +191,7 @@ export const InfoCard = ({
             }}
             title={title}
             subheader={subheader}
+            action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}
             {...headerProps}

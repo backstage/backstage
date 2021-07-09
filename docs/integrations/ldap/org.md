@@ -122,8 +122,8 @@ The DN under which users are stored, e.g.
 #### users.options
 
 The search options to use when sending the query to the server, when reading all
-users. All of the options are shown below, with their default values, but they
-are all optional.
+users. All the options are shown below, with their default values, but they are
+all optional.
 
 ```yaml
 options:
@@ -158,8 +158,8 @@ set:
 
 Mappings from well known entity fields, to LDAP attribute names. This is where
 you are able to define how to interpret the attributes of each LDAP result item,
-and to move them into the corresponding entity fields. All of the options are
-shown below, with their default values, but they are all optional.
+and to move them into the corresponding entity fields. All the options are shown
+below, with their default values, but they are all optional.
 
 If you leave out an optional mapping, it will still be copied using that default
 value. For example, even if you do not put in the field `displayName` in your
@@ -204,8 +204,8 @@ The DN under which groups are stored, e.g.
 #### groups.options
 
 The search options to use when sending the query to the server, when reading all
-groups. All of the options are shown below, with their default values, but they
-are all optional.
+groups. All the options are shown below, with their default values, but they are
+all optional.
 
 ```yaml
 options:
@@ -281,4 +281,36 @@ map:
   # The name of the attribute that shall be used for the values of
   # the spec.children field of the entity.
   members: member
+```
+
+## Customize the Processor
+
+In case you want to customize the ingested entities, the
+`LdapOrgReaderProcessor` allows to pass transformers for users and groups.
+
+1. Create a transformer:
+
+```ts
+export async function myGroupTransformer(
+  vendor: LdapVendor,
+  config: GroupConfig,
+  group: SearchEntry,
+): Promise<GroupEntity | undefined> {
+  // Transformations may change namespace, change entity naming pattern, fill
+  // profile with more or other details...
+
+  // Create the group entity on your own, or wrap the default transformer
+  return await defaultGroupTransformer(vendor, config, group);
+}
+```
+
+2. Configure the processor with the transformer:
+
+```ts
+builder.addProcessor(
+  LdapOrgReaderProcessor.fromConfig(config, {
+    logger,
+    groupTransformer: myGroupTransformer,
+  }),
+);
 ```

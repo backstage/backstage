@@ -128,6 +128,14 @@ export class DatabaseManager {
     };
   }
 
+  private getEnsureExistsConfig(pluginId: string): boolean {
+    const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
+    return (
+      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
+      baseConfig
+    );
+  }
+
   /**
    * Provides a Knex connection plugin config by combining base and plugin config.
    *
@@ -203,13 +211,15 @@ export class DatabaseManager {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    const databaseName = this.getDatabaseName(pluginId);
-    try {
-      await ensureDatabaseExists(pluginConfig, databaseName);
-    } catch (error) {
-      throw new Error(
-        `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
-      );
+    if (this.getEnsureExistsConfig(pluginId)) {
+      const databaseName = this.getDatabaseName(pluginId);
+      try {
+        await ensureDatabaseExists(pluginConfig, databaseName);
+      } catch (error) {
+        throw new Error(
+          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+        );
+      }
     }
 
     return createDatabaseClient(

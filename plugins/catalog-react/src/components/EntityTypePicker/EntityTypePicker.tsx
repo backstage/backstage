@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { Box } from '@material-ui/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
@@ -24,7 +24,12 @@ import { Select } from '@backstage/core-components';
 
 export const EntityTypePicker = () => {
   const alertApi = useApi(alertApiRef);
-  const { error, types, selectedType, setType } = useEntityTypeFilter();
+  const {
+    error,
+    availableTypes,
+    selectedTypes,
+    setSelectedTypes,
+  } = useEntityTypeFilter();
 
   useEffect(() => {
     if (error) {
@@ -35,13 +40,11 @@ export const EntityTypePicker = () => {
     }
   }, [error, alertApi]);
 
-  if (!types || error) {
-    return null;
-  }
+  if (!availableTypes || error) return null;
 
   const items = [
     { value: 'all', label: 'All' },
-    ...types.map((type: string) => ({
+    ...availableTypes.map((type: string) => ({
       value: type,
       label: capitalize(type),
     })),
@@ -52,8 +55,10 @@ export const EntityTypePicker = () => {
       <Select
         label="Type"
         items={items}
-        selected={selectedType ?? 'all'}
-        onChange={value => setType(value === 'all' ? undefined : String(value))}
+        selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
+        onChange={value =>
+          setSelectedTypes(value === 'all' ? [] : [String(value)])
+        }
       />
     </Box>
   );

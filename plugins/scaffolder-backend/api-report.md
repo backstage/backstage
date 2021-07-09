@@ -4,26 +4,18 @@
 
 ```ts
 
-import { AzureIntegrationConfig } from '@backstage/integration';
-import { BitbucketIntegrationConfig } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import express from 'express';
-import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegrationConfig } from '@backstage/integration';
-import { Gitlab } from '@gitbeaker/core';
-import { GitLabIntegrationConfig } from '@backstage/integration';
-import gitUrlParse from 'git-url-parse';
 import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
@@ -31,7 +23,7 @@ import { Writable } from 'stream';
 // @public (undocumented)
 export type ActionContext<Input extends InputBase> = {
     baseUrl?: string;
-    logger: Logger;
+    logger: Logger_2;
     logStream: Writable;
     token?: string | undefined;
     workspacePath: string;
@@ -40,74 +32,12 @@ export type ActionContext<Input extends InputBase> = {
     createTemporaryDirectory(): Promise<string>;
 };
 
-// @public (undocumented)
-export class AzurePreparer implements PreparerBase {
-    constructor(config: {
-        token?: string;
-    });
-    // (undocumented)
-    static fromConfig(config: AzureIntegrationConfig): AzurePreparer;
-    // (undocumented)
-    prepare({ url, workspacePath, logger }: PreparerOptions): Promise<void>;
-}
-
-// @public (undocumented)
-export class AzurePublisher implements PublisherBase {
-    constructor(config: {
-        token: string;
-    });
-    // (undocumented)
-    static fromConfig(config: AzureIntegrationConfig): Promise<AzurePublisher | undefined>;
-    // (undocumented)
-    publish({ values, workspacePath, logger, }: PublisherOptions): Promise<PublisherResult>;
-}
-
-// @public (undocumented)
-export class BitbucketPreparer implements PreparerBase {
-    constructor(config: {
-        username?: string;
-        token?: string;
-        appPassword?: string;
-    });
-    // (undocumented)
-    static fromConfig(config: BitbucketIntegrationConfig): BitbucketPreparer;
-    // (undocumented)
-    prepare({ url, workspacePath, logger }: PreparerOptions): Promise<void>;
-}
-
-// @public (undocumented)
-export class BitbucketPublisher implements PublisherBase {
-    constructor(config: {
-        host: string;
-        token?: string;
-        appPassword?: string;
-        username?: string;
-        apiBaseUrl?: string;
-        repoVisibility: RepoVisibilityOptions_2;
-    });
-    // (undocumented)
-    static fromConfig(config: BitbucketIntegrationConfig, { repoVisibility }: {
-        repoVisibility: RepoVisibilityOptions_2;
-    }): Promise<BitbucketPublisher>;
-    // (undocumented)
-    publish({ values, workspacePath, logger, }: PublisherOptions): Promise<PublisherResult>;
-}
-
 // @public
 export class CatalogEntityClient {
     constructor(catalogClient: CatalogApi);
     findTemplate(templateName: string, options?: {
         token?: string;
-    }): Promise<TemplateEntityV1alpha1 | TemplateEntityV1beta2>;
-}
-
-// @public (undocumented)
-export class CookieCutter implements TemplaterBase {
-    constructor({ containerRunner }: {
-        containerRunner: ContainerRunner;
-    });
-    // (undocumented)
-    run({ workspacePath, values, logStream, }: TemplaterRunOptions): Promise<void>;
+    }): Promise<TemplateEntityV1beta2>;
 }
 
 // @public (undocumented)
@@ -115,7 +45,8 @@ export const createBuiltinActions: (options: {
     reader: UrlReader;
     integrations: ScmIntegrations;
     catalogClient: CatalogApi;
-    templaters: TemplaterBuilder;
+    containerRunner: ContainerRunner;
+    config: Config;
 }) => TemplateAction<any>[];
 
 // @public (undocumented)
@@ -134,7 +65,7 @@ export function createDebugLogAction(): TemplateAction<any>;
 export function createFetchCookiecutterAction(options: {
     reader: UrlReader;
     integrations: ScmIntegrations;
-    templaters: TemplaterBuilder;
+    containerRunner: ContainerRunner;
 }): TemplateAction<any>;
 
 // @public (undocumented)
@@ -144,16 +75,27 @@ export function createFetchPlainAction(options: {
 }): TemplateAction<any>;
 
 // @public (undocumented)
-export function createLegacyActions(options: Options): TemplateAction<any>[];
+export function createFetchTemplateAction(options: {
+    reader: UrlReader;
+    integrations: ScmIntegrations;
+}): TemplateAction<any>;
+
+// @public (undocumented)
+export const createFilesystemDeleteAction: () => TemplateAction<any>;
+
+// @public (undocumented)
+export const createFilesystemRenameAction: () => TemplateAction<any>;
 
 // @public (undocumented)
 export function createPublishAzureAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public (undocumented)
 export function createPublishBitbucketAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public
@@ -162,6 +104,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 // @public (undocumented)
 export function createPublishGithubAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
 
 // @public (undocumented)
@@ -170,16 +113,8 @@ export const createPublishGithubPullRequestAction: ({ integrations, clientFactor
 // @public (undocumented)
 export function createPublishGitlabAction(options: {
     integrations: ScmIntegrationRegistry;
+    config: Config;
 }): TemplateAction<any>;
-
-// @public (undocumented)
-export class CreateReactAppTemplater implements TemplaterBase {
-    constructor({ containerRunner }: {
-        containerRunner: ContainerRunner;
-    });
-    // (undocumented)
-    run({ workspacePath, values, logStream, }: TemplaterRunOptions): Promise<void>;
-}
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -190,204 +125,13 @@ export const createTemplateAction: <Input extends Partial<{
 }>>(templateAction: TemplateAction<Input>) => TemplateAction<any>;
 
 // @public (undocumented)
-export class FilePreparer implements PreparerBase {
-    // (undocumented)
-    prepare({ url, workspacePath }: PreparerOptions): Promise<void>;
-}
-
-// @public
-export const getTemplaterKey: (entity: TemplateEntityV1alpha1) => string;
-
-// @public (undocumented)
-export class GithubPreparer implements PreparerBase {
-    constructor(config: {
-        credentialsProvider: GithubCredentialsProvider;
-    });
-    // (undocumented)
-    static fromConfig(config: GitHubIntegrationConfig): GithubPreparer;
-    // (undocumented)
-    prepare({ url, workspacePath, logger }: PreparerOptions): Promise<void>;
-}
-
-// @public @deprecated (undocumented)
-export class GithubPublisher implements PublisherBase {
-    constructor(config: {
-        credentialsProvider: GithubCredentialsProvider;
-        repoVisibility: RepoVisibilityOptions;
-        apiBaseUrl: string | undefined;
-    });
-    // (undocumented)
-    static fromConfig(config: GitHubIntegrationConfig, { repoVisibility }: {
-        repoVisibility: RepoVisibilityOptions;
-    }): Promise<GithubPublisher | undefined>;
-    // (undocumented)
-    publish({ values, workspacePath, logger, }: PublisherOptions): Promise<PublisherResult>;
-}
-
-// @public (undocumented)
-export class GitlabPreparer implements PreparerBase {
-    constructor(config: {
-        token?: string;
-    });
-    // (undocumented)
-    static fromConfig(config: GitLabIntegrationConfig): GitlabPreparer;
-    // (undocumented)
-    prepare({ url, workspacePath, logger }: PreparerOptions): Promise<void>;
-}
-
-// @public (undocumented)
-export class GitlabPublisher implements PublisherBase {
-    constructor(config: {
-        token: string;
-        client: Gitlab;
-        repoVisibility: RepoVisibilityOptions_3;
-    });
-    // (undocumented)
-    static fromConfig(config: GitLabIntegrationConfig, { repoVisibility }: {
-        repoVisibility: RepoVisibilityOptions_3;
-    }): Promise<GitlabPublisher | undefined>;
-    // (undocumented)
-    publish({ values, workspacePath, logger, }: PublisherOptions): Promise<PublisherResult>;
-}
-
-// @public (undocumented)
-export type Job = {
-    id: string;
-    context: StageContext;
-    status: ProcessorStatus;
-    stages: StageResult[];
-    error?: Error;
-};
-
-// @public (undocumented)
-export type JobAndDirectoryTuple = {
-    job: Job;
-    directory: string;
-};
-
-// @public (undocumented)
-export class JobProcessor implements Processor {
-    constructor(workingDirectory: string);
-    // (undocumented)
-    create({ entity, values, stages, }: {
-        entity: TemplateEntityV1alpha1;
-        values: TemplaterValues;
-        stages: StageInput[];
-    }): Job;
-    // (undocumented)
-    static fromConfig({ config, logger, }: {
-        config: Config;
-        logger: Logger;
-    }): Promise<JobProcessor>;
-    // (undocumented)
-    get(id: string): Job | undefined;
-    // (undocumented)
-    run(job: Job): Promise<void>;
-    }
-
-// @public (undocumented)
-export function joinGitUrlPath(repoUrl: string, path?: string): string;
-
-// @public (undocumented)
-export type ParsedLocationAnnotation = {
-    protocol: 'file' | 'url';
-    location: string;
-};
-
-// @public (undocumented)
-export const parseLocationAnnotation: (entity: TemplateEntityV1alpha1) => ParsedLocationAnnotation;
-
-// @public (undocumented)
-export interface PreparerBase {
-    prepare(opts: PreparerOptions): Promise<void>;
-}
-
-// @public (undocumented)
-export type PreparerBuilder = {
-    register(host: string, preparer: PreparerBase): void;
-    get(url: string): PreparerBase;
-};
-
-// @public (undocumented)
-export type PreparerOptions = {
-    url: string;
-    workspacePath: string;
-    logger: Logger;
-};
-
-// @public (undocumented)
-export class Preparers implements PreparerBuilder {
-    // (undocumented)
-    static fromConfig(config: Config, _: {
-        logger: Logger;
-    }): Promise<PreparerBuilder>;
-    // (undocumented)
-    get(url: string): PreparerBase;
-    // (undocumented)
-    register(host: string, preparer: PreparerBase): void;
-}
-
-// @public (undocumented)
-export type Processor = {
-    create({ entity, values, stages, }: {
-        entity: TemplateEntityV1alpha1;
-        values: TemplaterValues;
-        stages: StageInput[];
-    }): Job;
-    get(id: string): Job | undefined;
-    run(job: Job): Promise<void>;
-};
-
-// @public (undocumented)
-export type ProcessorStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
-
-// @public
-export type PublisherBase = {
-    publish(opts: PublisherOptions): Promise<PublisherResult>;
-};
-
-// @public (undocumented)
-export type PublisherBuilder = {
-    register(host: string, publisher: PublisherBase): void;
-    get(storePath: string): PublisherBase;
-};
-
-// @public (undocumented)
-export type PublisherOptions = {
-    values: TemplaterValues;
-    workspacePath: string;
-    logger: Logger;
-};
-
-// @public (undocumented)
-export type PublisherResult = {
-    remoteUrl: string;
-    catalogInfoUrl?: string;
-};
-
-// @public (undocumented)
-export class Publishers implements PublisherBuilder {
-    // (undocumented)
-    static fromConfig(config: Config, _options: {
-        logger: Logger;
-    }): Promise<PublisherBuilder>;
-    // (undocumented)
-    get(url: string): PublisherBase;
-    // (undocumented)
-    register(host: string, preparer: PublisherBase | undefined): void;
-}
-
-// @public (undocumented)
-export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
-
-// @public
-export type RequiredTemplateValues = {
-    owner: string;
-    storePath: string;
-    destination?: {
-        git?: gitUrlParse.GitUrl;
-    };
-};
+export function fetchContents({ reader, integrations, baseUrl, fetchUrl, outputPath, }: {
+    reader: UrlReader;
+    integrations: ScmIntegrations;
+    baseUrl?: string;
+    fetchUrl?: JsonValue;
+    outputPath: string;
+}): Promise<void>;
 
 // @public (undocumented)
 export interface RouterOptions {
@@ -398,62 +142,19 @@ export interface RouterOptions {
     // (undocumented)
     config: Config;
     // (undocumented)
+    containerRunner: ContainerRunner;
+    // (undocumented)
     database: PluginDatabaseManager;
     // (undocumented)
-    logger: Logger;
-    // (undocumented)
-    preparers: PreparerBuilder;
-    // (undocumented)
-    publishers: PublisherBuilder;
+    logger: Logger_2;
     // (undocumented)
     reader: UrlReader;
     // (undocumented)
     taskWorkers?: number;
-    // (undocumented)
-    templaters: TemplaterBuilder;
 }
 
 // @public (undocumented)
 export const runCommand: ({ command, args, logStream, }: RunCommandOptions) => Promise<void>;
-
-// @public (undocumented)
-export type RunCommandOptions = {
-    command: string;
-    args: string[];
-    logStream?: Writable;
-};
-
-// @public (undocumented)
-export type StageContext<T = {}> = {
-    values: TemplaterValues;
-    entity: TemplateEntityV1alpha1;
-    logger: Logger;
-    logStream: Writable;
-    workspacePath: string;
-} & T;
-
-// @public (undocumented)
-export interface StageInput<T = {}> {
-    // (undocumented)
-    handler(ctx: StageContext<T>): Promise<void | object>;
-    // (undocumented)
-    name: string;
-}
-
-// @public (undocumented)
-export interface StageResult extends StageInput {
-    // (undocumented)
-    endedAt?: number;
-    // (undocumented)
-    log: string[];
-    // (undocumented)
-    startedAt?: number;
-    // (undocumented)
-    status: ProcessorStatus;
-}
-
-// @public
-export type SupportedTemplatingKey = 'cookiecutter' | string;
 
 // @public (undocumented)
 export type TemplateAction<Input extends InputBase> = {
@@ -475,45 +176,6 @@ export class TemplateActionRegistry {
     // (undocumented)
     register<Parameters extends InputBase>(action: TemplateAction<Parameters>): void;
 }
-
-// @public (undocumented)
-export type TemplaterBase = {
-    run(opts: TemplaterRunOptions): Promise<void>;
-};
-
-// @public
-export type TemplaterBuilder = {
-    register(protocol: SupportedTemplatingKey, templater: TemplaterBase): void;
-    get(templater: string): TemplaterBase;
-};
-
-// @public (undocumented)
-export type TemplaterConfig = {
-    templater?: TemplaterBase;
-};
-
-// @public
-export type TemplaterRunOptions = {
-    workspacePath: string;
-    values: TemplaterValues;
-    logStream?: Writable;
-};
-
-// @public
-export type TemplaterRunResult = {
-    resultDir: string;
-};
-
-// @public (undocumented)
-export class Templaters implements TemplaterBuilder {
-    // (undocumented)
-    get(templaterId: string): TemplaterBase;
-    // (undocumented)
-    register(templaterKey: SupportedTemplatingKey, templater: TemplaterBase): void;
-    }
-
-// @public (undocumented)
-export type TemplaterValues = RequiredTemplateValues & Record<string, any>;
 
 
 // (No @packageDocumentation comment for this package)

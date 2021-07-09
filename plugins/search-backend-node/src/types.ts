@@ -67,7 +67,7 @@ export interface SearchEngine {
   /**
    * Add the given documents to the SearchEngine index of the given type.
    */
-  index(type: string, documents: IndexableDocument[]): void;
+  index(type: string, documents: IndexableDocument[]): Promise<void>;
 
   /**
    * Perform a search query against the SearchEngine.

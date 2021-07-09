@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 0.6.6
+
+### Patch Changes
+
+- ad5d05b69: Change catalog page layout to use Grid components to improve responsiveness
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/catalog-client@0.3.16
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.6.5
 
 ### Patch Changes

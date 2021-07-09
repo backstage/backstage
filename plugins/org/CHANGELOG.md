@@ -1,5 +1,15 @@
 # @backstage/plugin-org
 
+## 0.3.16
+
+### Patch Changes
+
+- 34352a79c: Add edit button to Group Profile Card
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.3.15
 
 ### Patch Changes

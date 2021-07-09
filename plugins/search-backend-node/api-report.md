@@ -7,7 +7,7 @@
 import { DocumentCollator } from '@backstage/search-common';
 import { DocumentDecorator } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
@@ -27,14 +27,14 @@ export class IndexBuilder {
 // @public (undocumented)
 export class LunrSearchEngine implements SearchEngine {
     constructor({ logger }: {
-        logger: Logger;
+        logger: Logger_2;
     });
     // (undocumented)
     protected docStore: Record<string, IndexableDocument>;
     // (undocumented)
-    index(type: string, documents: IndexableDocument[]): void;
+    index(type: string, documents: IndexableDocument[]): Promise<void>;
     // (undocumented)
-    protected logger: Logger;
+    protected logger: Logger_2;
     // (undocumented)
     protected lunrIndices: Record<string, lunr_2.Index>;
     // (undocumented)
@@ -48,7 +48,7 @@ export class LunrSearchEngine implements SearchEngine {
 // @public
 export class Scheduler {
     constructor({ logger }: {
-        logger: Logger;
+        logger: Logger_2;
     });
     addToSchedule(task: Function, interval: number): void;
     start(): void;
@@ -57,7 +57,7 @@ export class Scheduler {
 
 // @public
 export interface SearchEngine {
-    index(type: string, documents: IndexableDocument[]): void;
+    index(type: string, documents: IndexableDocument[]): Promise<void>;
     query(query: SearchQuery): Promise<SearchResultSet>;
     setTranslator(translator: QueryTranslator): void;
 }

@@ -11,10 +11,39 @@ import { Config } from '@backstage/config';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import { LocationSpec } from '@backstage/catalog-model';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { UserEntity } from '@backstage/catalog-model';
+
+// @public (undocumented)
+export function defaultGroupTransformer(vendor: LdapVendor, config: GroupConfig, entry: SearchEntry): Promise<GroupEntity | undefined>;
+
+// @public (undocumented)
+export function defaultUserTransformer(vendor: LdapVendor, config: UserConfig, entry: SearchEntry): Promise<UserEntity | undefined>;
+
+// @public
+export type GroupConfig = {
+    dn: string;
+    options: SearchOptions;
+    set?: {
+        [path: string]: JsonValue;
+    };
+    map: {
+        rdn: string;
+        name: string;
+        description: string;
+        type: string;
+        displayName: string;
+        email?: string;
+        picture?: string;
+        memberOf: string;
+        members: string;
+    };
+};
+
+// @public
+export type GroupTransformer = (vendor: LdapVendor, config: GroupConfig, group: SearchEntry) => Promise<GroupEntity | undefined>;
 
 // @public
 export const LDAP_DN_ANNOTATION = "backstage.io/ldap-dn";
@@ -29,7 +58,7 @@ export const LDAP_UUID_ANNOTATION = "backstage.io/ldap-uuid";
 export class LdapClient {
     constructor(client: Client);
     // (undocumented)
-    static create(logger: Logger, target: string, bind?: BindConfig): Promise<LdapClient>;
+    static create(logger: Logger_2, target: string, bind?: BindConfig): Promise<LdapClient>;
     getRootDSE(): Promise<SearchEntry | undefined>;
     getVendor(): Promise<LdapVendor>;
     search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
@@ -39,15 +68,19 @@ export class LdapClient {
 export class LdapOrgReaderProcessor implements CatalogProcessor {
     constructor(options: {
         providers: LdapProviderConfig[];
-        logger: Logger;
+        logger: Logger_2;
+        groupTransformer?: GroupTransformer;
+        userTransformer?: UserTransformer;
     });
     // (undocumented)
     static fromConfig(config: Config, options: {
-        logger: Logger;
+        logger: Logger_2;
+        groupTransformer?: GroupTransformer;
+        userTransformer?: UserTransformer;
     }): LdapOrgReaderProcessor;
     // (undocumented)
     readLocation(location: LocationSpec, _optional: boolean, emit: CatalogProcessorEmit): Promise<boolean>;
-}
+    }
 
 // @public
 export type LdapProviderConfig = {
@@ -58,13 +91,48 @@ export type LdapProviderConfig = {
 };
 
 // @public
+export type LdapVendor = {
+    dnAttributeName: string;
+    uuidAttributeName: string;
+    decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
+};
+
+// @public
+export function mapStringAttr(entry: SearchEntry, vendor: LdapVendor, attributeName: string | undefined, setter: (value: string) => void): void;
+
+// @public
 export function readLdapConfig(config: Config): LdapProviderConfig[];
 
 // @public
-export function readLdapOrg(client: LdapClient, userConfig: UserConfig, groupConfig: GroupConfig): Promise<{
+export function readLdapOrg(client: LdapClient, userConfig: UserConfig, groupConfig: GroupConfig, options: {
+    groupTransformer?: GroupTransformer;
+    userTransformer?: UserTransformer;
+    logger: Logger_2;
+}): Promise<{
     users: UserEntity[];
     groups: GroupEntity[];
 }>;
+
+// @public
+export type UserConfig = {
+    dn: string;
+    options: SearchOptions;
+    set?: {
+        [path: string]: JsonValue;
+    };
+    map: {
+        rdn: string;
+        name: string;
+        description?: string;
+        displayName: string;
+        email: string;
+        picture?: string;
+        memberOf: string;
+    };
+};
+
+// @public
+export type UserTransformer = (vendor: LdapVendor, config: UserConfig, user: SearchEntry) => Promise<UserEntity | undefined>;
 
 
 // (No @packageDocumentation comment for this package)

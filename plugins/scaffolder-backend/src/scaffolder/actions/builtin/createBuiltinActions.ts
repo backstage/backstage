@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplaterBuilder } from '../../stages';
+import { Config } from '@backstage/config';
 import {
-  createCatalogRegisterAction,
   createCatalogWriteAction,
+  createCatalogRegisterAction,
 } from './catalog';
+
 import { createDebugLogAction } from './debug';
-import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
+import {
+  createFetchCookiecutterAction,
+  createFetchPlainAction,
+  createFetchTemplateAction,
+} from './fetch';
+import {
+  createFilesystemDeleteAction,
+  createFilesystemRenameAction,
+} from './filesystem';
 import {
   createPublishAzureAction,
   createPublishBitbucketAction,
@@ -36,9 +45,16 @@ export const createBuiltinActions = (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  templaters: TemplaterBuilder;
+  containerRunner: ContainerRunner;
+  config: Config;
 }) => {
-  const { reader, integrations, templaters, catalogClient } = options;
+  const {
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+  } = options;
 
   return [
     createFetchPlainAction({
@@ -48,25 +64,35 @@ export const createBuiltinActions = (options: {
     createFetchCookiecutterAction({
       reader,
       integrations,
-      templaters,
+      containerRunner,
+    }),
+    createFetchTemplateAction({
+      integrations,
+      reader,
     }),
     createPublishGithubAction({
       integrations,
+      config,
     }),
     createPublishGithubPullRequestAction({
       integrations,
     }),
     createPublishGitlabAction({
       integrations,
+      config,
     }),
     createPublishBitbucketAction({
       integrations,
+      config,
     }),
     createPublishAzureAction({
       integrations,
+      config,
     }),
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
     createCatalogWriteAction(),
+    createFilesystemDeleteAction(),
+    createFilesystemRenameAction(),
   ];
 };

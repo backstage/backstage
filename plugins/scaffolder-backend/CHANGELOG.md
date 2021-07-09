@@ -1,5 +1,106 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.13.0
+
+### Minor Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+- 7cad18e2f: Adding `config: Config` as a required argument to `createBuiltinActions` and downstream methods in order to support configuration of the default git author used for Scaffolder commits.
+
+  The affected methods are:
+
+  - `createBuiltinActions`
+  - `createPublishGithubAction`
+  - `createPublishGitlabAction`
+  - `createPublishBitbucketAction`
+  - `createPublishAzureAction`
+
+  Call sites to these methods will need to be migrated to include the new `config` argument. See `createRouter` in `plugins/scaffolder-backend/src/service/router.ts` for an example of adding this new argument.
+
+  To configure the default git author, use the `defaultAuthor` key under `scaffolder` in `app-config.yaml`:
+
+  ```yaml
+  scaffolder:
+    defaultAuthor:
+      name: Example
+      email: example@example.com
+  ```
+
+### Patch Changes
+
+- dad481793: add default branch property for publish GitLab, Bitbucket and Azure actions
+- 62c2f10f7: Added filesystem remove/rename built-in actions
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- 11e66e804: bump azure-devops-node to 10.2.2
+- 7a3ad92b5: Export the `fetchContents` from scaffolder-backend
+- c2db794f5: add defaultBranch property for publish GitHub action
+- 253136fba: removing mandatory of protection for the default branch, that could be handled by the GitHub automation in async manner, thus throwing floating errors
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+  - @backstage/catalog-client@0.3.16
+
 ## 0.12.4
 
 ### Patch Changes

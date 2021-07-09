@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { repoPickerValidation } from './validation';
 import { FieldValidation } from '@rjsf/core';
 
@@ -22,7 +23,7 @@ describe('RepoPicker Validation', () => {
       addError: jest.fn(),
     } as unknown) as FieldValidation);
 
-  it('validaties when no repo', () => {
+  it('validates when no repo', () => {
     const mockFieldValidation = fieldValidator();
 
     repoPickerValidation('github.com?owner=a', mockFieldValidation);

@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
  * A generic interface for fetching plain data from URLs.
  */
 export type UrlReader = {
+  /* Used to read a single file and return its content. */
   read(url: string): Promise<Buffer>;
 
   /**
@@ -32,8 +33,9 @@ export type UrlReader = {
    */
   readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
 
+  /* Used to read a file tree and download as a directory. */
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-
+  /* Used to search a file in a tree using a glob pattern. */
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 

@@ -26,7 +26,7 @@ export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
     id: 'debug:log',
     description:
-      'Writes a message into the log or list all files in the workspace.',
+      'Writes a message into the log or lists all files in the workspace.',
     schema: {
       input: {
         type: 'object',

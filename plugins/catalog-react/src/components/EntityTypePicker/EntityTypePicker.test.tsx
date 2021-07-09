@@ -22,7 +22,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { catalogApiRef } from '../../api';
-import { EntityKindFilter, EntityTypeFilter } from '../../types';
+import { EntityKindFilter, EntityTypeFilter } from '../../filters';
 
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
@@ -123,7 +123,7 @@ describe('<EntityTypePicker/>', () => {
     fireEvent.click(rendered.getByText('Service'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      type: new EntityTypeFilter('service'),
+      type: new EntityTypeFilter(['service']),
     });
 
     fireEvent.click(input);

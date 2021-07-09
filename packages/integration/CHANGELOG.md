@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 0.5.8
+
+### Patch Changes
+
+- 43a4ef644: Do not throw in `ScmIntegration` `byUrl` for invalid URLs
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- b691a938e: Fix downloads from repositories located at bitbucket.org
+
 ## 0.5.7
 
 ### Patch Changes
