@@ -230,6 +230,47 @@ describe('DocsSynchronizer', () => {
       expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
     });
 
+    it('should forward build errors', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      MockedConfigReader.prototype.getString.mockReturnValue('local');
+
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          uid: '0',
+          name: 'test',
+          namespace: 'default',
+          annotations: {
+            'sda.se/release-notes-location':
+              'github-releases:https://github.com/backstage/backstage',
+          },
+        },
+      };
+
+      catalogClient.getEntityByName.mockResolvedValue(entity);
+
+      const error = new Error('Some random error');
+      MockedDocsBuilder.prototype.build.mockRejectedValue(error);
+
+      await docsSynchronizer.doSync(() => mockResponseHandler, {
+        kind: 'Component',
+        namespace: 'default',
+        name: 'test',
+        token: undefined,
+      });
+
+      expect(mockResponseHandler.log).toBeCalledTimes(1);
+      expect(mockResponseHandler.log).toBeCalledWith(
+        expect.stringMatching(
+          /error.*: Failed to build the docs page: Some random error/,
+        ),
+      );
+      expect(mockResponseHandler.finish).toBeCalledTimes(0);
+      expect(mockResponseHandler.error).toBeCalledTimes(1);
+      expect(mockResponseHandler.error).toBeCalledWith(error);
+    });
+
     it('rejects when entity is not found', async () => {
       catalogClient.getEntityByName.mockResolvedValue(undefined);
 

@@ -23,7 +23,7 @@ import {
   PublisherBase,
 } from '@backstage/techdocs-common';
 import { PassThrough } from 'stream';
-import { Logger } from 'winston';
+import * as winston from 'winston';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 
 export type DocsSynchronizerSyncOpts = {
@@ -36,7 +36,7 @@ export class DocsSynchronizer {
   private readonly preparers: PreparerBuilder;
   private readonly generators: GeneratorBuilder;
   private readonly publisher: PublisherBase;
-  private readonly logger: Logger;
+  private readonly logger: winston.Logger;
   private readonly config: Config;
   private readonly catalogClient: CatalogApi;
 
@@ -51,7 +51,7 @@ export class DocsSynchronizer {
     preparers: PreparerBuilder;
     generators: GeneratorBuilder;
     publisher: PublisherBase;
-    logger: Logger;
+    logger: winston.Logger;
     config: Config;
     catalogClient: CatalogApi;
   }) {
@@ -88,11 +88,25 @@ export class DocsSynchronizer {
 
     // open the event-stream
     const { log, error, finish } = initResponseHandler();
+
+    // create a new logger to log data to the caller
+    const taskLogger = winston.createLogger({
+      level: process.env.LOG_LEVEL || 'info',
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.timestamp(),
+        winston.format.simple(),
+      ),
+      defaultMeta: {},
+    });
+
     // create an in-memory stream to forward logs to the event-stream
     const logStream = new PassThrough();
     logStream.on('data', async data => {
       log(data.toString().trim());
     });
+
+    taskLogger.add(new winston.transports.Stream({ stream: logStream }));
 
     // check if the last update check was too recent
     if (!shouldCheckForUpdate(entity.metadata.uid)) {
@@ -112,7 +126,7 @@ export class DocsSynchronizer {
       preparers: this.preparers,
       generators: this.generators,
       publisher: this.publisher,
-      logger: this.logger,
+      logger: taskLogger,
       entity,
       config: this.config,
       logStream,
@@ -120,10 +134,18 @@ export class DocsSynchronizer {
 
     let foundDocs = false;
 
-    const updated = await docsBuilder.build();
+    try {
+      const updated = await docsBuilder.build();
 
-    if (!updated) {
-      finish({ updated: false });
+      if (!updated) {
+        finish({ updated: false });
+        return;
+      }
+    } catch (e) {
+      const msg = `Failed to build the docs page: ${e.message}`;
+      taskLogger.error(msg);
+      this.logger.error(msg, e);
+      error(e);
       return;
     }
 

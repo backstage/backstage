@@ -120,6 +120,7 @@ export class DocsBuilder {
     try {
       const preparerResponse = await this.preparer.prepare(this.entity, {
         etag: storedEtag,
+        logger: this.logger,
       });
 
       preparedDir = preparerResponse.preparedDir;
@@ -171,6 +172,7 @@ export class DocsBuilder {
       outputDir,
       parsedLocationAnnotation,
       etag: newEtag,
+      logger: this.logger,
       logStream: this.logStream,
     });
 

@@ -17,8 +17,6 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
-import { PassThrough } from 'stream';
-import * as winston from 'winston';
 import { Logger } from 'winston';
 import {
   addBuildTimestampMetadata,
@@ -34,18 +32,6 @@ type TechdocsGeneratorOptions = {
   // or generate without the container.
   // This is used to avoid running into Docker in Docker environment.
   runGeneratorIn: string;
-};
-
-const createStream = (): [string[], PassThrough] => {
-  const log = [] as Array<string>;
-
-  const stream = new PassThrough();
-  stream.on('data', chunk => {
-    const textValue = chunk.toString().trim();
-    if (textValue?.length > 1) log.push(textValue);
-  });
-
-  return [log, stream];
 };
 
 export class TechdocsGenerator implements GeneratorBase {
@@ -75,25 +61,9 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     parsedLocationAnnotation,
     etag,
-    logStream: callerLogStream,
+    logger: childLogger,
+    logStream,
   }: GeneratorRunOptions): Promise<void> {
-    // create a copy of the logger. we want to keep all settings but want to add a new logger target.
-    // without the copy, we would add the target to the original (parent) logger.
-    const childLogger = winston.createLogger(this.logger);
-
-    const [log, logStream] = createStream();
-
-    // Forward the logs to the caller
-    if (callerLogStream) {
-      childLogger.add(
-        new winston.transports.Stream({ stream: callerLogStream }),
-      );
-      // don't use logStream.pipe(callerLogStream) because it would block others to write to callerLogStream
-      logStream.on('data', data => {
-        callerLogStream.write(data);
-      });
-    }
-
     // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
     // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
@@ -153,7 +123,6 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      childLogger.error(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );

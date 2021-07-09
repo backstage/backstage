@@ -53,6 +53,7 @@ export type GeneratorRunOptions = {
     outputDir: string;
     parsedLocationAnnotation?: ParsedLocationAnnotation;
     etag?: string;
+    logger: Logger;
     logStream?: Writable;
 };
 
@@ -167,7 +168,7 @@ export class TechdocsGenerator implements GeneratorBase {
         config: Config;
     });
     // (undocumented)
-    run({ inputDir, outputDir, parsedLocationAnnotation, etag, logStream: callerLogStream, }: GeneratorRunOptions): Promise<void>;
+    run({ inputDir, outputDir, parsedLocationAnnotation, etag, logger: childLogger, logStream, }: GeneratorRunOptions): Promise<void>;
 }
 
 // @public

@@ -2,5 +2,5 @@
 '@backstage/techdocs-common': patch
 ---
 
-Provide an optional `logStream: Writable` argument to the `GeneratorBase#run(...)` command.
-The stream receives all log messages that are emitted during the generator run.
+Provide optional `logger: Logger` and `logStream: Writable` arguments to the `GeneratorBase#run(...)` command.
+They receive all log messages that are emitted during the generator run.
