@@ -93,26 +93,25 @@ proxy:
       Authorization:
         $env: SENTRY_TOKEN
 
-  '/dfds/developer-automation/capability':
-    target: https://api.hellman.oxygen.dfds.cloud/capability/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_CAPABILITY_SERVICE_TOKEN
+  '/dfds-api/capsvc':
+    target: ${DFDS_API_CAPSVC_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
 
-  '/dfds/developer-automation/cost-janitor':
-    target: https://api.hellman.oxygen.dfds.cloud/costjanitor2/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_COST_JANITOR_TOKEN
+  '/dfds-api/inventa':
+    target: ${DFDS_API_INVENTA_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
 
-  '/dfds/developer-automation/azuredevops':
-    target: https://api.hellman.oxygen.dfds.cloud/azuredevops/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_COST_JANITOR_TOKEN
+  '/dfds-api/cost-janitor':
+    target: ${DFDS_API_COST_JANITOR_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
+  '/dfds-api/azure-devops-janitor':
+    target: ${DFDS_API_AZURE_DEVOPS_JANITOR_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
 
 organization:
   name: DFDS
