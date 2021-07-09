@@ -53,7 +53,7 @@ export type GeneratorRunOptions = {
     outputDir: string;
     parsedLocationAnnotation?: ParsedLocationAnnotation;
     etag?: string;
-    logger: Logger;
+    logger: Logger_2;
     logStream?: Writable;
 };
 
