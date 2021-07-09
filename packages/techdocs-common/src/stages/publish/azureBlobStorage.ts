@@ -289,4 +289,66 @@ export class AzureBlobStoragePublish implements PublisherBase {
       .getBlockBlobClient(`${entityRootDir}/index.html`)
       .exists();
   }
+
+  protected toLowerCase(originalName: string): string {
+    const [namespace, kind, name, ...parts] = originalName.split('/');
+    const lowerNamespace = namespace.toLowerCase();
+    const lowerKind = kind.toLowerCase();
+    const lowerName = name.toLowerCase();
+    return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+  }
+
+  protected async renameBlob(
+    originalName: string,
+    newName: string,
+    removeOriginal = false,
+  ): Promise<void> {
+    const container = this.storageClient.getContainerClient(this.containerName);
+    const blob = container.getBlobClient(newName);
+    const { url } = container.getBlobClient(originalName);
+    const response = await blob.beginCopyFromURL(url);
+    await response.pollUntilDone();
+    if (removeOriginal) {
+      await container.deleteBlob(originalName);
+    }
+  }
+
+  protected async renameBlobToLowerCase(
+    originalName: string,
+    removeOriginal: boolean,
+  ) {
+    const newName = this.toLowerCase(originalName);
+    if (originalName === newName) return;
+    try {
+      this.logger.debug(`Migrating ${originalName}`);
+      await this.renameBlob(originalName, newName, removeOriginal);
+    } catch (e) {
+      this.logger.warn(`Unable to migrate ${originalName}: ${e.message}`);
+    }
+  }
+
+  /**
+   * todo: Put this documentation somewhere the user will actually see and read
+   * it.
+   */
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    const promises = [];
+    const limiter = limiterFactory(concurrency);
+    const container = this.storageClient.getContainerClient(this.containerName);
+
+    for await (const blob of container.listBlobsFlat()) {
+      promises.push(
+        limiter(
+          this.renameBlobToLowerCase.bind(this),
+          blob.name,
+          removeOriginal,
+        ),
+      );
+    }
+
+    await Promise.all(promises);
+  }
 }
