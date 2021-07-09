@@ -18,6 +18,8 @@ import { act } from '@testing-library/react';
 
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
+const defaultBreakpoint: Breakpoint = 'xl';
+
 const queryToBreakpoint = {
   '(min-width:1920px)': 'xl',
   '(min-width:1280px)': 'lg',
@@ -26,14 +28,17 @@ const queryToBreakpoint = {
   '(min-width:0px)': 'xs',
 } as Record<string, Breakpoint>;
 
-function toBreakpoint(query: string) {
-  const breakpoint = queryToBreakpoint[query];
-  if (!breakpoint) {
-    throw new Error(
-      `received unknown media query in breakpoint mock: '${query}'`,
-    );
-  }
-  return breakpoint;
+/**
+ * Converts media query string to Breakpoint.
+ * Chooses the default breakpoint if no breakpoint is set in the media query.
+ *
+ * @param query media query string
+ * @returns Breakpoint
+ */
+function toBreakpoint(query: string): Breakpoint {
+  return queryToBreakpoint[query]
+    ? queryToBreakpoint[query]
+    : defaultBreakpoint;
 }
 
 type Listener = (event: { matches: boolean }) => void;
@@ -41,6 +46,8 @@ type Listener = (event: { matches: boolean }) => void;
 interface QueryList {
   addListener(listener: Listener): void;
   removeListener(listener: Listener): void;
+  addEventListener(listener: Listener): void;
+  removeEventListener(listener: Listener): void;
   matches: boolean;
 }
 
@@ -50,12 +57,15 @@ interface Query {
   listeners: Set<Listener>;
 }
 
-export default function mockBreakpoint(initialBreakpoint: Breakpoint = 'xl') {
+export default function mockBreakpoint(
+  initialBreakpoint: Breakpoint = defaultBreakpoint,
+) {
   let currentBreakpoint = initialBreakpoint;
   const queries = Array<Query>();
 
   const previousMatchMedia: any = (window as any).matchMedia;
 
+  // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
   (window as any).matchMedia = (query: string): QueryList => {
     const listeners = new Set<Listener>();
 
@@ -64,6 +74,12 @@ export default function mockBreakpoint(initialBreakpoint: Breakpoint = 'xl') {
         listeners.add(listener);
       },
       removeListener(listener) {
+        listeners.delete(listener);
+      },
+      addEventListener(listener) {
+        listeners.add(listener);
+      },
+      removeEventListener(listener) {
         listeners.delete(listener);
       },
       matches: toBreakpoint(query) === currentBreakpoint,
