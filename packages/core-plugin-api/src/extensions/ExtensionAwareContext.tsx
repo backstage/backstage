@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-export { attachComponentData, getComponentData } from './componentData';
-export {
-  createReactExtension,
-  createRoutableExtension,
-  createComponentExtension,
-} from './extensions';
-export { useElementFilter } from './useElementFilter';
-export { useExtensionAwareness } from './ExtensionAwareContext';
-export type { ElementCollection } from './useElementFilter';
+import { createContext, useContext } from 'react';
+
+export type ExtensionManifest = {
+  pluginId: string;
+  componentName: string;
+};
+
+export const ExtensionAwareContext = createContext<ExtensionManifest>({
+  pluginId: 'root',
+  componentName: 'App',
+});
+
+export const useExtensionAwareness = () => {
+  return useContext(ExtensionAwareContext);
+};
