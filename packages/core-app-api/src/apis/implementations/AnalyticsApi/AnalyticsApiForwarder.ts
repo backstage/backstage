@@ -42,10 +42,11 @@ export class AnalyticsApiForwarder implements AnalyticsApi {
         value?: number,
         context: AnalyticsEventContext = {},
       ) => {
-        const event = { verb, noun, value };
         subject.next({
-          ...context,
-          ...event,
+          verb,
+          noun,
+          value,
+          context,
           plugin: extension.pluginId,
           componentName: extension.componentName,
         });

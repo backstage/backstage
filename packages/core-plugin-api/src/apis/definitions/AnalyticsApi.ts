@@ -59,6 +59,12 @@ export type AnalyticsEvent = {
    * - The amount of time that has elapsed
    */
   value?: number;
+
+  /**
+   * Optional context with any additional dimensions or metrics that could be
+   * forwarded on to analytics systems.
+   */
+  context?: AnalyticsEventContext;
 };
 
 /**
