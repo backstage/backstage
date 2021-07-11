@@ -47,7 +47,7 @@ export function useBuilds({ branch }: { branch?: string } = {}) {
 
   const restartBuild = async (jobName: string, buildNumber: string) => {
     try {
-      await api.retry(entityName, jobName, buildNumber);
+      await api.retry({ entity: entityName, jobName, buildNumber });
     } catch (e) {
       errorApi.post(e);
     }
@@ -55,7 +55,10 @@ export function useBuilds({ branch }: { branch?: string } = {}) {
 
   const { loading, value: projects, retry } = useAsyncRetry(async () => {
     try {
-      const build = await api.getProjects(getEntityName(entity), { branch });
+      const build = await api.getProjects({
+        entity: getEntityName(entity),
+        filter: { branch },
+      });
 
       setTotal(build.length);
 

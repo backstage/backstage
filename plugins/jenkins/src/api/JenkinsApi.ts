@@ -78,13 +78,13 @@ export interface JenkinsApi {
    *
    * Typically, a folder job will be identified and the backend plugin will recursively look for projects (jobs with builds) within that folder.
    *
-   * @param entity the entity whose jobs should be retrieved.
-   * @param filter a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins)
+   * @param options.entity the entity whose jobs should be retrieved.
+   * @param options.filter a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins)
    */
-  getProjects(
-    entity: EntityRef,
-    filter: { branch?: string },
-  ): Promise<Project[]>;
+  getProjects(options: {
+    entity: EntityRef;
+    filter: { branch?: string };
+  }): Promise<Project[]>;
 
   /**
    * Get a single build.
@@ -92,21 +92,21 @@ export interface JenkinsApi {
    * This takes an entity to support selecting between multiple jenkins instances.
    *
    * TODO: abstract jobName (so we could support differentiating between the same named job on multiple instances).
-   * @param entity
-   * @param jobName
-   * @param buildNumber
+   * @param options.entity
+   * @param options.jobName
+   * @param options.buildNumber
    */
-  getBuild(
-    entity: EntityName,
-    jobName: string,
-    buildNumber: string,
-  ): Promise<Build>;
+  getBuild(options: {
+    entity: EntityName;
+    jobName: string;
+    buildNumber: string;
+  }): Promise<Build>;
 
-  retry(
-    entity: EntityName,
-    jobName: string,
-    buildNumber: string,
-  ): Promise<void>;
+  retry(options: {
+    entity: EntityName;
+    jobName: string;
+    buildNumber: string;
+  }): Promise<void>;
 }
 
 export class JenkinsClient implements JenkinsApi {
@@ -121,10 +121,13 @@ export class JenkinsClient implements JenkinsApi {
     this.identityApi = options.identityApi;
   }
 
-  async getProjects(
-    entity: EntityName,
-    filter: { branch?: string },
-  ): Promise<Project[]> {
+  async getProjects({
+    entity,
+    filter,
+  }: {
+    entity: EntityName;
+    filter: { branch?: string };
+  }): Promise<Project[]> {
     const url = new URL(
       `${await this.discoveryApi.getBaseUrl(
         'jenkins',
@@ -149,17 +152,25 @@ export class JenkinsClient implements JenkinsApi {
       (await response.json()).projects?.map((p: Project) => ({
         ...p,
         onRestartClick: async () => {
-          await this.retry(entity, p.fullName, String(p.lastBuild.number));
+          await this.retry({
+            entity,
+            jobName: p.fullName,
+            buildNumber: String(p.lastBuild.number),
+          });
         },
       })) || []
     );
   }
 
-  async getBuild(
-    entity: EntityName,
-    jobName: string,
-    buildNumber: string,
-  ): Promise<Build> {
+  async getBuild({
+    entity,
+    jobName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobName: string;
+    buildNumber: string;
+  }): Promise<Build> {
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
@@ -179,11 +190,15 @@ export class JenkinsClient implements JenkinsApi {
     return (await response.json()).build;
   }
 
-  async retry(
-    entity: EntityName,
-    jobName: string,
-    buildNumber: string,
-  ): Promise<void> {
+  async retry({
+    entity,
+    jobName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobName: string;
+    buildNumber: string;
+  }): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(

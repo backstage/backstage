@@ -42,7 +42,7 @@ export function useBuildWithSteps({
   const getBuildWithSteps = useCallback(async () => {
     try {
       const entityName = await getEntityName(entity);
-      return api.getBuild(entityName, jobName, buildNumber);
+      return api.getBuild({ entity: entityName, jobName, buildNumber });
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
