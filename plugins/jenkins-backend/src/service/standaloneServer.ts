@@ -36,7 +36,7 @@ export async function startStandaloneServer(
     logger,
     jenkinsInfoProvider: {
       async getInstance(_: { entityRef: EntityRef }): Promise<JenkinsInfo> {
-        return { baseUrl: 'https://example.com/', jobName: 'build-foo' };
+        return { baseUrl: 'https://example.com/', jobFullName: 'build-foo' };
       },
     },
   });

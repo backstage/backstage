@@ -23,10 +23,10 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
     // (undocumented)
     getInstance(opt: {
         entityRef: EntityName;
-        jobName?: string;
+        jobFullName?: string;
     }): Promise<JenkinsInfo>;
     // (undocumented)
-    static readonly NEW_JENKINS_ANNOTATION = "jenkins.io/job-slug";
+    static readonly NEW_JENKINS_ANNOTATION = "jenkins.io/job-full-name";
     // (undocumented)
     static readonly OLD_JENKINS_ANNOTATION = "jenkins.io/github-folder";
 }
@@ -38,7 +38,7 @@ export interface JenkinsInfo {
     // (undocumented)
     headers?: Record<string, string | string[]>;
     // (undocumented)
-    jobName: string;
+    jobFullName: string;
 }
 
 // @public (undocumented)
@@ -46,7 +46,7 @@ export interface JenkinsInfoProvider {
     // (undocumented)
     getInstance(options: {
         entityRef: EntityName;
-        jobName?: string;
+        jobFullName?: string;
     }): Promise<JenkinsInfo>;
 }
 

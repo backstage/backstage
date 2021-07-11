@@ -25,14 +25,14 @@ const INTERVAL_AMOUNT = 1500;
 
 /**
  * Hook to expose a specific build.
- * @param jobName the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
+ * @param jobFullName the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
  * @param buildNumber the number of the build. e.g. "13"
  */
 export function useBuildWithSteps({
-  jobName,
+  jobFullName,
   buildNumber,
 }: {
-  jobName: string;
+  jobFullName: string;
   buildNumber: string;
 }) {
   const api = useApi(jenkinsApiRef);
@@ -42,12 +42,12 @@ export function useBuildWithSteps({
   const getBuildWithSteps = useCallback(async () => {
     try {
       const entityName = await getEntityName(entity);
-      return api.getBuild({ entity: entityName, jobName, buildNumber });
+      return api.getBuild({ entity: entityName, jobFullName, buildNumber });
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [buildNumber, jobName, entity, api, errorApi]);
+  }, [buildNumber, jobFullName, entity, api, errorApi]);
 
   const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
     getBuildWithSteps,

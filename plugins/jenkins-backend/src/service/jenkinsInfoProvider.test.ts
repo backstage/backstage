@@ -61,7 +61,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'teamA/artistLookup-build',
           },
         },
       },
@@ -75,7 +75,7 @@ describe('DefaultJenkinsInfoProvider', () => {
         Authorization:
           'Basic YmFja3N0YWdlIC0gYm90OjEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNlZGYwMTI=',
       },
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -96,7 +96,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'teamA/artistLookup-build',
           },
         },
       },
@@ -106,7 +106,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -133,7 +133,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'teamA/artistLookup-build',
           },
         },
       },
@@ -143,7 +143,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -170,7 +170,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'other:teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'other:teamA/artistLookup-build',
           },
         },
       },
@@ -180,7 +180,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins-other.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -196,7 +196,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'default:teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'default:teamA/artistLookup-build',
           },
         },
       },
@@ -206,7 +206,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -232,7 +232,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 
@@ -253,7 +253,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       {
         metadata: {
           annotations: {
-            'jenkins.io/job-slug': 'other:teamA/artistLookup-build',
+            'jenkins.io/job-full-name': 'other:teamA/artistLookup-build',
           },
         },
       },
@@ -263,7 +263,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toMatchObject({
       baseUrl: 'https://jenkins-other.example.com',
-      jobName: 'teamA/artistLookup-build',
+      jobFullName: 'teamA/artistLookup-build',
     });
   });
 });

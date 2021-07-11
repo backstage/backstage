@@ -67,18 +67,18 @@ export class JenkinsApiImpl {
 
     if (branch) {
       // we have been asked to filter to a single branch.
-      // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
+      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       // TODO: extract a strategy interface for this
       const job = await client.job.get({
-        name: `${jenkinsInfo.jobName}/${branch}`,
+        name: `${jenkinsInfo.jobFullName}/${branch}`,
         tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
       });
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering
-      // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
+      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       const folder = await client.job.get({
-        name: jenkinsInfo.jobName,
+        name: jenkinsInfo.jobFullName,
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
         // at all.
@@ -107,17 +107,17 @@ export class JenkinsApiImpl {
    */
   async getBuild(
     jenkinsInfo: JenkinsInfo,
-    jobName: string,
+    jobFullName: string,
     buildNumber: number,
   ) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
 
     const project = await client.job.get({
-      name: jobName,
+      name: jobFullName,
       depth: 1,
     });
 
-    const build = await client.build.get(jobName, buildNumber);
+    const build = await client.build.get(jobFullName, buildNumber);
     const jobScmInfo = JenkinsApiImpl.extractScmDetailsFromJob(project);
 
     return this.augmentBuild(build, jobScmInfo);
@@ -127,7 +127,7 @@ export class JenkinsApiImpl {
    * Trigger a build of a project
    * @see ../../../jenkins/src/api/JenkinsApi.ts#retry
    */
-  async buildProject(jenkinsInfo: JenkinsInfo, jobName: string) {
+  async buildProject(jenkinsInfo: JenkinsInfo, jobFullName: string) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
 
     // looks like the current SDK only supports triggering a new build
@@ -135,7 +135,7 @@ export class JenkinsApiImpl {
 
     // Note Jenkins itself has concepts of rebuild and replay on a job.
     // The latter should be possible to trigger with a POST to /replay/rebuild
-    await client.job.build(jobName);
+    await client.job.build(jobFullName);
   }
 
   // private helper methods

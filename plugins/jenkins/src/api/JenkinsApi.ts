@@ -91,20 +91,20 @@ export interface JenkinsApi {
    *
    * This takes an entity to support selecting between multiple jenkins instances.
    *
-   * TODO: abstract jobName (so we could support differentiating between the same named job on multiple instances).
+   * TODO: abstract jobFullName (so we could support differentiating between the same named job on multiple instances).
    * @param options.entity
-   * @param options.jobName
+   * @param options.jobFullName
    * @param options.buildNumber
    */
   getBuild(options: {
     entity: EntityName;
-    jobName: string;
+    jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
 
   retry(options: {
     entity: EntityName;
-    jobName: string;
+    jobFullName: string;
     buildNumber: string;
   }): Promise<void>;
 }
@@ -154,7 +154,7 @@ export class JenkinsClient implements JenkinsApi {
         onRestartClick: async () => {
           await this.retry({
             entity,
-            jobName: p.fullName,
+            jobFullName: p.fullName,
             buildNumber: String(p.lastBuild.number),
           });
         },
@@ -164,11 +164,11 @@ export class JenkinsClient implements JenkinsApi {
 
   async getBuild({
     entity,
-    jobName,
+    jobFullName,
     buildNumber,
   }: {
     entity: EntityName;
-    jobName: string;
+    jobFullName: string;
     buildNumber: string;
   }): Promise<Build> {
     const url = `${await this.discoveryApi.getBaseUrl(
@@ -176,7 +176,7 @@ export class JenkinsClient implements JenkinsApi {
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
       entity.kind,
     )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
-      jobName,
+      jobFullName,
     )}/${encodeURIComponent(buildNumber)}`;
 
     const idToken = await this.identityApi.getIdToken();
@@ -192,11 +192,11 @@ export class JenkinsClient implements JenkinsApi {
 
   async retry({
     entity,
-    jobName,
+    jobFullName,
     buildNumber,
   }: {
     entity: EntityName;
-    jobName: string;
+    jobFullName: string;
     buildNumber: string;
   }): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl(
@@ -204,7 +204,7 @@ export class JenkinsClient implements JenkinsApi {
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
       entity.kind,
     )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
-      jobName,
+      jobFullName,
     )}/${encodeURIComponent(buildNumber)}:rebuild`;
 
     const idToken = await this.identityApi.getIdToken();

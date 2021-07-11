@@ -31,12 +31,12 @@ const mockedJenkinsClient = {
 const mockedJenkins = jenkins as jest.Mocked<any>;
 mockedJenkins.mockReturnValue(mockedJenkinsClient);
 
-const jobName = 'example-jobName/foo';
+const jobFullName = 'example-jobName/foo';
 const buildNumber = 19;
 const jenkinsInfo: JenkinsInfo = {
   baseUrl: 'https://jenkins.example.com',
   headers: { headerName: 'headerValue' },
-  jobName: 'example-jobName',
+  jobFullName: 'example-jobName',
 };
 
 describe('JenkinsApi', () => {
@@ -74,7 +74,7 @@ describe('JenkinsApi', () => {
           promisify: true,
         });
         expect(mockedJenkinsClient.job.get).toBeCalledWith({
-          name: jenkinsInfo.jobName,
+          name: jenkinsInfo.jobFullName,
           tree: expect.anything(),
         });
         expect(result).toHaveLength(1);
@@ -117,7 +117,7 @@ describe('JenkinsApi', () => {
           promisify: true,
         });
         expect(mockedJenkinsClient.job.get).toBeCalledWith({
-          name: `${jenkinsInfo.jobName}/testBranchName`,
+          name: `${jenkinsInfo.jobFullName}/testBranchName`,
           tree: expect.anything(),
         });
         expect(result).toHaveLength(1);
@@ -368,7 +368,7 @@ describe('JenkinsApi', () => {
     mockedJenkinsClient.job.get.mockResolvedValueOnce(project);
     mockedJenkinsClient.build.get.mockResolvedValueOnce(build);
 
-    await jenkinsApi.getBuild(jenkinsInfo, jobName, buildNumber);
+    await jenkinsApi.getBuild(jenkinsInfo, jobFullName, buildNumber);
 
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
@@ -376,19 +376,22 @@ describe('JenkinsApi', () => {
       promisify: true,
     });
     expect(mockedJenkinsClient.job.get).toBeCalledWith({
-      name: jobName,
+      name: jobFullName,
       depth: 1,
     });
-    expect(mockedJenkinsClient.build.get).toBeCalledWith(jobName, buildNumber);
+    expect(mockedJenkinsClient.build.get).toBeCalledWith(
+      jobFullName,
+      buildNumber,
+    );
   });
   it('buildProject', async () => {
-    await jenkinsApi.buildProject(jenkinsInfo, jobName);
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
 
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
     });
-    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobName);
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
   });
 });

@@ -30,14 +30,14 @@ export interface JenkinsInfoProvider {
     /**
      * A specific job to get. This is only passed in when we know about a job name we are interested in.
      */
-    jobName?: string;
+    jobFullName?: string;
   }): Promise<JenkinsInfo>;
 }
 
 export interface JenkinsInfo {
   baseUrl: string;
   headers?: Record<string, string | string[]>;
-  jobName: string; // TODO: make this an array
+  jobFullName: string; // TODO: make this an array
 }
 
 /**
@@ -47,7 +47,7 @@ export interface JenkinsInfo {
  */
 export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
-  static readonly NEW_JENKINS_ANNOTATION = 'jenkins.io/job-slug';
+  static readonly NEW_JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 
   private constructor(
     private readonly config: {
@@ -71,7 +71,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
 
   async getInstance(opt: {
     entityRef: EntityName;
-    jobName?: string;
+    jobFullName?: string;
   }): Promise<JenkinsInfo> {
     // load entity
     const entity = await this.catalog.getEntityByName(opt.entityRef);
@@ -81,7 +81,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       );
     }
 
-    // lookup `[jenkinsName#]jobName` from entity annotation
+    // lookup `[jenkinsName#]jobFullName` from entity annotation
     const jenkinsAndJobName = DefaultJenkinsInfoProvider.getEntityAnnotationValue(
       entity,
     );
@@ -93,16 +93,16 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       );
     }
 
-    let jobName;
+    let jobFullName;
     let jenkinsName: string | undefined;
     const splitIndex = jenkinsAndJobName.indexOf(':');
     if (splitIndex === -1) {
       // no jenkinsName specified, use default
-      jobName = jenkinsAndJobName;
+      jobFullName = jenkinsAndJobName;
     } else {
       // There is a jenkinsName specified
       jenkinsName = jenkinsAndJobName.substring(0, splitIndex);
-      jobName = jenkinsAndJobName.substring(
+      jobFullName = jenkinsAndJobName.substring(
         splitIndex + 1,
         jenkinsAndJobName.length,
       );
@@ -124,7 +124,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       headers: {
         Authorization: `Basic ${creds}`,
       },
-      jobName,
+      jobFullName,
     };
   }
 

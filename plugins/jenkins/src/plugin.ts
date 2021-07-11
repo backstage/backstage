@@ -31,8 +31,8 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const buildRouteRef = createRouteRef({
-  path: 'build/:jobName/:buildNumber',
-  params: ['jobName', 'buildNumber'],
+  path: 'build/:jobFullName/:buildNumber',
+  params: ['jobFullName', 'buildNumber'],
   title: 'Jenkins build',
 });
 

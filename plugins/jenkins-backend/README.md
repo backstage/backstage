@@ -71,10 +71,10 @@ kind: Component
 metadata:
   name: artist-lookup
   annotations:
-    'jenkins.io/job-slug': teamA/artistLookup-build
+    'jenkins.io/job-full-name': teamA/artistLookup-build
 ```
 
-The old annotation name of `jenkins.io/github-folder` is equivalent to `jenkins.io/job-slug`
+The old annotation name of `jenkins.io/github-folder` is equivalent to `jenkins.io/job-full-name`
 
 #### Example - Multiple global instances
 
@@ -103,7 +103,7 @@ kind: Component
 metadata:
   name: artist-lookup
   annotations:
-    'jenkins.io/job-slug': departmentFoo:teamA/artistLookup-build
+    'jenkins.io/job-full-name': departmentFoo:teamA/artistLookup-build
 ```
 
 If the `departmentFoo:` part is omitted, the default instance will be assumed.
@@ -124,7 +124,7 @@ jenkins:
 
 ### Custom JenkinsInfoProvider
 
-An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the Jenkins info (including jobName):
+An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the Jenkins info (including jobFullName):
 
 ```typescript
 class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
@@ -132,7 +132,7 @@ class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
 
   async getInstance(opt: {
     entityRef: EntityName;
-    jobName?: string;
+    jobFullName?: string;
   }): Promise<JenkinsInfo> {
     const PAAS_ANNOTATION = 'acme.example.com/paas-project-name';
 
@@ -157,7 +157,7 @@ class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
     const { team, dept } = this.lookupPaasInfo(paasProjectName);
 
     const baseUrl = `https://jenkins-${dept}.example.com/`;
-    const jobName = `${team}/${paasProjectName}`;
+    const jobFullName = `${team}/${paasProjectName}`;
     const username = 'backstage-bot';
     const apiKey = this.getJenkinsApiKey(paasProjectName);
     const creds = btoa(`${username}:${apiKey}`);
@@ -167,7 +167,7 @@ class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
       headers: {
         Authorization: `Basic ${creds}`,
       },
-      jobName,
+      jobFullName,
     };
   }
 
@@ -205,3 +205,5 @@ The domain model for Jenkins is not particularly clear but for the purposes of t
 
 Jenkins contains a tree of *job*s which have children of either; other *job*s (making it a _folder_) or *build*s (making it a _project_).
 Concepts like _pipeline_ and *view*s are meaningless (pipelines are just jobs for our purposes, views are (as the name suggests) just views of subsets of jobs)
+
+A _job full name_ is a slash separated list of the names of the job, and the folders which contain it. For example `teamA/artistLookupService/develop`, and the same way that a filesystem path has folders and file names.

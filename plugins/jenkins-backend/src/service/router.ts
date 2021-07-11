@@ -73,9 +73,15 @@ export async function createRouter(
   );
 
   router.get(
-    '/v1/entity/:namespace/:kind/:name/job/:jobName/:buildNumber',
+    '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
-      const { namespace, kind, name, jobName, buildNumber } = request.params;
+      const {
+        namespace,
+        kind,
+        name,
+        jobFullName,
+        buildNumber,
+      } = request.params;
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
@@ -83,12 +89,12 @@ export async function createRouter(
           namespace,
           name,
         },
-        jobName,
+        jobFullName,
       });
 
       const build = await jenkinsApi.getBuild(
         jenkinsInfo,
-        jobName,
+        jobFullName,
         parseInt(buildNumber, 10),
       );
 
@@ -99,9 +105,9 @@ export async function createRouter(
   );
 
   router.post(
-    '/v1/entity/:namespace/:kind/:name/job/:jobName/:buildNumber::rebuild',
+    '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
-      const { namespace, kind, name, jobName } = request.params;
+      const { namespace, kind, name, jobFullName } = request.params;
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
@@ -109,10 +115,10 @@ export async function createRouter(
           namespace,
           name,
         },
-        jobName,
+        jobFullName,
       });
 
-      await jenkinsApi.buildProject(jenkinsInfo, jobName);
+      await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
       response.json({});
     },
   );
