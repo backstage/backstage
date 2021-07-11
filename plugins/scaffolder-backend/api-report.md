@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
@@ -121,7 +123,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export const createTemplateAction: <Input extends Partial<{
-    [name: string]: JsonValue| Partial<JsonObject> | undefined;
+    [name: string]: JsonValue | Partial<JsonObject> | undefined;
 }>>(templateAction: TemplateAction<Input>) => TemplateAction<any>;
 
 // @public (undocumented)
@@ -176,7 +178,6 @@ export class TemplateActionRegistry {
     // (undocumented)
     register<Parameters extends InputBase>(action: TemplateAction<Parameters>): void;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

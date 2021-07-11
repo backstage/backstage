@@ -61,7 +61,7 @@ export class AlertApiForwarder implements AlertApi {
     alert$(): Observable<AlertMessage>;
     // (undocumented)
     post(alert: AlertMessage): void;
-    }
+}
 
 // @public (undocumented)
 export type ApiFactoryHolder = {
@@ -168,7 +168,7 @@ export class AppThemeSelector implements AppThemeApi {
     getInstalledThemes(): AppTheme[];
     // (undocumented)
     setActiveThemeId(themeId?: string): void;
-    }
+}
 
 // @public (undocumented)
 export class Auth0Auth {
@@ -207,13 +207,13 @@ export const defaultConfigLoader: AppConfigLoader;
 export class ErrorAlerter implements ErrorApi {
     constructor(alertApi: AlertApi, errorApi: ErrorApi);
     // (undocumented)
-    error$(): Observable<{
-        error: {
-            name: string;
-            message: string;
-            stack?: string | undefined;
-        };
-        context?: ErrorContext | undefined;
+    error$(): Observable<    {
+    error: {
+    name: string;
+    message: string;
+    stack?: string | undefined;
+    };
+    context?: ErrorContext | undefined;
     }>;
     // (undocumented)
     post(error: Error, context?: ErrorContext): void;
@@ -228,7 +228,7 @@ export class ErrorApiForwarder implements ErrorApi {
     }>;
     // (undocumented)
     post(error: Error, context?: ErrorContext): void;
-    }
+}
 
 // @public (undocumented)
 export type ErrorBoundaryFallbackProps = {
@@ -353,7 +353,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     authRequest$(): Observable<PendingAuthRequest[]>;
     // (undocumented)
     createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T>;
-    }
+}
 
 // @public (undocumented)
 export class OktaAuth {
@@ -407,7 +407,7 @@ export class UrlPatternDiscovery implements DiscoveryApi {
     static compile(pattern: string): UrlPatternDiscovery;
     // (undocumented)
     getBaseUrl(pluginId: string): Promise<string>;
-    }
+}
 
 // @public (undocumented)
 export class WebStorage implements StorageApi {
@@ -424,8 +424,7 @@ export class WebStorage implements StorageApi {
     remove(key: string): Promise<void>;
     // (undocumented)
     set<T>(key: string, data: T): Promise<void>;
-    }
-
+}
 
 // (No @packageDocumentation comment for this package)
 

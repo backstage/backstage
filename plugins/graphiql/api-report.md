@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -38,10 +40,8 @@ export const GraphiQLIcon: IconComponent;
 export const GraphiQLPage: () => JSX.Element;
 
 // @public (undocumented)
-const graphiqlPlugin: BackstagePlugin<{}, {}>;
-
+const graphiqlPlugin: BackstagePlugin<    {}, {}>;
 export { graphiqlPlugin }
-
 export { graphiqlPlugin as plugin }
 
 // @public (undocumented)
@@ -75,7 +75,6 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
 
 // @public (undocumented)
 export const Router: () => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

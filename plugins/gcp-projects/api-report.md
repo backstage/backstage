@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
@@ -42,12 +44,10 @@ export class GcpClient implements GcpApi {
 export const GcpProjectsPage: () => JSX.Element;
 
 // @public (undocumented)
-const gcpProjectsPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const gcpProjectsPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { gcpProjectsPlugin }
-
 export { gcpProjectsPlugin as plugin }
 
 // @public (undocumented)
@@ -79,7 +79,6 @@ export type Status = {
     message: string;
     details: string[];
 };
-
 
 // (No @packageDocumentation comment for this package)
 

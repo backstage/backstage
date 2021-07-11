@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -16,14 +18,12 @@ export const EntityPageRollbar: (_props: Props) => JSX.Element;
 
 // @public (undocumented)
 export const EntityRollbarContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
-
 export { isPluginApplicableToEntity }
-
 export { isPluginApplicableToEntity as isRollbarAvailable }
 
 // @public (undocumented)
@@ -58,20 +58,17 @@ export class RollbarClient implements RollbarApi {
     getProjectItems(project: string): Promise<RollbarItemsResponse>;
     // (undocumented)
     getTopActiveItems(project: string, hours?: number, environment?: string): Promise<RollbarTopActiveItem[]>;
-    }
+}
 
 // @public (undocumented)
-const rollbarPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const rollbarPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { rollbarPlugin as plugin }
-
 export { rollbarPlugin }
 
 // @public (undocumented)
 export const Router: (_props: Props_2) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

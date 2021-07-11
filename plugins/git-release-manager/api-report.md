@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -15,10 +17,9 @@ export const gitReleaseManagerApiRef: ApiRef<GitReleaseApi>;
 export const GitReleaseManagerPage: GitReleaseManager;
 
 // @public (undocumented)
-export const gitReleaseManagerPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+export const gitReleaseManagerPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 
 // (No @packageDocumentation comment for this package)
 

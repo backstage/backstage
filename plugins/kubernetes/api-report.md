@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -13,7 +15,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityKubernetesContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -23,23 +25,20 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     });
     // (undocumented)
     decorateRequestBodyForAuth(authProvider: string, requestBody: KubernetesRequestBody): Promise<KubernetesRequestBody>;
-    }
+}
 
 // @public (undocumented)
 export const kubernetesAuthProvidersApiRef: ApiRef<KubernetesAuthProvidersApi>;
 
 // @public (undocumented)
-const kubernetesPlugin: BackstagePlugin<{
-    entityContent: RouteRef<undefined>;
+const kubernetesPlugin: BackstagePlugin<    {
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { kubernetesPlugin }
-
 export { kubernetesPlugin as plugin }
 
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

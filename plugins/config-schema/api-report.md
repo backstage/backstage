@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/core-plugin-api';
@@ -23,8 +25,8 @@ export const configSchemaApiRef: ApiRef<ConfigSchemaApi>;
 export const ConfigSchemaPage: () => JSX.Element;
 
 // @public (undocumented)
-export const configSchemaPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+export const configSchemaPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
 
 // @public
@@ -34,8 +36,7 @@ export class StaticSchemaLoader implements ConfigSchemaApi {
     });
     // (undocumented)
     schema$(): Observable<ConfigSchemaResult>;
-    }
-
+}
 
 // (No @packageDocumentation comment for this package)
 

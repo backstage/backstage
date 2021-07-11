@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -278,14 +280,12 @@ export type CostInsightsPalette = BackstagePalette & CostInsightsPaletteAddition
 export type CostInsightsPaletteOptions = PaletteOptions & CostInsightsPaletteAdditions;
 
 // @public (undocumented)
-const costInsightsPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
-    growthAlerts: RouteRef<undefined>;
-    unlabeledDataflowAlerts: RouteRef<undefined>;
+const costInsightsPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
+growthAlerts: RouteRef<undefined>;
+unlabeledDataflowAlerts: RouteRef<undefined>;
 }, {}>;
-
 export { costInsightsPlugin }
-
 export { costInsightsPlugin as plugin }
 
 // @public (undocumented)
@@ -393,7 +393,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
     // (undocumented)
     getUserGroups(userId: string): Promise<Group[]>;
-    }
+}
 
 // @public (undocumented)
 export type Group = {
@@ -614,7 +614,6 @@ export interface UnlabeledDataflowData {
     // (undocumented)
     unlabeledCost: number;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

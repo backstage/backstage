@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -109,16 +111,13 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 export const ScaffolderPage: () => JSX.Element;
 
 // @public (undocumented)
-const scaffolderPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const scaffolderPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {
-    registerComponent: ExternalRouteRef<undefined, true>;
+registerComponent: ExternalRouteRef<undefined, true>;
 }>;
-
 export { scaffolderPlugin as plugin }
-
 export { scaffolderPlugin }
-
 
 // (No @packageDocumentation comment for this package)
 

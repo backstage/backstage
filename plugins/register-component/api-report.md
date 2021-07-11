@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -13,19 +15,16 @@ export const RegisterComponentPage: ({ catalogRouteRef, }: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const registerComponentPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const registerComponentPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { registerComponentPlugin as plugin }
-
 export { registerComponentPlugin }
 
 // @public @deprecated
 export const Router: ({ catalogRouteRef }: {
     catalogRouteRef: RouteRef;
 }) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

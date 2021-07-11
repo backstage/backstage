@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/core-plugin-api';
@@ -48,8 +50,7 @@ export const Shortcuts: () => JSX.Element;
 export const shortcutsApiRef: ApiRef<ShortcutApi>;
 
 // @public (undocumented)
-export const shortcutsPlugin: BackstagePlugin<{}, {}>;
-
+export const shortcutsPlugin: BackstagePlugin<    {}, {}>;
 
 // (No @packageDocumentation comment for this package)
 

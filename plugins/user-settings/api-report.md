@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -47,12 +49,10 @@ export const UserSettingsPage: ({ providerSettings }: {
 export const UserSettingsPinToggle: () => JSX.Element;
 
 // @public (undocumented)
-const userSettingsPlugin: BackstagePlugin<{
-    settingsPage: RouteRef<undefined>;
+const userSettingsPlugin: BackstagePlugin<    {
+settingsPage: RouteRef<undefined>;
 }, {}>;
-
 export { userSettingsPlugin as plugin }
-
 export { userSettingsPlugin }
 
 // @public (undocumented)
@@ -69,7 +69,6 @@ export const useUserProfile: () => {
     profile: ProfileInfo;
     displayName: string;
 };
-
 
 // (No @packageDocumentation comment for this package)
 

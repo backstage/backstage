@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -15,8 +17,7 @@ export const EntityTodoContent: () => JSX.Element;
 export const todoApiRef: ApiRef<TodoApi>;
 
 // @public (undocumented)
-export const todoPlugin: BackstagePlugin<{}, {}>;
-
+export const todoPlugin: BackstagePlugin<    {}, {}>;
 
 // (No @packageDocumentation comment for this package)
 

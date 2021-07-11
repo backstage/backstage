@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -16,9 +18,7 @@ export const EntityPagerDutyCard: () => JSX.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
-
 export { isPluginApplicableToEntity as isPagerDutyAvailable }
-
 export { isPluginApplicableToEntity }
 
 // @public (undocumented)
@@ -43,10 +43,8 @@ export class PagerDutyClient implements PagerDutyApi {
 }
 
 // @public (undocumented)
-const pagerDutyPlugin: BackstagePlugin<{}, {}>;
-
+const pagerDutyPlugin: BackstagePlugin<    {}, {}>;
 export { pagerDutyPlugin }
-
 export { pagerDutyPlugin as plugin }
 
 // @public (undocumented)
@@ -55,7 +53,6 @@ export function TriggerButton({ children, }: PropsWithChildren<TriggerButtonProp
 // @public (undocumented)
 export class UnauthorizedError extends Error {
 }
-
 
 // (No @packageDocumentation comment for this package)
 

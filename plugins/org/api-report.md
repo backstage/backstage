@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GroupEntity } from '@backstage/catalog-model';
@@ -12,25 +14,25 @@ import { UserEntity } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export const EntityGroupProfileCard: ({ variant, }: {
-    entity?: GroupEntity| undefined;
-    variant?: InfoCardVariants| undefined;
+    entity?: GroupEntity | undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityMembersListCard: (_props: {
-    entity?: GroupEntity| undefined;
+    entity?: GroupEntity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityOwnershipCard: ({ variant, }: {
-    entity?: Entity| undefined;
-    variant?: InfoCardVariants| undefined;
+    entity?: Entity | undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityUserProfileCard: ({ variant, }: {
-    entity?: UserEntity| undefined;
-    variant?: InfoCardVariants| undefined;
+    entity?: UserEntity | undefined;
+    variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -45,10 +47,8 @@ export const MembersListCard: (_props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const orgPlugin: BackstagePlugin<{}, {}>;
-
+const orgPlugin: BackstagePlugin<    {}, {}>;
 export { orgPlugin }
-
 export { orgPlugin as plugin }
 
 // @public (undocumented)
@@ -62,7 +62,6 @@ export const UserProfileCard: ({ variant, }: {
     entity?: UserEntity | undefined;
     variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

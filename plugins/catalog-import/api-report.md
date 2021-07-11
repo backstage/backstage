@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -89,12 +91,10 @@ export class CatalogImportClient implements CatalogImportApi {
 export const CatalogImportPage: (opts: StepperProviderOpts) => JSX.Element;
 
 // @public (undocumented)
-const catalogImportPlugin: BackstagePlugin<{
-    importPage: RouteRef<undefined>;
+const catalogImportPlugin: BackstagePlugin<    {
+importPage: RouteRef<undefined>;
 }, {}>;
-
 export { catalogImportPlugin }
-
 export { catalogImportPlugin as plugin }
 
 // @public
@@ -123,7 +123,6 @@ export const StepInitAnalyzeUrl: ({ onAnalysis, analysisUrl, disablePullRequest,
 
 // @public (undocumented)
 export const StepPrepareCreatePullRequest: ({ analyzeResult, onPrepare, onGoBack, renderFormFields, defaultTitle, defaultBody, }: Props_8) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

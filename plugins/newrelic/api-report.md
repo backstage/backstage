@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -11,14 +13,11 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const NewRelicPage: () => JSX.Element;
 
 // @public (undocumented)
-const newRelicPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const newRelicPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { newRelicPlugin }
-
 export { newRelicPlugin as plugin }
-
 
 // (No @packageDocumentation comment for this package)
 

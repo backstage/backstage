@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -37,7 +39,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     getUsers(): Promise<User[]>;
     // (undocumented)
     incidentAction({ routingKey, incidentType, incidentId, incidentDisplayName, incidentMessage, incidentStartTime, }: TriggerAlarmRequest): Promise<Response>;
-    }
+}
 
 // @public (undocumented)
 export const SplunkOnCallPage: {
@@ -50,18 +52,15 @@ export const SplunkOnCallPage: {
 };
 
 // @public (undocumented)
-const splunkOnCallPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+const splunkOnCallPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
-
 export { splunkOnCallPlugin as plugin }
-
 export { splunkOnCallPlugin }
 
 // @public (undocumented)
 export class UnauthorizedError extends Error {
 }
-
 
 // (No @packageDocumentation comment for this package)
 

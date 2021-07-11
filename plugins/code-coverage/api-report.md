@@ -4,13 +4,15 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const codeCoveragePlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
+export const codeCoveragePlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
 }, {}>;
 
 // @public (undocumented)
@@ -18,14 +20,11 @@ export const EntityCodeCoverageContent: () => JSX.Element;
 
 // @public (undocumented)
 const isCodeCoverageAvailable: (entity: Entity) => boolean;
-
 export { isCodeCoverageAvailable }
-
 export { isCodeCoverageAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
 export const Router: () => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

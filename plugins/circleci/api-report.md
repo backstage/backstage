@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BuildStepAction } from 'circleci-api';
@@ -49,10 +51,8 @@ export const circleCIApiRef: ApiRef<CircleCIApi>;
 export const circleCIBuildRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
-const circleCIPlugin: BackstagePlugin<{}, {}>;
-
+const circleCIPlugin: BackstagePlugin<    {}, {}>;
 export { circleCIPlugin }
-
 export { circleCIPlugin as plugin }
 
 // @public (undocumented)
@@ -60,21 +60,18 @@ export const circleCIRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
 export const EntityCircleCIContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 export { GitType }
 
 // @public (undocumented)
 const isCircleCIAvailable: (entity: Entity) => boolean;
-
 export { isCircleCIAvailable }
-
 export { isCircleCIAvailable as isPluginApplicableToEntity }
 
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 

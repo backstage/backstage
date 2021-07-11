@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
@@ -31,7 +33,7 @@ export const EmbeddedDocsRouter: (_props: Props) => JSX.Element;
 
 // @public (undocumented)
 export const EntityTechdocsContent: (_props: {
-    entity?: Entity| undefined;
+    entity?: Entity | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -87,13 +89,11 @@ export const TechDocsCustomHome: ({ tabsConfig, }: {
 export const TechdocsPage: () => JSX.Element;
 
 // @public (undocumented)
-const techdocsPlugin: BackstagePlugin<{
-    root: RouteRef<undefined>;
-    entityContent: RouteRef<undefined>;
+const techdocsPlugin: BackstagePlugin<    {
+root: RouteRef<undefined>;
+entityContent: RouteRef<undefined>;
 }, {}>;
-
 export { techdocsPlugin as plugin }
-
 export { techdocsPlugin }
 
 // @public (undocumented)
@@ -142,7 +142,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     identityApi: IdentityApi;
     syncEntityDocs(entityId: EntityName): Promise<SyncResult>;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
