@@ -73,14 +73,6 @@ const SKIPPED_PACKAGES = [
   'packages/e2e-test',
   'packages/storybook',
   'packages/techdocs-cli',
-
-  // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  'packages/core-components',
-  'plugins/catalog',
-  'plugins/catalog-backend',
-  'plugins/catalog-react',
-  'plugins/github-deployments',
-  'plugins/sentry-backend',
 ];
 
 async function findPackageDirs() {
