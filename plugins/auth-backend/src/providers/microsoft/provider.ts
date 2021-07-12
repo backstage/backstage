@@ -154,10 +154,6 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
       profile,
     };
 
-    if (!profile.email) {
-      throw new Error('Microsoft profile contained no email');
-    }
-
     if (this.signInResolver) {
       response.backstageIdentity = await this.signInResolver(
         {
@@ -234,20 +230,7 @@ export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> = async
     throw new Error('Profile contained no email');
   }
 
-  let userId: string;
-  try {
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'microsoft.com/email': profile.email,
-      },
-    });
-    userId = entity.metadata.name;
-  } catch (error) {
-    ctx.logger.warn(
-      `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
-    );
-    userId = profile.email.split('@')[0];
-  }
+  const userId = profile.email.split('@')[0];
 
   const token = await ctx.tokenIssuer.issueToken({
     claims: { sub: userId, ent: [`user:default/${userId}`] },
