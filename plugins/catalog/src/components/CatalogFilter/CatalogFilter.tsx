@@ -38,6 +38,7 @@ import React, { PropsWithChildren } from 'react';
 
 interface IProps {
   initiallySelectedFilter?: UserListFilterKind;
+  initialFilter?: 'component' | 'api';
 }
 
 const CatalogFilterWrapper = withWidth()(
@@ -56,11 +57,12 @@ const CatalogFilterWrapper = withWidth()(
 
 export const CatalogFilter = ({
   initiallySelectedFilter = 'owned',
+  initialFilter = 'component',
 }: IProps) => (
   <CatalogFilterWrapper>
     <Grid container alignContent="flex-start">
       <Grid item xs={12} sm={4} lg={12}>
-        <EntityKindPicker initialFilter="component" hidden />
+        <EntityKindPicker initialFilter={initialFilter} hidden />
         <EntityTypePicker />
       </Grid>
       <Grid item xs={12} sm={4} lg={12}>

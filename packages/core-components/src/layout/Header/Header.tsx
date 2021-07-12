@@ -88,7 +88,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 type HeaderStyles = ReturnType<typeof useStyles>;
 
-type Props = {
+export type Props = {
   component?: ReactNode;
   pageTitleOverride?: string;
   style?: CSSProperties;

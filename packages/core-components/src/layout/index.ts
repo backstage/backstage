@@ -29,3 +29,4 @@ export * from './Sidebar';
 export * from './SignInPage';
 export * from './TabbedCard';
 export * from './Breadcrumbs';
+export * from './TablePage';

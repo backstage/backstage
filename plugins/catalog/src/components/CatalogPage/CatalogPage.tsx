@@ -15,24 +15,17 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import {
   EntityListProvider,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import { CatalogTable } from '../CatalogTable';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import { EntityRow } from '../CatalogTable/types';
-import CatalogLayout from './CatalogLayout';
-import { CreateComponentButton } from '../CreateComponentButton';
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
+import { TableColumn, TableProps, TablePage } from '@backstage/core-components';
 import { CatalogFilter } from '../CatalogFilter';
+import { createComponentRouteRef } from '../../routes';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -44,23 +37,28 @@ export const CatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
-}: CatalogPageProps) => (
-  <CatalogLayout>
-    <Content>
-      <ContentHeader title="Components">
-        <CreateComponentButton />
-        <SupportButton>All your software catalog entities</SupportButton>
-      </ContentHeader>
-      <Grid container spacing={2}>
-        <EntityListProvider>
-          <Grid item xs={12} sm={12} lg={2}>
-            <CatalogFilter initiallySelectedFilter={initiallySelectedFilter} />
-          </Grid>
-          <Grid item xs={12} sm={12} lg={10}>
-            <CatalogTable columns={columns} actions={actions} />
-          </Grid>
-        </EntityListProvider>
-      </Grid>
-    </Content>
-  </CatalogLayout>
-);
+}: CatalogPageProps) => {
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+
+  return (
+    <EntityListProvider>
+      <TablePage
+        title={`${orgName} Catalog`}
+        subtitle={`Catalog of software components at ${orgName}`}
+        pageTitleOverride="Home"
+        themeId="home"
+        contentTitle="Components"
+        contentLink={createComponentLink ? createComponentLink() : ''}
+        contentLinkText="Create Component"
+        supportMessage="All your software catalog entities"
+        filter={
+          <CatalogFilter initiallySelectedFilter={initiallySelectedFilter} />
+        }
+      >
+        <CatalogTable columns={columns} actions={actions} />
+      </TablePage>
+    </EntityListProvider>
+  );
+};
