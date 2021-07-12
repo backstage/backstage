@@ -52,7 +52,7 @@ type Props = {
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   const uiSchemas: Array<UiSchema> = [];
   steps.forEach(step => {
-    if (!step.schema || !step.schema.properties) return;
+    if (!step.schema || !step.schema.properties) return [];
 
     const schemaProps = step.schema.properties as JsonObject;
     for (const key in schemaProps) {
