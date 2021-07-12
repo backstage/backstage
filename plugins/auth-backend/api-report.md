@@ -100,9 +100,6 @@ export class IdentityClient {
 }
 
 // @public (undocumented)
-export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult>;
-
-// @public (undocumented)
 export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // @public (undocumented)
