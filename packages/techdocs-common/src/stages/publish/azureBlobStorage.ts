@@ -323,10 +323,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
     }
   }
 
-  /**
-   * todo: Put this documentation somewhere the user will actually see and read
-   * it.
-   */
   async migrateDocsCase({
     removeOriginal = false,
     concurrency = 25,

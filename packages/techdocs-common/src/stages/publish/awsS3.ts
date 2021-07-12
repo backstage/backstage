@@ -313,19 +313,6 @@ export class AwsS3Publish implements PublisherBase {
     }
   }
 
-  /**
-   * todo: Put this documentation somewhere the user will actually see and read
-   * it.
-   *
-   * Note: In addition to the usual `PutObject`, `ListBucket` and `GetObject`
-   * actions, will need to add `PutObjectAcl` for copying files as well as
-   * `DeleteObject` if the removeOriginal flag is set to true. You may need to
-   * ensure access to the bucket resource in the following way:
-   * [
-   *   "arn:aws:s3:::your-bucket",
-   *   "arn:aws:s3:::your-bucket/*"
-   * ]
-   */
   async migrateDocsCase({
     removeOriginal = false,
     concurrency = 25,
