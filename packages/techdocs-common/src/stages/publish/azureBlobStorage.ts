@@ -25,7 +25,11 @@ import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
 import { default as path, default as platformPath } from 'path';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
@@ -290,14 +294,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       .exists();
   }
 
-  protected toLowerCase(originalName: string): string {
-    const [namespace, kind, name, ...parts] = originalName.split('/');
-    const lowerNamespace = namespace.toLowerCase();
-    const lowerKind = kind.toLowerCase();
-    const lowerName = name.toLowerCase();
-    return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
-  }
-
   protected async renameBlob(
     originalName: string,
     newName: string,
@@ -314,16 +310,16 @@ export class AzureBlobStoragePublish implements PublisherBase {
   }
 
   protected async renameBlobToLowerCase(
-    originalName: string,
+    originalPath: string,
     removeOriginal: boolean,
   ) {
-    const newName = this.toLowerCase(originalName);
-    if (originalName === newName) return;
+    const newPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    if (originalPath === newPath) return;
     try {
-      this.logger.debug(`Migrating ${originalName}`);
-      await this.renameBlob(originalName, newName, removeOriginal);
+      this.logger.debug(`Migrating ${originalPath}`);
+      await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
-      this.logger.warn(`Unable to migrate ${originalName}: ${e.message}`);
+      this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
     }
   }
 

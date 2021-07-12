@@ -25,7 +25,11 @@ import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
@@ -332,17 +336,10 @@ export class AwsS3Publish implements PublisherBase {
     await Promise.all(
       allObjects.map(f =>
         limiter(async file => {
-          const [namespace, kind, name, ...parts] = file.split('/');
-          const lowerNamespace = namespace.toLowerCase();
-          const lowerKind = kind.toLowerCase();
-          const lowerName = name.toLowerCase();
+          const newPath = lowerCaseEntityTripletInStoragePath(file);
 
           // If all parts are already lowercase, ignore.
-          if (
-            namespace === lowerNamespace &&
-            kind === lowerKind &&
-            name === lowerName
-          ) {
+          if (file === newPath) {
             return;
           }
 
@@ -352,7 +349,7 @@ export class AwsS3Publish implements PublisherBase {
               .copyObject({
                 Bucket: this.bucketName,
                 CopySource: [this.bucketName, file].join('/'),
-                Key: [lowerNamespace, lowerKind, lowerName, ...parts].join('/'),
+                Key: newPath,
               })
               .promise();
 

@@ -17,6 +17,7 @@
 import { File } from '@google-cloud/storage';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
+import { lowerCaseEntityTripletInStoragePath } from '../helpers';
 
 /**
  * Writable stream to handle object copy/move operations. This implementation
@@ -37,17 +38,10 @@ export class MigrateWriteStream extends Writable {
 
   _write(file: File, _encoding: BufferEncoding, next: Function) {
     let shouldCallNext = true;
-    const [namespace, kind, name, ...parts] = file.name.split('/');
-    const lowerNamespace = namespace.toLowerCase();
-    const lowerKind = kind.toLowerCase();
-    const lowerName = name.toLowerCase();
+    const newFile = lowerCaseEntityTripletInStoragePath(file.name);
 
     // If all parts are already lowercase, ignore.
-    if (
-      namespace === lowerNamespace &&
-      kind === lowerKind &&
-      name === lowerName
-    ) {
+    if (newFile === file.name) {
       next();
       return;
     }
@@ -60,7 +54,6 @@ export class MigrateWriteStream extends Writable {
     }
 
     // Otherwise, copy or move the file.
-    const newFile = [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
     // todo: Use file.move instead of file.copy when removeOriginal is true.
     const migrate = this.removeOriginal
       ? file.copy.bind(file)
