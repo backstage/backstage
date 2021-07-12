@@ -16,10 +16,12 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
+export const CATALOG_FILTER_EXISTS = Symbol();
+
 export type CatalogEntitiesRequest = {
   filter?:
-    | Record<string, string | string[]>[]
-    | Record<string, string | string[]>
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
 };
