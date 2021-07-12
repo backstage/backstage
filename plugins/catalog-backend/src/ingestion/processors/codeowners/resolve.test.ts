@@ -29,7 +29,7 @@ describe('resolveCodeOwner', () => {
 
 describe('normalizeCodeOwner', () => {
   it('should remove the @ symbol', () => {
-    expect(normalizeCodeOwner('@yoda')).toBe('yoda');
+    expect(normalizeCodeOwner('@yoda')).toBe('User:yoda');
   });
 
   it('should remove org from org/team format', () => {

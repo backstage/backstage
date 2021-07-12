@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.8.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.0
+  - @backstage/techdocs-common@0.6.7
+  - @backstage/backend-common@0.8.5
+
 ## 0.8.5
 
 ### Patch Changes

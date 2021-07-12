@@ -18,6 +18,7 @@ export * from './EntityLifecyclePicker';
 export * from './EntityOwnerPicker';
 export * from './EntityProvider';
 export * from './EntityRefLink';
+export * from './EntitySearchBar';
 export * from './EntityTable';
 export * from './EntityTagPicker';
 export * from './EntityTypePicker';

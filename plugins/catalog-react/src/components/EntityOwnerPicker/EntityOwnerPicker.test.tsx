@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityOwnerFilter } from '../../types';
+import { EntityOwnerFilter } from '../../filters';
 import { EntityOwnerPicker } from './EntityOwnerPicker';
 
 const sampleEntities: Entity[] = [
@@ -121,6 +121,27 @@ describe('<EntityOwnerPicker/>', () => {
     ]);
   });
 
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { owners: ['another-owner'] };
+    render(
+      <MockEntityListContextProvider
+        value={{
+          entities: sampleEntities,
+          backendEntities: sampleEntities,
+          updateFilters,
+          queryParameters,
+        }}
+      >
+        <EntityOwnerPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['another-owner']),
+    });
+  });
+
   it('adds owners to filters', () => {
     const updateFilters = jest.fn();
     const rendered = render(
@@ -134,7 +155,9 @@ describe('<EntityOwnerPicker/>', () => {
         <EntityOwnerPicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
 
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     fireEvent.click(rendered.getByText('some-owner'));
@@ -157,7 +180,9 @@ describe('<EntityOwnerPicker/>', () => {
         <EntityOwnerPicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['some-owner']),
+    });
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     expect(rendered.getByLabelText('some-owner')).toBeChecked();
 

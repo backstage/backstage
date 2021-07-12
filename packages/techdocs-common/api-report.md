@@ -12,17 +12,17 @@ import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { GitLabIntegrationConfig } from '@backstage/integration';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @public (undocumented)
-export const checkoutGitRepository: (repoUrl: string, config: Config, logger: Logger) => Promise<string>;
+export const checkoutGitRepository: (repoUrl: string, config: Config, logger: Logger_2) => Promise<string>;
 
 // @public (undocumented)
 export class CommonGitPreparer implements PreparerBase {
-    constructor(config: Config, logger: Logger);
+    constructor(config: Config, logger: Logger_2);
     // (undocumented)
     prepare(entity: Entity, options?: {
         etag?: string;
@@ -31,7 +31,7 @@ export class CommonGitPreparer implements PreparerBase {
 
 // @public (undocumented)
 export class DirectoryPreparer implements PreparerBase {
-    constructor(config: Config, logger: Logger, reader: UrlReader);
+    constructor(config: Config, logger: Logger_2, reader: UrlReader);
     // (undocumented)
     prepare(entity: Entity): Promise<PreparerResponse>;
     }
@@ -51,7 +51,7 @@ export type GeneratorBuilder = {
 export class Generators implements GeneratorBuilder {
     // (undocumented)
     static fromConfig(config: Config, { logger, containerRunner, }: {
-        logger: Logger;
+        logger: Logger_2;
         containerRunner: ContainerRunner;
     }): Promise<GeneratorBuilder>;
     // (undocumented)
@@ -69,7 +69,7 @@ export const getDefaultBranch: (repositoryUrl: string, config: Config) => Promis
 // @public (undocumented)
 export const getDocFilesFromRepository: (reader: UrlReader, entity: Entity, opts?: {
     etag?: string | undefined;
-    logger?: Logger | undefined;
+    logger?: Logger_2 | undefined;
 } | undefined) => Promise<PreparerResponse>;
 
 // @public (undocumented)
@@ -88,7 +88,7 @@ export const getGitRepositoryTempFolder: (repositoryUrl: string, config: Config)
 export function getGitRepoType(url: string): string;
 
 // @public (undocumented)
-export const getLastCommitTimestamp: (repositoryLocation: string, logger: Logger) => Promise<number>;
+export const getLastCommitTimestamp: (repositoryLocation: string, logger: Logger_2) => Promise<number>;
 
 // @public (undocumented)
 export const getLocationForEntity: (entity: Entity) => ParsedLocationAnnotation;
@@ -108,7 +108,7 @@ export const parseReferenceAnnotation: (annotationName: string, entity: Entity) 
 // @public (undocumented)
 export type PreparerBase = {
     prepare(entity: Entity, options?: {
-        logger?: Logger;
+        logger?: Logger_2;
         etag?: string;
     }): Promise<PreparerResponse>;
 };
@@ -153,7 +153,7 @@ export type RemoteProtocol = 'url' | 'dir' | 'github' | 'gitlab' | 'file' | 'azu
 // @public (undocumented)
 export class TechdocsGenerator implements GeneratorBase {
     constructor({ logger, containerRunner, config, }: {
-        logger: Logger;
+        logger: Logger_2;
         containerRunner: ContainerRunner;
         config: Config;
     });
@@ -170,7 +170,7 @@ export type TechDocsMetadata = {
 
 // @public (undocumented)
 export class UrlPreparer implements PreparerBase {
-    constructor(reader: UrlReader, logger: Logger);
+    constructor(reader: UrlReader, logger: Logger_2);
     // (undocumented)
     prepare(entity: Entity, options?: {
         etag?: string;
