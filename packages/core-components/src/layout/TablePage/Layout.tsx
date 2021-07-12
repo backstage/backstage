@@ -16,27 +16,20 @@
 
 import React from 'react';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Header, Page } from '@backstage/core-components';
+import { Header, Page } from '../../';
+import { Props as HeaderProps } from '../../layout/Header/Header';
 
-type Props = {
-  children?: React.ReactNode;
-};
+export interface IProps extends HeaderProps {
+  themeId: string;
+}
 
-export const CatalogLayout = ({ children }: Props) => {
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-
-  return (
-    <Page themeId="home">
-      <Header
-        title={`${orgName} Catalog`}
-        subtitle={`Catalog of software components at ${orgName}`}
-        pageTitleOverride="Home"
-      />
-      {children}
-    </Page>
-  );
-};
-
-export default CatalogLayout;
+export const Layout = ({
+  themeId,
+  children,
+  ...props
+}: React.PropsWithChildren<IProps>) => (
+  <Page themeId={themeId}>
+    <Header {...props} />
+    {children}
+  </Page>
+);
