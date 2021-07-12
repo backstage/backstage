@@ -14,7 +14,7 @@ import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
 
 // @public (undocumented)
-export function createRouter({ preparers, generators, publisher, config, logger, discovery, }: RouterOptions): Promise<express.Router>;
+export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 
 export * from "@backstage/techdocs-common";
