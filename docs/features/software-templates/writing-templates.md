@@ -230,7 +230,7 @@ spec:
 #### Hide or mask sensitive data on Review step
 
 Sometimes, specially in custom fields, you collect some data on Create form that
-must note be shown to the user on Review step. To hide or mask this data, you
+must not be shown to the user on Review step. To hide or mask this data, you
 can use `ui:widget: password` or set some properties of `ui:backstage`:
 
 ```yaml
