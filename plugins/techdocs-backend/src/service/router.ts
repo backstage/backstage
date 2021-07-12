@@ -246,28 +246,6 @@ export async function createRouter(
     }
   });
 
-  /**
-   * TODO: Remove this endpoint before merging. This is just a convenient way
-   * to test publisher.migrateDocsCase() implementations.
-   */
-  router.get('/do-not-commit/migrate', async (req, res) => {
-    if (publisher.migrateDocsCase) {
-      try {
-        await publisher.migrateDocsCase({
-          // removeOriginal: !!req.query?.removeOriginal,
-          concurrency:
-            parseInt((req.query?.concurrency as string) || '', 25) || undefined,
-        });
-        res.status(200).send('Good job');
-      } catch (e) {
-        logger.error(e);
-        res.status(500).send('Uh-oh');
-      }
-    } else {
-      res.status(400).send('Not valid');
-    }
-  });
-
   // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());
 
