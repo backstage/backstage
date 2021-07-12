@@ -86,10 +86,11 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     const countByType = entities.reduce((acc, entity) => {
       if (typeof entity.spec?.type !== 'string') return acc;
 
-      if (!acc[entity.spec.type]) {
-        acc[entity.spec.type] = 0;
+      const entityType = entity.spec.type.toLocaleLowerCase('en-US');
+      if (!acc[entityType]) {
+        acc[entityType] = 0;
       }
-      acc[entity.spec.type] += 1;
+      acc[entityType] += 1;
       return acc;
     }, {} as Record<string, number>);
 

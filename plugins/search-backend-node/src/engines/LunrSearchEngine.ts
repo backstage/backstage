@@ -15,13 +15,13 @@
  */
 
 import {
-  SearchQuery,
   IndexableDocument,
+  SearchQuery,
   SearchResultSet,
 } from '@backstage/search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
-import { SearchEngine, QueryTranslator } from '../types';
+import { QueryTranslator, SearchEngine } from '../types';
 
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
@@ -113,7 +113,7 @@ export class LunrSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  index(type: string, documents: IndexableDocument[]): void {
+  async index(type: string, documents: IndexableDocument[]): Promise<void> {
     const lunrBuilder = new lunr.Builder();
 
     lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
@@ -139,7 +139,7 @@ export class LunrSearchEngine implements SearchEngine {
     this.lunrIndices[type] = lunrBuilder.build();
   }
 
-  query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<SearchResultSet> {
     const { lunrQueryBuilder, documentTypes } = this.translator(
       query,
     ) as ConcreteLunrQuery;
@@ -183,6 +183,6 @@ export class LunrSearchEngine implements SearchEngine {
       }),
     };
 
-    return Promise.resolve(realResultSet);
+    return realResultSet;
   }
 }
