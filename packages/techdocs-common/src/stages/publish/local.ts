@@ -32,7 +32,11 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -182,30 +186,14 @@ export class LocalPublish implements PublisherBase {
       files.map(f =>
         limit(async file => {
           const relativeFile = file.replace(`${staticDocsDir}${path.sep}`, '');
-          const [namespace, kind, name, ...parts] = relativeFile.split(
-            path.sep,
-          );
-          const lowerNamespace = namespace.toLowerCase();
-          const lowerKind = kind.toLowerCase();
-          const lowerName = name.toLowerCase();
+          const newFile = lowerCaseEntityTripletInStoragePath(relativeFile);
 
           // If all parts are already lowercase, ignore.
-          if (
-            namespace === lowerNamespace &&
-            kind === lowerKind &&
-            name === lowerName
-          ) {
+          if (relativeFile === newFile) {
             return;
           }
 
           // Otherwise, copy or move the file.
-          const newFile = [
-            staticDocsDir,
-            lowerNamespace,
-            lowerKind,
-            lowerName,
-            ...parts,
-          ].join(path.sep);
           await new Promise<void>(resolve => {
             const migrate = removeOriginal ? fs.move : fs.copyFile;
             this.logger.debug(`Migrating ${relativeFile}`);
