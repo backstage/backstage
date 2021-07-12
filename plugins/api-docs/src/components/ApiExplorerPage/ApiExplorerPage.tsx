@@ -14,39 +14,19 @@
  * limitations under the License.
  */
 
+import { TableColumn, TablePage } from '@backstage/core-components';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  EntityKindPicker,
-  EntityLifecyclePicker,
+  CatalogFilter,
+  CatalogTable,
+  CatalogTableRow,
+} from '@backstage/plugin-catalog';
+import {
   EntityListProvider,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
   UserListFilterKind,
-  UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
-import { Button, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { createComponentRouteRef } from '../../routes';
-import { ApiExplorerLayout } from './ApiExplorerLayout';
-
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  TableColumn,
-} from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
-
-const useStyles = makeStyles(theme => ({
-  contentWrapper: {
-    display: 'grid',
-    gridTemplateAreas: "'filters' 'table'",
-    gridTemplateColumns: '250px 1fr',
-    gridColumnGap: theme.spacing(2),
-  },
-}));
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
@@ -58,8 +38,11 @@ const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTagsColumn(),
 ];
 
-export type ApiExplorerPageProps = {
+interface IApiExplorerePageFilterProps {
   initiallySelectedFilter?: UserListFilterKind;
+}
+
+export type ApiExplorerPageProps = IApiExplorerePageFilterProps & {
   columns?: TableColumn<CatalogTableRow>[];
 };
 
@@ -67,39 +50,32 @@ export const ApiExplorerPage = ({
   initiallySelectedFilter = 'all',
   columns,
 }: ApiExplorerPageProps) => {
-  const styles = useStyles();
   const createComponentLink = useRouteRef(createComponentRouteRef);
+  const configApi = useApi(configApiRef);
+  const generatedSubtitle = `${
+    configApi.getOptionalString('organization.name') ?? 'Backstage'
+  } API Explorer`;
 
   return (
-    <ApiExplorerLayout>
-      <Content>
-        <ContentHeader title="">
-          {createComponentLink && (
-            <Button
-              variant="contained"
-              color="primary"
-              component={RouterLink}
-              to={createComponentLink()}
-            >
-              Register Existing API
-            </Button>
-          )}
-          <SupportButton>All your APIs</SupportButton>
-        </ContentHeader>
-        <div className={styles.contentWrapper}>
-          <EntityListProvider>
-            <div>
-              <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-            </div>
-            <CatalogTable columns={columns || defaultColumns} />
-          </EntityListProvider>
-        </div>
-      </Content>
-    </ApiExplorerLayout>
+    <EntityListProvider>
+      <TablePage
+        title="APIs"
+        subtitle={generatedSubtitle}
+        pageTitleOverride="APIs"
+        themeId="apis"
+        contentTitle=""
+        contentLink={createComponentLink ? createComponentLink() : ''}
+        contentLinkText="Register Existing API"
+        supportMessage="All your APIs"
+        filter={
+          <CatalogFilter
+            initialFilter="api"
+            initiallySelectedFilter={initiallySelectedFilter}
+          />
+        }
+      >
+        <CatalogTable columns={columns || defaultColumns} />
+      </TablePage>
+    </EntityListProvider>
   );
 };

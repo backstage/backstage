@@ -21,22 +21,27 @@ import { Content, ContentHeader, SupportButton, Button } from '../..';
 import { Layout, IProps as LayoutProps } from './Layout';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface IProps extends LayoutProps {
-  supportMessage: string;
-  filter: React.ReactNode;
-  header: string;
-  headerLink?: string;
+interface ILinkProps {
+  contentLink?: string;
+  contentLinkText?: string;
 }
 
-const TablePageLink = ({ link }: { link?: string }) => {
-  return link ? (
+type IProps = LayoutProps &
+  ILinkProps & {
+    contentTitle: string;
+    supportMessage: string;
+    filter: React.ReactNode;
+  };
+
+const TablePageLink = ({ contentLink, contentLinkText }: ILinkProps) => {
+  return contentLink && contentLinkText ? (
     <Button
       component={RouterLink}
       variant="contained"
       color="primary"
-      to={link}
+      to={contentLink}
     >
-      Create Component
+      {contentLinkText}
     </Button>
   ) : null;
 };
@@ -45,14 +50,18 @@ export const TablePage = ({
   supportMessage,
   filter,
   children,
-  header,
-  headerLink,
+  contentTitle,
+  contentLink,
+  contentLinkText,
   ...props
 }: React.PropsWithChildren<IProps>) => (
   <Layout {...props}>
     <Content>
-      <ContentHeader title={header}>
-        <TablePageLink link={headerLink} />
+      <ContentHeader title={contentTitle}>
+        <TablePageLink
+          contentLink={contentLink}
+          contentLinkText={contentLinkText}
+        />
         <SupportButton>{supportMessage}</SupportButton>
       </ContentHeader>
       <Grid container spacing={2}>

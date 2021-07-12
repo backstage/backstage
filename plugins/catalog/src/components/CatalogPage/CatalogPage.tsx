@@ -45,16 +45,17 @@ export const CatalogPage = ({
   return (
     <EntityListProvider>
       <TablePage
-        header="Components"
+        title={`${orgName} Catalog`}
+        subtitle={`Catalog of software components at ${orgName}`}
+        pageTitleOverride="Home"
+        themeId="home"
+        contentTitle="Components"
+        contentLink={createComponentLink ? createComponentLink() : ''}
+        contentLinkText="Create Component"
         supportMessage="All your software catalog entities"
         filter={
           <CatalogFilter initiallySelectedFilter={initiallySelectedFilter} />
         }
-        title={`${orgName} Catalog`}
-        subtitle={`Catalog of software components at ${orgName}`}
-        themeId="home"
-        pageTitleOverride="Home"
-        headerLink={createComponentLink ? createComponentLink() : ''}
       >
         <CatalogTable columns={columns} actions={actions} />
       </TablePage>
