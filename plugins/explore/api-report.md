@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default } from 'react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -11,10 +13,10 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)
-export const catalogEntityRouteRef: ExternalRouteRef<{
-    name: string;
-    kind: string;
-    namespace: string;
+export const catalogEntityRouteRef: ExternalRouteRef<    {
+name: string;
+kind: string;
+namespace: string;
 }, false>;
 
 // @public (undocumented)
@@ -32,18 +34,16 @@ export const ExploreLayout: {
 export const ExplorePage: () => JSX.Element;
 
 // @public (undocumented)
-const explorePlugin: BackstagePlugin<{
-    explore: RouteRef<undefined>;
+const explorePlugin: BackstagePlugin<    {
+explore: RouteRef<undefined>;
 }, {
-    catalogEntity: ExternalRouteRef<{
-        name: string;
-        kind: string;
-        namespace: string;
-    }, false>;
+catalogEntity: ExternalRouteRef<    {
+name: string;
+kind: string;
+namespace: string;
+}, false>;
 }>;
-
 export { explorePlugin }
-
 export { explorePlugin as plugin }
 
 // @public (undocumented)
@@ -58,7 +58,6 @@ export const GroupsExplorerContent: ({ title, }: {
 export const ToolExplorerContent: ({ title }: {
     title?: string | undefined;
 }) => JSX.Element;
-
 
 // (No @packageDocumentation comment for this package)
 
