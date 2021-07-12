@@ -9,7 +9,7 @@
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
     "build": "lerna run build",
-    "build:api-reports": "tsc && yarn build:api-reports:only",
+    "build:api-reports": "yarn tsc:full && yarn build:api-reports:only",
     "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
     "build:api-docs": "yarn build:api-reports --docs",
     "tsc": "tsc",
