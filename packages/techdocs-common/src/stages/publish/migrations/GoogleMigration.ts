@@ -54,9 +54,8 @@ export class MigrateWriteStream extends Writable {
     }
 
     // Otherwise, copy or move the file.
-    // todo: Use file.move instead of file.copy when removeOriginal is true.
     const migrate = this.removeOriginal
-      ? file.copy.bind(file)
+      ? file.move.bind(file)
       : file.copy.bind(file);
     this.logger.debug(`Migrating ${file.name}`);
     migrate(newFile)
