@@ -16,7 +16,7 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { BuildItem, BuildsResult, XCMetricsApi } from './types';
+import { BuildCount, BuildItem, BuildsResult, XCMetricsApi } from './types';
 
 interface Options {
   discoveryApi: DiscoveryApi;
@@ -29,14 +29,27 @@ export class XCMetricsClient implements XCMetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuilds(): Promise<BuildItem[]> {
+  async getBuilds(limit = 10): Promise<BuildItem[]> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build`);
+    const response = await fetch(`${baseUrl}/build?per=${limit}`);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
 
     return ((await response.json()) as BuildsResult).items;
+  }
+
+  async getBuildCounts(days: number): Promise<BuildCount[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/errors?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildCount[];
   }
 }

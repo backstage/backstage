@@ -24,13 +24,15 @@ import {
   Table,
   TableColumn,
   EmptyState,
+  InfoCard,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { BuildItem, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Duration } from 'luxon';
-import { Chip } from '@material-ui/core';
+import { Chip, Grid, Typography } from '@material-ui/core';
+import { ErrorTrendComponent } from '../ErrorTrendComponent';
 
 const formatStatus = (status: BuildStatus, warningCount: number) => {
   const statusIcons = {
@@ -109,12 +111,22 @@ export const OverviewComponent = () => {
       <ContentHeader title="XCMetrics Dashboard">
         <SupportButton>Dashboard for XCMetrics</SupportButton>
       </ContentHeader>
-      <Table<BuildItem>
-        options={{ paging: false, search: false }}
-        data={builds}
-        columns={columns}
-        title="Latest Builds"
-      />
+      <Grid container spacing={3} direction="row">
+        <Grid item xs={7}>
+          <Table<BuildItem>
+            options={{ paging: false, search: false }}
+            data={builds}
+            columns={columns}
+            title="Latest Builds"
+          />
+        </Grid>
+        <Grid item xs={5}>
+          <InfoCard>
+            <Typography variant="overline">Error Rate</Typography>
+            <ErrorTrendComponent days={14} />
+          </InfoCard>
+        </Grid>
+      </Grid>
     </>
   );
 };

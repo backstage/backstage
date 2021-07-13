@@ -44,6 +44,12 @@ export type BuildItem = {
   wasSuspended: boolean;
 };
 
+export type BuildCount = {
+  day: string;
+  errors: number;
+  builds: number;
+};
+
 export type BuildsResult = {
   items: BuildItem[];
   metadata: {
@@ -54,7 +60,8 @@ export type BuildsResult = {
 };
 
 export interface XCMetricsApi {
-  getBuilds(): Promise<BuildItem[]>;
+  getBuilds(limit?: number): Promise<BuildItem[]>;
+  getBuildCounts(days: number): Promise<BuildCount[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XCMetricsApi>({
