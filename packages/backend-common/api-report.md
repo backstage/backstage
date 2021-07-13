@@ -142,6 +142,7 @@ export class DockerContainerRunner implements ContainerRunner {
     mountDirs,
     workingDir,
     envVars,
+    pullImage,
   }: RunContainerOptions): Promise<void>;
 }
 
@@ -374,6 +375,7 @@ export type RunContainerOptions = {
   mountDirs?: Record<string, string>;
   workingDir?: string;
   envVars?: Record<string, string>;
+  pullImage?: boolean;
 };
 
 // @public

@@ -226,6 +226,17 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
   });
   // (undocumented)
+  static fromConfig(
+    config: Config,
+    {
+      containerRunner,
+      logger,
+    }: {
+      containerRunner: ContainerRunner;
+      logger: Logger_2;
+    },
+  ): Promise<TechdocsGenerator>;
+  // (undocumented)
   run({
     inputDir,
     outputDir,

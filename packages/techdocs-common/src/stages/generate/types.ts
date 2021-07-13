@@ -17,6 +17,18 @@ import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { ParsedLocationAnnotation } from '../../helpers';
 
+// Determines where the generator will be run
+export type GeneratorRunInType = 'docker' | 'local';
+
+/**
+ * The techdocs generator configurations options.
+ */
+export type GeneratorConfig = {
+  runIn: GeneratorRunInType;
+  dockerImage?: string;
+  pullImage?: boolean;
+};
+
 /**
  * The values that the generator will receive.
  *
