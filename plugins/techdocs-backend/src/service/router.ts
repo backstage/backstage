@@ -176,6 +176,7 @@ export async function createRouter(
       return;
     }
 
+    // Set the synchronization and build process if "out-of-the-box" configuration is provided.
     if (isOutOfTheBoxOption(options)) {
       const { preparers, generators } = options;
 
