@@ -241,7 +241,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
           // also handles the event-stream close. the reject is ignored if the Promise was already
           // resolved by a finish event.
           default:
-            reject(new Error(e.message));
+            reject(new Error(e.data));
             return;
         }
       };

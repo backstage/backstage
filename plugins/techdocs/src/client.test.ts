@@ -242,8 +242,8 @@ describe('TechDocsStorageClient', () => {
         .instances[0] as jest.Mocked<EventSource>;
 
       instance.onerror({
-        status: 500,
-        message: 'Some other error',
+        type: 'error',
+        data: 'Some other error',
       } as any);
 
       await expect(promise).rejects.toThrow(Error);
