@@ -203,7 +203,7 @@ describe('TaskWorker', () => {
     expect((event?.body?.output as JsonObject).result).toBe('winning');
   });
 
-  it('should execute steps conditionally with eq helper', async () => {
+  it('should execute steps conditionally using eq helper', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = new TaskWorker({
       logger,
@@ -234,6 +234,39 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should skip steps conditionally using notEq helper', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        { id: 'test', name: 'test', action: 'test-action' },
+        {
+          id: 'conditional',
+          name: 'conditional',
+          action: 'test-action',
+          if: '{{ notEq steps.test.output.testOutput "winning" }}',
+        },
+      ],
+      output: {
+        result: '{{ steps.conditional.output.testOutput }}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+    expect((event?.body?.output as JsonObject).result).toBeUndefined();
   });
 
   it('should skip steps conditionally', async () => {
