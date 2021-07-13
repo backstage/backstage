@@ -60,10 +60,18 @@ export const createGoogleProvider: (
 ) => AuthProviderFactory;
 
 // @public (undocumented)
-export const createMicrosoftProvider: (options?: MicrosoftProviderOptions | undefined) => AuthProviderFactory;
+export const createMicrosoftProvider: (
+  options?: MicrosoftProviderOptions | undefined,
+) => AuthProviderFactory;
 
 // @public (undocumented)
-export function createRouter({ logger, config, discovery, database, providerFactories, }: RouterOptions): Promise<express.Router>;
+export function createRouter({
+  logger,
+  config,
+  discovery,
+  database,
+  providerFactories,
+}: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export const defaultAuthProviderFactories: {
@@ -104,10 +112,10 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // @public (undocumented)
 export type MicrosoftProviderOptions = {
-    authHandler?: AuthHandler<OAuthResult>;
-    signIn?: {
-        resolver?: SignInResolver<OAuthResult>;
-    };
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
 };
 
 // @public (undocumented)
