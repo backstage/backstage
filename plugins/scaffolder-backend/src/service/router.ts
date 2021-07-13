@@ -233,17 +233,19 @@ export async function createRouter(
             );
           }
 
+          let shouldUnsubscribe = false;
           for (const event of events) {
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
             if (event.type === 'completion') {
-              unsubscribe();
+              shouldUnsubscribe = true;
               // Closing the event stream here would cause the frontend
               // to automatically reconnect because it lost connection.
             }
           }
           res.flush();
+          if (shouldUnsubscribe) unsubscribe();
         },
       );
       // When client closes connection we update the clients list
