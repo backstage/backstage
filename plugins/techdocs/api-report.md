@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { Action } from '@material-table/core';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
@@ -14,6 +15,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LocationSpec } from '@backstage/catalog-model';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // Warning: (ae-missing-release-tag) "DocsCardGrid" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -42,16 +44,34 @@ export const DocsResultListItem: ({
 export const DocsTable: ({
   entities,
   title,
+  loading,
+  actions,
 }: {
   entities: Entity[] | undefined;
   title?: string | undefined;
+  loading?: boolean | undefined;
+  actions?:
+    | (
+        | Action<DocsTableRow>
+        | {
+            action: (rowData: DocsTableRow) => Action<DocsTableRow>;
+            position: string;
+          }
+        | ((rowData: DocsTableRow) => Action<DocsTableRow>)
+      )[]
+    | undefined;
 }) => JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EmbeddedDocsRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EmbeddedDocsRouter: (_props: Props) => JSX.Element;
+export const EmbeddedDocsRouter: (_props: Props_2) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "EntityListDocsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityListDocsTable: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityTechdocsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -69,7 +89,7 @@ export type PanelType = 'DocsCardGrid' | 'DocsTable';
 // Warning: (ae-missing-release-tag) "Reader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Reader: ({ entityId, onReady }: Props_2) => JSX.Element;
+export const Reader: ({ entityId, onReady }: Props_3) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -143,10 +163,21 @@ export const TechDocsCustomHome: ({
   tabsConfig: TabsConfig;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "TechDocsHomeLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TechDocsHomeLayout: ({ children }: Props) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "TechdocsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const TechdocsPage: () => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TechDocsPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TechDocsPicker: () => null;
 
 // Warning: (ae-missing-release-tag) "techdocsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -255,7 +286,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
 // Warnings were encountered during analysis:
 //
-// src/plugin.d.ts:18:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
+// src/plugin.d.ts:17:5 - (ae-forgotten-export) The symbol "DocsTableRow" needs to be exported by the entry point index.d.ts
+// src/plugin.d.ts:23:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

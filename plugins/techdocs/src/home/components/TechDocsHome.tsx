@@ -15,41 +15,49 @@
  */
 
 import React from 'react';
-import { PanelType, TechDocsCustomHome } from './TechDocsCustomHome';
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+} from '@backstage/core-components';
+import {
+  EntityListContainer,
+  FilterContainer,
+  FilteredEntityLayout,
+} from '@backstage/plugin-catalog';
+import {
+  EntityListProvider,
+  EntityOwnerPicker,
+  EntityTagPicker,
+  UserListPicker,
+} from '@backstage/plugin-catalog-react';
+import { EntityListDocsTable } from './EntityListDocsTable';
+import { TechDocsHomeLayout } from './TechDocsHomeLayout';
+import { TechDocsPicker } from './TechDocsPicker';
 
 export const TechDocsHome = () => {
-  const tabsConfig = [
-    {
-      label: 'Overview',
-      panels: [
-        {
-          title: 'Overview',
-          description:
-            'Explore your internal technical ecosystem through documentation.',
-          panelType: 'DocsCardGrid' as PanelType,
-          filterPredicate: () => true,
-        },
-        // uncomment this if you would like to have a secondary panel with owned documents
-        // {
-        //   title: 'Owned',
-        //   description: 'Explore your owned internal documentation.',
-        //   panelType: 'DocsCardGrid' as PanelType,
-        //   filterPredicate: 'ownedByUser',
-        // },
-      ],
-    },
-    {
-      label: 'Owned Documents',
-      panels: [
-        {
-          title: 'Owned documents',
-          description: 'Access your documentation.',
-          panelType: 'DocsTable' as PanelType,
-          // ownedByUser filters out entities owned by signed in user
-          filterPredicate: 'ownedByUser',
-        },
-      ],
-    },
-  ];
-  return <TechDocsCustomHome tabsConfig={tabsConfig} />;
+  return (
+    <TechDocsHomeLayout>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>
+            Discover documentation in your ecosystem.
+          </SupportButton>
+        </ContentHeader>
+        <EntityListProvider>
+          <FilteredEntityLayout>
+            <FilterContainer>
+              <TechDocsPicker />
+              <UserListPicker initialFilter="all" />
+              <EntityOwnerPicker />
+              <EntityTagPicker />
+            </FilterContainer>
+            <EntityListContainer>
+              <EntityListDocsTable />
+            </EntityListContainer>
+          </FilteredEntityLayout>
+        </EntityListProvider>
+      </Content>
+    </TechDocsHomeLayout>
+  );
 };
