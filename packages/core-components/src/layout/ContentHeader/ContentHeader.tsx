@@ -59,10 +59,10 @@ const useStyles = (props: ContentHeaderProps) =>
 
 type DefaultTitleProps = {
   title?: string;
-  className: string;
+  className?: string;
 };
 
-const DefaultTitle = ({
+export const ContentHeaderTitle = ({
   title = 'Unknown page',
   className,
 }: DefaultTitleProps) => (
@@ -95,7 +95,7 @@ export const ContentHeader = ({
   const renderedTitle = TitleComponent ? (
     <TitleComponent />
   ) : (
-    <DefaultTitle title={title} className={classes.title} />
+    <ContentHeaderTitle title={title} className={classes.title} />
   );
   return (
     <Fragment>

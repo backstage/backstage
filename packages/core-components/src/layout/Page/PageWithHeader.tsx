@@ -14,4 +14,22 @@
  * limitations under the License.
  */
 
-export { ContentHeader, ContentHeaderTitle } from './ContentHeader';
+import React from 'react';
+
+import { Header, Page } from '../../';
+import { Props as HeaderProps } from '../../layout/Header/Header';
+
+export interface IProps extends HeaderProps {
+  themeId: string;
+}
+
+export const PageWithHeader = ({
+  themeId,
+  children,
+  ...props
+}: React.PropsWithChildren<IProps>) => (
+  <Page themeId={themeId}>
+    <Header {...props} />
+    {children}
+  </Page>
+);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { ContentHeader, ContentHeaderTitle } from './ContentHeader';
+import React from 'react';
+import { Grid } from '@material-ui/core';
+
+interface IProps {}
+
+export const FilteredTableLayout = ({
+  children,
+}: React.PropsWithChildren<IProps>) => {
+  return (
+    <Grid container style={{ position: 'relative' }}>
+      {children}
+    </Grid>
+  );
+};
