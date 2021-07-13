@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
@@ -33,62 +33,35 @@ export type DocsSynchronizerSyncOpts = {
 };
 
 export class DocsSynchronizer {
-  private readonly preparers: PreparerBuilder;
-  private readonly generators: GeneratorBuilder;
   private readonly publisher: PublisherBase;
   private readonly logger: winston.Logger;
   private readonly config: Config;
-  private readonly catalogClient: CatalogApi;
 
   constructor({
-    preparers,
-    generators,
     publisher,
     logger,
     config,
-    catalogClient,
   }: {
-    preparers: PreparerBuilder;
-    generators: GeneratorBuilder;
     publisher: PublisherBase;
     logger: winston.Logger;
     config: Config;
-    catalogClient: CatalogApi;
   }) {
-    this.catalogClient = catalogClient;
     this.config = config;
     this.logger = logger;
     this.publisher = publisher;
-    this.generators = generators;
-    this.preparers = preparers;
   }
 
-  async doSync(
-    initResponseHandler: () => DocsSynchronizerSyncOpts,
-    {
-      kind,
-      namespace,
-      name,
-      token,
-    }: {
-      kind: string;
-      namespace: string;
-      name: string;
-      token: string | undefined;
-    },
-  ) {
-    const entity = await this.catalogClient.getEntityByName(
-      { kind, namespace, name },
-      { token },
-    );
-
-    if (!entity?.metadata?.uid) {
-      throw new NotFoundError('Entity metadata UID missing');
-    }
-
-    // open the event-stream
-    const { log, error, finish } = initResponseHandler();
-
+  async doSync({
+    responseHandler: { log, error, finish },
+    entity,
+    preparers,
+    generators,
+  }: {
+    responseHandler: DocsSynchronizerSyncOpts;
+    entity: Entity;
+    preparers: PreparerBuilder;
+    generators: GeneratorBuilder;
+  }) {
     // create a new logger to log data to the caller
     const taskLogger = winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
@@ -109,22 +82,14 @@ export class DocsSynchronizer {
     taskLogger.add(new winston.transports.Stream({ stream: logStream }));
 
     // check if the last update check was too recent
-    if (!shouldCheckForUpdate(entity.metadata.uid)) {
-      finish({ updated: false });
-      return;
-    }
-
-    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (this.config.getString('techdocs.builder') !== 'local') {
+    if (!shouldCheckForUpdate(entity.metadata.uid!)) {
       finish({ updated: false });
       return;
     }
 
     const docsBuilder = new DocsBuilder({
-      preparers: this.preparers,
-      generators: this.generators,
+      preparers,
+      generators,
       publisher: this.publisher,
       logger: taskLogger,
       entity,

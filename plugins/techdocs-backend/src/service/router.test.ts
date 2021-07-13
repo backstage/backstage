@@ -19,8 +19,9 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import { NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   PreparerBuilder,
@@ -31,13 +32,37 @@ import request from 'supertest';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createEventStream, createHttpResponse, createRouter } from './router';
 
+jest.mock('@backstage/catalog-client');
+jest.mock('@backstage/config');
 jest.mock('./DocsSynchronizer');
 
+const MockedConfigReader = ConfigReader as jest.MockedClass<
+  typeof ConfigReader
+>;
+const MockCatalogClient = CatalogClient as jest.MockedClass<
+  typeof CatalogClient
+>;
 const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
   typeof DocsSynchronizer
 >;
 
 describe('createRouter', () => {
+  const entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      uid: '0',
+      name: 'test',
+    },
+  };
+  const entityWithoutMetadata = {
+    ...entity,
+    metadata: {
+      ...entity.metadata,
+      uid: undefined,
+    },
+  };
+
   const preparers: jest.Mocked<PreparerBuilder> = {
     register: jest.fn(),
     get: jest.fn(),
@@ -70,7 +95,7 @@ describe('createRouter', () => {
       return `http://backstage.local/api/${type}`;
     });
 
-    const router = await createRouter({
+    const outOfTheBoxRouter = await createRouter({
       preparers,
       generators,
       publisher,
@@ -78,37 +103,101 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       discovery,
     });
+    const recommendedRouter = await createRouter({
+      publisher,
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      discovery,
+    });
 
-    router.use(errorHandler());
     app = express();
-    app.use(router);
+    app.use(outOfTheBoxRouter);
+    app.use('/recommended', recommendedRouter);
+    app.use(errorHandler());
   });
 
   describe('GET /sync/:namespace/:kind/:name', () => {
     describe('accept application/json', () => {
+      it('should return not found if entity is not found', async () => {
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(
+          undefined,
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(404);
+      });
+
+      it('should return not found if entity has no uid', async () => {
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(
+          entityWithoutMetadata,
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(404);
+      });
+
+      it('should not check for an update without local builder', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('external');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(304);
+      });
+
+      it('should error if missing builder', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
+
+        const response = await request(app)
+          .get('/recommended/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(500);
+        expect(response.text).toMatch(
+          /Invalid configuration\. 'techdocs\.builder' was set to 'local' but no 'preparer' was provided to the router initialization/,
+        );
+
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(0);
+      });
+
       it('should execute synchronization', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => handler().finish({ updated: true }),
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: true }),
         );
 
         await request(app).get('/sync/default/Component/test').send();
 
         expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith(
-          expect.any(Function),
-          {
-            kind: 'Component',
-            name: 'test',
-            namespace: 'default',
-            token: undefined,
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith({
+          responseHandler: {
+            log: expect.any(Function),
+            error: expect.any(Function),
+            finish: expect.any(Function),
           },
-        );
+          entity,
+          generators,
+          preparers,
+        });
       });
 
       it('should return on updated', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => {
-            const { log, finish } = handler();
+          async ({ responseHandler }) => {
+            const { log, finish } = responseHandler;
 
             log('Some log');
 
@@ -126,43 +215,81 @@ describe('createRouter', () => {
           '{"message":"Docs updated or did not need updating"}',
         );
       });
+    });
 
-      it('should return error', async () => {
-        MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => {
-            const { log, error } = handler();
-
-            log('Some log');
-
-            error(new Error('Some Error'));
-          },
+    describe('accept text/event-stream', () => {
+      it('should return not found if entity is not found', async () => {
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(
+          undefined,
         );
 
         const response = await request(app)
           .get('/sync/default/Component/test')
-          .send();
-
-        expect(response.status).toBe(500);
-        expect(response.text).toMatch(/Some Error/);
-      });
-
-      it('should return not found', async () => {
-        MockDocsSynchronizer.prototype.doSync.mockRejectedValue(
-          new NotFoundError(),
-        );
-
-        const response = await request(app)
-          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
           .send();
 
         expect(response.status).toBe(404);
       });
-    });
 
-    describe('accept text/event-stream', () => {
+      it('should return not found if entity has no uid', async () => {
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(
+          entityWithoutMetadata,
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(404);
+      });
+
+      it('should not check for an update without local builder', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('external');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: finish
+data: {"updated":false}
+
+`,
+        );
+      });
+
+      it('should error if missing builder', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
+
+        const response = await request(app)
+          .get('/recommended/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: error
+data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization."
+
+`,
+        );
+
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(0);
+      });
+
       it('should execute synchronization', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => handler().finish({ updated: true }),
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: true }),
         );
 
         await request(app)
@@ -171,21 +298,24 @@ describe('createRouter', () => {
           .send();
 
         expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith(
-          expect.any(Function),
-          {
-            kind: 'Component',
-            name: 'test',
-            namespace: 'default',
-            token: undefined,
+        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith({
+          responseHandler: {
+            log: expect.any(Function),
+            error: expect.any(Function),
+            finish: expect.any(Function),
           },
-        );
+          entity,
+          generators,
+          preparers,
+        });
       });
 
       it('should return an event-stream', async () => {
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCatalogClient.prototype.getEntityByName.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => {
-            const { log, finish } = handler();
+          async ({ responseHandler }) => {
+            const { log, finish } = responseHandler;
 
             log('Some log');
             log('Another log');
@@ -213,48 +343,6 @@ data: {"updated":true}
 
 `,
         );
-      });
-
-      it('should return error', async () => {
-        MockDocsSynchronizer.prototype.doSync.mockImplementation(
-          async handler => {
-            const { log, error } = handler();
-
-            log('Some log');
-
-            error(new Error('Some Error'));
-          },
-        );
-
-        const response = await request(app)
-          .get('/sync/default/Component/test')
-          .set('accept', 'text/event-stream')
-          .send();
-
-        expect(response.status).toBe(200);
-        expect(response.get('content-type')).toBe('text/event-stream');
-        expect(response.text).toEqual(
-          `event: log
-data: "Some log"
-
-event: error
-data: "Some Error"
-
-`,
-        );
-      });
-
-      it('should return not found', async () => {
-        MockDocsSynchronizer.prototype.doSync.mockRejectedValue(
-          new NotFoundError(),
-        );
-
-        const response = await request(app)
-          .get('/sync/default/Component/test')
-          .set('accept', 'text/event-stream')
-          .send();
-
-        expect(response.status).toBe(404);
       });
     });
   });

@@ -18,9 +18,7 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   PreparerBuilder,
@@ -29,12 +27,8 @@ import {
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
-jest.mock('@backstage/config');
 jest.mock('../DocsBuilder');
 
-const MockedConfigReader = ConfigReader as jest.MockedClass<
-  typeof ConfigReader
->;
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
 describe('DocsSynchronizer', () => {
@@ -57,16 +51,6 @@ describe('DocsSynchronizer', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
-  const catalogClient: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  };
 
   let docsSynchronizer: DocsSynchronizer;
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
@@ -82,10 +66,7 @@ describe('DocsSynchronizer', () => {
     });
 
     docsSynchronizer = new DocsSynchronizer({
-      preparers,
-      generators,
       publisher,
-      catalogClient,
       config: new ConfigReader({}),
       logger: getVoidLogger(),
     });
@@ -98,7 +79,6 @@ describe('DocsSynchronizer', () => {
   describe('doSync', () => {
     it('should execute an update', async () => {
       (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      MockedConfigReader.prototype.getString.mockReturnValue('local');
 
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -107,14 +87,8 @@ describe('DocsSynchronizer', () => {
           uid: '0',
           name: 'test',
           namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
-          },
         },
       };
-
-      catalogClient.getEntityByName.mockResolvedValue(entity);
 
       MockedDocsBuilder.prototype.build.mockImplementation(async () => {
         // extract the logStream from the constructor call
@@ -123,37 +97,34 @@ describe('DocsSynchronizer', () => {
         logStream?.write('Some log');
         logStream?.write('Another log');
 
+        const logger = MockedDocsBuilder.mock.calls[0][0].logger;
+
+        logger.info('Some more log');
+
         return true;
       });
 
       publisher.hasDocsBeenGenerated.mockResolvedValue(true);
 
-      await docsSynchronizer.doSync(() => mockResponseHandler, {
-        kind: 'Component',
-        namespace: 'default',
-        name: 'test',
-        token: undefined,
+      await docsSynchronizer.doSync({
+        responseHandler: mockResponseHandler,
+        entity,
+        preparers,
+        generators,
       });
 
-      expect(catalogClient.getEntityByName).toBeCalledWith(
-        {
-          kind: 'Component',
-          namespace: 'default',
-          name: 'test',
-        },
-        { token: undefined },
-      );
-
-      expect(mockResponseHandler.log).toBeCalledTimes(2);
+      expect(mockResponseHandler.log).toBeCalledTimes(3);
       expect(mockResponseHandler.log).toBeCalledWith('Some log');
       expect(mockResponseHandler.log).toBeCalledWith('Another log');
+      expect(mockResponseHandler.log).toBeCalledWith(
+        expect.stringMatching(/info.*Some more log/),
+      );
 
       expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
 
       expect(mockResponseHandler.error).toBeCalledTimes(0);
 
       expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(1);
       expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
     });
 
@@ -167,20 +138,14 @@ describe('DocsSynchronizer', () => {
           uid: '0',
           name: 'test',
           namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
-          },
         },
       };
 
-      catalogClient.getEntityByName.mockResolvedValue(entity);
-
-      await docsSynchronizer.doSync(() => mockResponseHandler, {
-        kind: 'Component',
-        namespace: 'default',
-        name: 'test',
-        token: undefined,
+      await docsSynchronizer.doSync({
+        responseHandler: mockResponseHandler,
+        entity,
+        preparers,
+        generators,
       });
 
       expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
@@ -189,50 +154,11 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.error).toBeCalledTimes(0);
 
       expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(0);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
-    });
-
-    it('should not check for an update without local builder', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      MockedConfigReader.prototype.getString.mockReturnValue('external');
-
-      const entity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          uid: '0',
-          name: 'test',
-          namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
-          },
-        },
-      };
-
-      catalogClient.getEntityByName.mockResolvedValue(entity);
-
-      await docsSynchronizer.doSync(() => mockResponseHandler, {
-        kind: 'Component',
-        namespace: 'default',
-        name: 'test',
-        token: undefined,
-      });
-
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
-
-      expect(mockResponseHandler.log).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
-
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(MockedConfigReader.prototype.getString).toBeCalledTimes(1);
       expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
     });
 
     it('should forward build errors', async () => {
       (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      MockedConfigReader.prototype.getString.mockReturnValue('local');
 
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -241,23 +167,17 @@ describe('DocsSynchronizer', () => {
           uid: '0',
           name: 'test',
           namespace: 'default',
-          annotations: {
-            'sda.se/release-notes-location':
-              'github-releases:https://github.com/backstage/backstage',
-          },
         },
       };
-
-      catalogClient.getEntityByName.mockResolvedValue(entity);
 
       const error = new Error('Some random error');
       MockedDocsBuilder.prototype.build.mockRejectedValue(error);
 
-      await docsSynchronizer.doSync(() => mockResponseHandler, {
-        kind: 'Component',
-        namespace: 'default',
-        name: 'test',
-        token: undefined,
+      await docsSynchronizer.doSync({
+        responseHandler: mockResponseHandler,
+        entity,
+        preparers,
+        generators,
       });
 
       expect(mockResponseHandler.log).toBeCalledTimes(1);
@@ -269,23 +189,6 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.finish).toBeCalledTimes(0);
       expect(mockResponseHandler.error).toBeCalledTimes(1);
       expect(mockResponseHandler.error).toBeCalledWith(error);
-    });
-
-    it('rejects when entity is not found', async () => {
-      catalogClient.getEntityByName.mockResolvedValue(undefined);
-
-      await expect(
-        docsSynchronizer.doSync(() => mockResponseHandler, {
-          kind: 'Component',
-          namespace: 'default',
-          name: 'test',
-          token: undefined,
-        }),
-      ).rejects.toThrowError(NotFoundError);
-
-      expect(mockResponseHandler.finish).toBeCalledTimes(0);
-      expect(mockResponseHandler.log).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
     });
   });
 });

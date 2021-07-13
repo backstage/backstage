@@ -31,7 +31,11 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
-type RouterOptions = {
+/**
+ * All of the required dependencies for running TechDocs in the "out-of-the-box"
+ * deployment configuration (prepare/generate/publish all in the Backend).
+ */
+type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
@@ -41,23 +45,44 @@ type RouterOptions = {
   config: Config;
 };
 
-export async function createRouter({
-  preparers,
-  generators,
-  publisher,
-  config,
-  logger,
-  discovery,
-}: RouterOptions): Promise<express.Router> {
+/**
+ * Required dependencies for running TechDocs in the "recommended" deployment
+ * configuration (prepare/generate handled externally in CI/CD).
+ */
+type RecommendedDeploymentOptions = {
+  publisher: PublisherBase;
+  logger: Logger;
+  discovery: PluginEndpointDiscovery;
+  config: Config;
+};
+
+/**
+ * One of the two deployment configurations must be provided.
+ */
+type RouterOptions =
+  | RecommendedDeploymentOptions
+  | OutOfTheBoxDeploymentOptions;
+
+/**
+ * Typeguard to help createRouter() understand when we are in a "recommended"
+ * deployment vs. when we are in an out-of-the-box deployment configuration.
+ */
+function isOutOfTheBoxOption(
+  opt: RouterOptions,
+): opt is OutOfTheBoxDeploymentOptions {
+  return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
+}
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
   const router = Router();
+  const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const docsSynchronizer = new DocsSynchronizer({
-    preparers: preparers,
-    generators: generators,
     publisher: publisher,
     logger: logger,
     config: config,
-    catalogClient: catalogClient,
   });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
@@ -124,23 +149,49 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
     const token = getBearerToken(req.headers.authorization);
 
-    await docsSynchronizer.doSync(
-      () => {
-        if (req.header('accept') !== 'text/event-stream') {
-          console.warn(
-            "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
-          );
-          return createHttpResponse(res);
-        }
+    const entity = await catalogClient.getEntityByName(
+      { kind, namespace, name },
+      { token },
+    );
 
-        return createEventStream(res);
-      },
-      {
-        kind,
-        namespace,
-        name,
-        token,
-      },
+    if (!entity?.metadata?.uid) {
+      throw new NotFoundError('Entity metadata UID missing');
+    }
+
+    let responseHandler: DocsSynchronizerSyncOpts;
+    if (req.header('accept') !== 'text/event-stream') {
+      console.warn(
+        "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
+      );
+      responseHandler = createHttpResponse(res);
+    } else {
+      responseHandler = createEventStream(res);
+    }
+
+    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
+    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider
+    if (config.getString('techdocs.builder') !== 'local') {
+      responseHandler.finish({ updated: false });
+      return;
+    }
+
+    if (isOutOfTheBoxOption(options)) {
+      const { preparers, generators } = options;
+
+      await docsSynchronizer.doSync({
+        responseHandler,
+        entity,
+        preparers,
+        generators,
+      });
+      return;
+    }
+
+    responseHandler.error(
+      new Error(
+        "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization.",
+      ),
     );
   });
 
