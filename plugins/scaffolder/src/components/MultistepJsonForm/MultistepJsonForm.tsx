@@ -52,11 +52,9 @@ type Props = {
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   const uiSchemas: Array<UiSchema> = [];
   steps.forEach(step => {
-    if (!step.schema || !step.schema.properties) return [];
-
     const schemaProps = step.schema.properties as JsonObject;
     for (const key in schemaProps) {
-      if (Object.prototype.hasOwnProperty.call(schemaProps, key)) {
+      if (schemaProps.hasOwnProperty.call(schemaProps, key)) {
         const uiSchema = schemaProps[key] as UiSchema;
         uiSchema.name = key;
         uiSchemas.push(uiSchema);
@@ -70,7 +68,7 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   const uiSchemas = getUiSchemasFromSteps(steps);
   const reviewData: Record<string, any> = {};
   for (const key in formData) {
-    if (Object.prototype.hasOwnProperty.call(formData, key)) {
+    if (formData.hasOwnProperty.call(formData, key)) {
       const uiSchema = uiSchemas.find(us => us.name === key);
 
       if (!uiSchema) {
@@ -114,7 +112,6 @@ export const MultistepJsonForm = ({
   widgets,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [reviewData, setReviewData] = useState({});
 
   const handleReset = () => {
     setActiveStep(0);
@@ -122,10 +119,6 @@ export const MultistepJsonForm = ({
   };
   const handleNext = () => {
     setActiveStep(Math.min(activeStep + 1, steps.length));
-
-    if (Math.min(activeStep + 1, steps.length) === steps.length) {
-      setReviewData(getReviewData(formData, steps));
-    }
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
 
@@ -174,7 +167,10 @@ export const MultistepJsonForm = ({
         <Content>
           <Paper square elevation={0}>
             <Typography variant="h6">Review and create</Typography>
-            <StructuredMetadataTable dense metadata={reviewData} />
+            <StructuredMetadataTable
+              dense
+              metadata={getReviewData(formData, steps)}
+            />
             <Box mb={4} />
             <Button onClick={handleBack}>Back</Button>
             <Button onClick={handleReset}>Reset</Button>
