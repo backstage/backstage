@@ -60,6 +60,11 @@ export const createGoogleProvider: (
 ) => AuthProviderFactory;
 
 // @public (undocumented)
+export const createMicrosoftProvider: (
+  options?: MicrosoftProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// @public (undocumented)
 export function createRouter({
   logger,
   config,
@@ -101,6 +106,17 @@ export class IdentityClient {
     keys: JSONWebKey[];
   }>;
 }
+
+// @public (undocumented)
+export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// @public (undocumented)
+export type MicrosoftProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
 
 // @public (undocumented)
 export class OAuthAdapter implements AuthProviderRouteHandlers {
