@@ -16,13 +16,13 @@
 import React from 'react';
 import { OverviewComponent } from './OverviewComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { XCMetricsApi, xcmetricsApiRef } from '../../api';
+import { XcmetricsApi, xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('OverviewComponent', () => {
   it('should render', async () => {
     const mockUserId = 'mockUser';
-    const mockApi: jest.Mocked<XCMetricsApi> = {
+    const mockApi: jest.Mocked<XcmetricsApi> = {
       getBuilds: jest.fn().mockResolvedValue([
         {
           userid: mockUserId,
@@ -47,7 +47,7 @@ describe('OverviewComponent', () => {
   });
 
   it('should render an empty state when no builds exist', async () => {
-    const mockApi: jest.Mocked<XCMetricsApi> = {
+    const mockApi: jest.Mocked<XcmetricsApi> = {
       getBuilds: jest.fn().mockResolvedValue([]),
     };
 
@@ -61,7 +61,7 @@ describe('OverviewComponent', () => {
 
   it('should show an error when API not responding', async () => {
     const errorMessage = 'MockErrorMessage';
-    const mockApi: jest.Mocked<XCMetricsApi> = {
+    const mockApi: jest.Mocked<XcmetricsApi> = {
       getBuilds: jest.fn().mockRejectedValue({ message: errorMessage }),
     };
 

@@ -16,13 +16,13 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { BuildItem, BuildsResult, XCMetricsApi } from './types';
+import { BuildItem, BuildsResult, XcmetricsApi } from './types';
 
 interface Options {
   discoveryApi: DiscoveryApi;
 }
 
-export class XCMetricsClient implements XCMetricsApi {
+export class XcmetricsClient implements XcmetricsApi {
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: Options) {

@@ -17,7 +17,7 @@ import React from 'react';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { OverviewComponent } from '../OverviewComponent';
 
-export const XCMetricsPage = () => (
+export const XcmetricsLayout = () => (
   <Page themeId="tool">
     <Header title="XCMetrics" subtitle="Dashboard">
       <HeaderLabel label="Owner" value="Spotify" />

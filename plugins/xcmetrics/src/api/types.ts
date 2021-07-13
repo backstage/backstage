@@ -53,11 +53,11 @@ export type BuildsResult = {
   };
 };
 
-export interface XCMetricsApi {
+export interface XcmetricsApi {
   getBuilds(): Promise<BuildItem[]>;
 }
 
-export const xcmetricsApiRef = createApiRef<XCMetricsApi>({
+export const xcmetricsApiRef = createApiRef<XcmetricsApi>({
   id: 'plugin.xcmetrics.api',
   description: 'Used by the XCMetrics plugin to make requests',
 });
