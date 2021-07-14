@@ -13,9 +13,13 @@ import { Logger as Logger_2 } from 'winston';
 // Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface ClusterDetails {
+export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
+}
+
+// @public (undocumented)
+export interface ClusterDetails {
   // (undocumented)
   authProvider: string;
   // (undocumented)
@@ -57,6 +61,9 @@ export interface FetchResponseWrapper {
 
 // Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
+// @public (undocumented)
+export interface GKEClusterDetails extends ClusterDetails {}
+
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
   // (undocumented)
@@ -109,7 +116,10 @@ export const makeRouter: (
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
-  clusterDetails: ClusterDetails;
+  clusterDetails:
+    | AWSClusterDetails
+    | GKEClusterDetails
+    | ServiceAccountClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
@@ -134,6 +144,9 @@ export interface RouterOptions {
 
 // Warning: (ae-missing-release-tag) "ServiceLocatorMethod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
+// @public (undocumented)
+export interface ServiceAccountClusterDetails extends ClusterDetails {}
+
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
 
