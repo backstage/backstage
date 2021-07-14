@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-Fix oidc auth provider
+Configuration updates for the `OpenID Connect` auth provider to allow `prompt` configuration and some sensible defaults.
