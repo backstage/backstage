@@ -9,6 +9,9 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
+import { EntityRef } from '@backstage/catalog-model';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -35,36 +38,66 @@ export { isJenkinsAvailable as isPluginApplicableToEntity };
 export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 
 // @public (undocumented)
-export class JenkinsApi {
-  constructor(options: Options);
+export interface JenkinsApi {
+  getBuild(options: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<Build>;
+  getProjects(options: {
+    entity: EntityRef;
+    filter: {
+      branch?: string;
+    };
+  }): Promise<Project[]>;
   // (undocumented)
-  extractJobDetailsFromBuildName(
-    buildName: string,
-  ): {
-    jobName: string;
-    buildNumber: number;
-  };
-  // (undocumented)
-  extractScmDetailsFromJob(jobDetails: any): any | undefined;
-  // (undocumented)
-  getBuild(buildName: string): Promise<any>;
-  // (undocumented)
-  getFolder(folderName: string): Promise<CITableBuildInfo[]>;
-  // (undocumented)
-  getJob(jobName: string): Promise<any>;
-  // (undocumented)
-  getLastBuild(jobName: string): Promise<any>;
-  // (undocumented)
-  mapJenkinsBuildToCITable(
-    jenkinsResult: any,
-    jobScmInfo?: any,
-  ): CITableBuildInfo;
-  // (undocumented)
-  retry(buildName: string): Promise<any>;
+  retry(options: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<void>;
 }
 
 // @public (undocumented)
 export const jenkinsApiRef: ApiRef<JenkinsApi>;
+
+// @public (undocumented)
+export class JenkinsClient implements JenkinsApi {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  getBuild({
+    entity,
+    jobFullName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<Build>;
+  // (undocumented)
+  getProjects({
+    entity,
+    filter,
+  }: {
+    entity: EntityName;
+    filter: {
+      branch?: string;
+    };
+  }): Promise<Project[]>;
+  // (undocumented)
+  retry({
+    entity,
+    jobFullName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<void>;
+}
 
 // @public (undocumented)
 const jenkinsPlugin: BackstagePlugin<

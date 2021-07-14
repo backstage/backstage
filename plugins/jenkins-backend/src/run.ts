@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
-export { JenkinsClient, jenkinsApiRef } from './JenkinsApi';
+import { getRootLogger } from '@backstage/backend-common';
+import yn from 'yn';
+import { startStandaloneServer } from './service/standaloneServer';
 
-export type { JenkinsApi } from './JenkinsApi';
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7000;
+const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
+const logger = getRootLogger();
+
+startStandaloneServer({ port, enableCors, logger }).catch(err => {
+  logger.error(err);
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  logger.info('CTRL+C pressed; exiting.');
+  process.exit(0);
+});

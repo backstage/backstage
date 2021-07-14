@@ -5828,6 +5828,13 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
+"@types/jenkins@^0.23.1":
+  version "0.23.1"
+  resolved "https://registry.npmjs.org/@types/jenkins/-/jenkins-0.23.1.tgz#d0f0ef5511beff975c91cbd2365e580d700ca7f9"
+  integrity sha512-3oGxVCq+5esbjb0BQXUv0Iz0/7ogJxmzaxKtxwwMik5vGtRvfjWf/sXGA1RzkVAG0+rJUZNKStjKRdtqJfEyRg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/jest-when@^2.7.2":
   version "2.7.2"
   resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-2.7.2.tgz#619fbc5f623bcd0b29efde0e4993c7f0d50d026d"
@@ -15766,7 +15773,7 @@ jake@^10.6.1:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-jenkins@^0.28.0:
+jenkins@^0.28.1:
   version "0.28.1"
   resolved "https://registry.npmjs.org/jenkins/-/jenkins-0.28.1.tgz#f7951798ee5d2bb501a831979b6b5ecc1a922a64"
   integrity sha512-gcC4QUrP4VzdqOMHoVzh36XlJprxJkI2HGLQSY7w84KoCTVNDcR/8O00tYyXp9vrZOx4wl5zCXLVKMgH2IoyJQ==

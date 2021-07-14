@@ -38,6 +38,7 @@
     "@backstage/plugin-catalog-backend": "^0.12.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.8",
     "@backstage/plugin-graphql-backend": "^0.1.8",
+    "@backstage/plugin-jenkins-backend": "^0.1.1",
     "@backstage/plugin-kubernetes-backend": "^0.3.9",
     "@backstage/plugin-kafka-backend": "^0.2.8",
     "@backstage/plugin-proxy-backend": "^0.2.9",
