@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { AuthProviders } from './AuthProviders';
+export { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 export { DefaultProviderSettings } from './DefaultProviderSettings';
 export { ProviderSettingsItem } from './ProviderSettingsItem';

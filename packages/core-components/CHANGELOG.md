@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.1.5
+
+### Patch Changes
+
+- a446bffdb: Improve UX of the Sidebar by adding SidebarScrollWrapper component allowing the user to scroll through Plugins & Shortcuts on smaller screens. Prevent the Sidebar from opening on click on small devices
+- f11e50ea7: - Enhanced core `Button` component to open external links in new tab.
+  - Replaced the use of `Button` component from material by `core-components` in tools card.
+- 76bb7aeda: Show scroll bar of the sidebar wrapper only on hover
+- 2a13aa1b7: Handle empty code blocks in markdown files so they don't fail rendering
+- 47748c7e6: Fix error in error panel, and console warnings about DOM nesting pre inside p
+- 34352a79c: Add edit button to Group Profile Card
+- 612e25fd7: Add custom styles to scroll bar of the sidebar wrapper to fix flaky behaviour
+
 ## 0.1.4
 
 ### Patch Changes

@@ -112,14 +112,21 @@ type ExtraContextMenuItem = {
   onClick: () => void;
 };
 
+// unstable context menu option, eg: disable the unregister entity menu
+type contextMenuOptions = {
+  disableUnregister: boolean;
+};
+
 type EntityPageLayoutProps = {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: contextMenuOptions;
   children?: React.ReactNode;
 };
 
 export const EntityPageLayout = ({
   children,
   UNSTABLE_extraContextMenuItems,
+  UNSTABLE_contextMenuOptions,
 }: EntityPageLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
@@ -152,6 +159,7 @@ export const EntityPageLayout = ({
             <EntityLabels entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
               onUnregisterEntity={showRemovalDialog}
             />
           </>

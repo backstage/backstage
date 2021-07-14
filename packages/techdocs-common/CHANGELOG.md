@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.6.7
+
+### Patch Changes
+
+- 683308ecf: Fix openStack swift publisher encoding issue. Remove utf8 forced encoding on binary files
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+
 ## 0.6.6
 
 ### Patch Changes

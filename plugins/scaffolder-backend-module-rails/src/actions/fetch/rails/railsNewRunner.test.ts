@@ -137,7 +137,7 @@ describe('Rails Templater', () => {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
         name: 'rails-project',
-        railsArguments: { template: './something.rb' },
+        railsArguments: { template: `.${path.sep}something.rb` },
         imageName: 'foo/rails-custom-image',
       };
 
@@ -210,7 +210,7 @@ describe('Rails Templater', () => {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
         name: 'rails-project',
-        railsArguments: { template: './something.rb' },
+        railsArguments: { template: `.${path.sep}something.rb` },
         imageName: 'foo/rails-custom-image',
       };
 

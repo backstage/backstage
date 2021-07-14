@@ -15,4 +15,4 @@
  */
 
 export * from './types';
-export * from './XCMetricsClient';
+export * from './XcmetricsClient';

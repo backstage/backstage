@@ -19,7 +19,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
-import { xcmetricsApiRef, XCMetricsClient } from './api';
+import { xcmetricsApiRef, XcmetricsClient } from './api';
 import { rootRouteRef } from './routes';
 
 export const xcmetricsPlugin = createPlugin({
@@ -34,7 +34,7 @@ export const xcmetricsPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
       },
       factory({ discoveryApi }) {
-        return new XCMetricsClient({ discoveryApi });
+        return new XcmetricsClient({ discoveryApi });
       },
     }),
   ],
@@ -43,7 +43,7 @@ export const xcmetricsPlugin = createPlugin({
 export const XcmetricsPage = xcmetricsPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./components/XCMetricsPage').then(m => m.XCMetricsPage),
+      import('./components/XcmetricsLayout').then(m => m.XcmetricsLayout),
     mountPoint: rootRouteRef,
   }),
 );

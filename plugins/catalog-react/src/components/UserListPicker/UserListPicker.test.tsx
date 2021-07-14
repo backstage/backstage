@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { UserListPicker } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityTagFilter, UserListFilter } from '../../types';
+import { EntityTagFilter, UserListFilter } from '../../filters';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi } from '@backstage/test-utils';
@@ -198,6 +198,24 @@ describe('<UserListPicker />', () => {
         ({ nextSibling }) => nextSibling?.textContent,
       ),
     ).toEqual(['1', '0', '2']);
+  });
+
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { user: 'owned' };
+    render(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ backendEntities, updateFilters, queryParameters }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('owned', mockUser, mockIsStarredEntity),
+    });
   });
 
   it('updates user filter when a menuitem is selected', () => {
