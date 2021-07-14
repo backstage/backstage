@@ -94,9 +94,9 @@ export type GithubAppConfig = {
    */
   clientSecret: string;
   /**
-   * List of installations allowed to be used by this backstage https://github.com/app/installations/$InstallationId
+   * List of installation owners allowed to be used by this backstage https://github.com/app/installations/$InstallationId
    */
-  allowedInstallations?: number[];
+  allowedInstallationOwners?: string[];
 };
 
 /**
@@ -117,9 +117,9 @@ export function readGitHubIntegrationConfig(
     clientSecret: c.getString('clientSecret'),
     webhookSecret: c.getString('webhookSecret'),
     privateKey: c.getString('privateKey'),
-    allowedInstallations: c
-      .getOptionalStringArray('allowedInstallations')
-      ?.map(allowedInstallation => Number(allowedInstallation)),
+    allowedInstallationOwners: c.getOptionalStringArray(
+      'allowedInstallationOwners',
+    ),
   }));
 
   if (!isValidHost(host)) {
