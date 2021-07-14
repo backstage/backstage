@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
     id: 'debug:log',
     description:
-      'Writes a message into the log or list all files in the workspace.',
+      'Writes a message into the log or lists all files in the workspace.',
     schema: {
       input: {
         type: 'object',

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  SingleConnectionDatabaseManager,
-} from '@backstage/backend-common';
-import { ConfigReader, JsonObject } from '@backstage/config';
 import os from 'os';
+import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
+import { ConfigReader, JsonObject } from '@backstage/config';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { RepoSpec } from '../actions/builtin/publish/util';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
@@ -27,7 +24,7 @@ import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker } from './TaskWorker';
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = SingleConnectionDatabaseManager.fromConfig(
+  const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
         database: {
@@ -190,6 +187,39 @@ describe('TaskWorker', () => {
           name: 'conditional',
           action: 'test-action',
           if: '{{ steps.test.output.testOutput }}',
+        },
+      ],
+      output: {
+        result: '{{ steps.conditional.output.testOutput }}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+    expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should execute steps conditionally with eq helper', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        { id: 'test', name: 'test', action: 'test-action' },
+        {
+          id: 'conditional',
+          name: 'conditional',
+          action: 'test-action',
+          if: '{{ eq steps.test.output.testOutput "winning" }}',
         },
       ],
       output: {

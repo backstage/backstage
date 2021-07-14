@@ -1,5 +1,26 @@
 # @backstage/plugin-org
 
+## 0.3.16
+
+### Patch Changes
+
+- 34352a79c: Add edit button to Group Profile Card
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
+## 0.3.15
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+- ce4abc1e0: Display a tooltip for ownership cards listing the related entities
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.3
+  - @backstage/catalog-model@0.8.4
+  - @backstage/plugin-catalog-react@0.2.4
+
 ## 0.3.14
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  TemplateEntityV1alpha1,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
@@ -35,7 +32,7 @@ export class CatalogEntityClient {
   async findTemplate(
     templateName: string,
     options?: { token?: string },
-  ): Promise<TemplateEntityV1alpha1 | TemplateEntityV1beta2> {
+  ): Promise<TemplateEntityV1beta2> {
     const { items: templates } = (await this.catalogClient.getEntities(
       {
         filter: {
@@ -44,7 +41,7 @@ export class CatalogEntityClient {
         },
       },
       options,
-    )) as { items: (TemplateEntityV1alpha1 | TemplateEntityV1beta2)[] };
+    )) as { items: TemplateEntityV1beta2[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

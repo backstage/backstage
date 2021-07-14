@@ -1,5 +1,218 @@
 # @backstage/create-app
 
+## 0.3.30
+
+### Patch Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+- f7134c368: bump sqlite3 to 5.0.1
+- e4244f94b: Use SidebarScrollWrapper to improve responsiveness of the current sidebar. Change: Wrap a section of SidebarItems with this component to enable scroll for smaller screens. It can also be used in sidebar plugins (see shortcuts plugin for an example).
+
+## 0.3.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.2
+
+## 0.3.28
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+
+## 0.3.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@0.12.2
+
+## 0.3.26
+
+### Patch Changes
+
+- 5db7445b4: Adding .DS_Store pattern to .gitignore in Scaffolded Backstage App. To migrate an existing app that pattern should be added manually.
+
+  ```diff
+  +# macOS
+  +.DS_Store
+  ```
+
+- b45e29410: This release enables the new catalog processing engine which is a major milestone for the catalog!
+
+  This update makes processing more scalable across multiple instances, adds support for deletions and ui flagging of entities that are no longer referenced by a location.
+
+  **Changes Required** to `catalog.ts`
+
+  ```diff
+  -import { useHotCleanup } from '@backstage/backend-common';
+   import {
+     CatalogBuilder,
+  -  createRouter,
+  -  runPeriodically
+  +  createRouter
+   } from '@backstage/plugin-catalog-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
+  -  const builder = new CatalogBuilder(env);
+  +  const builder = await CatalogBuilder.create(env);
+     const {
+       entitiesCatalog,
+       locationsCatalog,
+  -    higherOrderOperation,
+  +    locationService,
+  +    processingEngine,
+       locationAnalyzer,
+     } = await builder.build();
+
+  -  useHotCleanup(
+  -    module,
+  -    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
+  -  );
+  +  await processingEngine.start();
+
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+  -    higherOrderOperation,
+  +    locationService,
+       locationAnalyzer,
+       logger: env.logger,
+       config: env.config,
+  ```
+
+  As this is a major internal change we have taken some precaution by still allowing the old catalog to be enabled by keeping your `catalog.ts` in it's current state.
+  If you encounter any issues and have to revert to the previous catalog engine make sure to raise an issue immediately as the old catalog engine is deprecated and will be removed in a future release.
+
+- 772dbdb51: Deprecates `SingleConnectionDatabaseManager` and provides an API compatible database
+  connection manager, `DatabaseManager`, which allows developers to configure database
+  connections on a per plugin basis.
+
+  The `backend.database` config path allows you to set `prefix` to use an
+  alternate prefix for automatically generated database names, the default is
+  `backstage_plugin_`. Use `backend.database.plugin.<pluginId>` to set plugin
+  specific database connection configuration, e.g.
+
+  ```yaml
+  backend:
+    database:
+      client: 'pg',
+      prefix: 'custom_prefix_'
+      connection:
+        host: 'localhost'
+        user: 'foo'
+        password: 'bar'
+      plugin:
+        catalog:
+          connection:
+            database: 'database_name_overriden'
+        scaffolder:
+          client: 'sqlite3'
+          connection: ':memory:'
+  ```
+
+  Migrate existing backstage installations by swapping out the database manager in the
+  `packages/backend/src/index.ts` file as shown below:
+
+  ```diff
+  import {
+  -  SingleConnectionDatabaseManager,
+  +  DatabaseManager,
+  } from '@backstage/backend-common';
+
+  // ...
+
+  function makeCreateEnv(config: Config) {
+    // ...
+  -  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  +  const databaseManager = DatabaseManager.fromConfig(config);
+    // ...
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.3
+  - @backstage/plugin-search-backend-node@0.2.1
+  - @backstage/plugin-catalog-backend@0.10.3
+  - @backstage/backend-common@0.8.3
+  - @backstage/cli@0.7.1
+  - @backstage/plugin-api-docs@0.5.0
+  - @backstage/plugin-scaffolder-backend@0.12.1
+  - @backstage/plugin-techdocs@0.9.6
+  - @backstage/plugin-techdocs-backend@0.8.3
+  - @backstage/plugin-catalog-import@0.5.10
+  - @backstage/plugin-app-backend@0.3.14
+  - @backstage/plugin-proxy-backend@0.2.10
+  - @backstage/plugin-rollbar-backend@0.1.12
+  - @backstage/plugin-search-backend@0.2.1
+  - @backstage/plugin-user-settings@0.2.11
+  - @backstage/catalog-model@0.8.3
+  - @backstage/plugin-auth-backend@0.3.13
+  - @backstage/core@0.7.13
+
 ## 0.3.25
 
 ### Patch Changes

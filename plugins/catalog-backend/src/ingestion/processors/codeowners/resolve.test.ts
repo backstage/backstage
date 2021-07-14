@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ describe('resolveCodeOwner', () => {
 
 describe('normalizeCodeOwner', () => {
   it('should remove the @ symbol', () => {
-    expect(normalizeCodeOwner('@yoda')).toBe('yoda');
+    expect(normalizeCodeOwner('@yoda')).toBe('User:yoda');
   });
 
   it('should remove org from org/team format', () => {

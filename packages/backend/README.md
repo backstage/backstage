@@ -6,9 +6,7 @@ The main purpose of this package is to provide a test bed for Backstage plugins
 that have a backend part. Feel free to experiment locally or within your fork
 by adding dependencies and routes to this backend, to try things out.
 
-Our goal is to eventually amend the create-app flow of the CLI, such that a
-production ready version of a backend skeleton is made alongside the frontend
-app. Until then, feel free to experiment here!
+By running the `@backstage/create-app` script, you get your own separate Backstage backend.
 
 ## Development
 
@@ -40,6 +38,16 @@ dummy values just to try out the backend without using the auth or sentry featur
 You can also, instead of using dummy values for a huge number of environment variables, remove those config directly from app-config.yaml file located in the root folder.
 
 The backend starts up on port 7000 per default.
+
+### Debugging
+
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/cli/commands#backenddev).
+
+To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
+
+- Enable Auto Attach (⌘ + Shift + P > Toggle Auto Attach > Only With Flag)
+- Open a VSCode terminal (Control + `)
+- Run the backend from the VSCode terminal: `yarn start-backend --inspect`
 
 ## Populating The Catalog
 

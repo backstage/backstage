@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
     beforeEach(() => {
       input = {
-        owner: 'myorg',
-        repo: 'myrepo',
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',
@@ -127,8 +126,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
     beforeEach(() => {
       input = {
-        owner: 'myorg',
-        repo: 'myrepo',
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',

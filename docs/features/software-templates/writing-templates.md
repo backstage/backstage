@@ -4,8 +4,8 @@ title: Writing Templates
 description: Details around creating your own custom Software Templates
 ---
 
-Templates are stored in the **Service Catalog** under a kind `Template`. You can
-create your own templates with a small `yaml` definition which describes the
+Templates are stored in the **Software Catalog** under a kind `Template`. You
+can create your own templates with a small `yaml` definition which describes the
 template and it's metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
@@ -62,7 +62,7 @@ spec:
   steps:
     - id: fetch-base
       name: Fetch Base
-      action: fetch:cookiecutter
+      action: fetch:template
       input:
         url: ./template
         values:
@@ -289,8 +289,8 @@ template. These follow the same standard format:
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: '{{ parameters.name }}' # Optional condition, skip the step if not truthy
-  action: fetch:cookiecutter # an action to call
-  input: # input that is passed as arguments to the action handler
+  action: fetch:template # An action to call
+  input: # Input that is passed as arguments to the action handler
     url: ./template
     values:
       name: '{{ parameters.name }}'
@@ -317,20 +317,20 @@ output:
 
 ### The templating syntax
 
-You might have noticed in the examples that there are `{{ }}`, and these are a
-`handlebars` templates for linking and glueing all these different parts of
-`yaml` together. All the form inputs from the `parameters` section, when passed
-to the steps will be available by using the template syntax
-`{{ parameters.something }}`. This is great for passing the values from the form
-into different steps and reusing these input variables. To pass arrays or
-objects use the syntax `{{ json paramaters.something }}` where
-`paramaters.something` is of type `object` or `array` in the `jsonSchema`, such
-as the `nicknames` parameter in the previous example.
+You might have noticed variables wrapped in `{{ }}` in the examples. These are
+`handlebars` template strings for linking and gluing the different parts of the
+template together. All the form inputs from the `parameters` section will be
+available by using this template syntax (for example,
+`{{ parameters.firstName }}` inserts the value of `firstName` from the
+parameters). This is great for passing the values from the form into different
+steps and reusing these input variables. To pass arrays or objects use the
+`json` custom [helper](https://handlebarsjs.com/guide/expressions.html#helpers).
+For example, `{{ json parameters.nicknames }}` will insert the result of calling
+`JSON.stringify` on the value of the `nicknames` parameter.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
-output things. So you can grab that output by using
-`steps.$stepId.output.$property`.
+output things. You can grab that output using `steps.$stepId.output.$property`.
 
 You can read more about all the `inputs` and `outputs` defined in the actions in
-code part of the `JSONSchema` or you can read more about our built in ones
+code part of the `JSONSchema`, or you can read more about our built in ones
 [here](./builtin-actions.md).

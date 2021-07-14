@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { repoPickerValidation } from './validation';
 import { FieldValidation } from '@rjsf/core';
 
@@ -22,7 +23,7 @@ describe('RepoPicker Validation', () => {
       addError: jest.fn(),
     } as unknown) as FieldValidation);
 
-  it('validaties when no repo', () => {
+  it('validates when no repo', () => {
     const mockFieldValidation = fieldValidator();
 
     repoPickerValidation('github.com?owner=a', mockFieldValidation);

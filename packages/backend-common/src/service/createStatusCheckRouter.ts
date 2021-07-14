@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
 export interface StatusCheckRouterOptions {
   logger: Logger;
   path?: string;
+  /**
+   * If not implemented, the default express middleware always returns 200.
+   * Override this to implement your own logic for a health check.
+   */
   statusCheck?: StatusCheck;
 }
 

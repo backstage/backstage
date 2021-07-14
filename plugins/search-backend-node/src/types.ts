@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ export interface SearchEngine {
   /**
    * Add the given documents to the SearchEngine index of the given type.
    */
-  index(type: string, documents: IndexableDocument[]): void;
+  index(type: string, documents: IndexableDocument[]): Promise<void>;
 
   /**
    * Perform a search query against the SearchEngine.

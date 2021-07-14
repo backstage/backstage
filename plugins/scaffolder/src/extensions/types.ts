@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
+
+export type CustomFieldValidator<T> =
+  | ((data: T, field: FieldValidation) => void)
+  | ((
+      data: T,
+      field: FieldValidation,
+      context: { apiHolder: ApiHolder },
+    ) => void);
 
 export type FieldExtensionOptions<T = any> = {
   name: string;
   component: (props: FieldProps<T>) => JSX.Element | null;
-  validation?: (data: T, field: FieldValidation) => void;
+  validation?: CustomFieldValidator<T>;
 };

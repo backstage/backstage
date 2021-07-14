@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
@@ -31,7 +31,11 @@ import { Logger } from 'winston';
 import { DocsBuilder } from '../DocsBuilder';
 import { shouldCheckForUpdate } from '../DocsBuilder/BuildMetadataStorage';
 
-type RouterOptions = {
+/**
+ * All of the required dependencies for running TechDocs in the "out-of-the-box"
+ * deployment configuration (prepare/generate/publish all in the Backend).
+ */
+type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
@@ -41,15 +45,39 @@ type RouterOptions = {
   config: Config;
 };
 
-export async function createRouter({
-  preparers,
-  generators,
-  publisher,
-  config,
-  logger,
-  discovery,
-}: RouterOptions): Promise<express.Router> {
+/**
+ * Required dependencies for running TechDocs in the "recommended" deployment
+ * configuration (prepare/generate handled externally in CI/CD).
+ */
+type RecommendedDeploymentOptions = {
+  publisher: PublisherBase;
+  logger: Logger;
+  discovery: PluginEndpointDiscovery;
+  config: Config;
+};
+
+/**
+ * One of the two deployment configurations must be provided.
+ */
+type RouterOptions =
+  | RecommendedDeploymentOptions
+  | OutOfTheBoxDeploymentOptions;
+
+/**
+ * Typeguard to help createRouter() understand when we are in a "recommended"
+ * deployment vs. when we are in an out-of-the-box deployment configuration.
+ */
+function isOutOfTheBoxOption(
+  opt: RouterOptions,
+): opt is OutOfTheBoxDeploymentOptions {
+  return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
+}
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
   const router = Router();
+  const { publisher, config, logger, discovery } = options;
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
@@ -158,49 +186,63 @@ export async function createRouter({
       });
       return;
     }
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher,
-      logger,
-      entity,
-    });
-    let foundDocs = false;
-    switch (publisherType) {
-      case 'local':
-      case 'awsS3':
-      case 'azureBlobStorage':
-      case 'openStackSwift':
-      case 'googleGcs':
-        // This block should be valid for all storage implementations. So no need to duplicate in future,
-        // add the publisher type in the list here.
-        await docsBuilder.build();
-        // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-        // on the user's page. If not, respond with a message asking them to check back later.
-        // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
-        for (let attempt = 0; attempt < 5; attempt++) {
-          if (await publisher.hasDocsBeenGenerated(entity)) {
-            foundDocs = true;
-            break;
+
+    // Set up a DocsBuilder if "out-of-the-box" configuration is provided.
+    if (isOutOfTheBoxOption(options)) {
+      const { preparers, generators } = options;
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher,
+        logger,
+        entity,
+        config,
+      });
+      let foundDocs = false;
+      switch (publisherType) {
+        case 'local':
+        case 'awsS3':
+        case 'azureBlobStorage':
+        case 'openStackSwift':
+        case 'googleGcs': {
+          // This block should be valid for all storage implementations. So no need to duplicate in future,
+          // add the publisher type in the list here.
+          const updated = await docsBuilder.build();
+
+          if (!updated) {
+            throw new NotModifiedError();
           }
-          await new Promise(r => setTimeout(r, 1000));
+
+          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+          // on the user's page. If not, respond with a message asking them to check back later.
+          // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
+          for (let attempt = 0; attempt < 5; attempt++) {
+            if (await publisher.hasDocsBeenGenerated(entity)) {
+              foundDocs = true;
+              break;
+            }
+            await new Promise(r => setTimeout(r, 1000));
+          }
+          if (!foundDocs) {
+            logger.error(
+              'Published files are taking longer to show up in storage. Something went wrong.',
+            );
+            throw new NotFoundError(
+              'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+            );
+          }
+
+          res
+            .status(201)
+            .json({ message: 'Docs updated or did not need updating' });
+          break;
         }
-        if (!foundDocs) {
-          logger.error(
-            'Published files are taking longer to show up in storage. Something went wrong.',
-          );
+
+        default:
           throw new NotFoundError(
-            'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+            `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
           );
-        }
-        res
-          .status(201)
-          .json({ message: 'Docs updated or did not need updating' });
-        break;
-      default:
-        throw new NotFoundError(
-          `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
-        );
+      }
     }
   });
 
