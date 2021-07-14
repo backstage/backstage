@@ -41,3 +41,4 @@ export {
 } from './plugin';
 export * from './components/CatalogTable/columns';
 export * from './components/CatalogFilter';
+export * from './components/FilteredTableLayout';
