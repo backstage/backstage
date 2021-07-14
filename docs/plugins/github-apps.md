@@ -92,11 +92,11 @@ integrations:
 ### Limiting the GitHub App installations
 
 If you want to limit the GitHub app installations visible to backstage you may
-optionally include the `allowedInstallationIds` option.
+optionally include the `allowedInstallationOwners` option.
 
 ```yaml
 appId: 1
-allowedInstallationIds: [1234]
+allowedInstallationOwners: [1234]
 clientId: client id
 clientSecret: client secret
 webhookSecret: webhook secret
