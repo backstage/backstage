@@ -22,6 +22,10 @@ import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
 export interface StatusCheckRouterOptions {
   logger: Logger;
   path?: string;
+  /**
+   * If not implemented, the default express middleware always returns 200.
+   * Override this to implement your own logic for a health check.
+   */
   statusCheck?: StatusCheck;
 }
 
