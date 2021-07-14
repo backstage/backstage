@@ -54,7 +54,7 @@ export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   steps.forEach(step => {
     const schemaProps = step.schema.properties as JsonObject;
     for (const key in schemaProps) {
-      if (schemaProps.hasOwnProperty.call(schemaProps, key)) {
+      if (schemaProps.hasOwnProperty(key)) {
         const uiSchema = schemaProps[key] as UiSchema;
         uiSchema.name = key;
         uiSchemas.push(uiSchema);
@@ -68,7 +68,7 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   const uiSchemas = getUiSchemasFromSteps(steps);
   const reviewData: Record<string, any> = {};
   for (const key in formData) {
-    if (formData.hasOwnProperty.call(formData, key)) {
+    if (formData.hasOwnProperty(key)) {
       const uiSchema = uiSchemas.find(us => us.name === key);
 
       if (!uiSchema) {
