@@ -16180,9 +16180,9 @@ jest-watcher@^26.6.2:
     string-length "^4.0.1"
 
 jest-when@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/jest-when/-/jest-when-3.1.0.tgz#d041191b8d4a8ad3fd9c4dc2eda3237eaeec4004"
-  integrity sha512-oLANZfF60yxheShbbke3+XXosZhge8Va2xiwIddF8DF5l996Ldy8bL6hT319ovSyjrhBWLOEESKfANyM0Eo/SQ==
+  version "3.3.1"
+  resolved "https://registry.npmjs.org/jest-when/-/jest-when-3.3.1.tgz#04f978b2e522a290b1d91db7ab6ca029a7925513"
+  integrity sha512-nbQxKeHqfmoSE38TfLVPCgxG+rnsgHSXsdH1wdE9bqHt9US6twHjSXV+fD4ncfsIWNXqhv7zRvN5jn/QYL2UwA==
   dependencies:
     bunyan "^1.8.12"
     expect "^24.8.0"
