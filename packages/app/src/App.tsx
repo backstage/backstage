@@ -56,10 +56,19 @@ import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import myTheme from './theme';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  themes: [
+    {
+      id: 'my-theme',
+      title: 'My Custom Theme',
+      variant: 'light',
+      theme: myTheme,
+    },
+  ],
   icons: {
     // Custom icon example
     alert: AlarmIcon,

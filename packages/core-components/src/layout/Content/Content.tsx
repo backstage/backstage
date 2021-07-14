@@ -18,12 +18,20 @@ import React, { PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import { Theme, makeStyles } from '@material-ui/core';
 
+function getParameterByName(name: string, url = window.location.href) {
+  const results = url.includes(name);
+  if (!results) return null;
+  return results;
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     gridArea: 'pageContent',
     minWidth: 0,
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
+    borderTop: '8px solid #fac922',
+    borderColor: '#fac922!important',
     ...theme.mixins.gutters({}),
   },
   stretch: {
@@ -49,9 +57,17 @@ export const Content = ({
   children,
   ...props
 }: PropsWithChildren<Props>) => {
+  const catalogCheck = getParameterByName('catalog');
+  let borderStyle = {};
+  if (!catalogCheck) {
+    borderStyle = {
+      border: 'none',
+    };
+  }
   const classes = useStyles();
   return (
     <article
+      style={borderStyle}
       {...props}
       className={classNames(classes.root, className, {
         [classes.stretch]: stretch,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createTheme, lightTheme } from '@backstage/theme';
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import LogoSrc from './va-color-logo.png';
-
-const useStyles = makeStyles({
-  icon: {
-    width: 'auto',
-    height: 28,
+const myTheme = createTheme({
+  palette: {
+    ...lightTheme.palette,
+    navigation: {
+      background: '#293e40',
+      indicator: '#0071bb',
+      color: '#FFFFFF',
+      selectedColor: '#FFFFFF',
+    },
   },
+  fontFamily:
+    'Source Sans Pro,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif',
+  defaultPageTheme: 'home',
 });
 
-const LogoIcon = () => {
-  const classes = useStyles();
-
-  return <img className={classes.icon} src={LogoSrc} alt="VA-logo" />;
-};
-
-export default LogoIcon;
+export default myTheme;

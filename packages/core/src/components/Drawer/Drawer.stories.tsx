@@ -53,7 +53,7 @@ const useDrawerContentStyles = makeStyles((theme: Theme) =>
     },
     content: {
       height: '80%',
-      backgroundColor: '#EEEEEE',
+      backgroundColor: '#0071bb',
     },
     secondaryAction: {
       marginLeft: theme.spacing(2.5),
