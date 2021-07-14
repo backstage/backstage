@@ -16,10 +16,10 @@
 
 import React from 'react';
 
-import { Header, Page } from '../../';
-import { Props as HeaderProps } from '../../layout/Header/Header';
+import { Header } from '../Header';
+import { Page } from './';
 
-export interface IProps extends HeaderProps {
+interface IProps extends React.ComponentProps<typeof Header> {
   themeId: string;
 }
 
