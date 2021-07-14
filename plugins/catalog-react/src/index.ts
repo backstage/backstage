@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ export type { CatalogApi } from '@backstage/catalog-client';
 export { catalogApiRef } from './api';
 export * from './components';
 export * from './hooks';
+export * from './filters';
 export {
   catalogRouteRef,
   entityRoute,

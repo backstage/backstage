@@ -72,7 +72,7 @@ proxy:
   '/pagerduty':
     target: https://api.pagerduty.com
     headers:
-      Authorization: ${PAGERDUTY_TOKEN}
+      Authorization: Token token=${PAGERDUTY_TOKEN}
 
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
@@ -250,6 +250,10 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
+  # Use to customize default commit author info used when new components are created
+  # defaultAuthor:
+  #   name: Scaffolder
+  #   email: scaffolder@backstage.io
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'

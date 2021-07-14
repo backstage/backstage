@@ -1,5 +1,61 @@
 # @backstage/core-components
 
+## 0.1.5
+
+### Patch Changes
+
+- a446bffdb: Improve UX of the Sidebar by adding SidebarScrollWrapper component allowing the user to scroll through Plugins & Shortcuts on smaller screens. Prevent the Sidebar from opening on click on small devices
+- f11e50ea7: - Enhanced core `Button` component to open external links in new tab.
+  - Replaced the use of `Button` component from material by `core-components` in tools card.
+- 76bb7aeda: Show scroll bar of the sidebar wrapper only on hover
+- 2a13aa1b7: Handle empty code blocks in markdown files so they don't fail rendering
+- 47748c7e6: Fix error in error panel, and console warnings about DOM nesting pre inside p
+- 34352a79c: Add edit button to Group Profile Card
+- 612e25fd7: Add custom styles to scroll bar of the sidebar wrapper to fix flaky behaviour
+
+## 0.1.4
+
+### Patch Changes
+
+- f423891ee: Fixed sizing of the System diagram when the rendered graph was wider than the container.
+- 3db266fe4: Make `ErrorBoundary` display more helpful information about the error that
+  occurred.
+
+  The `slackChannel` (optional) prop can now be passed as an object on the form
+  `{ name: string; href?: string; }` in addition to the old string form. If you
+  are using the error boundary like
+
+  ```tsx
+  <ErrorBoundary slackChannel="#support">
+    <InnerComponent>
+  </ErrorBoundary>
+  ```
+
+  you may like to migrate it to
+
+  ```tsx
+  const support = {
+    name: '#support',
+    href: 'https://slack.com/channels/your-channel',
+  };
+
+  <ErrorBoundary slackChannel={support}>
+    <InnerComponent>
+  </ErrorBoundary>
+  ```
+
+  Also deprecated the prop `slackChannel` on `TabbedCard` and `InfoCard`, while
+  adding the prop `errorBoundaryProps` to replace it.
+
+- e8c65b068: Clear the previously selected sign-in provider on failure
+
+## 0.1.3
+
+### Patch Changes
+
+- d2c31b132: Add title prop in SupportButton component
+- d4644f592: Use the Backstage `Link` component in the `Button`
+
 ## 0.1.2
 
 ### Patch Changes

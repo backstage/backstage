@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
     return;
   }
 
-  const { properties, anyOf, oneOf, allOf } = schema;
+  const { properties, anyOf, oneOf, allOf, dependencies } = schema;
 
   for (const propName in schema) {
     if (!schema.hasOwnProperty(propName)) {
@@ -75,6 +75,16 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
 
   if (Array.isArray(allOf)) {
     for (const schemaNode of allOf) {
+      if (!isObject(schemaNode)) {
+        continue;
+      }
+      extractUiSchema(schemaNode, uiSchema);
+    }
+  }
+
+  if (isObject(dependencies)) {
+    for (const depName of Object.keys(dependencies)) {
+      const schemaNode = dependencies[depName];
       if (!isObject(schemaNode)) {
         continue;
       }

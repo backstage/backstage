@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,69 +15,70 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  TableColumn,
-} from '@backstage/core';
+import { Grid } from '@material-ui/core';
 import {
   EntityKindPicker,
+  EntityLifecyclePicker,
   EntityListProvider,
+  EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-
 import { CatalogTable } from '../CatalogTable';
+
 import { EntityRow } from '../CatalogTable/types';
 import CatalogLayout from './CatalogLayout';
 import { CreateComponentButton } from '../CreateComponentButton';
-
-const useStyles = makeStyles(theme => ({
-  contentWrapper: {
-    display: 'grid',
-    gridTemplateAreas: "'filters' 'table'",
-    gridTemplateColumns: '250px 1fr',
-    gridColumnGap: theme.spacing(2),
-  },
-  buttonSpacing: {
-    marginLeft: theme.spacing(2),
-  },
-}));
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  TableColumn,
+  TableProps,
+} from '@backstage/core-components';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<EntityRow>[];
+  actions?: TableProps<EntityRow>['actions'];
 };
 
 export const CatalogPage = ({
   initiallySelectedFilter = 'owned',
   columns,
-}: CatalogPageProps) => {
-  const styles = useStyles();
-
-  return (
-    <CatalogLayout>
-      <Content>
-        <ContentHeader title="Components">
-          <CreateComponentButton />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <div className={styles.contentWrapper}>
-          <EntityListProvider>
-            <div>
-              <EntityKindPicker initialFilter="component" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityTagPicker />
-            </div>
-            <CatalogTable columns={columns} />
-          </EntityListProvider>
-        </div>
-      </Content>
-    </CatalogLayout>
-  );
-};
+  actions,
+}: CatalogPageProps) => (
+  <CatalogLayout>
+    <Content>
+      <ContentHeader title="Components">
+        <CreateComponentButton />
+        <SupportButton>All your software catalog entities</SupportButton>
+      </ContentHeader>
+      <Grid container spacing={2}>
+        <EntityListProvider>
+          <Grid item sm={12} lg={2} alignContent="flex-start">
+            <Grid container>
+              <Grid item xs={12} sm={4} lg={12}>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={12}>
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={12}>
+                <EntityOwnerPicker />
+                <EntityLifecyclePicker />
+                <EntityTagPicker />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sm={12} lg={10}>
+            <CatalogTable columns={columns} actions={actions} />
+          </Grid>
+        </EntityListProvider>
+      </Grid>
+    </Content>
+  </CatalogLayout>
+);

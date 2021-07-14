@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Header, Page, TabbedLayout } from '@backstage/core';
 import React from 'react';
-import { AuthProviders } from './AuthProviders';
-import { FeatureFlags } from './FeatureFlags';
-import { General } from './General';
+import { UserSettingsAuthProviders } from './AuthProviders';
+import { UserSettingsFeatureFlags } from './FeatureFlags';
+import { UserSettingsGeneral } from './General';
+import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;
@@ -31,16 +31,16 @@ export const SettingsPage = ({ providerSettings }: Props) => {
 
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
-          <General />
+          <UserSettingsGeneral />
         </TabbedLayout.Route>
         <TabbedLayout.Route
           path="auth-providers"
           title="Authentication Providers"
         >
-          <AuthProviders providerSettings={providerSettings} />
+          <UserSettingsAuthProviders providerSettings={providerSettings} />
         </TabbedLayout.Route>
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
-          <FeatureFlags />
+          <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
       </TabbedLayout>
     </Page>

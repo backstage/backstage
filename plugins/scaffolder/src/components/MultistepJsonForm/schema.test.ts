@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -279,6 +279,66 @@ describe('transformSchemaToProps', () => {
       field2: {
         'ui:derp': 'xerp',
       },
+    };
+
+    expect(transformSchemaToProps(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
+
+  it('transforms schema with dependencies', () => {
+    const inputSchema = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        credit_card: {
+          type: 'number',
+        },
+      },
+      required: ['name'],
+      dependencies: {
+        credit_card: {
+          properties: {
+            billing_address: {
+              type: 'string',
+              'ui:widget': 'textarea',
+            },
+          },
+          required: ['billing_address'],
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        credit_card: {
+          type: 'number',
+        },
+      },
+      required: ['name'],
+      dependencies: {
+        credit_card: {
+          properties: {
+            billing_address: {
+              type: 'string',
+            },
+          },
+          required: ['billing_address'],
+        },
+      },
+    };
+    const expectedUiSchema = {
+      billing_address: {
+        'ui:widget': 'textarea',
+      },
+      credit_card: {},
+      name: {},
     };
 
     expect(transformSchemaToProps(inputSchema)).toEqual({

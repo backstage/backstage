@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@ import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 import { filter, get, head, pipe, reverse } from 'lodash/fp';
 
+const USER_PATTERN = /^@.*/;
+const GROUP_PATTERN = /^@.*\/.*/;
+const EMAIL_PATTERN = /^.*@.*\..*$/;
+
 export function resolveCodeOwner(
   contents: string,
   pattern = '*',
@@ -35,11 +39,11 @@ export function resolveCodeOwner(
 }
 
 export function normalizeCodeOwner(owner: string) {
-  if (owner.match(/^@.*\/.*/)) {
+  if (owner.match(GROUP_PATTERN)) {
     return owner.split('/')[1];
-  } else if (owner.match(/^@.*/)) {
-    return owner.substring(1);
-  } else if (owner.match(/^.*@.*\..*$/)) {
+  } else if (owner.match(USER_PATTERN)) {
+    return `User:${owner.substring(1)}`;
+  } else if (owner.match(EMAIL_PATTERN)) {
     return owner.split('@')[0];
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,13 @@
 export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
+    /**
+     * The commit author info used when new components are created.
+     */
+    defaultAuthor?: {
+      name?: string;
+      email?: string;
+    };
     github?: {
       [key: string]: string;
       /**

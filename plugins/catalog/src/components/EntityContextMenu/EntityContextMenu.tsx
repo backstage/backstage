@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core';
 import {
   Divider,
   IconButton,
@@ -28,6 +27,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 // TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
 const useStyles = makeStyles({
@@ -44,13 +44,20 @@ type ExtraContextMenuItem = {
   onClick: () => void;
 };
 
+// unstable context menu option, eg: disable the unregister entity menu
+type contextMenuOptions = {
+  disableUnregister: boolean;
+};
+
 type Props = {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: contextMenuOptions;
   onUnregisterEntity: () => void;
 };
 
 export const EntityContextMenu = ({
   UNSTABLE_extraContextMenuItems,
+  UNSTABLE_contextMenuOptions,
   onUnregisterEntity,
 }: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
@@ -82,6 +89,9 @@ export const EntityContextMenu = ({
     <Divider key="the divider is here!" />,
   ];
 
+  const disableUnregister =
+    UNSTABLE_contextMenuOptions?.disableUnregister ?? false;
+
   return (
     <>
       <IconButton
@@ -108,6 +118,7 @@ export const EntityContextMenu = ({
               onClose();
               onUnregisterEntity();
             }}
+            disabled={disableUnregister}
           >
             <ListItemIcon>
               <Cancel fontSize="small" />

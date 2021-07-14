@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import {
   GroupEntity,
   ResourceEntity,
   SystemEntity,
-  TemplateEntity,
+  TemplateEntityV1beta2,
   UserEntity,
 } from '@backstage/catalog-model';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
@@ -522,22 +522,13 @@ describe('BuiltinKindsEntityProcessor', () => {
       });
     });
     it('generates relations for template entities', async () => {
-      const entity: TemplateEntity = {
-        apiVersion: 'backstage.io/v1alpha1',
+      const entity: TemplateEntityV1beta2 = {
+        apiVersion: 'backstage.io/v1beta2',
         kind: 'Template',
         metadata: { name: 'n' },
         spec: {
-          schema: {
-            properties: {
-              description: {
-                title: 'd',
-                type: 'string',
-                description: 'des',
-              },
-            },
-          },
-          templater: 'cookiecutter',
-          path: '.',
+          parameters: {},
+          steps: [],
           type: 'service',
           owner: 'o',
         },

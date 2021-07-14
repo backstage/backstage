@@ -43,6 +43,10 @@ root of the project which you can then use as an `include` in your
 `app-config.yaml`. You can go ahead and
 [skip ahead](#including-in-integrations-config) if you've already got an app.
 
+Note that the created app will have a webhook that is disabled by default and
+points to `smee.io`, which is intended for local development. There's also
+currently no part of Backstage that makes use of the webhook.
+
 ### GitHub Enterprise
 
 You have to create the GitHub Application manually using these
@@ -104,3 +108,12 @@ privateKey: |
 
 This will result in backstage preventing the use of any installation that is not
 within the allow list.
+
+### Permissions for pull requests
+
+These are the minimum permissions required for creating a pull request with
+Backstage software templates:
+
+- Read and Write permissions for `Contents`.
+- Read and write permissions for `Pull Requests` and `Issues`.
+- Read permissions on `Metadata`.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
+    defaultBranch?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     sourcePath?: string;
   }>({
@@ -47,6 +50,11 @@ export function createPublishGitlabAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -70,7 +78,11 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, repoVisibility = 'private' } = ctx.input;
+      const {
+        repoUrl,
+        repoVisibility = 'private',
+        defaultBranch = 'master',
+      } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -111,14 +123,21 @@ export function createPublishGitlabAction(options: {
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/master`;
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
+        defaultBranch,
         auth: {
           username: 'oauth2',
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       ctx.output('remoteUrl', remoteUrl);

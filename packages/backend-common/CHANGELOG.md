@@ -1,5 +1,129 @@
 # @backstage/backend-common
 
+## 0.8.5
+
+### Patch Changes
+
+- 09d3eb684: Added a `readUrl` method to the `UrlReader` interface that allows for complex response objects and is intended to replace the `read` method. This new method is currently optional to implement which allows for a soft migration to `readUrl` instead of `read` in the future.
+
+  The main use case for `readUrl` returning an object instead of solely a read buffer is to allow for additional metadata such as ETag, which is a requirement for more efficient catalog processing.
+
+  The `GithubUrlReader` and `GitlabUrlReader` readers fully implement `readUrl`. The other existing readers implement the new method but do not propagate or return ETags.
+
+  While the `readUrl` method is not yet required, it will be in the future, and we already log deprecation warnings when custom `UrlReader` implementations that do not implement `readUrl` are used. We therefore recommend that any existing custom implementations are migrated to implement `readUrl`.
+
+  The old `read` and the new `readUrl` methods can easily be implemented using one another, but we recommend moving the chunk of the implementation to the new `readUrl` method as `read` is being removed, for example this:
+
+  ```ts
+  class CustomUrlReader implements UrlReader {
+    read(url: string): Promise<Buffer> {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        // error handling ...
+      }
+
+      return Buffer.from(await res.text());
+    }
+  }
+  ```
+
+  Can be migrated to something like this:
+
+  ```ts
+  class CustomUrlReader implements UrlReader {
+    read(url: string): Promise<Buffer> {
+      const res = await this.readUrl(url);
+      return res.buffer();
+    }
+
+    async readUrl(
+      url: string,
+      _options?: ReadUrlOptions,
+    ): Promise<ReadUrlResponse> {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        // error handling ...
+      }
+
+      const buffer = Buffer.from(await res.text());
+      return { buffer: async () => buffer };
+    }
+  }
+  ```
+
+  While there is no usage of the ETag capability yet in the main Backstage packages, you can already add it to your custom implementations. To do so, refer to the documentation of the `readUrl` method and surrounding types, and the existing implementation in `packages/backend-common/src/reading/GithubUrlReader.ts`.
+
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- c2db794f5: add defaultBranch property for publish GitHub action
+- Updated dependencies
+  - @backstage/integration@0.5.8
+
+## 0.8.4
+
+### Patch Changes
+
+- 88d742eb8: Download archives as compressed tar files for GitLab to fix the `readTree` bug in TODO Plugin.
+- ab5cc376f: Add new `isChildPath` and `resolveSafeChildPath` exports
+- Updated dependencies
+  - @backstage/cli-common@0.1.2
+  - @backstage/integration@0.5.7
+
+## 0.8.3
+
+### Patch Changes
+
+- e5cdf0560: Provide a more clear error message when database connection fails.
+- 772dbdb51: Deprecates `SingleConnectionDatabaseManager` and provides an API compatible database
+  connection manager, `DatabaseManager`, which allows developers to configure database
+  connections on a per plugin basis.
+
+  The `backend.database` config path allows you to set `prefix` to use an
+  alternate prefix for automatically generated database names, the default is
+  `backstage_plugin_`. Use `backend.database.plugin.<pluginId>` to set plugin
+  specific database connection configuration, e.g.
+
+  ```yaml
+  backend:
+    database:
+      client: 'pg',
+      prefix: 'custom_prefix_'
+      connection:
+        host: 'localhost'
+        user: 'foo'
+        password: 'bar'
+      plugin:
+        catalog:
+          connection:
+            database: 'database_name_overriden'
+        scaffolder:
+          client: 'sqlite3'
+          connection: ':memory:'
+  ```
+
+  Migrate existing backstage installations by swapping out the database manager in the
+  `packages/backend/src/index.ts` file as shown below:
+
+  ```diff
+  import {
+  -  SingleConnectionDatabaseManager,
+  +  DatabaseManager,
+  } from '@backstage/backend-common';
+
+  // ...
+
+  function makeCreateEnv(config: Config) {
+    // ...
+  -  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  +  const databaseManager = DatabaseManager.fromConfig(config);
+    // ...
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/config-loader@0.6.4
+
 ## 0.8.2
 
 ### Patch Changes

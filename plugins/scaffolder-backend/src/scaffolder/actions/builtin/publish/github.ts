@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,19 @@ import { Octokit } from '@octokit/rest';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
-} from '../../../stages/publish/helpers';
+} from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   const credentialsProviders = new Map(
     integrations.github.list().map(integration => {
@@ -45,9 +47,11 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
+    defaultBranch?: string;
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
+    topics?: string[];
   }>({
     id: 'publish:github',
     description:
@@ -59,6 +63,7 @@ export function createPublishGithubAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
             type: 'string',
           },
           description: {
@@ -67,12 +72,18 @@ export function createPublishGithubAction(options: {
           },
           access: {
             title: 'Repository Access',
+            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
           },
           repoVisibility: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -81,7 +92,7 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
-            description: 'Provide users with permissions',
+            description: 'Provide additional users with permissions',
             type: 'array',
             items: {
               type: 'object',
@@ -97,6 +108,13 @@ export function createPublishGithubAction(options: {
                   description: 'The username or group',
                 },
               },
+            },
+          },
+          topics: {
+            title: 'Topics',
+            type: 'array',
+            items: {
+              type: 'string',
             },
           },
         },
@@ -121,7 +139,9 @@ export function createPublishGithubAction(options: {
         description,
         access,
         repoVisibility = 'private',
+        defaultBranch = 'master',
         collaborators,
+        topics,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
@@ -215,17 +235,36 @@ export function createPublishGithubAction(options: {
         }
       }
 
+      if (topics) {
+        try {
+          await client.repos.replaceAllTopics({
+            owner,
+            repo,
+            names: topics.map(t => t.toLowerCase()),
+          });
+        } catch (e) {
+          ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
+        }
+      }
+
       const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/master`;
+      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
+        defaultBranch,
         auth: {
           username: 'x-access-token',
           password: token,
         },
         logger: ctx.logger,
+        gitAuthorInfo,
       });
 
       try {
@@ -234,10 +273,11 @@ export function createPublishGithubAction(options: {
           client,
           repoName: newRepo.name,
           logger: ctx.logger,
+          defaultBranch,
         });
       } catch (e) {
-        throw new Error(
-          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        ctx.logger.warn(
+          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );
       }
 

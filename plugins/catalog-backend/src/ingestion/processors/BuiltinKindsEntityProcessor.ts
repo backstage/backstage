@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ import {
   resourceEntityV1alpha1Validator,
   SystemEntity,
   systemEntityV1alpha1Validator,
-  TemplateEntity,
-  templateEntityV1alpha1Validator,
+  TemplateEntityV1beta2,
   templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
@@ -62,7 +61,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     resourceEntityV1alpha1Validator,
     groupEntityV1alpha1Validator,
     locationEntityV1alpha1Validator,
-    templateEntityV1alpha1Validator,
     templateEntityV1beta2Validator,
     userEntityV1alpha1Validator,
     systemEntityV1alpha1Validator,
@@ -136,7 +134,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
      * Emit relations for the Template kind
      */
     if (entity.kind === 'Template') {
-      const template = entity as TemplateEntity;
+      const template = entity as TemplateEntityV1beta2;
       doEmit(
         template.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },

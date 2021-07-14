@@ -29,7 +29,7 @@ Backstage app with the following contents:
 
 ```tsx
 import React from 'react';
-import { Content, Header, Page } from '@backstage/core';
+import { Content, Header, Page } from '@backstage/core-components';
 import { Grid, List, Card, CardContent } from '@material-ui/core';
 import {
   SearchBar,
@@ -142,7 +142,6 @@ export default async function createPlugin({
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   indexBuilder.addCollator({
-    type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
     collator: new DefaultCatalogCollator({ discovery }),
   });
@@ -262,21 +261,21 @@ const indexBuilder = new IndexBuilder({ logger, searchEngine });
 ```
 
 Backstage Search can be used to power search of anything! Plugins like the
-Catalog offer default [collators](./concepts.md#collators) which are responsible
-for providing documents [to be indexed](./concepts.md#documents-and-indices).
-You can register any number of collators with the `IndexBuilder` like this:
+Catalog offer default [collators](./concepts.md#collators) (e.g.
+[DefaultCatalogCollator](https://github.com/backstage/backstage/blob/df12cc25aa4934a98bc42ed03c07f64a1a0a9d72/plugins/catalog-backend/src/search/DefaultCatalogCollator.ts))
+which are responsible for providing documents
+[to be indexed](./concepts.md#documents-and-indices). You can register any
+number of collators with the `IndexBuilder` like this:
 
 ```typescript
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });
 
 indexBuilder.addCollator({
-  type: 'my-custom-stuff',
   defaultRefreshIntervalSeconds: 3600,
   collator: new MyCustomCollator(),
 });
@@ -290,7 +289,6 @@ its `defaultRefreshIntervalSeconds` value, like this:
 
 ```typescript {3}
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });
