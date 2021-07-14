@@ -194,6 +194,7 @@ export interface PublisherBase {
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
+  migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
   publish(request: PublishRequest): Promise<PublishResponse>;
 }
 

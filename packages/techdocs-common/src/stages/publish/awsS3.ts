@@ -16,7 +16,7 @@
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
+import { ListObjectsV2Output, ManagedUpload } from 'aws-sdk/clients/s3';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import express from 'express';
 import fs from 'fs-extra';
@@ -25,7 +25,11 @@ import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
@@ -307,5 +311,79 @@ export class AwsS3Publish implements PublisherBase {
     } catch (e) {
       return Promise.resolve(false);
     }
+  }
+
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    // Iterate through every file in the root of the publisher.
+    const allObjects = await this.getAllObjectsFromBucket();
+    const limiter = createLimiter(concurrency);
+    await Promise.all(
+      allObjects.map(f =>
+        limiter(async file => {
+          let newPath;
+          try {
+            newPath = lowerCaseEntityTripletInStoragePath(file);
+          } catch (e) {
+            this.logger.warn(e.message);
+            return;
+          }
+
+          // If all parts are already lowercase, ignore.
+          if (file === newPath) {
+            return;
+          }
+
+          try {
+            this.logger.debug(`Migrating ${file}`);
+            await this.storageClient
+              .copyObject({
+                Bucket: this.bucketName,
+                CopySource: [this.bucketName, file].join('/'),
+                Key: newPath,
+              })
+              .promise();
+
+            if (removeOriginal) {
+              await this.storageClient
+                .deleteObject({
+                  Bucket: this.bucketName,
+                  Key: file,
+                })
+                .promise();
+            }
+          } catch (e) {
+            this.logger.warn(`Unable to migrate ${file}: ${e.message}`);
+          }
+        }, f),
+      ),
+    );
+  }
+
+  /**
+   * Returns a list of all object keys from the configured bucket.
+   */
+  protected async getAllObjectsFromBucket(): Promise<string[]> {
+    const objects: string[] = [];
+    let nextContinuation: string | undefined;
+    let allObjects: ListObjectsV2Output;
+
+    // Iterate through every file in the root of the publisher.
+    do {
+      allObjects = await this.storageClient
+        .listObjectsV2({
+          Bucket: this.bucketName,
+          ContinuationToken: nextContinuation,
+        })
+        .promise();
+      objects.push(
+        ...(allObjects.Contents || []).map(f => f.Key || '').filter(f => !!f),
+      );
+      nextContinuation = allObjects.NextContinuationToken;
+    } while (nextContinuation);
+
+    return objects;
   }
 }
