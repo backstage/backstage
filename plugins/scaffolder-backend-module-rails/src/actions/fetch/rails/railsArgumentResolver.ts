@@ -56,6 +56,7 @@ export type RailsRunOptions = {
 export const railsArgumentResolver = (
   projectRoot: string,
   options: RailsRunOptions,
+  executionOnContainer = false,
 ): string[] => {
   const argumentsToRun: string[] = [];
 
@@ -103,7 +104,7 @@ export const railsArgumentResolver = (
     argumentsToRun.push(
       options.template.replace(
         `.${separatorPath}`,
-        `${projectRoot}${separatorPath}`,
+        `${projectRoot}${executionOnContainer ? '/' : separatorPath}`,
       ),
     );
   }

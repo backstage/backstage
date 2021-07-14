@@ -24,7 +24,11 @@ import {
 } from './catalog';
 
 import { createDebugLogAction } from './debug';
-import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
+import {
+  createFetchCookiecutterAction,
+  createFetchPlainAction,
+  createFetchTemplateAction,
+} from './fetch';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -61,6 +65,10 @@ export const createBuiltinActions = (options: {
       reader,
       integrations,
       containerRunner,
+    }),
+    createFetchTemplateAction({
+      integrations,
+      reader,
     }),
     createPublishGithubAction({
       integrations,

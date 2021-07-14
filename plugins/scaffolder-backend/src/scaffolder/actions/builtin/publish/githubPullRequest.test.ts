@@ -67,8 +67,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
     beforeEach(() => {
       input = {
-        owner: 'myorg',
-        repo: 'myrepo',
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',
@@ -127,8 +126,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
     beforeEach(() => {
       input = {
-        owner: 'myorg',
-        repo: 'myrepo',
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',

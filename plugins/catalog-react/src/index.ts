@@ -17,6 +17,7 @@ export type { CatalogApi } from '@backstage/catalog-client';
 export { catalogApiRef } from './api';
 export * from './components';
 export * from './hooks';
+export * from './filters';
 export {
   catalogRouteRef,
   entityRoute,

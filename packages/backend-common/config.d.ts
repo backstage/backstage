@@ -64,6 +64,11 @@ export interface Config {
       connection: string | object;
       /** Database name prefix override */
       prefix?: string;
+      /**
+       * Whether to ensure the given database exists by creating it if it does not.
+       * Defaults to true if unspecified.
+       */
+      ensureExists?: boolean;
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {
@@ -74,6 +79,11 @@ export interface Config {
            * @secret
            */
           connection?: string | object;
+          /**
+           * Whether to ensure the given database exists by creating it if it does not.
+           * Defaults to base config if unspecified.
+           */
+          ensureExists?: boolean;
         };
       };
     };

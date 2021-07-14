@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { FeatureFlags } from './FeatureFlags';
+export { UserSettingsFeatureFlags } from './UserSettingsFeatureFlags';
