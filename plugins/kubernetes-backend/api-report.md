@@ -15,6 +15,8 @@ import { Logger as Logger_2 } from 'winston';
 // @public (undocumented)
 export interface ClusterDetails {
   // (undocumented)
+  assumeRole?: string;
+  // (undocumented)
   authProvider: string;
   // (undocumented)
   name: string;
