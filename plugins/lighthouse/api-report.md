@@ -12,9 +12,14 @@ import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "Audit" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type Audit = AuditRunning | AuditFailed | AuditCompleted;
 
+// Warning: (ae-forgotten-export) The symbol "AuditBase" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AuditCompleted" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface AuditCompleted extends AuditBase {
   // (undocumented)
@@ -27,6 +32,8 @@ export interface AuditCompleted extends AuditBase {
   timeCompleted: string;
 }
 
+// Warning: (ae-missing-release-tag) "AuditFailed" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface AuditFailed extends AuditBase {
   // (undocumented)
@@ -35,15 +42,22 @@ export interface AuditFailed extends AuditBase {
   timeCompleted: string;
 }
 
+// Warning: (ae-missing-release-tag) "AuditRunning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface AuditRunning extends AuditBase {
   // (undocumented)
   status: 'RUNNING';
 }
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EmbeddedRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EmbeddedRouter: (_props: Props) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLastLighthouseAuditCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLastLighthouseAuditCard: ({
   dense,
@@ -53,11 +67,15 @@ export const EntityLastLighthouseAuditCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLighthouseContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLighthouseContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "FetchError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class FetchError extends Error {
   // (undocumented)
@@ -66,11 +84,15 @@ export class FetchError extends Error {
   get name(): string;
 }
 
+// Warning: (ae-missing-release-tag) "isLighthouseAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
 export { isLighthouseAvailable };
 export { isLighthouseAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "LASListRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface LASListRequest {
   // (undocumented)
@@ -79,6 +101,8 @@ export interface LASListRequest {
   offset?: number;
 }
 
+// Warning: (ae-missing-release-tag) "LASListResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface LASListResponse<Item> {
   // (undocumented)
@@ -91,6 +115,8 @@ export interface LASListResponse<Item> {
   total: number;
 }
 
+// Warning: (ae-missing-release-tag) "LastLighthouseAuditCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LastLighthouseAuditCard: ({
   dense,
@@ -100,6 +126,8 @@ export const LastLighthouseAuditCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "LighthouseApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type LighthouseApi = {
   url: string;
@@ -109,9 +137,13 @@ export type LighthouseApi = {
   getWebsiteByUrl: (websiteUrl: string) => Promise<Website>;
 };
 
+// Warning: (ae-missing-release-tag) "lighthouseApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const lighthouseApiRef: ApiRef<LighthouseApi>;
 
+// Warning: (ae-missing-release-tag) "LighthouseCategoryAbbr" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface LighthouseCategoryAbbr {
   // (undocumented)
@@ -122,6 +154,8 @@ export interface LighthouseCategoryAbbr {
   title: string;
 }
 
+// Warning: (ae-missing-release-tag) "LighthouseCategoryId" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type LighthouseCategoryId =
   | 'pwa'
@@ -130,9 +164,13 @@ export type LighthouseCategoryId =
   | 'accessibility'
   | 'best-practices';
 
+// Warning: (ae-missing-release-tag) "LighthousePage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LighthousePage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "lighthousePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const lighthousePlugin: BackstagePlugin<
   {
@@ -144,6 +182,8 @@ const lighthousePlugin: BackstagePlugin<
 export { lighthousePlugin };
 export { lighthousePlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "LighthouseRestApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class LighthouseRestApi implements LighthouseApi {
   constructor(url: string);
@@ -164,9 +204,13 @@ export class LighthouseRestApi implements LighthouseApi {
   url: string;
 }
 
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "TriggerAuditPayload" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface TriggerAuditPayload {
   // (undocumented)
@@ -181,6 +225,8 @@ export interface TriggerAuditPayload {
   url: string;
 }
 
+// Warning: (ae-missing-release-tag) "Website" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface Website {
   // (undocumented)
@@ -191,6 +237,8 @@ export interface Website {
   url: string;
 }
 
+// Warning: (ae-missing-release-tag) "WebsiteListResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type WebsiteListResponse = LASListResponse<Website>;
 

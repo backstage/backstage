@@ -9,9 +9,13 @@ import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "DefaultJenkinsInfoProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   // (undocumented)
@@ -30,6 +34,8 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 }
 
+// Warning: (ae-missing-release-tag) "JenkinsInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface JenkinsInfo {
   // (undocumented)
@@ -40,6 +46,8 @@ export interface JenkinsInfo {
   jobFullName: string;
 }
 
+// Warning: (ae-missing-release-tag) "JenkinsInfoProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface JenkinsInfoProvider {
   // (undocumented)
@@ -49,6 +57,8 @@ export interface JenkinsInfoProvider {
   }): Promise<JenkinsInfo>;
 }
 
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

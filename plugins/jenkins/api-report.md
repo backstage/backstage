@@ -15,11 +15,15 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityJenkinsContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLatestJenkinsRunCard: ({
   branch,
@@ -29,21 +33,34 @@ export const EntityLatestJenkinsRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isJenkinsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isJenkinsAvailable: (entity: Entity) => boolean;
 export { isJenkinsAvailable };
 export { isJenkinsAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 
+// Warning: (ae-missing-release-tag) "JenkinsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface JenkinsApi {
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (ae-forgotten-export) The symbol "Build" needs to be exported by the entry point index.d.ts
   getBuild(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
     entity: EntityRef;
     filter: {
@@ -58,9 +75,13 @@ export interface JenkinsApi {
   }): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "jenkinsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const jenkinsApiRef: ApiRef<JenkinsApi>;
 
+// Warning: (ae-missing-release-tag) "JenkinsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class JenkinsClient implements JenkinsApi {
   constructor(options: {
@@ -99,6 +120,8 @@ export class JenkinsClient implements JenkinsApi {
   }): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "jenkinsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const jenkinsPlugin: BackstagePlugin<
   {
@@ -109,6 +132,8 @@ const jenkinsPlugin: BackstagePlugin<
 export { jenkinsPlugin };
 export { jenkinsPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "LatestRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LatestRunCard: ({
   branch,
@@ -118,6 +143,9 @@ export const LatestRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
 

@@ -9,6 +9,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "codeCoveragePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const codeCoveragePlugin: BackstagePlugin<
   {
@@ -17,14 +19,20 @@ export const codeCoveragePlugin: BackstagePlugin<
   {}
 >;
 
+// Warning: (ae-missing-release-tag) "EntityCodeCoverageContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityCodeCoverageContent: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isCodeCoverageAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isCodeCoverageAvailable: (entity: Entity) => boolean;
 export { isCodeCoverageAvailable };
 export { isCodeCoverageAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
