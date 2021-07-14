@@ -33,6 +33,7 @@
     "@backstage/config": "^0.1.5",
     "@backstage/core-components": "^0.1.5",
     "@backstage/core-plugin-api": "^0.1.3",
+    "@backstage/errors": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.2.6",
     "@backstage/search-common": "^0.1.2",
     "@backstage/theme": "^0.2.8",
