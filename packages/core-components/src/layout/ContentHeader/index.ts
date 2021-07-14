@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ContentHeader, ContentHeaderTitle } from './ContentHeader';
+export { ContentHeader } from './ContentHeader';

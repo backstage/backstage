@@ -32,6 +32,7 @@ export const MockEntityListContextProvider = ({
   const [filters, setFilters] = useState<DefaultEntityFilters>(
     value.filters ?? {},
   );
+  const [showFiltersDrawer, toggleFiltersDrawer] = useState(false);
   const updateFilters = useCallback(
     (
       update:
@@ -52,10 +53,12 @@ export const MockEntityListContextProvider = ({
   const defaultContext: EntityListContextProps = {
     entities: [],
     backendEntities: [],
-    updateFilters: updateFilters,
-    filters: filters,
+    updateFilters,
+    filters,
     loading: false,
     queryParameters: {},
+    showFiltersDrawer,
+    toggleFiltersDrawer,
   };
 
   // Extract value.filters to avoid overwriting it; some tests exercise filter updates. The value

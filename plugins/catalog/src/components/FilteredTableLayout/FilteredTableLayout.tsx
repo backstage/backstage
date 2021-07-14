@@ -16,14 +16,7 @@
 
 import { useEntityListProvider } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
-import {
-  Box,
-  Button,
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import React, { Fragment } from 'react';
 
