@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Link, makeStyles, Typography } from '@material-ui/core';
+import { Link, makeStyles, Typography, Grid } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
-    margin: theme.spacing(2),
     display: 'inline-block',
   },
   label: {
@@ -64,9 +63,11 @@ export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
     />
   );
   return (
-    <span className={classes.root}>
-      <Typography className={classes.label}>{label}</Typography>
-      {url ? <Link href={url}>{content}</Link> : content}
-    </span>
+    <Grid item>
+      <span className={classes.root}>
+        <Typography className={classes.label}>{label}</Typography>
+        {url ? <Link href={url}>{content}</Link> : content}
+      </span>
+    </Grid>
   );
 };
