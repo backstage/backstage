@@ -23,9 +23,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 export const CreateComponentButton = () => {
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  if (!createComponentLink) return null;
-
-  return (
+  return !createComponentLink ? null : (
     <Button
       component={RouterLink}
       variant="contained"

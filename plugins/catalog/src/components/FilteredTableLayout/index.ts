@@ -15,3 +15,5 @@
  */
 
 export { FilteredTableLayout } from './FilteredTableLayout';
+export { FilterContainer } from './FilterContainer';
+export { TableContainer } from './TableContainer';

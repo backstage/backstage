@@ -16,8 +16,6 @@
 
 import {
   Content,
-  ContentHeader,
-  ContentHeaderTitle,
   PageWithHeader,
   SupportButton,
   TableColumn,
@@ -34,15 +32,16 @@ import {
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme } from '@backstage/theme';
-import { Box, Grid, IconButton, useMediaQuery } from '@material-ui/core';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import React, { useState } from 'react';
+import React from 'react';
 import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
 import { CreateComponentButton } from '../CreateComponentButton/CreateComponentButton';
-import { FilterContainer } from '../FilterContainer';
-import { FilteredTableLayout } from '../FilteredTableLayout';
+import {
+  FilteredTableLayout,
+  TableContainer,
+  FilterContainer,
+} from '../FilteredTableLayout';
+import { CatalogPageHeader } from './CatalogPageHeader';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -50,74 +49,24 @@ export type CatalogPageProps = {
   actions?: TableProps<EntityRow>['actions'];
 };
 
-const CatalogPageHeaderAction = ({
-  showFilter,
-  toggleFilter,
-  isMidSizeScreen,
-}: {
-  showFilter: boolean;
-  toggleFilter: (showFilter: boolean) => void;
-  isMidSizeScreen: boolean;
-}) =>
-  isMidSizeScreen ? (
-    <Box display="flex" alignItems="center">
-      <ContentHeaderTitle title="Components" />
-      <IconButton onClick={() => toggleFilter(!showFilter)}>
-        <FilterListIcon />
-      </IconButton>
-    </Box>
-  ) : (
-    <ContentHeaderTitle title="Components" />
-  );
-
-const CatalogPageHeader = ({
-  children,
-  ...props
-}: React.PropsWithChildren<{
-  showFilter: boolean;
-  toggleFilter: (showFilter: boolean) => void;
-  isMidSizeScreen: boolean;
-}>) => {
-  return (
-    <ContentHeader
-      titleComponent={() => <CatalogPageHeaderAction {...props} />}
-    >
-      {children}
-    </ContentHeader>
-  );
-};
-
 export const CatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
 }: CatalogPageProps) => {
-  const [showFilter, toggleFilter] = useState<boolean>(false);
-  const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('md'),
-  );
-
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
-        <CatalogPageHeader
-          showFilter={showFilter}
-          toggleFilter={toggleFilter}
-          isMidSizeScreen={isMidSizeScreen}
-        >
-          <CreateComponentButton />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </CatalogPageHeader>
         <EntityListProvider>
+          <CatalogPageHeader>
+            <CreateComponentButton />
+            <SupportButton>All your software catalog entities</SupportButton>
+          </CatalogPageHeader>
           <FilteredTableLayout>
-            <FilterContainer
-              showFilter={showFilter}
-              toggleFilter={toggleFilter}
-              isMidSizeScreen={isMidSizeScreen}
-            >
+            <FilterContainer>
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
@@ -125,9 +74,9 @@ export const CatalogPage = ({
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </FilterContainer>
-            <Grid id="drawer-container" item xs={12} lg={10}>
+            <TableContainer>
               <CatalogTable columns={columns} actions={actions} />
-            </Grid>
+            </TableContainer>
           </FilteredTableLayout>
         </EntityListProvider>
       </Content>

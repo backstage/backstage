@@ -14,44 +14,34 @@
  * limitations under the License.
  */
 
-import { Box, Drawer, Grid } from '@material-ui/core';
+import { Box, Drawer, Grid, useMediaQuery } from '@material-ui/core';
+import { useEntityListProvider } from '@backstage/plugin-catalog-react';
+import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
 
-interface IProps {
-  showFilter: boolean;
-  toggleFilter: (showFilter: boolean) => void;
-  isMidSizeScreen: boolean;
-}
+export const FilterContainer = ({ children }: React.PropsWithChildren<{}>) => {
+  const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('md'),
+  );
+  const { showFiltersDrawer, toggleFiltersDrawer } = useEntityListProvider();
 
-export const FilterContainer = ({
-  children,
-  showFilter,
-  toggleFilter,
-  isMidSizeScreen,
-}: React.PropsWithChildren<IProps>) =>
-  isMidSizeScreen ? (
+  return isMidSizeScreen ? (
     <Drawer
-      open={showFilter}
+      open={showFiltersDrawer}
       onClose={() => {
-        toggleFilter(false);
+        toggleFiltersDrawer(false);
       }}
       elevation={0}
+      anchor="left"
       disableAutoFocus
-      PaperProps={{
-        style: { position: 'absolute', width: '250px' },
-      }}
-      BackdropProps={{ style: { position: 'absolute' } }}
-      ModalProps={{
-        container: document.getElementById('drawer-container'),
-        disableEnforceFocus: true,
-        style: { position: 'absolute' },
-      }}
+      keepMounted
       variant="temporary"
     >
-      <Box m={1}>{children}</Box>
+      <Box m={2}>{children}</Box>
     </Drawer>
   ) : (
     <Grid item lg={2}>
       {children}
     </Grid>
   );
+};
