@@ -100,9 +100,8 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
         color="primary"
         onClick={onClickHandler}
       >
-        <Box marginRight={1}>
-          <HelpIcon />
-        </Box>
+        <HelpIcon />
+        <Box mr={1} />
         Support
       </Button>
       <Popover

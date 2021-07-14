@@ -14,17 +14,46 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid } from '@material-ui/core';
+import { useEntityListProvider } from '@backstage/plugin-catalog-react';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  Box,
+  Button,
+  Grid,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import React, { Fragment } from 'react';
 
 interface IProps {}
 
 export const FilteredTableLayout = ({
   children,
 }: React.PropsWithChildren<IProps>) => {
+  const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('md'),
+  );
+  const { showFiltersDrawer, toggleFiltersDrawer } = useEntityListProvider();
+  const theme = useTheme<BackstageTheme>();
+
   return (
-    <Grid container style={{ position: 'relative' }}>
-      {children}
-    </Grid>
+    <Fragment>
+      {isMidSizeScreen && (
+        <Button
+          style={{ paddingLeft: 0, marginBottom: theme.spacing(1) }}
+          onClick={() => toggleFiltersDrawer(!showFiltersDrawer)}
+        >
+          <Box display="flex" alignItems="center">
+            <FilterListIcon style={{ marginRight: theme.spacing(1) }} />
+            Filters
+          </Box>
+        </Button>
+      )}
+      <Grid container style={{ position: 'relative' }}>
+        {children}
+      </Grid>
+    </Fragment>
   );
 };

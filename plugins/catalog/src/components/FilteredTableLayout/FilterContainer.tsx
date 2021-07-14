@@ -31,6 +31,9 @@ export const FilterContainer = ({ children }: React.PropsWithChildren<{}>) => {
       onClose={() => {
         toggleFiltersDrawer(false);
       }}
+      PaperProps={{
+        style: { width: '300px' },
+      }}
       elevation={0}
       anchor="left"
       disableAutoFocus

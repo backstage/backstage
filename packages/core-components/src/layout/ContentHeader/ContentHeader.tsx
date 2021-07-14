@@ -62,7 +62,7 @@ type DefaultTitleProps = {
   className?: string;
 };
 
-export const ContentHeaderTitle = ({
+const ContentHeaderTitle = ({
   title = 'Unknown page',
   className,
 }: DefaultTitleProps) => (

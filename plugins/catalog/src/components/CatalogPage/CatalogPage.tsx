@@ -16,6 +16,7 @@
 
 import {
   Content,
+  ContentHeader,
   PageWithHeader,
   SupportButton,
   TableColumn,
@@ -41,7 +42,6 @@ import {
   TableContainer,
   FilterContainer,
 } from '../FilteredTableLayout';
-import { CatalogPageHeader } from './CatalogPageHeader';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -60,11 +60,11 @@ export const CatalogPage = ({
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
+        <ContentHeader title="Components">
+          <CreateComponentButton />
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
         <EntityListProvider>
-          <CatalogPageHeader>
-            <CreateComponentButton />
-            <SupportButton>All your software catalog entities</SupportButton>
-          </CatalogPageHeader>
           <FilteredTableLayout>
             <FilterContainer>
               <EntityKindPicker initialFilter="component" hidden />
