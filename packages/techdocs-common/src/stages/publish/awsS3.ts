@@ -323,7 +323,13 @@ export class AwsS3Publish implements PublisherBase {
     await Promise.all(
       allObjects.map(f =>
         limiter(async file => {
-          const newPath = lowerCaseEntityTripletInStoragePath(file);
+          let newPath;
+          try {
+            newPath = lowerCaseEntityTripletInStoragePath(file);
+          } catch (e) {
+            this.logger.warn(e.message);
+            return;
+          }
 
           // If all parts are already lowercase, ignore.
           if (file === newPath) {

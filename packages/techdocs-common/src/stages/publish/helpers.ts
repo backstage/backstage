@@ -97,6 +97,14 @@ export const getFileTreeRecursively = async (
 export const lowerCaseEntityTripletInStoragePath = (
   originalPath: string,
 ): string => {
+  const trimmedPath =
+    originalPath[0] === '/' ? originalPath.substring(1) : originalPath;
+  const matches = trimmedPath.match(/\//g) || [];
+  if (matches.length <= 2) {
+    throw new Error(
+      `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
+    );
+  }
   const [namespace, kind, name, ...parts] = originalPath.split('/');
   const lowerNamespace = namespace.toLowerCase();
   const lowerKind = kind.toLowerCase();

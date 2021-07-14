@@ -38,7 +38,14 @@ export class MigrateWriteStream extends Writable {
 
   _write(file: File, _encoding: BufferEncoding, next: Function) {
     let shouldCallNext = true;
-    const newFile = lowerCaseEntityTripletInStoragePath(file.name);
+    let newFile;
+    try {
+      newFile = lowerCaseEntityTripletInStoragePath(file.name);
+    } catch (e) {
+      this.logger.warn(e.message);
+      next();
+      return;
+    }
 
     // If all parts are already lowercase, ignore.
     if (newFile === file.name) {

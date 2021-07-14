@@ -313,7 +313,14 @@ export class AzureBlobStoragePublish implements PublisherBase {
     originalPath: string,
     removeOriginal: boolean,
   ) {
-    const newPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    let newPath;
+    try {
+      newPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    } catch (e) {
+      this.logger.warn(e.message);
+      return;
+    }
+
     if (originalPath === newPath) return;
     try {
       this.logger.debug(`Migrating ${originalPath}`);

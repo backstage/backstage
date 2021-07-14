@@ -90,4 +90,12 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
     const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);
     expect(actualPath).toBe('default/component/backstage/assets/IMAGE.png');
   });
+
+  it('throws error when there is no triplet', () => {
+    const originalPath = '/default/component/IMAGE.png';
+    const error = `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`;
+    expect(() =>
+      lowerCaseEntityTripletInStoragePath(originalPath),
+    ).toThrowError(error);
+  });
 });
