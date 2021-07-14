@@ -55,6 +55,16 @@ export type GeneratorBuilder = {
   get(entity: Entity): GeneratorBase;
 };
 
+// @public
+export type GeneratorRunOptions = {
+  inputDir: string;
+  outputDir: string;
+  parsedLocationAnnotation?: ParsedLocationAnnotation;
+  etag?: string;
+  logger: Logger_2;
+  logStream?: Writable;
+};
+
 // @public (undocumented)
 export class Generators implements GeneratorBuilder {
   // (undocumented)
@@ -232,6 +242,8 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     parsedLocationAnnotation,
     etag,
+    logger: childLogger,
+    logStream,
   }: GeneratorRunOptions): Promise<void>;
 }
 

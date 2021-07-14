@@ -17,7 +17,6 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
-import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import {
   addBuildTimestampMetadata,
@@ -33,18 +32,6 @@ type TechdocsGeneratorOptions = {
   // or generate without the container.
   // This is used to avoid running into Docker in Docker environment.
   runGeneratorIn: string;
-};
-
-const createStream = (): [string[], PassThrough] => {
-  const log = [] as Array<string>;
-
-  const stream = new PassThrough();
-  stream.on('data', chunk => {
-    const textValue = chunk.toString().trim();
-    if (textValue?.length > 1) log.push(textValue);
-  });
-
-  return [log, stream];
 };
 
 export class TechdocsGenerator implements GeneratorBase {
@@ -74,9 +61,9 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     parsedLocationAnnotation,
     etag,
+    logger: childLogger,
+    logStream,
   }: GeneratorRunOptions): Promise<void> {
-    const [log, logStream] = createStream();
-
     // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
     // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
@@ -84,7 +71,7 @@ export class TechdocsGenerator implements GeneratorBase {
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
         mkdocsYmlPath,
-        this.logger,
+        childLogger,
         parsedLocationAnnotation,
       );
     }
@@ -108,7 +95,7 @@ export class TechdocsGenerator implements GeneratorBase {
             },
             logStream,
           });
-          this.logger.info(
+          childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
@@ -123,7 +110,7 @@ export class TechdocsGenerator implements GeneratorBase {
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
           });
-          this.logger.info(
+          childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
           );
           break;
@@ -136,7 +123,6 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      this.logger.error(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
@@ -150,7 +136,7 @@ export class TechdocsGenerator implements GeneratorBase {
     // Creates techdocs_metadata.json if file does not exist.
     await addBuildTimestampMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
-      this.logger,
+      childLogger,
     );
 
     // Add etag of the prepared tree to techdocs_metadata.json

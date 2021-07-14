@@ -18,6 +18,7 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBase,
@@ -31,8 +32,8 @@ import {
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { Writable } from 'stream';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 
 type DocsBuilderArguments = {
@@ -42,6 +43,7 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   config: Config;
+  logStream?: Writable;
 };
 
 export class DocsBuilder {
@@ -51,6 +53,7 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private config: Config;
+  private logStream: Writable | undefined;
 
   constructor({
     preparers,
@@ -59,6 +62,7 @@ export class DocsBuilder {
     entity,
     logger,
     config,
+    logStream,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -66,6 +70,7 @@ export class DocsBuilder {
     this.entity = entity;
     this.logger = logger;
     this.config = config;
+    this.logStream = logStream;
   }
 
   /**
@@ -115,6 +120,7 @@ export class DocsBuilder {
     try {
       const preparerResponse = await this.preparer.prepare(this.entity, {
         etag: storedEtag,
+        logger: this.logger,
       });
 
       preparedDir = preparerResponse.preparedDir;
@@ -159,12 +165,15 @@ export class DocsBuilder {
     const outputDir = await fs.mkdtemp(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
+
     const parsedLocationAnnotation = getLocationForEntity(this.entity);
     await this.generator.run({
       inputDir: preparedDir,
       outputDir,
       parsedLocationAnnotation,
       etag: newEtag,
+      logger: this.logger,
+      logStream: this.logStream,
     });
 
     // Remove Prepared directory since it is no longer needed.

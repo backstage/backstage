@@ -17,6 +17,7 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
 import React from 'react';
+import { EntityName } from '@backstage/catalog-model';
 import {
   Reader,
   SyncResult,
@@ -81,9 +82,18 @@ function createPage({
       });
     }
 
-    async syncEntityDocs() {
+    async syncEntityDocs(_: EntityName, logHandler?: (line: string) => void) {
       if (syncDocsDelay) {
-        await new Promise(resolve => setTimeout(resolve, syncDocsDelay));
+        for (let i = 0; i < 10; i++) {
+          setTimeout(
+            () => logHandler?.call(this, `Log line ${i}`),
+            ((i + 1) * syncDocsDelay) / 10,
+          );
+        }
+
+        await new Promise(resolve => {
+          setTimeout(resolve, syncDocsDelay);
+        });
       }
 
       return syncDocs();
@@ -138,6 +148,11 @@ createDevApp()
 
           <TabbedLayout.Route path="/stale" title="Stale">
             {createPage({
+              entityDocs: ({ called, content }) => {
+                return called === 0
+                  ? content
+                  : content.replace(/World/, 'New World');
+              },
               syncDocs: () => 'updated',
               syncDocsDelay: 2000,
             })}
@@ -192,13 +207,6 @@ createDevApp()
               syncDocs: () => {
                 throw new Error('Some random error');
               },
-              syncDocsDelay: 2000,
-            })}
-          </TabbedLayout.Route>
-
-          <TabbedLayout.Route path="/timeout" title="Sync Timeout">
-            {createPage({
-              syncDocs: () => 'timeout',
               syncDocsDelay: 2000,
             })}
           </TabbedLayout.Route>
