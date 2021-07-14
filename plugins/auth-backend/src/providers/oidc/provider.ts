@@ -73,12 +73,16 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     const { strategy } = await this.implementation;
-    return await executeRedirectStrategy(req, strategy, {
+    const options: Record<string, string> = {
       accessType: 'offline',
-      prompt: this.prompt || '',
       scope: req.scope || this.scope || 'openid profile email',
       state: encodeState(req.state),
-    });
+    };
+    const prompt = this.prompt || 'none';
+    if (prompt !== 'auto') {
+      options.prompt = prompt;
+    }
+    return await executeRedirectStrategy(req, strategy, options);
   }
 
   async handler(
