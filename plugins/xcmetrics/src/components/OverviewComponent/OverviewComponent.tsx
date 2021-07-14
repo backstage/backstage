@@ -109,7 +109,7 @@ export const OverviewComponent = () => {
       <ContentHeader title="XCMetrics Dashboard">
         <SupportButton>Dashboard for XCMetrics</SupportButton>
       </ContentHeader>
-      <Table<BuildItem>
+      <Table
         options={{ paging: false, search: false }}
         data={builds}
         columns={columns}

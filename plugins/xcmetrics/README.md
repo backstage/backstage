@@ -26,7 +26,7 @@ import { XcmetricsPage } from '@backstage/plugin-xcmetrics';
 </FlatRoutes>
 ```
 
-Add the URL to your XCMetrics backend instance in `app-config.yml` like so:
+Add the URL to your XCMetrics backend instance in `app-config.yaml` like so:
 
 ```yaml
 proxy:
