@@ -12,33 +12,55 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntitySplunkOnCallCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntitySplunkOnCallCard: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isSplunkOnCallAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const isSplunkOnCallAvailable: (entity: Entity) => boolean;
 
+// Warning: (ae-forgotten-export) The symbol "SplunkOnCallApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "splunkOnCallApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const splunkOnCallApiRef: ApiRef<SplunkOnCallApi>;
 
+// Warning: (ae-missing-release-tag) "SplunkOnCallClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class SplunkOnCallClient implements SplunkOnCallApi {
+  // Warning: (ae-forgotten-export) The symbol "ClientApiConfig" needs to be exported by the entry point index.d.ts
   constructor(config: ClientApiConfig);
   // (undocumented)
   static fromConfig(
     configApi: ConfigApi,
     discoveryApi: DiscoveryApi,
   ): SplunkOnCallClient;
+  // Warning: (ae-forgotten-export) The symbol "EscalationPolicyInfo" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
+  // Warning: (ae-forgotten-export) The symbol "Incident" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getIncidents(): Promise<Incident[]>;
+  // Warning: (ae-forgotten-export) The symbol "OnCall" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getOnCallUsers(): Promise<OnCall[]>;
+  // Warning: (ae-forgotten-export) The symbol "Team" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getTeams(): Promise<Team[]>;
+  // Warning: (ae-forgotten-export) The symbol "User" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getUsers(): Promise<User[]>;
+  // Warning: (ae-forgotten-export) The symbol "TriggerAlarmRequest" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   incidentAction({
     routingKey,
@@ -50,6 +72,8 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   }: TriggerAlarmRequest): Promise<Response>;
 }
 
+// Warning: (ae-missing-release-tag) "SplunkOnCallPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SplunkOnCallPage: {
   ({ title, subtitle, pageTitle }: SplunkOnCallPageProps): JSX.Element;
@@ -60,6 +84,8 @@ export const SplunkOnCallPage: {
   };
 };
 
+// Warning: (ae-missing-release-tag) "splunkOnCallPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const splunkOnCallPlugin: BackstagePlugin<
   {
@@ -70,8 +96,14 @@ const splunkOnCallPlugin: BackstagePlugin<
 export { splunkOnCallPlugin as plugin };
 export { splunkOnCallPlugin };
 
+// Warning: (ae-missing-release-tag) "UnauthorizedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class UnauthorizedError extends Error {}
+
+// Warnings were encountered during analysis:
+//
+// src/plugin.d.ts:7:5 - (ae-forgotten-export) The symbol "SplunkOnCallPageProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

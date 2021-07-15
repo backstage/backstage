@@ -9,6 +9,8 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
+// Warning: (ae-missing-release-tag) "Badge" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface Badge {
   color?: string;
@@ -21,6 +23,8 @@ export interface Badge {
   style?: BadgeStyle;
 }
 
+// Warning: (ae-missing-release-tag) "BADGE_STYLES" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const BADGE_STYLES: readonly [
   'plastic',
@@ -30,6 +34,8 @@ export const BADGE_STYLES: readonly [
   'social',
 ];
 
+// Warning: (ae-missing-release-tag) "BadgeBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BadgeBuilder = {
   getBadges(): Promise<BadgeInfo[]>;
@@ -37,6 +43,8 @@ export type BadgeBuilder = {
   createBadgeSvg(options: BadgeOptions): Promise<string>;
 };
 
+// Warning: (ae-missing-release-tag) "BadgeContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface BadgeContext {
   // (undocumented)
@@ -47,29 +55,39 @@ export interface BadgeContext {
   entity?: Entity;
 }
 
+// Warning: (ae-missing-release-tag) "BadgeFactories" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface BadgeFactories {
   // (undocumented)
   [id: string]: BadgeFactory;
 }
 
+// Warning: (ae-missing-release-tag) "BadgeFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface BadgeFactory {
   // (undocumented)
   createBadge(context: BadgeContext): Badge;
 }
 
+// Warning: (ae-missing-release-tag) "BadgeInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BadgeInfo = {
   id: string;
 };
 
+// Warning: (ae-missing-release-tag) "BadgeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BadgeOptions = {
   badgeInfo: BadgeInfo;
   context: BadgeContext;
 };
 
+// Warning: (ae-missing-release-tag) "BadgeSpec" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BadgeSpec = {
   id: string;
@@ -78,15 +96,23 @@ export type BadgeSpec = {
   markdown: string;
 };
 
+// Warning: (ae-missing-release-tag) "BadgeStyle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BadgeStyle = typeof BADGE_STYLES[number];
 
+// Warning: (ae-missing-release-tag) "createDefaultBadgeFactories" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const createDefaultBadgeFactories: () => BadgeFactories;
 
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "DefaultBadgeBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(factories: BadgeFactories);
@@ -98,6 +124,8 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
   getBadges(): Promise<BadgeInfo[]>;
 }
 
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

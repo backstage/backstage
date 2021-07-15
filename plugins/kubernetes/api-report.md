@@ -12,11 +12,16 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityKubernetesContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvidersApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: { googleAuthApi: OAuthApi });
@@ -27,9 +32,13 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   ): Promise<KubernetesRequestBody>;
 }
 
+// Warning: (ae-missing-release-tag) "kubernetesAuthProvidersApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const kubernetesAuthProvidersApiRef: ApiRef<KubernetesAuthProvidersApi>;
 
+// Warning: (ae-missing-release-tag) "kubernetesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const kubernetesPlugin: BackstagePlugin<
   {
@@ -40,6 +49,9 @@ const kubernetesPlugin: BackstagePlugin<
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
 
