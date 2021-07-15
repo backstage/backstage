@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.14.0
+
+### Minor Changes
+
+- 96fc27698: Updated inputs for the `publish:github:pull-request` action.
+
+  Now requires a `repoUrl` instead of separate `owner` and `repo` inputs. This aligns with the output of the `RepoUrlPicker` ui field used by the pull-request sample template.
+
+### Patch Changes
+
+- e75506fe7: Unsubscribe from broker after response is flushed
+- ea1d956ef: Updating fs-extra to 10.0.0 to handle broken symbolic links correctly
+- 31de5f27f: Add new `fetch:template` action which handles the same responsibilities as `fetch:cookiecutter` without the external dependency on `cookiecutter`. For information on migrating from `fetch:cookiecutter` to `fetch:template`, see the [migration guide](https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetch-cookiecutter-to-fetch-template) in the docs.
+- 84d329e2a: Scaffolder: Added an 'eq' handlebars helper for use in software template YAML files. This can be used to execute a step depending on the value of an input, e.g.:
+
+  ```yaml
+  steps:
+    id: 'conditional-step'
+    action: 'custom-action'
+    if: '{{ eq parameters.myvalue "custom" }}',
+  ```
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
 ## 0.13.0
 
 ### Minor Changes

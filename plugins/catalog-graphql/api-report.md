@@ -7,9 +7,13 @@ import { Config } from '@backstage/config';
 import { GraphQLModule } from '@graphql-modules/core';
 import { Logger as Logger_2 } from 'winston';
 
+// Warning: (ae-missing-release-tag) "createModule" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createModule(options: ModuleOptions): Promise<GraphQLModule>;
 
+// Warning: (ae-missing-release-tag) "ModuleOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ModuleOptions {
   // (undocumented)

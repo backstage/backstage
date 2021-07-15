@@ -1,5 +1,12 @@
 # @backstage/plugin-register-component
 
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.2.19
 
 ### Patch Changes

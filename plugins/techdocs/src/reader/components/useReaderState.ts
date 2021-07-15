@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { useApi } from '@backstage/core-plugin-api';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
 
 /**
  * A state representation that is used to configure the UI of <Reader />
@@ -34,9 +34,6 @@ type ContentStateTypes =
 
   /** There is content, but after a reload, the content will be different */
   | 'CONTENT_STALE_READY'
-
-  /** There is content, the backend tried to update it, but it took too long */
-  | 'CONTENT_STALE_TIMEOUT'
 
   /** There is content, the backend tried to update it, but failed */
   | 'CONTENT_STALE_ERROR'
@@ -93,11 +90,6 @@ export function calculateDisplayState({
     return 'CONTENT_STALE_READY';
   }
 
-  // the build timed out, but the content is still stale
-  if (activeSyncState === 'BUILD_TIMED_OUT') {
-    return 'CONTENT_STALE_TIMEOUT';
-  }
-
   // the build failed, but the content is still stale
   if (activeSyncState === 'ERROR') {
     return 'CONTENT_STALE_ERROR';
@@ -127,9 +119,6 @@ type SyncStates =
    */
   | 'BUILD_READY_RELOAD'
 
-  /** Building the documentation timed out */
-  | 'BUILD_TIMED_OUT'
-
   /** No need for a sync. The content was already up-to-date. */
   | 'UP_TO_DATE'
 
@@ -148,7 +137,8 @@ type ReducerActions =
       contentLoading?: true;
       contentError?: Error;
     }
-  | { type: 'navigate'; path: string };
+  | { type: 'navigate'; path: string }
+  | { type: 'buildLog'; log: string };
 
 type ReducerState = {
   /**
@@ -172,6 +162,11 @@ type ReducerState = {
 
   contentError?: Error;
   syncError?: Error;
+
+  /**
+   * A list of log messages that were emitted by the build process.
+   */
+  buildLog: string[];
 };
 
 export function reducer(
@@ -182,6 +177,11 @@ export function reducer(
 
   switch (action.type) {
     case 'sync':
+      // reset the build log when a new check starts
+      if (action.state === 'CHECKING') {
+        newState.buildLog = [];
+      }
+
       newState.activeSyncState = action.state;
       newState.syncError = action.syncError;
       break;
@@ -196,6 +196,10 @@ export function reducer(
       newState.path = action.path;
       break;
 
+    case 'buildLog':
+      newState.buildLog = newState.buildLog.concat(action.log);
+      break;
+
     default:
       throw new Error();
   }
@@ -206,6 +210,7 @@ export function reducer(
     ['content', 'navigate'].includes(action.type)
   ) {
     newState.activeSyncState = 'UP_TO_DATE';
+    newState.buildLog = [];
   }
 
   return newState;
@@ -216,11 +221,19 @@ export function useReaderState(
   namespace: string,
   name: string,
   path: string,
-): { state: ContentStateTypes; content?: string; errorMessage?: string } {
+): {
+  state: ContentStateTypes;
+  contentReload: () => void;
+  content?: string;
+  contentErrorMessage?: string;
+  syncErrorMessage?: string;
+  buildLog: string[];
+} {
   const [state, dispatch] = useReducer(reducer, {
     activeSyncState: 'CHECKING',
     path,
     contentLoading: true,
+    buildLog: [],
   });
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
@@ -268,24 +281,38 @@ export function useReaderState(
     }, 1000);
 
     try {
-      const result = await techdocsStorageApi.syncEntityDocs({
-        kind,
-        namespace,
-        name,
-      });
+      const result = await techdocsStorageApi.syncEntityDocs(
+        {
+          kind,
+          namespace,
+          name,
+        },
+        log => {
+          dispatch({ type: 'buildLog', log });
+        },
+      );
 
-      if (result === 'updated') {
-        // if there was no content prior to building, retry the loading
-        if (!contentRef.current.content) {
-          contentRef.current.reload();
-          dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
-        } else {
-          dispatch({ type: 'sync', state: 'BUILD_READY' });
-        }
-      } else if (result === 'cached') {
-        dispatch({ type: 'sync', state: 'UP_TO_DATE' });
-      } else {
-        dispatch({ type: 'sync', state: 'BUILD_TIMED_OUT' });
+      switch (result) {
+        case 'updated':
+          // if there was no content prior to building, retry the loading
+          if (!contentRef.current.content) {
+            contentRef.current.reload();
+            dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
+          } else {
+            dispatch({ type: 'sync', state: 'BUILD_READY' });
+          }
+          break;
+        case 'cached':
+          dispatch({ type: 'sync', state: 'UP_TO_DATE' });
+          break;
+
+        default:
+          dispatch({
+            type: 'sync',
+            state: 'ERROR',
+            syncError: new Error('Unexpected return state'),
+          });
+          break;
       }
     } catch (e) {
       dispatch({ type: 'sync', state: 'ERROR', syncError: e });
@@ -305,19 +332,12 @@ export function useReaderState(
     [state.activeSyncState, state.content, state.contentLoading],
   );
 
-  const errorMessage = useMemo(() => {
-    let errMessage = '';
-    if (state.contentError) {
-      errMessage += ` Load error: ${state.contentError}`;
-    }
-    if (state.syncError) errMessage += ` Build error: ${state.syncError}`;
-
-    return errMessage;
-  }, [state.syncError, state.contentError]);
-
   return {
     state: displayState,
+    contentReload,
     content: state.content,
-    errorMessage,
+    contentErrorMessage: state.contentError?.toString(),
+    syncErrorMessage: state.syncError?.toString(),
+    buildLog: state.buildLog,
   };
 }

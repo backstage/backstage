@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { CITable } from './CITable';
-export type { CITableBuildInfo } from './CITable';

@@ -1,5 +1,11 @@
 # @backstage/plugin-user-settings
 
+## 0.3.0
+
+### Minor Changes
+
+- 71afed7f3: Exported and renamed components from the `@backstage/plugin-user-settings` plugin , to be able to use it in the consumer side and customize the `SettingPage`
+
 ## 0.2.12
 
 ### Patch Changes

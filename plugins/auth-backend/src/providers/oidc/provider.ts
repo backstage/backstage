@@ -56,26 +56,33 @@ type AuthResult = {
 export type Options = OAuthProviderOptions & {
   metadataUrl: string;
   scope?: string;
+  prompt?: string;
   tokenSignedResponseAlg?: string;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
   private readonly scope?: string;
+  private readonly prompt?: string;
 
   constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
     this.scope = options.scope;
+    this.prompt = options.prompt;
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     const { strategy } = await this.implementation;
-    return await executeRedirectStrategy(req, strategy, {
+    const options: Record<string, string> = {
       accessType: 'offline',
-      prompt: 'none',
-      scope: req.scope || this.scope || '',
+      scope: req.scope || this.scope || 'openid profile email',
       state: encodeState(req.state),
-    });
+    };
+    const prompt = this.prompt || 'none';
+    if (prompt !== 'auto') {
+      options.prompt = prompt;
+    }
+    return await executeRedirectStrategy(req, strategy, options);
   }
 
   async handler(
@@ -190,10 +197,11 @@ export const createOidcProvider = (
       const clientSecret = envConfig.getString('clientSecret');
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
       const metadataUrl = envConfig.getString('metadataUrl');
-      const tokenSignedResponseAlg = envConfig.getString(
+      const tokenSignedResponseAlg = envConfig.getOptionalString(
         'tokenSignedResponseAlg',
       );
       const scope = envConfig.getOptionalString('scope');
+      const prompt = envConfig.getOptionalString('prompt');
 
       const provider = new OidcAuthProvider({
         clientId,
@@ -202,6 +210,7 @@ export const createOidcProvider = (
         tokenSignedResponseAlg,
         metadataUrl,
         scope,
+        prompt,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {

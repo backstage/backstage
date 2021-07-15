@@ -1,5 +1,14 @@
 # @backstage/plugin-app-backend
 
+## 0.3.15
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/config-loader@0.6.5
+
 ## 0.3.14
 
 ### Patch Changes
