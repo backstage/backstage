@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export type BuildStatus = 'succeeded' | 'failed' | 'stopped';
 
-export type BuildItem = {
+export type Build = {
   userid: string;
   warningCount: number;
   duration: number;
@@ -44,8 +44,10 @@ export type BuildItem = {
   wasSuspended: boolean;
 };
 
-export type BuildsResult = {
-  items: BuildItem[];
+export type BuildStatusResult = Pick<Build, 'id' | 'buildStatus'>;
+
+export type PaginationResult<T> = {
+  items: T[];
   metadata: {
     per: number;
     total: number;
@@ -54,7 +56,9 @@ export type BuildsResult = {
 };
 
 export interface XcmetricsApi {
-  getBuilds(): Promise<BuildItem[]>;
+  getBuild(id: string): Promise<Build>;
+  getBuilds(): Promise<Build[]>;
+  getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XcmetricsApi>({

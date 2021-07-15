@@ -18,21 +18,24 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import userEvent from '@testing-library/user-event';
 import { StatusMatrixComponent } from './StatusMatrixComponent';
-import { XCMetricsApi, xcmetricsApiRef } from '../../api';
+import { XcmetricsApi, xcmetricsApiRef } from '../../api';
 import { formatStatus } from '../../utils';
 
 describe('StatusMatrixComponent', () => {
   it('should render', async () => {
+    const mockId = 'mockId';
     const mockStatus = 'succeeded';
-    const mockApi: jest.Mocked<XCMetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue([
-        {
-          id: 1,
-          startTimestamp: '2020-11-02T16:38:40Z',
-          duration: 123.45,
-          buildStatus: mockStatus,
-        },
-      ]),
+    const mockApi: jest.Mocked<XcmetricsApi> = {
+      getBuildStatuses: jest
+        .fn()
+        .mockResolvedValue([{ id: mockId, buildStatus: mockStatus }]),
+      getBuild: jest.fn().mockResolvedValue({
+        id: mockId,
+        buildStatus: mockStatus,
+        duration: 10.0,
+        startTimestamp: new Date().getTime().toString(),
+      }),
+      getBuilds: jest.fn().mockResolvedValue([]),
     };
 
     const rendered = await renderInTestApp(
@@ -41,7 +44,7 @@ describe('StatusMatrixComponent', () => {
       </ApiProvider>,
     );
 
-    const cell = rendered.getByTestId(1);
+    const cell = rendered.getByTestId(mockId);
     expect(cell).toBeInTheDocument();
 
     userEvent.hover(cell);

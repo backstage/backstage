@@ -26,7 +26,7 @@ import {
   EmptyState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { BuildItem, BuildStatus, xcmetricsApiRef } from '../../api';
+import { Build, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Chip } from '@material-ui/core';
@@ -55,7 +55,7 @@ const Status = ({
   );
 };
 
-const columns: TableColumn<BuildItem>[] = [
+const columns: TableColumn<Build>[] = [
   {
     title: 'Project',
     field: 'projectName',
@@ -93,7 +93,7 @@ const columns: TableColumn<BuildItem>[] = [
 export const OverviewComponent = () => {
   const client = useApi(xcmetricsApiRef);
   const { value: builds, loading, error } = useAsync(
-    async (): Promise<BuildItem[]> => client.getBuilds(),
+    async () => client.getBuilds(),
     [],
   );
 
