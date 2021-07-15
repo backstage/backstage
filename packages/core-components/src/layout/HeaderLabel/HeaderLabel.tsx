@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 0,
     fontSize: 14,
     height: '16px',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   value: {
     color: 'rgba(255, 255, 255, 0.8)',
