@@ -46,6 +46,12 @@ export type Build = {
 
 export type BuildStatusResult = Pick<Build, 'id' | 'buildStatus'>;
 
+export type BuildCount = {
+  day: string;
+  errors: number;
+  builds: number;
+};
+
 export type PaginationResult<T> = {
   items: T[];
   metadata: {
@@ -58,6 +64,7 @@ export type PaginationResult<T> = {
 export interface XcmetricsApi {
   getBuild(id: string): Promise<Build>;
   getBuilds(): Promise<Build[]>;
+  getBuildCounts(days: number): Promise<BuildCount[]>;
   getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;
 }
 

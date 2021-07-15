@@ -18,6 +18,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
   Build,
+  BuildCount,
   BuildStatusResult,
   PaginationResult,
   XcmetricsApi,
@@ -54,6 +55,19 @@ export class XcmetricsClient implements XcmetricsApi {
     }
 
     return ((await response.json()) as PaginationResult<Build>).items;
+  }
+
+  async getBuildCounts(days: number): Promise<BuildCount[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/count?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildCount[];
   }
 
   async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {
