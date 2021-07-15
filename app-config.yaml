@@ -314,13 +314,20 @@ auth:
         #
         # scope: saml-login-selector openid profile email
     oidc:
+      # Note that you must define a session secret (see above) since the oidc provider requires session support.
+      # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
+      # You should set prompt to:
+      # - auto: will let the IDP decide if you need to log on or if you can skip login when you have an active SSO session
+      # - login: will force the IDP to always present a login form to the user
       development:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
         clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
         authorizationUrl: ${AUTH_OIDC_AUTH_URL}
         tokenUrl: ${AUTH_OIDC_TOKEN_URL}
-        tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG}
+        tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
+        scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
+        prompt: ${AUTH_OIDC_PROMPT} # default=none (allowed values: auto, none, consent, login)
     auth0:
       development:
         clientId: ${AUTH_AUTH0_CLIENT_ID}
