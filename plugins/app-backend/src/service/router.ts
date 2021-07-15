@@ -87,11 +87,15 @@ export async function createRouter(
     );
 
     if (fallbackToProxyToAppUrl) {
+      const appBaseUrl = config.getString('app.baseUrl');
+      logger.warn(
+        `Falling back to proxying all requests for the app on '/' to ${appBaseUrl}`,
+      );
       const proxyRouter = Router();
       proxyRouter.use(
         '/',
         createProxyMiddleware({
-          target: config.getString('app.baseUrl'),
+          target: appBaseUrl,
           ws: true,
         }),
       );
