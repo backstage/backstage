@@ -6103,9 +6103,9 @@
   integrity sha512-4QQmOF5KlwfxJ5IGXFIudkeLCdMABz03RcUXu+LCb24zmln8QW6aDjuGl4d4XPVLf2j+FnjelHTP7dvceAFbhA==
 
 "@types/nunjucks@^3.1.4":
-  version "3.1.4"
-  resolved "https://registry.npmjs.org/@types/nunjucks/-/nunjucks-3.1.4.tgz#2f80e2fa5e7982b2131201d0b4474ab4d03d9de1"
-  integrity sha512-cR65PLlHKW/qxxj840dbNb3ICO+iAVQzaNKJ8TcKOVKFi+QcAkhw9SCY8VFAyU41SmJMs+2nrIN2JGhX+jYb7A==
+  version "3.1.5"
+  resolved "https://registry.npmjs.org/@types/nunjucks/-/nunjucks-3.1.5.tgz#e0782333b75b4ff9ac9213aa160ca8c5132eaf57"
+  integrity sha512-0zEdmQNNvQ+xyV9kqQvAV93UVroTwhE78toVUDT0GBnGcW2jQBZnB4al9qq2LqI5qHOqROy/DvvAY/UwrbvV1A==
 
 "@types/oauth@*":
   version "0.9.1"
