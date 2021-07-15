@@ -33,9 +33,11 @@ services:
     volumes:
       - ../:/app
     ports:
-      - '3000:3000'
+      - 3000:3000
     env_file:
       - .env
+    extra_hosts: 
+      - "localdev:0.0.0.0"
   kafka:
     image: spotify/kafka
     ports:

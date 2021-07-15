@@ -17,3 +17,17 @@ to stop docker compose, open new terminal window and run this in the root of the
 yarn docker-compose:stop
 ```
 
+
+### Enabling Micorsoft login on local Dev environment using docer on Windows and WSL
+
+Open this file using Run as Administrator:
+C:\Windows\System32\drivers\etc\hosts
+
+Add this entry:
+127.0.0.1 localdev
+
+Save and close
+
+Then update .env file with the following values (port number can be modified as desired)
+APP_CONFIG_app_baseUrl=http://localdev:3000
+BACKEND_CORS_ORIGIN=http://localdev:3000
