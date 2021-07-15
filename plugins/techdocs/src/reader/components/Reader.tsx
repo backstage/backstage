@@ -96,6 +96,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   useEffect(() => {
     if (!rawPage || !shadowDomRef.current) {
+      // clear the shadow dom if no content is available
+      if (shadowDomRef.current?.shadowRoot) {
+        shadowDomRef.current.shadowRoot.innerHTML = '';
+      }
       return;
     }
     if (onReady) {

@@ -131,11 +131,11 @@ type ReducerActions =
       state: SyncStates;
       syncError?: Error;
     }
+  | { type: 'contentLoading' }
   | {
       type: 'content';
       path?: string;
       content?: string;
-      contentLoading?: true;
       contentError?: Error;
     }
   | { type: 'buildLog'; log: string };
@@ -186,13 +186,21 @@ export function reducer(
       newState.syncError = action.syncError;
       break;
 
+    case 'contentLoading':
+      newState.contentLoading = true;
+
+      // only reset errors but keep the old content until it is replaced by the 'content' action
+      newState.contentError = undefined;
+      break;
+
     case 'content':
+      // only override the path if it is part of the action
       if (typeof action.path === 'string') {
         newState.path = action.path;
       }
 
+      newState.contentLoading = false;
       newState.content = action.content;
-      newState.contentLoading = action.contentLoading ?? false;
       newState.contentError = action.contentError;
       break;
 
@@ -204,10 +212,10 @@ export function reducer(
       throw new Error();
   }
 
-  // a navigation or a content update loads fresh content so the build is updated to being up-to-date
+  // a content update loads fresh content so the build is updated to being up-to-date
   if (
     ['BUILD_READY', 'BUILD_READY_RELOAD'].includes(newState.activeSyncState) &&
-    ['content'].includes(action.type)
+    ['contentLoading', 'content'].includes(action.type)
   ) {
     newState.activeSyncState = 'UP_TO_DATE';
     newState.buildLog = [];
@@ -241,7 +249,7 @@ export function useReaderState(
 
   // try to load the content. the function will fire events and we don't care for the return values
   const { retry: contentReload } = useAsyncRetry(async () => {
-    dispatch({ type: 'content', contentLoading: true });
+    dispatch({ type: 'contentLoading' });
 
     try {
       const entityDocs = await techdocsStorageApi.getEntityDocs(

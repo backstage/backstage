@@ -102,11 +102,13 @@ describe('useReaderState', () => {
     });
 
     it.each`
-      type         | oldActiveSyncState      | newActiveSyncState
-      ${'content'} | ${'BUILD_READY'}        | ${'UP_TO_DATE'}
-      ${'content'} | ${'BUILD_READY_RELOAD'} | ${'UP_TO_DATE'}
-      ${'sync'}    | ${'BUILD_READY'}        | ${undefined}
-      ${'sync'}    | ${'BUILD_READY_RELOAD'} | ${undefined}
+      type                | oldActiveSyncState      | newActiveSyncState
+      ${'contentLoading'} | ${'BUILD_READY'}        | ${'UP_TO_DATE'}
+      ${'contentLoading'} | ${'BUILD_READY_RELOAD'} | ${'UP_TO_DATE'}
+      ${'content'}        | ${'BUILD_READY'}        | ${'UP_TO_DATE'}
+      ${'content'}        | ${'BUILD_READY_RELOAD'} | ${'UP_TO_DATE'}
+      ${'sync'}           | ${'BUILD_READY'}        | ${undefined /* undefined, because we don't set an input */}
+      ${'sync'}           | ${'BUILD_READY_RELOAD'} | ${undefined /* undefined, because we don't set an input */}
     `(
       'should, when type=$type and activeSyncState=$oldActiveSyncState, set activeSyncState=$newActiveSyncState',
       ({ type, oldActiveSyncState, newActiveSyncState }) => {
@@ -122,18 +124,45 @@ describe('useReaderState', () => {
       },
     );
 
-    describe('"content" action', () => {
+    describe('"contentLoading" action', () => {
       it('should set loading', () => {
+        expect(
+          reducer(oldState, {
+            type: 'contentLoading',
+          }),
+        ).toEqual({
+          ...oldState,
+          contentLoading: true,
+        });
+      });
+
+      it('should keep content', () => {
         expect(
           reducer(
             {
               ...oldState,
               content: 'some-old-content',
+            },
+            {
+              type: 'contentLoading',
+            },
+          ),
+        ).toEqual({
+          ...oldState,
+          contentLoading: true,
+          content: 'some-old-content',
+        });
+      });
+
+      it('should reset errors', () => {
+        expect(
+          reducer(
+            {
+              ...oldState,
               contentError: new Error(),
             },
             {
-              type: 'content',
-              contentLoading: true,
+              type: 'contentLoading',
             },
           ),
         ).toEqual({
@@ -141,7 +170,9 @@ describe('useReaderState', () => {
           contentLoading: true,
         });
       });
+    });
 
+    describe('"content" action', () => {
       it('should set content', () => {
         expect(
           reducer(
@@ -457,7 +488,7 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           path: '/example',
-          content: undefined,
+          content: 'my content',
           contentErrorMessage: undefined,
           syncErrorMessage: undefined,
           buildLog: [],
@@ -538,7 +569,7 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           path: '/example',
-          content: undefined,
+          content: 'my content',
           contentErrorMessage: undefined,
           syncErrorMessage: undefined,
           buildLog: [],
