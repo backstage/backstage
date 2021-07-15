@@ -27,6 +27,7 @@ export const FilterContainer = ({ children }: React.PropsWithChildren<{}>) => {
 
   return isMidSizeScreen ? (
     <Drawer
+      data-testid="entity-filters-drawer"
       open={showFiltersDrawer}
       onClose={() => {
         toggleFiltersDrawer(false);
@@ -43,7 +44,7 @@ export const FilterContainer = ({ children }: React.PropsWithChildren<{}>) => {
       <Box m={2}>{children}</Box>
     </Drawer>
   ) : (
-    <Grid item lg={2}>
+    <Grid data-testid="entity-filters-grid" item lg={2}>
       {children}
     </Grid>
   );

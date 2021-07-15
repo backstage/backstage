@@ -112,8 +112,6 @@ describe('CatalogPage', () => {
     getProfile: () => testProfile,
   };
 
-  const { set: setBreakpoint } = mockBreakpoint();
-
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
       wrapInTestApp(
@@ -248,9 +246,16 @@ describe('CatalogPage', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it('should wrap filter in accordion on smaller screens', async () => {
-    setBreakpoint('sm');
-    const { findByText } = await renderWrapped(<CatalogPage />);
-    await expect(findByText(/Filters/)).resolves.toBeInTheDocument();
+  it('should wrap filter in drawer on smaller screens', async () => {
+    mockBreakpoint({ matches: true });
+    const { findByText, getByTestId } = await renderWrapped(<CatalogPage />);
+    expect(getByTestId('entity-filters-drawer')).toBeInTheDocument();
+    await expect(findByText('Filters')).resolves.toBeInTheDocument();
+  });
+
+  it('should wrap filter in grid on larger screens', async () => {
+    mockBreakpoint({ matches: false });
+    const { getByTestId } = await renderWrapped(<CatalogPage />);
+    expect(getByTestId('entity-filters-grid')).toBeInTheDocument();
   });
 });
