@@ -1,5 +1,12 @@
 # @backstage/plugin-github-actions
 
+## 0.4.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.4.12
 
 ### Patch Changes

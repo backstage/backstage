@@ -1,5 +1,23 @@
 # example-backend
 
+## 0.2.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/plugin-scaffolder-backend@0.14.0
+  - @backstage/plugin-catalog-backend@0.13.0
+  - @backstage/plugin-auth-backend@0.3.17
+  - @backstage/plugin-scaffolder-backend-module-rails@0.1.3
+  - @backstage/plugin-search-backend-node@0.4.0
+  - @backstage/plugin-techdocs-backend@0.8.7
+  - @backstage/plugin-app-backend@0.3.15
+  - @backstage/plugin-kubernetes-backend@0.3.10
+  - @backstage/plugin-rollbar-backend@0.1.13
+  - example-app@0.2.37
+  - @backstage/plugin-search-backend@0.2.3
+
 ## 0.2.36
 
 ### Patch Changes

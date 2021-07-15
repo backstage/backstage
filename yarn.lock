@@ -1425,6 +1425,27 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
+"@backstage/plugin-catalog-react@^0.2.0", "@backstage/plugin-catalog-react@^0.2.4":
+  version "0.2.6"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.2.6.tgz#4e3a0ea9394f163c95df97b72511f2bd2277f40a"
+  integrity sha512-loSYkm6aZKFn5gJ0xy9A3Ii3czSgA5ZRhCchqcN3ViSsipJLUbQt2TtMc8Tyk2h0e8AyRhyteEkcrnPGQqGXlQ==
+  dependencies:
+    "@backstage/catalog-client" "^0.3.16"
+    "@backstage/catalog-model" "^0.9.0"
+    "@backstage/core-app-api" "^0.1.4"
+    "@backstage/core-components" "^0.1.5"
+    "@backstage/core-plugin-api" "^0.1.3"
+    "@backstage/integration" "^0.5.8"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@types/react" "^16.9"
+    lodash "^4.17.15"
+    react "^16.13.1"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"

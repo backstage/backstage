@@ -1,5 +1,12 @@
 # @backstage/plugin-rollbar
 
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.3.8
 
 ### Patch Changes
