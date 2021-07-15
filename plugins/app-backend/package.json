@@ -30,12 +30,13 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.8.3",
-    "@backstage/config-loader": "^0.6.4",
     "@backstage/config": "^0.1.5",
+    "@backstage/config-loader": "^0.6.4",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "9.1.0",
+    "http-proxy-middleware": "^2.0.1",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

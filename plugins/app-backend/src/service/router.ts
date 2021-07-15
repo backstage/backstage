@@ -18,6 +18,7 @@ import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
@@ -57,12 +58,25 @@ export interface RouterOptions {
    * This also disables configuration injection though `APP_CONFIG_` environment variables.
    */
   disableConfigInjection?: boolean;
+
+  /**
+   * Fallback to proxy requests to the app.baseUrl if the static assets are not found.
+   * Good for local development, not meant to be used in production.
+   * Should proxy all requests to the webpack instance running underneath.
+   */
+  fallbackToProxyToAppUrl?: boolean;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, logger, appPackageName, staticFallbackHandler } = options;
+  const {
+    config,
+    logger,
+    appPackageName,
+    staticFallbackHandler,
+    fallbackToProxyToAppUrl,
+  } = options;
 
   const appDistDir = resolvePackagePath(appPackageName, 'dist');
   const staticDir = resolvePath(appDistDir, 'static');
@@ -71,6 +85,18 @@ export async function createRouter(
     logger.warn(
       `Can't serve static app content from ${staticDir}, directory doesn't exist`,
     );
+
+    if (fallbackToProxyToAppUrl) {
+      const proxyRouter = Router();
+      proxyRouter.use(
+        '/',
+        createProxyMiddleware({
+          target: config.getString('app.baseUrl'),
+          ws: true,
+        }),
+      );
+      return proxyRouter;
+    }
 
     return Router();
   }
