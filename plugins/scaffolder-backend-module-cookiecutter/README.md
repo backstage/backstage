@@ -13,11 +13,12 @@ cd packages/backend
 yarn add @backstage/plugin-scaffolder-backend-module-cookiecutter
 ```
 
-Configure the action (you can check
-the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to
-see all options):
+Configure the action:
+(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
 
 ```typescript
+// packages/backend/src/plugins/scaffolder.ts
+
 const actions = [
   createFetchCookiecutterAction({
     integrations,
