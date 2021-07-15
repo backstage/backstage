@@ -51,7 +51,8 @@
   "dependencies": {
     "@microsoft/api-documenter": "^7.13.30",
     "@microsoft/api-extractor": "^7.18.1",
-    "@microsoft/api-extractor-model": "^7.13.3"
+    "@microsoft/api-extractor-model": "^7.13.3",
+    "string": "^3.3.3"
   },
   "devDependencies": {
     "@changesets/cli": "^2.14.0",
