@@ -187,6 +187,7 @@ export class DockerContainerRunner implements ContainerRunner {
     mountDirs,
     workingDir,
     envVars,
+    pullImage,
   }: RunContainerOptions): Promise<void>;
 }
 
@@ -461,6 +462,7 @@ export type RunContainerOptions = {
   mountDirs?: Record<string, string>;
   workingDir?: string;
   envVars?: Record<string, string>;
+  pullImage?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "SearchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

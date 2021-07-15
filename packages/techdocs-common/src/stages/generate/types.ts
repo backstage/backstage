@@ -19,6 +19,18 @@ import { Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 
+// Determines where the generator will be run
+export type GeneratorRunInType = 'docker' | 'local';
+
+/**
+ * The techdocs generator configurations options.
+ */
+export type GeneratorConfig = {
+  runIn: GeneratorRunInType;
+  dockerImage?: string;
+  pullImage?: boolean;
+};
+
 /**
  * The values that the generator will receive.
  *

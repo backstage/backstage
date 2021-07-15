@@ -58,6 +58,7 @@ describe('DockerContainerRunner', () => {
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
     mockFs.restore();
   });
 
@@ -83,6 +84,17 @@ describe('DockerContainerRunner', () => {
       expect.any(Function),
     );
 
+    expect(mockDocker.run).toHaveBeenCalled();
+  });
+
+  it('should not pull the docker container when pullImage is false', async () => {
+    await containerTaskApi.runContainer({
+      imageName,
+      args,
+      pullImage: false,
+    });
+
+    expect(mockDocker.pull).not.toHaveBeenCalled();
     expect(mockDocker.run).toHaveBeenCalled();
   });
 
