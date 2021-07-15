@@ -20,6 +20,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   disableConfigInjection?: boolean;
+  fallbackToProxyToAppUrl?: boolean;
   // (undocumented)
   logger: Logger_2;
   staticFallbackHandler?: express.Handler;
