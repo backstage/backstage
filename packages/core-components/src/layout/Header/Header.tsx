@@ -42,6 +42,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     backgroundSize: 'cover',
   },
   leftItemsBox: {
+    maxWidth: '100%',
     flex: '1 1 auto',
     marginBottom: theme.spacing(1),
   },
