@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.1.3
+
+### Patch Changes
+
+- e114cc7e0: updated paths to consider differences between platform (windows corrected)
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/plugin-scaffolder-backend@0.14.0
+
 ## 0.1.2
 
 ### Patch Changes

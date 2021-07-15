@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog
 
+## 0.6.7
+
+### Patch Changes
+
+- 75a532fbe: Add unstable prop for disabling unregister entity menu
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.6.6
 
 ### Patch Changes
