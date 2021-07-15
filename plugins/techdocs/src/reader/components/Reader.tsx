@@ -47,17 +47,17 @@ type Props = {
 
 export const Reader = ({ entityId, onReady }: Props) => {
   const { kind, namespace, name } = entityId;
-  const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
 
   const {
     state,
+    path,
     contentReload,
     content: rawPage,
     contentErrorMessage,
     syncErrorMessage,
     buildLog,
-  } = useReaderState(kind, namespace, name, path);
+  } = useReaderState(kind, namespace, name, useParams()['*']);
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
