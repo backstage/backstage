@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.31
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+
 ## 0.3.30
 
 ### Patch Changes

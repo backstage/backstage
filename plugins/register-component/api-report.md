@@ -8,6 +8,8 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "RegisterComponentPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const RegisterComponentPage: ({
   catalogRouteRef,
@@ -15,6 +17,8 @@ export const RegisterComponentPage: ({
   catalogRouteRef: RouteRef<any>;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "registerComponentPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const registerComponentPlugin: BackstagePlugin<
   {
@@ -25,6 +29,8 @@ const registerComponentPlugin: BackstagePlugin<
 export { registerComponentPlugin as plugin };
 export { registerComponentPlugin };
 
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public @deprecated
 export const Router: ({
   catalogRouteRef,

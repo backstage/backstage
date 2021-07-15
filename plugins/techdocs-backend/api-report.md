@@ -12,6 +12,9 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
 
+// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 

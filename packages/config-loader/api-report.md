@@ -7,6 +7,8 @@ import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 
+// Warning: (ae-missing-release-tag) "ConfigSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ConfigSchema = {
   process(
@@ -16,12 +18,19 @@ export type ConfigSchema = {
   serialize(): JsonObject;
 };
 
+// Warning: (ae-forgotten-export) The symbol "CONFIG_VISIBILITIES" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ConfigVisibility" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
 
+// Warning: (ae-missing-release-tag) "loadConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 
+// Warning: (ae-missing-release-tag) "LoadConfigOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type LoadConfigOptions = {
   configRoot: string;
@@ -30,16 +39,28 @@ export type LoadConfigOptions = {
   experimentalEnvFunc?: EnvFunc;
 };
 
+// Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "loadConfigSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function loadConfigSchema(options: Options): Promise<ConfigSchema>;
 
+// Warning: (ae-missing-release-tag) "mergeConfigSchemas" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;
 
+// Warning: (ae-missing-release-tag) "readEnvConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
+
+// Warnings were encountered during analysis:
+//
+// src/lib/schema/types.d.ts:77:5 - (ae-forgotten-export) The symbol "ConfigProcessingOptions" needs to be exported by the entry point index.d.ts
+// src/loader.d.ts:13:5 - (ae-forgotten-export) The symbol "EnvFunc" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

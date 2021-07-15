@@ -6,14 +6,20 @@
 import { ReactElement } from 'react';
 import { RenderResult } from '@testing-library/react';
 
+// Warning: (ae-missing-release-tag) "AsyncLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AsyncLogCollector = () => Promise<void>;
 
+// Warning: (ae-missing-release-tag) "CollectedLogs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type CollectedLogs<T extends LogFuncs> = {
   [key in T]: string[];
 };
 
+// Warning: (ae-missing-release-tag) "Keyboard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class Keyboard {
   constructor(
@@ -60,18 +66,31 @@ export class Keyboard {
   static typeDebug(target: any, input: any): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "LogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 
+// Warning: (ae-missing-release-tag) "LogFuncs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type LogFuncs = 'log' | 'warn' | 'error';
 
+// Warning: (ae-missing-release-tag) "renderWithEffects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function renderWithEffects(nodes: ReactElement): Promise<RenderResult>;
 
+// Warning: (ae-missing-release-tag) "SyncLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type SyncLogCollector = () => void;
 
+// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function withLogCollector(
   callback: AsyncLogCollector,

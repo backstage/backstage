@@ -44,7 +44,7 @@ describe('apis', () => {
 
   const json = jest.fn();
   const originalFetch = window.fetch;
-  window.fetch = jest.fn().mockResolvedValue({ json });
+  window.fetch = jest.fn().mockResolvedValue({ json, ok: true });
 
   afterAll(() => {
     window.fetch = originalFetch;

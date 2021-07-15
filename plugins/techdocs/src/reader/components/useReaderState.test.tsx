@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
@@ -23,7 +24,6 @@ import {
   reducer,
   useReaderState,
 } from './useReaderState';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('useReaderState', () => {
   let Wrapper: React.ComponentType;
@@ -55,14 +55,12 @@ describe('useReaderState', () => {
       ${false}       | ${undefined} | ${'BUILDING'}           | ${'INITIAL_BUILD'}
       ${false}       | ${undefined} | ${'BUILD_READY'}        | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
-      ${false}       | ${undefined} | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'UP_TO_DATE'}         | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${undefined} | ${'ERROR'}              | ${'CONTENT_NOT_FOUND'}
       ${false}       | ${'asdf'}    | ${'CHECKING'}           | ${'CONTENT_FRESH'}
       ${false}       | ${'asdf'}    | ${'BUILDING'}           | ${'CONTENT_STALE_REFRESHING'}
       ${false}       | ${'asdf'}    | ${'BUILD_READY'}        | ${'CONTENT_STALE_READY'}
       ${false}       | ${'asdf'}    | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
-      ${false}       | ${'asdf'}    | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_STALE_TIMEOUT'}
       ${false}       | ${'asdf'}    | ${'UP_TO_DATE'}         | ${'CONTENT_FRESH'}
       ${false}       | ${'asdf'}    | ${'ERROR'}              | ${'CONTENT_STALE_ERROR'}
     `(
@@ -84,6 +82,7 @@ describe('useReaderState', () => {
       activeSyncState: 'CHECKING',
       contentLoading: false,
       path: '',
+      buildLog: ['1', '2'],
     };
 
     it('should return a copy of the state', () => {
@@ -91,12 +90,14 @@ describe('useReaderState', () => {
         activeSyncState: 'CHECKING',
         contentLoading: false,
         path: '/',
+        buildLog: ['1', '2'],
       });
 
       expect(oldState).toEqual({
         activeSyncState: 'CHECKING',
         contentLoading: false,
         path: '',
+        buildLog: ['1', '2'],
       });
     });
 
@@ -210,6 +211,33 @@ describe('useReaderState', () => {
           activeSyncState: 'BUILDING',
         });
       });
+
+      it('should clear buildLog on "CHECKING"', () => {
+        expect(
+          reducer(oldState, {
+            type: 'sync',
+            state: 'CHECKING',
+          }),
+        ).toEqual({
+          ...oldState,
+          activeSyncState: 'CHECKING',
+          buildLog: [],
+        });
+      });
+    });
+
+    describe('"buildLog" action', () => {
+      it('should work', () => {
+        expect(
+          reducer(oldState, {
+            type: 'buildLog',
+            log: 'Another Line',
+          }),
+        ).toEqual({
+          ...oldState,
+          buildLog: ['1', '2', 'Another Line'],
+        });
+      });
     });
   });
 
@@ -229,7 +257,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -237,18 +268,24 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
@@ -259,10 +296,14 @@ describe('useReaderState', () => {
           await new Promise(resolve => setTimeout(resolve, 500));
           return 'my content';
         });
-      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 1100));
-        return 'updated';
-      });
+      techdocsStorageApi.syncEntityDocs.mockImplementation(
+        async (_, logHandler) => {
+          logHandler?.call(this, 'Line 1');
+          logHandler?.call(this, 'Line 2');
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'updated';
+        },
+      );
 
       await act(async () => {
         const { result, waitForValueToChange } = await renderHook(
@@ -273,7 +314,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -281,7 +325,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'INITIAL_BUILD',
           content: undefined,
-          errorMessage: ' Load error: NotFoundError: Page Not Found',
+          contentErrorMessage: 'NotFoundError: Page Not Found',
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -289,7 +336,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         await waitForValueToChange(() => result.current.state);
@@ -297,7 +347,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
@@ -306,20 +359,32 @@ describe('useReaderState', () => {
           '/example',
         );
         expect(techdocsStorageApi.syncEntityDocs).toBeCalledTimes(1);
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
     it('should handle stale content', async () => {
-      techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
-      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 1100));
-        return 'updated';
-      });
+      techdocsStorageApi.getEntityDocs
+        .mockResolvedValueOnce('my content')
+        .mockImplementationOnce(async () => {
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'my new content';
+        });
+      techdocsStorageApi.syncEntityDocs.mockImplementation(
+        async (_, logHandler) => {
+          logHandler?.call(this, 'Line 1');
+          logHandler?.call(this, 'Line 2');
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          return 'updated';
+        },
+      );
 
       await act(async () => {
         const { result, waitForValueToChange } = await renderHook(
@@ -330,7 +395,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         // the content is returned but the sync is in progress
@@ -338,7 +406,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
         // the sync takes longer than 1 seconds so the refreshing state starts
@@ -346,62 +417,61 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_REFRESHING',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
-        // the content is up-to-date
+        // the content is updated but not yet displayed
         await waitForValueToChange(() => result.current.state);
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_READY',
           content: 'my content',
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
-      });
-    });
+        // reload the content
+        result.current.contentReload();
 
-    it('should handle timed-out refresh', async () => {
-      techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
-      techdocsStorageApi.syncEntityDocs.mockResolvedValue('timeout');
-
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
-
+        // the new content refresh is triggered
+        await waitForValueToChange(() => result.current.state);
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
-        // the content is returned but the sync is in progress
+        // the new content is loaded
         await waitForValueToChange(() => result.current.state);
         expect(result.current).toEqual({
-          state: 'CONTENT_STALE_TIMEOUT',
-          content: 'my content',
-          errorMessage: '',
+          state: 'CONTENT_FRESH',
+          content: 'my new content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
+        expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
 
@@ -420,7 +490,10 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CHECKING',
           content: undefined,
-          errorMessage: '',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         // the content loading threw an error
@@ -428,18 +501,24 @@ describe('useReaderState', () => {
         expect(result.current).toEqual({
           state: 'CONTENT_NOT_FOUND',
           content: undefined,
-          errorMessage: ' Load error: NotFoundError: Some error description',
+          contentErrorMessage: 'NotFoundError: Some error description',
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
 
         expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        });
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
       });
     });
   });

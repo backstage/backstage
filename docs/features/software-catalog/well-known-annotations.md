@@ -101,17 +101,21 @@ repository itself. If the URL points to a folder, it is important that it is
 suffixed with a `'/'` in order for relative path resolution to work
 consistently.
 
-### jenkins.io/github-folder
+### jenkins.io/job-full-name
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    jenkins.io/github-folder: folder-name/job-name
+    jenkins.io/job-full-name: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this
 entity.
+
+The value can be the format of just `[folder-path]` or
+`[instanceName]:[folder-path]`, if multiple instances are configured in
+`app-config.yaml`
 
 Specifying this annotation may enable Jenkins related features in Backstage for
 that entity.
@@ -303,6 +307,10 @@ annotation, with the same value format.
 This annotation allowed to load the API definition from another location. Use
 [substitution](./descriptor-format.md#substitutions-in-the-descriptor-format)
 instead.
+
+### jenkins.io/github-folder
+
+Use the `jenkins.io/job-full-name` instead.
 
 ## Links
 

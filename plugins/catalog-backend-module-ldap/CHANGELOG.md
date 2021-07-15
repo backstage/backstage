@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.2.1
+
+### Patch Changes
+
+- afe3e4b54: Expose missing types used by the custom transformers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.0
+
 ## 0.2.0
 
 ### Minor Changes

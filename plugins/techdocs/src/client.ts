@@ -16,10 +16,11 @@
 
 import { EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
+import EventSource from 'eventsource';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 /**
  * API to talk to techdocs-backend.
@@ -192,44 +193,59 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
    * Check if docs are on the latest version and trigger rebuild if not
    *
    * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @param {Function} logHandler Callback to receive log messages from the build process
    * @returns {SyncResult} Whether documents are currently synchronized to newest version
    * @throws {Error} Throws error on error from sync endpoint in Techdocs Backend
    */
-  async syncEntityDocs(entityId: EntityName): Promise<SyncResult> {
+  async syncEntityDocs(
+    entityId: EntityName,
+    logHandler: (line: string) => void = () => {},
+  ): Promise<SyncResult> {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
     const token = await this.identityApi.getIdToken();
-    let request;
-    let attempts: number = 0;
-    // retry if request times out, up to 5 times
-    // can happen due to docs taking too long to generate
-    while (!request || (request.status === 408 && attempts < 5)) {
-      attempts++;
-      request = await fetch(url, {
+
+    return new Promise((resolve, reject) => {
+      const source = new EventSource(url, {
+        withCredentials: true,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-    }
 
-    switch (request.status) {
-      case 404:
-        throw new NotFoundError((await request.json()).error);
+      source.addEventListener('log', (e: any) => {
+        if (e.data) {
+          logHandler(JSON.parse(e.data));
+        }
+      });
 
-      case 200:
-      case 304:
-        return 'cached';
+      source.addEventListener('finish', (e: any) => {
+        let updated: boolean = false;
 
-      case 201:
-        return 'updated';
+        if (e.data) {
+          ({ updated } = JSON.parse(e.data));
+        }
 
-      // for timeout and misc errors, handle without error to allow viewing older docs
-      // if older docs not available,
-      // Reader will show 404 error coming from getEntityDocs
-      case 408:
-      default:
-        return 'timeout';
-    }
+        resolve(updated ? 'updated' : 'cached');
+      });
+
+      source.onerror = (e: any) => {
+        source.close();
+
+        switch (e.status) {
+          // the endpoint returned a 404 status
+          case 404:
+            reject(new NotFoundError(e.message));
+            return;
+
+          // also handles the event-stream close. the reject is ignored if the Promise was already
+          // resolved by a finish event.
+          default:
+            reject(new Error(e.data));
+            return;
+        }
+      };
+    });
   }
 
   async getBaseUrl(
