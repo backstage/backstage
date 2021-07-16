@@ -56,6 +56,29 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 - [Backstage Community Sessions](https://github.com/backstage/community) - Join monthly meetup and explore Backstage community
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
+## BIH Style Guide
+![updatedColors](https://user-images.githubusercontent.com/12993587/125858910-7961a44a-3ce8-4854-a1a3-fbc4809bb396.png)
+- #112e51 background for all headers and content banners.
+- #293e40 background for the left Nav, this color can be found in the VA's Service Now. 
+- #FFFFFF most widely used font color, some dropdowns and headers.
+- #fac922 Used as the border-top for the content element, this border-top is only triggered on the home page 'catalog' as a way to signify the homepage and to reflect the same functionality as the VA homepage. There is a hard coded check in the content element that checks for 'catalog' in the url, if the user is not currently on the homepage, it sets the border to ```border:none;```.
+- #2E77D0 used for buttons and other call to action clickable items.
+----------------------------------------
+- Font-family: 'Source Sans Pro,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif'.
+- Padding: headers and banners - 24px, components - 8px.
+- Margin: 0px;
+- All alert, info, warning and success colors are the standard set with Material UI. (backstage standard)
+----------------------------------------
+- All Logos can be found at the VA design page [VA design Logos](https://design.va.gov/design/logos).
+- The current VA logo used for backstage (which isnt found in the design page),
+
+![va-color-logo](https://user-images.githubusercontent.com/12993587/125843344-a41587e3-2d0d-49bc-ab51-a0cffbe8ed0b.png)
+
+Material UI theming can be found in ```packages/app/src/theme.tsx```
+
+
+
+
 ## License
 
 Copyright 2020-2021 © Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
