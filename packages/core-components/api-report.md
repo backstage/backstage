@@ -1210,7 +1210,7 @@ export const PageWithHeader: ({
   themeId,
   children,
   ...props
-}: React_2.PropsWithChildren<ThemedHeaderProps>) => JSX.Element;
+}: PropsWithChildren<ThemedHeaderProps>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Progress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
