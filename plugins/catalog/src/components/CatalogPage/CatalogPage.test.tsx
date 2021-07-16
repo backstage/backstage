@@ -248,9 +248,8 @@ describe('CatalogPage', () => {
 
   it('should wrap filter in drawer on smaller screens', async () => {
     mockBreakpoint({ matches: true });
-    const { findByText, getByTestId } = await renderWrapped(<CatalogPage />);
+    const { getByTestId } = await renderWrapped(<CatalogPage />);
     expect(getByTestId('entity-filters-drawer')).toBeInTheDocument();
-    await expect(findByText('Filters')).resolves.toBeInTheDocument();
   });
 
   it('should wrap filter in grid on larger screens', async () => {
