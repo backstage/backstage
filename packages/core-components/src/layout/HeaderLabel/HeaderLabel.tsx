@@ -20,18 +20,19 @@ import React from 'react';
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
-    display: 'inline-block',
   },
   label: {
     color: theme.palette.common.white,
     fontWeight: 'bold',
     letterSpacing: 0,
     fontSize: theme.typography.fontSize,
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1) / 2,
+    lineHeight: 1,
   },
   value: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: theme.typography.fontSize,
+    lineHeight: 1,
   },
 }));
 
@@ -61,16 +62,8 @@ export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
   return (
     <Grid item>
       <span className={classes.root}>
-        <Typography component="span" className={classes.label}>
-          {label}
-        </Typography>
-        {url ? (
-          <Link component="span" href={url}>
-            {content}
-          </Link>
-        ) : (
-          content
-        )}
+        <Typography className={classes.label}>{label}</Typography>
+        {url ? <Link href={url}>{content}</Link> : content}
       </span>
     </Grid>
   );
