@@ -1,5 +1,19 @@
 ![headline](docs/assets/headline.png)
 
+# BIH
+
+## Start Up
+
+The BIH use of Backstage has been configured to utilize Docker to startup the application, both the UI and backend components along with a Postgres databse. These have been wrapped up into a single Docker call to ease the start up steps. The first that needs to be done is to create a .env file to contain all of your environment variables for your local deployment. A template for this file has been provided in the example.env file. Once this file has been added to the workspace, then you will be able to make a single call to start the application, `docker-compose up`.
+
+## Environment Variables
+
+Each of the environment variables supported for this application are listed in the example.env file. These map to much of the configurations that are utilized in the app-config.yaml.
+
+## Individual App Start Up
+
+If you are looking to start up just the UI or backend components, you can take a look at the [Backstage documentation](https://backstage.io/docs).
+
 # [Backstage](https://backstage.io)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
