@@ -23,19 +23,15 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-block',
   },
   label: {
-    color: '#FFFFFF',
+    color: theme.palette.common.white,
     fontWeight: 'bold',
-    lineHeight: '16px',
     letterSpacing: 0,
-    fontSize: 14,
-    height: '16px',
-    marginBottom: 4,
+    fontSize: theme.typography.fontSize,
+    marginBottom: theme.spacing(1),
   },
   value: {
     color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: '16px',
-    fontSize: 14,
-    height: '16px',
+    fontSize: theme.typography.fontSize,
   },
 }));
 
@@ -65,8 +61,16 @@ export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
   return (
     <Grid item>
       <span className={classes.root}>
-        <Typography className={classes.label}>{label}</Typography>
-        {url ? <Link href={url}>{content}</Link> : content}
+        <Typography component="span" className={classes.label}>
+          {label}
+        </Typography>
+        {url ? (
+          <Link component="span" href={url}>
+            {content}
+          </Link>
+        ) : (
+          content
+        )}
       </span>
     </Grid>
   );

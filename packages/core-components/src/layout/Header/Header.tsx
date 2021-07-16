@@ -22,13 +22,14 @@ import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
+const minHeaderHeight = 118;
+
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
     height: 'fit-content',
-    // Where does this number come from? :/
-    minHeight: 118,
+    minHeight: minHeaderHeight,
     width: '100%',
     boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
     position: 'relative',
@@ -215,7 +216,12 @@ export const Header = ({
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
         </div>
-        <Grid container className={classes.rightItemsBox} spacing={4}>
+        <Grid
+          component="div"
+          container
+          className={classes.rightItemsBox}
+          spacing={4}
+        >
           {children}
         </Grid>
       </header>
