@@ -278,8 +278,66 @@ scaffolder:
     visibility: public # or or 'private'
     
 auth:
-  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
   providers: {}
+    # google:
+    #   development:
+    #     clientId: ${AUTH_GOOGLE_CLIENT_ID}
+    #     clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+    # github:
+    #   development:
+    #     clientId: ${AUTH_GITHUB_CLIENT_ID}
+    #     clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+    #     enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+    # gitlab:
+    #   development:
+    #     clientId: ${AUTH_GITLAB_CLIENT_ID}
+    #     clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
+    #     audience: ${GITLAB_BASE_URL}
+    # saml:
+    #   entryPoint: 'http://localhost:7001/'
+    #   issuer: 'passport-saml'
+    # okta:
+    #   development:
+    #     clientId: ${AUTH_OKTA_CLIENT_ID}
+    #     clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
+    #     audience: ${AUTH_OKTA_AUDIENCE}
+    # oauth2:
+    #   development:
+    #     clientId: ${AUTH_OAUTH2_CLIENT_ID}
+    #     clientSecret: ${AUTH_OAUTH2_CLIENT_SECRET}
+    #     authorizationUrl: ${AUTH_OAUTH2_AUTH_URL}
+    #     tokenUrl: ${AUTH_OAUTH2_TOKEN_URL}
+        ###
+        # provide a list of scopes as needed for your OAuth2 Server:
+        #
+        # scope: saml-login-selector openid profile email
+    # oidc:
+    #   development:
+    #     metadataUrl: ${AUTH_OIDC_METADATA_URL}
+    #     clientId: ${AUTH_OIDC_CLIENT_ID}
+    #     clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
+    #     authorizationUrl: ${AUTH_OIDC_AUTH_URL}
+    #     tokenUrl: ${AUTH_OIDC_TOKEN_URL}
+    #     tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG}
+    # auth0:
+    #   development:
+    #     clientId: ${AUTH_AUTH0_CLIENT_ID}
+    #     clientSecret: ${AUTH_AUTH0_CLIENT_SECRET}
+    #     domain: ${AUTH_AUTH0_DOMAIN}
+    # microsoft:
+    #   development:
+    #     clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+    #     clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
+    #     tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+    # onelogin:
+    #   development:
+    #     clientId: ${AUTH_ONELOGIN_CLIENT_ID}
+    #     clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
+    #     issuer: ${AUTH_ONELOGIN_ISSUER}
     
 costInsights:
   engineerCost: 200000

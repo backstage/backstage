@@ -14,10 +14,9 @@ services:
     build:
       context: .
       dockerfile: packages/backend/Dockerfile
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
     ports:
       - "7000:7000"
+    depends_on:
+      - db
