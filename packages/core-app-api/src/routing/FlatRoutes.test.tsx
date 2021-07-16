@@ -100,7 +100,6 @@ describe('FlatRoutes', () => {
       return <>Outlet: {useOutlet()}</>;
     };
 
-    // The '/*' suffixes here are intentional and will be ignored by FlatRoutes
     const routes = (
       <>
         <Route path="/a" element={<MyPage />}>
@@ -112,11 +111,15 @@ describe('FlatRoutes', () => {
         <Route path="/b" element={<MyPage />}>
           b
         </Route>
+        <Route path="/" element={<MyPage />}>
+          c
+        </Route>
       </>
     );
     const renderRoute = makeRouteRenderer(<FlatRoutes>{routes}</FlatRoutes>);
     expect(renderRoute('/a').getByText('Outlet: a')).toBeInTheDocument();
     expect(renderRoute('/a/b').getByText('Outlet: a-b')).toBeInTheDocument();
     expect(renderRoute('/b').getByText('Outlet: b')).toBeInTheDocument();
+    expect(renderRoute('/').getByText('Outlet: c')).toBeInTheDocument();
   });
 });

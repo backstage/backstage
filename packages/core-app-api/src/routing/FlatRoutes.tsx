@@ -49,8 +49,10 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
             element: child,
             children: child.props.children
               ? [
+                  // These are the children of each route, which we all add in under a catch-all
+                  // subroute in order to make them available to `useOutlet`
                   {
-                    path: '/*',
+                    path: path === '/' ? '/' : '/*', // The root path must require an exact match
                     element: child.props.children,
                   },
                 ]
