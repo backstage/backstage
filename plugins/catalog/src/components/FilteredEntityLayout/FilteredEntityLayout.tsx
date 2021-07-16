@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export { FilteredTableLayout } from './FilteredTableLayout';
-export { FilterContainer } from './FilterContainer';
-export { TableContainer } from './TableContainer';
+import { Grid } from '@material-ui/core';
+import React, { PropsWithChildren } from 'react';
+
+export const FilteredEntityLayout = ({ children }: PropsWithChildren<{}>) => (
+  <Grid container style={{ position: 'relative' }}>
+    {children}
+  </Grid>
+);

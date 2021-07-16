@@ -40,5 +40,4 @@ export {
   EntitySystemDiagramCard,
 } from './plugin';
 export * from './components/CatalogTable/columns';
-export * from './components/CatalogFilter';
-export * from './components/FilteredTableLayout';
+export * from './components/FilteredEntityLayout';

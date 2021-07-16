@@ -57,7 +57,7 @@ const useStyles = (props: ContentHeaderProps) =>
     },
   }));
 
-type DefaultTitleProps = {
+type ContentHeaderTitleProps = {
   title?: string;
   className?: string;
 };
@@ -65,7 +65,7 @@ type DefaultTitleProps = {
 const ContentHeaderTitle = ({
   title = 'Unknown page',
   className,
-}: DefaultTitleProps) => (
+}: ContentHeaderTitleProps) => (
   <Typography
     variant="h4"
     component="h2"
@@ -77,7 +77,7 @@ const ContentHeaderTitle = ({
 );
 
 type ContentHeaderProps = {
-  title?: DefaultTitleProps['title'];
+  title?: ContentHeaderTitleProps['title'];
   titleComponent?: ComponentType;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';

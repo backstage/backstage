@@ -25,8 +25,8 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogTable,
   CatalogTableRow,
-  FilteredTableLayout,
-  TableContainer,
+  FilteredEntityLayout,
+  EntityListContainer,
   FilterContainer,
 } from '@backstage/plugin-catalog';
 import {
@@ -54,11 +54,8 @@ const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTagsColumn(),
 ];
 
-interface IApiExplorerePageFilterProps {
+type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
-}
-
-export type ApiExplorerPageProps = IApiExplorerePageFilterProps & {
   columns?: TableColumn<CatalogTableRow>[];
 };
 
@@ -94,7 +91,7 @@ export const ApiExplorerPage = ({
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <EntityListProvider>
-          <FilteredTableLayout>
+          <FilteredEntityLayout>
             <FilterContainer>
               <EntityKindPicker initialFilter="api" hidden />
               <EntityTypePicker />
@@ -103,10 +100,10 @@ export const ApiExplorerPage = ({
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </FilterContainer>
-            <TableContainer>
+            <EntityListContainer>
               <CatalogTable columns={columns || defaultColumns} />
-            </TableContainer>
-          </FilteredTableLayout>
+            </EntityListContainer>
+          </FilteredEntityLayout>
         </EntityListProvider>
       </Content>
     </PageWithHeader>

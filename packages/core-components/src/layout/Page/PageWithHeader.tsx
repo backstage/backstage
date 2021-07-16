@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import { Header } from '../Header';
-import { Page } from './';
+import { Page } from './Page';
 
-interface IProps extends React.ComponentProps<typeof Header> {
+type ThemedHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
-}
+};
 
 export const PageWithHeader = ({
   themeId,
   children,
   ...props
-}: React.PropsWithChildren<IProps>) => (
+}: React.PropsWithChildren<ThemedHeaderProps>) => (
   <Page themeId={themeId}>
     <Header {...props} />
     {children}

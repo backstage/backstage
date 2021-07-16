@@ -38,10 +38,10 @@ import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
 import { CreateComponentButton } from '../CreateComponentButton/CreateComponentButton';
 import {
-  FilteredTableLayout,
-  TableContainer,
+  FilteredEntityLayout,
+  EntityListContainer,
   FilterContainer,
-} from '../FilteredTableLayout';
+} from '../FilteredEntityLayout';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -65,7 +65,7 @@ export const CatalogPage = ({
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <EntityListProvider>
-          <FilteredTableLayout>
+          <FilteredEntityLayout>
             <FilterContainer>
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
@@ -74,10 +74,10 @@ export const CatalogPage = ({
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </FilterContainer>
-            <TableContainer>
+            <EntityListContainer>
               <CatalogTable columns={columns} actions={actions} />
-            </TableContainer>
-          </FilteredTableLayout>
+            </EntityListContainer>
+          </FilteredEntityLayout>
         </EntityListProvider>
       </Content>
     </PageWithHeader>

@@ -84,9 +84,6 @@ export type EntityListContextProps<
    */
   queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
 
-  showFiltersDrawer: boolean;
-  toggleFiltersDrawer: (showFiltersDrawer: boolean) => void;
-
   loading: boolean;
   error?: Error;
 };
@@ -111,8 +108,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
   );
-  // Show
-  const [showFiltersDrawer, toggleFiltersDrawer] = useState<boolean>(false);
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>({
     appliedFilters: {} as EntityFilters,
     entities: [],
@@ -208,8 +203,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         updateFilters,
         queryParameters: outputState.queryParameters,
         loading,
-        showFiltersDrawer,
-        toggleFiltersDrawer,
         error,
       }}
     >

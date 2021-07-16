@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import { Grid } from '@material-ui/core';
-import React from 'react';
-
-export const TableContainer = ({ children }: React.PropsWithChildren<{}>) => (
-  <Grid item xs={12} lg={10}>
-    {children}
-  </Grid>
-);
+export { FilteredEntityLayout } from './FilteredEntityLayout';
+export { FilterContainer } from './FilterContainer';
+export { EntityListContainer } from './EntityListContainer';
