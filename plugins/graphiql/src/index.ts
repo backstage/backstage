@@ -15,7 +15,7 @@
  */
 
 import GraphiQLIconComponent from './assets/graphiql.icon.svg';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-api';
 
 export {
   graphiqlPlugin,
