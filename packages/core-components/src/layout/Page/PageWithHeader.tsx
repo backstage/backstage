@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps } from 'react';
+import React, { PropsWithChildren, ComponentProps } from 'react';
 
 import { Header } from '../Header';
 import { Page } from './Page';
 
-type ThemedHeaderProps = ComponentProps<typeof Header> & {
+export type ThemedHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
 };
 
@@ -27,7 +27,7 @@ export const PageWithHeader = ({
   themeId,
   children,
   ...props
-}: React.PropsWithChildren<ThemedHeaderProps>) => (
+}: PropsWithChildren<ThemedHeaderProps>) => (
   <Page themeId={themeId}>
     <Header {...props} />
     {children}

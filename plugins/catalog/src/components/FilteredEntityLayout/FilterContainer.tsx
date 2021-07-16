@@ -20,6 +20,7 @@ import {
   Button,
   Drawer,
   Grid,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
@@ -57,7 +58,16 @@ export const FilterContainer = ({ children }: React.PropsWithChildren<{}>) => {
         keepMounted
         variant="temporary"
       >
-        <Box m={2}>{children}</Box>
+        <Box m={2}>
+          <Typography
+            variant="h6"
+            component="h2"
+            style={{ marginBottom: theme.spacing(1) }}
+          >
+            Filters
+          </Typography>
+          {children}
+        </Box>
       </Drawer>
     </>
   ) : (

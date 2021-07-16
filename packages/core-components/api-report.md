@@ -1202,7 +1202,7 @@ export const Page: ({
   children,
 }: PropsWithChildren<Props_21>) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "IProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ThemedHeaderProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PageWithHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1210,7 +1210,7 @@ export const PageWithHeader: ({
   themeId,
   children,
   ...props
-}: React_2.PropsWithChildren<IProps>) => JSX.Element;
+}: React_2.PropsWithChildren<ThemedHeaderProps>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Progress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
