@@ -18,7 +18,10 @@
 import 'os';
 
 Cypress.Commands.add('loginAsGuest', () => {
-  window.localStorage.setItem('@backstage/core:SignInPage:provider', 'guest');
+  cy.visit('/', {
+    onLoad: (win: Window) =>
+      win.localStorage.setItem('@backstage/core:SignInPage:provider', 'guest'),
+  });
 });
 
 Cypress.Commands.add('getTechDocsShadowRoot', () => {
