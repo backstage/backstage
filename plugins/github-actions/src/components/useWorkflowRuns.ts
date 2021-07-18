@@ -73,7 +73,7 @@ export function useWorkflowRuns({
     // Transformation here
     return workflowRunsData.workflow_runs.map(run => ({
       workflowName: run.name,
-      message: run.head_commit.message,
+      message: run.head_commit?.message,
       id: `${run.id}`,
       onReRunClick: async () => {
         try {
@@ -90,10 +90,10 @@ export function useWorkflowRuns({
       source: {
         branchName: run.head_branch,
         commit: {
-          hash: run.head_commit.id,
+          hash: run.head_commit?.id,
           url: run.head_repository?.branches_url?.replace(
             '{/branch}',
-            run.head_branch,
+            run.head_branch ? `?ref=${run.head_branch}` : '',
           ),
         },
       },
