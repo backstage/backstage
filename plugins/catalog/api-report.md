@@ -160,6 +160,11 @@ export type CatalogTableRow = {
   };
 };
 
+// Warning: (ae-missing-release-tag) "CreateComponentButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CreateComponentButton: () => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "createMetadataDescriptionColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

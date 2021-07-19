@@ -27,7 +27,11 @@ default catalog page and create a component in a
 ```tsx
 // imports, etc omitted for brevity. for full source see:
 // https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx
-export const CustomCatalogPage = () => {
+export const CustomCatalogPage = ({
+  columns,
+  actions,
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
@@ -139,23 +143,27 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CustomCatalogPage`:
 
 ```diff
-export const CustomCatalogPage = () => {
+export const CustomCatalogPage = ({
+  columns,
+  actions,
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   return (
     ...
-          <EntityListProvider>
-            <FilteredEntityLayout>
-              <FilterContainer>
-                <EntityKindPicker initialFilter="component" hidden />
-                <EntityTypePicker />
-                <UserListPicker />
-+               <EntitySecurityTierPicker />
-                <EntityTagPicker />
-              <FilterContainer>
-              <EntityListContainer>
-                <CatalogTable />
-              </EntityListContainer>
-            </FilteredEntityLayout>
-          </EntityListProvider>
+        <EntityListProvider>
+          <FilteredEntityLayout>
+            <FilterContainer>
+              <EntityKindPicker initialFilter="component" hidden />
+              <EntityTypePicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
++             <EntitySecurityTierPicker />
+              <EntityTagPicker />
+            <FilterContainer>
+            <EntityListContainer>
+              <CatalogTable columns={columns} actions={actions} />
+            </EntityListContainer>
+          </FilteredEntityLayout>
+        </EntityListProvider>
     ...
 };
 ```

@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, Fragment, PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
@@ -98,7 +98,7 @@ export const ContentHeader = ({
     <ContentHeaderTitle title={title} className={classes.title} />
   );
   return (
-    <Fragment>
+    <>
       <Helmet title={title} />
       <div className={classes.container}>
         <div className={classes.leftItemsBox}>
@@ -111,6 +111,6 @@ export const ContentHeader = ({
         </div>
         <div className={classes.rightItemsBox}>{children}</div>
       </div>
-    </Fragment>
+    </>
   );
 };

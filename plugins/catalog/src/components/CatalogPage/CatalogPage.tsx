@@ -36,7 +36,7 @@ import {
 import React from 'react';
 import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
-import { CreateComponentButton } from '../CreateComponentButton/CreateComponentButton';
+import { CreateComponentButton } from '../CreateComponentButton';
 import {
   FilteredEntityLayout,
   EntityListContainer,
