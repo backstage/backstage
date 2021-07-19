@@ -44,7 +44,6 @@ export const FilterContainer = ({ children }: PropsWithChildren<{}>) => {
         Filters
       </Button>
       <Drawer
-        data-testid="entity-filters-drawer"
         open={filterDrawerOpen}
         onClose={() => setFilterDrawerOpen(false)}
         anchor="left"
@@ -65,7 +64,7 @@ export const FilterContainer = ({ children }: PropsWithChildren<{}>) => {
       </Drawer>
     </>
   ) : (
-    <Grid data-testid="entity-filters-grid" item lg={2}>
+    <Grid item lg={2}>
       {children}
     </Grid>
   );
