@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-remove repo restriction from github creds provider
+Remove repo restriction from GitHub credentials provider
