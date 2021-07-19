@@ -31,6 +31,7 @@ import {
   AuthProviderFactory,
   SignInResolver,
   AuthHandler,
+  ProfileInfo,
 } from '../types';
 import {
   OAuthAdapter,
@@ -67,8 +68,8 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 
   let id = result.fullProfile.id;
 
-  if (profile.email) {
-    id = profile.email.split('@')[0];
+  if (!profile.username && !profile.email) {
+    throw new Error('Profile contained no username or email');
   }
 
   const token = await ctx.tokenIssuer.issueToken({
@@ -91,17 +92,17 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 ) => {
   const { profile } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
+  if (!profile.username && !profile.email) {
+    throw new Error('Profile contained no username or email');
   }
 
-  const userId = profile.email.split('@')[0];
+  const id = extractUserId(profile);
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: id, ent: [`user:default/${id}`] },
   });
 
-  return { id: userId, token };
+  return { id, token };
 };
 
 export class GitlabAuthProvider implements OAuthHandlers {
