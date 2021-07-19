@@ -24,7 +24,7 @@ export type Step = {
 };
 
 export type Job = {
-  html_url: string;
+  html_url: string | null;
   status: string;
   conclusion: string;
   started_at: string;

@@ -106,7 +106,7 @@ const JobListItem = ({
   entity,
 }: {
   job: Job;
-  className: string | undefined;
+  className: string;
   entity: Entity;
 }) => {
   const classes = useStyles();

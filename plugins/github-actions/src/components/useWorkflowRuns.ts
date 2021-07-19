@@ -19,7 +19,7 @@ import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export type WorkflowRun = {
-  workflowName: string;
+  workflowName: string | null;
   id: string;
   message: string;
   url?: string;
