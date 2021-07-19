@@ -32,27 +32,21 @@ export const FilterContainer = ({ children }: PropsWithChildren<{}>) => {
     theme.breakpoints.down('md'),
   );
   const theme = useTheme<BackstageTheme>();
-  const [showFiltersDrawer, toggleFiltersDrawer] = useState<boolean>(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
 
   return isMidSizeScreen ? (
     <>
       <Button
         style={{ marginTop: theme.spacing(1), marginLeft: theme.spacing(1) }}
-        onClick={() => toggleFiltersDrawer(!showFiltersDrawer)}
+        onClick={() => setFilterDrawerOpen(true)}
+        startIcon={<FilterListIcon />}
       >
-        <Box display="flex" alignItems="center">
-          <FilterListIcon style={{ marginRight: theme.spacing(1) }} />
-          Filters
-        </Box>
+        Filters
       </Button>
       <Drawer
-        title="Filters"
         data-testid="entity-filters-drawer"
-        open={showFiltersDrawer}
-        onClose={() => {
-          toggleFiltersDrawer(false);
-        }}
-        elevation={0}
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
         anchor="left"
         disableAutoFocus
         keepMounted
