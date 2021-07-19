@@ -37,6 +37,7 @@ import {
 import {
   AnyApiFactory,
   ApiFactory,
+  AppTheme,
   attachComponentData,
   configApiRef,
   createApiFactory,
@@ -79,6 +80,7 @@ class DevAppBuilder {
   private readonly sidebarItems = new Array<JSX.Element>();
 
   private defaultPage?: string;
+  private themes?: Array<AppTheme>;
 
   /**
    * Register one or more plugins to render in the dev app
@@ -145,6 +147,14 @@ class DevAppBuilder {
   }
 
   /**
+   * Adds an array of themes to overide the default theme.
+   */
+  addThemes(themes: AppTheme[]) {
+    this.themes = themes;
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
@@ -166,6 +176,7 @@ class DevAppBuilder {
     const app = createApp({
       apis,
       plugins: this.plugins,
+      themes: this.themes,
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
