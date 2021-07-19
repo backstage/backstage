@@ -78,7 +78,7 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/classnames": "^2.2.9",
     "@types/d3-selection": "^2.0.0",
-    "@types/d3-shape": "^2.0.0",
+    "@types/d3-shape": "^3.0.1",
     "@types/d3-zoom": "^2.0.0",
     "@types/google-protobuf": "^3.7.2",
     "@types/jest": "^26.0.7",
