@@ -30,7 +30,7 @@ export const makeProfileInfo = (
   profile: passport.Profile,
   idToken?: string,
 ): ProfileInfo => {
-  let { displayName } = profile;
+  let { displayName, username } = profile;
 
   let email: string | undefined = undefined;
   if (profile.emails && profile.emails.length > 0) {
@@ -56,6 +56,10 @@ export const makeProfileInfo = (
       if (!displayName && decoded.name) {
         displayName = decoded.name;
       }
+
+      if (!username && decoded.username) {
+        username = decoded.username;
+      }
     } catch (e) {
       throw new Error(`Failed to parse id token and get profile info, ${e}`);
     }
@@ -65,6 +69,7 @@ export const makeProfileInfo = (
     email,
     picture,
     displayName,
+    username,
   };
 };
 
