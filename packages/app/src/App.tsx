@@ -18,8 +18,10 @@ import { createApp, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
+  SignInProviderConfig,
   SignInPage,
 } from '@backstage/core-components';
+import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -54,8 +56,14 @@ import { apis } from './apis';
 import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
-import { providers } from './identityProviders';
 import * as plugins from './plugins';
+
+const oktaProvider: SignInProviderConfig = {
+  id: 'okta-auth-provider',
+  title: 'Okta',
+  message: 'Sign in using Okta',
+  apiRef: oktaAuthApiRef,
+};
 
 const app = createApp({
   apis,
@@ -70,7 +78,7 @@ const app = createApp({
       return (
         <SignInPage
           {...props}
-          providers={['guest', 'custom', ...providers]}
+          providers={[oktaProvider]}
           title="Select a sign-in method"
           align="center"
         />
