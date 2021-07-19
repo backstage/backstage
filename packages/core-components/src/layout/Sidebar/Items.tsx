@@ -97,6 +97,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       fontWeight: 'bold',
       fontSize: theme.typography.fontSize,
     },
+    searchFieldHTMLInput: {
+      padding: '15px 0 17px',
+    },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
     },
@@ -270,6 +273,9 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
           InputProps={{
             disableUnderline: true,
             className: classes.searchField,
+          }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
           }}
         />
       </SidebarItem>
