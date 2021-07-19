@@ -58,39 +58,15 @@ type PrivateInfo = {
 export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
   signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<OAuthResult>;
+  authHandler?: AuthHandler<OAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
 };
 
-const extractUserId = (profile: ProfileInfo): string => {
+export const extractGitLabUserId = (profile: ProfileInfo): string => {
   return profile.username || (profile.email?.split('@')[0] as string);
 };
-
-function transformResult(result: OAuthResult): OAuthResult {
-  const { fullProfile, ...authResult } = result;
-
-  fullProfile.photos = [
-    ...(fullProfile.photos ?? []),
-    ...((fullProfile as FullProfile).avatarUrl
-      ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
-      : []),
-  ];
-
-  const profile = makeProfileInfo(fullProfile);
-
-  if (!profile.username && !profile.email) {
-    throw new Error('Profile contained no username or email');
-  }
-
-  fullProfile.id = extractUserId(profile);
-
-  return {
-    ...authResult,
-    fullProfile,
-  };
-}
 
 export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   info,
@@ -102,7 +78,7 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
     throw new Error('Profile contained no username or email');
   }
 
-  const id = extractUserId(profile);
+  const id = extractGitLabUserId(profile);
 
   const token = await ctx.tokenIssuer.issueToken({
     claims: { sub: id, ent: [`user:default/${id}`] },
@@ -110,6 +86,13 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 
   return { id, token };
 };
+
+export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
+  fullProfile,
+  params,
+}) => ({
+  profile: makeProfileInfo(fullProfile, params.id_token),
+});
 
 export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
@@ -120,11 +103,11 @@ export class GitlabAuthProvider implements OAuthHandlers {
   private readonly logger: Logger;
 
   constructor(options: GitlabAuthProviderOptions) {
-    this.signInResolver = options.signInResolver;
-    this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.logger = options.logger;
     this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
+    this.tokenIssuer = options.tokenIssuer;
+    this.authHandler = options.authHandler || gitlabDefaultAuthHandler;
+    this.signInResolver = this.createSignInResolverFn(options);
 
     this._strategy = new GitlabStrategy(
       {
@@ -197,7 +180,8 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(transformResult(result));
+    const transformedResult = this.transformResult(result);
+    const { profile } = await this.authHandler(transformedResult);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -224,6 +208,46 @@ export class GitlabAuthProvider implements OAuthHandlers {
     }
 
     return response;
+  }
+
+  private createSignInResolverFn({
+    signInResolver,
+    catalogIdentityClient,
+    tokenIssuer,
+    logger,
+  }: GitlabAuthProviderOptions): SignInResolver<OAuthResult> {
+    const resolver = signInResolver || gitlabDefaultSignInResolver;
+
+    return info =>
+      resolver(info, {
+        catalogIdentityClient,
+        tokenIssuer,
+        logger,
+      });
+  }
+
+  private transformResult(result: OAuthResult): OAuthResult {
+    const { fullProfile, ...authResult } = result;
+
+    fullProfile.photos = [
+      ...(fullProfile.photos ?? []),
+      ...((fullProfile as FullProfile).avatarUrl
+        ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
+        : []),
+    ];
+
+    const profile = makeProfileInfo(fullProfile);
+
+    if (!profile.username && !profile.email) {
+      throw new Error('Profile contained no username or email');
+    }
+
+    fullProfile.id = extractGitLabUserId(profile);
+
+    return {
+      ...authResult,
+      fullProfile,
+    };
   }
 }
 
@@ -271,29 +295,13 @@ export const createGitlabProvider = (
         tokenIssuer,
       });
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
-
-      const signInResolverFn =
-        options?.signIn?.resolver ?? gitlabDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new GitlabAuthProvider({
         clientId,
         clientSecret,
         callbackUrl,
         baseUrl,
-        authHandler,
-        signInResolver,
+        authHandler: options?.authHandler,
+        signInResolver: options?.signIn?.resolver,
         catalogIdentityClient,
         logger,
         tokenIssuer,
