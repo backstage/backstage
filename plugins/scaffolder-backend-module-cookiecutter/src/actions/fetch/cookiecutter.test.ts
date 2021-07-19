@@ -17,9 +17,12 @@ const runCommand = jest.fn();
 const commandExists = jest.fn();
 const fetchContents = jest.fn();
 
-jest.mock('./helpers', () => ({ fetchContents }));
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents,
+  runCommand,
+}));
 jest.mock('command-exists', () => commandExists);
-jest.mock('../helpers', () => ({ runCommand }));
 
 import {
   getVoidLogger,
@@ -33,7 +36,7 @@ import os from 'os';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
-import { ActionContext } from '../../types';
+import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(

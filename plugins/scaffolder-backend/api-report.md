@@ -8,6 +8,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
+import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import express from 'express';
 import { JsonObject } from '@backstage/config';
@@ -78,14 +79,7 @@ export function createCatalogWriteAction(): TemplateAction<any>;
 // @public
 export function createDebugLogAction(): TemplateAction<any>;
 
-// Warning: (ae-missing-release-tag) "createFetchCookiecutterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function createFetchCookiecutterAction(options: {
-  reader: UrlReader;
-  integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
-}): TemplateAction<any>;
+export { createFetchCookiecutterAction };
 
 // Warning: (ae-missing-release-tag) "createFetchPlainAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
