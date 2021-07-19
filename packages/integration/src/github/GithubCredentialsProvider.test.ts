@@ -133,7 +133,7 @@ describe('GithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
-  it('should fail to issue tokens for an organization when the app is installed for a single repo', async () => {
+  it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
         etag: '123',
@@ -159,8 +159,8 @@ describe('GithubCredentialsProvider tests', () => {
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/backstage',
     });
-
-    expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
+    const expectedToken = 'secret_token';
+    expect(headers).toEqual({ Authorization: `Bearer ${expectedToken}` });
     expect(token).toEqual('secret_token');
   });
 
