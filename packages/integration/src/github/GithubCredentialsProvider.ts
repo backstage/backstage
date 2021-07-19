@@ -23,7 +23,6 @@ import { DateTime } from 'luxon';
 type InstallationData = {
   installationId: number;
   suspended: boolean;
-  repositorySelection: 'selected' | 'all';
 };
 
 class Cache {
@@ -85,33 +84,21 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string }> {
-    const {
-      installationId,
-      suspended,
-      repositorySelection,
-    } = await this.getInstallationData(owner);
+    const { installationId, suspended } = await this.getInstallationData(owner);
     if (suspended) {
       throw new Error(
-        `The GitHub application for ${[owner, repo]
+        `The GitHub application for ${[owner]
           .filter(Boolean)
           .join('/')} is suspended`,
       );
     }
-    if (repositorySelection !== 'all' && !repo) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization must be installed for the entire organization to be able to issue credentials without a specified repository.`,
-      );
-    }
 
-    const cacheKey = !repo ? owner : `${owner}/${repo}`;
-    const repositories = repositorySelection !== 'all' ? [repo!] : undefined;
+    const cacheKey = repo ? `${owner}/${repo}` : owner;
 
-    // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         headers: HEADERS,
-        repositories,
       });
       return {
         token: result.data.token,
@@ -135,7 +122,6 @@ class GithubAppManager {
       return {
         installationId: installation.id,
         suspended: Boolean(installation.suspended_by),
-        repositorySelection: installation.repository_selection,
       };
     }
     const notFoundError = new Error(

@@ -156,13 +156,12 @@ describe('GithubCredentialsProvider tests', () => {
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
-    await expect(
-      github.getCredentials({
-        url: 'https://github.com/backstage',
-      }),
-    ).rejects.toThrow(
-      'The Backstage GitHub application used in the backstage organization must be installed for the entire organization to be able to issue credentials without a specified repository.',
-    );
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+
+    expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
+    expect(token).toEqual('secret_token');
   });
 
   it('should throw if the app is suspended', async () => {
