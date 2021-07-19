@@ -31,6 +31,7 @@ import {
   AuthProviderFactory,
   SignInResolver,
   AuthHandler,
+  ProfileInfo,
 } from '../types';
 import {
   OAuthAdapter,
@@ -63,24 +64,27 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   logger: Logger;
 };
 
+const extractUserId = (profile: ProfileInfo): string => {
+  return profile.username || (profile.email?.split('@')[0] as string);
+};
+
 function transformResult(result: OAuthResult): OAuthResult {
   const { fullProfile, ...authResult } = result;
 
-  const profile = makeProfileInfo({
-    ...fullProfile,
-    photos: [
-      ...(fullProfile.photos ?? []),
-      ...((fullProfile as FullProfile).avatarUrl
-        ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
-        : []),
-    ],
-  });
+  fullProfile.photos = [
+    ...(fullProfile.photos ?? []),
+    ...((fullProfile as FullProfile).avatarUrl
+      ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
+      : []),
+  ];
 
-  let id = fullProfile.id;
+  const profile = makeProfileInfo(fullProfile);
 
-  if (profile.email) {
-    id = profile.email.split('@')[0];
+  if (!profile.username && !profile.email) {
+    throw new Error('Profile contained no username or email');
   }
+
+  fullProfile.id = extractUserId(profile);
 
   return {
     ...authResult,
@@ -94,17 +98,17 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 ) => {
   const { profile } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
+  if (!profile.username && !profile.email) {
+    throw new Error('Profile contained no username or email');
   }
 
-  const userId = profile.email.split('@')[0];
+  const id = extractUserId(profile);
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: id, ent: [`user:default/${id}`] },
   });
 
-  return { id: userId, token };
+  return { id, token };
 };
 
 export class GitlabAuthProvider implements OAuthHandlers {
