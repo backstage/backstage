@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime, Duration } from 'luxon';
-import { BuildStatus } from '../api';
+import React from 'react';
+import { ErrorTrendComponent } from './ErrorTrendComponent';
+import { renderInTestApp } from '@backstage/test-utils';
+import { BuildCount } from '../../api';
 
-export const formatDuration = (seconds: number) =>
-  Duration.fromObject({ seconds: Math.round(seconds) }).toISOTime({
-    suppressMilliseconds: true,
+describe('ErrorTrendComponent', () => {
+  it('should render', async () => {
+    const buildCounts: BuildCount[] = [
+      { day: '2021-01-01', errors: 10, builds: 100 },
+    ];
+    const rendered = await renderInTestApp(
+      <ErrorTrendComponent buildCounts={buildCounts} />,
+    );
+    expect(rendered.findAllByText('Error Rate')).toBeTruthy();
   });
-
-export const formatTime = (timestamp: string) => {
-  return DateTime.fromISO(timestamp).toLocaleString(
-    DateTime.DATETIME_SHORT_WITH_SECONDS,
-  );
-};
-
-export const formatPercentage = (number: number) => {
-  return `${Math.round(number * 100)} %`;
-};
-
-export const formatStatus = (status: BuildStatus) =>
-  status[0].toUpperCase() + status.slice(1);
+});

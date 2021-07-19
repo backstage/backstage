@@ -14,59 +14,47 @@
  * limitations under the License.
  */
 import React from 'react';
+import { OverviewTrendsComponent } from './OverviewTrendsComponent';
 import { renderInTestApp } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { mockUserId, createMockXcmetricsApi } from '../../test-utils';
-import { OverviewComponent } from './OverviewComponent';
+import { createMockXcmetricsApi } from '../../test-utils';
 
-jest.mock('../OverviewTrendsComponent', () => ({
-  OverviewTrendsComponent: () => 'OverviewTrendsComponent',
-}));
-
-jest.mock('../StatusMatrixComponent', () => ({
-  StatusMatrixComponent: () => 'StatusMatrixComponent',
-}));
-
-describe('OverviewComponent', () => {
+describe('OverviewTrendsComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
       >
-        <OverviewComponent />
+        <OverviewTrendsComponent days={14} />
       </ApiProvider>,
     );
-
-    expect(rendered.getByText('XCMetrics Dashboard')).toBeInTheDocument();
-    expect(rendered.getByText(mockUserId)).toBeInTheDocument();
+    expect(rendered.getByText('Last 14 Days')).toBeInTheDocument();
   });
 
-  it('should render an empty state when no builds exist', async () => {
+  it('should render empty state', async () => {
     const api = createMockXcmetricsApi();
-    api.getBuilds = jest.fn().mockResolvedValue([]);
+    api.getBuildCounts = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
-        <OverviewComponent />
+        <OverviewTrendsComponent days={14} />
       </ApiProvider>,
     );
-
-    expect(rendered.getByText('No builds to show')).toBeInTheDocument();
+    expect(rendered.getByText('No Trends Available')).toBeInTheDocument();
   });
 
   it('should show an error when API not responding', async () => {
     const api = createMockXcmetricsApi();
     const errorMessage = 'MockErrorMessage';
 
-    api.getBuilds = jest.fn().mockRejectedValue({ message: errorMessage });
+    api.getBuildCounts = jest.fn().mockRejectedValue({ message: errorMessage });
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
-        <OverviewComponent />
+        <OverviewTrendsComponent days={14} />
       </ApiProvider>,
     );
-
     expect(rendered.getByText(errorMessage)).toBeInTheDocument();
   });
 });

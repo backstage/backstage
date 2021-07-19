@@ -19,31 +19,29 @@ import { BuildCount } from '../../api';
 import { Typography, useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-const TRENDLINE_TITLE = 'Error Rate';
+const TRENDLINE_TITLE = 'Build Count';
 
-interface ErrorTrendProps {
+interface BuildTrendProps {
   buildCounts: BuildCount[];
 }
 
-export const ErrorTrendComponent = ({ buildCounts }: ErrorTrendProps) => {
+export const BuildTrendComponent = ({ buildCounts }: BuildTrendProps) => {
   const theme = useTheme<BackstageTheme>();
 
   let max = 0;
-  const averageErrors = buildCounts.map(counts => {
-    if (counts.builds === 0) return 0;
-    const dayAverage = counts.errors / counts.builds;
-    max = Math.max(max, dayAverage);
-    return dayAverage;
+  const builds = buildCounts.map(counts => {
+    max = Math.max(max, counts.builds);
+    return counts.builds;
   });
 
   return (
     <>
       <Typography variant="overline">{TRENDLINE_TITLE}</Typography>
       <TrendLine
-        data={averageErrors}
+        data={builds}
         title={TRENDLINE_TITLE}
         max={max}
-        color={theme.palette.status.warning}
+        color={theme.palette.primary.main}
       />
     </>
   );

@@ -19,7 +19,7 @@ export const mockUserId = 'user_id';
 export const mockBuildId = 'build_id';
 export const mockStatus = 'succeeded';
 
-export const mockXcmetricsApi: jest.Mocked<XcmetricsApi> = {
+export const createMockXcmetricsApi = (): jest.Mocked<XcmetricsApi> => ({
   getBuildStatuses: jest
     .fn()
     .mockResolvedValue([{ id: mockBuildId, status: mockStatus }]),
@@ -40,5 +40,8 @@ export const mockXcmetricsApi: jest.Mocked<XcmetricsApi> = {
       schema: 'AppSchema',
     },
   ]),
-  getBuildCounts: jest.fn(),
-};
+  getBuildCounts: jest.fn().mockResolvedValue([
+    { day: '2021-07-10', builds: 10, errors: 1 },
+    { day: '2021-07-09', builds: 11, errors: 2 },
+  ]),
+});

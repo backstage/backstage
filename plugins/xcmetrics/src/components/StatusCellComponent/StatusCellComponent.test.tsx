@@ -19,13 +19,19 @@ import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import userEvent from '@testing-library/user-event';
 import { StatusCellComponent } from './StatusCellComponent';
 import { xcmetricsApiRef } from '../../api';
-import { mockBuildId, mockStatus, mockXcmetricsApi } from '../../test-utils';
+import {
+  mockBuildId,
+  mockStatus,
+  createMockXcmetricsApi,
+} from '../../test-utils';
 import { formatStatus } from '../../utils';
 
 describe('StatusCellComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockXcmetricsApi)}>
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+      >
         <StatusCellComponent
           buildStatus={{ id: mockBuildId, buildStatus: mockStatus }}
           size={10}

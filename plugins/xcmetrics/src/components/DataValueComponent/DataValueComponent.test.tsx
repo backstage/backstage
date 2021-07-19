@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 import React from 'react';
+import { DataValueComponent, DataValueGridItem } from './DataValueComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { StatusMatrixComponent } from './StatusMatrixComponent';
-import { xcmetricsApiRef } from '../../api';
-import { mockBuildId, createMockXcmetricsApi } from '../../test-utils';
 
-describe('StatusMatrixComponent', () => {
+describe('DataValueComponent', () => {
   it('should render', async () => {
+    const field = 'Field';
+    const value = 'Value';
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
-      >
-        <StatusMatrixComponent />
-      </ApiProvider>,
+      <DataValueComponent field={field} value={value} />,
     );
+    expect(rendered.getByText(field)).toBeInTheDocument();
+    expect(rendered.getByText(value)).toBeInTheDocument();
+  });
 
-    const cell = rendered.getByTestId(mockBuildId);
-    expect(cell).toBeInTheDocument();
+  it('grid item should render', async () => {
+    const field = 'Field';
+    const value = 'Value';
+    const rendered = await renderInTestApp(
+      <DataValueGridItem field={field} value={value} />,
+    );
+    expect(rendered.getByText(field)).toBeInTheDocument();
+    expect(rendered.getByText(value)).toBeInTheDocument();
   });
 });

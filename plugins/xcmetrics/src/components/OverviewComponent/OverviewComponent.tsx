@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ReactChild } from 'react';
 import {
   ContentHeader,
   SupportButton,
@@ -31,33 +31,21 @@ import { Build, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { StatusMatrixComponent } from '../StatusMatrixComponent';
-import { formatDuration, formatStatus } from '../../utils';
-import { Chip, Grid, Typography } from '@material-ui/core';
-import { ErrorTrendComponent } from '../ErrorTrendComponent';
+import { formatTime } from '../../utils';
+import { Chip, Grid } from '@material-ui/core';
+import { OverviewTrendsComponent } from '../OverviewTrendsComponent';
 
-const Status = ({
-  status,
-  warningCount,
-}: {
-  status: BuildStatus;
-  warningCount: number;
-}) => {
-  const statusIcons = {
-    succeeded: <StatusOK />,
-    failed: <StatusError />,
-    stopped: <StatusWarning />,
-  };
-
-  return (
-    <>
-      {statusIcons[status]} {formatStatus(status)}
-      {warningCount > 0 && ` with ${warningCount} warning`}
-      {warningCount > 1 && 's'}
-    </>
-  );
+const STATUS_ICONS: { [key in BuildStatus]: ReactChild } = {
+  succeeded: <StatusOK />,
+  failed: <StatusError />,
+  stopped: <StatusWarning />,
 };
 
 const columns: TableColumn<Build>[] = [
+  {
+    field: 'buildStatus',
+    render: data => STATUS_ICONS[data.buildStatus],
+  },
   {
     title: 'Project',
     field: 'projectName',
@@ -67,22 +55,14 @@ const columns: TableColumn<Build>[] = [
     field: 'schema',
   },
   {
-    title: 'Duration',
-    field: 'duration',
-    type: 'time',
+    title: 'Started',
+    field: 'startedAt',
     searchable: false,
-    render: data => formatDuration(data.duration),
+    render: data => formatTime(data.startTimestamp),
   },
   {
     title: 'User',
     field: 'userid',
-  },
-  {
-    title: 'Status',
-    field: 'buildStatus',
-    render: data => (
-      <Status status={data.buildStatus} warningCount={data.warningCount} />
-    ),
   },
   {
     field: 'isCI',
@@ -121,7 +101,7 @@ export const OverviewComponent = () => {
         <SupportButton>Dashboard for XCMetrics</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="row">
-        <Grid item xs={7}>
+        <Grid item xs={12} md={8} lg={7} xl={9}>
           <Table
             options={{ paging: false, search: false }}
             data={builds}
@@ -134,10 +114,9 @@ export const OverviewComponent = () => {
             }
           />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={12} md={4} lg={5} xl={3}>
           <InfoCard>
-            <Typography variant="overline">Error Rate</Typography>
-            <ErrorTrendComponent days={14} />
+            <OverviewTrendsComponent days={14} />
           </InfoCard>
         </Grid>
       </Grid>
