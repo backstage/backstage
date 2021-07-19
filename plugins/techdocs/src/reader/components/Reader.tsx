@@ -52,6 +52,9 @@ type Props = {
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   message: {
+    // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
+    wordBreak: 'break-word',
     overflowWrap: 'anywhere',
   },
 }));

@@ -1,5 +1,4 @@
 ---
-'example-app': patch
 '@backstage/core-components': patch
 '@backstage/create-app': patch
 '@backstage/plugin-api-docs': patch
