@@ -66,7 +66,13 @@ export const StatusMatrixComponent = () => {
     >
       {loading &&
         [...new Array(cols * MAX_ROWS)].map((_, index) => {
-          return <div key={index} className={classes.cell} />;
+          return (
+            <StatusCellComponent
+              key={index}
+              size={CELL_SIZE}
+              spacing={CELL_MARGIN}
+            />
+          );
         })}
 
       {builds &&

@@ -16,19 +16,27 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { StatusMatrixComponent } from './StatusMatrixComponent';
+import userEvent from '@testing-library/user-event';
+import { StatusCellComponent } from './StatusCellComponent';
 import { xcmetricsApiRef } from '../../api';
-import { mockBuildId, mockXcmetricsApi } from '../../test-utils';
+import { mockBuildId, mockStatus, mockXcmetricsApi } from '../../test-utils';
+import { formatStatus } from '../../utils';
 
-describe('StatusMatrixComponent', () => {
+describe('StatusCellComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockXcmetricsApi)}>
-        <StatusMatrixComponent />
+        <StatusCellComponent
+          buildStatus={{ id: mockBuildId, buildStatus: mockStatus }}
+          size={10}
+          spacing={10}
+        />
       </ApiProvider>,
     );
 
-    const cell = rendered.getByTestId(mockBuildId);
-    expect(cell).toBeInTheDocument();
+    userEvent.hover(rendered.getByTestId(mockBuildId));
+    expect(
+      await rendered.findByText(formatStatus(mockStatus)),
+    ).toBeInTheDocument();
   });
 });

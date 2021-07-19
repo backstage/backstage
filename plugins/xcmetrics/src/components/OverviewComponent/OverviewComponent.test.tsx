@@ -16,28 +16,14 @@
 import React from 'react';
 import { OverviewComponent } from './OverviewComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { XcmetricsApi, xcmetricsApiRef } from '../../api';
+import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { mockUserId, mockXcmetricsApi } from '../../test-utils';
 
 describe('OverviewComponent', () => {
   it('should render', async () => {
-    const mockUserId = 'mockUser';
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue([
-        {
-          userid: mockUserId,
-          warningCount: 1,
-          duration: 123.45,
-          isCi: false,
-          projectName: 'App',
-          buildStatus: 'succeeded',
-          schema: 'AppSchema',
-        },
-      ]),
-    };
-
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockXcmetricsApi)}>
         <OverviewComponent />
       </ApiProvider>,
     );
@@ -47,12 +33,10 @@ describe('OverviewComponent', () => {
   });
 
   it('should render an empty state when no builds exist', async () => {
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue([]),
-    };
+    mockXcmetricsApi.getBuilds = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockXcmetricsApi)}>
         <OverviewComponent />
       </ApiProvider>,
     );
@@ -61,12 +45,13 @@ describe('OverviewComponent', () => {
 
   it('should show an error when API not responding', async () => {
     const errorMessage = 'MockErrorMessage';
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockRejectedValue({ message: errorMessage }),
-    };
+
+    mockXcmetricsApi.getBuilds = jest
+      .fn()
+      .mockRejectedValue({ message: errorMessage });
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockXcmetricsApi)}>
         <OverviewComponent />
       </ApiProvider>,
     );

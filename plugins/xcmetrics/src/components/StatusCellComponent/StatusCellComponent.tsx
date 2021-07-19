@@ -16,7 +16,7 @@
 import { makeStyles, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { BuildStatusResult, xcmetricsApiRef } from '../../api';
+import { BuildStatus, BuildStatusResult, xcmetricsApiRef } from '../../api';
 import { cn, formatDuration, formatStatus } from '../../utils';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
@@ -36,7 +36,7 @@ const TooltipContent = ({ buildId }: TooltipContentProps) => {
   if (error) {
     return <div>{error.message}</div>;
   } else if (loading || !build) {
-    return <Progress />;
+    return <Progress style={{ width: 100 }} />;
   }
 
   return (
@@ -60,10 +60,14 @@ const TooltipContent = ({ buildId }: TooltipContentProps) => {
 };
 
 interface StatusCellProps {
-  buildStatus: BuildStatusResult; // TODO: Rename this
+  buildStatus?: BuildStatusResult;
   size: number;
   spacing: number;
 }
+
+type StatusStyle = {
+  [key in BuildStatus]: any;
+};
 
 const useStyles = makeStyles<BackstageTheme, StatusCellProps>(theme => ({
   root: {
@@ -76,33 +80,43 @@ const useStyles = makeStyles<BackstageTheme, StatusCellProps>(theme => ({
       transform: 'scale(1.2)',
     },
   },
-  succeeded: {
-    backgroundColor:
-      theme.palette.type === 'light'
-        ? theme.palette.success.light
-        : theme.palette.success.main,
-  },
-  failed: {
-    backgroundColor: theme.palette.error[theme.palette.type],
-  },
-  stopped: {
-    backgroundColor: theme.palette.warning[theme.palette.type],
-  },
+  ...({
+    succeeded: {
+      backgroundColor:
+        theme.palette.type === 'light'
+          ? theme.palette.success.light
+          : theme.palette.success.main,
+    },
+  } as StatusStyle), // Make sure that key matches a status
+  ...({
+    failed: {
+      backgroundColor: theme.palette.error[theme.palette.type],
+    },
+  } as StatusStyle),
+  ...({
+    stopped: {
+      backgroundColor: theme.palette.warning[theme.palette.type],
+    },
+  } as StatusStyle),
 }));
 
 export const StatusCellComponent = (props: StatusCellProps) => {
   const classes = useStyles(props);
-  const { buildStatus: buildStatusItem } = props;
+  const { buildStatus } = props;
+
+  if (!buildStatus) {
+    return <div className={classes.root} />;
+  }
 
   return (
     <Tooltip
-      title={<TooltipContent buildId={buildStatusItem.id} />}
+      title={<TooltipContent buildId={buildStatus.id} />}
       enterNextDelay={500}
       arrow
     >
       <div
-        data-testid={buildStatusItem.id}
-        className={cn(classes.root, classes[buildStatusItem.buildStatus])}
+        data-testid={buildStatus.id}
+        className={cn(classes.root, classes[buildStatus.buildStatus])}
       />
     </Tooltip>
   );
