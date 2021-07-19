@@ -19,15 +19,22 @@ import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator
 import { get, def } from 'bdd-lazy-var';
 
 describe('AwsIamKubernetesAuthTranslator tests', () => {
-  let valid: boolean = true;
   let role: any = undefined;
-  let response: any = {
+  const credentials: any = {
+    accessKeyId: 'bloop',
+    secretAccessKey: 'omg-so-secret',
+    sessionToken: 'token',
+  };
+
+  let assumeResponse: any = {
     Credentials: {
-      AccessKeyId: 'bloop',
-      SecretAccessKey: 'omg-so-secret',
-      SessionToken: 'token',
+      AccessKeyId: credentials.accessKeyId,
+      SecretAccessKey: credentials.secretAccessKey,
+      SessionToken: credentials.sessionToken,
     },
   };
+
+  let credentialsResponse: any = new AWS.Credentials(credentials);
 
   AWSMock.setSDKInstance(AWS);
 
@@ -41,13 +48,15 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
 
   def('subject', () => {
     AWSMock.mock('STS', 'assumeRole', (_params: any, callback: Function) => {
-      callback(null, response);
+      callback(null, assumeResponse);
     });
 
     const authTranslator = new AwsIamKubernetesAuthTranslator();
+
     jest
-      .spyOn(authTranslator, 'validCredentials')
-      .mockImplementation(() => valid);
+      .spyOn(authTranslator, 'awsGetCredentials')
+      .mockImplementation(async () => credentialsResponse);
+
     return authTranslator.decorateClusterDetailsWithAuth({
       assumeRole: role,
       name: 'test-cluster',
@@ -86,16 +95,25 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
 
     describe('When the role is invalid', () => {
       it('returns the original AWS credentials', async () => {
-        response = undefined;
-
+        assumeResponse = undefined;
         await expect(get('subject')).rejects.toThrow(/Unable to assume role:/);
       });
     });
   });
 
-  it('throws when unable to get aws credentials', async () => {
-    valid = false;
-    AWS.config.credentials = undefined;
-    await expect(get('subject')).rejects.toThrow('No AWS credentials found');
+  describe('When no creds are returned from AWS', () => {
+    it('throws unable to get aws credentials', async () => {
+      credentialsResponse = new Error();
+      await expect(get('subject')).rejects.toThrow('No AWS credentials found.');
+    });
+  });
+
+  describe('When invalid creds are returned from AWS', () => {
+    it('throws credentials are invalid to get aws credentials', async () => {
+      credentialsResponse = new AWS.Credentials(credentialsResponse);
+      await expect(get('subject')).rejects.toThrow(
+        'Invalid AWS credentials found.',
+      );
+    });
   });
 });

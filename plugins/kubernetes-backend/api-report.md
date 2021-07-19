@@ -10,7 +10,7 @@ import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger as Logger_2 } from 'winston';
 
-// Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "AWSClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
@@ -18,6 +18,8 @@ export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
 }
 
+// Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ClusterDetails {
   // (undocumented)
@@ -59,11 +61,13 @@ export interface FetchResponseWrapper {
   responses: FetchResponse[];
 }
 
-// Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "GKEClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface GKEClusterDetails extends ClusterDetails {}
 
+// Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
   // (undocumented)
@@ -142,11 +146,13 @@ export interface RouterOptions {
   logger: Logger_2;
 }
 
-// Warning: (ae-missing-release-tag) "ServiceLocatorMethod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ServiceAccountClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
+// Warning: (ae-missing-release-tag) "ServiceLocatorMethod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
 

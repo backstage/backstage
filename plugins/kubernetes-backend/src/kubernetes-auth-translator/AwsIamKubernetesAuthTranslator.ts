@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import AWS from 'aws-sdk';
+import AWS, { Credentials } from 'aws-sdk';
 import { sign } from 'aws4';
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
@@ -38,29 +38,43 @@ type SigningCreds = {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
   validCredentials(creds: SigningCreds): boolean {
-    if (!creds.accessKeyId || !creds.secretAccessKey || !creds.sessionToken) {
+    if (
+      !creds?.accessKeyId ||
+      !creds?.secretAccessKey ||
+      !creds?.sessionToken
+    ) {
       return false;
     }
     return true;
   }
 
+  awsGetCredentials = async (): Promise<Credentials> => {
+    return new Promise((resolve, reject) => {
+      AWS.config.getCredentials(err => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(AWS.config.credentials as Credentials);
+      });
+    });
+  };
+
   async getCredentials(assumeRole: string | undefined): Promise<SigningCreds> {
     return new Promise<SigningCreds>(async (resolve, reject) => {
-      await AWS.config.getCredentials(err => {
-        if (err) {
-          console.error('Unable to load aws config.');
-          reject(err);
-        }
-      });
+      const awsCreds = await this.awsGetCredentials();
+
+      if (!(awsCreds instanceof Credentials))
+        return reject(Error('No AWS credentials found.'));
 
       let creds: SigningCreds = {
-        accessKeyId: AWS.config.credentials?.accessKeyId,
-        secretAccessKey: AWS.config.credentials?.secretAccessKey,
-        sessionToken: AWS.config.credentials?.sessionToken,
+        accessKeyId: awsCreds.accessKeyId,
+        secretAccessKey: awsCreds.secretAccessKey,
+        sessionToken: awsCreds.sessionToken,
       };
 
       if (!this.validCredentials(creds))
-        return reject(Error('No AWS credentials found.'));
+        return reject(Error('Invalid AWS credentials found.'));
       if (!assumeRole) return resolve(creds);
 
       try {
