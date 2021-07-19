@@ -5,5 +5,10 @@ metadata:
   description: A collection of all Backstage example templates
 spec:
   targets:
-    - ./local-templates.yaml
     - ./remote-templates.yaml
+
+# For local development of a template, you can reference your local templates here.
+# Examples:
+#
+#   - ./local-template/template.yaml
+#   - ../all-templates/local/template.yaml
