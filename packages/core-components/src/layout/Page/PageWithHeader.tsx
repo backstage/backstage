@@ -19,7 +19,7 @@ import React, { PropsWithChildren, ComponentProps } from 'react';
 import { Header } from '../Header';
 import { Page } from './Page';
 
-export type ThemedHeaderProps = ComponentProps<typeof Header> & {
+type PageWithHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
 };
 
@@ -27,7 +27,7 @@ export const PageWithHeader = ({
   themeId,
   children,
   ...props
-}: PropsWithChildren<ThemedHeaderProps>) => (
+}: PropsWithChildren<PageWithHeaderProps>) => (
   <Page themeId={themeId}>
     <Header {...props} />
     {children}

@@ -288,7 +288,7 @@ export const EntitySystemDiagramCard: SystemDiagramCard;
 // @public (undocumented)
 export const FilterContainer: ({
   children,
-}: React_2.PropsWithChildren<{}>) => JSX.Element;
+}: PropsWithChildren<{}>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "FilteredEntityLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
