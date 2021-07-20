@@ -16,14 +16,15 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
-import { ExtensionManifest } from '../../extensions/ExtensionAwareContext';
+import { AnalyticsDomainValues } from '../../analytics/types';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
  * how users of a Backstage instance are using its features.
  *
- * Note that attributes about the Backstage user, and about the plugin tracking
- * the event, are inferred and do not need to be passed on the event itself.
+ * Note that attributes about the Backstage user or about the plugin tracking
+ * the event are inferred and captured separately on the Analytics Domain and
+ * do not need to be passed on the event itself.
  */
 export type AnalyticsEvent = {
   /**
@@ -44,9 +45,9 @@ export type AnalyticsEvent = {
    * being taken on. Examples include:
    *
    * - The path of the page viewed
-   * - The text of the link clicked
-   * - The value filtered by
-   * - The text searched for
+   * - The url of the link clicked
+   * - The value that was filtered by
+   * - The text that was searched for
    */
   noun: string;
 
@@ -56,7 +57,7 @@ export type AnalyticsEvent = {
    *
    * - The index or position of the clicked element in an ordered list
    * - The percentage of an element that has been scrolled through
-   * - The amount of time that has elapsed
+   * - The amount of time that has elapsed since a fixed point
    */
   value?: number;
 
@@ -68,18 +69,15 @@ export type AnalyticsEvent = {
 };
 
 /**
- * An analytics event combined with extension metadata.
+ * An analytics event combined with domain attributes.
  */
-export type ExtensionAwareAnalyticsEvent = AnalyticsEvent & {
+export type DomainDecoratedAnalyticsEvent = AnalyticsEvent & {
   /**
-   * The ID of the plugin whose extension is responsible for the event.
+   * Domain metadata relating to where the event was captured and by whom. This
+   * could include information about the route, plugin, or component in which
+   * an event was captured.
    */
-  plugin: string;
-
-  /**
-   * The name of the component whose extension emitted the event.
-   */
-  componentName: string;
+  domain: AnalyticsDomainValues;
 };
 
 type ExtraDimensions = Record<string, string | boolean>;
@@ -107,20 +105,20 @@ export type AnalyticsTracker = {
 /**
  * The Analytics API is used to track user behavior in Backstage.
  *
- * To instrument your App or Plugin, use useAnalytics(analyticsApiRef) rather
- * than the normal useApi(). This will return a pre-configured AnalyticsTracker
+ * To instrument your App or Plugin, retrieve an analytics tracker using the
+ * useAnalytics() hook. This will return a pre-configured AnalyticsTracker
  * with relevant methods for instrumentation.
  */
 export type AnalyticsApi = {
   /**
-   * Retrieves a tracker for the given extension.
+   * Retrieves a tracker for the given analytics domain.
    */
-  getTrackerForExtension(extension: ExtensionManifest): AnalyticsTracker;
+  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker;
 
   /**
-   * Observe plugin-aware analytics events tracked throughout the application.
+   * Observe domain-aware analytics events tracked throughout the application.
    */
-  event$(): Observable<ExtensionAwareAnalyticsEvent>;
+  event$(): Observable<DomainDecoratedAnalyticsEvent>;
 };
 
 export const analyticsApiRef: ApiRef<AnalyticsApi> = createApiRef({

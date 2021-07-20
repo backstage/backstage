@@ -16,10 +16,11 @@
 
 import {
   AnalyticsApi,
+  AnalyticsDomainValues,
   AnalyticsEventContext,
   AnalyticsTracker,
   Observable,
-  ExtensionAwareAnalyticsEvent,
+  DomainDecoratedAnalyticsEvent,
 } from '@backstage/core-plugin-api';
 import { PublishSubject } from '../../../lib/subjects';
 
@@ -28,12 +29,9 @@ import { PublishSubject } from '../../../lib/subjects';
  * events to consumers.
  */
 export class AnalyticsApiForwarder implements AnalyticsApi {
-  private readonly subject = new PublishSubject<ExtensionAwareAnalyticsEvent>();
+  private readonly subject = new PublishSubject<DomainDecoratedAnalyticsEvent>();
 
-  getTrackerForExtension(extension: {
-    pluginId: string;
-    componentName: string;
-  }): AnalyticsTracker {
+  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker {
     const subject = this.subject;
     return {
       captureEvent: (
@@ -43,18 +41,17 @@ export class AnalyticsApiForwarder implements AnalyticsApi {
         context: AnalyticsEventContext = {},
       ) => {
         subject.next({
+          domain,
           verb,
           noun,
           value,
           context,
-          plugin: extension.pluginId,
-          componentName: extension.componentName,
         });
       },
     };
   }
 
-  event$(): Observable<ExtensionAwareAnalyticsEvent> {
+  event$(): Observable<DomainDecoratedAnalyticsEvent> {
     return this.subject;
   }
 }

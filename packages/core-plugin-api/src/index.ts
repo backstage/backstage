@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './analytics';
 export * from './apis';
 export * from './app';
 export * from './extensions';

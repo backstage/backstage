@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export { attachComponentData, getComponentData } from './componentData';
-export {
-  createReactExtension,
-  createRoutableExtension,
-  createComponentExtension,
-} from './extensions';
-export { useElementFilter } from './useElementFilter';
-export type { ElementCollection } from './useElementFilter';
+export { AnalyticsDomain, withAnalyticsDomain } from './AnalyticsDomain';
+export type { AnalyticsDomainDefinition } from './types';
+export { useAnalytics } from './useAnalytics';

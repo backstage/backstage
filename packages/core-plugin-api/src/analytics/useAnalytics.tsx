@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { useAnalyticsDomain } from './AnalyticsDomain';
+import {
+  analyticsApiRef,
+  AnalyticsTracker,
+} from '../apis/definitions/AnalyticsApi';
+import { useApi } from '../apis';
 
-export type ExtensionManifest = {
-  pluginId: string;
-  componentName: string;
-};
-
-export const ExtensionAwareContext = createContext<ExtensionManifest>({
-  pluginId: 'root',
-  componentName: 'App',
-});
-
-export const useExtensionAwareness = () => {
-  return useContext(ExtensionAwareContext);
-};
+/**
+ * Get a pre-configured analytics tracker.
+ */
+export function useAnalytics(): AnalyticsTracker {
+  const analyticsApi = useApi(analyticsApiRef);
+  const analyticsDomain = useAnalyticsDomain();
+  return analyticsApi.getTrackerForDomain(analyticsDomain);
+}

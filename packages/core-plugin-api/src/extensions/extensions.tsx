@@ -19,8 +19,8 @@ import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
-import { ExtensionAwareContext } from './ExtensionAwareContext';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
+import { AnalyticsDomain } from '../analytics/AnalyticsDomain';
 
 type ComponentLoader<T> =
   | {
@@ -59,7 +59,15 @@ export function createRoutableExtension<
                 }
                 throw error;
               }
-              return <InnerComponent {...props} />;
+              return (
+                <AnalyticsDomain
+                  attributes={{
+                    routeRef: (mountPoint as { id?: string }).id || '',
+                  }}
+                >
+                  <InnerComponent {...props} />
+                </AnalyticsDomain>
+              );
             };
 
             const componentName =
@@ -132,11 +140,11 @@ export function createReactExtension<
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
-              <ExtensionAwareContext.Provider
-                value={{ pluginId: plugin.getId(), componentName }}
+              <AnalyticsDomain
+                attributes={{ pluginId: plugin.getId(), componentName }}
               >
                 <Component {...props} />
-              </ExtensionAwareContext.Provider>
+              </AnalyticsDomain>
             </PluginErrorBoundary>
           </Suspense>
         );

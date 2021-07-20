@@ -16,6 +16,5 @@
 
 export { useApi, useApiHolder, withApis } from './useApi';
 export { createApiRef } from './ApiRef';
-export { useAnalytics } from './useAnalytics';
 export * from './types';
 export * from './helpers';

@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-import { analyticsApiRef, AnalyticsTracker } from '../definitions/AnalyticsApi';
-import { useExtensionAwareness } from '../../extensions';
-import { useApi } from './';
+/**
+ * Analytics domain covering routable extensions.
+ */
+export type RoutableDomain = {
+  routeRef: string;
+};
 
 /**
- * Get a pre-configured analytics tracker.
+ * Analytics domain covering component extensions.
  */
-export function useAnalytics(): AnalyticsTracker {
-  const analyticsApi = useApi(analyticsApiRef);
-  const extensionManifest = useExtensionAwareness();
-  return analyticsApi.getTrackerForExtension(extensionManifest);
-}
+export type ComponentDomain = {
+  pluginId: string;
+  componentName: string;
+};
+
+/**
+ * Allow arbitrary scalar values as domain attributes too.
+ */
+export type AnyDomain = {
+  [param in string]: string | boolean | number | undefined;
+};
+
+/**
+ * Common analytics domain
+ */
+export type AnalyticsDomainDefinition = Partial<
+  RoutableDomain & ComponentDomain & AnyDomain
+>;
