@@ -16,7 +16,7 @@
 
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Tooltip, Typography, Grid } from '@material-ui/core';
+import { Box, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
@@ -44,15 +44,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
   leftItemsBox: {
     maxWidth: '100%',
-    flex: '1 1 auto',
+    flexGrow: 1,
     marginBottom: theme.spacing(1),
   },
   rightItemsBox: {
-    flex: '0 1 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
     width: 'auto',
   },
   title: {
@@ -202,7 +197,7 @@ export const Header = ({
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
       <header style={style} className={classes.header}>
-        <div className={classes.leftItemsBox}>
+        <Box className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}
             type={type}
@@ -215,13 +210,8 @@ export const Header = ({
             tooltip={tooltip}
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
-        </div>
-        <Grid
-          component="div"
-          container
-          className={classes.rightItemsBox}
-          spacing={4}
-        >
+        </Box>
+        <Grid container className={classes.rightItemsBox} spacing={4}>
           {children}
         </Grid>
       </header>
