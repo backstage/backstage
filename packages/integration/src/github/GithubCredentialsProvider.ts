@@ -100,6 +100,20 @@ class GithubAppManager {
         installation_id: installationId,
         headers: HEADERS,
       });
+      if (repo && result.data.repository_selection === 'selected') {
+        const installationClient = new Octokit({
+          auth: result.data.token,
+        });
+        const repos = await installationClient.apps.listReposAccessibleToInstallation();
+        const hasRepo = repos.data.repositories.some(repository => {
+          return repository.name === repo;
+        });
+        if (!hasRepo) {
+          throw new Error(
+            `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+          );
+        }
+      }
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
@@ -219,7 +233,10 @@ export class GithubCredentialsProvider {
     const parsed = parseGitUrl(opts.url);
 
     const owner = parsed.owner || parsed.name;
-    const repo = parsed.owner ? parsed.name : undefined;
+    let repo = parsed.owner ? parsed.name : undefined;
+    // the github-discovery plugin passes an • as a repo name. This simply means it wants access to all repos
+    // that are available to the installation.
+    repo = repo === '*' ? undefined : repo;
 
     let type: GithubCredentialType = 'app';
     let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
