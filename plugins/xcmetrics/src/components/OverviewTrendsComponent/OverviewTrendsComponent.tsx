@@ -73,8 +73,8 @@ export const OverviewTrendsComponent = ({ days }: { days: number }) => {
         direction="row"
         className={classes.spacingTop}
       >
-        <DataValueGridItem field="Total Build Count" value={sumCount} />
-        <DataValueGridItem field="Total Error Count" value={sumErrors} />
+        <DataValueGridItem field="Build Count" value={sumCount} />
+        <DataValueGridItem field="Error Count" value={sumErrors} />
         <DataValueGridItem
           field="Error Rate"
           value={formatPercentage(errorRate)}

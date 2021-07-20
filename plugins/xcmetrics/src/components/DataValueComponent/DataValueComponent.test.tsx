@@ -28,6 +28,15 @@ describe('DataValueComponent', () => {
     expect(rendered.getByText(value)).toBeInTheDocument();
   });
 
+  it('should render placeholder text when no value is present', async () => {
+    const field = 'Field';
+    const rendered = await renderInTestApp(
+      <DataValueComponent field={field} />,
+    );
+    expect(rendered.getByText(field)).toBeInTheDocument();
+    expect(rendered.getByText('Unknown')).toBeInTheDocument();
+  });
+
   it('grid item should render', async () => {
     const field = 'Field';
     const value = 'Value';

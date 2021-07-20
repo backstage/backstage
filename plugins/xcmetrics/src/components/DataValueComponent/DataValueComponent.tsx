@@ -18,14 +18,14 @@ import React from 'react';
 
 interface DataValueProps {
   field: string;
-  value: string | number | undefined;
+  value?: string | number | null | undefined;
 }
 
 export const DataValueComponent = ({ field, value }: DataValueProps) => {
   return (
     <div>
       <Typography variant="caption">{field}</Typography>
-      <Typography variant="subtitle1">{value}</Typography>
+      <Typography variant="subtitle1">{value ?? 'Unknown'}</Typography>
     </div>
   );
 };
