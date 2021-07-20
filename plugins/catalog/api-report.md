@@ -39,7 +39,7 @@ export function AboutCard({ variant }: AboutCardProps): JSX.Element;
 // Warning: (ae-missing-release-tag) "AboutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AboutContent: ({ entity }: Props_2) => JSX.Element;
+export const AboutContent: ({ entity }: Props) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AboutField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -50,7 +50,7 @@ export const AboutField: ({
   value,
   gridSizes,
   children,
-}: Props_3) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -109,16 +109,10 @@ export const CatalogEntityPage: () => JSX.Element;
 //
 // @public (undocumented)
 export const CatalogIndexPage: ({
-  initiallySelectedFilter,
   columns,
   actions,
+  initiallySelectedFilter,
 }: CatalogPageProps) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CatalogLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CatalogLayout: ({ children }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "catalogPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -305,6 +299,13 @@ export const EntityLinksCard: ({
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityListContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityListContainer: ({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntityOrphanWarning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -342,6 +343,20 @@ export const EntitySwitch: {
 //
 // @public (undocumented)
 export const EntitySystemDiagramCard: SystemDiagramCard;
+
+// Warning: (ae-missing-release-tag) "FilterContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const FilterContainer: ({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "FilteredEntityLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const FilteredEntityLayout: ({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
