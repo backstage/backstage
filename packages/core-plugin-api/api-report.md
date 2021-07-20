@@ -34,6 +34,47 @@ export type AlertMessage = {
   severity?: 'success' | 'info' | 'warning' | 'error';
 };
 
+// Warning: (ae-missing-release-tag) "AnalyticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnalyticsApi = {
+  getTrackerForExtension(extension: ExtensionManifest): AnalyticsTracker;
+  event$(): Observable<ExtensionAwareAnalyticsEvent>;
+};
+
+// Warning: (ae-missing-release-tag) "analyticsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// Warning: (ae-missing-release-tag) "AnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnalyticsEvent = {
+  verb: string;
+  noun: string;
+  value?: number;
+};
+
+// Warning: (ae-forgotten-export) The symbol "ExtraDimensions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtraMetrics" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AnalyticsEventContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnalyticsEventContext = ExtraDimensions & ExtraMetrics;
+
+// Warning: (ae-missing-release-tag) "AnalyticsTracker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    verb: string,
+    noun: string,
+    value?: number,
+    context?: AnalyticsEventContext,
+  ) => void;
+};
+
 // Warning: (ae-missing-release-tag) "AnyApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -413,6 +454,14 @@ export type ErrorContext = {
 // @public (undocumented)
 export type Extension<T> = {
   expose(plugin: BackstagePlugin<any, any>): T;
+};
+
+// Warning: (ae-missing-release-tag) "ExtensionAwareAnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ExtensionAwareAnalyticsEvent = AnalyticsEvent & {
+  plugin: string;
+  componentName: string;
 };
 
 // Warning: (ae-missing-release-tag) "ExternalRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -831,6 +880,11 @@ export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;
 };
 
+// Warning: (ae-missing-release-tag) "useAnalytics" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function useAnalytics(apiRef: ApiRef<AnalyticsApi>): AnalyticsTracker;
+
 // Warning: (ae-missing-release-tag) "useApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -854,6 +908,11 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
+
+// Warning: (ae-missing-release-tag) "useExtensionAwareness" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const useExtensionAwareness: () => ExtensionManifest;
 
 // Warning: (ae-missing-release-tag) "UserFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -895,6 +954,7 @@ export function withApis<T>(
 
 // Warnings were encountered during analysis:
 //
+// src/apis/definitions/AnalyticsApi.d.ts:82:5 - (ae-forgotten-export) The symbol "ExtensionManifest" needs to be exported by the entry point index.d.ts
 // src/apis/definitions/ErrorApi.d.ts:37:5 - (ae-forgotten-export) The symbol "Error" needs to be exported by the entry point index.d.ts
 // src/apis/definitions/auth.d.ts:29:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 // src/apis/definitions/auth.d.ts:38:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration

@@ -5,6 +5,8 @@
 ```ts
 import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
+import { AnalyticsApi } from '@backstage/core-plugin-api';
+import { AnalyticsTracker } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
@@ -26,6 +28,7 @@ import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorContext } from '@backstage/core-plugin-api';
+import { ExtensionAwareAnalyticsEvent } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
@@ -62,6 +65,19 @@ export class AlertApiForwarder implements AlertApi {
   alert$(): Observable<AlertMessage>;
   // (undocumented)
   post(alert: AlertMessage): void;
+}
+
+// Warning: (ae-missing-release-tag) "AnalyticsApiForwarder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class AnalyticsApiForwarder implements AnalyticsApi {
+  // (undocumented)
+  event$(): Observable<ExtensionAwareAnalyticsEvent>;
+  // (undocumented)
+  getTrackerForExtension(extension: {
+    pluginId: string;
+    componentName: string;
+  }): AnalyticsTracker;
 }
 
 // Warning: (ae-missing-release-tag) "ApiFactoryHolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
