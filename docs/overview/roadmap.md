@@ -39,8 +39,8 @@ If you have specific questions about the roadmap, please create an
 
 ### How to read the roadmap
 
-The Backstage roadmap lays out both [“what’s next”](#What’s-next) and
-[“future work”](#Future-work). With "next" we mean features planned for release
+The Backstage roadmap lays out both [“what’s next”](#whats-next) and
+[“future work”](#future-work). With "next" we mean features planned for release
 within the ongoing quarter starting in July until September 2021 included. With
 "future" we mean features in the radar, but not yet scheduled.
 
@@ -113,7 +113,7 @@ The following features are planned for release:
 - **Connecting identity to ownership to prepare for role-based access control
   ([RBAC](https://en.wikipedia.org/wiki/Role-based_access_control)):** This is a
   first step to supporting RBAC for the software catalog (see the
-  [future work section](#Future-work) for further details). Provide each entity
+  [future work section](#future-work) for further details). Provide each entity
   within the software catalog with a recognized owner.
 - **Catalog performance improvements through improved caching:** Fix the
   performance gaps in the catalog processor, which currently doesn’t have a
@@ -147,7 +147,7 @@ the maintainers’ radar, with clear interest expressed by the community.
   visual guidelines and templates, especially navigation across plug-ins and
   portal functionalities.
 - **Catalog composability (routing):** Follow up development after the RFC
-  planned for the ongoing quarter (see [what’s next](#What’s-next) for further
+  planned for the ongoing quarter (see [what’s next](#whats-next) for further
   details).
 - **Catalog-import improvements:** Provide a faster (scalability) and better
   (more features like move/rename) way to import entities into the Software
