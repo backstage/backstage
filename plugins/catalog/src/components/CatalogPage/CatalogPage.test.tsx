@@ -248,17 +248,10 @@ describe('CatalogPage', () => {
 
   it('should wrap filter in drawer on smaller screens', async () => {
     mockBreakpoint({ matches: true });
-    const { getAllByText } = await renderWrapped(<CatalogPage />);
-    const elems = getAllByText('Filters');
-    expect(elems[0]).toBeVisible();
-    expect(elems[1]).not.toBeVisible();
-    fireEvent.click(elems[0]);
-    expect(elems[1]).toBeVisible();
-  });
-
-  it('should wrap filter in grid on larger screens', async () => {
-    mockBreakpoint({ matches: false });
-    const { queryAllByText } = await renderWrapped(<CatalogPage />);
-    expect(queryAllByText('Filters').length).toBe(0);
+    const { getByRole } = await renderWrapped(<CatalogPage />);
+    const button = getByRole('button', { name: 'Filters' });
+    expect(getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(getByRole('presentation')).toBeVisible();
   });
 });
