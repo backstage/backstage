@@ -48,7 +48,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  analyticsApiRef,
   useAnalytics,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
@@ -173,7 +172,7 @@ class AppContextImpl implements AppContext {
 
 const RouteTracker = () => {
   const { pathname, search, hash } = useLocation();
-  const analytics = useAnalytics(analyticsApiRef);
+  const analytics = useAnalytics();
 
   useEffect(() => {
     analytics.captureEvent('navigate', `${pathname}${search}${hash}`);

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { AnalyticsApi, AnalyticsTracker } from '../definitions/AnalyticsApi';
+import { analyticsApiRef, AnalyticsTracker } from '../definitions/AnalyticsApi';
 import { useExtensionAwareness } from '../../extensions';
-import { useApi, ApiRef } from './';
+import { useApi } from './';
 
 /**
  * Get a pre-configured analytics tracker.
  */
-export function useAnalytics(apiRef: ApiRef<AnalyticsApi>): AnalyticsTracker {
-  const analyticsApi = useApi(apiRef);
+export function useAnalytics(): AnalyticsTracker {
+  const analyticsApi = useApi(analyticsApiRef);
   const extensionManifest = useExtensionAwareness();
   return analyticsApi.getTrackerForExtension(extensionManifest);
 }
