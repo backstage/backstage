@@ -16,4 +16,4 @@
 
 export { createServiceBuilder } from './createServiceBuilder';
 export { createStatusCheckRouter } from './createStatusCheckRouter';
-export type { ServiceBuilder } from './types';
+export type { ServiceBuilder, RequestLoggingHandlerFactory } from './types';
