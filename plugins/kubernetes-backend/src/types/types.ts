@@ -30,7 +30,8 @@ export interface ObjectFetchParams {
   clusterDetails:
     | AWSClusterDetails
     | GKEClusterDetails
-    | ServiceAccountClusterDetails;
+    | ServiceAccountClusterDetails
+    | ClusterDetails;
   objectTypesToFetch: Set<KubernetesObjectTypes>;
   labelSelector: string;
   customResources: CustomResource[];

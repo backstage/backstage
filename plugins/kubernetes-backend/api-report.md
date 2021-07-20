@@ -123,7 +123,8 @@ export interface ObjectFetchParams {
   clusterDetails:
     | AWSClusterDetails
     | GKEClusterDetails
-    | ServiceAccountClusterDetails;
+    | ServiceAccountClusterDetails
+    | ClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
