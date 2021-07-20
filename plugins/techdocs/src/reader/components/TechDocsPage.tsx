@@ -39,7 +39,10 @@ export const TechDocsPage = () => {
     return Promise.resolve(undefined);
   }, [kind, namespace, name, techdocsApi, documentReady]);
 
-  const { value: entityMetadataValue } = useAsync(() => {
+  const {
+    value: entityMetadataValue,
+    error: entityMetadataError,
+  } = useAsync(() => {
     return techdocsApi.getEntityMetadata({ kind, namespace, name });
   }, [kind, namespace, name, techdocsApi]);
 
@@ -47,10 +50,8 @@ export const TechDocsPage = () => {
     setDocumentReady(true);
   }, [setDocumentReady]);
 
-  if (entityMetadataRequest?.error) {
-    return (
-      <TechDocsNotFound errorMessage={entityMetadataRequest.error.message} />
-    );
+  if (entityMetadataError) {
+    return <TechDocsNotFound errorMessage={entityMetadataError.message} />;
   }
 
   return (
