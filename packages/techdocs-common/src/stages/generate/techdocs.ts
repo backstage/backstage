@@ -168,7 +168,8 @@ export function readGeneratorConfig(
 
   if (legacyGeneratorType) {
     logger.warn(
-      `The 'techdocs.generators.techdocs' configuration key is deprecated and will be removed in the future. Please use 'techdocs.generator' instead.`,
+      `The 'techdocs.generators.techdocs' configuration key is deprecated and will be removed in the future. Please use 'techdocs.generator' instead. ` +
+        `See here https://backstage.io/docs/features/techdocs/configuration`,
     );
   }
 
