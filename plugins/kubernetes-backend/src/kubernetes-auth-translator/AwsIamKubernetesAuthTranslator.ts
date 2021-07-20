@@ -38,14 +38,9 @@ type SigningCreds = {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
   validCredentials(creds: SigningCreds): boolean {
-    if (
-      !creds?.accessKeyId ||
-      !creds?.secretAccessKey ||
-      !creds?.sessionToken
-    ) {
-      return false;
-    }
-    return true;
+    return ((creds?.accessKeyId &&
+      creds?.secretAccessKey &&
+      creds?.sessionToken) as unknown) as boolean;
   }
 
   awsGetCredentials = async (): Promise<Credentials> => {
