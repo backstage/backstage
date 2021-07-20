@@ -204,7 +204,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button aria-label={text ? text : props.to} {...childProps} ref={ref}>
+      <button aria-label={text} {...childProps} ref={ref}>
         {content}
       </button>
     );

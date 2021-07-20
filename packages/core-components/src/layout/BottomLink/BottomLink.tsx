@@ -15,12 +15,7 @@
  */
 
 import React from 'react';
-import {
-  ListItemIcon,
-  Divider,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Divider, Typography, makeStyles } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
