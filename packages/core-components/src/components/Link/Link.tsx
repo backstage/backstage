@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { useAnalytics, withAnalyticsDomain } from '@backstage/core-plugin-api';
 import {
   Link as MaterialLink,
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core';
-import React, { ElementType } from 'react';
+import React, { ElementType, MutableRefObject } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
@@ -31,24 +32,43 @@ export type LinkProps = MaterialLinkProps &
     component?: ElementType<any>;
   };
 
+type OptionalRef = MutableRefObject<any> | ((instance: any) => void) | null;
+
+const BackstageLink = withAnalyticsDomain(
+  ({ inputRef, ...props }: LinkProps & { inputRef: OptionalRef }) => {
+    const analytics = useAnalytics();
+    const to = String(props.to);
+    const external = isExternalUri(to);
+    const newWindow = external && !!/^https?:/.exec(to);
+    const track = () => analytics.captureEvent('click', to);
+
+    return external ? (
+      // External links
+      <MaterialLink
+        ref={inputRef}
+        href={to}
+        onClick={track}
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
+      />
+    ) : (
+      // Interact with React Router for internal links
+      <MaterialLink
+        ref={inputRef}
+        component={RouterLink}
+        onClick={track}
+        {...props}
+      />
+    );
+  },
+  { componentName: 'Link' },
+);
+
 /**
- * Thin wrapper on top of material-ui's Link component
- * Makes the Link to utilise react-router
+ * Thin wrapper on top of material-ui's Link component, which...
+ * - Makes the Link use react-router
+ * - Captures Link clicks as analytics events.
  */
-export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
-  const to = String(props.to);
-  const external = isExternalUri(to);
-  const newWindow = external && !!/^https?:/.exec(to);
-  return external ? (
-    // External links
-    <MaterialLink
-      ref={ref}
-      href={to}
-      {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-      {...props}
-    />
-  ) : (
-    // Interact with React Router for internal links
-    <MaterialLink ref={ref} component={RouterLink} {...props} />
-  );
-});
+export const Link = React.forwardRef<any, LinkProps>((props, ref) => (
+  <BackstageLink {...props} inputRef={ref} />
+));
