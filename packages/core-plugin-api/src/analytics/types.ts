@@ -37,8 +37,8 @@ export type AnyDomain = {
 };
 
 /**
- * Common analytics domain
+ * Common analytics domain attributes.
  */
-export type AnalyticsDomainDefinition = Partial<
+export type AnalyticsDomainValues = Partial<
   RoutableDomain & ComponentDomain & AnyDomain
 >;

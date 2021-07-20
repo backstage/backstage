@@ -6,6 +6,7 @@
 import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/core-plugin-api';
+import { AnalyticsDomainValues } from '@backstage/core-plugin-api';
 import { AnalyticsTracker } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
@@ -26,9 +27,9 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DomainDecoratedAnalyticsEvent } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorContext } from '@backstage/core-plugin-api';
-import { ExtensionAwareAnalyticsEvent } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
@@ -72,12 +73,9 @@ export class AlertApiForwarder implements AlertApi {
 // @public
 export class AnalyticsApiForwarder implements AnalyticsApi {
   // (undocumented)
-  event$(): Observable<ExtensionAwareAnalyticsEvent>;
+  event$(): Observable<DomainDecoratedAnalyticsEvent>;
   // (undocumented)
-  getTrackerForExtension(extension: {
-    pluginId: string;
-    componentName: string;
-  }): AnalyticsTracker;
+  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker;
 }
 
 // Warning: (ae-missing-release-tag) "ApiFactoryHolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

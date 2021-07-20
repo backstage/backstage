@@ -38,14 +38,30 @@ export type AlertMessage = {
 //
 // @public
 export type AnalyticsApi = {
-  getTrackerForExtension(extension: ExtensionManifest): AnalyticsTracker;
-  event$(): Observable<ExtensionAwareAnalyticsEvent>;
+  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker;
+  event$(): Observable<DomainDecoratedAnalyticsEvent>;
 };
 
 // Warning: (ae-missing-release-tag) "analyticsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// Warning: (ae-forgotten-export) The symbol "AnalyticsDomainProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AnalyticsDomain" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const AnalyticsDomain: (props: AnalyticsDomainProps) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "RoutableDomain" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ComponentDomain" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AnyDomain" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AnalyticsDomainValues" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnalyticsDomainValues = Partial<
+  RoutableDomain & ComponentDomain & AnyDomain
+>;
 
 // Warning: (ae-missing-release-tag) "AnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -54,6 +70,7 @@ export type AnalyticsEvent = {
   verb: string;
   noun: string;
   value?: number;
+  context?: AnalyticsEventContext;
 };
 
 // Warning: (ae-forgotten-export) The symbol "ExtraDimensions" needs to be exported by the entry point index.d.ts
@@ -401,6 +418,13 @@ export type DiscoveryApi = {
 // @public (undocumented)
 export const discoveryApiRef: ApiRef<DiscoveryApi>;
 
+// Warning: (ae-missing-release-tag) "DomainDecoratedAnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type DomainDecoratedAnalyticsEvent = AnalyticsEvent & {
+  domain: AnalyticsDomainValues;
+};
+
 // Warning: (ae-missing-release-tag) "ElementCollection" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -454,14 +478,6 @@ export type ErrorContext = {
 // @public (undocumented)
 export type Extension<T> = {
   expose(plugin: BackstagePlugin<any, any>): T;
-};
-
-// Warning: (ae-missing-release-tag) "ExtensionAwareAnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type ExtensionAwareAnalyticsEvent = AnalyticsEvent & {
-  plugin: string;
-  componentName: string;
 };
 
 // Warning: (ae-missing-release-tag) "ExternalRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -883,7 +899,7 @@ export type TypesToApiRefs<T> = {
 // Warning: (ae-missing-release-tag) "useAnalytics" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function useAnalytics(apiRef: ApiRef<AnalyticsApi>): AnalyticsTracker;
+export function useAnalytics(): AnalyticsTracker;
 
 // Warning: (ae-missing-release-tag) "useApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -908,11 +924,6 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
-
-// Warning: (ae-missing-release-tag) "useExtensionAwareness" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const useExtensionAwareness: () => ExtensionManifest;
 
 // Warning: (ae-missing-release-tag) "UserFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -940,6 +951,19 @@ export function useRouteRefParams<Params extends AnyParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (ae-missing-release-tag) "withAnalyticsDomain" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function withAnalyticsDomain<P>(
+  Component: React_2.ComponentType<P>,
+  domain: AnyDomain,
+): {
+  (props: P): JSX.Element;
+  displayName: string;
+};
+
 // Warning: (ae-missing-release-tag) "withApis" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -954,7 +978,6 @@ export function withApis<T>(
 
 // Warnings were encountered during analysis:
 //
-// src/apis/definitions/AnalyticsApi.d.ts:82:5 - (ae-forgotten-export) The symbol "ExtensionManifest" needs to be exported by the entry point index.d.ts
 // src/apis/definitions/ErrorApi.d.ts:37:5 - (ae-forgotten-export) The symbol "Error" needs to be exported by the entry point index.d.ts
 // src/apis/definitions/auth.d.ts:29:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 // src/apis/definitions/auth.d.ts:38:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
