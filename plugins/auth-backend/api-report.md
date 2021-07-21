@@ -346,6 +346,16 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
 }
 
+// Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type TokenIssuer = {
+  issueToken(params: TokenParams): Promise<string>;
+  listPublicKeys(): Promise<{
+    keys: AnyJWK[];
+  }>;
+};
+
 // Warning: (ae-missing-release-tag) "verifyNonce" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -366,9 +376,10 @@ export type WebMessageResponse =
 
 // Warnings were encountered during analysis:
 //
+// src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+// src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/google/provider.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:105:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:108:5 - (ae-forgotten-export) The symbol "TokenIssuer" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:111:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:128:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 
