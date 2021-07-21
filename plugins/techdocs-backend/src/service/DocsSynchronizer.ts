@@ -92,20 +92,20 @@ export class DocsSynchronizer {
       return;
     }
 
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher: this.publisher,
-      logger: taskLogger,
-      entity,
-      config: this.config,
-      scmIntegrations: this.scmIntegrations,
-      logStream,
-    });
-
     let foundDocs = false;
 
     try {
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher: this.publisher,
+        logger: taskLogger,
+        entity,
+        config: this.config,
+        scmIntegrations: this.scmIntegrations,
+        logStream,
+      });
+
       const updated = await docsBuilder.build();
 
       if (!updated) {
