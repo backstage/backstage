@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-// @ts-ignore
-import sanitizeHtml from 'sanitize-html';
-import type { Transformer } from '../transformer';
 import DOMPurify from 'dompurify';
-
-// TODO(freben): move all of this out of index
+import type { Transformer } from './transformer';
 
 export const sanitizeDOM = (): Transformer => {
   return dom => {
     return DOMPurify.sanitize(dom.innerHTML, {
-      // TODO: hmm...  https://security.stackexchange.com/questions/205975/is-xss-in-canonical-link-possible
       ADD_TAGS: ['link'],
       WHOLE_DOCUMENT: true,
       RETURN_DOM: true,
