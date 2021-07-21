@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@azure/identity": "^1.5.0",
-    "@azure/storage-blob": "^12.6.0",
+    "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "^0.8.6",
     "@backstage/catalog-model": "^0.9.0",
     "@backstage/config": "^0.1.5",
