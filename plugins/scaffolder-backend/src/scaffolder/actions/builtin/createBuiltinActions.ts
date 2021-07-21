@@ -37,7 +37,7 @@ import {
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
 } from './publish';
-import { createGithubActionsDispatchAction } from './ci';
+import { createGithubActionsDispatchAction } from './github';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -94,7 +94,6 @@ export const createBuiltinActions = (options: {
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
-      config,
     }),
   ];
 };

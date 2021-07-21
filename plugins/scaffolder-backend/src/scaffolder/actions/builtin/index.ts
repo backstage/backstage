@@ -20,6 +20,6 @@ export * from './debug';
 export * from './fetch';
 export * from './filesystem';
 export * from './publish';
-
 export { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
+export * from './github';
 export { runCommand } from './helpers';

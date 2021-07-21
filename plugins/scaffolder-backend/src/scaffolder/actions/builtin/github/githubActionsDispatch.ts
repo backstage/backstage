@@ -19,14 +19,11 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
+import { parseRepoUrl } from '../publish/util';
 import { createTemplateAction } from '../../createTemplateAction';
-import { Config } from '@backstage/config';
-
-const host = 'github.com';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
-  config: Config;
 }) {
   const { integrations } = options;
 
@@ -38,27 +35,21 @@ export function createGithubActionsDispatchAction(options: {
   );
 
   return createTemplateAction<{
-    owner: string;
-    repoName: string;
+    repoUrl: string;
     workflowId: string;
     branchOrTagName: string;
   }>({
-    id: 'ci:github-actions-dispatch',
+    id: 'github:actions:dispatch',
     description:
       'Dispatches a GitHub Action workflow for a given branch or tag',
     schema: {
       input: {
         type: 'object',
-        required: ['owner', 'repoName', 'workflowId', 'branchOrTagName'],
+        required: ['repoUrl', 'workflowId', 'branchOrTagName'],
         properties: {
-          owner: {
-            title: 'Repository Owner',
-            description: 'GitHub Org or User name owner of the repository',
-            type: 'string',
-          },
-          repoName: {
-            title: 'Repository Name',
-            description: `Repo`,
+          repoUrl: {
+            title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
             type: 'string',
           },
           workflowId: {
@@ -76,10 +67,12 @@ export function createGithubActionsDispatchAction(options: {
       },
     },
     async handler(ctx) {
-      const { owner, repoName, workflowId, branchOrTagName } = ctx.input;
+      const { repoUrl, workflowId, branchOrTagName } = ctx.input;
+
+      const { owner, repo, host } = parseRepoUrl(repoUrl);
 
       ctx.logger.info(
-        `Dispatching workflow ${workflowId} for repo ${owner}/${repoName} on ${branchOrTagName}`,
+        `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
       const credentialsProvider = credentialsProviders.get(host);
@@ -93,13 +86,13 @@ export function createGithubActionsDispatchAction(options: {
 
       const { token } = await credentialsProvider.getCredentials({
         url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repoName,
+          repo,
         )}`,
       });
 
       if (!token) {
         throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repoName}`,
+          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
         );
       }
 
@@ -111,7 +104,7 @@ export function createGithubActionsDispatchAction(options: {
 
       await client.rest.actions.createWorkflowDispatch({
         owner,
-        repo: repoName,
+        repo,
         workflow_id: workflowId,
         ref: branchOrTagName,
       });
