@@ -17,8 +17,6 @@
 import React from 'react';
 import {
   ListItem,
-  Divider,
-  ListItemSecondaryAction,
   ListItemText,
   ListItemIcon,
   Switch,
