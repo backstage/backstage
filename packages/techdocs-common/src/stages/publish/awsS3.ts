@@ -26,8 +26,11 @@ import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 import {
+  bulkStorageOperation,
+  getCloudPathForLocalPath,
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  getStaleFiles,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -175,53 +178,76 @@ export class AwsS3Publish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    // First, retrieve a list of all individual files in currently existing
+    const remoteFolder = getCloudPathForLocalPath(entity);
+    const existingFiles = await this.getAllObjectsFromBucket({
+      prefix: remoteFolder,
+    });
+
+    // Then, merge new files into the same folder
+    let absoluteFilesToUpload;
     try {
-      // Note: S3 manages creation of parent directories if they do not exist.
-      // So collecting path of only the files is good enough.
-      const allFilesToUpload = await getFileTreeRecursively(directory);
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
-      const limiter = createLimiter(10);
-      const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
-      for (const filePath of allFilesToUpload) {
-        // Remove the absolute path prefix of the source directory
-        // Path of all files to upload, relative to the root of the source directory
-        // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = path.relative(directory, filePath);
-
-        // Convert destination file path to a POSIX path for uploading.
-        // S3 expects / as path separator and relativeFilePath will contain \\ on Windows.
-        // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-        const relativeFilePathPosix = relativeFilePath
-          .split(path.sep)
-          .join(path.posix.sep);
-
-        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
-
-        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(() => {
-          const fileStream = fs.createReadStream(filePath);
+      await bulkStorageOperation(
+        async absoluteFilePath => {
+          const relativeFilePath = path.relative(directory, absoluteFilePath);
+          const fileStream = fs.createReadStream(absoluteFilePath);
 
           const params = {
             Bucket: this.bucketName,
-            Key: destination,
+            Key: getCloudPathForLocalPath(entity, relativeFilePath),
             Body: fileStream,
           };
 
           return this.storageClient.upload(params).promise();
-        });
-        uploadPromises.push(uploadFile);
-      }
-      await Promise.all(uploadPromises);
-      this.logger.info(
-        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+        },
+        absoluteFilesToUpload,
+        { concurrencyLimit: 10 },
       );
-      return;
+
+      this.logger.info(
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
+      );
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to AWS S3. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
+    }
+
+    // Last, try to remove the files that were *only* present previously
+    try {
+      const relativeFilesToUpload = absoluteFilesToUpload.map(
+        absoluteFilePath =>
+          getCloudPathForLocalPath(
+            entity,
+            path.relative(directory, absoluteFilePath),
+          ),
+      );
+      const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
+
+      await bulkStorageOperation(
+        async relativeFilePath => {
+          return await this.storageClient
+            .deleteObject({
+              Bucket: this.bucketName,
+              Key: relativeFilePath,
+            })
+            .promise();
+        },
+        staleFiles,
+        { concurrencyLimit: 10 },
+      );
+
+      this.logger.info(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
+      );
+    } catch (error) {
+      const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
+      this.logger.error(errorMessage);
     }
   }
 
@@ -365,17 +391,19 @@ export class AwsS3Publish implements PublisherBase {
   /**
    * Returns a list of all object keys from the configured bucket.
    */
-  protected async getAllObjectsFromBucket(): Promise<string[]> {
+  protected async getAllObjectsFromBucket(
+    { prefix } = { prefix: '' },
+  ): Promise<string[]> {
     const objects: string[] = [];
     let nextContinuation: string | undefined;
     let allObjects: ListObjectsV2Output;
-
     // Iterate through every file in the root of the publisher.
     do {
       allObjects = await this.storageClient
         .listObjectsV2({
           Bucket: this.bucketName,
           ContinuationToken: nextContinuation,
+          ...(prefix ? { Prefix: prefix } : {}),
         })
         .promise();
       objects.push(
