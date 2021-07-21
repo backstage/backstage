@@ -21,6 +21,7 @@ export const sanitizeDOM = (): Transformer => {
   return dom => {
     return DOMPurify.sanitize(dom.innerHTML, {
       ADD_TAGS: ['link'],
+      FORBID_TAGS: ['style'],
       WHOLE_DOCUMENT: true,
       RETURN_DOM: true,
     });
