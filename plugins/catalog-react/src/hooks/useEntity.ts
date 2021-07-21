@@ -17,7 +17,7 @@ import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useAsync } from 'react-use';
+import { useAsyncRetry } from 'react-use';
 import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 
@@ -25,12 +25,14 @@ type EntityLoadingStatus = {
   entity?: Entity;
   loading: boolean;
   error?: Error;
+  retry?: VoidFunction;
 };
 
 export const EntityContext = createContext<EntityLoadingStatus>({
   entity: undefined,
   loading: true,
   error: undefined,
+  retry: () => {},
 });
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {
@@ -39,7 +41,7 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
 
-  const { value: entity, error, loading } = useAsync(
+  const { value: entity, error, loading, retry } = useAsyncRetry(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
@@ -51,13 +53,13 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
     }
   }, [errorApi, navigate, error, loading, entity, name]);
 
-  return { entity, loading, error };
+  return { entity, loading, error, retry };
 };
 
 /**
  * Grab the current entity from the context and its current loading state.
  */
 export function useEntity<T extends Entity = Entity>() {
-  const { entity, loading, error } = useContext(EntityContext);
-  return { entity: entity as T, loading, error };
+  const { entity, loading, error, retry } = useContext(EntityContext);
+  return { entity: entity as T, loading, error, retry };
 }
