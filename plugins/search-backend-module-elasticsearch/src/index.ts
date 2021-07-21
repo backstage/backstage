@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export { IndexBuilder } from './IndexBuilder';
-export { Scheduler } from './Scheduler';
-export { LunrSearchEngine } from './engines';
-
-/**
- * @deprecated Import from @backstage/search-common instead
- */
-export type { SearchEngine } from '@backstage/search-common';
+export { ElasticSearchSearchEngine } from './engines';

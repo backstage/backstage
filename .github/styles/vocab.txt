@@ -75,6 +75,7 @@ dockerode
 Docusaurus
 env
 Env
+elasticsearch
 esbuild
 eslint
 etag
