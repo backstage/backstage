@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Grid, Typography } from '@material-ui/core';
+import { Chip, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { ImportStepper } from './ImportStepper';
 import { StepperProviderOpts } from './ImportStepper/defaults';
 
-import { ConfigApi, configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Content,
   ContentHeader,
@@ -29,30 +29,12 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 
-function repositories(configApi: ConfigApi): string[] {
-  const integrations = configApi.getConfig('integrations');
-  const repos = [];
-  if (integrations.has('github')) {
-    repos.push('GitHub');
-  }
-  if (integrations.has('bitbucket')) {
-    repos.push('Bitbucket');
-  }
-  if (integrations.has('gitlab')) {
-    repos.push('GitLab');
-  }
-  if (integrations.has('azure')) {
-    repos.push('Azure');
-  }
-  return repos;
-}
-
 export const ImportComponentPage = (opts: StepperProviderOpts) => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
-  const repos = repositories(configApi);
-  const repositoryString = repos.join(', ').replace(/, (\w*)$/, ' or $1');
+  const integrations = configApi.getConfig('integrations');
+  const hasGithubIntegration = integrations.has('github');
 
   return (
     <Page themeId="home">
@@ -76,7 +58,8 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
               }}
             >
               <Typography variant="body2" paragraph>
-                Enter the URL to your SCM repository to add it to {appTitle}.
+                Enter the URL to your source code repository to add it to{' '}
+                {appTitle}.
               </Typography>
               <Typography variant="h6">
                 Link to an existing entity file
@@ -91,10 +74,11 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
                 The wizard analyzes the file, previews the entities, and adds
                 them to the {appTitle} catalog.
               </Typography>
-              {repos.length > 0 && (
+              {hasGithubIntegration && (
                 <>
                   <Typography variant="h6">
-                    Link to a {repositoryString} repository
+                    Link to a repository{' '}
+                    <Chip label="GitHub only" variant="outlined" size="small" />
                   </Typography>
                   <Typography
                     variant="subtitle2"
