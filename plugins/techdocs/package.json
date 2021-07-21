@@ -52,8 +52,7 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "react-text-truncate": "^0.16.0",
-    "sanitize-html": "^2.3.2"
+    "react-text-truncate": "^0.16.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.4",
