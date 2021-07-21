@@ -31,7 +31,7 @@ import {
   GetLatestReleaseResult,
   GetRepositoryResult,
 } from '../../api/GitReleaseClient';
-import { ComponentConfigCreateRc } from '../../types/types';
+import { ComponentConfig, CreateRcOnSuccessArgs } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { getReleaseCandidateGitInfo } from '../../helpers/getReleaseCandidateGitInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
@@ -45,7 +45,7 @@ interface CreateReleaseCandidateProps {
   defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
   latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseBranch: GetBranchResult['branch'] | null;
-  onSuccess?: ComponentConfigCreateRc['onSuccess'];
+  onSuccess?: ComponentConfig<CreateRcOnSuccessArgs>['onSuccess'];
 }
 
 const InfoCardPlusWrapper = ({ children }: { children: React.ReactNode }) => {

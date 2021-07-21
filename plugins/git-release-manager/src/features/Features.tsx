@@ -142,6 +142,14 @@ export function Features({
             onSuccess={features?.patch?.onSuccess}
           />
         )}
+
+        {features?.custom?.factory &&
+          features.custom.factory({
+            latestRelease: gitBatchInfo.value.latestRelease,
+            project,
+            releaseBranch: gitBatchInfo.value.releaseBranch,
+            repository: gitBatchInfo.value.repository,
+          })}
       </ErrorBoundary>
     </RefetchContext.Provider>
   );

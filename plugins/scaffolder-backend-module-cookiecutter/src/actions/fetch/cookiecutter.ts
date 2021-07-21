@@ -26,9 +26,11 @@ import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
-import { runCommand } from '../helpers';
-import { createTemplateAction } from '../../createTemplateAction';
-import { fetchContents } from './helpers';
+import {
+  runCommand,
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-backend';
 
 export class CookiecutterRunner {
   private readonly containerRunner: ContainerRunner;
@@ -136,7 +138,7 @@ export function createFetchCookiecutterAction(options: {
   }>({
     id: 'fetch:cookiecutter',
     description:
-      "Downloads a template from the given URL into the workspace, and runs cookiecutter on it. This action is deprecated in favor of 'fetch:template'. See https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetch-cookiecutter-to-fetch-template for more details.",
+      'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
     schema: {
       input: {
         type: 'object',
