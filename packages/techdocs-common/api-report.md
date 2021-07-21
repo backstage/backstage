@@ -137,18 +137,6 @@ export const getDefaultBranch: (
   config: Config,
 ) => Promise<string>;
 
-// Warning: (ae-missing-release-tag) "getDirLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const getDirLocation: (
-  entity: Entity,
-) =>
-  | {
-      type: 'dir';
-      target: string;
-    }
-  | undefined;
-
 // Warning: (ae-missing-release-tag) "getDocFilesFromRepository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -382,6 +370,7 @@ export type TechDocsMetadata = {
 // @public
 export const transformDirLocation: (
   entity: Entity,
+  dirAnnotation: ParsedLocationAnnotation,
   scmIntegrations: ScmIntegrationRegistry,
 ) => {
   type: 'dir' | 'url';

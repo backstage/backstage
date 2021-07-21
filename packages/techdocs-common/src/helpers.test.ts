@@ -26,7 +26,6 @@ import os from 'os';
 import path from 'path';
 import { Readable } from 'stream';
 import {
-  getDirLocation,
   getDocFilesFromRepository,
   getLocationForEntity,
   parseReferenceAnnotation,
@@ -126,76 +125,11 @@ describe('parseReferenceAnnotation', () => {
   });
 });
 
-describe('getDirLocation', () => {
-  it.each`
-    techdocsRef                    | responseTarget
-    ${undefined}                   | ${undefined}
-    ${16}                          | ${undefined}
-    ${'.'}                         | ${'.'}
-    ${'dir:.'}                     | ${'.'}
-    ${'./relative'}                | ${'./relative'}
-    ${'dir:./relative'}            | ${'./relative'}
-    ${'dir:https://github.com...'} | ${'https://github.com...'}
-    ${'url:https://github.com...'} | ${undefined}
-  `(
-    'should handle "backstage.io/techdocs-ref: $techdocsRef" correctly',
-    ({ techdocsRef, responseTarget }) => {
-      const entity = {
-        apiVersion: '1',
-        kind: 'Component',
-        metadata: {
-          name: 'test',
-          annotations: {
-            'backstage.io/techdocs-ref': techdocsRef,
-          },
-        },
-      };
-
-      const result = getDirLocation(entity);
-
-      expect(result).toEqual(
-        responseTarget && { type: 'dir', target: responseTarget },
-      );
-    },
-  );
-
-  it('Reject https urls and hint to the url: location type', async () => {
-    const entity = {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        name: 'test',
-        annotations: {
-          'backstage.io/techdocs-ref': 'https://github.com/backstage/backstage',
-        },
-      },
-    };
-
-    expect(() => getDirLocation(entity)).toThrow(
-      /please prefix it with 'url:'/,
-    );
-  });
-});
-
 describe('transformDirLocation', () => {
-  it('should reject missing annotation', () => {
-    const entity = {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        name: 'test',
-      },
-    };
-
-    expect(() => transformDirLocation(entity, scmIntegrations)).toThrow(
-      /No techdocs location annotation provided in entity: component:default\/test/,
-    );
-  });
-
   it.each`
-    techdocsRef       | target
-    ${'.'}            | ${'https://my-url/folder/'}
-    ${'./sub-folder'} | ${'https://my-url/folder/sub-folder'}
+    techdocsRef           | target
+    ${'dir:.'}            | ${'https://my-url/folder/'}
+    ${'dir:./sub-folder'} | ${'https://my-url/folder/sub-folder'}
   `(
     'should transform "$techdocsRef" for url type locations',
     ({ techdocsRef, target }) => {
@@ -215,16 +149,20 @@ describe('transformDirLocation', () => {
         },
       };
 
-      const result = transformDirLocation(entity, scmIntegrations);
+      const result = transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      );
 
       expect(result).toEqual({ type: 'url', target });
     },
   );
 
   it.each`
-    techdocsRef       | target
-    ${'.'}            | ${path.join(rootDir, 'working-copy')}
-    ${'./sub-folder'} | ${path.join(rootDir, 'working-copy', 'sub-folder')}
+    techdocsRef           | target
+    ${'dir:.'}            | ${path.join(rootDir, 'working-copy')}
+    ${'dir:./sub-folder'} | ${path.join(rootDir, 'working-copy', 'sub-folder')}
   `(
     'should transform "$techdocsRef" for file type locations',
     ({ techdocsRef, target }) => {
@@ -244,7 +182,11 @@ describe('transformDirLocation', () => {
         },
       };
 
-      const result = transformDirLocation(entity, scmIntegrations);
+      const result = transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      );
 
       expect(result).toEqual({ type: 'dir', target });
     },
@@ -262,12 +204,18 @@ describe('transformDirLocation', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'backstage.io/techdocs-ref': '..',
+          'backstage.io/techdocs-ref': 'dir:..',
         },
       },
     };
 
-    expect(() => transformDirLocation(entity, scmIntegrations)).toThrow(
+    expect(() =>
+      transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      ),
+    ).toThrow(
       /Relative path is not allowed to refer to a directory outside its parent/,
     );
   });
@@ -284,43 +232,22 @@ describe('transformDirLocation', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'backstage.io/techdocs-ref': '.',
+          'backstage.io/techdocs-ref': 'dir:.',
         },
       },
     };
 
-    expect(() => transformDirLocation(entity, scmIntegrations)).toThrow(
-      /Unable to resolve location type other/,
-    );
+    expect(() =>
+      transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      ),
+    ).toThrow(/Unable to resolve location type other/);
   });
 });
 
 describe('getLocationForEntity', () => {
-  it('should handle implicit dir locations', () => {
-    (getEntitySourceLocation as jest.Mock).mockReturnValue({
-      type: 'url',
-      target: 'https://my-url/folder/',
-    });
-
-    const entity = {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        name: 'test',
-        annotations: {
-          'backstage.io/techdocs-ref': '.',
-        },
-      },
-    };
-
-    const parsedLocationAnnotation = getLocationForEntity(
-      entity,
-      scmIntegrations,
-    );
-    expect(parsedLocationAnnotation.type).toBe('url');
-    expect(parsedLocationAnnotation.target).toBe('https://my-url/folder/');
-  });
-
   it('should handle dir locations', () => {
     (getEntitySourceLocation as jest.Mock).mockReturnValue({
       type: 'url',

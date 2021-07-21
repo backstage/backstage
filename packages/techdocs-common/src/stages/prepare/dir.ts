@@ -23,7 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { Logger } from 'winston';
-import { transformDirLocation } from '../../helpers';
+import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import { PreparerBase, PreparerResponse } from './types';
 
 export class DirectoryPreparer implements PreparerBase {
@@ -39,18 +39,29 @@ export class DirectoryPreparer implements PreparerBase {
     entity: Entity,
     options?: { logger?: Logger; etag?: string },
   ): Promise<PreparerResponse> {
-    const { type, target } = transformDirLocation(entity, this.scmIntegrations);
+    const annotation = parseReferenceAnnotation(
+      'backstage.io/techdocs-ref',
+      entity,
+    );
+    const { type, target } = transformDirLocation(
+      entity,
+      annotation,
+      this.scmIntegrations,
+    );
 
     switch (type) {
       case 'url': {
-        options?.logger?.info(`Download documentation from ${target}`);
+        options?.logger?.debug(`Reading files from ${target}`);
         // the target is an absolute url since it has already been transformed
         const response = await this.reader.readTree(target, {
           etag: options?.etag,
         });
+        const preparedDir = await response.dir();
+
+        options?.logger?.debug(`Tree downloaded and stored at ${preparedDir}`);
 
         return {
-          preparedDir: await response.dir(),
+          preparedDir,
           etag: response.etag,
         };
       }

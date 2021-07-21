@@ -15,11 +15,10 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, parseLocationReference } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { getDirLocation } from '../../helpers';
+import { parseReferenceAnnotation } from '../../helpers';
 import { CommonGitPreparer } from './commonGit';
 import { DirectoryPreparer } from './dir';
 import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
@@ -63,20 +62,10 @@ export class Preparers implements PreparerBuilder {
   }
 
   get(entity: Entity): PreparerBase {
-    const annotation =
-      entity.metadata.annotations?.['backstage.io/techdocs-ref'];
-    if (!annotation) {
-      throw new InputError(
-        `No location annotation provided in entity: ${entity.metadata.name}`,
-      );
-    }
-
-    // the dir processor handles both `<target>` and `dir:<target>`
-    if (getDirLocation(entity) !== undefined) {
-      return this.preparerMap.get('dir')!;
-    }
-
-    const { type } = parseLocationReference(annotation);
+    const { type } = parseReferenceAnnotation(
+      'backstage.io/techdocs-ref',
+      entity,
+    );
     const preparer = this.preparerMap.get(type as RemoteProtocol);
 
     if (!preparer) {
