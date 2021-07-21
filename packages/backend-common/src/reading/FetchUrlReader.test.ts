@@ -15,11 +15,15 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { msw } from '@backstage/test-utils';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getVoidLogger } from '../logging';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+
+const fetchUrlReader = new FetchUrlReader();
 
 describe('FetchUrlReader', () => {
   const worker = setupServer();
@@ -28,6 +32,39 @@ describe('FetchUrlReader', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeEach(() => {
+    worker.use(
+      rest.get('https://backstage.io/some-resource', (req, res, ctx) => {
+        if (req.headers.get('if-none-match') === 'foo') {
+          return res(
+            ctx.status(304),
+            ctx.set('Content-Type', 'text/plain'),
+            ctx.set('etag', 'foo'),
+          );
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'text/plain'),
+          ctx.set('etag', 'foo'),
+          ctx.body('content foo'),
+        );
+      }),
+    );
+
+    worker.use(
+      rest.get('https://backstage.io/not-exists', (_req, res, ctx) => {
+        return res(ctx.status(404));
+      }),
+    );
+
+    worker.use(
+      rest.get('https://backstage.io/error', (_req, res, ctx) => {
+        return res(ctx.status(500), ctx.body('An internal error occured'));
+      }),
+    );
   });
 
   it('factory should create a single entry with a predicate that matches config', async () => {
@@ -69,5 +106,56 @@ describe('FetchUrlReader', () => {
     expect(predicate(new URL('https://examples.org:700/test'))).toBe(false);
     expect(predicate(new URL('https://a.examples.org:700/test'))).toBe(true);
     expect(predicate(new URL('https://a.b.examples.org:700/test'))).toBe(true);
+  });
+
+  describe('read', () => {
+    it('should return etag from the response', async () => {
+      const buffer = await fetchUrlReader.read(
+        'https://backstage.io/some-resource',
+      );
+      expect(buffer.toString()).toBe('content foo');
+    });
+
+    it('should throw NotFound if server responds with 404', async () => {
+      await expect(
+        fetchUrlReader.read('https://backstage.io/not-exists'),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should throw Error if server responds with 500', async () => {
+      await expect(
+        fetchUrlReader.read('https://backstage.io/error'),
+      ).rejects.toThrow(Error);
+    });
+  });
+
+  describe('readUrl', () => {
+    it('should throw NotModified if server responds with 304', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/some-resource', {
+          etag: 'foo',
+        }),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should return etag from the response', async () => {
+      const response = await fetchUrlReader.readUrl(
+        'https://backstage.io/some-resource',
+      );
+      expect(response.etag).toBe('foo');
+      expect((await response.buffer()).toString()).toEqual('content foo');
+    });
+
+    it('should throw NotFound if server responds with 404', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/not-exists'),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should throw Error if server responds with 500', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/error'),
+      ).rejects.toThrow(Error);
+    });
   });
 });
