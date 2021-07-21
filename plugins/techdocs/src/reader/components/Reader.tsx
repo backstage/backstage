@@ -61,18 +61,18 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
 
 export const Reader = ({ entityId, onReady }: Props) => {
   const { kind, namespace, name } = entityId;
-  const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
   const classes = useStyles();
 
   const {
     state,
+    path,
     contentReload,
     content: rawPage,
     contentErrorMessage,
     syncErrorMessage,
     buildLog,
-  } = useReaderState(kind, namespace, name, path);
+  } = useReaderState(kind, namespace, name, useParams()['*']);
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
@@ -322,6 +322,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   useEffect(() => {
     if (!rawPage || !shadowDomRef.current) {
+      // clear the shadow dom if no content is available
+      if (shadowDomRef.current?.shadowRoot) {
+        shadowDomRef.current.shadowRoot.innerHTML = '';
+      }
       return () => {};
     }
     if (onReady) {
