@@ -1,9 +1,9 @@
 name: FOSSA
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+on: {}
+  # push:
+  #   branches: [master]
+  # pull_request:
+  #   branches: [master]
 
 jobs:
   analyze:
@@ -22,3 +22,4 @@ jobs:
           GITHUB_REF: $GITHUB_REF
           FOSSA_API_KEY: 9ee7e8893660832a7387dcc32377fb61
         run: node scripts/run-fossa.js
+``
