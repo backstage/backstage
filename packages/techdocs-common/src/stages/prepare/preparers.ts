@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { parseReferenceAnnotation } from '../../helpers';
-import { CommonGitPreparer } from './commonGit';
 import { DirectoryPreparer } from './dir';
-import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
+import { CommonGitPreparer } from './commonGit';
 import { UrlPreparer } from './url';
+import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
 
 type factoryOptions = {
   logger: Logger;
@@ -66,7 +65,7 @@ export class Preparers implements PreparerBuilder {
       'backstage.io/techdocs-ref',
       entity,
     );
-    const preparer = this.preparerMap.get(type as RemoteProtocol);
+    const preparer = this.preparerMap.get(type);
 
     if (!preparer) {
       throw new Error(`No preparer registered for type: "${type}"`);
