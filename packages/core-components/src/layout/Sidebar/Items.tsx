@@ -44,7 +44,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     drawerWidthOpen,
     iconContainerWidth,
   } = sidebarConfig;
-
   return {
     root: {
       color: theme.palette.navigation.color,
@@ -96,6 +95,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       color: '#b5b5b5',
       fontWeight: 'bold',
       fontSize: theme.typography.fontSize,
+    },
+    searchFieldHTMLInput: {
+      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
     },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
@@ -270,6 +272,9 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
           InputProps={{
             disableUnderline: true,
             className: classes.searchField,
+          }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
           }}
         />
       </SidebarItem>
