@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-export * from './azure';
-export * from './bitbucket';
-export * from './github';
-export * from './gitlab';
-export * from './googleGcs';
-export * from './awsS3';
-export { defaultScmResolveUrl } from './helpers';
-export { ScmIntegrations } from './ScmIntegrations';
-export type { ScmIntegration, ScmIntegrationsGroup } from './types';
-export type { ScmIntegrationRegistry } from './registry';
+export { readAwsS3IntegrationConfig } from './config';
+export type { AwsS3IntegrationConfig } from './config';

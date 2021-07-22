@@ -155,9 +155,12 @@ integrations:
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
-#  googleGcs:
-#    clientEmail: 'example@example.com'
-#    privateKey: ${GCS_PRIVATE_KEY}
+  #  googleGcs:
+  #    clientEmail: 'example@example.com'
+  #    privateKey: ${GCS_PRIVATE_KEY}
+  #  awsS3:
+  #    accessKeyId: ${AWS_ACCESS_KEY_ID}
+  #    secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
   rules:
