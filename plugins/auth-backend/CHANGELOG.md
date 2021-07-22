@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.18
+
+### Patch Changes
+
+- 2567c066d: TokenIssuer is now exported so it may be used by auth providers that are not bundled with Backstage
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+  - @backstage/test-utils@0.1.15
+
 ## 0.3.17
 
 ### Patch Changes
