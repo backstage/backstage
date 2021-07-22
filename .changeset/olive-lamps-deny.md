@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Enhanced deployment accordian to disply the name of namespace.
+Enhanced deployment accordion to display the namespace of the deployment.
