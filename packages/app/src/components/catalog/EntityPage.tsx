@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+/* 
+&&&&&&&&&&&&&&&&&&&&&&&&&&  
+&&&&&&&&&&&&&&&&&&&&&&&&&&&
+TO be Uncommented out at a later time.
+ Lines 290 - 348 &  358 - 403
+ Are commented out until such functionality is added 
+ Or entities are added to components.
+ All dependencies for those lines will be uncommented out at that time.
+&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*/
 import React, { ReactNode, useMemo, useState } from 'react';
 import BadgeIcon from '@material-ui/icons/CallToAction';
 import {
@@ -21,14 +32,14 @@ import {
   EntityConsumingComponentsCard,
   EntityHasApisCard,
   EntityProvidingComponentsCard,
-  EntityProvidedApisCard,
-  EntityConsumedApisCard,
+  // EntityProvidedApisCard,
+  // EntityConsumedApisCard,
 } from '@backstage/plugin-api-docs';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
-  EntityDependsOnComponentsCard,
-  EntityDependsOnResourcesCard,
+  // EntityDependsOnComponentsCard,
+  // EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
@@ -60,11 +71,11 @@ import {
   EntityLatestJenkinsRunCard,
   isJenkinsAvailable,
 } from '@backstage/plugin-jenkins';
-import { EntityKafkaContent } from '@backstage/plugin-kafka';
-import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
+// import { EntityKafkaContent } from '@backstage/plugin-kafka';
+// import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
 import {
   EntityLastLighthouseAuditCard,
-  EntityLighthouseContent,
+  // EntityLighthouseContent,
   isLighthouseAvailable,
 } from '@backstage/plugin-lighthouse';
 import {
@@ -77,11 +88,11 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
-import {
+/* import {
   EntityRollbarContent,
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
-import { EntitySentryContent } from '@backstage/plugin-sentry';
+import { EntitySentryContent } from '@backstage/plugin-sentry'; */
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
@@ -90,14 +101,14 @@ import {
   isBuildkiteAvailable,
 } from '@roadiehq/backstage-plugin-buildkite';
 import {
-  EntityGithubInsightsContent,
+  //  EntityGithubInsightsContent,
   EntityGithubInsightsLanguagesCard,
   EntityGithubInsightsReadmeCard,
   EntityGithubInsightsReleasesCard,
   isGithubInsightsAvailable,
 } from '@roadiehq/backstage-plugin-github-insights';
 import {
-  EntityGithubPullRequestsContent,
+  // EntityGithubPullRequestsContent,
   EntityGithubPullRequestsOverviewCard,
   isGithubPullRequestsAvailable,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
@@ -106,7 +117,7 @@ import {
   EntityTravisCIOverviewCard,
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
+// import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import { EmptyState } from '@backstage/core-components';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -202,7 +213,7 @@ const cicdCard = (
   </EntitySwitch>
 );
 
-const errorsContent = (
+/* const errorsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isRollbarAvailable}>
       <EntityRollbarContent />
@@ -212,7 +223,7 @@ const errorsContent = (
       <EntitySentryContent />
     </EntitySwitch.Case>
   </EntitySwitch>
-);
+); */
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
@@ -281,7 +292,7 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
     </EntityLayout.Route>
-
+    {/*
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
@@ -339,6 +350,7 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+*/}
   </EntityLayoutWrapper>
 );
 
@@ -347,7 +359,7 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
     </EntityLayout.Route>
-
+    {/*
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
@@ -394,6 +406,7 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+*/}
   </EntityLayoutWrapper>
 );
 
