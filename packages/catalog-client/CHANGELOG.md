@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 0.3.17
+
+### Patch Changes
+
+- 71c936eb6: Export `CatalogRequestOptions` type
+
 ## 0.3.16
 
 ### Patch Changes
