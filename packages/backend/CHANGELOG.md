@@ -1,5 +1,18 @@
 # example-backend
 
+## 0.2.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.3.11
+  - @backstage/catalog-client@0.3.17
+  - @backstage/plugin-auth-backend@0.3.18
+  - @backstage/plugin-jenkins-backend@0.1.2
+  - @backstage/backend-common@0.8.7
+  - @backstage/plugin-techdocs-backend@0.9.0
+  - @backstage/plugin-scaffolder-backend@0.14.1
+
 ## 0.2.37
 
 ### Patch Changes

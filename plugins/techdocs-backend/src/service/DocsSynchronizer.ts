@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBuilder,
   PreparerBuilder,
@@ -36,19 +37,23 @@ export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
   private readonly logger: winston.Logger;
   private readonly config: Config;
+  private readonly scmIntegrations: ScmIntegrationRegistry;
 
   constructor({
     publisher,
     logger,
     config,
+    scmIntegrations,
   }: {
     publisher: PublisherBase;
     logger: winston.Logger;
     config: Config;
+    scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.config = config;
     this.logger = logger;
     this.publisher = publisher;
+    this.scmIntegrations = scmIntegrations;
   }
 
   async doSync({
@@ -87,19 +92,20 @@ export class DocsSynchronizer {
       return;
     }
 
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher: this.publisher,
-      logger: taskLogger,
-      entity,
-      config: this.config,
-      logStream,
-    });
-
     let foundDocs = false;
 
     try {
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher: this.publisher,
+        logger: taskLogger,
+        entity,
+        config: this.config,
+        scmIntegrations: this.scmIntegrations,
+        logStream,
+      });
+
       const updated = await docsBuilder.build();
 
       if (!updated) {
