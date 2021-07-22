@@ -697,6 +697,7 @@ export function useEntity<T extends Entity = Entity>(): {
   entity: T;
   loading: boolean;
   error: Error | undefined;
+  refresh: VoidFunction | undefined;
 };
 
 // Warning: (ae-missing-release-tag) "useEntityCompoundName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
