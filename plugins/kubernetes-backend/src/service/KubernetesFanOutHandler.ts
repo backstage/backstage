@@ -26,7 +26,7 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
-const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
+const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
   'pods',
   'services',
   'configmaps',
@@ -34,44 +34,44 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'replicasets',
   'horizontalpodautoscalers',
   'ingresses',
-]);
+];
 
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
+  private readonly objectTypesToFetch: KubernetesObjectTypes[];
 
   constructor(
     logger: Logger,
     fetcher: KubernetesFetcher,
     serviceLocator: KubernetesServiceLocator,
     customResources: CustomResource[],
+    objectTypesToFetch: KubernetesObjectTypes[] = DEFAULT_OBJECTS,
   ) {
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
+    this.objectTypesToFetch = objectTypesToFetch;
   }
 
-  async getKubernetesObjectsByEntity(
-    requestBody: KubernetesRequestBody,
-    objectTypesToFetch: Set<KubernetesObjectTypes> = DEFAULT_OBJECTS,
-  ) {
+  async getKubernetesObjectsByEntity(requestBody: KubernetesRequestBody) {
     const entityName =
       requestBody.entity?.metadata?.annotations?.[
         'backstage.io/kubernetes-id'
       ] || requestBody.entity?.metadata?.name;
 
-    const clusterDetails: ClusterDetails[] = await this.serviceLocator.getClustersByServiceId(
-      entityName,
-    );
+    const clusterDetails: ClusterDetails[] =
+      await this.serviceLocator.getClustersByServiceId(entityName);
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     const promises: Promise<ClusterDetails>[] = clusterDetails.map(cd => {
-      const kubernetesAuthTranslator: KubernetesAuthTranslator = KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-        cd.authProvider,
-      );
+      const kubernetesAuthTranslator: KubernetesAuthTranslator =
+        KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+          cd.authProvider,
+        );
       return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
         cd,
         requestBody,
@@ -98,7 +98,7 @@ export class KubernetesFanOutHandler {
           .fetchObjectsForService({
             serviceId: entityName,
             clusterDetails: clusterDetailsItem,
-            objectTypesToFetch,
+            objectTypesToFetch: new Set(this.objectTypesToFetch),
             labelSelector,
             customResources: this.customResources,
           })
