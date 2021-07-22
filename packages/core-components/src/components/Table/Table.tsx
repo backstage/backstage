@@ -47,7 +47,7 @@ import MTable, {
   MTableHeader,
   MTableToolbar,
   Options,
-} from 'material-table';
+} from '@material-table/core';
 import React, {
   forwardRef,
   MutableRefObject,
