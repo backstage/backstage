@@ -36,7 +36,7 @@
     "@backstage/config": "^0.1.5",
     "@backstage/plugin-kubernetes-common": "^0.1.2",
     "@google-cloud/container": "^2.2.0",
-    "@kubernetes/client-node": "^0.14.0",
+    "@kubernetes/client-node": "^0.15.0",
     "@types/express": "^4.17.6",
     "aws-sdk": "^2.840.0",
     "aws4": "^1.11.0",
