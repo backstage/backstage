@@ -32,7 +32,6 @@
     "@backstage/catalog-model": "^0.9.0",
     "@backstage/config": "^0.1.5",
     "@backstage/integration": "^0.5.8",
-    "@backstage/plugin-app-backend": "^0.3.13",
     "@backstage/plugin-auth-backend": "^0.3.16",
     "@backstage/plugin-badges-backend": "^0.1.8",
     "@backstage/plugin-catalog-backend": "^0.12.0",
@@ -56,7 +55,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^0.95.1",
-    "pg": "^8.3.0",
+    "pg": "^8.6.0",
     "pg-connection-string": "^2.3.0",
     "sqlite3": "^5.0.1",
     "winston": "^3.2.1"

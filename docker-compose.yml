@@ -1,0 +1,41 @@
+version: '3'
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: webapp
+    container_name: backstage-frontend
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+  db:
+    image: "postgres:9.6-alpine"
+    container_name: backstage
+    environment:
+      - POSTGRES_DB=backstage
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+  backstage-backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    image: backstage-backend
+    container_name: backstage-backend
+    environment:
+      - POSTGRES_HOST=db
+      - DB_SERVER=db
+      - POSTGRES_DB=backstage
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+    ports:
+      - '7000:7000'
+volumes:
+  postgres_data:

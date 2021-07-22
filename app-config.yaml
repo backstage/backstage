@@ -1,12 +1,7 @@
 app:
-  title: Inpixon Developer Portal
+  title: Backstage Example App
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
-  #datadogRum:
-  #  clientToken: '123456789'
-  #  applicationId: qwerty
-  #   site: # datadoghq.eu default = datadoghq.com
-  #   env: # optional
 
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
@@ -27,8 +22,12 @@ backend:
   listen:
     port: 7000
   database:
-    client: sqlite3
-    connection: ':memory:'
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      database:  ${POSTGRES_DATABASE}
   cache:
     store: memory
   cors:
@@ -37,8 +36,6 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
-    # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
-    # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   reading:
     allow:
       - host: example.com
@@ -72,7 +69,7 @@ proxy:
   '/pagerduty':
     target: https://api.pagerduty.com
     headers:
-      Authorization: Token token=${PAGERDUTY_TOKEN}
+      Authorization: ${PAGERDUTY_TOKEN}
 
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
@@ -93,7 +90,7 @@ proxy:
       Authorization: ${ILERT_AUTH_HEADER}
 
 organization:
-  name: My Company
+  name: Inpixon
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -134,7 +131,7 @@ kafka:
 integrations:
   github:
     - host: github.com
-      token: ${GITHUB_TOKEN}
+      token: 73495a221c188136bfe2bac141c8da3734f51764 
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -174,7 +171,7 @@ catalog:
     githubOrg:
       providers:
         - target: https://github.com
-          token: ${GITHUB_TOKEN}
+          token: 73495a221c188136bfe2bac141c8da3734f51764 
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api
@@ -221,60 +218,45 @@ catalog:
     # File locations are relative to the current working directory of the
     # backend, for example packages/backend/.
 
-    # Inpixon docs
+    # Backstage example components
+    # The Jibestream test doc to be used in all environments
     - type: url
-      target: https://github.com/Jibestream/techdocs-mapping-cms/blob/master/catalog-info.yaml
+      target: https://github.com/Jibestream/backstage-techdocs-01/blob/master/catalog-info.yaml
       rules:
         - allow: [Group]
-    # Backstage example components
-    - type: file
-      target: ../catalog-model/examples/all-components.yaml
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
-    # Example component for TechDocs
-    - type: file
-      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Backstage example APIs
-    - type: file
-      target: ../catalog-model/examples/all-apis.yaml
-    # Backstage example resources
-    - type: file
-      target: ../catalog-model/examples/all-resources.yaml
-    # Backstage example systems
-    - type: file
-      target: ../catalog-model/examples/all-systems.yaml
-    # Backstage example domains
-    - type: file
-      target: ../catalog-model/examples/all-domains.yaml
-    # Backstage example templates
-    - type: file
-      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
-    # Backstage example groups and users
-    - type: file
-      target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
-  # Use to customize default commit author info used when new components are created
-  # defaultAuthor:
-  #   name: Scaffolder
-  #   email: scaffolder@backstage.io
   github:
     token: ${GITHUB_TOKEN}
+    visibility: private # or 'internal' or 'private' or 'public' // TODO: what happens when I specify it as internal or private.
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token: ${GITLAB_TOKEN}
     visibility: public # or 'internal' or 'private'
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token: ${AZURE_TOKEN}
+  bitbucket:
+    api:
+      host: https://bitbucket.org
+      username: ${BITBUCKET_USERNAME}
+      token: ${BITBUCKET_TOKEN}
+    visibility: public # or or 'private'
 
 auth:
   environment: development
-  ### Providing an auth.session.secret will enable session support in the auth-backend
-  # session:
-  #   secret: custom session secret
   providers:
+    github:
+      development:
+        clientId: c44086066fc2ea77b350 
+        clientSecret: 5e1b77088cb2d821e72a5b5ca914f2a60a379ed0
     okta:
       development:
-        clientId: ${AUTH_OKTA_CLIENT_ID}
-        clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
-        audience: ${AUTH_OKTA_AUDIENCE}
-
+        clientId: 0oa3eontbbmV9Klmk4x7
+        clientSecret: J-aKNZW7s9K5KFd1e6-eCbt6g6dLei-Etsugzdz7
+        audience: https://dev-414194.okta.com 
 costInsights:
   engineerCost: 200000
   products:
