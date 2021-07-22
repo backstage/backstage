@@ -1,5 +1,18 @@
 # @backstage/plugin-git-release-manager
 
+## 0.2.0
+
+### Minor Changes
+
+- a2d8922c9: Enable users to add custom features
+
+  Add more metadata to success callbacks
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+
 ## 0.1.3
 
 ### Patch Changes

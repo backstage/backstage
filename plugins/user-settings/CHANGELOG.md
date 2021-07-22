@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings
 
+## 0.3.1
+
+### Patch Changes
+
+- b5953c1df: Aligns switch left and allows clicking on rows
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+
 ## 0.3.0
 
 ### Minor Changes
