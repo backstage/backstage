@@ -25,14 +25,14 @@ type EntityLoadingStatus = {
   entity?: Entity;
   loading: boolean;
   error?: Error;
-  retry?: VoidFunction;
+  refresh?: VoidFunction;
 };
 
 export const EntityContext = createContext<EntityLoadingStatus>({
   entity: undefined,
   loading: true,
   error: undefined,
-  retry: () => {},
+  refresh: () => {},
 });
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {
@@ -41,7 +41,7 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
 
-  const { value: entity, error, loading, retry } = useAsyncRetry(
+  const { value: entity, error, loading, retry: refresh } = useAsyncRetry(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
@@ -53,13 +53,13 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
     }
   }, [errorApi, navigate, error, loading, entity, name]);
 
-  return { entity, loading, error, retry };
+  return { entity, loading, error, refresh };
 };
 
 /**
  * Grab the current entity from the context and its current loading state.
  */
 export function useEntity<T extends Entity = Entity>() {
-  const { entity, loading, error, retry } = useContext(EntityContext);
-  return { entity: entity as T, loading, error, retry };
+  const { entity, loading, error, refresh } = useContext(EntityContext);
+  return { entity: entity as T, loading, error, refresh };
 }

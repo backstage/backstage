@@ -20,10 +20,10 @@ import {
 import React, { ReactNode } from 'react';
 
 export const EntityLoaderProvider = ({ children }: { children: ReactNode }) => {
-  const { entity, loading, error, retry } = useEntityFromUrl();
+  const { entity, loading, error, refresh } = useEntityFromUrl();
 
   return (
-    <EntityContext.Provider value={{ entity, loading, error, retry }}>
+    <EntityContext.Provider value={{ entity, loading, error, refresh }}>
       {children}
     </EntityContext.Provider>
   );
