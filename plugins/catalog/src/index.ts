@@ -23,6 +23,7 @@ export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
 export { CreateComponentButton } from './components/CreateComponentButton';
 export { EntityLayout } from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
+export * from './components/EntityProcessErrors';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
