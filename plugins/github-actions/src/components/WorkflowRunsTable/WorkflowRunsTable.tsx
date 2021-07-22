@@ -130,8 +130,8 @@ export const WorkflowRunsTableView = ({
         },
       ]}
       data={runs ?? []}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangePageSize}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangePageSize}
       style={{ width: '100%' }}
       title={
         <Box display="flex" alignItems="center">
