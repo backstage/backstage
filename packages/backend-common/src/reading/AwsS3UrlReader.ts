@@ -104,7 +104,7 @@ export class AwsS3UrlReader implements UrlReader {
   }
 
   async readTree(): Promise<ReadTreeResponse> {
-    throw new Error('AwsS3Reader does not implement search');
+    throw new Error('AwsS3Reader does not implement readTree');
   }
 
   async search(): Promise<SearchResponse> {
