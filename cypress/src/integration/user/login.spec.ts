@@ -19,7 +19,7 @@ import 'os';
 describe('Login', () => {
   it('should render the login page', () => {
     cy.visit('/');
-    cy.contains('Backstage Example App');
+    cy.contains('Select a sign-in method');
   });
 
   it('should be able to login', () => {

@@ -64,12 +64,6 @@ Cypress.Commands.add('getTechDocsNavigation', () => {
   cy.get('[data-md-component="navigation"]');
 });
 
-Cypress.Commands.add('mockTechDocsCSS', () => {
-  cy.intercept('GET', '**/assets/stylesheets/main.fe0cca5b.min.css', {
-    fixture: 'techdocs/style.css',
-  });
-});
-
 Cypress.Commands.add('mockSockJSNode', () => {
   cy.intercept('GET', '**/sockjs-node/info**', {
     body: {

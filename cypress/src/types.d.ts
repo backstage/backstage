@@ -43,11 +43,6 @@ declare namespace Cypress {
      */
     getTechDocsNavigation(): Chainable<Element>;
     /**
-     * Mock Techdocs CSS
-     * @example cy.mockTechDocsCSS
-     */
-    mockTechDocsCSS(): Chainable<Element>;
-    /**
      * Intercept the TechDocs API calls
      * @example cy.interceptTechDocsAPICalls
      */

@@ -19,7 +19,6 @@ import 'os';
 describe('TechDocs', () => {
   beforeEach(() => {
     cy.loginAsGuest();
-    cy.mockTechDocsCSS();
     cy.mockSockJSNode();
     cy.interceptTechDocsAPICalls();
   });
@@ -39,7 +38,6 @@ describe('TechDocs', () => {
 
     it('should navigate to the TechDocs home page from the URL', () => {
       cy.visit('/docs');
-
       cy.wait(500);
 
       cy.contains('Documentation');
