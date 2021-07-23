@@ -1,0 +1,271 @@
+# Default values for backstage.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+frontend:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: inpixon.jfrog.io/backstage/frontend
+    tag: latest
+    pullPolicy: Always
+  containerPort: 80
+  serviceType: ClusterIP
+  resources:
+    requests:
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
+backend:
+  enabled: true
+  nodeEnv: development
+  demoData: true
+  replicaCount: 1
+  image:
+    repository: inpixon.jfrog.io/backstage/backend
+    tag: latest
+    pullPolicy: Always
+  containerPort: 7000
+  serviceType: ClusterIP
+  postgresCertMountEnabled: true
+  resources:
+    requests:
+      memory: 512Mi
+    limits:
+      memory: 1024Mi
+
+# lighthouse:
+  # enabled: true
+  # replicaCount: 1
+  # image:
+  #   repository: roadiehq/lighthouse-audit-service
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  # containerPort: 3003
+  # serviceType: ClusterIP
+  # postgresCertMountEnabled: true
+  # resources:
+  #   requests:
+  #     memory: 128Mi
+  #   limits:
+  #     memory: 256Mi
+  # database:
+  #   connection:
+  #     port:
+  #     host:
+  #     user:
+  #     password:
+  #     database: lighthouse_audit_service
+  #   pathToDatabaseCa:
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+
+deployment:
+  # Annotations to add to the deployment
+  annotations: {}
+  ## Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to makesure the pods is destroyed first.
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ## Example:
+  ## updateStrategy:
+  ##  type: RollingUpdate
+  ##  rollingUpdate:
+  ##    maxSurge: 25%
+  ##    maxUnavailable: 25%
+  ##
+  updateStrategy:
+    type: RollingUpdate
+
+
+image:
+  repository: https://inpixon.jfrog.io/artifactory/backstage/
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 0.0.1
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+  path: /settings
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 5
+  path: /settings
+
+nginxConfig: |-
+  server {
+  listen 80;
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+    }
+    error_page   500 502 503 504  /50x.html;
+
+    location = /50x.html {
+    root   /usr/share/nginx/html;
+    }
+  }
+
+nameOverride: ''
+fullnameOverride: ''
+
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+
+# issuer:
+#   email:
+#   clusterIssuer: 'letsencrypt-staging'
+
+# global:
+#   postgresql:
+#     postgresqlUsername: postgres
+#     caFilename: ca.crt
+#   nodeSelector: {}
+
+postgresql:
+  enabled: true
+  nameOverride: postgresql
+  tls:
+    enabled: true
+    certificatesSecret: backstage-postgresql-certs
+    certFilename: tls.crt
+    certKeyFilename: tls.key
+  volumePermissions:
+    enabled: true
+  initdbScriptsSecret: backstage-postgresql-initdb
+
+appConfig:
+  app:
+    baseUrl: http://localhost
+    title: Backstage
+    googleAnalyticsTrackingId:
+  backend:
+    baseUrl: http://localhost
+    listen:
+      port: 7000
+    cors:
+      origin: http://localhost
+      methods: [GET, POST, PUT, DELETE]
+      credentials: true
+    database:
+      client: pg
+      connection:
+        database: backstage
+        host: localhost
+        user: postgres
+        port: 5432
+        password: postgres
+        # ssl:
+        #   rejectUnauthorized: false
+        #   ca:
+  # sentry:
+  #   organization: example-org-name
+  # techdocs:
+  #   storageUrl: https://demo.example.com/api/techdocs/static/docs
+  #   requestUrl: https://demo.example.com/api/techdocs
+  # lighthouse:
+  #   baseUrl: https://demo.example.com/lighthouse-api
+  # rollbar:
+  #   organization: example-org-name
+
+  # Auth config has recently moved into the app config file in upstream Backstage. However,
+  # most of this config simply mandates that items like the client id and client secret should
+  # be picked up from the environment variables named below. Those environment variables are
+  # set in this helm controlled environment by the 'auth' configuration below this section.
+  # Thus, the only key in this config which directly controls an app config is the
+  # auth.providers.github.development.appOrigin property.
+  auth:
+    providers:
+      # google:
+      #   development:
+      #     appOrigin: 'http://localhost:3000/'
+      #     secure: false
+      #     clientId: ${AUTH_GOOGLE_CLIENT_ID}
+      #     clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+      github:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: 32f78dc124598e901e2d
+          clientSecret: $88ec44a9e8ccab13e0347513f58892ce2e4861e5
+      okta:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: 0oa3eontbbmV9Klmk4x7
+          clientSecret: J-aKNZW7s9K5KFd1e6-eCbt6g6dLei-Etsugzdz7
+          audience: https://dev-414194.okta.com
+      
+
+# auth:
+  # google:
+  #   clientId: a
+  #   clientSecret: a
+  # github:
+  #   clientId: c
+  #   clientSecret: c
+  # gitlab:
+  #   clientId: b
+  #   clientSecret: b
+  #   baseUrl: b
+  # okta:
+  #   clientId: b
+  #   clientSecret: b
+  #   audience: b
+  # oauth2:
+  #   clientId: b
+  #   clientSecret: b
+  #   authUrl: b
+  #   tokenUrl: b
+  # auth0:
+  #   clientId: b
+  #   clientSecret: b
+  #   domain: b
+  # microsoft:
+  #   clientId: f
+  #   clientSecret: f
+  #   tenantId: f
+  # azure:
+  #   api:
+  #     token: h
+  # sentryToken: e
+  # rollbarAccountToken: f
+  # # This is a 'Personal Access Token'
+  # circleciAuthToken: r
+  # # Used by the scaffolder to create GitHub repos. Must have 'repo' scope.
+  # githubToken: g
+  # gitlabToken: g
+  # newRelicRestApiKey: r
+  # travisciAuthToken: fake-travis-ci-auth-token
+  # pagerdutyToken: h
+service:
+  type: LoadBalancer
+  ports:
+    name: "backstage-port"
+    port: 80
+    targetPort: 80
+  annotations: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
