@@ -6,7 +6,7 @@ title: Amazon Web Services S3 Locations
 description: Setting up an integration with Amazon Web Services S3
 ---
 
-The AWS S3 integration supports loading catalog entities from from an S3 Bucket.
+The AWS S3 integration supports loading catalog entities from an S3 Bucket.
 Entities can be added to
 [static catalog configuration](../../features/software-catalog/configuration.md),
 or registered with the
