@@ -20,7 +20,7 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
-import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { apiDocsPlugin } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -31,19 +31,9 @@ import {
   CatalogImportPage,
   catalogImportPlugin,
 } from '@backstage/plugin-catalog-import';
-import {
-  CostInsightsLabelDataflowInstructionsPage,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-} from '@backstage/plugin-cost-insights';
 import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
-import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
-import { LighthousePage } from '@backstage/plugin-lighthouse';
-import { NewRelicPage } from '@backstage/plugin-newrelic';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
@@ -119,7 +109,10 @@ const routes = (
     <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
-    <Route
+    <Route path="/search" element={<SearchPage />}>
+      {searchPage}
+    </Route>
+    {/* <Route
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
@@ -129,9 +122,7 @@ const routes = (
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
-    <Route path="/search" element={<SearchPage />}>
-      {searchPage}
-    </Route>
+
     <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
       path="/cost-insights/investigating-growth"
@@ -140,7 +131,7 @@ const routes = (
     <Route
       path="/cost-insights/labeling-jobs"
       element={<CostInsightsLabelDataflowInstructionsPage />}
-    />
+    />*/}
     <Route path="/settings" element={<UserSettingsPage />} />
   </FlatRoutes>
 );
