@@ -25,7 +25,7 @@ import React, {
   useState,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
 import { catalogApiRef } from '../api';
 import {
   EntityKindFilter,
@@ -102,6 +102,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => {
+  const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
   const [searchParams, setSearchParams] = useSearchParams();
   const allQueryParams = qs.parse(searchParams.toString());
@@ -164,12 +165,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         });
       }
 
-      setSearchParams(
-        qs.stringify({ ...allQueryParams, filters: queryParams }),
-        {
-          replace: true,
-        },
-      );
+      if (isMounted()) {
+        setSearchParams(
+          qs.stringify({ ...allQueryParams, filters: queryParams }),
+          {
+            replace: true,
+          },
+        );
+      }
     },
     [catalogApi, requestedFilters, outputState],
     { loading: true },
