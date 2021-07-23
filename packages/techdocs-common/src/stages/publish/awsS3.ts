@@ -16,7 +16,7 @@
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
-import { ListObjectsV2Output, ManagedUpload } from 'aws-sdk/clients/s3';
+import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import express from 'express';
 import fs from 'fs-extra';
