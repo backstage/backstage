@@ -113,14 +113,21 @@ export const lowerCaseEntityTripletInStoragePath = (
   const lowerKind = kind.toLowerCase();
   const lowerName = name.toLowerCase();
   return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
-}
+};
 
 // Only returns the files that existed previously and are not present anymore.
 export const getStaleFiles = (
   newFiles: string[],
   oldFiles: string[],
+  remoteFolder?: string,
 ): string[] => {
-  const staleFiles = new Set(oldFiles);
+  let filteredFiles = [...oldFiles];
+  if (remoteFolder) {
+    filteredFiles = filteredFiles.filter(filePath =>
+      filePath.match(remoteFolder),
+    );
+  }
+  const staleFiles = new Set(filteredFiles);
   newFiles.forEach(newFile => {
     staleFiles.delete(newFile);
   });
