@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
   db:
-    image: "postgres:9.6-alpine"
+    image: "postgres:latest"
     container_name: backstage
     environment:
       - POSTGRES_DB=backstage
@@ -29,7 +29,7 @@ services:
     container_name: backstage-backend
     environment:
       - POSTGRES_HOST=db
-      - DB_SERVER=db
+      # - DB_SERVER=db
       - POSTGRES_DB=backstage
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
