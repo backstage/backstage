@@ -147,11 +147,25 @@ export type GoogleProviderOptions = {
 //
 // @public
 export class IdentityClient {
-  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
+  // Warning: (ae-forgotten-export) The symbol "TokenFactory" needs to be exported by the entry point index.d.ts
+  constructor(
+    issuer: string,
+    tokenFactory: TokenFactory,
+    publicKeyStore: JWKS.KeyStore,
+    publicKeyStoreUpdated: number,
+  );
   authenticate(token: string | undefined): Promise<BackstageIdentity>;
+  // (undocumented)
+  static create(options: {
+    database: PluginDatabaseManager;
+    discovery: PluginEndpointDiscovery;
+    logger: Logger_2;
+  }): Promise<IdentityClient>;
   static getBearerToken(
     authorizationHeader: string | undefined,
   ): string | undefined;
+  // Warning: (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+  issueToken(params: TokenParams): Promise<string>;
   listPublicKeys(): Promise<{
     keys: JSONWebKey[];
   }>;
@@ -160,7 +174,7 @@ export class IdentityClient {
 // Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>
+export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // Warning: (ae-missing-release-tag) "MicrosoftProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -176,7 +190,7 @@ export type MicrosoftProviderOptions = {
 //
 // @public (undocumented)
 export class OAuthAdapter implements AuthProviderRouteHandlers {
-  constructor(handlers: OAuthHandlers, options: Options);
+  constructor(handlers: OAuthHandlers, options: Options_2);
   // (undocumented)
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
@@ -186,7 +200,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
     options: Pick<
-      Options,
+      Options_2,
       'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
     >,
   ): OAuthAdapter;
@@ -377,7 +391,6 @@ export type WebMessageResponse =
 
 // Warnings were encountered during analysis:
 //
-// src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/google/provider.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:105:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
