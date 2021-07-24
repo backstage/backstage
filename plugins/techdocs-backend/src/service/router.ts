@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  PluginCacheManager,
+} from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -31,6 +34,7 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
+import { createCacheMiddleware, TechDocsCache } from '../cache';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -44,6 +48,7 @@ type OutOfTheBoxDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
+  cache?: PluginCacheManager;
 };
 
 /**
@@ -87,6 +92,14 @@ export async function createRouter(
     config,
     scmIntegrations,
   });
+
+  // Set up a cache client if configured.
+  let cache: TechDocsCache | undefined;
+  const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
+  if (isOutOfTheBoxOption(options) && options.cache && defaultTtl) {
+    const cacheClient = options.cache.getClient({ defaultTtl });
+    cache = new TechDocsCache({ cache: cacheClient, logger });
+  }
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
@@ -198,6 +211,11 @@ export async function createRouter(
       ),
     );
   });
+
+  // If a cache manager was provided, attach the cache middleware.
+  if (cache) {
+    router.use(createCacheMiddleware({ logger, cache }));
+  }
 
   // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());

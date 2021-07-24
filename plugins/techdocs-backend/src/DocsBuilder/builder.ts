@@ -36,6 +36,7 @@ import path from 'path';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
+import { TechDocsCache } from '../cache';
 
 type DocsBuilderArguments = {
   preparers: PreparerBuilder;
@@ -46,6 +47,7 @@ type DocsBuilderArguments = {
   config: Config;
   scmIntegrations: ScmIntegrationRegistry;
   logStream?: Writable;
+  cache?: TechDocsCache;
 };
 
 export class DocsBuilder {
@@ -57,6 +59,7 @@ export class DocsBuilder {
   private config: Config;
   private scmIntegrations: ScmIntegrationRegistry;
   private logStream: Writable | undefined;
+  private cache?: TechDocsCache;
 
   constructor({
     preparers,
@@ -67,6 +70,7 @@ export class DocsBuilder {
     config,
     scmIntegrations,
     logStream,
+    cache,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -76,6 +80,7 @@ export class DocsBuilder {
     this.config = config;
     this.scmIntegrations = scmIntegrations;
     this.logStream = logStream;
+    this.cache = cache;
   }
 
   /**
@@ -210,10 +215,15 @@ export class DocsBuilder {
       )}`,
     );
 
-    await this.publisher.publish({
+    const published = await this.publisher.publish({
       entity: this.entity,
       directory: outputDir,
     });
+
+    // Invalidate the cache for any published objects.
+    if (this.cache && published?.objects?.length) {
+      await this.cache.invalidateMultiple(published.objects);
+    }
 
     try {
       // Not a blocker hence no need to await this.
