@@ -112,7 +112,7 @@ export const createCacheMiddleware = ({
     };
 
     // When a socket is closed, if there were no errors and the data written
-    // over the socket should be cached, cache it as a base64-encoded string!
+    // over the socket should be cached, cache it!
     socket.on('close', hadError => {
       if (writeToCache && !hadError) {
         cache.set(reqPath, Buffer.concat(chunks));

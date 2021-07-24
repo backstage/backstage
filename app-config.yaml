@@ -113,7 +113,7 @@ techdocs:
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
   cache:
-    ttl: 60000 # 1 minute cache for demonstration purposes. You may wish to set this higher in production.
+    ttl: 3600000 # 1 hour cache for demonstration purposes. You may wish to set this higher in production.
 sentry:
   organization: my-company
 
