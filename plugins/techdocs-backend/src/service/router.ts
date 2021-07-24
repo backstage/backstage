@@ -85,13 +85,6 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
-  const scmIntegrations = ScmIntegrations.fromConfig(config);
-  const docsSynchronizer = new DocsSynchronizer({
-    publisher,
-    logger,
-    config,
-    scmIntegrations,
-  });
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
@@ -100,6 +93,15 @@ export async function createRouter(
     const cacheClient = options.cache.getClient({ defaultTtl });
     cache = new TechDocsCache({ cache: cacheClient, logger });
   }
+
+  const scmIntegrations = ScmIntegrations.fromConfig(config);
+  const docsSynchronizer = new DocsSynchronizer({
+    publisher,
+    logger,
+    config,
+    scmIntegrations,
+    cache,
+  });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;

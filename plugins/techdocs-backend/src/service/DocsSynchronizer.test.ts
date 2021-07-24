@@ -25,6 +25,7 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
+import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
@@ -52,6 +53,12 @@ describe('DocsSynchronizer', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
+  const cache: jest.Mocked<TechDocsCache> = ({
+    get: jest.fn(),
+    set: jest.fn(),
+    invalidate: jest.fn(),
+    invalidateMultiple: jest.fn(),
+  } as unknown) as jest.Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
@@ -71,6 +78,7 @@ describe('DocsSynchronizer', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+      cache,
     });
   });
 

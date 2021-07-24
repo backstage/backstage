@@ -25,6 +25,7 @@ import {
 } from '@backstage/techdocs-common';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
+import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 
 export type DocsSynchronizerSyncOpts = {
@@ -38,22 +39,26 @@ export class DocsSynchronizer {
   private readonly logger: winston.Logger;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
+  private readonly cache: TechDocsCache | undefined;
 
   constructor({
     publisher,
     logger,
     config,
     scmIntegrations,
+    cache,
   }: {
     publisher: PublisherBase;
     logger: winston.Logger;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
+    cache: TechDocsCache | undefined;
   }) {
     this.config = config;
     this.logger = logger;
     this.publisher = publisher;
     this.scmIntegrations = scmIntegrations;
+    this.cache = cache;
   }
 
   async doSync({
@@ -104,6 +109,7 @@ export class DocsSynchronizer {
         config: this.config,
         scmIntegrations: this.scmIntegrations,
         logStream,
+        cache: this.cache,
       });
 
       const updated = await docsBuilder.build();
