@@ -114,8 +114,10 @@ export const createCacheMiddleware = ({
     // When a socket is closed, if there were no errors and the data written
     // over the socket should be cached, cache it!
     socket.on('close', hadError => {
-      if (writeToCache && !hadError) {
-        cache.set(reqPath, Buffer.concat(chunks));
+      const content = Buffer.concat(chunks);
+      const head = content.toString('utf8', 0, 12);
+      if (writeToCache && !hadError && head === 'HTTP/1.1 200') {
+        cache.set(reqPath, content);
       }
     });
 
