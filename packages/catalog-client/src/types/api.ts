@@ -16,7 +16,7 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
-export const CATALOG_FILTER_EXISTS = Symbol();
+export const CATALOG_FILTER_EXISTS = Symbol('CATALOG_FILTER_EXISTS');
 
 export type CatalogEntitiesRequest = {
   filter?:
