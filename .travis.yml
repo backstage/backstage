@@ -12,38 +12,39 @@ jobs:
     - name: 'Backstage Build'
     - language: node_js
     - node_js: 14
-    before_script:
-      - curl -o- -L https://yarnpkg.com/install.sh | bash
-      - if [ $TRAVIS_BRANCH == 'master' ]; then
-          export ENVIRONMENT='production';
-        fi
-      - if [ $TRAVIS_BRANCH == 'development' ]; then
-          export ENVIRONMENT='development';
-        fi
-      - if [ -z $ENVIRONMENT ]; then
-        export ENVIRONMENT='development';
-      # - git config --global user.email "developer@jibestream.com"
-      # - git config --global user.name "jibestreamdev"
-      # - git remote set-url origin https://${GH_TOKEN}@github.com/Jibestream/backstage.git
-      # - git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-    script:
-      - cd $TRAVIS_BUILD_DIR/
-      fi
-      # - export VERSION=`node -p "require('./package.json').version"`
-      # - if [ $ENVIRONMENT == 'development' ]; then
-      #     export VERSION=$VERSION.$TRAVIS_BUILD_NUMBER;
-      #   fi
-      # - echo "Going to stamp $VERSION on this build..."
-      - docker login inpixon.jfrog.io -u $JFROG_USERNAME -p $JFROG_PASSWORD
-      - COMPOSE_PROJECT_NAME=backstage docker-compose build
-      - docker tag webapp:latest inpixon.jfrog.io/backstage/frontend:latest
-      - docker tag backstage-backend:latest inpixon.jfrog.io/backstage/backend:latest
-      - docker push inpixon.jfrog.io/backstage/frontend:latest
-      - docker push inpixon.jfrog.io/backstage/backend:latest
-      - cd $TRAVIS_BUILD_DIR/
-      # - git fetch --tags
-      # - git checkout development
-      # - "sed -i -e \"s/tag: .*$/tag: $VERSION/g\" iip-vue-$ENVIRONMENT-custom-values.yaml"
-      # - git add iip-vue-$ENVIRONMENT-custom-values.yaml
-      # - git commit -m "Version stamp $VERSION in $ENVIRONMENT. [ci skip]"
-      # - git push
+
+before_script:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - if [ $TRAVIS_BRANCH == 'master' ]; then
+    export ENVIRONMENT='production';
+    fi
+  - if [ $TRAVIS_BRANCH == 'development' ]; then
+    export ENVIRONMENT='development';
+    fi
+  - if [ -z $ENVIRONMENT ]; then
+    export ENVIRONMENT='development';
+  # - git config --global user.email "developer@jibestream.com"
+  # - git config --global user.name "jibestreamdev"
+  # - git remote set-url origin https://${GH_TOKEN}@github.com/Jibestream/backstage.git
+  # - git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+
+# script:
+#   - cd $TRAVIS_BUILD_DIR/
+#   # - export VERSION=`node -p "require('./package.json').version"`
+#   # - if [ $ENVIRONMENT == 'development' ]; then
+#   #     export VERSION=$VERSION.$TRAVIS_BUILD_NUMBER;
+#   #   fi
+#   # - echo "Going to stamp $VERSION on this build..."
+#   - docker login inpixon.jfrog.io -u $JFROG_USERNAME -p $JFROG_PASSWORD
+#   - COMPOSE_PROJECT_NAME=backstage docker-compose build
+#   - docker tag webapp:latest inpixon.jfrog.io/backstage/frontend:latest
+#   - docker tag backstage-backend:latest inpixon.jfrog.io/backstage/backend:latest
+#   - docker push inpixon.jfrog.io/backstage/frontend:latest
+#   - docker push inpixon.jfrog.io/backstage/backend:latest
+#   - cd $TRAVIS_BUILD_DIR/
+#   # - git fetch --tags
+#   # - git checkout development
+#   # - "sed -i -e \"s/tag: .*$/tag: $VERSION/g\" iip-vue-$ENVIRONMENT-custom-values.yaml"
+#   # - git add iip-vue-$ENVIRONMENT-custom-values.yaml
+#   # - git commit -m "Version stamp $VERSION in $ENVIRONMENT. [ci skip]"
+#   # - git push
