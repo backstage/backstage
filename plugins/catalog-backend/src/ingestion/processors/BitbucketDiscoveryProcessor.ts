@@ -84,13 +84,15 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     this.logger.info(`Reading Bitbucket repositories from ${location.target}`);
 
     const { catalogPath } = parseUrl(location.target);
+    const expandedCatalogPath =
+      catalogPath === '/' ? '/catalog-info.yaml' : catalogPath;
 
     const result = await readBitbucketOrg(client, location.target);
 
     for (const repository of result.matches) {
       for await (const entity of this.parser({
         integration: integration,
-        target: `${repository.links.self[0].href}${catalogPath}`,
+        target: `${repository.links.self[0].href}${expandedCatalogPath}`,
         logger: this.logger,
       })) {
         emit(entity);

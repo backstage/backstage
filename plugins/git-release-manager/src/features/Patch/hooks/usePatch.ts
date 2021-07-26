@@ -22,7 +22,11 @@ import {
 } from '../../../api/GitReleaseClient';
 
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
-import { ComponentConfigPatch, CardHook } from '../../../types/types';
+import {
+  CardHook,
+  ComponentConfig,
+  PatchOnSuccessArgs,
+} from '../../../types/types';
 import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
@@ -32,12 +36,12 @@ import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
 
-interface Patch {
+export interface UsePatch {
   bumpedTag: string;
   latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
-  onSuccess?: ComponentConfigPatch['onSuccess'];
+  onSuccess?: ComponentConfig<PatchOnSuccessArgs>['onSuccess'];
 }
 
 // Inspiration: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
@@ -47,7 +51,7 @@ export function usePatch({
   project,
   tagParts,
   onSuccess,
-}: Patch): CardHook<GetRecentCommitsResultSingle> {
+}: UsePatch): CardHook<GetRecentCommitsResultSingle> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
   const {
@@ -337,13 +341,19 @@ ${selectedPatchCommit.commit.message}`,
 
     try {
       await onSuccess?.({
-        updatedReleaseUrl: updatedReleaseRes.value.htmlUrl,
-        updatedReleaseName: updatedReleaseRes.value.name,
-        previousTag: latestRelease.tagName,
-        patchedTag: updatedReleaseRes.value.tagName,
-        patchCommitUrl: releaseBranchRes.value.selectedPatchCommit.htmlUrl,
+        input: {
+          bumpedTag,
+          latestRelease,
+          project,
+          tagParts,
+        },
         patchCommitMessage:
           releaseBranchRes.value.selectedPatchCommit.commit.message,
+        patchCommitUrl: releaseBranchRes.value.selectedPatchCommit.htmlUrl,
+        patchedTag: updatedReleaseRes.value.tagName,
+        previousTag: latestRelease.tagName,
+        updatedReleaseName: updatedReleaseRes.value.name,
+        updatedReleaseUrl: updatedReleaseRes.value.htmlUrl,
       });
     } catch (error) {
       asyncCatcher(error);

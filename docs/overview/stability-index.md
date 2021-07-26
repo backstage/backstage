@@ -332,8 +332,7 @@ Stability: `1`
 The backend scaffolder plugin that provides an implementation for templates in
 the catalog.
 
-Stability: `1`. There is planned work to rework the scaffolder in
-https://github.com/backstage/backstage/issues/2771.
+Stability: `2`.
 
 ### `tech-radar` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/tech-radar/)
 

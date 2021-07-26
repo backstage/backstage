@@ -1,5 +1,12 @@
 # @backstage/plugin-search-backend-node
 
+## 0.4.0
+
+### Minor Changes
+
+- 97b2eb37b: Change return value of `SearchEngine.index` to `Promise<void>` to support
+  implementation of external search engines.
+
 ## 0.3.0
 
 ### Minor Changes

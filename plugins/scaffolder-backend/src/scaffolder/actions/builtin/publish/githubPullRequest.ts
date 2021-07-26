@@ -49,10 +49,7 @@ export type GithubPullRequestActionInput = {
   title: string;
   branchName: string;
   description: string;
-  owner?: string;
-  repo?: string;
-  repoUrl?: string;
-  host?: string;
+  repoUrl: string;
   targetPath?: string;
   sourcePath?: string;
 };
@@ -119,18 +116,13 @@ export const createPublishGithubPullRequestAction = ({
     id: 'publish:github:pull-request',
     schema: {
       input: {
-        required: ['owner', 'repo', 'title', 'description', 'branchName'],
+        required: ['repoUrl', 'title', 'description', 'branchName'],
         type: 'object',
         properties: {
-          owner: {
+          repoUrl: {
+            title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username`,
             type: 'string',
-            title: 'Repository owner',
-            description: 'The owner of the target repository',
-          },
-          repo: {
-            type: 'string',
-            title: 'Repository',
-            description: 'The github repository to create the file in',
           },
           branchName: {
             type: 'string',
@@ -173,8 +165,6 @@ export const createPublishGithubPullRequestAction = ({
       },
     },
     async handler(ctx) {
-      let { owner, repo } = ctx.input;
-      let host = 'github.com';
       const {
         repoUrl,
         branchName,
@@ -184,18 +174,7 @@ export const createPublishGithubPullRequestAction = ({
         sourcePath,
       } = ctx.input;
 
-      if (repoUrl) {
-        const parsed = parseRepoUrl(repoUrl);
-        host = parsed.host;
-        owner = parsed.owner;
-        repo = parsed.repo;
-      }
-
-      if (!host || !owner || !repo) {
-        throw new InputError(
-          'must provide either valid repo URL or owner and repo as parameters',
-        );
-      }
+      const { owner, repo, host } = parseRepoUrl(repoUrl);
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath

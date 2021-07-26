@@ -23,6 +23,7 @@ import {
   dirname,
   join,
 } from 'path';
+import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -61,6 +62,27 @@ PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackag
   return old.call(this, path);
 };
 
+/**
+ * Another monkey patch where we apply prettier to the API reports. This has to be patched into
+ * the middle of the process as API Extractor does a comparison of the contents of the old
+ * and new files during generation. This inserts the formatting just before that comparison.
+ */
+const {
+  ApiReportGenerator,
+} = require('@microsoft/api-extractor/lib/generators/ApiReportGenerator');
+
+const originalGenerateReviewFileContent =
+  ApiReportGenerator.generateReviewFileContent;
+ApiReportGenerator.generateReviewFileContent = function decoratedGenerateReviewFileContent(
+  ...args
+) {
+  const content = originalGenerateReviewFileContent.apply(this, args);
+  return prettier.format(content, {
+    ...require('@spotify/prettier-config'),
+    parser: 'markdown',
+  });
+};
+
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const SKIPPED_PACKAGES = [
@@ -73,14 +95,6 @@ const SKIPPED_PACKAGES = [
   'packages/e2e-test',
   'packages/storybook',
   'packages/techdocs-cli',
-
-  // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  'packages/core-components',
-  'plugins/catalog',
-  'plugins/catalog-backend',
-  'plugins/catalog-react',
-  'plugins/github-deployments',
-  'plugins/sentry-backend',
 ];
 
 async function findPackageDirs() {
@@ -136,16 +150,11 @@ async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
-    const packagePath = resolvePath(__dirname, `../${packageDir}/package.json`);
+    const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(
-          __dirname,
-          '../dist-types',
-          packageDir,
-          'src/index.d.ts',
-        ),
+        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
         bundledPackages: [],
 
         compiler: {
@@ -176,7 +185,7 @@ async function runApiExtraction({
         },
 
         messages: {
-          // Silence warnings, as these will prevent the CI build to work
+          // Silence compiler warnings, as these will prevent the CI build to work
           compilerMessageReporting: {
             default: {
               logLevel: 'none' as ExtractorLogLevel.None,
@@ -186,14 +195,14 @@ async function runApiExtraction({
           },
           extractorMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
           tsdocMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
         },
@@ -203,8 +212,15 @@ async function runApiExtraction({
         projectFolder,
       },
       configObjectFullPath: projectFolder,
-      packageJsonFullPath: packagePath,
+      packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
     });
+
+    // The `packageFolder` needs to point to the location within `dist-types` in order for relative
+    // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
+    // which needs to point to the actual file, so we override `packageFolder` afterwards.
+    (extractorConfig as {
+      packageFolder: string;
+    }).packageFolder = packageFolder;
 
     if (!compilerState) {
       compilerState = CompilerState.create(extractorConfig, {
