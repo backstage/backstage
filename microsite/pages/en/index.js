@@ -214,7 +214,7 @@ class Index extends React.Component {
                   title="Submit feedback for this feature. Click to learn more about this release."
                   href="https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates"
                 >
-                  (alpha)
+                  (beta)
                 </a>
               </Block.Subtitle>
               <Block.Title small>Standards can set you free</Block.Title>
