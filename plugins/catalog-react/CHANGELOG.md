@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-react
 
+## 0.3.1
+
+### Patch Changes
+
+- 221d7d060: added retry callback to useEntity hook
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/core-app-api@0.1.5
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/core-app-api
 
+## 0.1.5
+
+### Patch Changes
+
+- ea249c6e6: Fix a bug in `FlatRoutes` that prevented outlets from working with the root route, as well as matching root routes too broadly.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+
 ## 0.1.4
 
 ### Patch Changes

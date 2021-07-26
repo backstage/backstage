@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.11
+
+### Patch Changes
+
+- 5bd57f8f5: Support assume role on kubernetes api configuration for AWS.
+- Updated dependencies
+  - @backstage/backend-common@0.8.7
+
 ## 0.3.10
 
 ### Patch Changes

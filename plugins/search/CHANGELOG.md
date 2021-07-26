@@ -1,5 +1,14 @@
 # @backstage/plugin-search
 
+## 0.4.4
+
+### Patch Changes
+
+- 9266b80ab: Adding a type filter to new search
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+
 ## 0.4.3
 
 ### Patch Changes
