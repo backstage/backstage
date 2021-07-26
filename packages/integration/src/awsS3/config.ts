@@ -53,5 +53,5 @@ export function readAwsS3IntegrationConfig(
 
   const secretAccessKey = config.getString('secretAccessKey');
 
-  return { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey };
+  return { accessKeyId, secretAccessKey };
 }

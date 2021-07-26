@@ -163,5 +163,19 @@ export interface Config {
        */
       privateKey?: string;
     };
+
+    /** Integration configuration for AWS S3 Service */
+    awsS3?: {
+      /**
+       * Account access key used to authenticate requests.
+       * @visibility backend
+       */
+      accessKeyID?: string;
+      /**
+       * Account secret key used to authenticate requests.
+       * @visibility secret
+       */
+      secretAccessKey?: string;
+    };
   };
 }

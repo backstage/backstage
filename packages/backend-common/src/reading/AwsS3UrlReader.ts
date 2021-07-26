@@ -34,8 +34,15 @@ const parseURL = (
 ): { path: string; bucket: string; region: string } => {
   let { host, pathname } = new URL(url);
 
+  /**
+   * Removes the trailing '/' from the pathname to be processed
+   * by AWS S3 SDK methods.
+   */
   pathname = pathname.substr(1);
-
+  /** *
+   * This checks that the given URL is a valid S3 object url.
+   * Format of a Valid URL: https://bucket-name.s3.Region.amazonaws.com/keyname
+   */
   const validHost = new RegExp(
     /^[a-z\d][a-z\d\.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
   );
@@ -64,8 +71,8 @@ export class AwsS3UrlReader implements UrlReader {
     );
     let s3: S3;
     if (!awsS3Config.accessKeyId || !awsS3Config.secretAccessKey) {
-      logger.info(
-        'awsS3 credentials not found in config. Using default credentials provider.',
+      logger.debug(
+        'integrations.awsS3 not found in app config. AWS S3 integration will use default AWS credentials if set in environment.',
       );
       s3 = new S3({});
     } else {
