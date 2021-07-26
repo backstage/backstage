@@ -262,12 +262,7 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem
-        icon={SearchIcon}
-        to={props.to}
-        onClick={handleItemClick}
-        text="Search"
-      >
+      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
           value={input}
