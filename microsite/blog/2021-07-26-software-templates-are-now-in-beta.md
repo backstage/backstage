@@ -34,11 +34,13 @@ We’ve totally opened up the ability to compose your own workflows for each Tem
 Template Actions are customizable JavaScript functions that allow you to extend the capabilities of the Software Templates by adding your own business logic or reusing some of our Built-In actions.
 
 ![New template syntax with actions](assets/21-07-26/example-template-code.png)
+
 _An example of the new template syntax with steps and parameters_
 
 The workflow for Software Templates are now step-based, and each Software Template can have a customizable amount of steps which will in turn call these new actions.
 
 ![New steps being rendered in the frontend](assets/21-07-26/steps-running.gif)
+
 _An example of a Template with customizable steps_
 
 These actions are very heavily inspired by GitHub Actions and GitHub Workflows, and we’ve given back a lot of control to the template authors so they can build the boilerplate and push the code however they want.
@@ -50,6 +52,7 @@ A large part of the Software Templates feature is the form that we use to collec
 This is now possible with the new `ScaffolderFieldExtensions`.
 
 ![Custom UI extensions](assets/21-07-26/custom-components.gif)
+
 _An example of `ScaffolderFieldExtension` is the `OwnerPicker` component which can automatically add options and suggest typeahead with data from an async API request_
 
 Template Authors can create their own components to provide data to the custom actions in any way you see fit, and even override our own built in ones too like the `RepoUrlPicker`.
