@@ -82,3 +82,32 @@ export const getFileTreeRecursively = async (
   });
   return fileList;
 };
+
+/**
+ * Returns the version of an object's storage path where the first three parts
+ * of the path (the entity triplet of namespace, kind, and name) are
+ * lower-cased.
+ *
+ * Path must not include a starting slash.
+ *
+ * @example
+ * lowerCaseEntityTripletInStoragePath('default/Component/backstage')
+ * // return default/component/backstage
+ */
+export const lowerCaseEntityTripletInStoragePath = (
+  originalPath: string,
+): string => {
+  const trimmedPath =
+    originalPath[0] === '/' ? originalPath.substring(1) : originalPath;
+  const matches = trimmedPath.match(/\//g) || [];
+  if (matches.length <= 2) {
+    throw new Error(
+      `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
+    );
+  }
+  const [namespace, kind, name, ...parts] = originalPath.split('/');
+  const lowerNamespace = namespace.toLowerCase();
+  const lowerKind = kind.toLowerCase();
+  const lowerName = name.toLowerCase();
+  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+};

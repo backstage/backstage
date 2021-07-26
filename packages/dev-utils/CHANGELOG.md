@@ -1,5 +1,23 @@
 # @backstage/dev-utils
 
+## 0.2.3
+
+### Patch Changes
+
+- 01001a324: Allow custom theme for dev app.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+  - @backstage/core-app-api@0.1.5
+  - @backstage/test-utils@0.1.15
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

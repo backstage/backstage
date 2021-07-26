@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.7.5
+
+### Patch Changes
+
+- 9a96b5da7: chore: bump `eslint` to `7.30.0`
+
+## 0.7.4
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/config-loader@0.6.5
+
 ## 0.7.3
 
 ### Patch Changes

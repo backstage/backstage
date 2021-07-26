@@ -1,5 +1,44 @@
 # @backstage/backend-common
 
+## 0.8.7
+
+### Patch Changes
+
+- f25357273: Implement the etag functionality in the `readUrl` method of `FetchUrlReader`.
+- bdd6ab5f1: It's possible to customize the request logging handler when building the service. For example in your `backend`
+
+  ```
+    const service = createServiceBuilder(module)
+      .loadConfig(config)
+      .setRequestLoggingHandler((logger?: Logger): RequestHandler => {
+        const actualLogger = (logger || getRootLogger()).child({
+          type: 'incomingRequest',
+        });
+        return expressWinston.logger({ ...
+  ```
+
+## 0.8.6
+
+### Patch Changes
+
+- 5f6f2fd96: Support a `ensureExists` config option to skip ensuring a configured database exists. This allows deployment scenarios where
+  limited permissions are given for provisioned databases without privileges to create new databases. If set to `false`, the
+  database connection will not be validated prior to use which means the backend will not attempt to create the database if it
+  doesn't exist. You can configure this in your app-config.yaml:
+
+  ```yaml
+  backend:
+    database:
+      ensureExists: false
+  ```
+
+  This defaults to `true` if unspecified. You can also configure this per plugin connection and will override the base option.
+
+- ad93bb035: Document the default behavior of `statusCheck` option in `createStatusCheckRouter`.
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/config-loader@0.6.5
+
 ## 0.8.5
 
 ### Patch Changes
