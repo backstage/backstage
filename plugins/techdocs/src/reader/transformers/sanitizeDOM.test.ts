@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { createTestShadowDom, FIXTURES } from '../../../test-utils';
-import { Transformer } from '../index';
-import { sanitizeDOM } from './index';
+import { createTestShadowDom, FIXTURES } from '../../test-utils';
+import { Transformer } from './index';
+import { sanitizeDOM } from './sanitizeDOM';
 
 const injectMaliciousLink = (): Transformer => dom => {
   const link = document.createElement('a');

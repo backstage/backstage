@@ -37,7 +37,7 @@
     "@backstage/plugin-catalog-react": "^0.3.0",
     "@backstage/plugin-kubernetes-common": "^0.1.2",
     "@backstage/theme": "^0.2.8",
-    "@kubernetes/client-node": "^0.14.0",
+    "@kubernetes/client-node": "^0.15.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
