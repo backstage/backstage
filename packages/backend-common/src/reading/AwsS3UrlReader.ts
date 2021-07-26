@@ -18,6 +18,8 @@ import aws, { Credentials, S3 } from 'aws-sdk';
 import {
   ReaderFactory,
   ReadTreeResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchResponse,
   UrlReader,
 } from './types';
@@ -36,12 +38,13 @@ const parseURL = (
 
   /**
    * Removes the trailing '/' from the pathname to be processed
-   * by AWS S3 SDK methods.
+   * as a parameter by AWS S3 SDK getObject method.
    */
   pathname = pathname.substr(1);
-  /** *
-   * This checks that the given URL is a valid S3 object url.
-   * Format of a Valid URL: https://bucket-name.s3.Region.amazonaws.com/keyname
+
+  /**
+   * Checks that the given URL is a valid S3 object url.
+   * Format of a Valid S3 URL: https://bucket-name.s3.Region.amazonaws.com/keyname
    */
   const validHost = new RegExp(
     /^[a-z\d][a-z\d\.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
@@ -96,15 +99,40 @@ export class AwsS3UrlReader implements UrlReader {
   ) {}
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
     try {
       const { path, bucket, region } = parseURL(url);
       aws.config.update({ region: region });
 
-      const params = {
-        Bucket: bucket,
-        Key: path,
+      let params;
+      if (options?.etag) {
+        params = {
+          Bucket: bucket,
+          Key: path,
+          IfNoneMatch: options.etag,
+        };
+      } else {
+        params = {
+          Bucket: bucket,
+          Key: path,
+        };
+      }
+
+      const response = this.s3.getObject(params);
+      const buffer = await getRawBody(response.createReadStream());
+      const etag = (await response.promise()).ETag;
+
+      return {
+        buffer: async () => buffer,
+        etag: etag,
       };
-      return await getRawBody(this.s3.getObject(params).createReadStream());
     } catch (e) {
       throw new Error(`Could not retrieve file from S3: ${e.message}`);
     }
