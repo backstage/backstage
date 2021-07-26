@@ -21,9 +21,6 @@ import { AuthResponse } from '../types';
 
 jest.mock('google-auth-library');
 
-const setCredentialsMock = jest.fn();
-const getAccessTokenMock = jest.fn();
-
 const identityResolutionCallbackMock = async (): Promise<AuthResponse<any>> => {
   return {
     backstageIdentity: {
