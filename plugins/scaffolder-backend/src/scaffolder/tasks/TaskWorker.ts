@@ -56,6 +56,8 @@ export class TaskWorker {
     this.handlebars.registerHelper('json', obj => JSON.stringify(obj));
 
     this.handlebars.registerHelper('not', value => !isTruthy(value));
+
+    this.handlebars.registerHelper('eq', (a, b) => a === b);
   }
 
   start() {

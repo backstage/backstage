@@ -29,7 +29,31 @@ export interface Config {
     /**
      * Techdocs generator information
      */
+    generator?: {
+      /**
+       * Where to run the techdocs (mkdocs) generator
+       */
+      runIn: 'local' | 'docker';
+
+      /**
+       * Override the default techdocs docker image
+       */
+      dockerImage?: string;
+
+      /**
+       * Pull the latest docker image
+       */
+      pullImage?: boolean;
+    };
+
+    /**
+     * Techdocs generator information
+     * @deprecated Replaced with techdocs.generator
+     */
     generators?: {
+      /**
+       * @deprecated Use techdocs.generator.runIn
+       */
       techdocs: 'local' | 'docker';
     };
 

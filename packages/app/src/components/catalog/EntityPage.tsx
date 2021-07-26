@@ -135,6 +135,13 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   );
 };
 
+/**
+ * NOTE: This page is designed to work on small screens such as mobile devices.
+ * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
+ * since this does not default. If no breakpoints are used, the items will equitably share the asvailable space.
+ * https://material-ui.com/components/grid/#basic-grid.
+ */
+
 export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
@@ -292,10 +299,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/api" title="API">
       <Grid container spacing={3} alignItems="stretch">
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <EntityProvidedApisCard />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <EntityConsumedApisCard />
         </Grid>
       </Grid>
@@ -303,10 +310,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <EntityDependsOnComponentsCard variant="gridItem" />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
@@ -431,15 +438,17 @@ const apiPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
-        <Grid item md={6}>
+        <Grid item xs={12}>
           <EntityAboutCard />
         </Grid>
-        <Grid container item md={12}>
-          <Grid item md={6}>
-            <EntityProvidingComponentsCard />
-          </Grid>
-          <Grid item md={6}>
-            <EntityConsumingComponentsCard />
+        <Grid item xs={12}>
+          <Grid container>
+            <Grid item xs={12} md={6}>
+              <EntityProvidingComponentsCard />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <EntityConsumingComponentsCard />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

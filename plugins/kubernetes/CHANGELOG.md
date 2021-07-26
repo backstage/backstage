@@ -1,5 +1,12 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.4.7
 
 ### Patch Changes

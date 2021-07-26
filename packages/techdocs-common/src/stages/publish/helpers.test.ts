@@ -16,7 +16,11 @@
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import * as path from 'path';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 
 describe('getHeadersForFileExtension', () => {
   const correctMapOfExtensions = [
@@ -71,5 +75,27 @@ describe('getFileTreeRecursively', () => {
     expect(fileList.length).toBe(2);
     expect(fileList).toContain(path.resolve(root, 'file1'));
     expect(fileList).toContain(path.resolve(root, 'subDirA/file2'));
+  });
+});
+
+describe('lowerCaseEntityTripletInStoragePath', () => {
+  it('returns lower-cased entity triplet path', () => {
+    const originalPath = 'default/Component/backstage/index.html';
+    const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    expect(actualPath).toBe('default/component/backstage/index.html');
+  });
+
+  it('does not lowercase beyond the triplet', () => {
+    const originalPath = 'default/Component/backstage/assets/IMAGE.png';
+    const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    expect(actualPath).toBe('default/component/backstage/assets/IMAGE.png');
+  });
+
+  it('throws error when there is no triplet', () => {
+    const originalPath = '/default/component/IMAGE.png';
+    const error = `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`;
+    expect(() =>
+      lowerCaseEntityTripletInStoragePath(originalPath),
+    ).toThrowError(error);
   });
 });

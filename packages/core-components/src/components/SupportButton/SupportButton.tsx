@@ -28,7 +28,7 @@ import {
   makeStyles,
   Popover,
 } from '@material-ui/core';
-import React, { Fragment, MouseEventHandler, useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { Link } from '../Link';
 
@@ -94,17 +94,17 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
   };
 
   return (
-    <Fragment>
-      <Button
-        data-testid="support-button"
-        color="primary"
-        onClick={onClickHandler}
-      >
-        <Box marginRight={1}>
-          <HelpIcon />
-        </Box>
-        Support
-      </Button>
+    <>
+      <Box ml={1}>
+        <Button
+          data-testid="support-button"
+          color="primary"
+          onClick={onClickHandler}
+          startIcon={<HelpIcon />}
+        >
+          Support
+        </Button>
+      </Box>
       <Popover
         data-testid="support-button-popover"
         open={popoverOpen}
@@ -141,6 +141,6 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
           </Button>
         </DialogActions>
       </Popover>
-    </Fragment>
+    </>
   );
 };

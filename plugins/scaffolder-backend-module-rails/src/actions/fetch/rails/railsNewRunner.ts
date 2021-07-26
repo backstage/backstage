@@ -68,7 +68,7 @@ export class RailsNewRunner {
         command: baseCommand,
         args: [
           ...baseArguments,
-          `${intermediateDir}/${name}`,
+          `${intermediateDir}${path.sep}${name}`,
           ...arrayExtraArguments,
         ],
         logStream,
@@ -77,6 +77,7 @@ export class RailsNewRunner {
       const arrayExtraArguments = railsArgumentResolver(
         '/input',
         railsArguments as RailsRunOptions,
+        true,
       );
       await this.containerRunner.runContainer({
         imageName: imageName as string,

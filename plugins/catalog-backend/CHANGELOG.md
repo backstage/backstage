@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.0
+
+### Minor Changes
+
+- 8bfc0571c: Add a default catalog value for BitBucketDiscoveryProcessor. This allows to have a target like so: https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  which will be expanded to https://bitbucket.mycompany.com/projects/backstage/repos/service-a/catalog-info.yaml given that repository 'service-a' exists.
+
+  ## Migration
+
+  If you are using a custom [Bitbucket parser](https://backstage.io/docs/integrations/bitbucket/discovery#custom-repository-processing) and your `bitbucket-discovery` target (e.g. in your app-config.yaml) omits the catalog path in any of the following ways:
+
+  - https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*/
+
+  then you will be affected by this change.
+  The 'target' input to your parser before this commit would be '/', and after this commit it will be '/catalog-info.yaml', and as such needs to be handled to maintain the same functionality.
+
+### Patch Changes
+
+- 8b048934b: The codeowners processor extracts the username of the primary owner and uses this as the owner field.
+  Given the kind isn't specified this is assumed to be a group and so the link to the owner in the about card
+  doesn't work. This change specifies the kind where the entity is a user. e.g:
+
+  `@iain-b` -> `user:iain-b`
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/plugin-search-backend-node@0.4.0
+
 ## 0.12.0
 
 ### Minor Changes
