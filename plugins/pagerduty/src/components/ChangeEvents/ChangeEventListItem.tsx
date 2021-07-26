@@ -46,7 +46,7 @@ type Props = {
   changeEvent: ChangeEvent;
 };
 
-export const ChangeEventListItem = ({changeEvent }: Props) => {
+export const ChangeEventListItem = ({ changeEvent }: Props) => {
   const classes = useStyles();
   const duration =
     new Date().getTime() - new Date(changeEvent.timestamp).getTime();
@@ -54,7 +54,7 @@ export const ChangeEventListItem = ({changeEvent }: Props) => {
     .minus(Duration.fromMillis(duration))
     .toRelative({ locale: 'en' });
   let externalLinkElem = null;
-  if (changeEvent.links.length === 1) {
+  if (changeEvent.links.length > 0) {
     const text: string = changeEvent.links[0].text;
     externalLinkElem = (
       <Tooltip title={text} placement="top">
@@ -85,6 +85,7 @@ export const ChangeEventListItem = ({changeEvent }: Props) => {
         }
       />
       <ListItemSecondaryAction>
+        {externalLinkElem}
         <Tooltip title="View in Pagerduty" placement="top">
           <IconButton
             href={changeEvent.html_url}
@@ -95,7 +96,6 @@ export const ChangeEventListItem = ({changeEvent }: Props) => {
             <OpenInBrowserIcon />
           </IconButton>
         </Tooltip>
-        {externalLinkElem}
       </ListItemSecondaryAction>
     </ListItem>
   );
