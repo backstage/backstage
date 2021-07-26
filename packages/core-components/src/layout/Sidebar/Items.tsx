@@ -204,7 +204,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button {...childProps} ref={ref}>
+      <button aria-label={text ? text : props.to} {...childProps} ref={ref}>
         {content}
       </button>
     );
@@ -216,6 +216,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       activeClassName={classes.selected}
       to={props.to}
       ref={ref}
+      aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
@@ -261,7 +262,12 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
+      <SidebarItem
+        icon={SearchIcon}
+        to={props.to}
+        onClick={handleItemClick}
+        text="Search"
+      >
         <TextField
           placeholder="Search"
           value={input}
