@@ -6058,10 +6058,10 @@
     "@types/koa-compose" "*"
     "@types/node" "*"
 
-"@types/ldapjs@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.npmjs.org/@types/ldapjs/-/ldapjs-1.0.10.tgz#bac705c9e154b97d69496b5213cc28dbe9715a37"
-  integrity sha512-AMkMxkK/wjYtWebNH2O+rARfo7scBpW3T23g6zmGCwDgbyDbR79XWpcSqhPWdU+fChaF+I3dVyl9X2dT1CyI9w==
+"@types/ldapjs@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@types/ldapjs/-/ldapjs-2.2.0.tgz#43ff78668c420b69a61b93e0acde71ddc0c7766d"
+  integrity sha512-L6ObSryRGOw0qYmN9B4w4s8UkoyRbxoWh7C1vc/Z6O/VXJQJqGBSyZPXRDmgKF+TZVGq/F7H37t0Cxrm+hLiRA==
   dependencies:
     "@types/node" "*"
 
