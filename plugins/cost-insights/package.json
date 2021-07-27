@@ -49,7 +49,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "recharts": "^1.8.5",
+    "recharts": "^2.0.10",
     "regression": "^2.0.1",
     "yup": "^0.29.3"
   },
