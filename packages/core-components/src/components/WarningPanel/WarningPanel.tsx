@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { BackstageTheme } from '@backstage/theme';
 import {
   Accordion,
@@ -22,60 +21,61 @@ import {
   Grid,
   makeStyles,
   Typography,
+  darken,
+  lighten,
 } from '@material-ui/core';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
 
 const getWarningTextColor = (
-  severity: Props['severity'],
+  severity: NonNullable<WarningProps['severity']>,
   theme: BackstageTheme,
 ) => {
-  switch (severity) {
-    case 'error':
-      return theme.palette.errorText;
-    case 'info':
-      return theme.palette.infoText;
-    default:
-      return theme.palette.warningText;
-  }
+  const getColor = theme.palette.type === 'light' ? darken : lighten;
+  return getColor(theme.palette[severity].light, 0.6);
 };
 
 const getWarningBackgroundColor = (
-  severity: Props['severity'],
+  severity: NonNullable<WarningProps['severity']>,
   theme: BackstageTheme,
 ) => {
-  switch (severity) {
-    case 'error':
-      return theme.palette.errorBackground;
-    case 'info':
-      return theme.palette.infoBackground;
-    default:
-      return theme.palette.warningBackground;
-  }
+  const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
+  return getBackgroundColor(theme.palette[severity].light, 0.9);
 };
 
 const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     marginRight: theme.spacing(1),
-    fill: ({ severity }: Props) => getWarningTextColor(severity, theme),
+    fill: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
   },
 }));
 
-const ErrorOutlineStyled = ({ severity }: Pick<Props, 'severity'>) => {
+const ErrorOutlineStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
   const classes = useErrorOutlineStyles({ severity });
   return <ErrorOutline classes={classes} />;
 };
-const ExpandMoreIconStyled = ({ severity }: Pick<Props, 'severity'>) => {
+const ExpandMoreIconStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
   const classes = useErrorOutlineStyles({ severity });
   return <ExpandMoreIcon classes={classes} />;
 };
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   panel: {
-    backgroundColor: ({ severity }: Props) =>
-      getWarningBackgroundColor(severity, theme),
-    color: ({ severity }: Props) => getWarningTextColor(severity, theme),
+    backgroundColor: ({ severity }: WarningProps) =>
+      getWarningBackgroundColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
     verticalAlign: 'middle',
   },
   summary: {
@@ -83,15 +83,26 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     flexDirection: 'row',
   },
   summaryText: {
-    color: ({ severity }: Props) => getWarningTextColor(severity, theme),
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
     fontWeight: 'bold',
   },
   message: {
     width: '100%',
     display: 'block',
-    color: ({ severity }: Props) => getWarningTextColor(severity, theme),
-    backgroundColor: ({ severity }: Props) =>
-      getWarningBackgroundColor(severity, theme),
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    backgroundColor: ({ severity }: WarningProps) =>
+      getWarningBackgroundColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
   },
   details: {
     width: '100%',
@@ -104,7 +115,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-type Props = {
+export type WarningProps = {
   title?: string;
   severity?: 'warning' | 'error' | 'info';
   message?: React.ReactNode;
@@ -126,15 +137,14 @@ const capitalize = (s: string) => {
  * @param {Object} [children] Objects to provide context, such as a stack trace or detailed error reporting.
  * Will be available inside an unfolded accordion.
  */
-export const WarningPanel = (props: Props) => {
-  const classes = useStyles(props);
-  const {
-    severity = 'warning',
-    title,
-    message,
-    children,
-    defaultExpanded,
-  } = props;
+export const WarningPanel = ({
+  severity = 'warning',
+  title,
+  message,
+  children,
+  defaultExpanded,
+}: WarningProps) => {
+  const classes = useStyles({ severity });
 
   // If no severity or title provided, the heading will read simply "Warning"
   const subTitle = capitalize(severity) + (title ? `: ${title}` : '');
