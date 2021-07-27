@@ -134,17 +134,17 @@ export async function createRouter(
   );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
-  const objectTypes = options.config.getOptionalStringArray(
+  const objectTypesToFetch = options.config.getOptionalStringArray(
     'kubernetes.objectTypes',
   ) as KubernetesObjectTypes[];
 
-  const kubernetesFanOutHandler = new KubernetesFanOutHandler(
+  const kubernetesFanOutHandler = new KubernetesFanOutHandler({
     logger,
     fetcher,
     serviceLocator,
     customResources,
-    objectTypes,
-  );
+    objectTypesToFetch,
+  });
 
   return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
 }
