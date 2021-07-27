@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ErrorTrendComponent } from './ErrorTrendComponent';
-import { renderInTestApp } from '@backstage/test-utils';
-import { BuildCount } from '../../api';
+import { TrendLine } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
 
-describe('ErrorTrendComponent', () => {
-  it('should render', async () => {
-    const buildCounts: BuildCount[] = [
-      { day: '2021-01-01', errors: 10, builds: 100 },
-    ];
-    const rendered = await renderInTestApp(
-      <ErrorTrendComponent buildCounts={buildCounts} />,
-    );
-    expect(rendered.findAllByText('Error Rate')).toBeTruthy();
-  });
-});
+interface TrendProps {
+  data?: number[];
+  title: string;
+  color: string;
+}
+
+export const TrendComponent = ({ data, title, color }: TrendProps) => {
+  const emptyData = [0, 0];
+  const max = Math.max(...(data ?? emptyData));
+
+  return (
+    <>
+      <Typography variant="overline">{title}</Typography>
+      <TrendLine
+        data={data ?? emptyData}
+        title={title}
+        max={max}
+        color={data && color}
+      />
+    </>
+  );
+};

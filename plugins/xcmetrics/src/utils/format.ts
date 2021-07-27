@@ -16,10 +16,18 @@
 import { DateTime, Duration } from 'luxon';
 import { BuildStatus } from '../api';
 
-export const formatDuration = (seconds: number) =>
-  Duration.fromObject({ seconds: Math.round(seconds) }).toISOTime({
-    suppressMilliseconds: true,
-  });
+export const formatDuration = (seconds: number) => {
+  const duration = Duration.fromObject({
+    seconds: Math.round(seconds),
+  }).shiftTo('hours', 'minutes', 'seconds');
+
+  const h = duration.hours ? `${duration.hours} h` : '';
+  const m = duration.minutes ? `${duration.minutes} m` : '';
+  const s =
+    duration.hours < 12 && duration.seconds ? `${duration.seconds} s` : '';
+
+  return `${h} ${m} ${s}`;
+};
 
 export const formatTime = (timestamp: string) => {
   return DateTime.fromISO(timestamp).toLocaleString(

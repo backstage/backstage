@@ -25,7 +25,7 @@ export const DataValueComponent = ({ field, value }: DataValueProps) => {
   return (
     <div>
       <Typography variant="caption">{field}</Typography>
-      <Typography variant="subtitle1">{value ?? 'Unknown'}</Typography>
+      <Typography variant="subtitle1">{value ?? '--'}</Typography>
     </div>
   );
 };
@@ -33,10 +33,11 @@ export const DataValueComponent = ({ field, value }: DataValueProps) => {
 interface GridProps {
   xs?: GridSize;
   md?: GridSize;
+  lg?: GridSize;
 }
 
 export const DataValueGridItem = (props: DataValueProps & GridProps) => (
-  <Grid item xs={props.xs ?? 6} md={props.md ?? 4}>
+  <Grid item xs={props.xs ?? 6} md={props.md ?? 6} lg={props.lg ?? 4}>
     <DataValueComponent {...props} />
   </Grid>
 );

@@ -52,6 +52,13 @@ export type BuildCount = {
   builds: number;
 };
 
+export type BuildTime = {
+  day: string;
+  durationP50: number;
+  durationP95: number;
+  totalDuration: number;
+};
+
 export type PaginationResult<T> = {
   items: T[];
   metadata: {
@@ -65,6 +72,7 @@ export interface XcmetricsApi {
   getBuild(id: string): Promise<Build>;
   getBuilds(): Promise<Build[]>;
   getBuildCounts(days: number): Promise<BuildCount[]>;
+  getBuildTimes(days: number): Promise<BuildTime[]>;
   getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;
 }
 

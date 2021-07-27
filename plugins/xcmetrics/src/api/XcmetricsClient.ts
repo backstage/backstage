@@ -20,6 +20,7 @@ import {
   Build,
   BuildCount,
   BuildStatusResult,
+  BuildTime,
   PaginationResult,
   XcmetricsApi,
 } from './types';
@@ -68,6 +69,19 @@ export class XcmetricsClient implements XcmetricsApi {
     }
 
     return (await response.json()) as BuildCount[];
+  }
+
+  async getBuildTimes(days: number): Promise<BuildTime[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/time?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildTime[];
   }
 
   async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {

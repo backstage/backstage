@@ -34,7 +34,7 @@ describe('DataValueComponent', () => {
       <DataValueComponent field={field} />,
     );
     expect(rendered.getByText(field)).toBeInTheDocument();
-    expect(rendered.getByText('Unknown')).toBeInTheDocument();
+    expect(rendered.getByText('--')).toBeInTheDocument();
   });
 
   it('grid item should render', async () => {

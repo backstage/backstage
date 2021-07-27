@@ -44,4 +44,18 @@ export const createMockXcmetricsApi = (): jest.Mocked<XcmetricsApi> => ({
     { day: '2021-07-10', builds: 10, errors: 1 },
     { day: '2021-07-09', builds: 11, errors: 2 },
   ]),
+  getBuildTimes: jest.fn().mockResolvedValue([
+    {
+      day: '2021-07-10',
+      durationP50: 1.1,
+      durationP95: 2.1,
+      totalDuration: 3.1,
+    },
+    {
+      day: '2021-07-09',
+      durationP50: 1.2,
+      durationP95: 2.2,
+      totalDuration: 3.2,
+    },
+  ]),
 });

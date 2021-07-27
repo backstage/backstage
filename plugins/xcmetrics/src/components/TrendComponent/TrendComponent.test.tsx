@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 import React from 'react';
-import { BuildTrendComponent } from './BuildTrendComponent';
+import { TrendComponent } from './TrendComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { BuildCount } from '../../api';
 
-describe('BuildTrendComponent', () => {
+describe('TrendComponent', () => {
   it('should render', async () => {
-    const buildCounts: BuildCount[] = [
-      { day: '2021-01-01', errors: 10, builds: 100 },
-    ];
+    const data = [1, 2, 3, 4];
+    const title = 'testTitle';
     const rendered = await renderInTestApp(
-      <BuildTrendComponent buildCounts={buildCounts} />,
+      <TrendComponent data={data} title={title} color="#000" />,
     );
-    expect(rendered.findAllByText('Build Count')).toBeTruthy();
+    expect(rendered.findAllByText('testTitle')).toBeTruthy();
+  });
+
+  it('should render empty state', async () => {
+    const title = 'testTitle';
+    const rendered = await renderInTestApp(
+      <TrendComponent title={title} color="#000" />,
+    );
+    expect(rendered.findAllByText('testTitle')).toBeTruthy();
   });
 });

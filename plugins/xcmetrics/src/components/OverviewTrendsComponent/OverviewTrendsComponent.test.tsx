@@ -30,6 +30,8 @@ describe('OverviewTrendsComponent', () => {
       </ApiProvider>,
     );
     expect(rendered.getByText('Last 14 Days')).toBeInTheDocument();
+    expect(rendered.getAllByText('Build Count').length).toEqual(3);
+    expect(rendered.getByText('Avg. Build Time (P50)')).toBeInTheDocument();
   });
 
   it('should render empty state', async () => {
@@ -41,20 +43,27 @@ describe('OverviewTrendsComponent', () => {
         <OverviewTrendsComponent days={14} />
       </ApiProvider>,
     );
-    expect(rendered.getByText('No Trends Available')).toBeInTheDocument();
+    expect(rendered.getByText('--')).toBeInTheDocument();
   });
 
-  it('should show an error when API not responding', async () => {
+  it('should show errors when API not responding', async () => {
     const api = createMockXcmetricsApi();
-    const errorMessage = 'MockErrorMessage';
+    const buildCountError = 'MockBuildCountErrorMessage';
+    const buildTimesError = 'MockBuildTimesErrorMessage';
 
-    api.getBuildCounts = jest.fn().mockRejectedValue({ message: errorMessage });
+    api.getBuildCounts = jest
+      .fn()
+      .mockRejectedValue({ message: buildCountError });
+    api.getBuildTimes = jest
+      .fn()
+      .mockRejectedValue({ message: buildTimesError });
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
         <OverviewTrendsComponent days={14} />
       </ApiProvider>,
     );
-    expect(rendered.getByText(errorMessage)).toBeInTheDocument();
+    expect(rendered.getByText(buildCountError)).toBeInTheDocument();
+    expect(rendered.getByText(buildTimesError)).toBeInTheDocument();
   });
 });
