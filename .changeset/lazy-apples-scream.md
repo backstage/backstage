@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend': minor
+'@backstage/plugin-auth-backend': patch
 ---
 
 Allow to configure SAML auth acceptedClockSkewMs
