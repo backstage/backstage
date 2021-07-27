@@ -51,7 +51,7 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
-    "@types/codemirror": "^0.0.108",
+    "@types/codemirror": "^5.60.2",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
     "cross-fetch": "^3.0.6",
