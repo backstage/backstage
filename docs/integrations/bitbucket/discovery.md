@@ -11,12 +11,12 @@ catalog entities located in Bitbucket. The processor will crawl your Bitbucket
 account and register entities matching the configured path. This can be useful
 as an alternative to static locations or manually adding things to the catalog.
 
-> Note: The Bitbucket Discovery Processor currently only supports a self-hosted
-> Bitbucket Server, and not the hosted Bitbucket Cloud product.
+## Self-hosted Bitbucket Server
 
-To use the discovery processor, you'll need a Bitbucket integration
-[set up](locations.md) with a `BITBUCKET_TOKEN` and a `BITBUCKET_API_BASE_URL`.
-Then you can add a location target to the catalog configuration:
+To use the discovery processor with a self-hosted Bitbucket Server, you'll need
+a Bitbucket integration [set up](locations.md) with a `BITBUCKET_TOKEN` and a
+`BITBUCKET_API_BASE_URL`. Then you can add a location target to the catalog
+configuration:
 
 ```yaml
 catalog:
@@ -43,6 +43,41 @@ The target is composed of four parts:
   exists, `https://bitbucket.mycompany.com/projects/my-project/repos/service-*/`
   will result in:
   `https://bitbucket.mycompany.com/projects/my-project/repos/service-a/catalog-info.yaml`.
+
+## Bitbucket Cloud
+
+To use the discovery processor with Bitbucket Cloud, you'll need a Bitbucket
+integration [set up](locations.md) with a `username` and an `appPassword`. Then
+you can add a location target to the catalog configuration:
+
+```yaml
+catalog:
+  locations:
+    - type: bitbucket-discovery
+      target: https://bitbucket.org/workspaces/my-workspace/projects/my-project/repos/service-*/catalog-info.yaml
+```
+
+Note the `bitbucket-discovery` type, as this is not a regular `url` processor.
+
+The target is composed of four parts:
+
+- The base instance URL, `https://bitbucket.org` in this case
+- The workspace name to scan, which must match a workspace accessible with the
+  username of your integration.
+- The project key to scan, which accepts \* wildcard tokens. This can simply be
+  `*` to include all repositories. This example only returns repositories in the
+  `my-project` project.
+- The repository blob to scan, which accepts \* wildcard tokens. This can simply
+  be `*` to scan all repositories in the workspace. This example only looks for
+  repositories prefixed with `service-`.
+- The path within each repository to find the catalog YAML file. This will
+  usually be `/catalog-info.yaml` or a similar variation for catalog files
+  stored in the root directory of each repository. If omitted, the default value
+  `catalog-info.yaml` will be used. E.g. given that `my-project` and `service-a`
+  exists,
+  `https://bitbucket.org/workspaces/my-workspace/projects/my-project/repos/service-*/`
+  will result in:
+  `https://bitbucket.org/my-workspace/service-a/src/master/catalog-info.yaml`.
 
 ## Custom repository processing
 

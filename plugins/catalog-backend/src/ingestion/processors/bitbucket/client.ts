@@ -19,6 +19,7 @@ import {
   BitbucketIntegrationConfig,
   getBitbucketRequestOptions,
 } from '@backstage/integration';
+import { BitbucketRepository, BitbucketRepository20 } from './types';
 
 export class BitbucketClient {
   private readonly config: BitbucketIntegrationConfig;
@@ -29,6 +30,16 @@ export class BitbucketClient {
 
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
+  }
+
+  async listRepositoriesByWorkspace20(
+    workspace: string,
+    options?: ListOptions,
+  ): Promise<PagedResponse20<BitbucketRepository20>> {
+    return this.pagedRequest20<BitbucketRepository20>(
+      `${this.config.apiBaseUrl}/repositories/${workspace}`,
+      options,
+    );
   }
 
   async listRepositories(
@@ -67,6 +78,33 @@ export class BitbucketClient {
       return repositories as PagedResponse<any>;
     });
   }
+
+  private async pagedRequest20<T = any>(
+    endpoint: string,
+    options?: ListOptions,
+  ): Promise<PagedResponse20<T>> {
+    const request = new URL(endpoint);
+    for (const key in options) {
+      if (options[key]) {
+        request.searchParams.append(key, options[key]!.toString());
+      }
+    }
+
+    const response = await fetch(
+      request.toString(),
+      getBitbucketRequestOptions(this.config),
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+          response.status
+        } - ${response.statusText}`,
+      );
+    }
+    return response.json().then(repositories => {
+      return repositories as PagedResponse20<T>;
+    });
+  }
 }
 
 export type ListOptions = {
@@ -84,6 +122,19 @@ export type PagedResponse<T> = {
   nextPageStart: number;
 };
 
+export type ListOptions20 = {
+  [key: string]: number | undefined;
+  page?: number | undefined;
+};
+
+export type PagedResponse20<T> = {
+  page: number;
+  pagelen: number;
+  size: number;
+  values: T[];
+  next: string;
+};
+
 export async function* paginated(
   request: (options: ListOptions) => Promise<PagedResponse<any>>,
   options?: ListOptions,
@@ -97,4 +148,19 @@ export async function* paginated(
       yield item;
     }
   } while (!res.isLastPage);
+}
+
+export async function* paginated20<T = any>(
+  request: (options: ListOptions20) => Promise<PagedResponse20<T>>,
+  options?: ListOptions20,
+) {
+  const opts = options || { page: 1 };
+  let res;
+  do {
+    res = await request(opts);
+    opts.page = (opts.page || 1) + 1;
+    for (const item of res.values) {
+      yield item;
+    }
+  } while (res.next);
 }

@@ -13,15 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type BitbucketRepository = {
+
+type BitbucketRepositoryBase = {
   project: {
     key: string;
   };
   slug: string;
+};
+
+export type BitbucketRepository = BitbucketRepositoryBase & {
   links: Record<
     string,
     {
       href: string;
     }[]
   >;
+};
+
+export type BitbucketRepository20 = BitbucketRepositoryBase & {
+  links: Record<
+    | 'self'
+    | 'source'
+    | 'html'
+    | 'avatar'
+    | 'pullrequests'
+    | 'commits'
+    | 'forks'
+    | 'watchers'
+    | 'downloads'
+    | 'hooks',
+    {
+      href: string;
+      name?: string;
+    }
+  > &
+    Record<
+      'clone',
+      {
+        href: string;
+        name?: string;
+      }[]
+    >;
+  mainbranch?: {
+    type: string;
+    name: string;
+  };
 };
