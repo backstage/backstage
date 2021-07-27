@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './array';
-export * from './buildData';
-export * from './format';
-export * from './classnames';
+
+export const sumField = <T extends {}>(
+  field: (element: T) => number,
+  arr?: T[],
+) => {
+  return arr?.reduce((sum, current) => sum + field(current), 0);
+};
+
+export const getValues = <T extends {}>(
+  field: (element: T) => number,
+  arr?: T[],
+) => {
+  if (!arr?.length) {
+    return undefined;
+  }
+
+  return arr.map(element => field(element));
+};

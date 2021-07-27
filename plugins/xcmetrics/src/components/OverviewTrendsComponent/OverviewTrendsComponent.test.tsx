@@ -19,6 +19,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { createMockXcmetricsApi } from '../../test-utils';
+import userEvent from '@testing-library/user-event';
 
 describe('OverviewTrendsComponent', () => {
   it('should render', async () => {
@@ -26,10 +27,10 @@ describe('OverviewTrendsComponent', () => {
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
       >
-        <OverviewTrendsComponent days={14} />
+        <OverviewTrendsComponent />
       </ApiProvider>,
     );
-    expect(rendered.getByText('Last 14 Days')).toBeInTheDocument();
+    expect(rendered.getByText('Trends for')).toBeInTheDocument();
     expect(rendered.getAllByText('Build Count').length).toEqual(3);
     expect(rendered.getByText('Avg. Build Time (P50)')).toBeInTheDocument();
   });
@@ -40,10 +41,24 @@ describe('OverviewTrendsComponent', () => {
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
-        <OverviewTrendsComponent days={14} />
+        <OverviewTrendsComponent />
       </ApiProvider>,
     );
     expect(rendered.getByText('--')).toBeInTheDocument();
+  });
+
+  it('should change number of days when select is changed', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+      >
+        <OverviewTrendsComponent />
+      </ApiProvider>,
+    );
+
+    userEvent.click(rendered.getByText('14 days'));
+    userEvent.click(await rendered.findByText('30 days'));
+    expect(await rendered.findByText('30 days')).toBeInTheDocument();
   });
 
   it('should show errors when API not responding', async () => {
@@ -60,7 +75,7 @@ describe('OverviewTrendsComponent', () => {
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
-        <OverviewTrendsComponent days={14} />
+        <OverviewTrendsComponent />
       </ApiProvider>,
     );
     expect(rendered.getByText(buildCountError)).toBeInTheDocument();

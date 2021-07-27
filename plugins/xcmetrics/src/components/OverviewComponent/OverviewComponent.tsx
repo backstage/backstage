@@ -31,7 +31,7 @@ import { Build, BuildStatus, xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { StatusMatrixComponent } from '../StatusMatrixComponent';
-import { formatTime } from '../../utils';
+import { formatDuration, formatTime } from '../../utils';
 import { Chip, Grid } from '@material-ui/core';
 import { OverviewTrendsComponent } from '../OverviewTrendsComponent';
 
@@ -59,6 +59,11 @@ const columns: TableColumn<Build>[] = [
     field: 'startedAt',
     searchable: false,
     render: data => formatTime(data.startTimestamp),
+  },
+  {
+    title: 'Duration',
+    field: 'duration',
+    render: data => formatDuration(data.duration),
   },
   {
     title: 'User',
@@ -101,7 +106,7 @@ export const OverviewComponent = () => {
         <SupportButton>Dashboard for XCMetrics</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="row">
-        <Grid item xs={12} md={8} lg={7} xl={9}>
+        <Grid item xs={12} md={8} lg={8} xl={9}>
           <Table
             options={{ paging: false, search: false }}
             data={builds}
@@ -114,9 +119,9 @@ export const OverviewComponent = () => {
             }
           />
         </Grid>
-        <Grid item xs={12} md={4} lg={5} xl={3}>
+        <Grid item xs={12} md={4} lg={4} xl={3}>
           <InfoCard>
-            <OverviewTrendsComponent days={14} />
+            <OverviewTrendsComponent />
           </InfoCard>
         </Grid>
       </Grid>
