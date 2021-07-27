@@ -26,7 +26,7 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
-const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
+export const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
   'pods',
   'services',
   'configmaps',
@@ -36,6 +36,14 @@ const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
   'ingresses',
 ];
 
+export interface KubernetesFanOutHandlerOptions {
+  logger: Logger;
+  fetcher: KubernetesFetcher;
+  serviceLocator: KubernetesServiceLocator;
+  customResources: CustomResource[];
+  objectTypesToFetch: KubernetesObjectTypes[];
+}
+
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
@@ -43,13 +51,13 @@ export class KubernetesFanOutHandler {
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: KubernetesObjectTypes[];
 
-  constructor(
-    logger: Logger,
-    fetcher: KubernetesFetcher,
-    serviceLocator: KubernetesServiceLocator,
-    customResources: CustomResource[],
-    objectTypesToFetch: KubernetesObjectTypes[] = DEFAULT_OBJECTS,
-  ) {
+  constructor({
+    logger,
+    fetcher,
+    serviceLocator,
+    customResources,
+    objectTypesToFetch = DEFAULT_OBJECTS,
+  }: KubernetesFanOutHandlerOptions) {
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
