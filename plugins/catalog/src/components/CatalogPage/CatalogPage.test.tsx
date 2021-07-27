@@ -26,6 +26,7 @@ import {
   MockStorageApi,
   renderWithEffects,
   wrapInTestApp,
+  mockBreakpoint,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
@@ -243,5 +244,14 @@ describe('CatalogPage', () => {
     await expect(
       screen.findByText(/Starred \(1\)/),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should wrap filter in drawer on smaller screens', async () => {
+    mockBreakpoint({ matches: true });
+    const { getByRole } = await renderWrapped(<CatalogPage />);
+    const button = getByRole('button', { name: 'Filters' });
+    expect(getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(getByRole('presentation')).toBeVisible();
   });
 });

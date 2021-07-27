@@ -11,18 +11,28 @@ import { Observable } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { Schema } from 'jsonschema';
 
+// Warning: (ae-missing-release-tag) "ConfigSchemaApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ConfigSchemaApi {
+  // Warning: (ae-forgotten-export) The symbol "ConfigSchemaResult" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   schema$(): Observable<ConfigSchemaResult>;
 }
 
+// Warning: (ae-missing-release-tag) "configSchemaApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const configSchemaApiRef: ApiRef<ConfigSchemaApi>;
 
+// Warning: (ae-missing-release-tag) "ConfigSchemaPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ConfigSchemaPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "configSchemaPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const configSchemaPlugin: BackstagePlugin<
   {
@@ -31,6 +41,8 @@ export const configSchemaPlugin: BackstagePlugin<
   {}
 >;
 
+// Warning: (ae-missing-release-tag) "StaticSchemaLoader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export class StaticSchemaLoader implements ConfigSchemaApi {
   constructor({ url }?: { url?: string });

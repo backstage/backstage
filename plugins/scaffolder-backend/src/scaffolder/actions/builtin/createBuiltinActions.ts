@@ -24,11 +24,8 @@ import {
 } from './catalog';
 
 import { createDebugLogAction } from './debug';
-import {
-  createFetchCookiecutterAction,
-  createFetchPlainAction,
-  createFetchTemplateAction,
-} from './fetch';
+import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
+import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -40,6 +37,7 @@ import {
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
 } from './publish';
+import { createGithubActionsDispatchAction } from './github';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -94,5 +92,8 @@ export const createBuiltinActions = (options: {
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),
+    createGithubActionsDispatchAction({
+      integrations,
+    }),
   ];
 };

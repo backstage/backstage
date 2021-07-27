@@ -7,6 +7,8 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { Location as Location_2 } from '@backstage/catalog-model';
 
+// Warning: (ae-missing-release-tag) "AddLocationRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AddLocationRequest = {
   type?: string;
@@ -15,12 +17,16 @@ export type AddLocationRequest = {
   presence?: 'optional' | 'required';
 };
 
+// Warning: (ae-missing-release-tag) "AddLocationResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AddLocationResponse = {
   location: Location_2;
   entities: Entity[];
 };
 
+// Warning: (ae-missing-release-tag) "CatalogApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface CatalogApi {
   // (undocumented)
@@ -65,6 +71,8 @@ export interface CatalogApi {
   ): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "CatalogClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class CatalogClient implements CatalogApi {
   constructor(options: { discoveryApi: DiscoveryApi });
@@ -110,6 +118,8 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "CatalogEntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
   filter?:
@@ -119,14 +129,29 @@ export type CatalogEntitiesRequest = {
   fields?: string[] | undefined;
 };
 
+// Warning: (ae-missing-release-tag) "CatalogListResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type CatalogListResponse<T> = {
   items: T[];
 };
 
+// Warning: (ae-missing-release-tag) "CatalogRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogRequestOptions = {
+  token?: string;
+};
+
+// Warning: (ae-missing-release-tag) "ENTITY_STATUS_CATALOG_PROCESSING_TYPE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
+
+// Warnings were encountered during analysis:
+//
+// src/CatalogClient.d.ts:7:9 - (ae-forgotten-export) The symbol "DiscoveryApi" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

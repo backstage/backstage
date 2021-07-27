@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { Git, UrlReader } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
-import { Entity, parseLocationReference } from '@backstage/catalog-model';
+import {
+  Git,
+  resolveSafeChildPath,
+  UrlReader,
+} from '@backstage/backend-common';
+import {
+  Entity,
+  getEntitySourceLocation,
+  parseLocationReference,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
 import os from 'os';
@@ -50,30 +59,77 @@ export const parseReferenceAnnotation = (
   };
 };
 
+/**
+ * TechDocs references of type `dir` are relative the source location of the entity.
+ * This function transforms relative references to absolute ones, based on the
+ * location the entity was ingested from. If the entity was registered by a `url`
+ * location, it returns a `url` location with a resolved target that points to the
+ * targeted subfolder. If the entity was registered by a `file` location, it returns
+ * an absolute `dir` location.
+ *
+ * @param entity - the entity with annotations
+ * @param dirAnnotation - the parsed techdocs-ref annotation of type 'dir'
+ * @param scmIntegrations - access to the scmIntegration to do url transformations
+ * @throws if the entity doesn't specify a `dir` location or is ingested from an unsupported location.
+ * @returns the transformed location with an absolute target.
+ */
+export const transformDirLocation = (
+  entity: Entity,
+  dirAnnotation: ParsedLocationAnnotation,
+  scmIntegrations: ScmIntegrationRegistry,
+): { type: 'dir' | 'url'; target: string } => {
+  const location = getEntitySourceLocation(entity);
+
+  switch (location.type) {
+    case 'url': {
+      const target = scmIntegrations.resolveUrl({
+        url: dirAnnotation.target,
+        base: location.target,
+      });
+
+      return {
+        type: 'url',
+        target,
+      };
+    }
+
+    case 'file': {
+      // only permit targets in the same folder as the target of the `file` location!
+      const target = resolveSafeChildPath(
+        path.dirname(location.target),
+        dirAnnotation.target,
+      );
+
+      return {
+        type: 'dir',
+        target,
+      };
+    }
+
+    default:
+      throw new InputError(`Unable to resolve location type ${location.type}`);
+  }
+};
+
 export const getLocationForEntity = (
   entity: Entity,
+  scmIntegration: ScmIntegrationRegistry,
 ): ParsedLocationAnnotation => {
-  const { type, target } = parseReferenceAnnotation(
+  const annotation = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
-  switch (type) {
+  switch (annotation.type) {
     case 'github':
     case 'gitlab':
     case 'azure/api':
     case 'url':
-      return { type, target };
+      return annotation;
     case 'dir':
-      if (path.isAbsolute(target)) {
-        return { type, target };
-      }
-      return parseReferenceAnnotation(
-        'backstage.io/managed-by-location',
-        entity,
-      );
+      return transformDirLocation(entity, annotation, scmIntegration);
     default:
-      throw new Error(`Invalid reference annotation ${type}`);
+      throw new Error(`Invalid reference annotation ${annotation.type}`);
   }
 };
 

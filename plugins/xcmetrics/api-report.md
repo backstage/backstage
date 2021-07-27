@@ -8,9 +8,13 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "XcmetricsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const XcmetricsPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "xcmetricsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const xcmetricsPlugin: BackstagePlugin<
   {

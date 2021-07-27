@@ -1,5 +1,56 @@
 # @backstage/plugin-techdocs
 
+## 0.10.1
+
+### Patch Changes
+
+- 9266b80ab: Add search list item to display tech docs search results
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- 378cc6a54: Only update the `path` when the content is updated.
+  If content and path are updated independently, the frontend rendering is triggered twice on each navigation: Once for the `path` change (with the old content) and once for the new content.
+  This might result in a flickering rendering that is caused by the async frontend preprocessing, and the fact that replacing the shadow dom content is expensive.
+- 214e7c52d: Refactor the techdocs transformers to return `Promise`s and await all transformations.
+- e35b13afa: Handle error responses in `getTechDocsMetadata` and `getEntityMetadata` such that `<TechDocsPageHeader>` doesn't throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 94a54dd47: Added a `migrateDocsCase()` method to TechDocs publishers, along with
+  implementations for AWS, Azure, and GCS.
+
+  This change is in support of a future update to TechDocs that will allow for
+  case-insensitive entity triplet URL access to documentation pages which will
+  require a migration of existing documentation objects in external storage
+  solutions.
+
+  See [#4367](https://github.com/backstage/backstage/issues/4367) for details.
+
+### Patch Changes
+
+- 537c37b0f: Fix displaying owned documents list by fetching associated entity relations
+- 136a91974: Show a "Refresh" button to if the content is stale.
+  This removes the need to do a full page-reload to display more recent TechDocs content.
+- f1200f44c: Rewrite the `/sync/:namespace/:kind/:name` endpoint to support an event-stream as response.
+  This change allows the sync process to take longer than a normal HTTP timeout.
+  The stream also emits log events, so the caller can follow the build process in the frontend.
+- 3af126cdd: Provide a Drawer component to follow a running build.
+  This can be used to debug the rendering and get build logs in case an error occurs.
+- 2a4a3b32d: Techdocs: fix sidebars not adjusting position automatically
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.9.9
 
 ### Patch Changes

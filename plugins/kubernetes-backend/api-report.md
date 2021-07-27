@@ -10,6 +10,16 @@ import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger as Logger_2 } from 'winston';
 
+// Warning: (ae-missing-release-tag) "AWSClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AWSClusterDetails extends ClusterDetails {
+  // (undocumented)
+  assumeRole?: string;
+}
+
+// Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ClusterDetails {
   // (undocumented)
@@ -24,9 +34,13 @@ export interface ClusterDetails {
   url: string;
 }
 
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "CustomResource" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface CustomResource {
   // (undocumented)
@@ -37,6 +51,8 @@ export interface CustomResource {
   plural: string;
 }
 
+// Warning: (ae-missing-release-tag) "FetchResponseWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface FetchResponseWrapper {
   // (undocumented)
@@ -45,12 +61,21 @@ export interface FetchResponseWrapper {
   responses: FetchResponse[];
 }
 
+// Warning: (ae-missing-release-tag) "GKEClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface GKEClusterDetails extends ClusterDetails {}
+
+// Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
   // (undocumented)
   getClusters(): Promise<ClusterDetails[]>;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesFetcher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesFetcher {
   // (undocumented)
@@ -59,6 +84,8 @@ export interface KubernetesFetcher {
   ): Promise<FetchResponseWrapper>;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesObjectTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type KubernetesObjectTypes =
   | 'pods'
@@ -70,12 +97,17 @@ export type KubernetesObjectTypes =
   | 'ingresses'
   | 'customresources';
 
+// Warning: (ae-missing-release-tag) "KubernetesServiceLocator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesServiceLocator {
   // (undocumented)
   getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesFanOutHandler" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "makeRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const makeRouter: (
   logger: Logger_2,
@@ -83,10 +115,16 @@ export const makeRouter: (
   clusterDetails: ClusterDetails[],
 ) => express.Router;
 
+// Warning: (ae-missing-release-tag) "ObjectFetchParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
-  clusterDetails: ClusterDetails;
+  clusterDetails:
+    | AWSClusterDetails
+    | GKEClusterDetails
+    | ServiceAccountClusterDetails
+    | ClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
@@ -97,6 +135,8 @@ export interface ObjectFetchParams {
   serviceId: string;
 }
 
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
@@ -107,6 +147,13 @@ export interface RouterOptions {
   logger: Logger_2;
 }
 
+// Warning: (ae-missing-release-tag) "ServiceAccountClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ServiceAccountClusterDetails extends ClusterDetails {}
+
+// Warning: (ae-missing-release-tag) "ServiceLocatorMethod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
 

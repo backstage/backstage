@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog
 
+## 0.6.8
+
+### Patch Changes
+
+- 221d7d060: added retry callback to useEntity hook
+- 45b5fc3a8: Updated the layout of catalog and API index pages to handle smaller screen sizes. This adds responsive wrappers to the entity tables, and switches filters to a drawer when width-constrained. If you have created a custom catalog or API index page, you will need to update the page structure to match the updated [catalog customization](https://backstage.io/docs/features/software-catalog/catalog-customization) documentation.
+- 71c936eb6: Export `CatalogClientWrapper` class
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/plugin-catalog-react@0.3.1
+
+## 0.6.7
+
+### Patch Changes
+
+- 75a532fbe: Add unstable prop for disabling unregister entity menu
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.6.6
 
 ### Patch Changes

@@ -14,6 +14,8 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "BuildStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export enum BuildStatus {
   // (undocumented)
@@ -26,11 +28,15 @@ export enum BuildStatus {
   'success' = 0,
 }
 
+// Warning: (ae-missing-release-tag) "EntityGithubActionsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityGithubActionsContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLatestGithubActionRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: ({
   branch,
@@ -41,6 +47,8 @@ export const EntityLatestGithubActionRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLatestGithubActionsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLatestGithubActionsForBranchCard: ({
   branch,
@@ -51,6 +59,9 @@ export const EntityLatestGithubActionsForBranchCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityRecentGithubActionsRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityRecentGithubActionsRunsCard: ({
   branch,
@@ -59,9 +70,13 @@ export const EntityRecentGithubActionsRunsCard: ({
   variant,
 }: Props) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "GITHUB_ACTIONS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
+// Warning: (ae-missing-release-tag) "GithubActionsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GithubActionsApi = {
   listWorkflowRuns: ({
@@ -150,9 +165,13 @@ export type GithubActionsApi = {
   >;
 };
 
+// Warning: (ae-missing-release-tag) "githubActionsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const githubActionsApiRef: ApiRef<GithubActionsApi>;
 
+// Warning: (ae-missing-release-tag) "GithubActionsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class GithubActionsClient implements GithubActionsApi {
   constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi });
@@ -248,6 +267,8 @@ export class GithubActionsClient implements GithubActionsApi {
   }): Promise<any>;
 }
 
+// Warning: (ae-missing-release-tag) "githubActionsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const githubActionsPlugin: BackstagePlugin<
   {
@@ -258,11 +279,15 @@ const githubActionsPlugin: BackstagePlugin<
 export { githubActionsPlugin };
 export { githubActionsPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "isGithubActionsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isGithubActionsAvailable: (entity: Entity) => boolean;
 export { isGithubActionsAvailable };
 export { isGithubActionsAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "Job" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type Job = {
   html_url: string;
@@ -275,24 +300,33 @@ export type Job = {
   steps: Step[];
 };
 
+// Warning: (ae-missing-release-tag) "Jobs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type Jobs = {
   total_count: number;
   jobs: Job[];
 };
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LatestWorkflowRunCard: ({
   branch,
   variant,
 }: Props_3) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LatestWorkflowsForBranchCard: ({
   branch,
   variant,
 }: Props_3) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "RecentWorkflowRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const RecentWorkflowRunsCard: ({
   branch,
@@ -301,9 +335,14 @@ export const RecentWorkflowRunsCard: ({
   variant,
 }: Props) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: (_props: Props_2) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "Step" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type Step = {
   name: string;

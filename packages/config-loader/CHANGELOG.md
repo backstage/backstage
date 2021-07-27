@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 0.6.5
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+
 ## 0.6.4
 
 ### Patch Changes

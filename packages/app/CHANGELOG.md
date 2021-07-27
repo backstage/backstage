@@ -1,5 +1,35 @@
 # example-app
 
+## 0.2.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.7
+  - @backstage/plugin-catalog-react@0.3.0
+  - @backstage/plugin-scaffolder@0.10.1
+  - @backstage/plugin-techdocs@0.10.0
+  - @backstage/plugin-jenkins@0.5.0
+  - @backstage/plugin-user-settings@0.3.0
+  - @backstage/plugin-search@0.4.3
+  - @backstage/cli@0.7.4
+  - @backstage/plugin-api-docs@0.6.2
+  - @backstage/plugin-badges@0.2.5
+  - @backstage/plugin-catalog-import@0.5.13
+  - @backstage/plugin-circleci@0.2.19
+  - @backstage/plugin-cloudbuild@0.2.19
+  - @backstage/plugin-code-coverage@0.1.7
+  - @backstage/plugin-explore@0.3.10
+  - @backstage/plugin-github-actions@0.4.13
+  - @backstage/plugin-kafka@0.2.11
+  - @backstage/plugin-kubernetes@0.4.8
+  - @backstage/plugin-lighthouse@0.2.20
+  - @backstage/plugin-org@0.3.17
+  - @backstage/plugin-pagerduty@0.3.8
+  - @backstage/plugin-rollbar@0.3.9
+  - @backstage/plugin-sentry@0.3.15
+  - @backstage/plugin-todo@0.1.5
+
 ## 0.2.36
 
 ### Patch Changes

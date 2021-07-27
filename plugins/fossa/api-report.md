@@ -9,6 +9,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntityFossaCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityFossaCard: ({
   variant,
@@ -16,9 +18,13 @@ export const EntityFossaCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "FossaPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const FossaPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "fossaPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const fossaPlugin: BackstagePlugin<
   {

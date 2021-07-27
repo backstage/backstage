@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 
 import { gitReleaseManagerPlugin, GitReleaseManagerPage } from '../src/plugin';
 import { InfoCardPlus } from '../src/components/InfoCardPlus';
@@ -44,9 +44,15 @@ createDevApp()
       <Box padding={4}>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
+
           <Typography>
             Configure plugin statically by passing props to the
             `GitHubReleaseManagerPage` component
+          </Typography>
+
+          <Typography variant="body2">
+            Note that the static configuration points towards private
+            repositories and will thus not work for everyone.
           </Typography>
         </InfoCardPlus>
 
@@ -67,8 +73,10 @@ createDevApp()
       <Box padding={4}>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
-          <Typography>Each feature can be omitted</Typography>
-          <Typography>Success callbacks can also be added</Typography>
+          <Typography>
+            Each feature can be individually omitted as well as have success
+            callback attached to them
+          </Typography>
         </InfoCardPlus>
 
         <GitReleaseManagerPage
@@ -79,22 +87,12 @@ createDevApp()
           }}
           features={{
             createRc: {
-              onSuccess: ({
-                comparisonUrl,
-                createdTag,
-                gitReleaseName,
-                gitReleaseUrl,
-                previousTag,
-              }) => {
+              onSuccess: args => {
                 // eslint-disable-next-line no-console
                 console.log(
-                  'Custom success callback for Create RC',
-                  comparisonUrl,
-                  createdTag,
-                  gitReleaseName,
-                  gitReleaseUrl,
-                  previousTag,
+                  'Custom success callback for Create RC with the following args',
                 );
+                console.log(JSON.stringify(args, null, 2)); // eslint-disable-line no-console
               },
             },
             promoteRc: {
@@ -102,6 +100,52 @@ createDevApp()
             },
             patch: {
               omit: true,
+            },
+          }}
+        />
+      </Box>
+    ),
+  })
+  .addPage({
+    title: 'Custom',
+    path: '/custom',
+    element: (
+      <Box padding={4}>
+        <InfoCardPlus>
+          <Typography variant="h4">Dev notes</Typography>
+          <Typography>
+            The custom feature's return value can either be a React Element or
+            an array of React Elements.
+          </Typography>
+        </InfoCardPlus>
+
+        <GitReleaseManagerPage
+          project={{
+            owner: 'eengervall-playground',
+            repo: 'playground-semver',
+            versioningStrategy: 'semver',
+          }}
+          features={{
+            custom: {
+              factory: args => {
+                return (
+                  <InfoCardPlus>
+                    <Typography variant="h4">I'm a custom feature</Typography>
+
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        console.log(`Here's my args 🚀`); // eslint-disable-line no-console
+                        console.log(JSON.stringify(args, null, 2)); // eslint-disable-line no-console
+                      }}
+                    >
+                      View the arguments for this feature in the console by
+                      pressing this button
+                    </Button>
+                  </InfoCardPlus>
+                );
+              },
             },
           }}
         />

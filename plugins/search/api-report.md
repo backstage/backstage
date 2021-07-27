@@ -17,6 +17,8 @@ import { SearchQuery } from '@backstage/search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
 
+// Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
@@ -24,6 +26,9 @@ export const DefaultResultListItem: ({
   result: IndexableDocument;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "FiltersProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Filters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Filters: ({
   filters,
@@ -33,27 +38,42 @@ export const Filters: ({
   updateChecked,
 }: FiltersProps) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "FiltersButtonProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "FiltersButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const FiltersButton: ({
   numberOfSelectedFilters,
   handleToggleFilters,
 }: FiltersButtonProps) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "FiltersState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type FiltersState = {
   selected: string;
   checked: Array<string>;
 };
 
+// Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchBar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SearchBar: ({ className, debounceTime }: Props) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public @deprecated (undocumented)
 export const SearchBarNext: ({
   className,
@@ -63,6 +83,8 @@ export const SearchBarNext: ({
   debounceTime?: number | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SearchContextProvider: ({
   initialState,
@@ -71,6 +93,8 @@ export const SearchContextProvider: ({
   initialState?: SettableSearchContext | undefined;
 }>) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SearchFilter: {
   ({ component: Element, ...props }: Props_2): JSX.Element;
@@ -78,6 +102,8 @@ export const SearchFilter: {
   Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
 };
 
+// Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public @deprecated (undocumented)
 export const SearchFilterNext: {
   ({ component: Element, ...props }: Props_2): JSX.Element;
@@ -85,12 +111,18 @@ export const SearchFilterNext: {
   Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
 };
 
+// Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SearchPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchPageNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public @deprecated (undocumented)
 export const SearchPageNext: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "searchPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const searchPlugin: BackstagePlugin<
   {
@@ -102,6 +134,8 @@ const searchPlugin: BackstagePlugin<
 export { searchPlugin as plugin };
 export { searchPlugin };
 
+// Warning: (ae-missing-release-tag) "SearchResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SearchResult: ({
   children,
@@ -109,11 +143,33 @@ export const SearchResult: ({
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "SearchTypeProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchType: ({
+  values,
+  className,
+  name,
+  defaultValue,
+}: SearchTypeProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const SidebarSearch: () => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
+
+// Warnings were encountered during analysis:
+//
+// src/components/SearchContext/SearchContext.d.ts:18:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
+// src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

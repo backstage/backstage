@@ -12,6 +12,8 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EndpointConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type EndpointConfig = {
   id: string;
@@ -23,6 +25,8 @@ export type EndpointConfig = {
   };
 };
 
+// Warning: (ae-missing-release-tag) "GithubEndpointConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GithubEndpointConfig = {
   id: string;
@@ -32,28 +36,42 @@ export type GithubEndpointConfig = {
   githubAuthApi: OAuthApi;
 };
 
+// Warning: (ae-missing-release-tag) "GraphiQLIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const GraphiQLIcon: IconComponent;
 
+// Warning: (ae-missing-release-tag) "GraphiQLPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const GraphiQLPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "graphiqlPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const graphiqlPlugin: BackstagePlugin<{}, {}>;
 export { graphiqlPlugin };
 export { graphiqlPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "graphiQLRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const graphiQLRouteRef: RouteRef<undefined>;
 
+// Warning: (ae-missing-release-tag) "GraphQLBrowseApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GraphQLBrowseApi = {
   getEndpoints(): Promise<GraphQLEndpoint[]>;
 };
 
+// Warning: (ae-missing-release-tag) "graphQlBrowseApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const graphQlBrowseApiRef: ApiRef<GraphQLBrowseApi>;
 
+// Warning: (ae-missing-release-tag) "GraphQLEndpoint" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GraphQLEndpoint = {
   id: string;
@@ -61,6 +79,8 @@ export type GraphQLEndpoint = {
   fetcher: (body: any) => Promise<any>;
 };
 
+// Warning: (ae-missing-release-tag) "GraphQLEndpoints" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class GraphQLEndpoints implements GraphQLBrowseApi {
   // (undocumented)
@@ -72,6 +92,8 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
   static github(config: GithubEndpointConfig): GraphQLEndpoint;
 }
 
+// Warning: (ae-missing-release-tag) "GraphiQLPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 

@@ -11,6 +11,8 @@ import { GroupEntity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
 
+// Warning: (ae-missing-release-tag) "EntityGroupProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityGroupProfileCard: ({
   variant,
@@ -19,11 +21,15 @@ export const EntityGroupProfileCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityMembersListCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityMembersListCard: (_props: {
   entity?: GroupEntity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityOwnershipCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityOwnershipCard: ({
   variant,
@@ -32,6 +38,8 @@ export const EntityOwnershipCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityUserProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityUserProfileCard: ({
   variant,
@@ -40,6 +48,8 @@ export const EntityUserProfileCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "GroupProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const GroupProfileCard: ({
   variant,
@@ -48,14 +58,20 @@ export const GroupProfileCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "MembersListCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const MembersListCard: (_props: { entity?: GroupEntity }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "orgPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const orgPlugin: BackstagePlugin<{}, {}>;
 export { orgPlugin };
 export { orgPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "OwnershipCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const OwnershipCard: ({
   variant,
@@ -64,6 +80,8 @@ export const OwnershipCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "UserProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const UserProfileCard: ({
   variant,
