@@ -53,7 +53,7 @@ export interface Config {
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
-        acceptedClockSkewMs: number;
+        acceptedClockSkewMs?: number;
       };
       okta?: {
         [authEnv: string]: { [key: string]: string };
