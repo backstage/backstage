@@ -54,7 +54,6 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
@@ -212,6 +211,7 @@ export interface TableProps<T extends object = {}>
 }
 
 export function TableToolbar(toolbarProps: {
+  toolbarRef: MutableRefObject<any>;
   setSearch: (value: string) => void;
   onSearchChanged: (value: string) => void;
   toggleFilters: () => void;
@@ -219,6 +219,7 @@ export function TableToolbar(toolbarProps: {
   selectedFiltersLength: number;
 }) {
   const {
+    toolbarRef,
     setSearch,
     hasFilters,
     selectedFiltersLength,
@@ -246,6 +247,7 @@ export function TableToolbar(toolbarProps: {
         </div>
         <StyledMTableToolbar
           {...toolbarProps}
+          ref={toolbarRef}
           onSearchChanged={onSearchChanged}
         />
       </div>
@@ -253,7 +255,11 @@ export function TableToolbar(toolbarProps: {
   }
 
   return (
-    <StyledMTableToolbar {...toolbarProps} onSearchChanged={onSearchChanged} />
+    <StyledMTableToolbar
+      {...toolbarProps}
+      ref={toolbarRef}
+      onSearchChanged={onSearchChanged}
+    />
   );
 }
 
