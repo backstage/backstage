@@ -212,7 +212,6 @@ export interface TableProps<T extends object = {}>
 }
 
 export function TableToolbar(toolbarProps: {
-  toolbarRef: MutableRefObject<any>;
   setSearch: (value: string) => void;
   onSearchChanged: (value: string) => void;
   toggleFilters: () => void;
@@ -220,7 +219,6 @@ export function TableToolbar(toolbarProps: {
   selectedFiltersLength: number;
 }) {
   const {
-    toolbarRef,
     setSearch,
     hasFilters,
     selectedFiltersLength,
@@ -248,7 +246,6 @@ export function TableToolbar(toolbarProps: {
         </div>
         <StyledMTableToolbar
           {...toolbarProps}
-          ref={toolbarRef}
           onSearchChanged={onSearchChanged}
         />
       </div>
@@ -256,11 +253,7 @@ export function TableToolbar(toolbarProps: {
   }
 
   return (
-    <StyledMTableToolbar
-      {...toolbarProps}
-      ref={toolbarRef}
-      onSearchChanged={onSearchChanged}
-    />
+    <StyledMTableToolbar {...toolbarProps} onSearchChanged={onSearchChanged} />
   );
 }
 
@@ -298,13 +291,6 @@ export function Table<T extends object = {}>({
   const MTColumns = convertColumns(columns, theme);
 
   const [search, setSearch] = useState(calculatedInitialState.search);
-  const toolbarRef = useRef<any>();
-
-  useEffect(() => {
-    if (toolbarRef.current) {
-      toolbarRef.current.onSearchChange(search);
-    }
-  }, [search, toolbarRef]);
 
   useEffect(() => {
     if (onStateChange) {
@@ -440,7 +426,6 @@ export function Table<T extends object = {}>({
     toolbarProps => {
       return (
         <TableToolbar
-          toolbarRef={toolbarRef}
           setSearch={setSearch}
           hasFilters={hasFilters}
           selectedFiltersLength={selectedFiltersLength}
@@ -449,7 +434,7 @@ export function Table<T extends object = {}>({
         />
       );
     },
-    [toggleFilters, hasFilters, selectedFiltersLength, setSearch, toolbarRef],
+    [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
   );
 
   const hasNoRows = typeof data !== 'function' && data.length === 0;
