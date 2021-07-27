@@ -69,8 +69,8 @@ export class AwsS3UrlReader implements UrlReader {
         !integration.config.accessKeyId ||
         !integration.config.secretAccessKey
       ) {
-        logger.info(
-          'awsS3 credentials not found in config. Using default credentials provider.',
+        logger.debug(
+          'integrations.awsS3 not found in app config. AWS S3 integration will use default AWS credentials if set in environment.',
         );
         s3 = new S3({});
       } else {
