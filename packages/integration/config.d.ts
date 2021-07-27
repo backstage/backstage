@@ -165,7 +165,14 @@ export interface Config {
     };
 
     /** Integration configuration for AWS S3 Service */
-    awsS3?: {
+    awsS3?: Array<{
+      /**
+       * The host of the target that this matches on, e.g. "amazonaws.com".
+       *
+       * @visibility frontend
+       */
+      host: string;
+      /**
       /**
        * Account access key used to authenticate requests.
        * @visibility backend
@@ -176,6 +183,6 @@ export interface Config {
        * @visibility secret
        */
       secretAccessKey?: string;
-    };
+    }>;
   };
 }

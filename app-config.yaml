@@ -163,9 +163,10 @@ integrations:
   #  googleGcs:
   #    clientEmail: 'example@example.com'
   #    privateKey: ${GCS_PRIVATE_KEY}
-  #  awsS3:
-  #    accessKeyId: ${AWS_ACCESS_KEY_ID}
-  #    secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+  awsS3:
+    - host: amazonaws.com
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
   rules:

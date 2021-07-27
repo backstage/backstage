@@ -15,12 +15,22 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
+
+const AMAZON_AWS_HOST = '.amazonaws.com';
 
 /**
  * The configuration parameters for a single AWS S3 provider.
  */
 
 export type AwsS3IntegrationConfig = {
+  /**
+   * The host of the target that this matches on, e.g. "amazonaws.com"
+   *
+   * Currently only "amazonaws.com" is supported.
+   */
+  host: string;
+
   /**
    * accessKeyId
    */
@@ -41,17 +51,31 @@ export type AwsS3IntegrationConfig = {
 export function readAwsS3IntegrationConfig(
   config: Config,
 ): AwsS3IntegrationConfig {
-  if (!config) {
-    return {};
+  const host = config.getOptionalString('host') ?? AMAZON_AWS_HOST;
+  const accessKeyId = config.getOptionalString('accessKeyId');
+  const secretAccessKey = config.getOptionalString('secretAccessKey');
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid awsS3 integration config, '${host}' is not a valid host`,
+    );
   }
 
-  if (!config.has('accessKeyId') && !config.has('secretAccessKey')) {
-    return {};
+  return { host, accessKeyId, secretAccessKey };
+}
+
+export function readAwsS3IntegrationConfigs(
+  configs: Config[],
+): AwsS3IntegrationConfig[] {
+  // First read all the explicit integrations
+  const result = configs.map(readAwsS3IntegrationConfig);
+
+  // If no explicit amazonaws.com integration was added, put one in the list as
+  // a convenience
+  if (!result.some(c => c.host === AMAZON_AWS_HOST)) {
+    result.push({
+      host: AMAZON_AWS_HOST,
+    });
   }
-
-  const accessKeyId = config.getString('accessKeyId');
-
-  const secretAccessKey = config.getString('secretAccessKey');
-
-  return { accessKeyId, secretAccessKey };
+  return result;
 }

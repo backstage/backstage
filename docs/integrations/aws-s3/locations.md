@@ -18,9 +18,9 @@ plugin.
 To use this integration, add configuration to your root `app-config.yaml`:
 
 ```yaml
-integrations:
-  awsS3:
-    accessKeyID: ${AWS_ACCESS_KEY_ID}
+awsS3:
+  - host: amazonaws.com
+    accessKeyId: ${AWS_ACCESS_KEY_ID}
     secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 ```
 

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { readAwsS3IntegrationConfig } from './config';
+export { AwsS3Integration } from './AwsS3Integration';
+export {
+  readAwsS3IntegrationConfig,
+  readAwsS3IntegrationConfigs,
+} from './config';
 export type { AwsS3IntegrationConfig } from './config';

@@ -24,12 +24,7 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import {
-  AwsS3IntegrationConfig,
-  readAwsS3IntegrationConfig,
-} from '@backstage/integration';
-
-const AMAZON_AWS_HOST = '.amazonaws.com';
+import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 
 const parseURL = (
   url: string,
@@ -66,35 +61,37 @@ const parseURL = (
 
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, logger }) => {
-    if (!config.has('integrations.awsS3')) {
-      return [];
-    }
-    const awsS3Config = readAwsS3IntegrationConfig(
-      config.getConfig('integrations.awsS3'),
-    );
-    let s3: S3;
-    if (!awsS3Config.accessKeyId || !awsS3Config.secretAccessKey) {
-      logger.debug(
-        'integrations.awsS3 not found in app config. AWS S3 integration will use default AWS credentials if set in environment.',
-      );
-      s3 = new S3({});
-    } else {
-      const creds = new Credentials({
-        accessKeyId: awsS3Config.accessKeyId,
-        secretAccessKey: awsS3Config.secretAccessKey,
-      });
-      s3 = new S3({
-        apiVersion: '2006-03-01',
-        credentials: creds,
-      });
-    }
-    const reader = new AwsS3UrlReader(awsS3Config, s3);
-    const predicate = (url: URL) => url.host.endsWith(AMAZON_AWS_HOST);
-    return [{ reader, predicate }];
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return integrations.awsS3.list().map(integration => {
+      let s3: S3;
+      if (
+        !integration.config.accessKeyId ||
+        !integration.config.secretAccessKey
+      ) {
+        logger.info(
+          'awsS3 credentials not found in config. Using default credentials provider.',
+        );
+        s3 = new S3({});
+      } else {
+        const creds = new Credentials({
+          accessKeyId: integration.config.accessKeyId,
+          secretAccessKey: integration.config.secretAccessKey,
+        });
+        s3 = new S3({
+          apiVersion: '2006-03-01',
+          credentials: creds,
+        });
+      }
+      const reader = new AwsS3UrlReader(integration, s3);
+      const predicate = (url: URL) =>
+        url.host.endsWith(integration.config.host);
+      return { reader, predicate };
+    });
   };
 
   constructor(
-    private readonly integration: AwsS3IntegrationConfig,
+    private readonly integration: AwsS3Integration,
     private readonly s3: S3,
   ) {}
 
@@ -147,7 +144,9 @@ export class AwsS3UrlReader implements UrlReader {
   }
 
   toString() {
-    const secretAccessKey = this.integration.secretAccessKey;
-    return `awsS3{host=${AMAZON_AWS_HOST},authed=${Boolean(secretAccessKey)}}`;
+    const secretAccessKey = this.integration.config.secretAccessKey;
+    return `awsS3{host=${this.integration.config.host},authed=${Boolean(
+      secretAccessKey,
+    )}}`;
   }
 }

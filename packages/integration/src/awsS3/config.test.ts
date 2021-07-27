@@ -15,7 +15,11 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { AwsS3IntegrationConfig, readAwsS3IntegrationConfig } from './config';
+import {
+  AwsS3IntegrationConfig,
+  readAwsS3IntegrationConfig,
+  readAwsS3IntegrationConfigs,
+} from './config';
 
 describe('readAwsS3IntegrationConfig', () => {
   function buildConfig(data: Partial<AwsS3IntegrationConfig>): Config {
@@ -25,18 +29,47 @@ describe('readAwsS3IntegrationConfig', () => {
   it('reads all values', () => {
     const output = readAwsS3IntegrationConfig(
       buildConfig({
+        host: '.amazonaws.com',
         accessKeyId: 'fake-key',
         secretAccessKey: 'fake-secret-key',
       }),
     );
     expect(output).toEqual({
+      host: '.amazonaws.com',
       accessKeyId: 'fake-key',
       secretAccessKey: 'fake-secret-key',
     });
   });
+});
 
-  it('does not fail when config is not set', () => {
-    const output = readAwsS3IntegrationConfig(buildConfig({}));
-    expect(output).toEqual({});
+describe('readAwsS3IntegrationConfigs', () => {
+  function buildConfig(data: Partial<AwsS3IntegrationConfig>[]): Config[] {
+    return data.map(item => new ConfigReader(item));
+  }
+
+  it('reads all values', () => {
+    const output = readAwsS3IntegrationConfigs(
+      buildConfig([
+        {
+          host: '.amazonaws.com',
+          accessKeyId: 'key',
+          secretAccessKey: 'secret',
+        },
+      ]),
+    );
+    expect(output).toContainEqual({
+      host: '.amazonaws.com',
+      accessKeyId: 'key',
+      secretAccessKey: 'secret',
+    });
+  });
+
+  it('adds a default entry when missing', () => {
+    const output = readAwsS3IntegrationConfigs(buildConfig([]));
+    expect(output).toEqual([
+      {
+        host: '.amazonaws.com',
+      },
+    ]);
   });
 });

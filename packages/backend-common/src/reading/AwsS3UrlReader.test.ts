@@ -30,38 +30,45 @@ describe('AwsS3UrlReader', () => {
     });
   };
 
-  it('does not create a reader without the awsS3 field', () => {
+  it('creates a dummy reader without the awsS3 field', () => {
     const entries = createReader({
       integrations: {},
     });
-    expect(entries).toHaveLength(0);
+    expect(entries).toHaveLength(1);
   });
 
   it('creates a reader with credentials correctly configured', () => {
+    const awsS3Integrations = [];
+    awsS3Integrations.push({
+      host: 'amazonaws.com',
+      accessKeyId: 'fakekey',
+      secretAccessKey: 'fakekey',
+    });
     const entries = createReader({
       integrations: {
-        awsS3: {
-          accessKeyId: 'fakekey',
-          secretAccessKey: 'fakekey',
-        },
+        awsS3: awsS3Integrations,
       },
     });
-    expect(entries).toHaveLength(1);
+    expect(entries).toHaveLength(2);
   });
 
   it('creates a reader with default credentials provider', () => {
+    const awsS3Integrations = [];
+    awsS3Integrations.push({
+      host: 'amazonaws.com',
+    });
     const entries = createReader({
       integrations: {
-        awsS3: {},
+        awsS3: awsS3Integrations,
       },
     });
-    expect(entries).toHaveLength(1);
+    expect(entries).toHaveLength(2);
   });
 
   describe('predicates', () => {
     const readers = createReader({
       integrations: {
-        awsS3: {},
+        awsS3: [{}],
       },
     });
     const predicate = readers[0].predicate;
