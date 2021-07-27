@@ -125,6 +125,10 @@ export class ContainerClient {
   getBlockBlobClient(blobName: string) {
     return new BlockBlobClient(blobName);
   }
+
+  listBlobsFlat() {
+    return [];
+  }
 }
 
 class ContainerClientFailGetProperties extends ContainerClient {

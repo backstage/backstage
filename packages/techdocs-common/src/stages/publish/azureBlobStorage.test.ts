@@ -64,10 +64,11 @@ const getEntityRootDir = (entity: Entity) => {
 
 const logger = getVoidLogger();
 jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const loggerSpy = jest.spyOn(logger, 'error').mockReturnValue(logger);
 
 let publisher: PublisherBase;
 beforeEach(async () => {
+  loggerSpy.mockClear();
   mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
@@ -175,14 +176,12 @@ describe('publishing with valid credentials', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(
-          `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-        ),
-      });
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(wrongPathToGeneratedDirectory),
-      });
+      await expect(fails).rejects.toThrow(
+        /Unable to upload file\(s\) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory/,
+      );
+      await expect(fails).rejects.toThrow(
+        new RegExp(wrongPathToGeneratedDirectory),
+      );
 
       mockFs.restore();
     });
@@ -225,13 +224,11 @@ describe('publishing with valid credentials', () => {
         error = e;
       }
 
-      expect(error.message).toContain(
-        `Unable to upload file(s) to Azure Blob Storage.`,
-      );
+      expect(error.message).toContain(`Unable to upload file(s) to Azure`);
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
+          `Unable to upload file(s) to Azure. Error: Upload failed for ${path.join(
             entityRootDir,
             'index.html',
           )} with status code 500`,

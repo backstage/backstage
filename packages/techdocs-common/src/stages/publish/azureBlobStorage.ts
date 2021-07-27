@@ -16,6 +16,7 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import {
   BlobServiceClient,
+  ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { Entity, EntityName } from '@backstage/catalog-model';
@@ -139,8 +140,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
     // First, retrieve a list of all individual files in currently existing
     const remoteFolder = getCloudPathForLocalPath(entity);
     const existingFiles: string[] = [];
-    const container = this.storageClient.getContainerClient(this.containerName);
+    let container: ContainerClient;
     try {
+      container = this.storageClient.getContainerClient(this.containerName);
       for await (const blob of container.listBlobsFlat()) {
         existingFiles.push(blob.name);
       }
@@ -158,22 +160,41 @@ export class AzureBlobStoragePublish implements PublisherBase {
       // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
       absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
+      const failedOperations: Error[] = [];
       await bulkStorageOperation(
         async absoluteFilePath => {
           // const relativeFilePath = path.relative(directory, absoluteFilePath);
           const relativeFilePath = path.normalize(
             path.relative(directory, absoluteFilePath),
           );
-          return await this.storageClient
-            .getContainerClient(this.containerName)
+          const response = await container
             .getBlockBlobClient(
               getCloudPathForLocalPath(entity, relativeFilePath),
             )
             .uploadFile(absoluteFilePath);
+
+          if (response._response.status >= 400) {
+            failedOperations.push(
+              new Error(
+                `Upload failed for ${absoluteFilePath} with status code ${response._response.status}`,
+              ),
+            );
+          }
+
+          return response;
         },
         absoluteFilesToUpload,
         { concurrencyLimit: BATCH_CONCURRENCY },
       );
+
+      if (failedOperations.length > 0) {
+        throw new Error(
+          failedOperations
+            .map(r => r.message)
+            .filter(Boolean)
+            .join(' '),
+        );
+      }
 
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
