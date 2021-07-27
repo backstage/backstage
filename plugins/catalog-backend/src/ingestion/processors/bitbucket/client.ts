@@ -125,6 +125,7 @@ export type PagedResponse<T> = {
 export type ListOptions20 = {
   [key: string]: number | undefined;
   page?: number | undefined;
+  pagelen?: number | undefined;
 };
 
 export type PagedResponse20<T> = {
@@ -154,7 +155,7 @@ export async function* paginated20<T = any>(
   request: (options: ListOptions20) => Promise<PagedResponse20<T>>,
   options?: ListOptions20,
 ) {
-  const opts = options || { page: 1 };
+  const opts = options || { page: 1, pagelen: 100 };
   let res;
   do {
     res = await request(opts);

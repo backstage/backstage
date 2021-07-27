@@ -124,7 +124,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       const mainbranch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
       for await (const entity of this.parser({
         integration,
-        target: `${repository.links.source.href}/${mainbranch}${catalogPath}`,
+        target: `${repository.links.html.href}/src/${mainbranch}${catalogPath}`,
         logger: this.logger,
       })) {
         emit(entity);

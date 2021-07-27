@@ -106,8 +106,8 @@ function setupBitbucketCloudStubs(
               repositories.map(r => ({
                 ...r,
                 links: {
-                  source: {
-                    href: `https://api.bitbucket.org/2.0/repositories/${workspace}/${r.slug}/src`,
+                  html: {
+                    href: `https://bitbucket.org/${workspace}/${r.slug}`,
                   },
                 },
               })),
@@ -332,7 +332,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://api.bitbucket.org/2.0/repositories/myworkspace/repository-one/src/master/catalog.yaml',
+            'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
         },
         optional: true,
       });
@@ -341,7 +341,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://api.bitbucket.org/2.0/repositories/myworkspace/repository-two/src/master/catalog.yaml',
+            'https://bitbucket.org/myworkspace/repository-two/src/master/catalog.yaml',
         },
         optional: true,
       });
@@ -367,7 +367,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://api.bitbucket.org/2.0/repositories/myworkspace/repository-one/src/master/catalog.yaml',
+            'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
         },
         optional: true,
       });
@@ -393,7 +393,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://api.bitbucket.org/2.0/repositories/myworkspace/repository-three/src/master/catalog.yaml',
+            'https://bitbucket.org/myworkspace/repository-three/src/master/catalog.yaml',
         },
         optional: true,
       });
@@ -424,7 +424,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://api.bitbucket.org/2.0/repositories/myworkspace/repository-one/src/master/catalog-info.yaml',
+            'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
         },
         optional: true,
       });
