@@ -64,7 +64,7 @@ export class MigrateWriteStream extends Writable {
     const migrate = this.removeOriginal
       ? file.move.bind(file)
       : file.copy.bind(file);
-    this.logger.debug(`Migrating ${file.name}`);
+    this.logger.verbose(`Migrating ${file.name}`);
     migrate(newFile)
       .catch(e =>
         this.logger.warn(`Unable to migrate ${file.name}: ${e.message}`),
