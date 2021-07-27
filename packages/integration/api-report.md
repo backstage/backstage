@@ -6,10 +6,36 @@
 import { Config } from '@backstage/config';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
+// Warning: (ae-missing-release-tag) "AwsS3Integration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3Integration implements ScmIntegration {
+  constructor(integrationConfig: AwsS3IntegrationConfig);
+  // (undocumented)
+  get config(): AwsS3IntegrationConfig;
+  // Warning: (ae-forgotten-export) The symbol "ScmIntegrationsFactory" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<AwsS3Integration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
 // Warning: (ae-missing-release-tag) "AwsS3IntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export type AwsS3IntegrationConfig = {
+  host: string;
   accessKeyId?: string;
   secretAccessKey?: string;
 };
@@ -21,8 +47,6 @@ export class AzureIntegration implements ScmIntegration {
   constructor(integrationConfig: AzureIntegrationConfig);
   // (undocumented)
   get config(): AzureIntegrationConfig;
-  // Warning: (ae-forgotten-export) The symbol "ScmIntegrationsFactory" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static factory: ScmIntegrationsFactory<AzureIntegration>;
   // (undocumented)
@@ -330,6 +354,13 @@ export function readAwsS3IntegrationConfig(
   config: Config,
 ): AwsS3IntegrationConfig;
 
+// Warning: (ae-missing-release-tag) "readAwsS3IntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function readAwsS3IntegrationConfigs(
+  configs: Config[],
+): AwsS3IntegrationConfig[];
+
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "readAzureIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -426,6 +457,8 @@ export interface ScmIntegration {
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
   // (undocumented)
+  awsS3: ScmIntegrationsGroup<AwsS3Integration>;
+  // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
@@ -451,6 +484,8 @@ export interface ScmIntegrationRegistry
 export class ScmIntegrations implements ScmIntegrationRegistry {
   // Warning: (ae-forgotten-export) The symbol "IntegrationsByType" needs to be exported by the entry point index.d.ts
   constructor(integrationsByType: IntegrationsByType);
+  // (undocumented)
+  get awsS3(): ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   get azure(): ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
