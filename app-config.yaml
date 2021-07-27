@@ -27,8 +27,20 @@ backend:
   listen:
     port: 7000
   database:
-    client: sqlite3
-    connection: ':memory:'
+    # client: sqlite3
+    # connection: ':memory:'
+    # config options: https://node-postgres.com/api/client
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      # port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      database:  ${POSTGRES_DATABASE}
+      # https://node-postgres.com/features/ssl
+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+        #ca: # if you have a CA file and want to verify it you can uncomment this section
+        #$file: <file-path>/ca/server.crt
   cache:
     store: memory
   cors:
@@ -145,16 +157,16 @@ integrations:
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token: ${GHE_TOKEN}
-  gitlab:
-    - host: gitlab.com
-      token: ${GITLAB_TOKEN}
-  bitbucket:
-    - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
-      appPassword: ${BITBUCKET_APP_PASSWORD}
-  azure:
-    - host: dev.azure.com
-      token: ${AZURE_TOKEN}
+  # gitlab:
+  #   - host: gitlab.com
+  #     token: ${GITLAB_TOKEN}
+  # bitbucket:
+  #   - host: bitbucket.org
+  #     username: ${BITBUCKET_USERNAME}
+  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  # azure:
+  #   - host: dev.azure.com
+  #     token: ${AZURE_TOKEN}
 #  googleGcs:
 #    clientEmail: 'example@example.com'
 #    privateKey: ${GCS_PRIVATE_KEY}
@@ -271,6 +283,10 @@ auth:
   # session:
   #   secret: custom session secret
   providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
     okta:
       development:
         clientId: ${AUTH_OKTA_CLIENT_ID}
