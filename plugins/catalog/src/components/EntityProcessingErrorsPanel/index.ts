@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { EntityProcessErrors, hasErrors } from './EntityProcessErrors';
+export {
+  EntityProcessingErrorsPanel,
+  hasCatalogProcessingErrors,
+} from './EntityProcessingErrorsPanel';

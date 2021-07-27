@@ -18,9 +18,8 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { EntityProcessErrors } from './EntityProcessErrors';
+import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
 import { Entity } from '@backstage/catalog-model';
-import { waitFor } from '@testing-library/react';
 
 describe('<EntityProcessErrors />', () => {
   it('renders EntityProcessErrors if the entity has errors', async () => {
@@ -56,6 +55,20 @@ describe('<EntityProcessErrors />', () => {
             },
           },
           {
+            type: 'foo',
+            level: 'error',
+            message: 'InputError: This should not be rendered',
+            error: {
+              name: 'InputError',
+              message: 'Foo',
+              cause: {
+                name: 'Error',
+                message:
+                  'Malformed envelope, /metadata/labels should be object',
+              },
+            },
+          },
+          {
             type: 'backstage.io/catalog-processing',
             level: 'error',
             message: 'InputError: Foo',
@@ -73,19 +86,18 @@ describe('<EntityProcessErrors />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, queryByText } = await renderInTestApp(
       <EntityProvider entity={entity}>
-        <EntityProcessErrors />
+        <EntityProcessingErrorsPanel />
       </EntityProvider>,
     );
 
-    await waitFor(() => {
-      expect(
-        getByText(
-          'Error: Policy check failed; caused by Error: Malformed envelope, /metadata/labels should be object',
-        ),
-      ).toBeInTheDocument();
-      expect(getByText('Error: Foo')).toBeInTheDocument();
-    });
+    expect(
+      getByText(
+        'Error: Policy check failed; caused by Error: Malformed envelope, /metadata/labels should be object',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Error: Foo')).toBeInTheDocument();
+    expect(queryByText('Error: This should not be rendered')).toBeNull();
   });
 });

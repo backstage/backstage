@@ -14,30 +14,38 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '../../../../../packages/catalog-client/src';
 
-export const hasErrors = (entity: Entity) => entity?.status?.items?.length! > 0;
+const errorfilter = (i: UNSTABLE_EntityStatusItem) =>
+  i.error &&
+  i.level === 'error' &&
+  i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
+
+export const hasCatalogProcessingErrors = (entity: Entity) =>
+  entity?.status?.items?.filter(errorfilter).length! > 0;
 
 /**
  * Displays a list of errors if the entity is invalid.
  */
-export const EntityProcessErrors = () => {
+export const EntityProcessingErrorsPanel = () => {
   const { entity } = useEntity();
+  const catalogProcessingErrors =
+    (entity?.status?.items?.filter(
+      errorfilter,
+    ) as Required<UNSTABLE_EntityStatusItem>[]) || [];
 
   return (
     <>
-      {entity?.status?.items?.map(
-        ({ error }, index) =>
-          error && (
-            <Box key={index} mb={1}>
-              <ResponseErrorPanel error={error} />
-            </Box>
-          ),
-      )}
+      {catalogProcessingErrors.map(({ error }, index) => (
+        <Box key={index} mb={1}>
+          <ResponseErrorPanel error={error} />
+        </Box>
+      ))}
     </>
   );
 };

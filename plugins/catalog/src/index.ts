@@ -23,7 +23,7 @@ export * from './components/CatalogTable/columns';
 export * from './components/CreateComponentButton';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
-export * from './components/EntityProcessErrors';
+export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
