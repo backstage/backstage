@@ -366,7 +366,7 @@ export const FilteredEntityLayout: ({
 // Warning: (ae-missing-release-tag) "hasErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const hasErrors: (entity: Entity) => boolean;
+export const hasCatalogProcessingErrors: (entity: Entity) => boolean;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
