@@ -57,7 +57,7 @@ export const ScaffolderPageContents = () => {
         pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a New Component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
