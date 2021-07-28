@@ -17,6 +17,7 @@
 import {
   Content,
   ContentHeader,
+  CreateButton,
   PageWithHeader,
   SupportButton,
   TableColumn,
@@ -39,9 +40,7 @@ import {
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { Button } from '@material-ui/core';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { createComponentRouteRef } from '../../routes';
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
@@ -63,11 +62,11 @@ export const ApiExplorerPage = ({
   initiallySelectedFilter = 'all',
   columns,
 }: ApiExplorerPageProps) => {
-  const createComponentLink = useRouteRef(createComponentRouteRef);
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   } API Explorer`;
+  const createComponentLink = useRouteRef(createComponentRouteRef);
 
   return (
     <PageWithHeader
@@ -78,16 +77,10 @@ export const ApiExplorerPage = ({
     >
       <Content>
         <ContentHeader title="">
-          {createComponentLink && (
-            <Button
-              variant="contained"
-              color="primary"
-              component={RouterLink}
-              to={createComponentLink()}
-            >
-              Register Existing API
-            </Button>
-          )}
+          <CreateButton
+            title="Register Existing API"
+            to={createComponentLink && createComponentLink()}
+          />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <EntityListProvider>

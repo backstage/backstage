@@ -20,7 +20,6 @@ export * from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
 export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
 export * from './components/CatalogTable/columns';
-export * from './components/CreateComponentButton';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
 export * from './components/EntityPageLayout';
