@@ -16,10 +16,10 @@
 
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import path from 'path';
 import { Logger } from 'winston';
 import {
   addBuildTimestampMetadata,
+  getMkdocsYml,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -71,19 +71,13 @@ export class TechdocsGenerator implements GeneratorBase {
     logger: childLogger,
     logStream,
   }: GeneratorRunOptions): Promise<void> {
-    // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
-    // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const { path, content } = await getMkdocsYml(inputDir);
     if (parsedLocationAnnotation) {
-      await patchMkdocsYmlPreBuild(
-        mkdocsYmlPath,
-        childLogger,
-        parsedLocationAnnotation,
-      );
+      await patchMkdocsYmlPreBuild(path, childLogger, parsedLocationAnnotation);
     }
 
-    await validateMkdocsYaml(inputDir, mkdocsYmlPath);
+    await validateMkdocsYaml(inputDir, content);
 
     // Directories to bind on container
     const mountDirs = {

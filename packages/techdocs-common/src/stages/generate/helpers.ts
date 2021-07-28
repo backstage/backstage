@@ -19,7 +19,7 @@ import { isChildPath } from '@backstage/backend-common';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import { resolve as resolvePath } from 'path';
+import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
@@ -156,25 +156,49 @@ const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
+ * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
+ * depending on which is present (MkDocs supports both as of v1.2.2).
+ *
+ * @param {string} inputDir base dir to be searched for either an mkdocs.yml or
+ *   mkdocs.yaml file.
+ */
+export const getMkdocsYml = async (
+  inputDir: string,
+): Promise<{ path: string; content: string }> => {
+  let mkdocsYmlPath: string;
+  let mkdocsYmlFileString: string;
+  try {
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch {
+    try {
+      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    } catch (error) {
+      throw new Error(
+        `Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation: ${error.message}`,
+      );
+    }
+  }
+
+  return {
+    path: mkdocsYmlPath,
+    content: mkdocsYmlFileString,
+  };
+};
+
+/**
  * Validating mkdocs config file for incorrect/insecure values
  * Throws on invalid configs
  *
  * @param {string} inputDir base dir to be used as a docs_dir path validity check
- * @param {string} mkdocsYmlPath Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param {string} mkdocsYmlFileString The string contents of the loaded
+ *   mkdocs.yml or equivalent of a docs site
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
-  mkdocsYmlPath: string,
+  mkdocsYmlFileString: string,
 ) => {
-  let mkdocsYmlFileString;
-  try {
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch (error) {
-    throw new Error(
-      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before for validation: ${error.message}`,
-    );
-  }
-
   const mkdocsYml: any = yaml.load(mkdocsYmlFileString, {
     schema: MKDOCS_SCHEMA,
   });
