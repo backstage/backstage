@@ -16,6 +16,7 @@
 
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import path from 'path';
 import { Logger } from 'winston';
 import {
   addBuildTimestampMetadata,
@@ -72,9 +73,13 @@ export class TechdocsGenerator implements GeneratorBase {
     logStream,
   }: GeneratorRunOptions): Promise<void> {
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const { path, content } = await getMkdocsYml(inputDir);
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
     if (parsedLocationAnnotation) {
-      await patchMkdocsYmlPreBuild(path, childLogger, parsedLocationAnnotation);
+      await patchMkdocsYmlPreBuild(
+        mkdocsYmlPath,
+        childLogger,
+        parsedLocationAnnotation,
+      );
     }
 
     await validateMkdocsYaml(inputDir, content);
