@@ -1,7 +1,7 @@
 ---
 '@backstage/cli': patch
 '@backstage/core-app-api': patch
-'@backstage/core-components': patch
+'@backstage/core-components': minor
 '@backstage/core-plugin-api': patch
 '@backstage/create-app': patch
 '@backstage/dev-utils': patch
@@ -51,8 +51,10 @@
 '@backstage/plugin-xcmetrics': patch
 ---
 
-- Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke Pagination of the Table.
-
+- Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
 - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+- This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+- `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+- `onChangePage` has been renamed to `onPageChange`
+- Information on migraiton guide here: https://material-table-core.com/docs/breaking-changes
 
-- For anyone not using our `Table` component and relying on `material-table` directly, please update to use `@material-table/core` and follow this migration guide https://material-table-core.com/docs/breaking-changes#onchangerowsperpage
