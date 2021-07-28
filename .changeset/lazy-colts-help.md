@@ -56,5 +56,4 @@
 - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
 - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
 - `onChangePage` has been renamed to `onPageChange`
-- Information on migraiton guide here: https://material-table-core.com/docs/breaking-changes
-
+- Migration guide is here: https://material-table-core.com/docs/breaking-changes
