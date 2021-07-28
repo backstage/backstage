@@ -36,7 +36,7 @@ export const CustomCatalogPage = ({
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
         <ContentHeader title="Components">
-          <CreateComponentButton />
+          <CreateButton title="Create Component" to={link} />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <EntityListProvider>
