@@ -88,6 +88,7 @@ function setupBitbucketCloudStubs(
   workspace: string,
   repositories: Pick<BitbucketRepository20, 'slug' | 'project'>[],
 ) {
+  const stubCallerFn = jest.fn();
   function pagedResponse(values: any): PagedResponse20<any> {
     return {
       values: values,
@@ -99,6 +100,7 @@ function setupBitbucketCloudStubs(
     rest.get(
       `https://api.bitbucket.org/2.0/repositories/${workspace}`,
       (_, res, ctx) => {
+        stubCallerFn(_);
         return res(
           ctx.json(
             pagedResponse(
@@ -116,6 +118,7 @@ function setupBitbucketCloudStubs(
       },
     ),
   );
+  return stubCallerFn;
 }
 
 describe('BitbucketDiscoveryProcessor', () => {
@@ -310,6 +313,77 @@ describe('BitbucketDiscoveryProcessor', () => {
       { logger: getVoidLogger() },
     );
 
+    it('output all repositories by default', async () => {
+      setupBitbucketCloudStubs('myworkspace', [
+        { project: { key: 'prj-one' }, slug: 'repository-one' },
+        { project: { key: 'prj-two' }, slug: 'repository-two' },
+      ]);
+      const location: LocationSpec = {
+        type: 'bitbucket-discovery',
+        target: 'https://bitbucket.org/workspaces/myworkspace',
+      };
+
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
+        },
+        optional: true,
+      });
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.org/myworkspace/repository-two/src/master/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it('uses provided catalog path', async () => {
+      setupBitbucketCloudStubs('myworkspace', [
+        { project: { key: 'prj-one' }, slug: 'repository-one' },
+        { project: { key: 'prj-two' }, slug: 'repository-two' },
+      ]);
+      const location: LocationSpec = {
+        type: 'bitbucket-discovery',
+        target:
+          'https://bitbucket.org/workspaces/myworkspace?catalogPath=my/nested/path/catalog.yaml',
+      };
+
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.org/myworkspace/repository-one/src/master/my/nested/path/catalog.yaml',
+        },
+        optional: true,
+      });
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.org/myworkspace/repository-two/src/master/my/nested/path/catalog.yaml',
+        },
+        optional: true,
+      });
+    });
+
     it('output all repositories', async () => {
       setupBitbucketCloudStubs('myworkspace', [
         { project: { key: 'prj-one' }, slug: 'repository-one' },
@@ -318,7 +392,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
         target:
-          'https://bitbucket.org/workspaces/myworkspace/projects/*/repos/*/catalog.yaml',
+          'https://bitbucket.org/workspaces/myworkspace/projects/*/repos/*?catalogPath=catalog.yaml',
       };
 
       const emitter = jest.fn();
@@ -354,7 +428,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
         target:
-          'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/*/catalog.yaml',
+          'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/*?catalogPath=catalog.yaml',
       };
 
       const emitter = jest.fn();
@@ -371,6 +445,7 @@ describe('BitbucketDiscoveryProcessor', () => {
         optional: true,
       });
     });
+
     it('filter unrelated repositories', async () => {
       setupBitbucketCloudStubs('myworkspace', [
         { project: { key: 'prj-one' }, slug: 'repository-one' },
@@ -380,7 +455,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
         target:
-          'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/repository-three/catalog.yaml',
+          'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/repository-three?catalogPath=catalog.yaml',
       };
 
       const emitter = jest.fn();
@@ -398,13 +473,42 @@ describe('BitbucketDiscoveryProcessor', () => {
       });
     });
 
+    it('submits query', async () => {
+      const mockCall = setupBitbucketCloudStubs('myworkspace', [
+        { project: { key: 'prj-one' }, slug: 'repository-one' },
+      ]);
+      const location: LocationSpec = {
+        type: 'bitbucket-discovery',
+        target:
+          'https://bitbucket.org/workspaces/myworkspace?q=project.key ~ "prj-one"',
+      };
+
+      const emitter = jest.fn();
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
+        },
+        optional: true,
+      });
+      expect(mockCall).toBeCalledTimes(1);
+      // it should be possible to do this via an `expect.objectContaining` check but seems to fail with some encoding issue.
+      expect(mockCall.mock.calls[0][0].url).toMatchInlineSnapshot(
+        `"https://api.bitbucket.org/2.0/repositories/myworkspace?page=1&pagelen=100&q=project.key+%7E+%22prj-one%22"`,
+      );
+    });
+
     it.each`
       target
       ${'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/*'}
       ${'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/*/'}
       ${'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/repository-*/'}
     `("target '$target' adds default path to catalog", async ({ target }) => {
-      setupStubs([{ key: 'backstage', repos: ['techdocs-cli'] }]);
       setupBitbucketCloudStubs('myworkspace', [
         { project: { key: 'prj-one' }, slug: 'repository-one' },
       ]);
@@ -427,6 +531,25 @@ describe('BitbucketDiscoveryProcessor', () => {
         },
         optional: true,
       });
+    });
+
+    it.each`
+      target
+      ${'https://bitbucket.org/test'}
+    `("target '$target' is rejected", async ({ target }) => {
+      setupBitbucketCloudStubs('myworkspace', [
+        { project: { key: 'prj-one' }, slug: 'repository-one' },
+      ]);
+
+      const location: LocationSpec = {
+        type: 'bitbucket-discovery',
+        target: target,
+      };
+
+      const emitter = jest.fn();
+      await expect(
+        processor.readLocation(location, false, emitter),
+      ).rejects.toThrow(/Failed to parse /);
     });
   });
 

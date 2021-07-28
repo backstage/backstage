@@ -34,7 +34,7 @@ export class BitbucketClient {
 
   async listRepositoriesByWorkspace20(
     workspace: string,
-    options?: ListOptions,
+    options?: ListOptions20,
   ): Promise<PagedResponse20<BitbucketRepository20>> {
     return this.pagedRequest20<BitbucketRepository20>(
       `${this.config.apiBaseUrl}/repositories/${workspace}`,
@@ -81,7 +81,7 @@ export class BitbucketClient {
 
   private async pagedRequest20<T = any>(
     endpoint: string,
-    options?: ListOptions,
+    options?: ListOptions20,
   ): Promise<PagedResponse20<T>> {
     const request = new URL(endpoint);
     for (const key in options) {
@@ -123,7 +123,7 @@ export type PagedResponse<T> = {
 };
 
 export type ListOptions20 = {
-  [key: string]: number | undefined;
+  [key: string]: string | number | undefined;
   page?: number | undefined;
   pagelen?: number | undefined;
 };
@@ -155,11 +155,11 @@ export async function* paginated20<T = any>(
   request: (options: ListOptions20) => Promise<PagedResponse20<T>>,
   options?: ListOptions20,
 ) {
-  const opts = options || { page: 1, pagelen: 100 };
+  const opts = { page: 1, pagelen: 100, ...options };
   let res;
   do {
     res = await request(opts);
-    opts.page = (opts.page || 1) + 1;
+    opts.page = opts.page + 1;
     for (const item of res.values) {
       yield item;
     }

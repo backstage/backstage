@@ -54,30 +54,44 @@ you can add a location target to the catalog configuration:
 catalog:
   locations:
     - type: bitbucket-discovery
-      target: https://bitbucket.org/workspaces/my-workspace/projects/my-project/repos/service-*/catalog-info.yaml
+      target: https://bitbucket.org/workspaces/my-workspace
 ```
 
 Note the `bitbucket-discovery` type, as this is not a regular `url` processor.
 
-The target is composed of four parts:
+The target is composed of the following parts:
 
-- The base instance URL, `https://bitbucket.org` in this case
-- The workspace name to scan, which must match a workspace accessible with the
-  username of your integration.
-- The project key to scan, which accepts \* wildcard tokens. This can simply be
-  `*` to include all repositories. This example only returns repositories in the
-  `my-project` project.
-- The repository blob to scan, which accepts \* wildcard tokens. This can simply
-  be `*` to scan all repositories in the workspace. This example only looks for
-  repositories prefixed with `service-`.
-- The path within each repository to find the catalog YAML file. This will
-  usually be `/catalog-info.yaml` or a similar variation for catalog files
-  stored in the root directory of each repository. If omitted, the default value
-  `catalog-info.yaml` will be used. E.g. given that `my-project` and `service-a`
-  exists,
-  `https://bitbucket.org/workspaces/my-workspace/projects/my-project/repos/service-*/`
-  will result in:
-  `https://bitbucket.org/my-workspace/service-a/src/master/catalog-info.yaml`.
+- The base URL for Bitbucket, `https://bitbucket.org`
+- The workspace name to scan (following the `workspaces/` path part), which must
+  match a workspace accessible with the username of your integration.
+- (Optional) The project key to scan (following the `projects/` path part),
+  which accepts \* wildcard tokens. If ommitted, repositories from all projects
+  in the workspace are included.
+- (Optional) The repository blob to scan (following the `repos/` path part),
+  which accepts \* wildcard tokens. If ommitted, all repositories in the
+  workspace are included.
+- (Optional) The `catalogPath` query argument to specify the location within
+  each repository to find the catalog YAML file. This will usually be
+  `/catalog-info.yaml` or a similar variation for catalog files stored in the
+  root directory of each repository. If omitted, the default value
+  `catalog-info.yaml` will be used.
+- (Optional) The `q` query argument to be passed through to Bitbucket for
+  filtering results via the API. This is the most flexible option and will
+  reduce the amount of API calls if you have a large workspace.
+  [See here for the specification](https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering)
+  for the query argument (will be passed as the `q` query parameter).
+
+Examples:
+
+- `https://bitbucket.org/workspaces/my-workspace/projects/my-project` will find
+  all repositories in the `my-project` project in the `my-workspace` workspace.
+- `https://bitbucket.org/workspaces/my-workspace/repos/service-*` will find all
+  repositories starting with `service-` in the `my-workspace` workspace.
+- `https://bitbucket.org/workspaces/my-workspace/projects/apis-*/repos/service-*`
+  will find all repositories starting with `service-`, in all projects starting
+  with `apis-` in the `my-workspace` workspace.
+- `https://bitbucket.org/workspaces/my-workspace?q=project.key ~ "my-project"`
+  will find all repositories in a project containing `my-project` in its key.
 
 ## Custom repository processing
 

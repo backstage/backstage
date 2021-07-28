@@ -196,11 +196,16 @@ export async function readBitbucketCloud(
 ): Promise<Result<BitbucketRepository20>> {
   const {
     workspacePath,
+    queryParam: q,
     projectSearchPath,
     repoSearchPath,
   } = parseBitbucketCloudUrl(target);
-  const repositories = paginated20(options =>
-    client.listRepositoriesByWorkspace20(workspacePath, options),
+
+  const repositories = paginated20(
+    options => client.listRepositoriesByWorkspace20(workspacePath, options),
+    {
+      q,
+    },
   );
   const result: Result<BitbucketRepository20> = {
     scanned: 0,
@@ -210,8 +215,8 @@ export async function readBitbucketCloud(
   for await (const repository of repositories) {
     result.scanned++;
     if (
-      projectSearchPath.test(repository.project.key) &&
-      repoSearchPath.test(repository.slug)
+      (!projectSearchPath || projectSearchPath.test(repository.project.key)) &&
+      (!repoSearchPath || repoSearchPath.test(repository.slug))
     ) {
       result.matches.push(repository);
     }
@@ -237,28 +242,43 @@ function parseUrl(
   throw new Error(`Failed to parse ${urlString}`);
 }
 
+function readPathParameters(pathParts: string[]): Map<string, string> {
+  const vals: Record<string, any> = {};
+  for (let i = 0; i < pathParts.length; i += 2) {
+    if (i + 1 >= pathParts.length) continue;
+    vals[pathParts[i]] = decodeURIComponent(pathParts[i + 1]);
+  }
+  return new Map<string, string>(Object.entries(vals));
+}
+
 function parseBitbucketCloudUrl(
   urlString: string,
 ): {
   workspacePath: string;
-  projectSearchPath: RegExp;
-  repoSearchPath: RegExp;
   catalogPath: string;
+  projectSearchPath?: RegExp;
+  repoSearchPath?: RegExp;
+  queryParam?: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const pathMap = readPathParameters(url.pathname.substr(1).split('/'));
+  const query = url.searchParams;
 
-  // workspaces/{workspacePath}/projects/{projectSearchPath}/repos/{repoSearchPath}/{catalogPath=catalog-info.yaml}
-  if (path.length > 5 && path[1].length && path[3].length) {
-    return {
-      workspacePath: decodeURIComponent(path[1]),
-      projectSearchPath: escapeRegExp(decodeURIComponent(path[3])),
-      repoSearchPath: escapeRegExp(decodeURIComponent(path[5])),
-      catalogPath: `/${decodeURIComponent(path.slice(6).join('/'))}`,
-    };
+  if (!pathMap.has('workspaces')) {
+    throw new Error(`Failed to parse workspace from ${urlString}`);
   }
 
-  throw new Error(`Failed to parse ${urlString}`);
+  return {
+    workspacePath: pathMap.get('workspaces')!,
+    projectSearchPath: pathMap.has('projects')
+      ? escapeRegExp(pathMap.get('projects')!)
+      : undefined,
+    repoSearchPath: pathMap.has('repos')
+      ? escapeRegExp(pathMap.get('repos')!)
+      : undefined,
+    catalogPath: `/${query.get('catalogPath') || ''}`,
+    queryParam: query.get('q') || undefined,
+  };
 }
 
 function escapeRegExp(str: string): RegExp {
