@@ -16,7 +16,14 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { BuildItem, BuildsResult, XcmetricsApi } from './types';
+import {
+  Build,
+  BuildCount,
+  BuildStatusResult,
+  BuildTime,
+  PaginationResult,
+  XcmetricsApi,
+} from './types';
 
 interface Options {
   discoveryApi: DiscoveryApi;
@@ -29,14 +36,65 @@ export class XcmetricsClient implements XcmetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuilds(): Promise<BuildItem[]> {
+  async getBuild(id: string): Promise<Build> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build`);
+    const response = await fetch(`${baseUrl}/build/${id}`);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
 
-    return ((await response.json()) as BuildsResult).items;
+    return ((await response.json()) as Record<'build', Build>).build;
+  }
+
+  async getBuilds(limit: number = 10): Promise<Build[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build?per=${limit}`);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return ((await response.json()) as PaginationResult<Build>).items;
+  }
+
+  async getBuildCounts(days: number): Promise<BuildCount[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/count?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildCount[];
+  }
+
+  async getBuildTimes(days: number): Promise<BuildTime[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/time?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildTime[];
+  }
+
+  async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/status?per=${limit}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return ((await response.json()) as PaginationResult<BuildStatusResult>)
+      .items;
   }
 }
