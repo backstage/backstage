@@ -69,6 +69,7 @@ export const StatusOK = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.ok)}
       aria-label="Status ok"
+      aria-hidden="true"
       {...props}
     />
   );
@@ -80,6 +81,7 @@ export const StatusWarning = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.warning)}
       aria-label="Status warning"
+      aria-hidden="true"
       {...props}
     />
   );
@@ -91,6 +93,7 @@ export const StatusError = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.error)}
       aria-label="Status error"
+      aria-hidden="true"
       {...props}
     />
   );
@@ -102,6 +105,7 @@ export const StatusPending = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.pending)}
       aria-label="Status pending"
+      aria-hidden="true"
       {...props}
     />
   );
@@ -113,6 +117,7 @@ export const StatusRunning = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.running)}
       aria-label="Status running"
+      aria-hidden="true"
       {...props}
     />
   );
@@ -124,6 +129,7 @@ export const StatusAborted = (props: PropsWithChildren<{}>) => {
     <span
       className={classNames(classes.status, classes.aborted)}
       aria-label="Status aborted"
+      aria-hidden="true"
       {...props}
     />
   );

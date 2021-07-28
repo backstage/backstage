@@ -107,7 +107,11 @@ export const Tabs = ({ tabs }: TabsProps) => {
     <div className={classes.root}>
       <AppBar ref={wrapper} className={classes.appbar} position="static">
         <div>
-          <StyledTabs value={currentIndex} onChange={handleChange}>
+          <StyledTabs
+            value={currentIndex}
+            onChange={handleChange}
+            selectionFollowsFocus
+          >
             {navIndex !== 0 && (
               <StyledIcon
                 onClick={navigateToPrevChunk}
