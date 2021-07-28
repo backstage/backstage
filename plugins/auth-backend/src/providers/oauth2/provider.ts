@@ -177,6 +177,8 @@ export const createOAuth2Provider = (
       const authorizationUrl = envConfig.getString('authorizationUrl');
       const tokenUrl = envConfig.getString('tokenUrl');
       const scope = envConfig.getOptionalString('scope');
+      const disableRefresh =
+        envConfig.getOptionalBoolean('disableRefresh') ?? false;
 
       const provider = new OAuth2AuthProvider({
         clientId,
@@ -188,7 +190,7 @@ export const createOAuth2Provider = (
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
+        disableRefresh: disableRefresh,
         providerId,
         tokenIssuer,
       });
