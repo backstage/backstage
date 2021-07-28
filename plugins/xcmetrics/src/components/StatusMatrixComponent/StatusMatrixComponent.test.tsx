@@ -18,19 +18,21 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { StatusMatrixComponent } from './StatusMatrixComponent';
 import { xcmetricsApiRef } from '../../api';
-import { mockBuildId, createMockXcmetricsApi } from '../../test-utils';
+
+jest.mock('../../api/XcmetricsClient');
+const client = require('../../api/XcmetricsClient');
 
 describe('StatusMatrixComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
         <StatusMatrixComponent />
       </ApiProvider>,
     );
 
-    const cell = rendered.getByTestId(mockBuildId);
+    const cell = rendered.getByTestId(client.mockBuild.id);
     expect(cell).toBeInTheDocument();
   });
 });

@@ -18,14 +18,16 @@ import { OverviewTrendsComponent } from './OverviewTrendsComponent';
 import { renderInTestApp } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { createMockXcmetricsApi } from '../../test-utils';
 import userEvent from '@testing-library/user-event';
+
+jest.mock('../../api/XcmetricsClient');
+const client = require('../../api/XcmetricsClient');
 
 describe('OverviewTrendsComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
         <OverviewTrendsComponent />
       </ApiProvider>,
@@ -36,7 +38,7 @@ describe('OverviewTrendsComponent', () => {
   });
 
   it('should render empty state', async () => {
-    const api = createMockXcmetricsApi();
+    const api = client.XcmetricsClient;
     api.getBuildCounts = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
@@ -50,7 +52,7 @@ describe('OverviewTrendsComponent', () => {
   it('should change number of days when select is changed', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
         <OverviewTrendsComponent />
       </ApiProvider>,
@@ -62,7 +64,7 @@ describe('OverviewTrendsComponent', () => {
   });
 
   it('should show errors when API not responding', async () => {
-    const api = createMockXcmetricsApi();
+    const api = client.XcmetricsClient;
     const buildCountError = 'MockBuildCountErrorMessage';
     const buildTimesError = 'MockBuildTimesErrorMessage';
 

@@ -19,30 +19,36 @@ import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import userEvent from '@testing-library/user-event';
 import { StatusCellComponent } from './StatusCellComponent';
 import { xcmetricsApiRef } from '../../api';
-import {
-  mockBuildId,
-  mockStatus,
-  createMockXcmetricsApi,
-} from '../../test-utils';
-import { formatStatus } from '../../utils';
+import { formatDuration, formatStatus } from '../../utils';
+
+jest.mock('../../api/XcmetricsClient');
+const client = require('../../api/XcmetricsClient');
 
 describe('StatusCellComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
         <StatusCellComponent
-          buildStatus={{ id: mockBuildId, buildStatus: mockStatus }}
+          buildStatus={{
+            id: client.mockBuild.id,
+            buildStatus: client.mockBuild.buildStatus,
+          }}
           size={10}
           spacing={10}
         />
       </ApiProvider>,
     );
 
-    userEvent.hover(rendered.getByTestId(mockBuildId));
+    userEvent.hover(rendered.getByTestId(client.mockBuild.id));
     expect(
-      await rendered.findByText(formatStatus(mockStatus)),
+      await rendered.findByText(formatStatus(client.mockBuild.buildStatus)),
+    ).toBeInTheDocument();
+    expect(
+      await rendered.findByText(
+        formatDuration(client.mockBuild.duration).trim(),
+      ),
     ).toBeInTheDocument();
   });
 });

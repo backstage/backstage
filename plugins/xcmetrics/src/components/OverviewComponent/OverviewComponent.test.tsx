@@ -17,8 +17,10 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { mockUserId, createMockXcmetricsApi } from '../../test-utils';
 import { OverviewComponent } from './OverviewComponent';
+
+jest.mock('../../api/XcmetricsClient');
+const client = require('../../api/XcmetricsClient');
 
 jest.mock('../OverviewTrendsComponent', () => ({
   OverviewTrendsComponent: () => 'OverviewTrendsComponent',
@@ -32,18 +34,18 @@ describe('OverviewComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, createMockXcmetricsApi())}
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
         <OverviewComponent />
       </ApiProvider>,
     );
 
     expect(rendered.getByText('XCMetrics Dashboard')).toBeInTheDocument();
-    expect(rendered.getByText(mockUserId)).toBeInTheDocument();
+    expect(rendered.getByText(client.mockBuild.userid)).toBeInTheDocument();
   });
 
   it('should render an empty state when no builds exist', async () => {
-    const api = createMockXcmetricsApi();
+    const api = client.XcmetricsClient;
     api.getBuilds = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
@@ -56,7 +58,7 @@ describe('OverviewComponent', () => {
   });
 
   it('should show an error when API not responding', async () => {
-    const api = createMockXcmetricsApi();
+    const api = client.XcmetricsClient;
     const errorMessage = 'MockErrorMessage';
 
     api.getBuilds = jest.fn().mockRejectedValue({ message: errorMessage });
