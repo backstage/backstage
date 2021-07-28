@@ -65,10 +65,10 @@ The target is composed of the following parts:
 - The workspace name to scan (following the `workspaces/` path part), which must
   match a workspace accessible with the username of your integration.
 - (Optional) The project key to scan (following the `projects/` path part),
-  which accepts \* wildcard tokens. If ommitted, repositories from all projects
+  which accepts \* wildcard tokens. If omitted, repositories from all projects
   in the workspace are included.
 - (Optional) The repository blob to scan (following the `repos/` path part),
-  which accepts \* wildcard tokens. If ommitted, all repositories in the
+  which accepts \* wildcard tokens. If omitted, all repositories in the
   workspace are included.
 - (Optional) The `catalogPath` query argument to specify the location within
   each repository to find the catalog YAML file. This will usually be
@@ -92,6 +92,9 @@ Examples:
   with `apis-` in the `my-workspace` workspace.
 - `https://bitbucket.org/workspaces/my-workspace?q=project.key ~ "my-project"`
   will find all repositories in a project containing `my-project` in its key.
+- `https://bitbucket.org/workspaces/my-workspace?catalogPath=my/nested/path/catalog.yaml`
+  will find all repositories in the `my-workspace` workspace and use the catalog
+  file at `my/nested/path/catalog.yaml`.
 
 ## Custom repository processing
 
