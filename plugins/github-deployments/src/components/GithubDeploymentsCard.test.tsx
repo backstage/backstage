@@ -311,7 +311,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No apiBaseUrl available for host my-github-3.com, please check your integrations config',
+            'Error: No apiBaseUrl available for host my-github-3.com, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
@@ -336,7 +336,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No matching GitHub integration configuration for host my-github-unknown.com, please check your integrations config',
+            'Error: No matching GitHub integration configuration for host my-github-unknown.com, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
