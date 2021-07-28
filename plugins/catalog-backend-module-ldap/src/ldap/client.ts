@@ -16,6 +16,7 @@
 
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { Logger } from 'winston';
+import { ansiColors } from '../util';
 import { BindConfig } from './config';
 import { errorString } from './util';
 import {
@@ -70,10 +71,24 @@ export class LdapClient {
    * @param dn The fully qualified base DN to search within
    * @param options The search options
    */
-  async search(dn: string, options: SearchOptions): Promise<SearchEntry[]> {
+  async search(
+    dn: string,
+    options: SearchOptions & { type: 'users' | 'groups' },
+    logger: Logger,
+  ): Promise<SearchEntry[]> {
     try {
       return await new Promise<SearchEntry[]>((resolve, reject) => {
         const output: SearchEntry[] = [];
+        logger.info(
+          `Searching LDAP directory ${
+            dn ? `at dn ${ansiColors.yellow}${dn}${ansiColors.reset} ` : ''
+          }with filter ${ansiColors.yellow}${options.filter}${
+            ansiColors.reset
+          },`,
+        );
+        const loggingTimeout = setInterval(() => {
+          logger.info(`found ${output.length} ${options.type} so far...`);
+        }, 5000);
 
         this.client.search(dn, options, (err, res) => {
           if (err) {
@@ -90,10 +105,12 @@ export class LdapClient {
           });
 
           res.on('error', e => {
+            clearInterval(loggingTimeout);
             reject(new Error(errorString(e)));
           });
 
           res.on('end', r => {
+            clearInterval(loggingTimeout);
             if (!r) {
               reject(new Error('Null response'));
             } else if (r.status !== 0) {
@@ -105,7 +122,9 @@ export class LdapClient {
         });
       });
     } catch (e) {
-      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+      throw new Error(
+        `LDAP search at DN "${ansiColors.yellow}${dn}${ansiColors.reset}" failed, ${e.message}`,
+      );
     }
   }
 
@@ -115,11 +134,11 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
    */
-  async getVendor(): Promise<LdapVendor> {
+  async getVendor(logger: Logger): Promise<LdapVendor> {
     if (this.vendor) {
       return this.vendor;
     }
-    this.vendor = this.getRootDSE()
+    this.vendor = this.getRootDSE(logger)
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
           return ActiveDirectoryVendor;
@@ -138,11 +157,16 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/RootDSE
    */
-  async getRootDSE(): Promise<SearchEntry | undefined> {
-    const result = await this.search('', {
-      scope: 'base',
-      filter: '(objectclass=*)',
-    } as SearchOptions);
+  async getRootDSE(logger: Logger): Promise<SearchEntry | undefined> {
+    const result = await this.search(
+      '',
+      {
+        scope: 'base',
+        filter: '(objectclass=*)',
+        type: 'groups',
+      } as SearchOptions & { type: 'users' | 'groups' },
+      logger,
+    );
     if (result && result.length === 1) {
       return result[0];
     }

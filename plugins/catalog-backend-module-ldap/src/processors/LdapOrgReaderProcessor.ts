@@ -48,6 +48,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       userTransformer?: UserTransformer;
     },
   ) {
+    options.logger.info('Created LDAP Reader');
     const c = config.getOptionalConfig('catalog.processors.ldapOrg');
     return new LdapOrgReaderProcessor({
       ...options,
@@ -77,6 +78,8 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     }
 
     const provider = this.providers.find(p => location.target === p.target);
+
+    this.logger.info(`Found LDAP provider ${provider?.target}`);
     if (!provider) {
       throw new Error(
         `There is no LDAP Org provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.ldapOrg.providers.`,
@@ -85,7 +88,6 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
-    this.logger.info('Reading LDAP users and groups');
 
     // Be lazy and create the client each time; even though it's pretty
     // inefficient, we usually only do this once per entire refresh loop and
@@ -95,6 +97,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       provider.target,
       provider.bind,
     );
+    this.logger.info('Created LDAP Client, reading LDAP users and groups');
     const { users, groups } = await readLdapOrg(
       client,
       provider.users,
@@ -107,7 +110,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
+    this.logger.info(
       `Read ${users.length} LDAP users and ${groups.length} LDAP groups in ${duration} seconds`,
     );
 

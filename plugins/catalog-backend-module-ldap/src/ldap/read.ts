@@ -94,20 +94,26 @@ export async function defaultUserTransformer(
 export async function readLdapUsers(
   client: LdapClient,
   config: UserConfig,
-  opts?: { transformer?: UserTransformer },
+  opts: { transformer?: UserTransformer; logger: Logger },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
 }> {
   const { dn, options, map } = config;
-  const vendor = await client.getVendor();
+  const vendor = await client.getVendor(opts.logger);
 
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
 
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  const entries = await client.search(dn, options);
+  opts.logger.info(`Started searching for users`);
+  const entries = await client.search(
+    dn,
+    { ...options, type: 'users' },
+    opts.logger,
+  );
+  opts?.logger.info(`Found ${entries.length} users. Processing...`);
 
   for (const user of entries) {
     const entity = await transformer(vendor, config, user);
@@ -123,6 +129,7 @@ export async function readLdapUsers(
     entities.push(entity);
   }
 
+  opts.logger.info(`Users imported.`);
   return { users: entities, userMemberOf };
 }
 
@@ -193,8 +200,9 @@ export async function defaultGroupTransformer(
 export async function readLdapGroups(
   client: LdapClient,
   config: GroupConfig,
-  opts?: {
+  opts: {
     transformer?: GroupTransformer;
+    logger: Logger;
   },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
@@ -206,11 +214,18 @@ export async function readLdapGroups(
   const groupMember: Map<string, Set<string>> = new Map();
 
   const { dn, map, options } = config;
-  const vendor = await client.getVendor();
+  const vendor = await client.getVendor(opts.logger);
 
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  const entries = await client.search(dn, options);
+  opts.logger.info(`Started searching for groups`);
+
+  const entries = await client.search(
+    dn,
+    { ...options, type: 'groups' },
+    opts.logger,
+  );
+  opts.logger.info(`Found ${entries.length} groups. Processing...`);
 
   for (const group of entries) {
     const entity = await transformer(vendor, config, group);
@@ -262,17 +277,26 @@ export async function readLdapOrg(
 }> {
   const { users, userMemberOf } = await readLdapUsers(client, userConfig, {
     transformer: options?.userTransformer,
+    logger: options.logger,
   });
+
   const { groups, groupMemberOf, groupMember } = await readLdapGroups(
     client,
     groupConfig,
-    { transformer: options?.groupTransformer },
+    {
+      transformer: options?.groupTransformer,
+      logger: options.logger,
+    },
   );
 
+  options.logger.info('Resolving relations between users and groups...');
   resolveRelations(groups, users, userMemberOf, groupMemberOf, groupMember);
+  options.logger.info('Sorting...');
+
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
   groups.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
 
+  options.logger.info('Reading directory completed.');
   return { users, groups };
 }
 
