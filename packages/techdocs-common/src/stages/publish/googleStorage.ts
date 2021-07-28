@@ -15,7 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { FileExistsResponse, Storage } from '@google-cloud/storage';
+import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
 import path from 'path';
@@ -119,9 +119,7 @@ export class GoogleGCSPublish implements PublisherBase {
 
     // First, retrieve a list of all individual files in currently existing
     const remoteFolder = getCloudPathForLocalPath(entity);
-    const existingFiles = (
-      await bucket.getFiles({ prefix: remoteFolder })
-    )[0].map(file => file.name);
+    const existingFiles = await this.getFilesForFolder(remoteFolder);
 
     // Then, merge new files into the same folder
     let absoluteFilesToUpload;
@@ -273,6 +271,31 @@ export class GoogleGCSPublish implements PublisherBase {
       allFileMetadata.pipe(migrateFiles).on('error', error => {
         migrateFiles.destroy();
         reject(error);
+      });
+    });
+  }
+
+  private getFilesForFolder(folder: string): Promise<string[]> {
+    const fileMetadataStream: Readable = this.storageClient
+      .bucket(this.bucketName)
+      .getFilesStream({ prefix: folder });
+
+    return new Promise((resolve, reject) => {
+      const files: string[] = [];
+
+      fileMetadataStream.on('error', error => {
+        // push file to file array
+        reject(error);
+      });
+
+      fileMetadataStream.on('data', (file: File) => {
+        // push file to file array
+        files.push(file.name);
+      });
+
+      fileMetadataStream.on('end', () => {
+        // resolve promise
+        resolve(files);
       });
     });
   }

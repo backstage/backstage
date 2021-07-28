@@ -104,6 +104,14 @@ export class S3 {
         }),
     };
   }
+
+  listObjectsV2() {
+    return {
+      promise: () => {
+        return Promise.resolve([]);
+      },
+    };
+  }
 }
 
 export default {

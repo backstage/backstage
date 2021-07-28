@@ -107,6 +107,17 @@ class Bucket {
   file(destinationFilePath: string) {
     return new GCSFile(destinationFilePath);
   }
+
+  getFilesStream() {
+    const readable = new Readable();
+    readable._read = () => {};
+
+    process.nextTick(() => {
+      readable.emit('end');
+    });
+
+    return readable;
+  }
 }
 
 export class Storage {
