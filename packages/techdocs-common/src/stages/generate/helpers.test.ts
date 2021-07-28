@@ -23,6 +23,7 @@ import { RemoteProtocol } from '../prepare/types';
 import {
   addBuildTimestampMetadata,
   getGeneratorKey,
+  getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
   isValidRepoUrlForMkdocs,
   patchMkdocsYmlPreBuild,
@@ -52,6 +53,9 @@ const mkdocsYmlWithValidDocDir = fs.readFileSync(
 );
 const mkdocsYmlWithInvalidDocDir = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir.yml'),
+);
+const mkdocsYmlWithInvalidDocDir2 = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir2.yml'),
 );
 const mockLogger = getVoidLogger();
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
@@ -334,48 +338,68 @@ describe('helpers', () => {
     });
   });
 
-  describe('validateMkdocsYaml', () => {
-    beforeEach(() => {
-      mockFs({
-        '/mkdocs.yml': mkdocsYml,
-        '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
-        '/mkdocs_valid_doc_dir.yml': mkdocsYmlWithValidDocDir,
-        '/mkdocs_invalid_doc_dir.yml': mkdocsYmlWithInvalidDocDir,
-      });
-    });
-
+  describe('getMkdocsYml', () => {
     afterEach(() => {
       mockFs.restore();
     });
 
     const inputDir = resolvePath(__filename, '../__fixtures__/');
+
+    it('returns expected contents when .yml file is present', async () => {
+      const key = path.join(inputDir, 'mkdocs.yml');
+      mockFs({ [key]: mkdocsYml });
+      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+
+      expect(mkdocsPath).toBe(key);
+      expect(content).toBe(mkdocsYml.toString());
+    });
+
+    it('returns expected contents when .yaml file is present', async () => {
+      const key = path.join(inputDir, 'mkdocs.yaml');
+      mockFs({ [key]: mkdocsYml });
+      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+      expect(mkdocsPath).toBe(key);
+      expect(content).toBe(mkdocsYml.toString());
+    });
+
+    it('throws when neither .yml nor .yaml file is present', async () => {
+      const invalidInputDir = resolvePath(__filename);
+      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrowError(
+        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation/,
+      );
+    });
+  });
+
+  describe('validateMkdocsYaml', () => {
+    const inputDir = resolvePath(__filename, '../__fixtures__/');
+
     it('should return true on when no docs_dir present', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, '/mkdocs.yml'),
+        validateMkdocsYaml(inputDir, mkdocsYml.toString()),
       ).resolves.toBeUndefined();
     });
 
     it('should return true on when a valid docs_dir is present', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, '/mkdocs_valid_doc_dir.yml'),
+        validateMkdocsYaml(inputDir, mkdocsYmlWithValidDocDir.toString()),
       ).resolves.toBeUndefined();
     });
 
     it('should return false on absolute doc_dir path', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, '/mkdocs_invalid_doc_dir.yml'),
+        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir.toString()),
       ).rejects.toThrow();
     });
 
     it('should return false on doc_dir path that traverses directory structure backwards', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, '/mkdocs_invalid_doc_dir2.yml'),
+        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir2.toString()),
       ).rejects.toThrow();
     });
 
     it('should validate files with custom yaml tags', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, '/mkdocs_with_extensions.yml'),
+        validateMkdocsYaml(inputDir, mkdocsYmlWithExtensions.toString()),
       ).resolves.toBeUndefined();
     });
   });
