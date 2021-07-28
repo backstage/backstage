@@ -491,7 +491,9 @@ export function Table<T extends object = {}>({
         icons={tableIcons}
         title={
           <>
-            <Typography variant="h5">{title}</Typography>
+            <Typography variant="h5" component="h3">
+              {title}
+            </Typography>
             {subtitle && (
               <Typography color="textSecondary" variant="body1">
                 {subtitle}

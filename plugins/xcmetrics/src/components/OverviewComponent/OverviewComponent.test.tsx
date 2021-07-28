@@ -14,62 +14,61 @@
  * limitations under the License.
  */
 import React from 'react';
-import { OverviewComponent } from './OverviewComponent';
 import { renderInTestApp } from '@backstage/test-utils';
-import { XcmetricsApi, xcmetricsApiRef } from '../../api';
+import { xcmetricsApiRef } from '../../api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { OverviewComponent } from './OverviewComponent';
+
+jest.mock('../../api/XcmetricsClient');
+const client = require('../../api/XcmetricsClient');
+
+jest.mock('../OverviewTrendsComponent', () => ({
+  OverviewTrendsComponent: () => 'OverviewTrendsComponent',
+}));
+
+jest.mock('../StatusMatrixComponent', () => ({
+  StatusMatrixComponent: () => 'StatusMatrixComponent',
+}));
 
 describe('OverviewComponent', () => {
   it('should render', async () => {
-    const mockUserId = 'mockUser';
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue([
-        {
-          userid: mockUserId,
-          warningCount: 1,
-          duration: 123.45,
-          isCi: false,
-          projectName: 'App',
-          buildStatus: 'succeeded',
-          schema: 'AppSchema',
-        },
-      ]),
-    };
-
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
+      >
         <OverviewComponent />
       </ApiProvider>,
     );
+
     expect(rendered.getByText('XCMetrics Dashboard')).toBeInTheDocument();
-    expect(rendered.getByText(mockUserId)).toBeInTheDocument();
-    expect(rendered.queryByText('CI')).toBeNull();
+    expect(rendered.getByText(client.mockBuild.userid)).toBeInTheDocument();
   });
 
   it('should render an empty state when no builds exist', async () => {
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockResolvedValue([]),
-    };
+    const api = client.XcmetricsClient;
+    api.getBuilds = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
         <OverviewComponent />
       </ApiProvider>,
     );
+
     expect(rendered.getByText('No builds to show')).toBeInTheDocument();
   });
 
   it('should show an error when API not responding', async () => {
+    const api = client.XcmetricsClient;
     const errorMessage = 'MockErrorMessage';
-    const mockApi: jest.Mocked<XcmetricsApi> = {
-      getBuilds: jest.fn().mockRejectedValue({ message: errorMessage }),
-    };
+
+    api.getBuilds = jest.fn().mockRejectedValue({ message: errorMessage });
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, mockApi)}>
+      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
         <OverviewComponent />
       </ApiProvider>,
     );
+
     expect(rendered.getByText(errorMessage)).toBeInTheDocument();
   });
 });

@@ -76,6 +76,7 @@ export const EntityLifecyclePicker = () => {
     <Box pb={1} pt={1}>
       <Typography variant="button">Lifecycle</Typography>
       <Autocomplete<string>
+        aria-label="Lifecycle"
         multiple
         options={availableLifecycles}
         value={selectedLifecycles}
