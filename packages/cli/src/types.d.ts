@@ -258,9 +258,23 @@ declare module 'webpack-node-externals' {
     }
   }
 }
+
+// local webpack.d.ts
+import * as webpack from 'webpack';
+
+declare module 'webpack' {
+  namespace loader {
+    // Stub to avoid compiler error in ts-loader types.
+    interface LoaderContext {}
+  }
+
+  namespace Stats {
+    // Work-around for https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50802
+    type ToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
+  }
+}
 declare module 'webpack-dev-server' {
   declare namespace WebpackDevServer {
-    import webpack = require('webpack');
     import httpProxyMiddleware = require('http-proxy-middleware');
     import express = require('express');
     import serveStatic = require('serve-static');
@@ -604,17 +618,6 @@ declare module 'webpack-dev-server' {
       writeToDisk?: boolean | ((filePath: string) => boolean);
     }
   }
-
-  declare module 'webpack' {
-    interface Configuration {
-      /**
-       * Can be used to configure the behaviour of webpack-dev-server when
-       * the webpack config is passed to webpack-dev-server CLI.
-       */
-      devServer?: WebpackDevServer.Configuration;
-    }
-  }
-
   declare class WebpackDevServer {
     listeningApp: WebpackDevServer.ListeningApp;
     sockets: NodeJS.EventEmitter[];
