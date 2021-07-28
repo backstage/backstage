@@ -54,3 +54,5 @@
 - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke Pagination of the Table.
 
 - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+
+- For anyone not using our `Table` component and relying on `material-table` directly, please update to use `@material-table/core` and follow this migration guide https://material-table-core.com/docs/breaking-changes#onchangerowsperpage
