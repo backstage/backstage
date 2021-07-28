@@ -17,10 +17,9 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { ThemeProvider, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
 import { WarningPanel, WarningProps } from './WarningPanel';
-import { lightTheme } from '@backstage/theme';
 
 const propsTitle: WarningProps = { title: 'Mock title' };
 const propsTitleMessage: WarningProps = {
@@ -36,20 +35,12 @@ const propsErrorMessage: WarningProps = {
 
 describe('<WarningPanel />', () => {
   it('renders without exploding', async () => {
-    await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsTitleMessage} />
-      </ThemeProvider>,
-    );
+    await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
   });
 
   it('renders title', async () => {
-    await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsTitleMessage} />
-      </ThemeProvider>,
-    );
+    await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
     const expandIcon = await screen.getByText('Warning: Mock title');
     fireEvent.click(expandIcon);
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
@@ -58,43 +49,31 @@ describe('<WarningPanel />', () => {
 
   it('renders title and children', async () => {
     await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsTitle}>
-          <Typography>Java stacktrace</Typography>
-        </WarningPanel>
-      </ThemeProvider>,
+      <WarningPanel {...propsTitle}>
+        <Typography>Java stacktrace</Typography>
+      </WarningPanel>,
     );
     expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
   });
 
   it('renders message', async () => {
-    await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsMessage} />
-      </ThemeProvider>,
-    );
+    await renderInTestApp(<WarningPanel {...propsMessage} />);
     expect(screen.getByText('Warning')).toBeInTheDocument();
     expect(screen.getByText('Some more info')).toBeInTheDocument();
   });
 
   it('renders title, message, and children', async () => {
     await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsTitleMessage}>
-          <Typography>Java stacktrace</Typography>
-        </WarningPanel>
-      </ThemeProvider>,
+      <WarningPanel {...propsTitleMessage}>
+        <Typography>Java stacktrace</Typography>
+      </WarningPanel>,
     );
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
     expect(screen.getByText('Some more info')).toBeInTheDocument();
     expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
   });
   it('renders message using severity', async () => {
-    await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <WarningPanel {...propsErrorMessage} />
-      </ThemeProvider>,
-    );
+    await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
     expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
   });
 });
