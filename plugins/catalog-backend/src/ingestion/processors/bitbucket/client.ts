@@ -19,7 +19,7 @@ import {
   BitbucketIntegrationConfig,
   getBitbucketRequestOptions,
 } from '@backstage/integration';
-import { BitbucketRepository, BitbucketRepository20 } from './types';
+import { BitbucketRepository20 } from './types';
 
 export class BitbucketClient {
   private readonly config: BitbucketIntegrationConfig;

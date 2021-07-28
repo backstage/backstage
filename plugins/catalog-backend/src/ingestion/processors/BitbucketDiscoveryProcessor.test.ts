@@ -18,7 +18,6 @@ import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/catalog-model';
 import {
-  BitbucketRepository,
   BitbucketRepository20,
   BitbucketRepositoryParser,
   PagedResponse,
