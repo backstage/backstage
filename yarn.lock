@@ -4087,9 +4087,9 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^1.1.20":
-  version "1.1.20"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.20.tgz#5e58124b4da2a60c0d4e6563cd94cdd7702fa341"
-  integrity sha512-bhYe9o1MpIGxSqXa2HK1E8P/uzTL7zJvUleLTp9C5q4CmPCroNTE/Ce8Apzlrb9o9baSQEhQLoPqe0xs+chS7A==
+  version "1.1.21"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.21.tgz#d43de9bc384c7a6e3d8ef13c77f4842e2ca69794"
+  integrity sha512-PctbxHscDmFK8jaM3MPUhoDw90TTQEydxTjiTQ+1+yY2KnlrEbxu5i8RgDk3UfRfZQIJw6JFDkEYGaTJIAv3Tw==
   dependencies:
     "@backstage/catalog-model" "^0.9.0"
     "@backstage/core-app-api" "^0.1.3"
@@ -15904,7 +15904,7 @@ isomorphic-fetch@^3.0.0:
     node-fetch "^2.6.1"
     whatwg-fetch "^3.4.1"
 
-isomorphic-form-data@~2.0.0:
+isomorphic-form-data@^2.0.0, isomorphic-form-data@~2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/isomorphic-form-data/-/isomorphic-form-data-2.0.0.tgz#9f6adf1c4c61ae3aefd8f110ab60fb9b143d6cec"
   integrity sha512-TYgVnXWeESVmQSg4GLVbalmQ+B4NPi/H4eWxqALKj63KsUrcu301YDjBqaOw3h+cbak7Na4Xyps3BiptHtxTfg==
