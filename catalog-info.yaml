@@ -15,7 +15,7 @@ metadata:
       url: https://discord.com/invite/EBHEGzX
   annotations:
     github.com/project-slug: backstage/backstage
-    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage
+    backstage.io/techdocs-ref: dir:.
     lighthouse.com/website-url: https://backstage.io
 spec:
   type: library
