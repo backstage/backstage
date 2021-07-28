@@ -5,6 +5,7 @@ metadata:
   description: A collection of all Backstage example components
 spec:
   targets:
+    - ./components/workplace-component.yaml
     - ./components/artist-lookup-component.yaml
     - ./components/petstore-component.yaml
     - ./components/playback-order-component.yaml

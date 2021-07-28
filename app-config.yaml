@@ -53,6 +53,7 @@ backend:
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   reading:
     allow:
+      - host: login.inpixon.com
       - host: example.com
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
