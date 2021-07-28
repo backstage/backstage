@@ -6812,9 +6812,9 @@
   integrity sha512-Fx+NpfOO0CpeYX2g9bkvX8O5qh9wrU1sOF4g8sft4Mu7z+qfe387YlyY8w8daDyDsKY5vUxM0yxkAYnbkRbZEw==
 
 "@types/webpack-node-externals@^2.5.0":
-  version "2.5.1"
-  resolved "https://registry.npmjs.org/@types/webpack-node-externals/-/webpack-node-externals-2.5.1.tgz#0f00036bce0f405ceabc092e415b734059fe5505"
-  integrity sha512-Cwg6+FQogkImRMF5nu5bKsLoZlwNCzpEyvxIzJM0ZgkkuKP7TrmQ3suOvNKKG1O4luxXZroKGo0mMC5EN5gPBA==
+  version "2.5.2"
+  resolved "https://registry.npmjs.org/@types/webpack-node-externals/-/webpack-node-externals-2.5.2.tgz#d6e0c90147472304b6b5cfcd1bbd7138e6b9eb65"
+  integrity sha512-MeNdcLW9Wqtj20057ixY35oFl+m59LlyPCi7GbjkJlf2043SJQg8br/5sQDAiSIIBPi7fqdJ+dVwLvhH5NLZtQ==
   dependencies:
     "@types/webpack" "^4"
 
