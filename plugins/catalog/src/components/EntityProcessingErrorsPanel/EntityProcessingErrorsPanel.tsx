@@ -19,7 +19,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '../../../../../packages/catalog-client/src';
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 
 const errorfilter = (i: UNSTABLE_EntityStatusItem) =>
   i.error &&
