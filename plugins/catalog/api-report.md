@@ -327,6 +327,11 @@ export const EntityPageLayout: {
   }) => null;
 };
 
+// Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const EntityProcessingErrorsPanel: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntitySwitch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -357,6 +362,11 @@ export const FilterContainer: ({
 export const FilteredEntityLayout: ({
   children,
 }: PropsWithChildren<{}>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "hasCatalogProcessingErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const hasCatalogProcessingErrors: (entity: Entity) => boolean;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

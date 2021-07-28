@@ -35,8 +35,12 @@ import {
   EntityLayout,
   EntityLinksCard,
   EntitySwitch,
+  EntityOrphanWarning,
+  EntityProcessingErrorsPanel,
   isComponentType,
   isKind,
+  hasCatalogProcessingErrors,
+  isOrphan,
 } from '@backstage/plugin-catalog';
 import {
   isGithubActionsAvailable,
@@ -80,6 +84,22 @@ const cicdContent = (
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+    
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
