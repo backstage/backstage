@@ -73,6 +73,7 @@ export const EntityTagPicker = () => {
       <Typography variant="button">Tags</Typography>
       <Autocomplete<string>
         multiple
+        aria-label="Tags"
         options={availableTags}
         value={selectedTags}
         onChange={(_: object, value: string[]) => setSelectedTags(value)}

@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-// @ts-ignore
-import sanitizeHtml from 'sanitize-html';
-import type { Transformer } from '../transformer';
-import { TECHDOCS_ALLOWED_TAGS } from './tags';
-import { TECHDOCS_ALLOWED_ATTRIBUTES } from './attributes';
-
-// TODO(freben): move all of this out of index
+import DOMPurify from 'dompurify';
+import type { Transformer } from './transformer';
 
 export const sanitizeDOM = (): Transformer => {
   return dom => {
-    const sanitizedHtml = sanitizeHtml(dom.innerHTML, {
-      allowedTags: TECHDOCS_ALLOWED_TAGS,
-      allowedAttributes: TECHDOCS_ALLOWED_ATTRIBUTES,
-      allowedSchemes: ['http', 'https', 'ftp', 'mailto', 'data', 'blob'],
+    return DOMPurify.sanitize(dom.innerHTML, {
+      ADD_TAGS: ['link'],
+      FORBID_TAGS: ['style'],
+      WHOLE_DOCUMENT: true,
+      RETURN_DOM: true,
     });
-
-    return new DOMParser().parseFromString(sanitizedHtml, 'text/html')
-      .documentElement;
   };
 };

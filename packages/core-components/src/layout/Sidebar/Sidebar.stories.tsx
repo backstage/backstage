@@ -44,7 +44,7 @@ const handleSearch = (input: string) => {
 
 export const SampleSidebar = () => (
   <Sidebar>
-    <SidebarSearchField onSearch={handleSearch} />
+    <SidebarSearchField onSearch={handleSearch} to="/search" />
     <SidebarDivider />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />

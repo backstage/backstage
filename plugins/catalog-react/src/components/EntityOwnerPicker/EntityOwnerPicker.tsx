@@ -81,6 +81,7 @@ export const EntityOwnerPicker = () => {
       <Typography variant="button">Owner</Typography>
       <Autocomplete<string>
         multiple
+        aria-label="Owner"
         options={availableOwners}
         value={selectedOwners}
         onChange={(_: object, value: string[]) => setSelectedOwners(value)}
