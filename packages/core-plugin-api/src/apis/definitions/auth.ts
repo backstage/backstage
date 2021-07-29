@@ -151,9 +151,15 @@ export type BackstageIdentity = {
   id: string;
 
   /**
-   * An ID token that can be used to authenticate the user within Backstage.
+   * This is deprecated, use `token` instead.
+   * @deprecated
    */
   idToken: string;
+
+  /**
+   * The token used to authenticate the user within Backstage.
+   */
+  token: string;
 };
 
 /**
