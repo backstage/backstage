@@ -70,7 +70,22 @@ export type PaginationResult<T> = {
 
 export interface XcmetricsApi {
   getBuild(id: string): Promise<Build>;
-  getBuilds(): Promise<Build[]>;
+  getBuilds(limit?: number): Promise<Build[]>;
+
+  /**
+   * Get builds filtered by the provided parameters
+   *
+   * @param from Builds after this date. An ISO date in a string (e.g. "2020-01-01")
+   * @param to Builds before this date. An ISO date in a string (e.g. "2021-01-01")
+   * @param status Builds with this status
+   */
+  getFilteredBuilds(
+    from: string,
+    to: string,
+    status?: BuildStatus,
+    page?: number,
+    perPage?: number,
+  ): Promise<PaginationResult<Build>>;
   getBuildCounts(days: number): Promise<BuildCount[]>;
   getBuildTimes(days: number): Promise<BuildTime[]>;
   getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;

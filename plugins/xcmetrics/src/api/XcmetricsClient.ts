@@ -16,9 +16,11 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
+import { DateTime } from 'luxon';
 import {
   Build,
   BuildCount,
+  BuildStatus,
   BuildStatusResult,
   BuildTime,
   PaginationResult,
@@ -56,6 +58,38 @@ export class XcmetricsClient implements XcmetricsApi {
     }
 
     return ((await response.json()) as PaginationResult<Build>).items;
+  }
+
+  async getFilteredBuilds(
+    from: string,
+    to: string,
+    status?: BuildStatus,
+    page?: number,
+    perPage?: number,
+  ): Promise<PaginationResult<Build>> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build/filter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: DateTime.fromISO(from)
+          .startOf('day')
+          .toISO({ suppressMilliseconds: true }),
+        to: DateTime.fromISO(to)
+          .endOf('day')
+          .startOf('second')
+          .toISO({ suppressMilliseconds: true }),
+        status,
+        page,
+        per: perPage,
+      }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as PaginationResult<Build>;
   }
 
   async getBuildCounts(days: number): Promise<BuildCount[]> {

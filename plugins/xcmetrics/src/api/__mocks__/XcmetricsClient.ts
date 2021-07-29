@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Build, XcmetricsApi } from '../types';
+import { Build, BuildStatus, XcmetricsApi } from '../types';
 
 export const mockBuild = {
   userid: 'userid1',
@@ -60,6 +60,22 @@ export const XcmetricsClient: XcmetricsApi = {
       { ...mockBuild, id: '1' },
       { ...mockBuild, id: '2', userid: 'userid2' },
     ]);
+  },
+  getFilteredBuilds: (
+    from: string,
+    to: string,
+    status?: BuildStatus,
+    page?: number,
+    perPage?: number,
+  ) => {
+    return Promise.resolve({
+      items: [mockBuild],
+      metadata: {
+        per: 10,
+        total: 1,
+        page: 1,
+      },
+    });
   },
   getBuildCounts: () => {
     return Promise.resolve([mockBuildCount, mockBuildCount]);
