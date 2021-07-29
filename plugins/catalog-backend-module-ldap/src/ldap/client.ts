@@ -79,6 +79,7 @@ export class LdapClient {
     try {
       return await new Promise<SearchEntry[]>((resolve, reject) => {
         const output: SearchEntry[] = [];
+        let newUsers = 0;
         logger.info(
           `Searching LDAP directory ${
             dn ? `at dn ${ansiColors.yellow}${dn}${ansiColors.reset} ` : ''
@@ -87,10 +88,23 @@ export class LdapClient {
           },`,
         );
         const loggingTimeout = setInterval(() => {
-          logger.info(`found ${output.length} ${options.type} so far...`);
+          const newUsersInTheLast5Seconds = output.length - newUsers;
+          logger.info(
+            `found ${output.length} ${options.type} so far... (${
+              newUsersInTheLast5Seconds ? ansiColors.green : ansiColors.red
+            }+${newUsersInTheLast5Seconds}${
+              ansiColors.reset
+            } in the last 5 seconds)`,
+          );
+          if (newUsersInTheLast5Seconds === 0) {
+            logger.warn(
+              'Your LDAP server appears to be throttling our requests, or may be unresponsive. Please adjust your network conditions or talk to the responsible team.',
+            );
+          }
+          newUsers = output.length;
         }, 5000);
 
-        this.client.search(dn, options, (err, res) => {
+        this.client.search(dn, { paged: true, ...options }, (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
             return;
@@ -164,6 +178,7 @@ export class LdapClient {
         scope: 'base',
         filter: '(objectclass=*)',
         type: 'groups',
+        paged: false,
       } as SearchOptions & { type: 'users' | 'groups' },
       logger,
     );
