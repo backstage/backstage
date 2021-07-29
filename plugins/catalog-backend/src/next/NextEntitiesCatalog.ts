@@ -78,7 +78,11 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
 
     for (const singleFilter of request?.filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const { key, matchValueIn } of singleFilter.allOf) {
+        for (const {
+          key,
+          matchValueIn,
+          matchValueExists,
+        } of singleFilter.allOf) {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
@@ -86,7 +90,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
             .select('entity_id')
             .where(function keyFilter() {
               this.andWhere({ key: key.toLowerCase() });
-              if (matchValueIn) {
+              if (matchValueExists !== false && matchValueIn) {
                 if (matchValueIn.length === 1) {
                   this.andWhere({ value: matchValueIn[0].toLowerCase() });
                 } else if (matchValueIn.length > 1) {
@@ -98,7 +102,12 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
                 }
               }
             });
-          this.andWhere('entity_id', 'in', matchQuery);
+          // Explicitly evaluate matchValueExists as a boolean since it may be undefined
+          this.andWhere(
+            'entity_id',
+            matchValueExists === false ? 'not in' : 'in',
+            matchQuery,
+          );
         }
       });
     }
