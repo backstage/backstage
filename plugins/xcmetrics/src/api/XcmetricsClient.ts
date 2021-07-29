@@ -20,7 +20,7 @@ import { DateTime } from 'luxon';
 import {
   Build,
   BuildCount,
-  BuildStatus,
+  BuildFilters,
   BuildStatusResult,
   BuildTime,
   PaginationResult,
@@ -61,9 +61,7 @@ export class XcmetricsClient implements XcmetricsApi {
   }
 
   async getFilteredBuilds(
-    from: string,
-    to: string,
-    status?: BuildStatus,
+    filters: BuildFilters,
     page?: number,
     perPage?: number,
   ): Promise<PaginationResult<Build>> {
@@ -72,14 +70,15 @@ export class XcmetricsClient implements XcmetricsApi {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: DateTime.fromISO(from)
+        from: DateTime.fromISO(filters.from)
           .startOf('day')
           .toISO({ suppressMilliseconds: true }),
-        to: DateTime.fromISO(to)
+        to: DateTime.fromISO(filters.to)
           .endOf('day')
           .startOf('second')
           .toISO({ suppressMilliseconds: true }),
-        status,
+        status: filters.buildStatus,
+        projectName: filters.project,
         page,
         per: perPage,
       }),
@@ -130,5 +129,16 @@ export class XcmetricsClient implements XcmetricsApi {
 
     return ((await response.json()) as PaginationResult<BuildStatusResult>)
       .items;
+  }
+
+  async getProjects(): Promise<string[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build/project`);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as string[];
   }
 }

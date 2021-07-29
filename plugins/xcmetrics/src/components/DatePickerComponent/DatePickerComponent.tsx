@@ -65,6 +65,7 @@ interface DatePickerProps {
 
 export const DatePickerComponent = ({
   label,
+  onDateChange,
   ...inputProps
 }: InputProps & DatePickerProps) => {
   const classes = useStyles();
@@ -75,8 +76,8 @@ export const DatePickerComponent = ({
       <BootstrapInput
         type="date"
         fullWidth
+        onChange={event => onDateChange?.(event.target.value)}
         {...inputProps}
-        onChange={event => inputProps.onDateChange?.(event.target.value)}
       />
     </div>
   );

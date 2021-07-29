@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  makeStyles,
-  useTheme,
-  IconButton,
-  Grid,
-  Button,
-} from '@material-ui/core';
-import FilterList from '@material-ui/icons/FilterList';
 import React, { useEffect, useState } from 'react';
+import { makeStyles, IconButton, Grid, Button } from '@material-ui/core';
+import FilterList from '@material-ui/icons/FilterList';
 import { InfoCard, Select } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
-import { BuildStatus } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
+import { BuildFilters, BuildStatus, xcmetricsApiRef } from '../../api';
 import { DatePickerComponent } from '../DatePickerComponent';
 
-export type ActiveFilters = {
-  from: string;
-  to: string;
-  buildStatus?: BuildStatus;
+const toSelectItems = (strings: string[]) => {
+  return strings.map(str => ({ label: str, value: str }));
 };
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -43,37 +37,26 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 type FilterOption<T> = T | 'all';
 
 interface FiltersProps {
-  initDates: { from: string; to: string };
-  onFilterChange: (filters: ActiveFilters) => void;
+  initialValues: BuildFilters;
+  onFilterChange: (filters: BuildFilters) => void;
 }
 
 export const BuildListFilterComponent = ({
   onFilterChange,
-  initDates,
+  initialValues,
 }: FiltersProps) => {
-  const classes = useStyles(useTheme<BackstageTheme>());
-  const [status, setStatus] = useState<BuildStatus | undefined>();
-  const [from, setFrom] = useState<string>(initDates.from);
-  const [to, setTo] = useState<string>(initDates.to);
+  const client = useApi(xcmetricsApiRef);
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [values, setValues] = useState(initialValues);
 
-  useEffect(() => onFilterChange({ from, to, buildStatus: status }), [
-    onFilterChange,
-    from,
-    to,
-    status,
-  ]);
+  useEffect(() => onFilterChange(values), [onFilterChange, values]);
 
   const numFilters =
-    Number(!!status) +
-    Number(from !== initDates.from) +
-    Number(to !== initDates.to);
-
-  const clear = () => {
-    setStatus(undefined);
-    setFrom(initDates.from);
-    setTo(initDates.to);
-  };
+    Number(values.from !== initialValues.from) +
+    Number(values.to !== initialValues.to) +
+    Number(!!values.buildStatus) +
+    Number(!!values.project);
 
   const title = (
     <>
@@ -82,7 +65,7 @@ export const BuildListFilterComponent = ({
       </IconButton>
       Filters ({numFilters})
       {!!numFilters && (
-        <Button color="primary" onClick={clear}>
+        <Button color="primary" onClick={() => setValues(initialValues)}>
           Clear all
         </Button>
       )}
@@ -96,6 +79,10 @@ export const BuildListFilterComponent = ({
     { label: 'Stopped', value: 'stopped' },
   ];
 
+  const { value: projects, loading } = useAsync(async () => {
+    return client.getProjects();
+  }, []);
+
   const content = (
     <Grid
       container
@@ -104,20 +91,53 @@ export const BuildListFilterComponent = ({
       className={classes.filtersContent}
     >
       <Grid item xs={2}>
-        <DatePickerComponent label="From" value={from} onDateChange={setFrom} />
+        <DatePickerComponent
+          label="From"
+          value={values.from}
+          onDateChange={date => setValues({ ...values, from: date })}
+        />
       </Grid>
       <Grid item xs={2}>
-        <DatePickerComponent label="To" value={to} onDateChange={setTo} />
+        <DatePickerComponent
+          label="To"
+          value={values.to}
+          onDateChange={date => setValues({ ...values, to: date })}
+        />
       </Grid>
       <Grid item xs={2}>
         <Select
           label="Status"
           items={statusItems}
-          selected={!status ? 'all' : status}
-          onChange={arg =>
-            setStatus(arg === 'all' ? undefined : (arg as BuildStatus))
-          }
+          selected={!values.buildStatus ? 'all' : values.buildStatus}
+          onChange={selection => {
+            const buildStatus =
+              selection === 'all' ? undefined : (selection as BuildStatus);
+            setValues({ ...values, buildStatus });
+          }}
         />
+      </Grid>
+      <Grid item xs={2}>
+        {loading ? (
+          <Select
+            label="Project"
+            placeholder="Loading.."
+            items={[]}
+            onChange={() => undefined}
+          />
+        ) : (
+          <Select
+            label="Project"
+            items={toSelectItems(['All'].concat(projects ?? []))}
+            selected={values.project ? values.project : 'All'}
+            onChange={selection =>
+              setValues({
+                ...values,
+                project:
+                  selection === 'All' ? undefined : (selection as string),
+              })
+            }
+          />
+        )}
       </Grid>
     </Grid>
   );

@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Build, xcmetricsApiRef } from '../../api';
+import { Build, BuildFilters, xcmetricsApiRef } from '../../api';
 import { formatDuration, formatTime } from '../../utils';
 import { Chip, Grid } from '@material-ui/core';
-import {
-  ActiveFilters,
-  BuildListFilterComponent as Filters,
-} from '../BuildListFilterComponent';
+import { BuildListFilterComponent as Filters } from '../BuildListFilterComponent';
 import { DateTime } from 'luxon';
 
 const columns: TableColumn<Build>[] = [
@@ -62,31 +59,39 @@ const columns: TableColumn<Build>[] = [
 ];
 
 export const BuildListComponent = () => {
-  const initDates = {
+  const client = useApi(xcmetricsApiRef);
+  const tableRef = useRef<any>();
+
+  const initialFilters = {
     from: DateTime.now().minus({ year: 1 }).toISODate(),
     to: DateTime.now().toISODate(),
   };
-  const client = useApi(xcmetricsApiRef);
-  const tableRef = useRef<any>();
-  const [filters, setFilters] = useState<ActiveFilters>(initDates);
 
-  useEffect(() => tableRef.current?.onQueryChange(), [filters]);
+  const [filters, setFilters] = useState<BuildFilters>(initialFilters);
+
+  const handleFilterChange = (values: BuildFilters) => {
+    setFilters(values);
+    tableRef.current?.onQueryChange();
+  };
 
   return (
     <Grid container spacing={3} direction="column">
-      <Filters onFilterChange={setFilters} initDates={initDates} />
+      <Filters
+        onFilterChange={handleFilterChange}
+        initialValues={initialFilters}
+      />
       <Table
-        tableRef={tableRef}
+        title="Builds"
+        columns={columns}
         options={{ paging: true, sorting: false, search: false, pageSize: 10 }}
+        tableRef={tableRef}
         data={query => {
           return new Promise((resolve, reject) => {
             if (!query) return;
             client
               .getFilteredBuilds(
-                filters.from,
-                filters.to,
-                filters.buildStatus,
-                query.page + 1, // Page starts at 1 in API
+                filters,
+                query.page + 1, // Page is 0-indexed in Table
                 query.pageSize,
               )
               .then(result => {
@@ -99,8 +104,6 @@ export const BuildListComponent = () => {
               .catch(reason => reject(reason));
           });
         }}
-        columns={columns}
-        title="Builds"
       />
     </Grid>
   );
