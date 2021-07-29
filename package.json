@@ -41,6 +41,7 @@
     ]
   },
   "resolutions": {
+    "**/@graphql-tools/url-loader/**/ws": "^7.4.6",
     "**/@roadiehq/**/@backstage/core": "*",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
     "**/@roadiehq/**/@backstage/catalog-model": "*",
