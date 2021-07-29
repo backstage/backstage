@@ -190,7 +190,7 @@ export const createOAuth2Provider = (
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: disableRefresh,
+        disableRefresh,
         providerId,
         tokenIssuer,
       });
