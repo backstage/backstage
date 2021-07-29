@@ -1,5 +1,15 @@
 # @backstage/techdocs-common
 
+## 0.7.1
+
+### Patch Changes
+
+- 59a5fa319: Migrated files are now printed when `techdocs-cli migrate` is run with the
+  `--verbose` flag set.
+- 54356336e: TechDocs generator stage now supports `mkdocs.yaml` file, in addition to `.yml`
+  depending on whichever is present at the time of generation. (Assumes the
+  latest `spotify/techdocs` container, running mkdocs `v1.2.2` or greater).
+
 ## 0.7.0
 
 ### Minor Changes
