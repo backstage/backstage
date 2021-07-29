@@ -289,12 +289,12 @@ td {
     display: none;
   }
 
-  .docsSliderActive .toc section .navGroups{
+  .docsSliderActive .toc section .navGroups {
     padding-top: 0;
     padding-bottom: 0;
   }
 
-  .docsSliderActive.docsNavContainer{
+  .docsSliderActive.docsNavContainer {
     background-color: #121212;
     padding-bottom: 0;
   }
