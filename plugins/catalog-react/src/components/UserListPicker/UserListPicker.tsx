@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { compact } from 'lodash';
-import { UserListFilterKind } from '../../types';
-import { UserListFilter } from '../../filters';
 import {
-  useEntityListProvider,
-  useOwnUser,
-  useStarredEntities,
-} from '../../hooks';
+  configApiRef,
+  IconComponent,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   Card,
   List,
@@ -36,12 +32,16 @@ import {
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import { reduceEntityFilters } from '../../utils';
+import { compact } from 'lodash';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { UserListFilter } from '../../filters';
 import {
-  configApiRef,
-  IconComponent,
-  useApi,
-} from '@backstage/core-plugin-api';
+  useEntityListProvider,
+  useStarredEntities,
+  useEntityOwnership,
+} from '../../hooks';
+import { UserListFilterKind } from '../../types';
+import { reduceEntityFilters } from '../../utils';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -136,20 +136,20 @@ export const UserListPicker = ({
     queryParameters,
   } = useEntityListProvider();
 
-  const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
+  const { isOwnedEntity } = useEntityOwnership();
   const [selectedUserFilter, setSelectedUserFilter] = useState(
     [queryParameters.user].flat()[0] ?? initialFilter,
   );
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
-    () => new UserListFilter('owned', user, isStarredEntity),
-    [user, isStarredEntity],
+    () => new UserListFilter('owned', isOwnedEntity, isStarredEntity),
+    [isOwnedEntity, isStarredEntity],
   );
   const starredFilter = useMemo(
-    () => new UserListFilter('starred', user, isStarredEntity),
-    [user, isStarredEntity],
+    () => new UserListFilter('starred', isOwnedEntity, isStarredEntity),
+    [isOwnedEntity, isStarredEntity],
   );
 
   useEffect(() => {
@@ -157,12 +157,12 @@ export const UserListPicker = ({
       user: selectedUserFilter
         ? new UserListFilter(
             selectedUserFilter as UserListFilterKind,
-            user,
+            isOwnedEntity,
             isStarredEntity,
           )
         : undefined,
     });
-  }, [selectedUserFilter, user, isStarredEntity, updateFilters]);
+  }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
 
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.

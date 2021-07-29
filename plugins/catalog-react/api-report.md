@@ -724,6 +724,14 @@ export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
 >(): EntityListContextProps<EntityFilters>;
 
+// Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function useEntityOwnership(): {
+  loading: boolean;
+  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+};
+
 // Warning: (ae-forgotten-export) The symbol "EntityTypeReturn" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useEntityTypeFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -759,17 +767,17 @@ export function useRelatedEntities(
 export class UserListFilter implements EntityFilter {
   constructor(
     value: UserListFilterKind,
-    user: UserEntity | undefined,
+    isOwnedEntity: (entity: Entity) => boolean,
     isStarredEntity: (entity: Entity) => boolean,
   );
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  readonly isOwnedEntity: (entity: Entity) => boolean;
+  // (undocumented)
   readonly isStarredEntity: (entity: Entity) => boolean;
   // (undocumented)
   toQueryValue(): string;
-  // (undocumented)
-  readonly user: UserEntity | undefined;
   // (undocumented)
   readonly value: UserListFilterKind;
 }
