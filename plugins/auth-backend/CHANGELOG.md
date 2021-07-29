@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.19
+
+### Patch Changes
+
+- 4edca1bd0: Allow to configure SAML auth `acceptedClockSkewMs`
+- b68f2c83c: Added the `disableRefresh` option to the `OAuth2` config
+- Updated dependencies
+  - @backstage/test-utils@0.1.16
+  - @backstage/catalog-client@0.3.18
+
 ## 0.3.18
 
 ### Patch Changes

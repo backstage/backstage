@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 0.3.18
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence
+
 ## 0.3.17
 
 ### Patch Changes
