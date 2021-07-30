@@ -36,7 +36,7 @@ Welcome to the Backstage Catalog LDAP Module
   const appConfigFileContent = readFileSync(appConfigFilePath, 'utf-8');
 
   if (!doesCatalogHaveProcessor(catalogFileContent)) {
-    const shouldAddProcessor = await prompts({
+    const { shouldAddProcessor } = await prompts({
       name: 'shouldAddProcessor',
       message:
         'The LDAP plugin does not appear to be installed in your software catalog. Would you like to add it?',
@@ -48,7 +48,7 @@ Welcome to the Backstage Catalog LDAP Module
   }
 
   if (!validateAppConfig(appConfigFileContent)) {
-    const shouldPatchAppConfig = await prompts({
+    const { shouldPatchAppConfig } = await prompts({
       name: 'shouldPatchAppConfig',
       message:
         'The LDAP plugin does not appear to be set up in your application config. Would you like to add it?',
