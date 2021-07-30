@@ -27,6 +27,7 @@ import {
 } from './constants';
 import { readLdapGroups, readLdapUsers, resolveRelations } from './read';
 import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
+import { getRootLogger } from '@backstage/backend-common';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -100,7 +101,9 @@ describe('readLdapUsers', () => {
         memberOf: 'memberOf',
       },
     };
-    const { users, userMemberOf } = await readLdapUsers(client, config);
+    const { users, userMemberOf } = await readLdapUsers(client, config, {
+      logger: getRootLogger(),
+    });
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
@@ -173,7 +176,9 @@ describe('readLdapUsers', () => {
         memberOf: 'memberOf',
       },
     };
-    const { users, userMemberOf } = await readLdapUsers(client, config);
+    const { users, userMemberOf } = await readLdapUsers(client, config, {
+      logger: getRootLogger(),
+    });
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
@@ -242,6 +247,7 @@ describe('readLdapGroups', () => {
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
       config,
+      { logger: getRootLogger() },
     );
     expect(groups).toEqual([
       expect.objectContaining({
@@ -324,6 +330,7 @@ describe('readLdapGroups', () => {
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
       config,
+      { logger: getRootLogger() },
     );
     expect(groups).toEqual([
       expect.objectContaining({
