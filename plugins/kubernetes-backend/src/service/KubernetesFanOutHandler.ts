@@ -41,7 +41,7 @@ export interface KubernetesFanOutHandlerOptions {
   fetcher: KubernetesFetcher;
   serviceLocator: KubernetesServiceLocator;
   customResources: CustomResource[];
-  objectTypesToFetch: KubernetesObjectTypes[];
+  objectTypesToFetch?: KubernetesObjectTypes[];
 }
 
 export class KubernetesFanOutHandler {
