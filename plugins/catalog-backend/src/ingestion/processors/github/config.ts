@@ -99,10 +99,23 @@ export type GithubMultiOrgConfig = Array<{
 
 export function readGithubMultiOrgConfig(config: Config): GithubMultiOrgConfig {
   const orgConfigs = config.getOptionalConfigArray('orgs') ?? [];
-  return orgConfigs.map(c => ({
-    name: c.getString('name'),
-    groupNamespace: (
-      c.getOptionalString('groupNamespace') ?? c.getString('name')
-    ).toLowerCase(),
-  }));
+  if (orgConfigs.hasOwnProperty('userNamespace')){
+    return orgConfigs.map(c => ({
+      name: c.getString('name'),
+      groupNamespace: (
+        c.getOptionalString('groupNamespace') ?? c.getString('name')
+      ).toLowerCase(),
+      userNamespace: (
+        c.getOptionalString('userNamespace') ?? c.getString('name')
+      ).toLowerCase(),
+    }));
+  }
+  else{
+    return orgConfigs.map(c => ({
+      name: c.getString('name'),
+      groupNamespace: (
+        c.getOptionalString('groupNamespace') ?? c.getString('name')
+      ).toLowerCase(),
+    }));
+  }
 }

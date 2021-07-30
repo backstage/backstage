@@ -163,6 +163,12 @@ export interface Config {
            * Defaults to org name if omitted.
            */
           groupNamespace?: string;
+          /**
+           * The namespace of the users created for this org.
+           *
+           * Does not apply a namespace if omitted
+           */
+          userNamespace?: string;
         }>;
       };
 

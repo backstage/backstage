@@ -108,11 +108,22 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
         this.logger.info(
           `Reading GitHub users and teams for org: ${orgConfig.name}`,
         );
-        const { users } = await getOrganizationUsers(
-          client,
-          orgConfig.name,
-          tokenType,
-        );
+
+        if (this.options.userNamespace) {
+          const { users } = await getOrganizationUsers(
+            client,
+            orgConfig.name,
+            tokenType,
+            orgConfig.userNamespace,
+          );
+        }
+        else {
+          const { users } = await getOrganizationUsers(
+            client,
+            orgConfig.name,
+            tokenType,
+          );
+        }
         const { groups, groupMemberUsers } = await getOrganizationTeams(
           client,
           orgConfig.name,
