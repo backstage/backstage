@@ -18,7 +18,6 @@ import {
   createStyles,
   InputBase,
   InputProps,
-  makeStyles,
   Theme,
   Typography,
   withStyles,
@@ -51,13 +50,6 @@ const BootstrapInput = withStyles((theme: Theme) =>
   }),
 )(InputBase);
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-});
-
 interface DatePickerProps {
   label: string;
   onDateChange?: (date: string) => void;
@@ -67,19 +59,15 @@ export const DatePickerComponent = ({
   label,
   onDateChange,
   ...inputProps
-}: InputProps & DatePickerProps) => {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.root}>
-      <Typography variant="button">{label}</Typography>
-      <BootstrapInput
-        inputProps={{ 'aria-label': label }}
-        type="date"
-        fullWidth
-        onChange={event => onDateChange?.(event.target.value)}
-        {...inputProps}
-      />
-    </div>
-  );
-};
+}: InputProps & DatePickerProps) => (
+  <>
+    <Typography variant="button">{label}</Typography>
+    <BootstrapInput
+      inputProps={{ 'aria-label': label }}
+      type="date"
+      fullWidth
+      onChange={event => onDateChange?.(event.target.value)}
+      {...inputProps}
+    />
+  </>
+);
