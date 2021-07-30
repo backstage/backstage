@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2021 The Backstage Authors
  *
@@ -52,7 +53,14 @@ Welcome to the Backstage Catalog LDAP Module
         'The LDAP plugin does not appear to be set up in your application config. Would you like to add it?',
       type: 'confirm',
     });
-    const { ldapHostUrl, bindDn } = await prompts([
+    const {
+      ldapHostUrl,
+      bindDn,
+      userBaseDn,
+      userFilter,
+      groupBaseDn,
+      groupFilter,
+    } = await prompts([
       {
         name: 'ldapHostUrl',
         type: 'text',
@@ -64,10 +72,37 @@ Welcome to the Backstage Catalog LDAP Module
         type: 'text',
         message: 'Enter a bind DN to connect to your LDAP service',
       },
+      {
+        name: 'userBaseDn',
+        type: 'text',
+        message: 'From what base DN would you like to search for users?',
+      },
+      {
+        name: 'userFilter',
+        type: 'text',
+        message: 'What filter would you like to use for users?',
+      },
+      {
+        name: 'groupBaseDn',
+        type: 'text',
+        message: 'From what base DN would you like to search for groups?',
+      },
+      {
+        name: 'groupFilter',
+        type: 'text',
+        message: 'What filter would you like to use for groups?',
+      },
     ]);
 
     if (shouldPatchAppConfig) {
-      patchAppConfig({ bindDn, ldapHostUrl })(appConfigFilePath);
+      patchAppConfig({
+        bindDn,
+        ldapHostUrl,
+        userBaseDn,
+        userFilter,
+        groupBaseDn,
+        groupFilter,
+      })(appConfigFilePath);
     }
   }
 };

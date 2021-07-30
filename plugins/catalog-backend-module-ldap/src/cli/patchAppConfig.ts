@@ -19,10 +19,21 @@ import { parse, parseDocument, visit, Pair } from 'yaml';
 type Params = {
   ldapHostUrl: string;
   bindDn: string;
+  userBaseDn: string;
+  userFilter: string;
+  groupBaseDn: string;
+  groupFilter: string;
 };
 
 export const patchAppConfig =
-  ({ bindDn, ldapHostUrl }: Params) =>
+  ({
+    bindDn,
+    ldapHostUrl,
+    groupBaseDn,
+    groupFilter,
+    userBaseDn,
+    userFilter,
+  }: Params) =>
   (
     filePath: string,
     readFile: (
@@ -44,16 +55,20 @@ export const patchAppConfig =
           target: ldapHostUrl,
           bind: { dn: bindDn, secret: '${LDAP_SECRET}' },
           users: {
-            dn: 'Base DN to search for users goes here',
-            options: { filter: '(uid=*)' },
-          },
-          map: { description: 'A user' },
-          groups: {
-            dn: 'Base DN to search for groups goes here',
+            dn: userBaseDn || 'Base DN to search for users goes here',
             options: {
-              filter: '(&(objectClass=some-group-class)(!(groupType=email)))',
+              paged: 'true',
+              filter: userFilter || '(objectclass=spotifyEmployee)',
+              scope: 'sub',
             },
-            map: { description: 'A group' },
+          },
+          groups: {
+            dn: groupBaseDn || 'Base DN to search for groups goes here',
+            options: {
+              paged: 'true',
+              filter: groupFilter || '(objectclass=spotifyEmployee)',
+              scope: 'sub',
+            },
           },
         },
       ],

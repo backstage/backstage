@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { advancedAppConfig } from './mocks/advancedAppConfig';
-import { basicAppConfig } from './mocks/basicAppConfig';
-import { patchAppConfig } from './patchAppConfig';
+import { advancedAppConfig } from '../mocks/advancedAppConfig';
+import { basicAppConfig } from '../mocks/basicAppConfig';
+import { patchAppConfig } from '../patchAppConfig';
 
 describe('patchAppConfig', () => {
   it('should patch the barebones app-config.yaml correctly', () => {
     expect(
-      patchAppConfig({ bindDn: 'lol', ldapHostUrl: 'lel' })(
+      patchAppConfig({
+        bindDn: 'lol',
+        ldapHostUrl: 'lel',
+        userBaseDn: 'haha',
+        userFilter: 'hehe',
+        groupBaseDn: 'hoho',
+        groupFilter: 'i-love-juan--both-of-them',
+      })(
         '',
         () => basicAppConfig,
         () => {},
@@ -146,24 +153,31 @@ describe('patchAppConfig', () => {
                   dn: lol
                   secret: \${LDAP_SECRET}
                 users:
-                  dn: Base DN to search for users goes here
+                  dn: haha
                   options:
-                    filter: (uid=*)
-                map:
-                  description: A user
+                    paged: \\"true\\"
+                    filter: hehe
+                    scope: sub
                 groups:
-                  dn: Base DN to search for groups goes here
+                  dn: hoho
                   options:
-                    filter: (&(objectClass=some-group-class)(!(groupType=email)))
-                  map:
-                    description: A group
+                    paged: \\"true\\"
+                    filter: i-love-juan--both-of-them
+                    scope: sub
       "
     `);
   });
 
   it('should patch a more advanced app-config.yaml correctly', () => {
     expect(
-      patchAppConfig({ bindDn: 'lol', ldapHostUrl: 'lel' })(
+      patchAppConfig({
+        bindDn: 'lol',
+        ldapHostUrl: 'lel',
+        userBaseDn: 'haha',
+        userFilter: 'hehe',
+        groupBaseDn: 'hoho',
+        groupFilter: 'i-love-juan--both-of-them',
+      })(
         '',
         () => advancedAppConfig,
         () => {},
@@ -266,17 +280,17 @@ describe('patchAppConfig', () => {
                   dn: lol
                   secret: \${LDAP_SECRET}
                 users:
-                  dn: Base DN to search for users goes here
+                  dn: haha
                   options:
-                    filter: (uid=*)
-                map:
-                  description: A user
+                    paged: \\"true\\"
+                    filter: hehe
+                    scope: sub
                 groups:
-                  dn: Base DN to search for groups goes here
+                  dn: hoho
                   options:
-                    filter: (&(objectClass=some-group-class)(!(groupType=email)))
-                  map:
-                    description: A group
+                    paged: \\"true\\"
+                    filter: i-love-juan--both-of-them
+                    scope: sub
 
       service-auth:
         maintainers:

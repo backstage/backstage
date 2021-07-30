@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { addCatalogProcessor } from './addCatalogProcessor';
-import { advancedCatalogFile } from './mocks/advancedCatalogFile';
-import { basicCatalogFile } from './mocks/basicCatalogFile';
+import { addCatalogProcessor } from '../addCatalogProcessor';
+import { advancedCatalogFile } from '../mocks/advancedCatalogFile';
+import { basicCatalogFile } from '../mocks/basicCatalogFile';
 
 describe('addCatalogProcessor', () => {
   it('should add an import and builder configuration correctly to a barebones catalog backend', () => {
