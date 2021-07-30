@@ -46,6 +46,7 @@ Welcome to the Backstage Catalog LDAP Module
       addCatalogProcessor(catalogFilePath);
     }
   }
+
   if (!validateAppConfig(appConfigFileContent)) {
     const shouldPatchAppConfig = await prompts({
       name: 'shouldPatchAppConfig',
@@ -105,6 +106,13 @@ Welcome to the Backstage Catalog LDAP Module
       })(appConfigFilePath);
     }
   }
+
+  console.log(`✅ Your software catalog is configured to speak to LDAP.
+Please remember to pass in your bind DN secret as an environment variable before starting the catalog like so:
+
+  LDAP_SECRET=your-secret yarn start
+  
+Happy coding! 👋`);
 };
 
 main();
