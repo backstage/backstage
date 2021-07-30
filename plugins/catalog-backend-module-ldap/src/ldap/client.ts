@@ -104,36 +104,40 @@ export class LdapClient {
           newUsers = output.length;
         }, 5000);
 
-        this.client.search(dn, { paged: true, ...options }, (err, res) => {
-          if (err) {
-            reject(new Error(errorString(err)));
-            return;
-          }
-
-          res.on('searchReference', () => {
-            reject(new Error('Unable to handle referral'));
-          });
-
-          res.on('searchEntry', entry => {
-            output.push(entry);
-          });
-
-          res.on('error', e => {
-            clearInterval(loggingTimeout);
-            reject(new Error(errorString(e)));
-          });
-
-          res.on('end', r => {
-            clearInterval(loggingTimeout);
-            if (!r) {
-              reject(new Error('Null response'));
-            } else if (r.status !== 0) {
-              reject(new Error(`Got status ${r.status}: ${r.errorMessage}`));
-            } else {
-              resolve(output);
+        this.client.search(
+          dn,
+          { timeLimit: Infinity, paged: true, ...options },
+          (err, res) => {
+            if (err) {
+              reject(new Error(errorString(err)));
+              return;
             }
-          });
-        });
+
+            res.on('searchReference', () => {
+              reject(new Error('Unable to handle referral'));
+            });
+
+            res.on('searchEntry', entry => {
+              output.push(entry);
+            });
+
+            res.on('error', e => {
+              clearInterval(loggingTimeout);
+              reject(new Error(errorString(e)));
+            });
+
+            res.on('end', r => {
+              clearInterval(loggingTimeout);
+              if (!r) {
+                reject(new Error('Null response'));
+              } else if (r.status !== 0) {
+                reject(new Error(`Got status ${r.status}: ${r.errorMessage}`));
+              } else {
+                resolve(output);
+              }
+            });
+          },
+        );
       });
     } catch (e) {
       throw new Error(
