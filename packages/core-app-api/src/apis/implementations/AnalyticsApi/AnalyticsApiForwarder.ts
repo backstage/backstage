@@ -25,7 +25,7 @@ import {
 import { PublishSubject } from '../../../lib/subjects';
 
 /**
- * Base implementation for the AnalyticsApi that forwards extension-aware
+ * Base implementation for the AnalyticsApi that forwards domain-aware
  * events to consumers.
  */
 export class AnalyticsApiForwarder implements AnalyticsApi {
