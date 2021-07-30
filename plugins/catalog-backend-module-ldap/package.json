@@ -10,6 +10,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "bin": {
+    "setup-ldap": "./dist/cli/index.js"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -26,7 +29,7 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "postinstall": "node ./dist/cli/index.js",
+    "postinstall": "npx setup-ldap",
     "clean": "backstage-cli clean",
     "dev": "nodemon --watch \"src/**\" --ext \"ts\" --ignore \"*.spec.ts\" --exec \"ts-node --project tsconfig.cli.json src/cli/index.ts\""
   },
@@ -57,7 +60,9 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "!dist/cli/mocks",
+    "!dist/cli/tests"
   ],
   "configSchema": "config.d.ts"
 }
