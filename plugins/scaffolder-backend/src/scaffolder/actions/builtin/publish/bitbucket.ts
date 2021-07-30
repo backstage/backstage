@@ -304,6 +304,9 @@ export function createPublishBitbucketAction(options: {
         },
         defaultBranch,
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 

@@ -337,7 +337,7 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           try {
-            this.logger.debug(`Migrating ${file}`);
+            this.logger.verbose(`Migrating ${file}`);
             await this.storageClient
               .copyObject({
                 Bucket: this.bucketName,
