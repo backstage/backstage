@@ -104,7 +104,7 @@
     "start-server-webpack-plugin": "^2.2.5",
     "style-loader": "^1.2.1",
     "sucrase": "^3.18.2",
-    "tar": "^6.0.1",
+    "tar": "^6.1.2",
     "terser-webpack-plugin": "^1.4.3",
     "ts-loader": "^8.0.17",
     "typescript": "^4.0.3",
