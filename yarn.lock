@@ -411,21 +411,21 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
-"@babel/generator@^7.12.5", "@babel/generator@^7.14.9":
-  version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/generator/-/generator-7.14.9.tgz#23b19c597d38b4f7dc2e3fe42a69c88d9ecfaa16"
-  integrity sha1-I7GcWX04tPfcLj/kKmnIjZ7PqhY=
-  dependencies:
-    "@babel/types" "^7.14.9"
-    jsesc "^2.5.1"
-    source-map "^0.5.0"
-
-"@babel/generator@^7.14.8":
+"@babel/generator@^7.12.5", "@babel/generator@^7.14.8":
   version "7.14.8"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/generator/-/generator-7.14.8.tgz#bf86fd6af96cf3b74395a8ca409515f89423e070"
   integrity sha1-v4b9avls87dDlajKQJUV+JQj4HA=
   dependencies:
     "@babel/types" "^7.14.8"
+    jsesc "^2.5.1"
+    source-map "^0.5.0"
+
+"@babel/generator@^7.14.9":
+  version "7.14.9"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/generator/-/generator-7.14.9.tgz#23b19c597d38b4f7dc2e3fe42a69c88d9ecfaa16"
+  integrity sha1-I7GcWX04tPfcLj/kKmnIjZ7PqhY=
+  dependencies:
+    "@babel/types" "^7.14.9"
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
@@ -796,15 +796,15 @@
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.14.4.tgz#a5c560d6db6cd8e6ed342368dea8039232cbab18"
   integrity sha512-ArliyUsWDUqEGfWcmzpGUzNfLxTdTp6WU4IuP6QFSp9gGfWS6boxFCkJSJ/L4+RG8z/FnIU3WxCk6hPL9SSWeA==
 
-"@babel/parser@^7.12.5", "@babel/parser@^7.14.9":
-  version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
-  integrity sha1-WWwa1nYIBwBY6/jfUMHq9l24laQ=
-
-"@babel/parser@^7.14.5", "@babel/parser@^7.14.8":
+"@babel/parser@^7.12.5", "@babel/parser@^7.14.5", "@babel/parser@^7.14.8":
   version "7.14.8"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/parser/-/parser-7.14.8.tgz#66fd41666b2d7b840bd5ace7f7416d5ac60208d4"
   integrity sha1-Zv1BZmste4QL1azn90FtWsYCCNQ=
+
+"@babel/parser@^7.14.9":
+  version "7.14.9"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
+  integrity sha1-WWwa1nYIBwBY6/jfUMHq9l24laQ=
 
 "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@^7.13.12":
   version "7.13.12"
@@ -21625,6 +21625,11 @@ prettier@^2.2.1, prettier@~2.2.1:
   resolved "https://registry.npmjs.org/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
   integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
 
+prettier@^2.3.2:
+  version "2.3.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/prettier/-/prettier-2.3.2.tgz#ef280a05ec253712e486233db5c6f23441e7342d"
+  integrity sha1-7ygKBewlNxLkhiM9tcbyNEHnNC0=
+
 pretty-bytes@^5.6.0:
   version "5.6.0"
   resolved "https://registry.npmjs.org/pretty-bytes/-/pretty-bytes-5.6.0.tgz#356256f643804773c82f64723fe78c92c62beaeb"
@@ -27354,6 +27359,11 @@ yaml@*, yaml@^1.10.0, yaml@^1.10.2, yaml@^1.7.2, yaml@^1.9.2:
   version "1.10.2"
   resolved "https://registry.npmjs.org/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
+
+yaml@^2.0.0-7:
+  version "2.0.0-7"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/yaml/-/yaml-2.0.0-7.tgz#9799d9d85dfc8f01e4cc425e18e09215364beef1"
+  integrity sha1-l5nZ2F38jwHkzEJeGOCSFTZL7vE=
 
 yargs-parser@20.2.4, yargs-parser@^20.2.2, yargs-parser@^20.2.3:
   version "20.2.4"

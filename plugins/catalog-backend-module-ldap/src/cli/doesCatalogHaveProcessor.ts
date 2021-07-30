@@ -15,13 +15,7 @@
  */
 import { checkIfWeAddTheProcessor } from './checkIfWeAddTheProcessor';
 import { checkIfWeImportThePlugin } from './checkIfWeImportThePlugin';
-import { mockCatalog } from './mocks/catalog';
 
-export const doesCatalogHaveProcessor = () => {
-  const fileContent = mockCatalog;
-
-  return (
-    checkIfWeImportThePlugin(fileContent) &&
-    checkIfWeAddTheProcessor(fileContent)
-  );
-};
+export const doesCatalogHaveProcessor = (fileContent: string) =>
+  checkIfWeImportThePlugin(fileContent) &&
+  checkIfWeAddTheProcessor(fileContent);

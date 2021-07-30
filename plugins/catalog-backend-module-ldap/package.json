@@ -41,9 +41,10 @@
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
+    "prettier": "^2.3.2",
     "prompts": "^2.4.1",
     "winston": "^3.2.1",
-    "yaml": "^1.10.2"
+    "yaml": "^2.0.0-7"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.6",

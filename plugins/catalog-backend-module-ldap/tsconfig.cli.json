@@ -12,7 +12,8 @@
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "incremental": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noUnusedLocals": false
   },
   "include": ["."]
 }

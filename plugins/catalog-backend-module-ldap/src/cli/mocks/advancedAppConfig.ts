@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const mockAppConfig = `app:
+export const advancedAppConfig = `app:
   title: Scaffolded Backstage App
   baseUrl: http://localhost:3000
 
@@ -32,16 +32,16 @@ backend:
     credentials: true
   # config options: https://node-postgres.com/api/client
   database:
-    client: sqlite3
-    connection: ':memory:'
-    #   host: \${POSTGRES_HOST}
-    #   port: \${POSTGRES_PORT}
-    #   user: \${POSTGRES_USER}
-    #   password: \${POSTGRES_PASSWORD}
-    # https://node-postgres.com/features/ssl
-    #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-    #ca: # if you have a CA file and want to verify it you can uncomment this section
-    #  $file: <file-path>/ca/server.crt
+    client: pg
+    connection:
+      host: \${POSTGRES_HOST}
+      port: \${POSTGRES_PORT}
+      user: \${POSTGRES_USER}
+      password: \${POSTGRES_PASSWORD}
+      # https://node-postgres.com/features/ssl
+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      #ca: # if you have a CA file and want to verify it you can uncomment this section
+      #  $file: <file-path>/ca/server.crt
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
@@ -89,22 +89,9 @@ catalog:
     - type: ldap-org
       target: ldaps://ds.spotify.net
   processors:
-    ldapOrg:
-      providers:
+    cheese:
+      haha:
         - target: ldaps://ds.spotify.net
-          bind:
-            dn: uid=backstage-ldap-plugin,ou=robots,ou=spotify,dc=spotify,dc=net
-            secret: \${LDAP_DN_SECRET}
-          users:
-            dn: ou=spotify,dc=spotify,dc=net
-            options:
-              filter: (objectclass=spotifyEmployee)
-              scope: sub
-          groups:
-            dn: ou=spotify,dc=spotify,dc=net
-            options:
-              scope: sub
-              filter: (&(objectClass=spotify-group)(!(groupType=email)))
 
 service-auth:
   maintainers:

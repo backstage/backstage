@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { parse } from 'yaml';
-import { mockAppConfig } from './mocks/appConfig';
 
 type LdapOrgLocation = { type: string; target: string };
 
@@ -31,8 +30,7 @@ type LdapProvider = {
   };
 };
 
-export const validateAppConfig = () => {
-  const fileContent = mockAppConfig;
+export const validateAppConfig = (fileContent: string) => {
   const config = parse(fileContent);
 
   const ldapOrgLocation: LdapOrgLocation = config.catalog.locations.find(

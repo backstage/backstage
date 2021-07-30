@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const mockCatalog = `import {
+export const advancedCatalogFile = `import {
     CatalogBuilder,
     createRouter,
   } from '@backstage/plugin-catalog-backend';
   import { Router } from 'express';
-  import { LdapOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-ldap';
   
   import { PluginEnvironment } from '../types';
   
@@ -28,13 +27,6 @@ export const mockCatalog = `import {
     const builder = await CatalogBuilder.create(env);
   
     builder.addProcessor(new SysmodelReaderProcessor(env.logger));
-    builder.addProcessor(
-      LdapOrgReaderProcessor.fromConfig(env.config, {
-        logger: env.logger.child({
-          plugin: 'LDAP',
-        }),
-      }),
-    );
   
     const {
       entitiesCatalog,
