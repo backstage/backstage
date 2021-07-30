@@ -41,8 +41,9 @@ Welcome to the Backstage Catalog LDAP Module
       message:
         'The LDAP plugin does not appear to be installed in your software catalog. Would you like to add it?',
       type: 'confirm',
+      initial: 'yes',
     });
-    if (shouldAddProcessor) {
+    if (shouldAddProcessor === 'yes') {
       addCatalogProcessor(catalogFilePath);
     }
   }
@@ -53,49 +54,50 @@ Welcome to the Backstage Catalog LDAP Module
       message:
         'The LDAP plugin does not appear to be set up in your application config. Would you like to add it?',
       type: 'confirm',
+      initial: 'yes',
     });
-    const {
-      ldapHostUrl,
-      bindDn,
-      userBaseDn,
-      userFilter,
-      groupBaseDn,
-      groupFilter,
-    } = await prompts([
-      {
-        name: 'ldapHostUrl',
-        type: 'text',
-        message:
-          'Enter the URL of your LDAP host (usually starts with ldaps://)',
-      },
-      {
-        name: 'bindDn',
-        type: 'text',
-        message: 'Enter a bind DN to connect to your LDAP service',
-      },
-      {
-        name: 'userBaseDn',
-        type: 'text',
-        message: 'From what base DN would you like to search for users?',
-      },
-      {
-        name: 'userFilter',
-        type: 'text',
-        message: 'What filter would you like to use for users?',
-      },
-      {
-        name: 'groupBaseDn',
-        type: 'text',
-        message: 'From what base DN would you like to search for groups?',
-      },
-      {
-        name: 'groupFilter',
-        type: 'text',
-        message: 'What filter would you like to use for groups?',
-      },
-    ]);
 
-    if (shouldPatchAppConfig) {
+    if (shouldPatchAppConfig === 'yes') {
+      const {
+        ldapHostUrl,
+        bindDn,
+        userBaseDn,
+        userFilter,
+        groupBaseDn,
+        groupFilter,
+      } = await prompts([
+        {
+          name: 'ldapHostUrl',
+          type: 'text',
+          message:
+            'Enter the URL of your LDAP host (usually starts with ldaps://)',
+        },
+        {
+          name: 'bindDn',
+          type: 'text',
+          message: 'Enter a bind DN to connect to your LDAP service',
+        },
+        {
+          name: 'userBaseDn',
+          type: 'text',
+          message: 'From what base DN would you like to search for users?',
+        },
+        {
+          name: 'userFilter',
+          type: 'text',
+          message: 'What filter would you like to use for users?',
+        },
+        {
+          name: 'groupBaseDn',
+          type: 'text',
+          message: 'From what base DN would you like to search for groups?',
+        },
+        {
+          name: 'groupFilter',
+          type: 'text',
+          message: 'What filter would you like to use for groups?',
+        },
+      ]);
       patchAppConfig({
         bindDn,
         ldapHostUrl,
@@ -107,7 +109,7 @@ Welcome to the Backstage Catalog LDAP Module
     }
   }
 
-  console.log(`✅ Your software catalog is configured to speak to LDAP.
+  console.log(`✅ Done!
 Please remember to pass in your bind DN secret as an environment variable before starting the catalog like so:
 
   LDAP_SECRET=your-secret yarn start
