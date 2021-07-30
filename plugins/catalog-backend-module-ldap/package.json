@@ -29,7 +29,6 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "postinstall": "npx setup-ldap",
     "clean": "backstage-cli clean",
     "dev": "nodemon --watch \"src/**\" --ext \"ts\" --ignore \"*.spec.ts\" --exec \"ts-node --project tsconfig.cli.json src/cli/index.ts\""
   },
