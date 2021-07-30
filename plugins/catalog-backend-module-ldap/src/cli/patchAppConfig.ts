@@ -57,7 +57,7 @@ export const patchAppConfig =
           users: {
             dn: userBaseDn || 'Base DN to search for users goes here',
             options: {
-              paged: 'true',
+              paged: true,
               filter: userFilter || '(objectclass=spotifyEmployee)',
               scope: 'sub',
             },
@@ -65,7 +65,7 @@ export const patchAppConfig =
           groups: {
             dn: groupBaseDn || 'Base DN to search for groups goes here',
             options: {
-              paged: 'true',
+              paged: true,
               filter: groupFilter || '(objectclass=spotifyEmployee)',
               scope: 'sub',
             },
