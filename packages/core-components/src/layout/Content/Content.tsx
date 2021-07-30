@@ -24,7 +24,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: 0,
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
-    ...theme.mixins.gutters({}),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: theme.spacing(3),
+      paddingRight: theme.spacing(3),
+    },
   },
   stretch: {
     display: 'flex',

@@ -86,7 +86,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
     <Popover
       open={open}
       anchorEl={anchorEl}
-      onExit={handleClose}
+      TransitionProps={{ onExit: handleClose }}
       onClose={onClose}
       anchorOrigin={{
         vertical: 'top',

@@ -167,7 +167,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <Badge
       color="secondary"
       variant="dot"
-      overlap="circle"
+      overlap="circular"
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
