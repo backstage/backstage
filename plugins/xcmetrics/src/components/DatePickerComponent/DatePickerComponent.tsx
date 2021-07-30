@@ -74,6 +74,7 @@ export const DatePickerComponent = ({
     <div className={classes.root}>
       <Typography variant="button">{label}</Typography>
       <BootstrapInput
+        inputProps={{ 'aria-label': label }}
         type="date"
         fullWidth
         onChange={event => onDateChange?.(event.target.value)}

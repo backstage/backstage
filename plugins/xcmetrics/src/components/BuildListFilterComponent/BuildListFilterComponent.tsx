@@ -52,15 +52,17 @@ export const BuildListFilterComponent = ({
 
   useEffect(() => onFilterChange(values), [onFilterChange, values]);
 
-  const numFilters =
-    Number(values.from !== initialValues.from) +
-    Number(values.to !== initialValues.to) +
-    Number(!!values.buildStatus) +
-    Number(!!values.project);
+  const numFilters = Object.keys(values).reduce((sum, key) => {
+    const filtersKey = key as keyof BuildFilters;
+    return sum + Number(values[filtersKey] !== initialValues[filtersKey]);
+  }, 0);
 
   const title = (
     <>
-      <IconButton onClick={() => setOpen(!open)} aria-label="filter list">
+      <IconButton
+        onClick={() => setOpen(!open)}
+        aria-label={`${open ? 'hide' : 'show'} filters`}
+      >
         <FilterList />
       </IconButton>
       Filters ({numFilters})

@@ -28,7 +28,7 @@ export const mockBuild = {
   day: '2021-01-01',
   compilationEndTimestamp: '2021-01-01T00:00:01Z',
   tag: '',
-  projectName: 'Project',
+  projectName: 'ProjectName',
   compilationEndTimestampMicroseconds: 1,
   errorCount: 1,
   id: 'buildId',
@@ -67,10 +67,13 @@ export const XcmetricsClient: XcmetricsApi = {
     _perPage?: number,
   ) => {
     return Promise.resolve({
-      items: [mockBuild],
+      items: [
+        mockBuild,
+        { ...mockBuild, buildStatus: 'failed', projectName: 'ProjectName2' },
+      ],
       metadata: {
         per: 10,
-        total: 1,
+        total: 2,
         page: 1,
       },
     });
