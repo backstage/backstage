@@ -23,7 +23,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   ApiProvider,
@@ -48,7 +48,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  useAnalytics,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -63,6 +62,7 @@ import {
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
+import { RouteTracker } from '../routing/RouteTracker';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
@@ -169,18 +169,6 @@ class AppContextImpl implements AppContext {
     return this.app.getComponents();
   }
 }
-
-const RouteTracker = () => {
-  const { pathname, search, hash } = useLocation();
-  const analytics = useAnalytics();
-
-  useEffect(() => {
-    analytics.captureEvent('navigate', `${pathname}${search}${hash}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, search, hash]);
-
-  return null;
-};
 
 export class PrivateAppImpl implements BackstageApp {
   private apiHolder?: ApiHolder;
@@ -373,7 +361,7 @@ export class PrivateAppImpl implements BackstageApp {
 
         return (
           <RouterComponent>
-            <RouteTracker />
+            <RouteTracker children={children} />
             <Routes>
               <Route path={`${pathname}/*`} element={<>{children}</>} />
             </Routes>
@@ -383,7 +371,7 @@ export class PrivateAppImpl implements BackstageApp {
 
       return (
         <RouterComponent>
-          <RouteTracker />
+          <RouteTracker children={children} />
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
               <Route path={`${pathname}/*`} element={<>{children}</>} />
