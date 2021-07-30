@@ -356,9 +356,9 @@
   integrity sha512-i2wXrWQNkH6JplJQGn3Rd2I4Pij8GdHkXwHMxm+zV5YG/Jci+bCNrWZEWC4o+umiDkRrRs4dVzH3X4GP7vyjQQ==
 
 "@babel/compat-data@^7.14.5":
-  version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/compat-data/-/compat-data-7.14.9.tgz#ac7996ceaafcf8f410119c8af0d1db4cf914a210"
-  integrity sha1-rHmWzqr8+PQQEZyK8NHbTPkUohA=
+  version "7.14.7"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/compat-data/-/compat-data-7.14.7.tgz#7b047d7a3a89a67d2258dc61f604f098f1bc7e08"
+  integrity sha1-ewR9ejqJpn0iWNxh9gTwmPG8fgg=
 
 "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.12.3", "@babel/core@^7.13.16", "@babel/core@^7.4.4", "@babel/core@^7.7.5":
   version "7.14.3"
@@ -1693,6 +1693,24 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@backstage/core-api@^0.2.23":
+  version "0.2.23"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core-api/-/core-api-0.2.23.tgz#c0ec13407ff7c78d376eb18e9d8e1490d54d995b"
+  integrity sha1-wOwTQH/3x403brGOnY4UkNVNmVs=
+  dependencies:
+    "@backstage/config" "^0.1.4"
+    "@backstage/core-plugin-api" "^0.1.3"
+    "@backstage/theme" "^0.2.8"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    prop-types "^15.7.2"
+    react "^16.12.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
 "@backstage/core-components@^0.1.3", "@backstage/core-components@^0.1.6":
   version "0.1.6"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.1.6.tgz#a66d9af3be61e76ed60d1026dec376b2d97e0a8e"
@@ -1717,6 +1735,52 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
+    immer "^9.0.1"
+    lodash "^4.17.15"
+    material-table "^1.69.1"
+    pluralize "^8.0.0"
+    prop-types "^15.7.2"
+    qs "^6.9.4"
+    rc-progress "^3.0.0"
+    react "^16.12.0"
+    react-dom "^16.12.0"
+    react-helmet "6.1.0"
+    react-hook-form "^6.15.4"
+    react-markdown "^5.0.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-sparklines "^1.7.0"
+    react-syntax-highlighter "^15.4.3"
+    react-text-truncate "^0.16.0"
+    react-use "^17.2.4"
+    remark-gfm "^1.0.0"
+    zen-observable "^0.8.15"
+
+"@backstage/core@*":
+  version "0.7.14"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core/-/core-0.7.14.tgz#863844fe40bb6a29bcc2d297e42055633b0e886f"
+  integrity sha1-hjhE/kC7aim8wtKX5CBVYzsOiG8=
+  dependencies:
+    "@backstage/config" "^0.1.5"
+    "@backstage/core-api" "^0.2.23"
+    "@backstage/errors" "^0.1.1"
+    "@backstage/theme" "^0.2.8"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@testing-library/react-hooks" "^3.4.2"
+    "@types/dagre" "^0.7.44"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    "@types/react-sparklines" "^1.7.0"
+    "@types/react-text-truncate" "^0.14.0"
+    classnames "^2.2.6"
+    clsx "^1.1.0"
+    d3-selection "^2.0.0"
+    d3-shape "^2.0.0"
+    d3-zoom "^2.0.0"
+    dagre "^0.8.5"
+    history "^5.0.0"
     immer "^9.0.1"
     lodash "^4.17.15"
     material-table "^1.69.1"
@@ -14611,7 +14675,7 @@ graphql-extensions@^0.15.0:
     apollo-server-env "^3.1.0"
     apollo-server-types "^0.9.0"
 
-graphql-language-service-interface@^2.8.2:
+graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.8.2:
   version "2.8.2"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
   integrity sha1-s7sq736vDf8LTqQZ+kEsX2b6Jos=
@@ -14621,7 +14685,7 @@ graphql-language-service-interface@^2.8.2:
     graphql-language-service-utils "^2.5.1"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.9.0:
+graphql-language-service-parser@1.9.0, graphql-language-service-parser@^1.9.0:
   version "1.9.0"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
   integrity sha1-ea8hKUEZoKfoG2uZShrzaDO6tyQ=
@@ -27101,10 +27165,10 @@ write-pkg@^4.0.0:
     type-fest "^0.4.1"
     write-json-file "^3.2.0"
 
-ws@7.4.5:
-  version "7.4.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ws/-/ws-7.4.5.tgz#a484dd851e9beb6fdb420027e3885e8ce48986c1"
-  integrity sha1-pITdhR6b62/bQgAn44hejOSJhsE=
+ws@7.4.5, ws@^7.4.6:
+  version "7.5.3"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
+  integrity sha1-Fgg1tjx9l7+rQY/BuKn87SrAGnQ=
 
 ws@^5.2.0:
   version "5.2.3"
