@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { writeFileSync, readFileSync, PathLike } from 'fs';
-import { parse, parseDocument, visit } from 'yaml';
+import { parse, parseDocument, visit, Pair } from 'yaml';
 
 type Params = {
   ldapHostUrl: string;
@@ -88,7 +88,7 @@ export const patchAppConfig =
 
         // @ts-expect-error because `value` can be anything.
         const doWeAlreadyHaveProcessors = pair.value.items.find(
-          i => i.key.value === 'processors',
+          (i: Pair<{ value: string }, unknown>) => i.key.value === 'processors',
         );
         if (doWeAlreadyHaveProcessors) {
           // @ts-expect-error because `value` can be anything.

@@ -62,7 +62,7 @@ export const addCatalogProcessor = (
     plugins: [{ visitor }],
   }) ?? { code: 'Failed' };
 
-  writeFile(filePath, code);
+  writeFile(filePath, String(code));
 
   return code;
 };
