@@ -14,49 +14,13 @@
  * limitations under the License.
  */
 import React, { useRef, useState } from 'react';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Build, BuildFilters, xcmetricsApiRef } from '../../api';
-import { formatDuration, formatTime } from '../../utils';
-import { Chip, Grid } from '@material-ui/core';
+import { BuildFilters, xcmetricsApiRef } from '../../api';
+import { Grid } from '@material-ui/core';
 import { BuildListFilterComponent as Filters } from '../BuildListFilterComponent';
 import { DateTime } from 'luxon';
-
-const columns: TableColumn<Build>[] = [
-  {
-    title: 'Status',
-    field: 'buildStatus',
-  },
-  {
-    title: 'Project',
-    field: 'projectName',
-  },
-  {
-    title: 'Schema',
-    field: 'schema',
-  },
-  {
-    title: 'Started',
-    field: 'startedAt',
-    searchable: false,
-    render: data => formatTime(data.startTimestamp),
-  },
-  {
-    title: 'Duration',
-    field: 'duration',
-    render: data => formatDuration(data.duration),
-  },
-  {
-    title: 'User',
-    field: 'userid',
-  },
-  {
-    field: 'isCI',
-    render: data => data.isCi && <Chip label="CI" size="small" />,
-    width: '10',
-    sorting: false,
-  },
-];
+import { buildPageColumns } from '../BuildTableColumns';
 
 export const BuildListComponent = () => {
   const client = useApi(xcmetricsApiRef);
@@ -82,7 +46,7 @@ export const BuildListComponent = () => {
       />
       <Table
         title="Builds"
-        columns={columns}
+        columns={buildPageColumns}
         options={{ paging: true, sorting: false, search: false, pageSize: 10 }}
         tableRef={tableRef}
         data={query => {

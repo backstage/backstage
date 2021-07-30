@@ -90,21 +90,21 @@ export const BuildListFilterComponent = ({
       direction="row"
       className={classes.filtersContent}
     >
-      <Grid item xs={2}>
+      <Grid item sm={6} md={4} lg={2}>
         <DatePickerComponent
           label="From"
           value={values.from}
           onDateChange={date => setValues({ ...values, from: date })}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item sm={6} md={4} lg={2}>
         <DatePickerComponent
           label="To"
           value={values.to}
           onDateChange={date => setValues({ ...values, to: date })}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item sm={6} md={4} lg={2}>
         <Select
           label="Status"
           items={statusItems}
@@ -116,7 +116,7 @@ export const BuildListFilterComponent = ({
           }}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item sm={6} md={4} lg={2}>
         {loading ? (
           <Select
             label="Project"
