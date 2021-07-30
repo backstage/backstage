@@ -17,28 +17,48 @@
 /**
  * Analytics domain covering routable extensions.
  */
-export type RoutableDomain = {
+export type RoutableAnalyticsDomain = {
+  /**
+   * The plugin that exposed the route.
+   */
+  pluginId: string;
+
+  /**
+   * The ID of the route ref associated with the route.
+   */
   routeRef: string;
+
+  /**
+   * The name of the component used to render the route.
+   */
+  componentName: string;
 };
 
 /**
  * Analytics domain covering component extensions.
  */
-export type ComponentDomain = {
+export type ComponentAnalyticsDomain = {
+  /**
+   * The plugin that exposed the component.
+   */
   pluginId: string;
+
+  /**
+   * The name of the component.
+   */
   componentName: string;
 };
 
 /**
  * Allow arbitrary scalar values as domain attributes too.
  */
-export type AnyDomain = {
+export type AnyAnalyticsDomain = {
   [param in string]: string | boolean | number | undefined;
 };
 
 /**
  * Common analytics domain attributes.
  */
-export type AnalyticsDomainValues = Partial<
-  RoutableDomain & ComponentDomain & AnyDomain
+export type AnalyticsDomainValue = Partial<
+  RoutableAnalyticsDomain & ComponentAnalyticsDomain & AnyAnalyticsDomain
 >;

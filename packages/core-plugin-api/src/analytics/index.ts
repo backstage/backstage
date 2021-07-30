@@ -15,5 +15,10 @@
  */
 
 export { AnalyticsDomain, withAnalyticsDomain } from './AnalyticsDomain';
-export type { AnalyticsDomainValues } from './types';
+export type {
+  AnalyticsDomainValue,
+  AnyAnalyticsDomain,
+  ComponentAnalyticsDomain,
+  RoutableAnalyticsDomain,
+} from './types';
 export { useAnalytics } from './useAnalytics';

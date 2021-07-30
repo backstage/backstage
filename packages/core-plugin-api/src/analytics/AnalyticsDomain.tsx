@@ -15,9 +15,9 @@
  */
 
 import React, { createContext, ReactNode, useContext } from 'react';
-import { AnalyticsDomainValues, AnyDomain } from './types';
+import { AnalyticsDomainValue, AnyAnalyticsDomain } from './types';
 
-export const AnalyticsDomainContext = createContext<AnalyticsDomainValues>({
+export const AnalyticsDomainContext = createContext<AnalyticsDomainValue>({
   routeRef: '',
   pluginId: 'root',
   componentName: 'App',
@@ -36,7 +36,7 @@ type AnalyticsDomainProps = {
   /**
    * Key/value pairs of analytics domain attributes.
    */
-  attributes: AnalyticsDomainValues;
+  attributes: AnalyticsDomainValue;
 
   children: ReactNode;
 };
@@ -72,7 +72,7 @@ export const AnalyticsDomain = (props: AnalyticsDomainProps) => {
  */
 export function withAnalyticsDomain<P>(
   Component: React.ComponentType<P>,
-  domain: AnyDomain,
+  domain: AnyAnalyticsDomain,
 ) {
   const ComponentWithAnalyticsDomain = (props: P) => {
     return (

@@ -16,7 +16,7 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
-import { AnalyticsDomainValues } from '../../analytics/types';
+import { AnalyticsDomainValue } from '../../analytics/types';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
@@ -77,7 +77,7 @@ export type DomainDecoratedAnalyticsEvent = AnalyticsEvent & {
    * could include information about the route, plugin, or component in which
    * an event was captured.
    */
-  domain: AnalyticsDomainValues;
+  domain: AnalyticsDomainValue;
 };
 
 type ExtraDimensions = Record<string, string | boolean>;
@@ -113,7 +113,7 @@ export type AnalyticsApi = {
   /**
    * Retrieves a tracker for the given analytics domain.
    */
-  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker;
+  getTrackerForDomain(domain: AnalyticsDomainValue): AnalyticsTracker;
 
   /**
    * Observe domain-aware analytics events tracked throughout the application.

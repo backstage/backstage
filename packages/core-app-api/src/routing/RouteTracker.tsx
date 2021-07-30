@@ -25,13 +25,10 @@ import {
   useAnalytics,
   getComponentData,
   AnalyticsDomain,
+  RoutableAnalyticsDomain,
 } from '@backstage/core-plugin-api';
 
 type RouteObject = ReturnType<typeof createRoutesFromChildren>;
-type ExtensionDomain = {
-  pluginId?: string;
-  componentName?: string;
-};
 
 /**
  * Returns an extension domain given the current pathname and a RouteObject
@@ -43,7 +40,7 @@ type ExtensionDomain = {
 const getExtensionDomain = (
   pathname: string,
   routes: RouteObject,
-): ExtensionDomain => {
+): RoutableAnalyticsDomain | {} => {
   const cleanPath = pathname.replace(/\/+$/, '');
   const matches = matchRoutes(routes, { pathname });
   const RouteElement = matches
@@ -61,7 +58,11 @@ const getExtensionDomain = (
       RoutableElement,
       'core.plugin',
     );
-    if (plugin) {
+    const mountPoint: { id?: string } | undefined = getComponentData(
+      RoutableElement,
+      'core.mountPoint',
+    );
+    if (plugin && mountPoint) {
       const displayname =
         RoutableElement.type.displayName || RoutableElement.type.name || '';
       const componentName =
@@ -69,6 +70,7 @@ const getExtensionDomain = (
       return {
         pluginId: plugin.getId(),
         componentName,
+        routeRef: mountPoint?.id || '',
       };
     }
   }

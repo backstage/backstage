@@ -16,7 +16,7 @@
 
 import {
   AnalyticsApi,
-  AnalyticsDomainValues,
+  AnalyticsDomainValue,
   AnalyticsEventContext,
   AnalyticsTracker,
   Observable,
@@ -31,7 +31,7 @@ import { PublishSubject } from '../../../lib/subjects';
 export class AnalyticsApiForwarder implements AnalyticsApi {
   private readonly subject = new PublishSubject<DomainDecoratedAnalyticsEvent>();
 
-  getTrackerForDomain(domain: AnalyticsDomainValues): AnalyticsTracker {
+  getTrackerForDomain(domain: AnalyticsDomainValue): AnalyticsTracker {
     const subject = this.subject;
     return {
       captureEvent: (
