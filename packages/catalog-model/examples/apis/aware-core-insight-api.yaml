@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: awarecoreinsight
+  
+
+spec: 
+  type: openapi
+  lifecycle: production
+  owner: inpixon
+  definition: 
+    $text: https://api.inpixondev.com/aware/query/openapi.json

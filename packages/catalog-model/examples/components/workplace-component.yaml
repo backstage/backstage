@@ -1,11 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: wayback-archive
-  description: Archive of the wayback machine
+  name: wokplaceanalytics
+  
 spec:
   type: service
   lifecycle: production
-  owner: team-a
+  owner: inpixon
   providesApis:
-    - wayback-archive
+    - wokplaceanalytics
