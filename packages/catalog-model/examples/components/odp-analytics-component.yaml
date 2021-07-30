@@ -1,11 +1,12 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: searcher
-  description: Searcher
-  tags:
-    - go
+  name: odpanalyticsapi
+  
 spec:
   type: service
   lifecycle: production
-  owner: user:guest
+  owner: inpixon
+  providesApis:
+    - odpanalytics
+    

@@ -1,11 +1,12 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: wokplaceanalytics
+  name: aware
   
 spec:
   type: service
   lifecycle: production
   owner: inpixon
   providesApis:
-    - wokplaceanalytics
+    - awareproducerservice
+    - awarecoreinsight
