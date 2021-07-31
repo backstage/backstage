@@ -113,12 +113,11 @@ export type AnalyticsApi = {
   /**
    * Retrieves a tracker for the given analytics domain.
    */
-  getTrackerForDomain(domain: AnalyticsDomainValue): AnalyticsTracker;
-
-  /**
-   * Observe domain-aware analytics events tracked throughout the application.
-   */
-  event$(): Observable<DomainDecoratedAnalyticsEvent>;
+  getDecoratedTracker({
+    domain,
+  }: {
+    domain: AnalyticsDomainValue;
+  }): AnalyticsTracker;
 };
 
 export const analyticsApiRef: ApiRef<AnalyticsApi> = createApiRef({

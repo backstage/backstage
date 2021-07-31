@@ -21,11 +21,24 @@ import {
 } from '../apis/definitions/AnalyticsApi';
 import { useApi } from '../apis';
 
+function useTracker(): AnalyticsTracker {
+  const analyticsApi = useApi(analyticsApiRef);
+  const domain = useAnalyticsDomain();
+  return analyticsApi.getDecoratedTracker({ domain });
+}
+
 /**
  * Get a pre-configured analytics tracker.
  */
 export function useAnalytics(): AnalyticsTracker {
-  const analyticsApi = useApi(analyticsApiRef);
-  const analyticsDomain = useAnalyticsDomain();
-  return analyticsApi.getTrackerForDomain(analyticsDomain);
+  // Return a no-op tracker if no implementation for the Analytics API is
+  // available. Having no default Analytics API implementation enables simple
+  // provider installation via plugin instantiation.
+  try {
+    return useTracker();
+  } catch {
+    return {
+      captureEvent: () => {},
+    };
+  }
 }
