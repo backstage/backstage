@@ -80,14 +80,13 @@ export type DomainDecoratedAnalyticsEvent = AnalyticsEvent & {
   domain: AnalyticsDomainValue;
 };
 
-type ExtraDimensions = Record<string, string | boolean>;
-type ExtraMetrics = Record<string, number>;
-
 /**
  * A structure allowing other arbitrary metadata to be provided by analytics
  * event emitters.
  */
-export type AnalyticsEventContext = ExtraDimensions & ExtraMetrics;
+export type AnalyticsEventContext = {
+  [attribute in string]: string | boolean | number;
+};
 
 /**
  * Represents a tracker with methods that can be called to track events in a
