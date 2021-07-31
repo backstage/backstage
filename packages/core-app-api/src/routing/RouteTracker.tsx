@@ -63,13 +63,9 @@ const getExtensionDomain = (
       'core.mountPoint',
     );
     if (plugin && mountPoint) {
-      const displayname =
-        RoutableElement.type.displayName || RoutableElement.type.name || '';
-      const componentName =
-        (displayname.match(/^Extension\((.*)\)$/i) || [])[1] || 'Component';
       return {
         pluginId: plugin.getId(),
-        componentName,
+        componentName: 'App',
         routeRef: mountPoint?.id || '',
       };
     }
