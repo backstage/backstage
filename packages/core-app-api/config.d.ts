@@ -65,6 +65,18 @@ export interface Config {
         }>;
       }>;
     };
+
+    /**
+     * Information about how analytics events are to be instrumented and
+     * collected in this Backstage Instance.
+     */
+    analytics?: {
+      /**
+       * The provider used to collect instrumented events. Further config
+       * values depend on the provider specified here.
+       */
+      provider: string;
+    };
   };
 
   /**
