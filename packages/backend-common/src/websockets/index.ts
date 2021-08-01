@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-export * from './cache';
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './hot';
-export * from './logging';
-export * from './middleware';
-export * from './paths';
-export * from './reading';
-export * from './scm';
-export * from './service';
-export * from './util';
 export * from './websockets';
+export { WebSocketConnectionManager } from './WebSocketConnectionManager';

@@ -65,7 +65,9 @@
     "tar": "^6.0.5",
     "unzipper": "^0.10.11",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "ws": "^8.0.0",
+    "qs": "^6.9.4"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"
@@ -92,6 +94,7 @@
     "@types/tar": "^4.0.3",
     "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
+    "@types/ws": "^7.4.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
