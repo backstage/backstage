@@ -33,6 +33,8 @@ import {
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
+  WebSocketConnectionManager,
+  websockets,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -51,12 +53,14 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
+import notifications from './plugins/notifications';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
+  const websocketConnectionManager = new WebSocketConnectionManager();
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -67,7 +71,15 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, config, reader, discovery };
+    return {
+      logger,
+      cache,
+      database,
+      config,
+      reader,
+      discovery,
+      websocketConnectionManager,
+    };
   };
 }
 
@@ -103,6 +115,9 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const notificationsEnv = useHotMemoize(module, () =>
+    createEnv('notifications'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -119,6 +134,7 @@ async function main() {
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+  apiRouter.use('/notifications', await notifications(notificationsEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
@@ -127,7 +143,13 @@ async function main() {
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
-  await service.start().catch(err => {
+  const _service = await service.start();
+  const serviceWithWebSockets = websockets(
+    _service,
+    notificationsEnv.websocketConnectionManager,
+  );
+
+  serviceWithWebSockets.catch(err => {
     logger.error(err);
     process.exit(1);
   });

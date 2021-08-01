@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  UrlReader,
-  WebSocketConnectionManager,
-} from '@backstage/backend-common';
+import { createRouter } from '@backstage/plugin-notifications-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  websocketConnectionManager: WebSocketConnectionManager;
-};
+export default async function createPlugin({
+  logger,
+  websocketConnectionManager,
+}: PluginEnvironment): Promise<Router> {
+  return await createRouter({
+    logger,
+    websocketConnectionManager,
+  });
+}
