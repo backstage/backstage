@@ -1,0 +1,3 @@
+app:
+  analytics:
+    provider: ga
