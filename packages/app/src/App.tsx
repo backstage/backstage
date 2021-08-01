@@ -56,6 +56,10 @@ import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import {
+  NotificationsPage,
+  NotificationsWsPage,
+} from '@backstage/plugin-notifications';
 
 const app = createApp({
   apis,
@@ -133,6 +137,8 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/notifications-ws" element={<NotificationsWsPage />} />
   </FlatRoutes>
 );
 
