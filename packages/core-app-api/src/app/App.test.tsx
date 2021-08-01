@@ -15,11 +15,15 @@
  */
 
 import { LocalStorageFeatureFlags } from '../apis';
-import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  renderWithEffects,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
-import { BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { defaultAppIcons } from './icons';
 import {
   configApiRef,
@@ -31,6 +35,7 @@ import {
   createRouteRef,
   createSubRouteRef,
   createRoutableExtension,
+  analyticsApiRef,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 import { AppThemeProvider } from './AppThemeProvider';
@@ -59,6 +64,7 @@ describe('generateBoundRoutes', () => {
 
 describe('Integration Test', () => {
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
+  const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
   const subRouteRef1 = createSubRouteRef({
     id: 'sub1',
@@ -152,6 +158,16 @@ describe('Integration Test', () => {
           );
         }),
       mountPoint: plugin1RouteRef,
+    }),
+  );
+
+  const NavigateComponent = plugin1.provide(
+    createRoutableExtension({
+      component: () =>
+        Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
+          return <Navigate to="/foo" />;
+        }),
+      mountPoint: plugin1RouteRef2,
     }),
   );
 
@@ -320,6 +336,69 @@ describe('Integration Test', () => {
       name: 'name',
       pluginId: 'test',
     });
+  });
+
+  it('should track route changes via analytics api', async () => {
+    const mockAnalyticsApi = new MockAnalyticsApi();
+    const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
+    const app = new PrivateAppImpl({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultAppIcons,
+      plugins: [],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<NavigateComponent />} />
+            <Route path="/foo" element={<HiddenComponent path="/foo" />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    // Capture initial and subsequent navigation events with expected domain
+    // values.
+    const capturedEvents = mockAnalyticsApi.getEvents();
+    expect(capturedEvents[0]).toMatchObject({
+      verb: 'navigate',
+      noun: '/',
+      domain: {
+        componentName: 'App',
+        pluginId: 'blob',
+        routeRef: 'ref-1-2',
+      },
+    });
+    expect(capturedEvents[1]).toMatchObject({
+      verb: 'navigate',
+      noun: '/foo',
+      domain: {
+        componentName: 'App',
+        pluginId: 'plugin2',
+        routeRef: 'ref-2',
+      },
+    });
+    expect(capturedEvents).toHaveLength(2);
   });
 
   it('should throw some error when the route has duplicate params', () => {
