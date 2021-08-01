@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './websockets';
+export { websockets } from './websockets';
 export { WebSocketConnectionManager } from './WebSocketConnectionManager';

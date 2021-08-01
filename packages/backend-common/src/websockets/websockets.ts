@@ -18,7 +18,7 @@ import qs from 'qs';
 import http from 'http';
 import { WebSocketConnectionManager } from './WebSocketConnectionManager';
 
-export default async (
+export const websockets = async () => (
   expressServer: http.Server,
   websocketConnectionManager: WebSocketConnectionManager,
 ) => {
