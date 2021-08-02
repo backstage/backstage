@@ -126,8 +126,20 @@ export class ContainerClient {
     return new BlockBlobClient(blobName);
   }
 
-  listBlobsFlat() {
+  listBlobsFlat({ prefix }: { prefix: string }) {
+    if (
+      this.containerName === 'delete_stale_files_success' ||
+      this.containerName === 'delete_stale_files_error'
+    ) {
+      return [{ name: `${prefix}stale_file.png` }];
+    }
     return [];
+  }
+
+  deleteBlob() {
+    if (this.containerName === 'delete_stale_files_error') {
+      throw new Error('Message');
+    }
   }
 }
 

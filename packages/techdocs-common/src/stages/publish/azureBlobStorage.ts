@@ -143,7 +143,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
     let container: ContainerClient;
     try {
       container = this.storageClient.getContainerClient(this.containerName);
-      for await (const blob of container.listBlobsFlat()) {
+      for await (const blob of container.listBlobsFlat({
+        prefix: remoteFolder,
+      })) {
         existingFiles.push(blob.name);
       }
     } catch (e) {
@@ -163,7 +165,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const failedOperations: Error[] = [];
       await bulkStorageOperation(
         async absoluteFilePath => {
-          // const relativeFilePath = path.relative(directory, absoluteFilePath);
           const relativeFilePath = path.normalize(
             path.relative(directory, absoluteFilePath),
           );
@@ -215,11 +216,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
           ),
       );
 
-      const staleFiles = getStaleFiles(
-        relativeFilesToUpload,
-        existingFiles,
-        remoteFolder,
-      );
+      const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
 
       await bulkStorageOperation(
         async relativeFilePath => {
@@ -233,7 +230,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
       );
     } catch (error) {
-      const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
+      const errorMessage = `Unable to delete file(s) from Azure. ${error}`;
       this.logger.error(errorMessage);
     }
   }

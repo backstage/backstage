@@ -119,15 +119,8 @@ export const lowerCaseEntityTripletInStoragePath = (
 export const getStaleFiles = (
   newFiles: string[],
   oldFiles: string[],
-  remoteFolder?: string,
 ): string[] => {
-  let filteredFiles = [...oldFiles];
-  if (remoteFolder) {
-    filteredFiles = filteredFiles.filter(filePath =>
-      filePath.match(remoteFolder),
-    );
-  }
-  const staleFiles = new Set(filteredFiles);
+  const staleFiles = new Set(oldFiles);
   newFiles.forEach(newFile => {
     staleFiles.delete(newFile);
   });
