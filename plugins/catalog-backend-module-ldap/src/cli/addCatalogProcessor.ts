@@ -16,6 +16,7 @@
 import { Visitor, template } from '@babel/core';
 import { writeFileSync, PathLike, readFileSync } from 'fs';
 import { transform } from '@codemod/core';
+import { getFileContent } from './getFileContent';
 
 export const addCatalogProcessor = (
   filePath: string,
@@ -25,7 +26,7 @@ export const addCatalogProcessor = (
   ) => string = readFileSync,
   writeFile = writeFileSync,
 ) => {
-  const fileContent = readFile(filePath, 'utf-8');
+  const fileContent = getFileContent(readFile, filePath);
   const createImportStatement = template(
     `import { LdapOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-ldap';`,
   );
