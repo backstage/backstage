@@ -41,9 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   filters: {
     padding: theme.spacing(2),
   },
-  filter: {
-    marginTop: theme.spacing(2.5),
-  },
 }));
 
 // TODO: Move this into the search plugin once pagination is natively supported.
