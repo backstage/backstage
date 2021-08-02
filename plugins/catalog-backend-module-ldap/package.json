@@ -43,9 +43,7 @@
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
-    "prettier": "^2.3.2",
     "prompts": "^2.4.1",
-    "winston": "^3.2.1",
     "yaml": "^2.0.0-7"
   },
   "devDependencies": {
@@ -54,7 +52,6 @@
     "@types/lodash": "^4.14.151",
     "@types/prompts": "^2.0.14",
     "@types/yaml": "^1.9.7",
-    "msw": "^0.29.0",
     "ts-node": "^10.1.0"
   },
   "files": [
