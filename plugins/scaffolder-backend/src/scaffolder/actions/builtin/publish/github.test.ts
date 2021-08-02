@@ -260,6 +260,51 @@ describe('publish:github', () => {
     });
   });
 
+  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        github: [
+          { host: 'github.com', token: 'tokenlols' },
+          { host: 'ghe.github.com' },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations = ScmIntegrations.fromConfig(
+      customAuthorConfig,
+    );
+    const customAuthorAction = createPublishGithubAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://github.com/clone/url.git',
+      defaultBranch: 'master',
+      auth: { username: 'x-access-token', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
+    });
+  });
+
   it('should add access for the team when it starts with the owner', async () => {
     mockGithubClient.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
