@@ -58,6 +58,9 @@ export class TaskWorker {
     this.handlebars.registerHelper('not', value => !isTruthy(value));
 
     this.handlebars.registerHelper('eq', (a, b) => a === b);
+
+    // Below is the custom helper function. Where it will split the array of values into separate string
+    this.handlebars.registerHelper('joinDependencies', opt => opt.join(':'));
   }
 
   start() {
