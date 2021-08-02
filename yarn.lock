@@ -3511,10 +3511,10 @@
   resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.3.tgz#f722e5a69a03f20ef47d015cb69420bebeeaabe5"
   integrity sha512-aIRd0Z9b/HJ/O24KOaP7dNsXypMnXhpWrpLVYvQB/JesVqXYSbioYND200sR+C14a0LSCp+qWnWCnSXmN1hWGw==
 
-"@material-table/core@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@material-table/core/-/core-3.1.0.tgz#4fc3bd1553359e628413437a4102d8469852c253"
-  integrity sha512-46vpm1q9v2B5t/VgaEq2JmnftTBYle1yNAX3cfdQsTRZ1iWkpG34qBkNHx/hbOauQPsm5hmeUo1KJJZdwtGL1g==
+"@material-table/core@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/@material-table/core/-/core-4.1.0.tgz#489e6d8a842adc50f20056eced6c348415f5f059"
+  integrity sha512-gWv8d4L6G8zJz8gmpUSyWfdeASkEgNjYgeiHPJcCLiO23aN6BPBya8lgThPNjVRQa8ePlCHe9NV5WaW/gp2PDg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@date-io/date-fns" "^1.3.13"
@@ -3527,6 +3527,7 @@
     prop-types "^15.7.2"
     react-beautiful-dnd "^13.0.0"
     react-double-scrollbar "0.0.15"
+    uuid "^3.4.0"
 
 "@material-ui/core@^4.11.0", "@material-ui/core@^4.11.3", "@material-ui/core@^4.12.2":
   version "4.12.2"
