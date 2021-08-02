@@ -43,7 +43,7 @@ Welcome to the Backstage Catalog LDAP Module
       type: 'confirm',
       initial: 'yes',
     });
-    if (shouldAddProcessor === 'yes') {
+    if (shouldAddProcessor) {
       addCatalogProcessor(catalogFilePath);
     }
   }
@@ -57,7 +57,7 @@ Welcome to the Backstage Catalog LDAP Module
       initial: 'yes',
     });
 
-    if (shouldPatchAppConfig === 'yes') {
+    if (shouldPatchAppConfig) {
       const {
         ldapHostUrl,
         bindDn,
