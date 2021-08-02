@@ -26,42 +26,42 @@ Then, follow the steps below to set it up.
 
 ### Automatic Setup
 
-2. From there, set it up by running `yarn setup-ldap`. You will be guided
-   through the installation process by an interactive prompt, asking you
-   questions about your organization's LDAP setup. Particularly, it will ask you
-   the following questions:
+Set up this plugin automatically by running `yarn setup-ldap`. You will be
+guided through the installation process by an interactive prompt, asking you
+questions about your organization's LDAP setup. Particularly, it will ask you
+the following questions:
 
-   1. **The LDAP plugin does not appear to be installed in your software
-      catalog. Would you like to add it?** Answering _yes_ updates your
-      backend's catalog plugin to import and use the LDAP plugin. (Step 1 of
-      [manual installation](#manual-installation))
+1.  **The LDAP plugin does not appear to be installed in your software catalog.
+    Would you like to add it?** Answering _yes_ updates your backend's catalog
+    plugin to import and use the LDAP plugin. (Step 1 of
+    [manual installation](#manual-installation))
 
-   2. **The LDAP plugin does not appear to be set up in your application config.
-      Would you like to add it?** Answering _yes_ updates the `app-config.yaml`
-      at the root of your Backstage project after receiving more information
-      from you in subsequent prompts. Namely,
+2.  **The LDAP plugin does not appear to be set up in your application config.
+    Would you like to add it?** Answering _yes_ updates the `app-config.yaml` at
+    the root of your Backstage project after receiving more information from you
+    in subsequent prompts. Namely,
 
-      1. Your LDAP service host: this is a fully qualified URL starting with
-         `ldap://` or `ldaps://` which Backstage will communicate with.
-      2. The **bind DN** used to connect to your LDAP service: this is
-         effectively a connection string that identifies a user against the LDAP
-         service. We do not require a password or a secret, because we suggest
-         passing this in via an environment variable when starting Backstage.
-      3. The **base DN** when searching for users in your LDAP service: this is
-         a string representing a location in your LDAP tree from which to start
-         searching for users.
-      4. The **filter string** to use when searching for users in your LDAP
-         service: this is a string representing LDAP filters that identify
-         _user_ records in your LDAP service.
-      5. The **base DN** when searching for groups in your LDAP service: this is
-         a string representing a location in your LDAP tree from which to start
-         searching for groups.
-      6. The **filter string** to use when searching for groups in your LDAP
-         service: this is a string representing LDAP filters that identify
-         _user_ records in your LDAP service.
+    1. Your LDAP service host: this is a fully qualified URL starting with
+       `ldap://` or `ldaps://` which Backstage will communicate with.
+    2. The **bind DN** used to connect to your LDAP service: this is effectively
+       a connection string that identifies a user against the LDAP service. We
+       do not require a password or a secret, because we suggest passing this in
+       via an environment variable when starting Backstage.
+    3. The **base DN** when searching for users in your LDAP service: this is a
+       string representing a location in your LDAP tree from which to start
+       searching for users.
+    4. The **filter string** to use when searching for users in your LDAP
+       service: this is a string representing LDAP filters that identify _user_
+       records in your LDAP service.
+    5. The **base DN** when searching for groups in your LDAP service: this is a
+       string representing a location in your LDAP tree from which to start
+       searching for groups.
+    6. The **filter string** to use when searching for groups in your LDAP
+       service: this is a string representing LDAP filters that identify _user_
+       records in your LDAP service.
 
-      These questions are optional, and if left blank, your `app-config.yaml`
-      will be updated with placeholder values that can be updated manually.
+    These questions are optional, and if left blank, your `app-config.yaml` will
+    be updated with placeholder values that can be updated manually.
 
 ### Manual Setup
 
