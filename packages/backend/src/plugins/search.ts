@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 import { useHotCleanup } from '@backstage/backend-common';
+import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
+import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { PluginEnvironment } from '../types';
-import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
-import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
   discovery,
   config,
+  database,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
   const searchEngine = config.has('search.elasticsearch')
@@ -35,6 +37,8 @@ export default async function createPlugin({
         logger,
         config,
       })
+    : (await PgSearchEngine.supported(database))
+    ? await PgSearchEngine.from({ database })
     : new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 

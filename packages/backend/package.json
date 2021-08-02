@@ -48,6 +48,7 @@
     "@backstage/plugin-search-backend": "^0.2.3",
     "@backstage/plugin-search-backend-node": "^0.4.0",
     "@backstage/plugin-search-backend-module-elasticsearch": "^0.0.1",
+    "@backstage/plugin-search-backend-module-pg": "^0.1.0",
     "@backstage/plugin-techdocs-backend": "^0.9.0",
     "@backstage/plugin-todo-backend": "^0.1.8",
     "@gitbeaker/node": "^30.2.0",
