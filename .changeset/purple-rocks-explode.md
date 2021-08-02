@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Fixed bug on when compared in organzation name on github
+Fixed bug for comparing Organization name in `GithubCredentialsProvider`
