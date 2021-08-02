@@ -14,8 +14,8 @@ entities that mirror your org setup.
 
 ## Installation
 
-1. Install this plugin into your backend package using your package manager of
-   choice.
+Install this plugin into your backend package using your package manager of
+choice.
 
 ```bash
 cd packages/backend                                       # Go to your backend package from your project root
