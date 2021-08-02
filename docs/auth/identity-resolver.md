@@ -111,6 +111,47 @@ export default async function createPlugin({
 ...
 ```
 
+## Resolving membership through the catalog
+
+If you want to provide additional claims through Sign-In resolvers but still
+have the software catalog handle group (and transitive group) membership, you
+can do this using the `CatalogIdentityClient` provided as context to Sign-In
+resolvers:
+
+```ts
+export default async function createPlugin({
+  ...
+}: PluginEnvironment): Promise<Router> {
+  return await createRouter({
+    ...
+    providerFactories: {
+      google: createGoogleProvider({
+        signIn: {
+          resolver: async ({ profile: { email } }, ctx) => {
+            const [sub] = email?.split('@') ?? '';
+            // Fetch from an external system that returns entity claims like:
+            // 'user:default/breanna.davison'
+            const ent = await externalSystemClient.getUsernames(email);
+
+            // Resolve group membership from the Backstage catalog
+            const claims = await ctx.catalogIdentityClient.resolveCatalogMemberClaims(
+              sub,
+              ent,
+              ctx.logger,
+            );
+            const token = await ctx.tokenIssuer.issueToken(claims);
+            return { sub, token };
+          },
+        },
+      }),
+      ...
+```
+
+The `resolveCatalogMemberClaims` method will retrieve the `sub` and `ent`
+entities from the catalog, if possible, and check for
+[memberOf](../features/software-catalog/well-known-relations.md#memberof-and-hasmember)
+relations to add additional entity claims.
+
 ## AuthHandler
 
 Similar to a custom sign-in resolver, you can also write a custom auth handler

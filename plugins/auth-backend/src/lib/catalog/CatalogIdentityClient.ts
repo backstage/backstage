@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { UserEntity } from '@backstage/catalog-model';
-import { TokenIssuer } from '../../identity';
+import {
+  EntityName,
+  parseEntityRef,
+  RELATION_MEMBER_OF,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { TokenIssuer, TokenParams } from '../../identity';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -63,5 +70,80 @@ export class CatalogIdentityClient {
     }
 
     return items[0] as UserEntity;
+  }
+
+  /**
+   * Resolve additional entity claims from the catalog, using the passed-in subject and entity
+   * claims. Designed to be used within a `signInResolver` where additional entity claims might be
+   * provided, but group membership and transient group membership lean on imported catalog
+   * relations.
+   *
+   * Returns a claim structure that can be passed directly to `issueToken`, with the same sub and a
+   * superset of `ent` claims.
+   */
+  async resolveCatalogMemberClaims(
+    sub: string,
+    ent: string[],
+    logger?: Logger,
+  ): Promise<TokenParams> {
+    const subRef: EntityName = parseEntityRef(sub, {
+      defaultKind: 'user',
+      defaultNamespace: 'default',
+    });
+
+    let entityRefs: Array<EntityName> = [];
+    if (ent) {
+      entityRefs = ent
+        .map((ref: string) => {
+          try {
+            const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'));
+            return parsedRef;
+          } catch {
+            logger?.debug(
+              `Failed to parse entityRef from '${sub}' ent claim: ${ref}, ignoring`,
+            );
+            return null;
+          }
+        })
+        .filter((ref): ref is EntityName => ref !== null);
+    }
+
+    const filter = [subRef].concat(entityRefs).map(ref => ({
+      kind: ref.kind,
+      'metadata.namespace': ref.namespace,
+      'metadata.name': ref.name,
+    }));
+    const entities = await this.catalogApi
+      .getEntities({ filter })
+      .then(r => r.items);
+
+    if (entityRefs.length !== entities.length) {
+      const foundEntityNames = entities.map(stringifyEntityRef);
+      const missingEntityNames = entityRefs
+        .map(stringifyEntityRef)
+        .filter(s => !foundEntityNames.includes(s));
+      logger?.debug(
+        `Entities not found for '${sub}' claims: ${missingEntityNames.join()}`,
+      );
+    }
+
+    const memberOf = entities.flatMap(
+      e =>
+        e!.relations
+          ?.filter(r => r.type === RELATION_MEMBER_OF)
+          .map(r => r.target) ?? [],
+    );
+
+    const newEnt = [...new Set(entityRefs.concat(memberOf))].map(
+      stringifyEntityRef,
+    );
+
+    logger?.debug(`Found claims for ${sub} in the catalog: ${newEnt.join()}`);
+    return {
+      claims: {
+        sub,
+        ent: newEnt,
+      },
+    };
   }
 }
