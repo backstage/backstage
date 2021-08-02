@@ -14,61 +14,106 @@ entities that mirror your org setup.
 
 ## Installation
 
-1. The processor is not installed by default, therefore you have to add a
-   dependency to `@backstage/plugin-catalog-backend-module-ldap` to your backend
-   package.
+1. Install this plugin into your backend package using your package manager of
+   choice.
 
 ```bash
-# From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-ldap
+cd packages/backend                                       # Go to your backend package from your project root
+yarn add @backstage/plugin-catalog-backend-module-ldap    # Install this plugin
 ```
 
-2. The `LdapOrgReaderProcessor` is not registered by default, so you have to
+Then, follow the steps below to set it up.
+
+### Automatic Setup
+
+2. From there, set it up by running `yarn setup-ldap`. You will be guided
+   through the installation process by an interactive prompt, asking you
+   questions about your organization's LDAP setup. Particularly, it will ask you
+   the following questions:
+
+   1. **The LDAP plugin does not appear to be installed in your software
+      catalog. Would you like to add it?** Answering _yes_ updates your
+      backend's catalog plugin to import and use the LDAP plugin. (Step 1 of
+      [manual installation](#manual-installation))
+
+   2. **The LDAP plugin does not appear to be set up in your application config.
+      Would you like to add it?** Answering _yes_ updates the `app-config.yaml`
+      at the root of your Backstage project after receiving more information
+      from you in subsequent prompts. Namely,
+
+      1. Your LDAP service host: this is a fully qualified URL starting with
+         `ldap://` or `ldaps://` which Backstage will communicate with.
+      2. The **bind DN** used to connect to your LDAP service: this is
+         effectively a connection string that identifies a user against the LDAP
+         service. We do not require a password or a secret, because we suggest
+         passing this in via an environment variable when starting Backstage.
+      3. The **base DN** when searching for users in your LDAP service: this is
+         a string representing a location in your LDAP tree from which to start
+         searching for users.
+      4. The **filter string** to use when searching for users in your LDAP
+         service: this is a string representing LDAP filters that identify
+         _user_ records in your LDAP service.
+      5. The **base DN** when searching for groups in your LDAP service: this is
+         a string representing a location in your LDAP tree from which to start
+         searching for groups.
+      6. The **filter string** to use when searching for groups in your LDAP
+         service: this is a string representing LDAP filters that identify
+         _user_ records in your LDAP service.
+
+      These questions are optional, and if left blank, your `app-config.yaml`
+      will be updated with placeholder values that can be updated manually.
+
+### Manual Setup
+
+For a more manual installation, follow these steps.
+
+1. The `LdapOrgReaderProcessor` is not registered by default, so you have to
    register it in the catalog plugin:
 
 ```typescript
-// packages/backend/src/plugins/catalog.ts
+// In packages/backend/src/plugins/catalog.ts,
+// add an import
+
+import { LdapOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-ldap';
+
+// ... after const builder = [...] is assigned, add the processor:
 builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(config, {
-    logger,
+  LdapOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
 ```
 
-## Configuration
-
-The following configuration is a small example of how a setup could look for
-importing groups and users from a corporate LDAP server.
+If you're working in a default scaffolded Backstage application, this should set
+up your catalog to import users and groups from your LDAP service. Finally,
+we'll need to update `app-config.yaml` to tell Backstage how to connect to your
+LDAP service:
 
 ```yaml
+# Under the catalog key,
 catalog:
   locations:
+    # After other locations,
     - type: ldap-org
-      target: ldaps://ds.example.net
+      target: ldaps://ds.example.net # Your LDAP service host
+
+  # Add the ldap processor to catalog.processors:
   processors:
     ldapOrg:
       providers:
-        - target: ldaps://ds.example.net
+        - target: ldaps://ds.example.net # Your LDAP service host
+          # Your "bind DN" or connection string
           bind:
             dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-            secret: ${LDAP_SECRET}
+            secret: ${LDAP_SECRET} # Reads from an environment variable
           users:
-            dn: ou=people,ou=example,dc=example,dc=net
+            dn: ou=people,ou=example,dc=example,dc=net # base DN to search for users
             options:
-              filter: (uid=*)
-            map:
-              description: l
-            set:
-              metadata.customField: 'hello'
+              filter: (uid=*) # filter string for users
           groups:
-            dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+            dn: ou=access,ou=groups,ou=example,dc=example,dc=net # base DN to search for groups
             options:
-              filter: (&(objectClass=some-group-class)(!(groupType=email)))
-            map:
-              description: l
-            set:
-              metadata.customField: 'hello'
+              filter: (&(objectClass=some-group-class)(!(groupType=email))) # filter string for groups
 ```
 
 Locations point out the specific org(s) you want to import. The `type` of these
@@ -81,6 +126,17 @@ The processor itself is configured in the other block, under
 `catalog.processors.ldapOrg`. There may be many providers, each targeting a
 specific `target` which is supposed to be on the same form as the location
 `target`.
+
+That's it – this plugin is now set up and will import users and groups from your
+LDAP service. If you run into issues around load times, data volume,
+`TimeLimitExceeded`, or similar, you might need to work with results returned
+from your LDAP service using _pagination_, as well as supply a longer time limit
+within which requests can respond.
+
+To learn about these along with other configuration options available, please
+read the next section.
+
+## Configuration
 
 These config blocks have a lot of options in them, so we will describe each
 "root" key within the block separately.
