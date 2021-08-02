@@ -34,12 +34,12 @@ the following questions:
 1.  **The LDAP plugin does not appear to be installed in your software catalog.
     Would you like to add it?** Answering _yes_ updates your backend's catalog
     plugin to import and use the LDAP plugin. (Step 1 of
-    [manual installation](#manual-installation))
+    [manual setup](#manual-setup))
 
 2.  **The LDAP plugin does not appear to be set up in your application config.
     Would you like to add it?** Answering _yes_ updates the `app-config.yaml` at
-    the root of your Backstage project after receiving more information from you
-    in subsequent prompts. Namely,
+    the root of your Backstage project (step 2 of [manual setup](#manual-setup))
+    after receiving more information from you in subsequent prompts. Namely,
 
     1. Your LDAP service host: this is a fully qualified URL starting with
        `ldap://` or `ldaps://` which Backstage will communicate with.
