@@ -255,29 +255,6 @@ describe('GithubCredentialsProvider tests', () => {
     ).resolves.toEqual({ headers: undefined, token: undefined, type: 'token' });
   });
 
-  // it('should return installation', async () => {
-  //   const githubProvider = GithubCredentialsProvider.create({
-  //     host: 'github.com',
-  //     apps: [
-  //       {
-  //         appId: 1,
-  //         privateKey: 'privateKey',
-  //         webhookSecret: '123',
-  //         clientId: 'CLIENT_ID',
-  //         clientSecret: 'CLIENT_SECRET',
-  //       },
-  //     ],
-  //   });
-  //
-  //   octokit.apps.listInstallations.mockResolvedValue(({
-  //     data: [],
-  //   } as unknown) as RestEndpointMethodTypes['apps']['listInstallations']['response']);
-  //
-  //   await expect(
-  //     githubProvider.getInstallationCredentials('Backstage'),
-  //   ).resolves.toEqual({ headers: undefined, token: undefined, type: 'token' });
-  // });
-
   it('should to create and ignore case sensitive when creating a token', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
