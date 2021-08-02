@@ -105,10 +105,29 @@ export class S3 {
     };
   }
 
-  listObjectsV2() {
+  listObjectsV2({ Bucket }) {
     return {
       promise: () => {
-        return Promise.resolve([]);
+        if (
+          Bucket === 'delete_stale_files_success' ||
+          Bucket === 'delete_stale_files_error'
+        ) {
+          return Promise.resolve({
+            Contents: [{ Key: 'stale_file.png' }],
+          });
+        }
+        return Promise.resolve({});
+      },
+    };
+  }
+
+  deleteObject({ Bucket }) {
+    return {
+      promise: () => {
+        if (Bucket === 'delete_stale_files_error') {
+          throw new Error('Message');
+        }
+        return Promise.resolve();
       },
     };
   }
