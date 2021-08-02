@@ -24,13 +24,13 @@ techdocs:
 
     runIn: 'docker'
 
-    # techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
+    # (Optional) techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
     # if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
     # NOTE: This setting is only used when techdocs.generator.runIn is set to 'docker'.
 
     dockerImage: 'spotify/techdocs'
 
-    # techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
+    # (Optional) techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
     # using a custom techdocs.generator.dockerImage and you have a custom docker login requirement. For example, you need to login to
     # AWS ECR to pull the docker image.
     # NOTE: Disabling this requires the docker image was pulled by other means before running the techdocs generator.
