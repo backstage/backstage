@@ -4,7 +4,7 @@
 
 The [FireHydrant](https://firehydrant.io) plugin brings incident management to Backstage, and it displays service incidents information such as active incidents and incident analytics. There are also quick action links that let you create and view incidents in FireHydrant.
 
-<img src="./doc/firehydrant_plugin_screenshot.png" alt="firehydrant plugin screenshot">
+<img src="./doc/firehydrant_plugin_screenshot.png" alt="FireHydrant plugin screenshot">
 
 ## Features
 
