@@ -62,6 +62,7 @@ export const DatePickerComponent = ({
 }: InputProps & DatePickerProps) => (
   <>
     <Typography variant="button">{label}</Typography>
+    <br />
     <BootstrapInput
       inputProps={{ 'aria-label': label }}
       type="date"
