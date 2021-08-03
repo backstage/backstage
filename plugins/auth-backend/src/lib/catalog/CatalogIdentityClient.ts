@@ -31,8 +31,7 @@ type UserQuery = {
 };
 
 type MemberClaimQuery = {
-  sub: string;
-  ent: string[];
+  entityRefs: string[];
   logger?: Logger;
 };
 
@@ -79,41 +78,33 @@ export class CatalogIdentityClient {
   }
 
   /**
-   * Resolve additional entity claims from the catalog, using the passed-in subject and entity
-   * claims. Designed to be used within a `signInResolver` where additional entity claims might be
-   * provided, but group membership and transient group membership lean on imported catalog
-   * relations.
+   * Resolve additional entity claims from the catalog, using the passed-in entity names. Designed
+   * to be used within a `signInResolver` where additional entity claims might be provided, but
+   * group membership and transient group membership lean on imported catalog relations.
    *
-   * Returns a superset of the `ent` argument that can be passed directly to `issueToken` as `ent`.
+   * Returns a superset of the entity names that can be passed directly to `issueToken` as `ent`.
    */
   async resolveCatalogMembership({
-    sub,
-    ent,
+    entityRefs,
     logger,
   }: MemberClaimQuery): Promise<string[]> {
-    const subRef: EntityName = parseEntityRef(sub, {
-      defaultKind: 'user',
-      defaultNamespace: 'default',
-    });
+    let resolvedEntityRefs: Array<EntityName> = [];
+    resolvedEntityRefs = entityRefs
+      .map((ref: string) => {
+        try {
+          const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'), {
+            defaultKind: 'user',
+            defaultNamespace: 'default',
+          });
+          return parsedRef;
+        } catch {
+          logger?.debug(`Failed to parse entityRef from ${ref}, ignoring`);
+          return null;
+        }
+      })
+      .filter((ref): ref is EntityName => ref !== null);
 
-    let entityRefs: Array<EntityName> = [];
-    if (ent) {
-      entityRefs = ent
-        .map((ref: string) => {
-          try {
-            const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'));
-            return parsedRef;
-          } catch {
-            logger?.debug(
-              `Failed to parse entityRef from '${sub}' ent claim: ${ref}, ignoring`,
-            );
-            return null;
-          }
-        })
-        .filter((ref): ref is EntityName => ref !== null);
-    }
-
-    const filter = [subRef].concat(entityRefs).map(ref => ({
+    const filter = resolvedEntityRefs.map(ref => ({
       kind: ref.kind,
       'metadata.namespace': ref.namespace,
       'metadata.name': ref.name,
@@ -124,12 +115,10 @@ export class CatalogIdentityClient {
 
     if (entityRefs.length !== entities.length) {
       const foundEntityNames = entities.map(stringifyEntityRef);
-      const missingEntityNames = entityRefs
+      const missingEntityNames = resolvedEntityRefs
         .map(stringifyEntityRef)
         .filter(s => !foundEntityNames.includes(s));
-      logger?.debug(
-        `Entities not found for '${sub}' claims: ${missingEntityNames.join()}`,
-      );
+      logger?.debug(`Entities not found for refs ${missingEntityNames.join()}`);
     }
 
     const memberOf = entities.flatMap(
@@ -139,11 +128,11 @@ export class CatalogIdentityClient {
           .map(r => r.target) ?? [],
     );
 
-    const newEnt = [...new Set(entityRefs.concat(memberOf))].map(
+    const newEntityRefs = [...new Set(resolvedEntityRefs.concat(memberOf))].map(
       stringifyEntityRef,
     );
 
-    logger?.debug(`Found claims for ${sub} in the catalog: ${newEnt.join()}`);
-    return newEnt;
+    logger?.debug(`Found catalog membership: ${newEntityRefs.join()}`);
+    return newEntityRefs;
   }
 }

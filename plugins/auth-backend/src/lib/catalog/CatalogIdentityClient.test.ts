@@ -119,8 +119,7 @@ describe('CatalogIdentityClient', () => {
     });
 
     const claims = await client.resolveCatalogMembership({
-      sub: 'inigom',
-      ent: ['User:default/imontoya', 'User:reality/mpatinkin'],
+      entityRefs: ['inigom', 'User:default/imontoya', 'User:reality/mpatinkin'],
     });
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
@@ -144,6 +143,7 @@ describe('CatalogIdentityClient', () => {
     });
 
     expect(claims).toMatchObject([
+      'user:default/inigom',
       'user:default/imontoya',
       'user:reality/mpatinkin',
       'group:default/team-a',
