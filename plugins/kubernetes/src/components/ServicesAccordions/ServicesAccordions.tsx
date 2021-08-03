@@ -35,7 +35,12 @@ type ServiceSummaryProps = {
 
 const ServiceSummary = ({ service }: ServiceSummaryProps) => {
   return (
-    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid xs={3} item>
         <ServiceDrawer service={service} />
       </Grid>

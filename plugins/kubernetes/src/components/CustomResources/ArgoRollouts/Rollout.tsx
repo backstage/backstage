@@ -97,7 +97,12 @@ const RolloutSummary = ({
   const abortedMessage = findAbortedMessage(rollout);
 
   return (
-    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid xs={3} item>
         <RolloutDrawer rollout={rollout} />
       </Grid>

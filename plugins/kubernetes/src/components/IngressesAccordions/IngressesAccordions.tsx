@@ -40,7 +40,12 @@ type IngressSummaryProps = {
 
 const IngressSummary = ({ ingress }: IngressSummaryProps) => {
   return (
-    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid xs={3} item>
         <IngressDrawer ingress={ingress} />
       </Grid>
