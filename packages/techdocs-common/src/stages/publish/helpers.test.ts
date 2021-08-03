@@ -16,9 +16,11 @@
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   getStaleFiles,
   getFileTreeRecursively,
+  getCloudPathForLocalPath,
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
@@ -122,5 +124,47 @@ describe('getStaleFiles', () => {
     const staleFiles = getStaleFiles(newFiles, oldFiles);
     expect(staleFiles).toHaveLength(1);
     expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
+  });
+});
+
+describe('getCloudPathForLocalPath', () => {
+  const entity: Entity = {
+    apiVersion: 'version',
+    metadata: { namespace: 'default', name: 'backstage' },
+    kind: 'Component',
+  };
+
+  it('should compose a remote bucket path including entity information', () => {
+    const remoteBucket = getCloudPathForLocalPath(entity);
+    expect(remoteBucket).toBe(
+      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/`,
+    );
+  });
+
+  it('should compose a remote filename including entity information', () => {
+    const localPath = 'index.html';
+    const remoteBucket = getCloudPathForLocalPath(entity, localPath);
+    expect(remoteBucket).toBe(
+      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/${localPath}`,
+    );
+  });
+
+  it('should use the default namespace when it is undefined', () => {
+    const localPath = 'index.html';
+    const {
+      kind,
+      metadata: { name },
+    } = entity;
+    const remoteBucket = getCloudPathForLocalPath(
+      { kind, metadata: { name } } as Entity,
+      localPath,
+    );
+    expect(remoteBucket).toBe(
+      `${ENTITY_DEFAULT_NAMESPACE}/${entity.kind}/${entity.metadata.name}/${localPath}`,
+    );
+  });
+
+  it('should throw error when entity is invalid', () => {
+    expect(() => getCloudPathForLocalPath({} as Entity)).toThrow();
   });
 });

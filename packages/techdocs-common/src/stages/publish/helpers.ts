@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import mime from 'mime-types';
 import path from 'path';
 import createLimiter from 'p-limit';
@@ -138,7 +138,9 @@ export const getCloudPathForLocalPath = (
   const relativeFilePathPosix = localPath.split(path.sep).join(path.posix.sep);
 
   // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-  const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+  const entityRootDir = `${
+    entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+  }/${entity.kind}/${entity.metadata.name}`;
   return `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
 };
 
