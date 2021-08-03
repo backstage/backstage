@@ -20,7 +20,7 @@ export interface Config {
     /**
      * Options for ElasticSearch
      */
-    elasticSearch?:
+    elasticsearch?:
       | // elastic = Elastic.co ElasticSearch provider
       {
           provider: 'elastic';
@@ -75,7 +75,7 @@ export interface Config {
            * Authentication credentials for ElasticSearch
            * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
            */
-          auth: {
+          auth?: {
             username?: string;
 
             /**

@@ -15,7 +15,7 @@ that environment variables for AWS access key id and secret access key are defin
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     provider: aws
     node: https://my-backstage-search-asdfqwerty.eu-west-1.es.amazonaws.com
 ```
@@ -26,7 +26,7 @@ Elastic Cloud hosted ElasticSearch uses a Cloud ID to determine the instance of 
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     provider: elastic
     cloudId: backstage-elastic:asdfqwertyasdfqwertyasdfqwertyasdfqwerty==
     auth:
@@ -44,7 +44,7 @@ Other ElasticSearch instances can be connected to by using standard ElasticSearc
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       username: elastic
@@ -55,7 +55,7 @@ search:
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       bearer: token
@@ -65,7 +65,7 @@ search:
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       apiKey: base64EncodedKey

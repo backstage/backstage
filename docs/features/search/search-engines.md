@@ -60,6 +60,9 @@ ElasticSearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
+The underlying functionality is using official ElasticSearch client version 7.x,
+meaning that ElasticSearch version 7 is the only one confirmed to be supported.
+
 ## Example configurations
 
 ### AWS
@@ -72,7 +75,7 @@ to the
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     provider: aws
     node: https://my-backstage-search-asdfqwerty.eu-west-1.es.amazonaws.com
 ```
@@ -86,7 +89,7 @@ be provided either directly or using environment variables like defined in
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     provider: elastic
     cloudId: backstage-elastic:asdfqwertyasdfqwertyasdfqwertyasdfqwerty==
     auth:
@@ -113,7 +116,7 @@ and how to create a bearer token see
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       username: elastic
@@ -124,7 +127,7 @@ search:
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       bearer: token
@@ -134,7 +137,7 @@ search:
 
 ```yaml
 search:
-  elasticSearch:
+  elasticsearch:
     node: http://localhost:9200
     auth:
       apiKey: base64EncodedKey

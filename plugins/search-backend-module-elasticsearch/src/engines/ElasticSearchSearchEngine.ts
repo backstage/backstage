@@ -87,7 +87,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return new ElasticSearchSearchEngine(
       await ElasticSearchSearchEngine.constructElasticSearchClient(
         logger,
-        config.getConfig('search.elasticSearch'),
+        config.getConfig('search.elasticsearch'),
       ),
       aliasPostfix,
       indexPrefix,
@@ -251,7 +251,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       });
       return {
         results: result.body.hits.hits.map((d: ElasticSearchResult) => ({
-          type: d._index.split('__')[0],
+          type: this.getTypeFromIndex(d._index),
           document: d._source,
         })),
       };
@@ -264,11 +264,20 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     }
   }
 
+  private readonly indexSeparator = '-index__';
+
   private constructIndexName(type: string, postFix: string) {
-    return `${this.indexPrefix}${type}-index__${postFix}`;
+    return `${this.indexPrefix}${type}${this.indexSeparator}${postFix}`;
+  }
+
+  private getTypeFromIndex(index: string) {
+    return index
+      .substring(this.indexPrefix.length)
+      .split(this.indexSeparator)[0];
   }
 
   private constructSearchAlias(type: string) {
-    return `${this.indexPrefix}${type}__${this.aliasPostfix}`;
+    const postFix = this.aliasPostfix ? `__${this.aliasPostfix}` : '';
+    return `${this.indexPrefix}${type}${postFix}`;
   }
 }

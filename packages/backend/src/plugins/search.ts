@@ -30,7 +30,7 @@ export default async function createPlugin({
   config,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
-  const searchEngine = config.has('search.elasticSearch')
+  const searchEngine = config.has('search.elasticsearch')
     ? await ElasticSearchSearchEngine.fromConfig({
         logger,
         config,
