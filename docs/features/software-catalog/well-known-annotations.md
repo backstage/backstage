@@ -63,12 +63,18 @@ the `app-config.yaml` of a Backstage installation.
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
+    backstage.io/techdocs-ref: dir:.
 ```
 
-The value of this annotation is a location reference string (see above). If this
-annotation is specified, it is expected to point to a repository that the
-TechDocs system can read and generate docs from.
+The value of this annotation informs _where_ TechDocs source content is stored
+so that it can be read and docs can be generated from it. Most commonly, it's
+written as a path, relative to the location of the `catalog-info.yaml` itself,
+where the associated `mkdocs.yml` file can be found.
+
+In unusual situations where the documentation for a catalog entity does not live
+alongside the entity's source code, the value of this annotation can point to an
+absolute URL, matching the location reference string format outlined above, for
+example: `url:https://github.com/backstage/backstage/tree/master`
 
 ### backstage.io/view-url, backstage.io/edit-url
 
