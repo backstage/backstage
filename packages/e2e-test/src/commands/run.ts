@@ -234,7 +234,7 @@ async function createApp(
 
     for (const cmd of [
       'install',
-      'tsc',
+      'tsc:full',
       'build',
       'lint:all',
       'prettier:check',
