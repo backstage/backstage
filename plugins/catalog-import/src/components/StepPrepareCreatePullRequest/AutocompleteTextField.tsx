@@ -18,12 +18,7 @@ import { CircularProgress, TextField } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import { Autocomplete } from '@material-ui/lab';
 import React from 'react';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseControllerOptions,
-} from 'react-hook-form';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
 
 type Props<TFieldValue extends string> = {
   name: TFieldValue;
@@ -32,7 +27,7 @@ type Props<TFieldValue extends string> = {
 
   control?: Control<Record<string, any>>;
   errors?: FieldErrors<Record<TFieldValue, string>>;
-  rules?: UseControllerOptions<Record<TFieldValue, any>>['rules'];
+  rules?: React.ComponentProps<typeof Controller>['rules'];
 
   loading?: boolean;
   loadingText?: string;
@@ -61,16 +56,14 @@ export const AutocompleteTextField = <TFieldValue extends string>({
       name={name}
       control={control}
       rules={rules}
-      render={({ value, onChange, onBlur }) => (
+      render={({ field }) => (
         <Autocomplete
           loading={loading}
           loadingText={loadingText}
           options={options || []}
-          onChange={(_: any, v: string | null) => onChange(v || '')}
-          onBlur={onBlur}
-          value={value}
           autoSelect
           freeSolo
+          {...field}
           renderInput={params => (
             <TextField
               {...params}
