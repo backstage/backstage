@@ -22,13 +22,20 @@ import {
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 
 export default async function createPlugin({
   logger,
   discovery,
+  config,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
-  const searchEngine = new LunrSearchEngine({ logger });
+  const searchEngine = config.has('search.elasticsearch')
+    ? await ElasticSearchSearchEngine.fromConfig({
+        logger,
+        config,
+      })
+    : new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   // Collators are responsible for gathering documents known to plugins. This
