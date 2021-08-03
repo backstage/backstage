@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   formatEntityRefTitle,
@@ -22,7 +23,7 @@ import {
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { UnpackNestedValue, UseFormMethods } from 'react-hook-form';
+import { FieldErrors, UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -32,7 +33,6 @@ import { PrepareResult } from '../useImportState';
 import { PreparePullRequestForm } from './PreparePullRequestForm';
 import { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
 import { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
-import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   previewCard: {
@@ -63,7 +63,8 @@ type Props = {
   defaultBody: string;
 
   renderFormFields: (
-    props: Pick<UseFormMethods<FormData>, 'errors' | 'register' | 'control'> & {
+    props: Pick<UseFormReturn<FormData>, 'register' | 'setValue'> & {
+      errors: FieldErrors<FormData>;
       values: UnpackNestedValue<FormData>;
       groups: string[];
       groupsLoading: boolean;
@@ -192,13 +193,13 @@ export const StepPrepareCreatePullRequest = ({
             analyzeResult.generatedEntities[0]?.metadata?.name || '',
           useCodeowners: false,
         }}
-        render={({ values, errors, control, register }) => (
+        render={({ values, errors, register, setValue }) => (
           <>
             {renderFormFields({
               values,
               errors,
               register,
-              control,
+              setValue,
               groups: groups ?? [],
               groupsLoading,
             })}
