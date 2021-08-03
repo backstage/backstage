@@ -22,6 +22,7 @@ import {
   getFileTreeRecursively,
   getCloudPathForLocalPath,
   getHeadersForFileExtension,
+  bulkStorageOperation,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 
@@ -166,5 +167,54 @@ describe('getCloudPathForLocalPath', () => {
 
   it('should throw error when entity is invalid', () => {
     expect(() => getCloudPathForLocalPath({} as Entity)).toThrow();
+  });
+});
+
+describe('bulkStorageOperation', () => {
+  const length = 26;
+  const args = Array.from({ length });
+  const createConcurrentRequestCounter = (
+    callback: (count: number) => void,
+  ) => {
+    let count = 0;
+    return () =>
+      new Promise(resolve => {
+        callback(++count);
+        setTimeout(() => {
+          count--;
+          resolve(null);
+        }, 100);
+      });
+  };
+
+  it('should take care of rate limit by default', async () => {
+    const operation = createConcurrentRequestCounter((count: number) => {
+      expect(count <= 25).toBeTruthy();
+    });
+    await bulkStorageOperation(operation, args);
+  });
+
+  it('should accept the number of concurrency limit', async () => {
+    const concurrencyLimit = 10;
+    const operation = createConcurrentRequestCounter((count: number) => {
+      expect(count <= concurrencyLimit).toBeTruthy();
+    });
+    await bulkStorageOperation(operation, args, { concurrencyLimit });
+  });
+
+  it('should wait for all promises be resolved', async () => {
+    const callback = jest.fn();
+    const operation = createConcurrentRequestCounter(callback);
+    await bulkStorageOperation(operation, args);
+    expect(callback).toHaveBeenCalledTimes(length);
+  });
+
+  it('should call operation with the correct argument', async () => {
+    const files = ['file1.txt', 'file2.txt'];
+    const fn = jest.fn();
+    await bulkStorageOperation(fn, files);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenNthCalledWith(1, files[0]);
+    expect(fn).toHaveBeenNthCalledWith(2, files[1]);
   });
 });
