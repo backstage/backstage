@@ -79,7 +79,7 @@ export const ApiExplorerPage = ({
         <ContentHeader title="">
           <CreateButton
             title="Register Existing API"
-            to={createComponentLink && createComponentLink()}
+            to={createComponentLink?.()}
           />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
