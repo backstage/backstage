@@ -139,15 +139,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
   async publish({ entity, directory }: PublishRequest): Promise<void> {
     // First, retrieve a list of all individual files in currently existing
     const remoteFolder = getCloudPathForLocalPath(entity);
-    const existingFiles: string[] = [];
-    let container: ContainerClient;
+    let existingFiles: string[];
     try {
-      container = this.storageClient.getContainerClient(this.containerName);
-      for await (const blob of container.listBlobsFlat({
+      existingFiles = await this.getAllBlobsFromContainer({
         prefix: remoteFolder,
-      })) {
-        existingFiles.push(blob.name);
-      }
+        maxPageSize: BATCH_CONCURRENCY,
+      });
     } catch (e) {
       const errorMessage = `Unable to list file(s) to Azure. ${e}`;
       this.logger.error(errorMessage);
@@ -156,12 +153,14 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
     // Then, merge new files into the same folder
     let absoluteFilesToUpload;
+    let container: ContainerClient;
     try {
       // Remove the absolute path prefix of the source directory
       // Path of all files to upload, relative to the root of the source directory
       // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
       absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
+      container = this.storageClient.getContainerClient(this.containerName);
       const failedOperations: Error[] = [];
       await bulkStorageOperation(
         async absoluteFilePath => {
@@ -380,5 +379,31 @@ export class AzureBlobStoragePublish implements PublisherBase {
     }
 
     await Promise.all(promises);
+  }
+
+  protected async getAllBlobsFromContainer({
+    prefix,
+    maxPageSize,
+  }: {
+    prefix: string;
+    maxPageSize: number;
+  }): Promise<string[]> {
+    const blobs: string[] = [];
+    const container = this.storageClient.getContainerClient(this.containerName);
+
+    let iterator = container.listBlobsFlat({ prefix }).byPage({ maxPageSize });
+    let response = (await iterator.next()).value;
+
+    do {
+      for (const blob of response.segment.blobItems) {
+        blobs.push(blob.name);
+      }
+      iterator = container
+        .listBlobsFlat({ prefix })
+        .byPage({ continuationToken: response.continuationToken, maxPageSize });
+      response = (await iterator.next()).value;
+    } while (response && response.continuationToken);
+
+    return blobs;
   }
 }
