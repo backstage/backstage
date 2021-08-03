@@ -57,6 +57,7 @@ export const PreparePullRequestForm = <
   render,
 }: Props<TFieldValues>) => {
 <<<<<<< HEAD
+<<<<<<< HEAD
   const methods = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
   const { handleSubmit, watch, control, register, formState, setValue } =
     methods;
@@ -65,6 +66,8 @@ export const PreparePullRequestForm = <
   const { handleSubmit, watch, control, register, errors } =
     useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
 =======
+=======
+>>>>>>> fix(catalog-import): migrate to the new react-hook-form version
   const {
     handleSubmit,
     watch,
@@ -72,8 +75,11 @@ export const PreparePullRequestForm = <
     register,
     formState: { errors },
   } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+<<<<<<< HEAD
 >>>>>>> chore: fixing up some migrations
 >>>>>>> chore: fixing up some migrations
+=======
+>>>>>>> fix(catalog-import): migrate to the new react-hook-form version
 
   return (
     <FormProvider {...methods}>
