@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-search-backend-module-elasticsearch': minor
 '@backstage/search-common': patch
 '@backstage/plugin-search-backend-node': patch
 ---
