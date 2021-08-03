@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const TECHDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css/;
-const GOOGLE_FONTS = /fonts\.googleapis\.com/;
-const GSTATIC_FONTS = /fonts\.gstatic\.com/;
+const TECHDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css$/;
+const GOOGLE_FONTS = /^https:\/\/fonts\.googleapis\.com/;
+const GSTATIC_FONTS = /^https:\/\/fonts\.gstatic\.com/;
 
 export const safeLinksHook = (node: Element) => {
   if (node.nodeName && node.nodeName === 'LINK') {
