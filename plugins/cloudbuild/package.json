@@ -42,6 +42,7 @@
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-hook-form": "^7.12.2",
     "react-lazylog": "^4.5.3",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
