@@ -70,7 +70,7 @@ export const MultiSignInPage = ({
         {title && <ContentHeader title={title} textAlign={align} />}
         <Grid
           container
-          justify={align === 'center' ? align : 'flex-start'}
+          justifyContent={align === 'center' ? align : 'flex-start'}
           spacing={2}
           component="ul"
           classes={classes}
@@ -152,7 +152,7 @@ export const SingleSignInPage = ({
       <Content>
         <Grid
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
           component="ul"
           classes={classes}

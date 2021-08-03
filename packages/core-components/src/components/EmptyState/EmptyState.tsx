@@ -44,7 +44,7 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
     <Grid
       container
       direction="row"
-      justify="space-around"
+      justifyContent="space-around"
       alignItems="flex-start"
       className={classes.root}
       spacing={2}
