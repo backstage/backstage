@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { FormHelperText, Grid, TextField } from '@material-ui/core';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { NextButton } from '../Buttons';
+import { asInputRef } from '../helpers';
 import { ImportFlows, PrepareResult } from '../useImportState';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 type FormData = {
   url: string;
@@ -123,15 +124,17 @@ export const StepInitAnalyzeUrl = ({
   return (
     <form onSubmit={handleSubmit(handleResult)}>
       <TextField
-        {...register('url', {
-          required: true,
-          validate: {
-            httpsValidator: (value: any) =>
-              (typeof value === 'string' &&
-                value.match(/^http[s]?:\/\//) !== null) ||
-              'Must start with http:// or https://.',
-          },
-        })}
+        {...asInputRef(
+          register('url', {
+            required: true,
+            validate: {
+              httpsValidator: (value: any) =>
+                (typeof value === 'string' &&
+                  value.match(/^http[s]?:\/\//) !== null) ||
+                'Must start with http:// or https://.',
+            },
+          }),
+        )}
         fullWidth
         id="url"
         label="Repository URL"

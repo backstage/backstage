@@ -18,6 +18,7 @@ import { FormHelperText, TextField } from '@material-ui/core';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { asInputRef } from '../helpers';
 import { PreparePullRequestForm } from './PreparePullRequestForm';
 
 describe('<PreparePullRequestForm />', () => {
@@ -29,7 +30,7 @@ describe('<PreparePullRequestForm />', () => {
         defaultValues={{ main: 'default' }}
         render={({ register }) => (
           <>
-            <TextField name="main" inputRef={register()} />
+            <TextField {...asInputRef(register('main'))} />
             <button type="submit">Submit</button>{' '}
           </>
         )}
@@ -54,10 +55,9 @@ describe('<PreparePullRequestForm />', () => {
         render={({ register }) => (
           <>
             <TextField
+              {...asInputRef(register('main'))}
               id="main"
-              name="main"
               label="Main Field"
-              inputRef={register()}
             />
             <button type="submit">Submit</button>
           </>
@@ -85,9 +85,9 @@ describe('<PreparePullRequestForm />', () => {
         render={({ errors, register }) => (
           <>
             <TextField
+              {...asInputRef(register('main', { required: true }))}
               name="main"
               required
-              inputRef={register({ required: true })}
             />
             {errors.main && (
               <FormHelperText error>

@@ -55,10 +55,6 @@ export const PreparePullRequestForm = <
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
-<<<<<<< HEAD
-  const { handleSubmit, watch, control, register, errors } =
-    useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
-=======
   const {
     handleSubmit,
     watch,
@@ -66,7 +62,6 @@ export const PreparePullRequestForm = <
     register,
     formState: { errors },
   } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
->>>>>>> chore: fixing up some migrations
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
