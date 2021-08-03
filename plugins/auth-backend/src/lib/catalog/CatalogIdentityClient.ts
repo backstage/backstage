@@ -86,7 +86,7 @@ export class CatalogIdentityClient {
    *
    * Returns a superset of the `ent` argument that can be passed directly to `issueToken` as `ent`.
    */
-  async resolveCatalogMemberClaims({
+  async resolveCatalogMembership({
     sub,
     ent,
     logger,

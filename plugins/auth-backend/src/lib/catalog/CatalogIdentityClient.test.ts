@@ -67,7 +67,7 @@ describe('CatalogIdentityClient', () => {
     });
   });
 
-  it('resolveCatalogMemberClaims resolves membership', async () => {
+  it('resolveCatalogMembership resolves membership', async () => {
     const mockUsers: Array<UserEntityV1alpha1> = [
       {
         apiVersion: 'backstage.io/v1beta1',
@@ -118,7 +118,7 @@ describe('CatalogIdentityClient', () => {
       tokenIssuer,
     });
 
-    const claims = await client.resolveCatalogMemberClaims({
+    const claims = await client.resolveCatalogMembership({
       sub: 'inigom',
       ent: ['User:default/imontoya', 'User:reality/mpatinkin'],
     });

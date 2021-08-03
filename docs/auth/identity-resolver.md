@@ -134,7 +134,7 @@ export default async function createPlugin({
             const ent = await externalSystemClient.getUsernames(email);
 
             // Resolve group membership from the Backstage catalog
-            const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMemberClaims({
+            const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMembership({
               sub,
               ent,
               logger: ctx.logger,
@@ -149,8 +149,8 @@ export default async function createPlugin({
       ...
 ```
 
-The `resolveCatalogMemberClaims` method will retrieve the `sub` and `ent`
-entities from the catalog, if possible, and check for
+The `resolveCatalogMembership` method will retrieve the `sub` and `ent` entities
+from the catalog, if possible, and check for
 [memberOf](../features/software-catalog/well-known-relations.md#memberof-and-hasmember)
 relations to add additional entity claims.
 
