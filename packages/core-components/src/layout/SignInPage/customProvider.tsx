@@ -50,9 +50,11 @@ type Data = {
 
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
-  const { register, handleSubmit, errors, formState } = useForm<Data>({
+  const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
   });
+
+  const { errors } = formState;
 
   const handleResult = ({ userId, idToken }: Data) => {
     onResult({
@@ -76,11 +78,11 @@ const Component: ProviderComponent = ({ onResult }) => {
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
+              {...register({ required: true })}
               name="userId"
               label="User ID"
               margin="normal"
               error={Boolean(errors.userId)}
-              inputRef={register({ required: true })}
             />
             {errors.userId && (
               <FormHelperText error>{errors.userId.message}</FormHelperText>
