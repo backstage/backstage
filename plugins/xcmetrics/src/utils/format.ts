@@ -18,8 +18,12 @@ import { BuildStatus } from '../api';
 
 export const formatDuration = (seconds: number) => {
   const duration = Duration.fromObject({
-    seconds: Math.round(seconds),
-  }).shiftTo('hours', 'minutes', 'seconds');
+    seconds: seconds,
+  }).shiftTo('hours', 'minutes', 'seconds', 'milliseconds');
+
+  if (duration.hours + duration.minutes + duration.seconds === 0) {
+    return `${Math.round(duration.milliseconds)} ms`;
+  }
 
   const h = duration.hours ? `${duration.hours} h` : '';
   const m = duration.minutes ? `${duration.minutes} m` : '';
