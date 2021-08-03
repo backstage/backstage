@@ -97,7 +97,7 @@ const RolloutSummary = ({
   const abortedMessage = findAbortedMessage(rollout);
 
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
       <Grid xs={3} item>
         <RolloutDrawer rollout={rollout} />
       </Grid>
@@ -111,7 +111,7 @@ const RolloutSummary = ({
               item
               container
               direction="column"
-              justify="flex-start"
+              justifyContent="flex-start"
               alignItems="flex-start"
               spacing={0}
             >
@@ -142,7 +142,7 @@ const RolloutSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -250,7 +250,7 @@ export const RolloutAccordions = ({
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {rollouts.map((rollout, i) => (

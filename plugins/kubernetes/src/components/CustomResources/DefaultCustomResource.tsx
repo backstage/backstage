@@ -51,7 +51,7 @@ const DefaultCustomResourceSummary = ({
   customResourceName,
 }: DefaultCustomResourceSummaryProps) => {
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
       <Grid xs={3} item>
         <DefaultCustomResourceDrawer
           customResource={customResource}
@@ -99,7 +99,7 @@ export const DefaultCustomResourceAccordions = ({
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {customResources.map((cr, i) => (

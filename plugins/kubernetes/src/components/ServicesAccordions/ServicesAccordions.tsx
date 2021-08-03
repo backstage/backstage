@@ -35,7 +35,7 @@ type ServiceSummaryProps = {
 
 const ServiceSummary = ({ service }: ServiceSummaryProps) => {
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
       <Grid xs={3} item>
         <ServiceDrawer service={service} />
       </Grid>
@@ -107,7 +107,7 @@ export const ServicesAccordions = ({}: ServicesAccordionsProps) => {
     <Grid
       container
       direction="row"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {groupedResponses.services.map((service, i) => (

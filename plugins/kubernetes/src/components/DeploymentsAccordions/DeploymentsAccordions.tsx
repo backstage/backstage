@@ -68,7 +68,7 @@ const DeploymentSummary = ({
   hpa,
 }: DeploymentSummaryProps) => {
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid container direction="row" justifyContent="flex-start" alignItems="center">
       <Grid xs={3} item>
         <DeploymentDrawer deployment={deployment} />
       </Grid>
@@ -82,7 +82,7 @@ const DeploymentSummary = ({
               item
               container
               direction="column"
-              justify="flex-start"
+              justifyContent="flex-start"
               alignItems="flex-start"
               spacing={0}
             >
@@ -113,7 +113,7 @@ const DeploymentSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -169,7 +169,7 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {groupedResponses.deployments.map((deployment, i) => (
