@@ -24,10 +24,16 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { TokenIssuer, TokenParams } from '../../identity';
+import { TokenIssuer } from '../../identity';
 
 type UserQuery = {
   annotations: Record<string, string>;
+};
+
+type MemberClaimQuery = {
+  sub: string;
+  ent: string[];
+  logger?: Logger;
 };
 
 /**
@@ -78,14 +84,13 @@ export class CatalogIdentityClient {
    * provided, but group membership and transient group membership lean on imported catalog
    * relations.
    *
-   * Returns a claim structure that can be passed directly to `issueToken`, with the same sub and a
-   * superset of `ent` claims.
+   * Returns a superset of the `ent` argument that can be passed directly to `issueToken` as `ent`.
    */
-  async resolveCatalogMemberClaims(
-    sub: string,
-    ent: string[],
-    logger?: Logger,
-  ): Promise<TokenParams> {
+  async resolveCatalogMemberClaims({
+    sub,
+    ent,
+    logger,
+  }: MemberClaimQuery): Promise<string[]> {
     const subRef: EntityName = parseEntityRef(sub, {
       defaultKind: 'user',
       defaultNamespace: 'default',
@@ -139,11 +144,6 @@ export class CatalogIdentityClient {
     );
 
     logger?.debug(`Found claims for ${sub} in the catalog: ${newEnt.join()}`);
-    return {
-      claims: {
-        sub,
-        ent: newEnt,
-      },
-    };
+    return newEnt;
   }
 }

@@ -118,10 +118,10 @@ describe('CatalogIdentityClient', () => {
       tokenIssuer,
     });
 
-    const claims = await client.resolveCatalogMemberClaims('inigom', [
-      'User:default/imontoya',
-      'User:reality/mpatinkin',
-    ]);
+    const claims = await client.resolveCatalogMemberClaims({
+      sub: 'inigom',
+      ent: ['User:default/imontoya', 'User:reality/mpatinkin'],
+    });
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: [
@@ -143,16 +143,11 @@ describe('CatalogIdentityClient', () => {
       ],
     });
 
-    expect(claims).toMatchObject({
-      claims: {
-        sub: 'inigom',
-        ent: [
-          'user:default/imontoya',
-          'user:reality/mpatinkin',
-          'group:default/team-a',
-          'group:reality/screen-actors-guild',
-        ],
-      },
-    });
+    expect(claims).toMatchObject([
+      'user:default/imontoya',
+      'user:reality/mpatinkin',
+      'group:default/team-a',
+      'group:reality/screen-actors-guild',
+    ]);
   });
 });

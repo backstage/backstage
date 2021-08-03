@@ -130,16 +130,18 @@ export default async function createPlugin({
           resolver: async ({ profile: { email } }, ctx) => {
             const [sub] = email?.split('@') ?? '';
             // Fetch from an external system that returns entity claims like:
-            // 'user:default/breanna.davison'
+            // ['user:default/breanna.davison', ...]
             const ent = await externalSystemClient.getUsernames(email);
 
             // Resolve group membership from the Backstage catalog
-            const claims = await ctx.catalogIdentityClient.resolveCatalogMemberClaims(
+            const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMemberClaims({
               sub,
               ent,
-              ctx.logger,
-            );
-            const token = await ctx.tokenIssuer.issueToken(claims);
+              logger: ctx.logger,
+            });
+            const token = await ctx.tokenIssuer.issueToken({
+              claims: { sub: id, fullEnt },
+            });
             return { sub, token };
           },
         },
