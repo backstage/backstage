@@ -17,6 +17,7 @@ import mockFs from 'mock-fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
+  getStaleFiles,
   getFileTreeRecursively,
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
@@ -97,5 +98,29 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
     expect(() =>
       lowerCaseEntityTripletInStoragePath(originalPath),
     ).toThrowError(error);
+  });
+});
+
+describe('getStaleFiles', () => {
+  const defaultFiles = [
+    'default/Component/backstage/index.html',
+    'default/Component/backstage/techdocs_metadata.json',
+    'default/Component/backstage/assests/javascripts/bundle.7f4f3c92.min.js',
+    'default/Component/backstage/assets/stylesheets/main.fe0cca5b.min.css',
+  ];
+
+  it('should return empty array if there is no stale file', () => {
+    const oldFiles = [...defaultFiles];
+    const newFiles = [...defaultFiles];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(0);
+  });
+
+  it('should return all stale files when they exists', () => {
+    const oldFiles = [...defaultFiles, 'stale_file.png'];
+    const newFiles = [...defaultFiles];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(1);
+    expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
   });
 });
