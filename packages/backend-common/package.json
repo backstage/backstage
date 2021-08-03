@@ -93,6 +93,7 @@
     "@types/tar": "^4.0.3",
     "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
+    "aws-sdk-mock": "^5.2.1",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
