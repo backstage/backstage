@@ -78,8 +78,7 @@ const Component: ProviderComponent = ({ onResult }) => {
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
-              {...register({ required: true })}
-              name="userId"
+              {...register('userId', { required: true })}
               label="User ID"
               margin="normal"
               error={Boolean(errors.userId)}
@@ -90,18 +89,17 @@ const Component: ProviderComponent = ({ onResult }) => {
           </FormControl>
           <FormControl>
             <TextField
-              name="idToken"
-              label="ID Token (optional)"
-              margin="normal"
-              autoComplete="off"
-              error={Boolean(errors.idToken)}
-              inputRef={register({
+              {...register('idToken', {
                 required: false,
                 validate: token =>
                   !token ||
                   ID_TOKEN_REGEX.test(token) ||
                   'Token is not a valid OpenID Connect JWT Token',
               })}
+              label="ID Token (optional)"
+              margin="normal"
+              autoComplete="off"
+              error={Boolean(errors.idToken)}
             />
             {errors.idToken && (
               <FormHelperText error>{errors.idToken.message}</FormHelperText>

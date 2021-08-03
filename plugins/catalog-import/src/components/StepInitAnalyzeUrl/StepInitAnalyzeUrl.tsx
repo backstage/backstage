@@ -52,7 +52,12 @@ export const StepInitAnalyzeUrl = ({
   const errorApi = useApi(errorApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
 
-  const { register, handleSubmit, errors, watch } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>({
     mode: 'onTouched',
     defaultValues: {
       url: analysisUrl,
@@ -118,16 +123,7 @@ export const StepInitAnalyzeUrl = ({
   return (
     <form onSubmit={handleSubmit(handleResult)}>
       <TextField
-        fullWidth
-        id="url"
-        name="url"
-        label="Repository URL"
-        placeholder="https://github.com/backstage/backstage/blob/master/catalog-info.yaml"
-        helperText="Enter the full path to your entity file to start tracking your component"
-        margin="normal"
-        variant="outlined"
-        error={Boolean(errors.url)}
-        inputRef={register({
+        {...register('url', {
           required: true,
           validate: {
             httpsValidator: (value: any) =>
@@ -136,6 +132,14 @@ export const StepInitAnalyzeUrl = ({
               'Must start with http:// or https://.',
           },
         })}
+        fullWidth
+        id="url"
+        label="Repository URL"
+        placeholder="https://github.com/backstage/backstage/blob/master/catalog-info.yaml"
+        helperText="Enter the full path to your entity file to start tracking your component"
+        margin="normal"
+        variant="outlined"
+        error={Boolean(errors.url)}
         required
       />
 
