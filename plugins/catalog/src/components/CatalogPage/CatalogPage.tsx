@@ -17,12 +17,13 @@
 import {
   Content,
   ContentHeader,
+  CreateButton,
   PageWithHeader,
   SupportButton,
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
   EntityLifecyclePicker,
@@ -34,9 +35,9 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
+import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
-import { CreateComponentButton } from '../CreateComponentButton';
 import {
   FilteredEntityLayout,
   EntityListContainer,
@@ -56,12 +57,16 @@ export const CatalogPage = ({
 }: CatalogPageProps) => {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
         <ContentHeader title="Components">
-          <CreateComponentButton />
+          <CreateButton
+            title="Create Component"
+            to={createComponentLink && createComponentLink()}
+          />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <EntityListProvider>

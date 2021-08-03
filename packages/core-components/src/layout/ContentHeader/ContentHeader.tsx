@@ -31,12 +31,11 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(2),
       textAlign: props.textAlign,
     },
     leftItemsBox: {
       flex: '1 1 auto',
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
@@ -47,13 +46,13 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       alignItems: 'center',
       marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
     description: {},
     title: {
       display: 'inline-flex',
+      marginBottom: 0,
     },
   }));
 
