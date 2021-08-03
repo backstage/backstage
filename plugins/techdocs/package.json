@@ -52,7 +52,8 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "react-text-truncate": "^0.16.0"
+    "react-text-truncate": "^0.16.0",
+    "git-url-parse": "~11.4.4"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.6",
