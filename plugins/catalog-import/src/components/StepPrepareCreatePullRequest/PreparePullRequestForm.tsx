@@ -56,9 +56,24 @@ export const PreparePullRequestForm = <
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
+<<<<<<< HEAD
   const methods = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
   const { handleSubmit, watch, control, register, formState, setValue } =
     methods;
+=======
+<<<<<<< HEAD
+  const { handleSubmit, watch, control, register, errors } =
+    useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+=======
+  const {
+    handleSubmit,
+    watch,
+    control,
+    register,
+    formState: { errors },
+  } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+>>>>>>> chore: fixing up some migrations
+>>>>>>> chore: fixing up some migrations
 
   return (
     <FormProvider {...methods}>
