@@ -44,6 +44,7 @@
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
     "prompts": "^2.4.1",
+    "winston": "^3.3.3",
     "yaml": "^2.0.0-7"
   },
   "devDependencies": {
