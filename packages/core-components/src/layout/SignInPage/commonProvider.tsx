@@ -86,7 +86,8 @@ const loader: ProviderLoader = async (apis, apiRef) => {
   return {
     userId: identity.id,
     profile: profile!,
-    getIdToken: () => authApi.getBackstageIdentity().then(i => i!.token),
+    getIdToken: () =>
+      authApi.getBackstageIdentity().then(i => i!.token ?? i!.idToken),
     signOut: async () => {
       await authApi.signOut();
     },
