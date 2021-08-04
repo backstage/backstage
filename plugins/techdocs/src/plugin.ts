@@ -113,6 +113,14 @@ export const TechDocsCustomHome = techdocsPlugin.provide(
   }),
 );
 
+export const TechDocsHome = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./home/components/TechDocsHome').then(m => m.TechDocsHome),
+    mountPoint: rootRouteRef,
+  }),
+);
+
 export const TechDocsReaderPage = techdocsPlugin.provide(
   createRoutableExtension({
     component: () =>

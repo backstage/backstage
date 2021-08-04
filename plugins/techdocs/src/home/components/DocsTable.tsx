@@ -18,28 +18,34 @@ import React from 'react';
 import { useCopyToClipboard } from 'react-use';
 import { generatePath } from 'react-router-dom';
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../routes';
 import {
   Button,
   EmptyState,
-  Link,
-  SubvalueCell,
   Table,
+  TableColumn,
   TableProps,
 } from '@backstage/core-components';
 import * as actionFactories from './actions';
+import * as columnFactories from './columns';
 import { DocsTableRow } from './types';
 
 export const DocsTable = ({
   entities,
   title,
   loading,
+  columns,
   actions,
 }: {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
+  columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
@@ -47,6 +53,8 @@ export const DocsTable = ({
   if (!entities) return null;
 
   const documents = entities.map(entity => {
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
     return {
       entity,
       resolved: {
@@ -55,32 +63,18 @@ export const DocsTable = ({
           kind: entity.kind,
           name: entity.metadata.name,
         }),
+        ownedByRelations,
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
       },
     };
   });
 
-  const columns = [
-    {
-      title: 'Document',
-      field: 'name',
-      highlight: true,
-      render: (row: DocsTableRow): React.ReactNode => (
-        <SubvalueCell
-          value={
-            <Link to={row.resolved.docsUrl}>{row.entity.metadata.name}</Link>
-          }
-          subvalue={row.entity.metadata.description}
-        />
-      ),
-    },
-    {
-      title: 'Owner',
-      field: 'entity.spec.owner',
-    },
-    {
-      title: 'Type',
-      field: 'entity.spec.type',
-    },
+  const defaultColumns: TableColumn<DocsTableRow>[] = [
+    columnFactories.createNameColumn(),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createTypeColumn(),
   ];
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
@@ -99,7 +93,7 @@ export const DocsTable = ({
             actionsColumnIndex: -1,
           }}
           data={documents}
-          columns={columns}
+          columns={columns || defaultColumns}
           actions={actions || defaultActions}
           title={
             title

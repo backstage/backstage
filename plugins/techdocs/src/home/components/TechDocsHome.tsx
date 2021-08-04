@@ -19,6 +19,8 @@ import {
   Content,
   ContentHeader,
   SupportButton,
+  TableColumn,
+  TableProps,
 } from '@backstage/core-components';
 import {
   EntityListContainer,
@@ -29,13 +31,23 @@ import {
   EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
+  UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { EntityListDocsTable } from './EntityListDocsTable';
 import { TechDocsHomeLayout } from './TechDocsHomeLayout';
 import { TechDocsPicker } from './TechDocsPicker';
+import { DocsTableRow } from './types';
 
-export const TechDocsHome = () => {
+export const TechDocsHome = ({
+  initialFilter = 'all',
+  columns,
+  actions,
+}: {
+  initialFilter?: UserListFilterKind;
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
+}) => {
   return (
     <TechDocsHomeLayout>
       <Content>
@@ -48,12 +60,12 @@ export const TechDocsHome = () => {
           <FilteredEntityLayout>
             <FilterContainer>
               <TechDocsPicker />
-              <UserListPicker initialFilter="all" />
+              <UserListPicker initialFilter={initialFilter} />
               <EntityOwnerPicker />
               <EntityTagPicker />
             </FilterContainer>
             <EntityListContainer>
-              <EntityListDocsTable />
+              <EntityListDocsTable actions={actions} columns={columns} />
             </EntityListContainer>
           </FilteredEntityLayout>
         </EntityListProvider>

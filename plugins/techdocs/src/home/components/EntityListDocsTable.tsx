@@ -17,35 +17,40 @@
 import React from 'react';
 import { useCopyToClipboard } from 'react-use';
 import { capitalize } from 'lodash';
-import { CodeSnippet, WarningPanel } from '@backstage/core-components';
 import {
-  favoriteEntityIcon,
-  favoriteEntityTooltip,
+  CodeSnippet,
+  TableColumn,
+  TableProps,
+  WarningPanel,
+} from '@backstage/core-components';
+import {
   useEntityListProvider,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import * as actionFactories from './actions';
 import { DocsTable } from './DocsTable';
+import * as actionFactories from './actions';
+import * as columnFactories from './columns';
 import { DocsTableRow } from './types';
 
-export const EntityListDocsTable = () => {
+export const EntityListDocsTable = ({
+  columns,
+  actions,
+}: {
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
+}) => {
   const { loading, error, entities, filters } = useEntityListProvider();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
 
   const title = capitalize(filters.user?.value ?? 'all');
 
-  const actions = [
+  const defaultActions = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard),
-    ({ entity }: DocsTableRow) => {
-      const isStarred = isStarredEntity(entity);
-      return {
-        cellStyle: { paddingLeft: '1em' },
-        icon: () => favoriteEntityIcon(isStarred),
-        tooltip: favoriteEntityTooltip(isStarred),
-        onClick: () => toggleStarredEntity(entity),
-      };
-    },
+    actionFactories.createStarEntityAction(
+      isStarredEntity,
+      toggleStarredEntity,
+    ),
   ];
 
   if (error) {
@@ -64,7 +69,11 @@ export const EntityListDocsTable = () => {
       title={title}
       entities={entities}
       loading={loading}
-      actions={actions}
+      actions={actions || defaultActions}
+      columns={columns}
     />
   );
 };
+
+EntityListDocsTable.columns = columnFactories;
+EntityListDocsTable.actions = actionFactories;

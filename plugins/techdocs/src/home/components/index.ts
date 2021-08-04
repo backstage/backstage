@@ -18,3 +18,4 @@ export { EntityListDocsTable } from './EntityListDocsTable';
 export { TechDocsHomeLayout } from './TechDocsHomeLayout';
 export { TechDocsPicker } from './TechDocsPicker';
 export type { PanelType } from './TechDocsCustomHome';
+export type { DocsTableRow } from './types';

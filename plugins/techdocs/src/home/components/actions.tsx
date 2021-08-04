@@ -16,6 +16,10 @@
 
 import React from 'react';
 import ShareIcon from '@material-ui/icons/Share';
+import {
+  favoriteEntityIcon,
+  favoriteEntityTooltip,
+} from '@backstage/plugin-catalog-react';
 import { DocsTableRow } from './types';
 
 export function createCopyDocsUrlAction(copyToClipboard: Function) {
@@ -25,8 +29,26 @@ export function createCopyDocsUrlAction(copyToClipboard: Function) {
       tooltip: 'Click to copy documentation link to clipboard',
       onClick: () =>
         copyToClipboard(
-          `${window.location.href.split('/?')[0]}/${row.resolved.docsUrl}`,
+          `${window.location.origin}${window.location.pathname.replace(
+            /\/?$/,
+            '/',
+          )}${row.resolved.docsUrl}`,
         ),
+    };
+  };
+}
+
+export function createStarEntityAction(
+  isStarredEntity: Function,
+  toggleStarredEntity: Function,
+) {
+  return ({ entity }: DocsTableRow) => {
+    const isStarred = isStarredEntity(entity);
+    return {
+      cellStyle: { paddingLeft: '1em' },
+      icon: () => favoriteEntityIcon(isStarred),
+      tooltip: favoriteEntityTooltip(isStarred),
+      onClick: () => toggleStarredEntity(entity),
     };
   };
 }
