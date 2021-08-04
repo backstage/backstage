@@ -2,6 +2,9 @@ const path = require('path');
 const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-warning');
 
 module.exports = {
+  core: {
+    builder: 'webpack5',
+  },
   stories: [
     '../../core-components/src/**/*.stories.tsx',
     '../../../plugins/**/src/**/*.stories.tsx',

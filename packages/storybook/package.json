@@ -7,24 +7,26 @@
     "start": "start-storybook -p 6006",
     "build-storybook": "build-storybook --output-dir dist"
   },
+  "dependencies": {
+    "@backstage/theme": "^0.2.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
   "workspaces": {
     "nohoist": [
       "@storybook/react/**",
       "@storybook/addons/**"
     ]
   },
-  "dependencies": {
-    "@backstage/theme": "^0.2.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
-  },
   "devDependencies": {
-    "@storybook/addon-a11y": "^6.3.4",
-    "@storybook/addon-actions": "^6.1.11",
-    "@storybook/addon-links": "^6.1.11",
-    "@storybook/addon-storysource": "^6.1.11",
-    "@storybook/addons": "^6.1.11",
-    "@storybook/react": "^6.1.11",
-    "storybook-dark-mode": "^1.0.3"
+    "@storybook/addon-a11y": "^6.4.0-alpha.23",
+    "@storybook/addon-actions": "^6.4.0-alpha.23",
+    "@storybook/addon-links": "^6.4.0-alpha.23",
+    "@storybook/addon-storysource": "^6.4.0-alpha.23",
+    "@storybook/addons": "^6.4.0-alpha.23",
+    "@storybook/builder-webpack5": "^6.4.0-alpha.23",
+    "@storybook/manager-webpack5": "^6.4.0-alpha.23",
+    "@storybook/react": "^6.4.0-alpha.23",
+    "storybook-dark-mode": "^1.0.9-canary.158.3571.0"
   }
 }

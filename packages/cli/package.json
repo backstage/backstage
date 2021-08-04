@@ -145,6 +145,9 @@
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
   },
+  "resolutions": {
+    "@types/webpack-dev-server/@types/webpack": "^5.28.0"
+  },
   "files": [
     "asset-types",
     "templates",
