@@ -38,6 +38,9 @@
     "packages": [
       "packages/*",
       "plugins/*"
+    ],
+    "nohoist": [
+      "**/@storybook/**"
     ]
   },
   "resolutions": {
