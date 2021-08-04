@@ -177,7 +177,7 @@ export interface Config {
        * Account access key used to authenticate requests.
        * @visibility backend
        */
-      accessKeyID?: string;
+      accessKeyId?: string;
       /**
        * Account secret key used to authenticate requests.
        * @visibility secret
