@@ -345,8 +345,8 @@
 
 "@babel/code-frame@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/code-frame/-/code-frame-7.14.5.tgz#23b08d740e83f49c5e59945fbf1b43e80bbf4edb"
-  integrity sha1-I7CNdA6D9JxeWZRfvxtD6Au/Tts=
+  resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.14.5.tgz#23b08d740e83f49c5e59945fbf1b43e80bbf4edb"
+  integrity sha512-9pzDqyc6OLDaqe+zbACgFkb6fKMNG6CObKpnYXChRsvYGyEdc7CA2BaqeOM+vOtCS5ndmJicPJhKAwYRI6UfFw==
   dependencies:
     "@babel/highlight" "^7.14.5"
 
@@ -356,9 +356,9 @@
   integrity sha512-i2wXrWQNkH6JplJQGn3Rd2I4Pij8GdHkXwHMxm+zV5YG/Jci+bCNrWZEWC4o+umiDkRrRs4dVzH3X4GP7vyjQQ==
 
 "@babel/compat-data@^7.14.5":
-  version "7.14.7"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/compat-data/-/compat-data-7.14.7.tgz#7b047d7a3a89a67d2258dc61f604f098f1bc7e08"
-  integrity sha1-ewR9ejqJpn0iWNxh9gTwmPG8fgg=
+  version "7.14.9"
+  resolved "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.14.9.tgz#ac7996ceaafcf8f410119c8af0d1db4cf914a210"
+  integrity sha512-p3QjZmMGHDGdpcwEYYWu7i7oJShJvtgMjJeb0W95PPhSm++3lm8YXYOh45Y6iCN9PkZLTZ7CIX5nFrp7pw7TXw==
 
 "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.12.3", "@babel/core@^7.13.16", "@babel/core@^7.4.4", "@babel/core@^7.7.5":
   version "7.14.3"
@@ -383,8 +383,8 @@
 
 "@babel/core@^7.14.8":
   version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/core/-/core-7.14.8.tgz#20cdf7c84b5d86d83fac8710a8bc605a7ba3f010"
-  integrity sha1-IM33yEtdhtg/rIcQqLxgWnuj8BA=
+  resolved "https://registry.npmjs.org/@babel/core/-/core-7.14.8.tgz#20cdf7c84b5d86d83fac8710a8bc605a7ba3f010"
+  integrity sha512-/AtaeEhT6ErpDhInbXmjHcUQXH0L0TEgscfcxk1qbOvLuKCa5aZT0SOOtDKFY96/CLROwbLSKyFor6idgNaU4Q==
   dependencies:
     "@babel/code-frame" "^7.14.5"
     "@babel/generator" "^7.14.8"
@@ -411,19 +411,10 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
-"@babel/generator@^7.12.5", "@babel/generator@^7.14.8":
-  version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/generator/-/generator-7.14.8.tgz#bf86fd6af96cf3b74395a8ca409515f89423e070"
-  integrity sha1-v4b9avls87dDlajKQJUV+JQj4HA=
-  dependencies:
-    "@babel/types" "^7.14.8"
-    jsesc "^2.5.1"
-    source-map "^0.5.0"
-
-"@babel/generator@^7.14.9":
+"@babel/generator@^7.12.5", "@babel/generator@^7.14.8", "@babel/generator@^7.14.9":
   version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/generator/-/generator-7.14.9.tgz#23b19c597d38b4f7dc2e3fe42a69c88d9ecfaa16"
-  integrity sha1-I7GcWX04tPfcLj/kKmnIjZ7PqhY=
+  resolved "https://registry.npmjs.org/@babel/generator/-/generator-7.14.9.tgz#23b19c597d38b4f7dc2e3fe42a69c88d9ecfaa16"
+  integrity sha512-4yoHbhDYzFa0GLfCzLp5GxH7vPPMAHdZjyE7M/OajM9037zhx0rf+iNsJwp4PT0MSFpwjG7BsHEbPkBQpZ6cYA==
   dependencies:
     "@babel/types" "^7.14.9"
     jsesc "^2.5.1"
@@ -438,8 +429,8 @@
 
 "@babel/helper-annotate-as-pure@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.14.5.tgz#7bf478ec3b71726d56a8ca5775b046fc29879e61"
-  integrity sha1-e/R47Dtxcm1WqMpXdbBG/CmHnmE=
+  resolved "https://registry.npmjs.org/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.14.5.tgz#7bf478ec3b71726d56a8ca5775b046fc29879e61"
+  integrity sha512-EivH9EgBIb+G8ij1B2jAwSH36WnGvkQSEC6CkX/6v6ZFlw5fVOHvsgGF4uiEHO2GzMvunZb6tDLQEQSdrdocrA==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -463,8 +454,8 @@
 
 "@babel/helper-compilation-targets@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-compilation-targets/-/helper-compilation-targets-7.14.5.tgz#7a99c5d0967911e972fe2c3411f7d5b498498ecf"
-  integrity sha1-epnF0JZ5Eely/iw0EffVtJhJjs8=
+  resolved "https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-7.14.5.tgz#7a99c5d0967911e972fe2c3411f7d5b498498ecf"
+  integrity sha512-v+QtZqXEiOnpO6EYvlImB6zCD2Lel06RzOPzmkz/D/XgQiUu3C/Jb1LOqSt/AIA34TYi/Q+KlT8vTQrgdxkbLw==
   dependencies:
     "@babel/compat-data" "^7.14.5"
     "@babel/helper-validator-option" "^7.14.5"
@@ -485,8 +476,8 @@
 
 "@babel/helper-create-class-features-plugin@^7.14.6":
   version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.14.8.tgz#a6f8c3de208b1e5629424a9a63567f56501955fc"
-  integrity sha1-pvjD3iCLHlYpQkqaY1Z/VlAZVfw=
+  resolved "https://registry.npmjs.org/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.14.8.tgz#a6f8c3de208b1e5629424a9a63567f56501955fc"
+  integrity sha512-bpYvH8zJBWzeqi1o+co8qOrw+EXzQ/0c74gVmY205AWXy9nifHrOg77y+1zwxX5lXE7Icq4sPlSQ4O2kWBrteQ==
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.14.5"
     "@babel/helper-function-name" "^7.14.5"
@@ -535,8 +526,8 @@
 
 "@babel/helper-function-name@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-function-name/-/helper-function-name-7.14.5.tgz#89e2c474972f15d8e233b52ee8c480e2cfcd50c4"
-  integrity sha1-ieLEdJcvFdjiM7Uu6MSA4s/NUMQ=
+  resolved "https://registry.npmjs.org/@babel/helper-function-name/-/helper-function-name-7.14.5.tgz#89e2c474972f15d8e233b52ee8c480e2cfcd50c4"
+  integrity sha512-Gjna0AsXWfFvrAuX+VKcN/aNNWonizBj39yGwUzVDVTlMYJMK2Wp6xdpy72mfArFq5uK+NOuexfzZlzI1z9+AQ==
   dependencies:
     "@babel/helper-get-function-arity" "^7.14.5"
     "@babel/template" "^7.14.5"
@@ -551,8 +542,8 @@
 
 "@babel/helper-get-function-arity@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-get-function-arity/-/helper-get-function-arity-7.14.5.tgz#25fbfa579b0937eee1f3b805ece4ce398c431815"
-  integrity sha1-Jfv6V5sJN+7h87gF7OTOOYxDGBU=
+  resolved "https://registry.npmjs.org/@babel/helper-get-function-arity/-/helper-get-function-arity-7.14.5.tgz#25fbfa579b0937eee1f3b805ece4ce398c431815"
+  integrity sha512-I1Db4Shst5lewOM4V+ZKJzQ0JGGaZ6VY1jYvMghRjqs6DWgxLCIyFt30GlnKkfUeFLpJt2vzbMVEXVSXlIFYUg==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -566,8 +557,8 @@
 
 "@babel/helper-hoist-variables@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-hoist-variables/-/helper-hoist-variables-7.14.5.tgz#e0dd27c33a78e577d7c8884916a3e7ef1f7c7f8d"
-  integrity sha1-4N0nwzp45XfXyIhJFqPn7x98f40=
+  resolved "https://registry.npmjs.org/@babel/helper-hoist-variables/-/helper-hoist-variables-7.14.5.tgz#e0dd27c33a78e577d7c8884916a3e7ef1f7c7f8d"
+  integrity sha512-R1PXiz31Uc0Vxy4OEOm07x0oSjKAdPPCh3tPivn/Eo8cvz6gveAeuyUUPB21Hoiif0uoPQSSdhIPS3352nvdyQ==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -580,8 +571,8 @@
 
 "@babel/helper-member-expression-to-functions@^7.14.5", "@babel/helper-member-expression-to-functions@^7.14.7":
   version "7.14.7"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.14.7.tgz#97e56244beb94211fe277bd818e3a329c66f7970"
-  integrity sha1-l+ViRL65QhH+J3vYGOOjKcZveXA=
+  resolved "https://registry.npmjs.org/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.14.7.tgz#97e56244beb94211fe277bd818e3a329c66f7970"
+  integrity sha512-TMUt4xKxJn6ccjcOW7c4hlwyJArizskAhoSTOCkA0uZ+KghIaci0Qg9R043kUMWI9mtQfgny+NQ5QATnZ+paaA==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -594,8 +585,8 @@
 
 "@babel/helper-module-imports@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-module-imports/-/helper-module-imports-7.14.5.tgz#6d1a44df6a38c957aa7c312da076429f11b422f3"
-  integrity sha1-bRpE32o4yVeqfDEtoHZCnxG0IvM=
+  resolved "https://registry.npmjs.org/@babel/helper-module-imports/-/helper-module-imports-7.14.5.tgz#6d1a44df6a38c957aa7c312da076429f11b422f3"
+  integrity sha512-SwrNHu5QWS84XlHwGYPDtCxcA0hrSlL2yhWYLgeOc0w7ccOl2qv4s/nARI0aYZW+bSwAL5CukeXA47B/1NKcnQ==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -615,8 +606,8 @@
 
 "@babel/helper-module-transforms@^7.14.8":
   version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-module-transforms/-/helper-module-transforms-7.14.8.tgz#d4279f7e3fd5f4d5d342d833af36d4dd87d7dc49"
-  integrity sha1-1Ceffj/V9NXTQtgzrzbU3YfX3Ek=
+  resolved "https://registry.npmjs.org/@babel/helper-module-transforms/-/helper-module-transforms-7.14.8.tgz#d4279f7e3fd5f4d5d342d833af36d4dd87d7dc49"
+  integrity sha512-RyE+NFOjXn5A9YU1dkpeBaduagTlZ0+fccnIcAGbv1KGUlReBj7utF7oEth8IdIBQPcux0DDgW5MFBH2xu9KcA==
   dependencies:
     "@babel/helper-module-imports" "^7.14.5"
     "@babel/helper-replace-supers" "^7.14.5"
@@ -636,8 +627,8 @@
 
 "@babel/helper-optimise-call-expression@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.14.5.tgz#f27395a8619e0665b3f0364cddb41c25d71b499c"
-  integrity sha1-8nOVqGGeBmWz8DZM3bQcJdcbSZw=
+  resolved "https://registry.npmjs.org/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.14.5.tgz#f27395a8619e0665b3f0364cddb41c25d71b499c"
+  integrity sha512-IqiLIrODUOdnPU9/F8ib1Fx2ohlgDhxnIDU7OEVi+kAbEZcyiF7BLU8W6PfvPi9LzztjS7kcbzbmL7oG8kD6VA==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -648,8 +639,8 @@
 
 "@babel/helper-plugin-utils@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-plugin-utils/-/helper-plugin-utils-7.14.5.tgz#5ac822ce97eec46741ab70a517971e443a70c5a9"
-  integrity sha1-WsgizpfuxGdBq3ClF5ceRDpwxak=
+  resolved "https://registry.npmjs.org/@babel/helper-plugin-utils/-/helper-plugin-utils-7.14.5.tgz#5ac822ce97eec46741ab70a517971e443a70c5a9"
+  integrity sha512-/37qQCE3K0vvZKwoK4XU/irIJQdIfCJuhU5eKnNxpFDsOkgFaUAwbv+RYw6eYgsC0E4hS7r5KqGULUogqui0fQ==
 
 "@babel/helper-remap-async-to-generator@^7.13.0":
   version "7.13.0"
@@ -672,8 +663,8 @@
 
 "@babel/helper-replace-supers@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-replace-supers/-/helper-replace-supers-7.14.5.tgz#0ecc0b03c41cd567b4024ea016134c28414abb94"
-  integrity sha1-DswLA8Qc1We0Ak6gFhNMKEFKu5Q=
+  resolved "https://registry.npmjs.org/@babel/helper-replace-supers/-/helper-replace-supers-7.14.5.tgz#0ecc0b03c41cd567b4024ea016134c28414abb94"
+  integrity sha512-3i1Qe9/8x/hCHINujn+iuHy+mMRLoc77b2nI9TB0zjH1hvn9qGlXjWlggdwUcju36PkPCy/lpM7LLUdcTyH4Ow==
   dependencies:
     "@babel/helper-member-expression-to-functions" "^7.14.5"
     "@babel/helper-optimise-call-expression" "^7.14.5"
@@ -689,8 +680,8 @@
 
 "@babel/helper-simple-access@^7.14.8":
   version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-simple-access/-/helper-simple-access-7.14.8.tgz#82e1fec0644a7e775c74d305f212c39f8fe73924"
-  integrity sha1-guH+wGRKfndcdNMF8hLDn4/nOSQ=
+  resolved "https://registry.npmjs.org/@babel/helper-simple-access/-/helper-simple-access-7.14.8.tgz#82e1fec0644a7e775c74d305f212c39f8fe73924"
+  integrity sha512-TrFN4RHh9gnWEU+s7JloIho2T76GPwRHhdzOWLqTrMnlas8T9O7ec+oEDNsRXndOmru9ymH9DFrEOxpzPoSbdg==
   dependencies:
     "@babel/types" "^7.14.8"
 
@@ -710,8 +701,8 @@
 
 "@babel/helper-split-export-declaration@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.14.5.tgz#22b23a54ef51c2b7605d851930c1976dd0bc693a"
-  integrity sha1-IrI6VO9RwrdgXYUZMMGXbdC8aTo=
+  resolved "https://registry.npmjs.org/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.14.5.tgz#22b23a54ef51c2b7605d851930c1976dd0bc693a"
+  integrity sha512-hprxVPu6e5Kdp2puZUmvOGjaLv9TCe58E/Fl6hRq4YiVQxIcNvuq6uTM2r1mT/oPskuS9CgR+I94sqAYv0NGKA==
   dependencies:
     "@babel/types" "^7.14.5"
 
@@ -720,15 +711,10 @@
   resolved "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.0.tgz#d26cad8a47c65286b15df1547319a5d0bcf27288"
   integrity sha512-V3ts7zMSu5lfiwWDVWzRDGIN+lnCEUdaXgtVHJgLb1rGaA6jMrtB9EmE7L18foXJIE8Un/A/h6NJfGQp/e1J4A==
 
-"@babel/helper-validator-identifier@^7.14.5", "@babel/helper-validator-identifier@^7.14.8":
-  version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.8.tgz#32be33a756f29e278a0d644fa08a2c9e0f88a34c"
-  integrity sha1-Mr4zp1bynieKDWRPoIosng+Io0w=
-
-"@babel/helper-validator-identifier@^7.14.9":
+"@babel/helper-validator-identifier@^7.14.5", "@babel/helper-validator-identifier@^7.14.8", "@babel/helper-validator-identifier@^7.14.9":
   version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.9.tgz#6654d171b2024f6d8ee151bf2509699919131d48"
-  integrity sha1-ZlTRcbICT22O4VG/JQlpmRkTHUg=
+  resolved "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.9.tgz#6654d171b2024f6d8ee151bf2509699919131d48"
+  integrity sha512-pQYxPY0UP6IHISRitNe8bsijHex4TWZXi2HwKVsjPiltzlhse2znVcm9Ace510VT1kxIHjGJCZZQBX2gJDbo0g==
 
 "@babel/helper-validator-option@^7.12.17":
   version "7.12.17"
@@ -737,8 +723,8 @@
 
 "@babel/helper-validator-option@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helper-validator-option/-/helper-validator-option-7.14.5.tgz#6e72a1fff18d5dfcb878e1e62f1a021c4b72d5a3"
-  integrity sha1-bnKh//GNXfy4eOHmLxoCHEty1aM=
+  resolved "https://registry.npmjs.org/@babel/helper-validator-option/-/helper-validator-option-7.14.5.tgz#6e72a1fff18d5dfcb878e1e62f1a021c4b72d5a3"
+  integrity sha512-OX8D5eeX4XwcroVW45NMvoYaIuFI+GQpA2a8Gi+X/U/cDUIRsV37qQfF905F0htTRCREQIB4KqPeaveRJUl3Ow==
 
 "@babel/helper-wrap-function@^7.13.0":
   version "7.13.0"
@@ -761,8 +747,8 @@
 
 "@babel/helpers@^7.14.8":
   version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/helpers/-/helpers-7.14.8.tgz#839f88f463025886cff7f85a35297007e2da1b77"
-  integrity sha1-g5+I9GMCWIbP9/haNSlwB+LaG3c=
+  resolved "https://registry.npmjs.org/@babel/helpers/-/helpers-7.14.8.tgz#839f88f463025886cff7f85a35297007e2da1b77"
+  integrity sha512-ZRDmI56pnV+p1dH6d+UN6GINGz7Krps3+270qqI9UJ4wxYThfAIcI5i7j5vXC4FJ3Wap+S9qcebxeYiqn87DZw==
   dependencies:
     "@babel/template" "^7.14.5"
     "@babel/traverse" "^7.14.8"
@@ -779,8 +765,8 @@
 
 "@babel/highlight@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/highlight/-/highlight-7.14.5.tgz#6861a52f03966405001f6aa534a01a24d99e8cd9"
-  integrity sha1-aGGlLwOWZAUAH2qlNKAaJNmejNk=
+  resolved "https://registry.npmjs.org/@babel/highlight/-/highlight-7.14.5.tgz#6861a52f03966405001f6aa534a01a24d99e8cd9"
+  integrity sha512-qf9u2WFWVV0MppaL877j2dBtQIDgmidgjGk5VIMw3OadXvYaXn66U1BFlH2t4+t3i+8PhedppRv+i40ABzd+gg==
   dependencies:
     "@babel/helper-validator-identifier" "^7.14.5"
     chalk "^2.0.0"
@@ -796,15 +782,10 @@
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.14.4.tgz#a5c560d6db6cd8e6ed342368dea8039232cbab18"
   integrity sha512-ArliyUsWDUqEGfWcmzpGUzNfLxTdTp6WU4IuP6QFSp9gGfWS6boxFCkJSJ/L4+RG8z/FnIU3WxCk6hPL9SSWeA==
 
-"@babel/parser@^7.12.5", "@babel/parser@^7.14.5", "@babel/parser@^7.14.8":
-  version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/parser/-/parser-7.14.8.tgz#66fd41666b2d7b840bd5ace7f7416d5ac60208d4"
-  integrity sha1-Zv1BZmste4QL1azn90FtWsYCCNQ=
-
-"@babel/parser@^7.14.9":
+"@babel/parser@^7.12.5", "@babel/parser@^7.14.5", "@babel/parser@^7.14.8", "@babel/parser@^7.14.9":
   version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
-  integrity sha1-WWwa1nYIBwBY6/jfUMHq9l24laQ=
+  resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
+  integrity sha512-RdUTOseXJ8POjjOeEBEvNMIZU/nm4yu2rufRkcibzkkg7DmQvXU8v3M4Xk9G7uuI86CDGkKcuDWgioqZm+mScQ==
 
 "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@^7.13.12":
   version "7.13.12"
@@ -1109,8 +1090,8 @@
 
 "@babel/plugin-syntax-typescript@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/plugin-syntax-typescript/-/plugin-syntax-typescript-7.14.5.tgz#b82c6ce471b165b5ce420cf92914d6fb46225716"
-  integrity sha1-uCxs5HGxZbXOQgz5KRTW+0YiVxY=
+  resolved "https://registry.npmjs.org/@babel/plugin-syntax-typescript/-/plugin-syntax-typescript-7.14.5.tgz#b82c6ce471b165b5ce420cf92914d6fb46225716"
+  integrity sha512-u6OXzDaIXjEstBRRoBCQ/uKQKlbuaeE5in0RvWdA4pN6AhqxTIwUsnHPU1CFZA/amYObMsuWhYfRl3Ch90HD0Q==
   dependencies:
     "@babel/helper-plugin-utils" "^7.14.5"
 
@@ -1406,8 +1387,8 @@
 
 "@babel/plugin-transform-typescript@^7.14.5":
   version "7.14.6"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.14.6.tgz#6e9c2d98da2507ebe0a883b100cde3c7279df36c"
-  integrity sha1-bpwtmNolB+vgqIOxAM3jxyed82w=
+  resolved "https://registry.npmjs.org/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.14.6.tgz#6e9c2d98da2507ebe0a883b100cde3c7279df36c"
+  integrity sha512-XlTdBq7Awr4FYIzqhmYY80WN0V0azF74DMPyFqVHBvf81ZUgc4X7ZOpx6O8eLDK6iM5cCQzeyJw0ynTaefixRA==
   dependencies:
     "@babel/helper-create-class-features-plugin" "^7.14.6"
     "@babel/helper-plugin-utils" "^7.14.5"
@@ -1550,8 +1531,8 @@
 
 "@babel/preset-typescript@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/preset-typescript/-/preset-typescript-7.14.5.tgz#aa98de119cf9852b79511f19e7f44a2d379bcce0"
-  integrity sha1-qpjeEZz5hSt5UR8Z5/RKLTebzOA=
+  resolved "https://registry.npmjs.org/@babel/preset-typescript/-/preset-typescript-7.14.5.tgz#aa98de119cf9852b79511f19e7f44a2d379bcce0"
+  integrity sha512-u4zO6CdbRKbS9TypMqrlGH7sd2TAJppZwn3c/ZRLeO/wGsbddxgbPDUZVNrie3JWYLQ9vpineKlsrWFvO6Pwkw==
   dependencies:
     "@babel/helper-plugin-utils" "^7.14.5"
     "@babel/helper-validator-option" "^7.14.5"
@@ -1594,8 +1575,8 @@
 
 "@babel/template@^7.14.5":
   version "7.14.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/template/-/template-7.14.5.tgz#a9bc9d8b33354ff6e55a9c60d1109200a68974f4"
-  integrity sha1-qbydizM1T/blWpxg0RCSAKaJdPQ=
+  resolved "https://registry.npmjs.org/@babel/template/-/template-7.14.5.tgz#a9bc9d8b33354ff6e55a9c60d1109200a68974f4"
+  integrity sha512-6Z3Po85sfxRGachLULUhOmvAaOo7xCvqGQtxINai2mEGPFm6pQ4z5QInFnUrRpfoSV60BnjyF5F3c+15fxFV1g==
   dependencies:
     "@babel/code-frame" "^7.14.5"
     "@babel/parser" "^7.14.5"
@@ -1630,25 +1611,10 @@
     debug "^4.1.0"
     globals "^11.1.0"
 
-"@babel/traverse@^7.14.5":
-  version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/traverse/-/traverse-7.14.8.tgz#c0253f02677c5de1a8ff9df6b0aacbec7da1a8ce"
-  integrity sha1-wCU/Amd8XeGo/532sKrL7H2hqM4=
-  dependencies:
-    "@babel/code-frame" "^7.14.5"
-    "@babel/generator" "^7.14.8"
-    "@babel/helper-function-name" "^7.14.5"
-    "@babel/helper-hoist-variables" "^7.14.5"
-    "@babel/helper-split-export-declaration" "^7.14.5"
-    "@babel/parser" "^7.14.8"
-    "@babel/types" "^7.14.8"
-    debug "^4.1.0"
-    globals "^11.1.0"
-
-"@babel/traverse@^7.14.8":
+"@babel/traverse@^7.14.5", "@babel/traverse@^7.14.8":
   version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/traverse/-/traverse-7.14.9.tgz#016126b331210bf06fff29d52971eef8383e556f"
-  integrity sha1-AWEmszEhC/Bv/ynVKXHu+Dg+VW8=
+  resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.14.9.tgz#016126b331210bf06fff29d52971eef8383e556f"
+  integrity sha512-bldh6dtB49L8q9bUyB7bC20UKgU+EFDwKJylwl234Kv+ySZeMD31Xeht6URyueQ6LrRRpF2tmkfcZooZR9/e8g==
   dependencies:
     "@babel/code-frame" "^7.14.5"
     "@babel/generator" "^7.14.9"
@@ -1677,26 +1643,18 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.14.5", "@babel/types@^7.14.8":
-  version "7.14.8"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/types/-/types-7.14.8.tgz#38109de8fcadc06415fbd9b74df0065d4d41c728"
-  integrity sha1-OBCd6PytwGQV+9m3TfAGXU1Bxyg=
-  dependencies:
-    "@babel/helper-validator-identifier" "^7.14.8"
-    to-fast-properties "^2.0.0"
-
-"@babel/types@^7.14.9":
+"@babel/types@^7.14.5", "@babel/types@^7.14.8", "@babel/types@^7.14.9":
   version "7.14.9"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@babel/types/-/types-7.14.9.tgz#f2b19c3f2f77c5708d67fe8f6046e9cea2b5036d"
-  integrity sha1-8rGcPy93xXCNZ/6PYEbpzqK1A20=
+  resolved "https://registry.npmjs.org/@babel/types/-/types-7.14.9.tgz#f2b19c3f2f77c5708d67fe8f6046e9cea2b5036d"
+  integrity sha512-u0bLTnv3DFHeaQLYzb7oRJ1JHr1sv/SYDM7JSqHFFLwXG1wTZRughxFI5NCP8qBEo1rVVsn7Yg2Lvw49nne/Ow==
   dependencies:
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
 "@backstage/core-api@^0.2.23":
   version "0.2.23"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core-api/-/core-api-0.2.23.tgz#c0ec13407ff7c78d376eb18e9d8e1490d54d995b"
-  integrity sha1-wOwTQH/3x403brGOnY4UkNVNmVs=
+  resolved "https://registry.npmjs.org/@backstage/core-api/-/core-api-0.2.23.tgz#c0ec13407ff7c78d376eb18e9d8e1490d54d995b"
+  integrity sha512-859IGJ5LpcFaqZOenJNM9eFBKd5lrdBjYst8I0srLCaZkBCshTbUT615G3zoDMDiXZNSm+h4V82kMT4eES9wDw==
   dependencies:
     "@backstage/config" "^0.1.4"
     "@backstage/core-plugin-api" "^0.1.3"
@@ -1758,8 +1716,8 @@
 
 "@backstage/core@*":
   version "0.7.14"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core/-/core-0.7.14.tgz#863844fe40bb6a29bcc2d297e42055633b0e886f"
-  integrity sha1-hjhE/kC7aim8wtKX5CBVYzsOiG8=
+  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.7.14.tgz#863844fe40bb6a29bcc2d297e42055633b0e886f"
+  integrity sha512-W7EMspBXrp1GPALK6+qdJjsvkqcaYGFyoh8/bRAXABIkJpGQGiy4xUZUKDoMhd+OdVHv/mzyyv3fH2yc32J07w==
   dependencies:
     "@backstage/config" "^0.1.5"
     "@backstage/core-api" "^0.2.23"
@@ -2028,8 +1986,8 @@
 
 "@codemod/core@^1.1.0":
   version "1.1.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@codemod/core/-/core-1.1.0.tgz#828cad09903d23db3ab93cb23c9741fd901e5555"
-  integrity sha1-goytCZA9I9s6uTyyPJdB/ZAeVVU=
+  resolved "https://registry.npmjs.org/@codemod/core/-/core-1.1.0.tgz#828cad09903d23db3ab93cb23c9741fd901e5555"
+  integrity sha512-jPrDXVkpxhLtddZIjB2wPmoczCSegksLRYZIfc8NUXoy7zEN8+Atl5upjNs5KUFC5i3NbSEvKSU7mfUgjpntXA==
   dependencies:
     "@babel/core" "^7.12.3"
     "@babel/generator" "^7.12.5"
@@ -2039,8 +1997,8 @@
 
 "@codemod/parser@^1.0.7":
   version "1.1.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@codemod/parser/-/parser-1.1.0.tgz#8a8f0bf2f261082cf5b8a39cfafe3d15e2454da6"
-  integrity sha1-io8L8vJhCCz1uKOc+v49FeJFTaY=
+  resolved "https://registry.npmjs.org/@codemod/parser/-/parser-1.1.0.tgz#8a8f0bf2f261082cf5b8a39cfafe3d15e2454da6"
+  integrity sha512-MR2oYTZRobGBFTMzo+NmwzgXUT3VgihaLJroZHA34XaF+Nqnw3rqU/Jf08jI/bctVtyZ0FTosZCRz6OKVbttAw==
   dependencies:
     "@babel/parser" "^7.12.5"
 
@@ -6817,8 +6775,8 @@
 
 "@types/prompts@^2.0.14":
   version "2.0.14"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@types/prompts/-/prompts-2.0.14.tgz#10cb8899844bb0771cabe57c1becaaaca9a3b521"
-  integrity sha1-EMuImYRLsHccq+V8G+yqrKmjtSE=
+  resolved "https://registry.npmjs.org/@types/prompts/-/prompts-2.0.14.tgz#10cb8899844bb0771cabe57c1becaaaca9a3b521"
+  integrity sha512-HZBd99fKxRWpYCErtm2/yxUZv6/PBI9J7N4TNFffl5JbrYMHBwF25DjQGTW3b3jmXq+9P6/8fCIb2ee57BFfYA==
   dependencies:
     "@types/node" "*"
 
@@ -7314,8 +7272,8 @@
 
 "@types/yaml@^1.9.7":
   version "1.9.7"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@types/yaml/-/yaml-1.9.7.tgz#2331f36e0aac91311a63d33eb026c21687729679"
-  integrity sha1-IzHzbgqskTEaY9M+sCbCFodylnk=
+  resolved "https://registry.npmjs.org/@types/yaml/-/yaml-1.9.7.tgz#2331f36e0aac91311a63d33eb026c21687729679"
+  integrity sha512-8WMXRDD1D+wCohjfslHDgICd2JtMATZU8CkhH8LVJqcJs6dyYj5TGptzP8wApbmEullGBSsCEzzap73DQ1HJaA==
   dependencies:
     yaml "*"
 
@@ -8360,8 +8318,8 @@ ast-types-flow@^0.0.7:
 
 ast-types@0.13.3:
   version "0.13.3"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ast-types/-/ast-types-0.13.3.tgz#50da3f28d17bdbc7969a3a2d83a0e4a72ae755a7"
-  integrity sha1-UNo/KNF728eWmjotg6DkpyrnVac=
+  resolved "https://registry.npmjs.org/ast-types/-/ast-types-0.13.3.tgz#50da3f28d17bdbc7969a3a2d83a0e4a72ae755a7"
+  integrity sha512-XTZ7xGML849LkQP86sWdQzfhwbt3YwIO6MqbX9mUNYY98VKaaVZP7YNNm70IpwecbkkxmfC5IYAzOQ/2p29zRA==
 
 ast-types@0.14.2, ast-types@^0.14.1, ast-types@^0.14.2:
   version "0.14.2"
@@ -14677,8 +14635,8 @@ graphql-extensions@^0.15.0:
 
 graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.8.2:
   version "2.8.2"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
-  integrity sha1-s7sq736vDf8LTqQZ+kEsX2b6Jos=
+  resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
+  integrity sha512-otbOQmhgkAJU1QJgQkMztNku6SbJLu/uodoFOYOOtJsizTjrMs93vkYaHCcYnLA3oi1Goj27XcHjMnRCYQOZXQ==
   dependencies:
     graphql-language-service-parser "^1.9.0"
     graphql-language-service-types "^1.8.0"
@@ -14687,8 +14645,8 @@ graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.
 
 graphql-language-service-parser@1.9.0, graphql-language-service-parser@^1.9.0:
   version "1.9.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
-  integrity sha1-ea8hKUEZoKfoG2uZShrzaDO6tyQ=
+  resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
+  integrity sha512-B5xPZLbBmIp0kHvpY1Z35I5DtPoDK9wGxQVRDIzcBaiIvAmlTrDvjo3bu7vKREdjFbYKvWNgrEWENuprMbF17Q==
   dependencies:
     graphql-language-service-types "^1.8.0"
 
@@ -21750,8 +21708,8 @@ prompts@2.4.0, prompts@^2.0.1:
 
 prompts@^2.4.1:
   version "2.4.1"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/prompts/-/prompts-2.4.1.tgz#befd3b1195ba052f9fd2fde8a486c4e82ee77f61"
-  integrity sha1-vv07EZW6BS+f0v3opIbE6C7nf2E=
+  resolved "https://registry.npmjs.org/prompts/-/prompts-2.4.1.tgz#befd3b1195ba052f9fd2fde8a486c4e82ee77f61"
+  integrity sha512-EQyfIuO2hPDsX1L/blblV+H7I0knhgAd82cVneCwcdND9B8AuCDuRcBH6yIcG4dFzlOUqbazQqwGjx5xmsNLuQ==
   dependencies:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
@@ -22852,8 +22810,8 @@ readdirp@~3.6.0:
 
 recast@^0.19.0:
   version "0.19.1"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/recast/-/recast-0.19.1.tgz#555f3612a5a10c9f44b9a923875c51ff775de6c8"
-  integrity sha1-VV82EqWhDJ9Euakjh1xR/3dd5sg=
+  resolved "https://registry.npmjs.org/recast/-/recast-0.19.1.tgz#555f3612a5a10c9f44b9a923875c51ff775de6c8"
+  integrity sha512-8FCjrBxjeEU2O6I+2hyHyBFH1siJbMBLwIRvVr1T3FD2cL754sOaJDsJ/8h3xYltasbJ8jqWRIhMuDGBSiSbjw==
   dependencies:
     ast-types "0.13.3"
     esprima "~4.0.0"
@@ -25809,8 +25767,8 @@ ts-node@^10.0.0:
 
 ts-node@^10.1.0:
   version "10.1.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ts-node/-/ts-node-10.1.0.tgz#e656d8ad3b61106938a867f69c39a8ba6efc966e"
-  integrity sha1-5lbYrTthEGk4qGf2nDmoum78lm4=
+  resolved "https://registry.npmjs.org/ts-node/-/ts-node-10.1.0.tgz#e656d8ad3b61106938a867f69c39a8ba6efc966e"
+  integrity sha512-6szn3+J9WyG2hE+5W8e0ruZrzyk1uFLYye6IGMBadnOzDh8aP7t8CbFpsfCiEx2+wMixAhjFt7lOZC4+l+WbEA==
   dependencies:
     "@tsconfig/node10" "^1.0.7"
     "@tsconfig/node12" "^1.0.7"
@@ -27167,8 +27125,8 @@ write-pkg@^4.0.0:
 
 ws@7.4.5, ws@^7.4.6:
   version "7.5.3"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
-  integrity sha1-Fgg1tjx9l7+rQY/BuKn87SrAGnQ=
+  resolved "https://registry.npmjs.org/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
+  integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
 
 ws@^5.2.0:
   version "5.2.3"
@@ -27340,8 +27298,8 @@ yallist@^4.0.0:
 
 yaml-ast-parser@0.0.43, yaml-ast-parser@^0.0.43:
   version "0.0.43"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/yaml-ast-parser/-/yaml-ast-parser-0.0.43.tgz#e8a23e6fb4c38076ab92995c5dca33f3d3d7c9bb"
-  integrity sha1-6KI+b7TDgHarkplcXcoz89PXybs=
+  resolved "https://registry.npmjs.org/yaml-ast-parser/-/yaml-ast-parser-0.0.43.tgz#e8a23e6fb4c38076ab92995c5dca33f3d3d7c9bb"
+  integrity sha512-2PTINUwsRqSd+s8XxKaJWQlUuEMHJQyEuh2edBbW8KNJz0SJPwUSD2zRWqezFEdN7IzAgeuYHFUCF7o8zRdZ0A==
 
 yaml-jest@^1.0.5:
   version "1.0.5"
@@ -27357,8 +27315,8 @@ yaml@*, yaml@^1.10.0, yaml@^1.10.2, yaml@^1.7.2, yaml@^1.9.2:
 
 yaml@^2.0.0-7:
   version "2.0.0-7"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/yaml/-/yaml-2.0.0-7.tgz#9799d9d85dfc8f01e4cc425e18e09215364beef1"
-  integrity sha1-l5nZ2F38jwHkzEJeGOCSFTZL7vE=
+  resolved "https://registry.npmjs.org/yaml/-/yaml-2.0.0-7.tgz#9799d9d85dfc8f01e4cc425e18e09215364beef1"
+  integrity sha512-RbI2Tm3hl9AoHY4wWyWvGvJfFIbHOzuzaxum6ez1A0vve+uXgNor03Wys4t+2sgjJSVSe+B2xerd1/dnvqHlOA==
 
 yargs-parser@20.2.4, yargs-parser@^20.2.2, yargs-parser@^20.2.3:
   version "20.2.4"
