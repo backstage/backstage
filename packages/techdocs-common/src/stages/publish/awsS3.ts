@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
 import { ListObjectsV2Output, ManagedUpload } from 'aws-sdk/clients/s3';
@@ -196,8 +200,12 @@ export class AwsS3Publish implements PublisherBase {
           .join(path.posix.sep);
 
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
+        const entityRootDir = `${
+          entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+        }/${entity.kind}/${entity.metadata.name}`;
+        const destination = lowerCaseEntityTripletInStoragePath(
+          `${entityRootDir}/${relativeFilePathPosix}`,
+        ); // S3 Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() => {
@@ -268,8 +276,10 @@ export class AwsS3Publish implements PublisherBase {
   docsRouter(): express.Handler {
     return async (req, res) => {
       // Decode and trim the leading forward slash
-      // filePath example - /default/Component/documented-component/index.html
-      const filePath = decodeURI(req.path.replace(/^\//, ''));
+      const decodedUri = decodeURI(req.path.replace(/^\//, ''));
+
+      // filePath example - /default/component/documented-component/index.html
+      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
