@@ -223,6 +223,7 @@ Routable
 rst
 rsync
 ruleset
+runbook
 sam
 sanitization
 scaffolded
