@@ -18,7 +18,11 @@ import {
   BlobServiceClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import JSON5 from 'json5';
@@ -159,8 +163,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
           .join(path.posix.sep);
 
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Azure Blob Storage Container file relative path
+        const entityRootDir = `${
+          entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+        }/${entity.kind}/${entity.metadata.name}`;
+        const destination = lowerCaseEntityTripletInStoragePath(
+          `${entityRootDir}/${relativeFilePathPosix}`,
+        ); // Azure Blob Storage Container file relative path
         return limiter(async () => {
           const response = await this.storageClient
             .getContainerClient(this.containerName)
@@ -259,8 +267,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
   docsRouter(): express.Handler {
     return (req, res) => {
       // Decode and trim the leading forward slash
+      const decodedUri = decodeURI(req.path.replace(/^\//, ''));
+
       // filePath example - /default/Component/documented-component/index.html
-      const filePath = decodeURI(req.path.replace(/^\//, ''));
+      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
+
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
