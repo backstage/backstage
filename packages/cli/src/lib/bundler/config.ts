@@ -98,10 +98,9 @@ export async function createConfig(
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        typescript: {
-          configFile: paths.targetTsConfig,
-        },
-        eslint: {
+        typescript: paths.targetTsConfig,
+        eslint: true,
+        eslintOptions: {
           files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
           options: {
             parserOptions: {
@@ -170,9 +169,6 @@ export async function createConfig(
     performance: {
       hints: false, // we check the gzip size instead
     },
-    // Workaround for hot module reloads not working, will be fixed in webpack-dev-server v4
-    //   https://github.com/webpack/webpack-dev-server/issues/2758
-    target: 'web',
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
@@ -218,7 +214,7 @@ export async function createConfig(
         : 'static/[name].[chunkhash:8].chunk.js',
       ...(isDev
         ? {
-            devtoolModuleFilenameTemplate: info =>
+            devtoolModuleFilenameTemplate: (info: any) =>
               `file:///${resolvePath(info.absoluteResourcePath).replace(
                 /\\/g,
                 '/',
@@ -309,7 +305,7 @@ export async function createBackendConfig(
         : '[name].[chunkhash:8].chunk.js',
       ...(isDev
         ? {
-            devtoolModuleFilenameTemplate: info =>
+            devtoolModuleFilenameTemplate: (info: any) =>
               `file:///${resolvePath(info.absoluteResourcePath).replace(
                 /\\/g,
                 '/',
@@ -326,10 +322,9 @@ export async function createBackendConfig(
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
-              typescript: {
-                configFile: paths.targetTsConfig,
-              },
-              eslint: {
+              typescript: paths.targetTsConfig,
+              eslint: true,
+              eslintOptions: {
                 files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
                 options: {
                   parserOptions: {

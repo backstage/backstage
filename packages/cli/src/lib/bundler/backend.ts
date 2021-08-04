@@ -28,6 +28,7 @@ export async function serveBackend(options: BackendServeOptions) {
 
   const compiler = webpack(config, (err: Error | undefined) => {
     if (err) {
+      console.log('here');
       console.error(err);
     } else console.log('Build succeeded');
   });
