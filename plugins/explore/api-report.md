@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="react" />
-
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default } from 'react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';

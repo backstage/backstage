@@ -96,11 +96,17 @@ export class LdapClient {
     target: string,
     bind?: BindConfig,
   ): Promise<LdapClient>;
-  getRootDSE(): Promise<SearchEntry | undefined>;
-  getVendor(): Promise<LdapVendor>;
+  getRootDSE(logger: Logger_2): Promise<SearchEntry | undefined>;
+  getVendor(logger: Logger_2): Promise<LdapVendor>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
+  search(
+    dn: string,
+    options: SearchOptions & {
+      type: 'users' | 'groups';
+    },
+    logger: Logger_2,
+  ): Promise<SearchEntry[]>;
 }
 
 // Warning: (ae-missing-release-tag) "LdapOrgReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -2738,8 +2738,8 @@ export const WarningPanel: ({
 
 // Warnings were encountered during analysis:
 //
-// src/components/CopyTextButton/CopyTextButton.d.ts:24:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
+// src/components/CopyTextButton/CopyTextButton.d.ts:23:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// src/components/TabbedLayout/RoutedTabs.d.ts:8:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/TabbedLayout/TabbedLayout.d.ts:29:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:15:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:7:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
