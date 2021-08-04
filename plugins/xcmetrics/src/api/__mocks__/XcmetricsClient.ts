@@ -24,8 +24,12 @@ import {
   BuildStatusResult,
   BuildTime,
   BuildWarning,
+  Target,
   XcmetricsApi,
+  Xcode,
 } from '../types';
+
+const MOCK_BUILD_ID = 'buildId';
 
 export const mockBuild: Build = {
   userid: 'userid1',
@@ -42,7 +46,7 @@ export const mockBuild: Build = {
   projectName: 'ProjectName',
   compilationEndTimestampMicroseconds: 1,
   errorCount: 1,
-  id: 'buildId',
+  id: MOCK_BUILD_ID,
   buildStatus: 'succeeded',
   compilationDuration: 1,
   schema: 'SchemaName',
@@ -74,7 +78,7 @@ export const mockBuildError: BuildError = {
   severity: 2,
   startingLine: 241,
   parentType: 'step',
-  buildIdentifier: 'buildId',
+  buildIdentifier: MOCK_BUILD_ID,
   startingColumn: 97,
   characterRangeStart: 0,
   documentURL: 'file:///Users/<redacted>/myproject/Sources/MyClass.m',
@@ -96,7 +100,7 @@ export const mockBuildHost: BuildHost = {
   memoryTotalMb: 16384,
   timezone: 'CET',
   cpuModel: 'Intel(R) Core(TM) i7-7567U CPU @ 3.50GHz',
-  buildIdentifier: 'buildId',
+  buildIdentifier: MOCK_BUILD_ID,
   memoryFreeMb: 24.5234375,
   cpuSpeedGhz: 3.5,
 };
@@ -114,7 +118,7 @@ export const mockBuildTime: BuildTime = {
   totalDuration: 3.1,
 };
 export const mockBuildStatus: BuildStatusResult = {
-  id: 'build_id',
+  id: MOCK_BUILD_ID,
   buildStatus: 'succeeded',
 };
 
@@ -135,13 +139,47 @@ export const mockBuildWarning: BuildWarning = {
   parentType: 'step',
   clangFlag: '[-Wdeprecated-declarations]',
   startingColumn: 22,
-  buildIdentifier: 'MyMac_34580469-5792-40F3-BEFB-7C5925996F23_1',
+  buildIdentifier: MOCK_BUILD_ID,
   characterRangeStart: 0,
 };
 
+export const mockTarget: Target = {
+  id: 'MyMac_34580469-5792-40F3-BEFB-7C5925996F23_1992',
+  category: 'noop',
+  startTimestamp: '2020-11-02T10:59:09Z',
+  compilationEndTimestampMicroseconds: 1604314749.2909288,
+  endTimestampMicroseconds: 1604314982.298002,
+  endTimestamp: '2020-11-02T11:03:02Z',
+  fetchedFromCache: false,
+  errorCount: 0,
+  day: '2020-11-02T00:00:00Z',
+  warningCount: 0,
+  compilationEndTimestamp: '2020-11-02T10:59:09Z',
+  compilationDuration: 0,
+  compiledCount: 0,
+  duration: 0.000233007,
+  buildIdentifier: MOCK_BUILD_ID,
+  name: 'Model',
+  startTimestampMicroseconds: 1604314749.2909288,
+};
+
+export const mockXcode: Xcode = {
+  buildNumber: '12A7209',
+  id: '6354C87F-0ADC-4354-929C-02EBE545E099',
+  buildIdentifier: MOCK_BUILD_ID,
+  day: '2020-11-02T00:00:00Z',
+  version: '1200',
+};
+
+export const mockBuildResponse = {
+  build: mockBuild,
+  targets: [mockTarget],
+  xcode: mockXcode,
+};
+
 export const XcmetricsClient: XcmetricsApi = {
-  getBuild: (id: string) => {
-    return Promise.resolve({ ...mockBuild, id });
+  getBuild: (_id: string) => {
+    return Promise.resolve(mockBuildResponse);
   },
   getBuilds: () => {
     return Promise.resolve([

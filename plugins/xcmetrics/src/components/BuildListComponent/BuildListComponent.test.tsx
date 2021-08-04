@@ -28,6 +28,7 @@ jest.mock('../BuildListFilterComponent', () => ({
 }));
 
 jest.mock('../BuildDetailsComponent', () => ({
+  withRequest: (component: any) => component,
   BuildDetailsComponent: () => 'BuildDetailsComponent',
 }));
 

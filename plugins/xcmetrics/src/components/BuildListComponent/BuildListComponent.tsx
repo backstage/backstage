@@ -21,7 +21,7 @@ import { createStyles, Grid, makeStyles } from '@material-ui/core';
 import { BuildListFilterComponent as Filters } from '../BuildListFilterComponent';
 import { DateTime } from 'luxon';
 import { buildPageColumns } from '../BuildTableColumns';
-import { BuildDetailsComponent } from '../BuildDetailsComponent';
+import { BuildDetailsComponent, withRequest } from '../BuildDetailsComponent';
 import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
@@ -80,11 +80,14 @@ export const BuildListComponent = () => {
               .catch(reason => reject(reason));
           });
         }}
-        detailPanel={rowData => (
-          <div className={classes.detailPanel}>
-            <BuildDetailsComponent build={(rowData as any).rowData} />
-          </div>
-        )}
+        detailPanel={rowData => {
+          const BuildDetails = withRequest(BuildDetailsComponent);
+          return (
+            <div className={classes.detailPanel}>
+              <BuildDetails buildId={(rowData as any).rowData.id} />
+            </div>
+          );
+        }}
       />
     </Grid>
   );

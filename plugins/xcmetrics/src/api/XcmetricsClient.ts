@@ -24,6 +24,7 @@ import {
   BuildFilters,
   BuildHost,
   BuildMetadata,
+  BuildResponse,
   BuildStatusResult,
   BuildTime,
   BuildWarning,
@@ -42,9 +43,9 @@ export class XcmetricsClient implements XcmetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuild(id: string): Promise<Build> {
+  async getBuild(id: string): Promise<BuildResponse> {
     const response = await this.get(`/build/${id}`);
-    return ((await response.json()) as Record<'build', Build>).build;
+    return (await response.json()) as BuildResponse;
   }
 
   async getBuilds(limit: number = 10): Promise<Build[]> {

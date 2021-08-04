@@ -32,6 +32,12 @@ export const formatDuration = (seconds: number) => {
   return `${h} ${m} ${s}`;
 };
 
+export const formatSecondsInterval = ([start, end]: [number, number]) => {
+  return `${Math.round(start * 100) / 100} s - ${
+    Math.round(end * 100) / 100
+  } s`;
+};
+
 export const formatTime = (timestamp: string) => {
   return DateTime.fromISO(timestamp).toLocaleString(
     DateTime.DATETIME_SHORT_WITH_SECONDS,

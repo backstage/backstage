@@ -18,7 +18,7 @@ import { useRouteRefParams } from '@backstage/core-plugin-api';
 import { buildsRouteRef } from '../../routes';
 import { BuildListComponent } from '../BuildListComponent';
 import { BuildDetailsComponent, withRequest } from '../BuildDetailsComponent';
-import { CopyTextButton, InfoCard } from '@backstage/core-components';
+import { InfoCard } from '@backstage/core-components';
 
 export const BuildsPage = () => {
   const { '*': buildId } = useRouteRefParams(buildsRouteRef) ?? { '*': '' };
@@ -27,19 +27,8 @@ export const BuildsPage = () => {
     const BuildDetails = withRequest(BuildDetailsComponent);
 
     return (
-      <InfoCard
-        title="Build Details"
-        subheader={
-          <>
-            {buildId}{' '}
-            <CopyTextButton
-              text={buildId}
-              tooltipText="Build Id copied to clipboard"
-            />
-          </>
-        }
-      >
-        <BuildDetails buildId={buildId} />
+      <InfoCard title="Build Details" subheader={buildId}>
+        <BuildDetails buildId={buildId} showId={false} />
       </InfoCard>
     );
   }

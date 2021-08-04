@@ -132,6 +132,40 @@ export type PaginationResult<T> = {
   };
 };
 
+export type Target = {
+  id: string;
+  category: string;
+  startTimestamp: string;
+  compilationEndTimestampMicroseconds: number;
+  endTimestampMicroseconds: number;
+  endTimestamp: string;
+  fetchedFromCache: boolean;
+  errorCount: number;
+  day: string;
+  warningCount: number;
+  compilationEndTimestamp: string;
+  compilationDuration: number;
+  compiledCount: number;
+  duration: number;
+  buildIdentifier: string;
+  name: string;
+  startTimestampMicroseconds: number;
+};
+
+export type Xcode = {
+  buildNumber: string;
+  id: string;
+  buildIdentifier: string;
+  day: string;
+  version: string;
+};
+
+export type BuildResponse = {
+  build: Build;
+  targets: Target[];
+  xcode: Xcode;
+};
+
 export type BuildFilters = {
   from: string; // ISO Date (e.g. "2021-01-01")
   to: string; // ISO Date (e.g. "2021-01-02")
@@ -140,7 +174,7 @@ export type BuildFilters = {
 };
 
 export interface XcmetricsApi {
-  getBuild(id: string): Promise<Build>;
+  getBuild(id: string): Promise<BuildResponse>;
   getBuilds(limit?: number): Promise<Build[]>;
   getFilteredBuilds(
     filters: BuildFilters,

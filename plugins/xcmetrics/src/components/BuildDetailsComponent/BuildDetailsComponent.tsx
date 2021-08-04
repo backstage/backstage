@@ -15,12 +15,8 @@
  */
 import { createStyles, Divider, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { Build, xcmetricsApiRef } from '../../api';
-import {
-  OverflowTooltip,
-  Progress,
-  StructuredMetadataTable,
-} from '@backstage/core-components';
+import { BuildResponse, xcmetricsApiRef } from '../../api';
+import { Progress, StructuredMetadataTable } from '@backstage/core-components';
 import { Alert } from '@material-ui/lab';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
@@ -28,6 +24,8 @@ import { formatDuration, formatStatus, formatTime } from '../../utils';
 import { StatusIconComponent as StatusIcon } from '../StatusIconComponent';
 import { BackstageTheme } from '@backstage/theme';
 import { AccordionComponent } from '../AccordionComponent';
+import { BuildTimelineComponent } from '../BuildTimelineComponent';
+import { PreformattedTextComponent } from '../PreformattedTextComponent';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({
@@ -39,10 +37,14 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
 );
 
 interface BuildDetailsProps {
-  build: Build;
+  buildData: BuildResponse;
+  showId?: boolean;
 }
 
-export const BuildDetailsComponent = ({ build }: BuildDetailsProps) => {
+export const BuildDetailsComponent = ({
+  buildData: { build, targets, xcode },
+  showId,
+}: BuildDetailsProps) => {
   const classes = useStyles();
   const client = useApi(xcmetricsApiRef);
   const hostResult = useAsync(async () => client.getBuildHost(build.id), []);
@@ -60,7 +62,6 @@ export const BuildDetailsComponent = ({ build }: BuildDetailsProps) => {
   );
 
   const buildDetails = {
-    id: build.id,
     project: build.projectName,
     schema: build.schema,
     category: build.category,
@@ -74,96 +75,110 @@ export const BuildDetailsComponent = ({ build }: BuildDetailsProps) => {
         {formatStatus(build.buildStatus)}
       </>
     ),
+    xcode: `${xcode.version} (${xcode.buildNumber})`,
     CI: build.isCi,
   };
 
   return (
-    <Grid container direction="column" spacing={3}>
-      <Grid container item direction="row">
-        <Grid item xs={4}>
-          <StructuredMetadataTable metadata={buildDetails} />
-        </Grid>
-        <Grid item xs={8}>
-          <AccordionComponent
-            id="buildHost"
-            heading="Host"
-            secondaryHeading={build.machineName}
-          >
-            {hostResult.loading && <Progress />}
-            {!hostResult.loading && hostResult.value && (
-              <StructuredMetadataTable metadata={hostResult.value} />
-            )}
-          </AccordionComponent>
-
-          <AccordionComponent
-            id="buildErrors"
-            heading="Errors"
-            secondaryHeading={build.errorCount}
-            disabled={build.errorCount === 0}
-          >
-            <div>
-              {errorsResult.loading && <Progress />}
-              {!errorsResult.loading &&
-                errorsResult.value &&
-                errorsResult.value.map((error, idx) => (
-                  <div key={error.id}>
-                    <OverflowTooltip text={error.detail} line={5} />
-                    {idx !== errorsResult.value.length - 1 && (
-                      <Divider className={classes.divider} />
-                    )}
-                  </div>
-                ))}
-            </div>
-          </AccordionComponent>
-
-          <AccordionComponent
-            id="buildWarnings"
-            heading="Warnings"
-            secondaryHeading={build.warningCount}
-            disabled={build.warningCount === 0}
-          >
-            <div>
-              {warningsResult.loading && <Progress />}
-              {!warningsResult.loading &&
-                warningsResult.value &&
-                warningsResult.value.map((warning, idx) => (
-                  <div key={warning.id}>
-                    <OverflowTooltip
-                      text={warning.detail ?? warning.title}
-                      line={5}
-                    />
-                    {idx !== warningsResult.value.length - 1 && (
-                      <Divider className={classes.divider} />
-                    )}
-                  </div>
-                ))}
-            </div>
-          </AccordionComponent>
-
-          <AccordionComponent
-            id="buildMetadata"
-            heading="Metadata"
-            disabled={!metadataResult.loading && !metadataResult.value}
-          >
-            {metadataResult.loading && <Progress />}
-            {!metadataResult.loading && metadataResult.value && (
-              <StructuredMetadataTable metadata={metadataResult.value} />
-            )}
-          </AccordionComponent>
-        </Grid>
+    <Grid container item direction="row">
+      <Grid item xs={4}>
+        <StructuredMetadataTable
+          metadata={
+            showId === false ? buildDetails : { id: build.id, ...buildDetails }
+          }
+        />
       </Grid>
-      <Grid item>{/* TODO: Sequnce chart */}</Grid>
+      <Grid item xs={8}>
+        <AccordionComponent
+          id="buildHost"
+          heading="Host"
+          secondaryHeading={build.machineName}
+        >
+          {hostResult.loading && <Progress />}
+          {!hostResult.loading && hostResult.value && (
+            <StructuredMetadataTable metadata={hostResult.value} />
+          )}
+        </AccordionComponent>
+
+        <AccordionComponent
+          id="buildErrors"
+          heading="Errors"
+          secondaryHeading={build.errorCount}
+          disabled={build.errorCount === 0}
+        >
+          <div>
+            {errorsResult.loading && <Progress />}
+            {!errorsResult.loading &&
+              errorsResult.value?.map((error, idx) => (
+                <div key={error.id}>
+                  <PreformattedTextComponent
+                    title="Error Details"
+                    text={error.detail}
+                    maxChars={190}
+                    expandable
+                  />
+                  {idx !== errorsResult.value.length - 1 && (
+                    <Divider className={classes.divider} />
+                  )}
+                </div>
+              ))}
+          </div>
+        </AccordionComponent>
+
+        <AccordionComponent
+          id="buildWarnings"
+          heading="Warnings"
+          secondaryHeading={build.warningCount}
+          disabled={build.warningCount === 0}
+        >
+          <div>
+            {warningsResult.loading && <Progress />}
+            {!warningsResult.loading &&
+              warningsResult.value?.map((warning, idx) => (
+                <div key={warning.id}>
+                  <PreformattedTextComponent
+                    title="Warning Details"
+                    text={warning.detail ?? warning.title}
+                    maxChars={190}
+                    expandable
+                  />
+                  {idx !== warningsResult.value.length - 1 && (
+                    <Divider className={classes.divider} />
+                  )}
+                </div>
+              ))}
+          </div>
+        </AccordionComponent>
+
+        <AccordionComponent
+          id="buildMetadata"
+          heading="Metadata"
+          disabled={!metadataResult.loading && !metadataResult.value}
+        >
+          {metadataResult.loading && <Progress />}
+          {!metadataResult.loading && metadataResult.value && (
+            <StructuredMetadataTable metadata={metadataResult.value} />
+          )}
+        </AccordionComponent>
+
+        <AccordionComponent id="buildTimeline" heading="Timeline" unmountOnExit>
+          <BuildTimelineComponent targets={targets} />
+        </AccordionComponent>
+      </Grid>
     </Grid>
   );
 };
 
+type WithRequestProps = Omit<BuildDetailsProps, 'buildData'> & {
+  buildId: string;
+};
+
 export const withRequest = (Component: typeof BuildDetailsComponent) => ({
   buildId,
-}: {
-  buildId: string;
-}) => {
+  ...props
+}: WithRequestProps) => {
   const client = useApi(xcmetricsApiRef);
-  const { value: build, loading, error } = useAsync(
+  const { value: buildResponse, loading, error } = useAsync(
     async () => client.getBuild(buildId),
     [],
   );
@@ -176,9 +191,9 @@ export const withRequest = (Component: typeof BuildDetailsComponent) => ({
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  if (!build) {
+  if (!buildResponse) {
     return <Alert severity="error">Could not load build {buildId}</Alert>;
   }
 
-  return <Component build={build} />;
+  return <Component {...props} buildData={buildResponse} />;
 };

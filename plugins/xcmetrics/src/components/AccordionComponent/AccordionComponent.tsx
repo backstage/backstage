@@ -42,6 +42,7 @@ interface AccordionProps {
   heading: string;
   secondaryHeading?: string | number;
   disabled?: boolean;
+  unmountOnExit?: boolean;
 }
 
 export const AccordionComponent = (
@@ -50,7 +51,10 @@ export const AccordionComponent = (
   const classes = useStyles();
 
   return (
-    <Accordion disabled={props.disabled}>
+    <Accordion
+      disabled={props.disabled}
+      TransitionProps={{ unmountOnExit: props.unmountOnExit ?? false }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${props.id}-content`}

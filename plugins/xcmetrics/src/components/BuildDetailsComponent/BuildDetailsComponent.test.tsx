@@ -28,13 +28,17 @@ jest.mock('../AccordionComponent', () => ({
   ),
 }));
 
+jest.mock('../BuildTimelineComponent', () => ({
+  BuildTimelineComponent: () => 'BuildTimelineComponent',
+}));
+
 describe('BuildDetailsComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
-        <BuildDetailsComponent build={client.mockBuild} />
+        <BuildDetailsComponent buildData={client.mockBuildResponse} />
       </ApiProvider>,
     );
 
@@ -42,6 +46,7 @@ describe('BuildDetailsComponent', () => {
     expect(rendered.getByText('accordion-Errors')).toBeInTheDocument();
     expect(rendered.getByText('accordion-Warnings')).toBeInTheDocument();
     expect(rendered.getByText('accordion-Metadata')).toBeInTheDocument();
+    expect(rendered.getByText('accordion-Timeline')).toBeInTheDocument();
 
     expect(rendered.getByText(client.mockBuild.id)).toBeInTheDocument();
     expect(
