@@ -30,7 +30,7 @@
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean",
-    "dev": "nodemon --watch \"src/**\" --ext \"ts\" --ignore \"*.spec.ts\" --exec \"ts-node --project tsconfig.cli.json src/cli/index.ts\""
+    "start": "nodemon --"
   },
   "dependencies": {
     "@babel/core": "^7.14.8",
