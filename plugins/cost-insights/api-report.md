@@ -370,10 +370,13 @@ export const costInsightsApiRef: ApiRef<CostInsightsApi>;
 // @public (undocumented)
 export const CostInsightsLabelDataflowInstructionsPage: () => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "CostInsightsPageProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CostInsightsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CostInsightsPage: () => JSX.Element;
+export const CostInsightsPage: ({
+  currencies,
+}: CostInsightsPageProps) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "CostInsightsPaletteAdditions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CostInsightsPalette" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
