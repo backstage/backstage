@@ -35,8 +35,16 @@ import {
   executeFetchUserProfileStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { RedirectInfo, AuthProviderFactory } from '../types';
+import {
+  AuthProviderFactory,
+  AuthHandler,
+  RedirectInfo,
+  SignInResolver,
+} from '../types';
 import { StateStore } from 'passport-oauth2';
+import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
+import { TokenIssuer } from '../../identity';
+import { Logger } from 'winston';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -44,10 +52,20 @@ type PrivateInfo = {
 
 export type OktaAuthProviderOptions = OAuthProviderOptions & {
   audience: string;
+  signInResolver?: SignInResolver<OAuthResult>;
+  authHandler: AuthHandler<OAuthResult>;
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
 };
 
 export class OktaAuthProvider implements OAuthHandlers {
   private readonly _strategy: any;
+  private readonly _signInResolver?: SignInResolver<OAuthResult>;
+  private readonly _authHandler: AuthHandler<OAuthResult>;
+  private readonly _tokenIssuer: TokenIssuer;
+  private readonly _catalogIdentityClient: CatalogIdentityClient;
+  private readonly _logger: Logger;
 
   /**
    * Due to passport-okta-oauth forcing options.state = true,
@@ -67,6 +85,12 @@ export class OktaAuthProvider implements OAuthHandlers {
   };
 
   constructor(options: OktaAuthProviderOptions) {
+    this._signInResolver = options.signInResolver;
+    this._authHandler = options.authHandler;
+    this._tokenIssuer = options.tokenIssuer;
+    this._catalogIdentityClient = options.catalogIdentityClient;
+    this._logger = options.logger;
+
     this._strategy = new OktaStrategy(
       {
         clientID: options.clientId,
@@ -117,18 +141,8 @@ export class OktaAuthProvider implements OAuthHandlers {
       PrivateInfo
     >(req, this._strategy);
 
-    const profile = makeProfileInfo(result.fullProfile, result.params.id_token);
-
     return {
-      response: await this.populateIdentity({
-        profile,
-        providerInfo: {
-          idToken: result.params.id_token,
-          accessToken: result.accessToken,
-          scope: result.params.scope,
-          expiresInSeconds: result.params.expires_in,
-        },
-      }),
+      response: await this.handleResult(result),
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -144,52 +158,157 @@ export class OktaAuthProvider implements OAuthHandlers {
       this._strategy,
       accessToken,
     );
-    const profile = makeProfileInfo(fullProfile, params.id_token);
 
-    return this.populateIdentity({
-      providerInfo: {
-        accessToken,
-        idToken: params.id_token,
-        expiresInSeconds: params.expires_in,
-        scope: params.scope,
-      },
-      profile,
+    return this.handleResult({
+      fullProfile,
+      params,
+      accessToken,
+      refreshToken: req.refreshToken,
     });
   }
 
-  private async populateIdentity(
-    response: OAuthResponse,
-  ): Promise<OAuthResponse> {
-    const { profile } = response;
+  private async handleResult(result: OAuthResult) {
+    const { profile } = await this._authHandler(result);
 
-    if (!profile.email) {
-      throw new Error('Okta profile contained no email');
+    const response: OAuthResponse = {
+      providerInfo: {
+        idToken: result.params.id_token,
+        accessToken: result.accessToken,
+        scope: result.params.scope,
+        expiresInSeconds: result.params.expires_in,
+      },
+      profile,
+    };
+
+    if (this._signInResolver) {
+      response.backstageIdentity = await this._signInResolver(
+        {
+          result,
+          profile,
+        },
+        {
+          tokenIssuer: this._tokenIssuer,
+          catalogIdentityClient: this._catalogIdentityClient,
+          logger: this._logger,
+        },
+      );
     }
 
-    // TODO(Rugvip): Hardcoded to the local part of the email for now
-    const id = profile.email.split('@')[0];
-
-    return { ...response, backstageIdentity: { id } };
+    return response;
   }
 }
 
-export type OktaProviderOptions = {};
+export const oktaEmailSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Okta profile contained no email');
+  }
+
+  const entity = await ctx.catalogIdentityClient.findUser({
+    annotations: {
+      'okta.com/email': profile.email,
+    },
+  });
+
+  const claims = getEntityClaims(entity);
+  const token = await ctx.tokenIssuer.issueToken({ claims });
+
+  return { id: entity.metadata.name, entity, token };
+};
+
+export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Okta profile contained no email');
+  }
+
+  // TODO(Rugvip): Hardcoded to the local part of the email for now
+  const userId = profile.email.split('@')[0];
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
+
+  return { id: userId, token };
+};
+
+export type OktaProviderOptions = {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<OAuthResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  /**
+   * Maps an auth result to a Backstage identity for the user.
+   *
+   * Set to `'email'` to use the default email-based sign in resolver, which will search
+   * the catalog for a single user entity that has a matching `okta.com/email` annotation.
+   */
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
 
 export const createOktaProvider = (
   _options?: OktaProviderOptions,
 ): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    tokenIssuer,
+    catalogApi,
+    logger,
+  }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
       const audience = envConfig.getString('audience');
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
+      const catalogIdentityClient = new CatalogIdentityClient({
+        catalogApi,
+        tokenIssuer,
+      });
+
+      const authHandler: AuthHandler<OAuthResult> = _options?.authHandler
+        ? _options.authHandler
+        : async ({ fullProfile, params }) => ({
+            profile: makeProfileInfo(fullProfile, params.id_token),
+          });
+
+      const signInResolverFn =
+        _options?.signIn?.resolver ?? oktaDefaultSignInResolver;
+
+      const signInResolver: SignInResolver<OAuthResult> = info =>
+        signInResolverFn(info, {
+          catalogIdentityClient,
+          tokenIssuer,
+          logger,
+        });
+
       const provider = new OktaAuthProvider({
         audience,
         clientId,
         clientSecret,
         callbackUrl,
+        authHandler,
+        signInResolver,
+        tokenIssuer,
+        catalogIdentityClient,
+        logger,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
