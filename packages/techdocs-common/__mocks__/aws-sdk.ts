@@ -42,12 +42,6 @@ const checkFileExists = async (Key: string): Promise<boolean> => {
 };
 
 export class S3 {
-  private readonly options;
-
-  constructor(options: S3Types.ClientConfiguration) {
-    this.options = options;
-  }
-
   headObject({ Key }: { Key: string }) {
     return {
       promise: async () => {
@@ -61,7 +55,7 @@ export class S3 {
   getObject({ Key }: { Key: string }) {
     const filePath = path.join(rootDir, Key);
     return {
-      promise: () => checkFileExists(filePath),
+      promise: async () => await checkFileExists(filePath),
       createReadStream: () => {
         const emitter = new EventEmitter();
         process.nextTick(() => {
@@ -86,7 +80,6 @@ export class S3 {
         if (Bucket === 'errorBucket') {
           throw new Error('Bucket does not exist');
         }
-
         return {};
       },
     };

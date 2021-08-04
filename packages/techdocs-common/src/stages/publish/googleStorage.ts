@@ -33,6 +33,7 @@ import { Logger } from 'winston';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import { MigrateWriteStream } from './migrations';
@@ -77,17 +78,29 @@ export class GoogleGCSPublish implements PublisherBase {
       }),
     });
 
-    return new GoogleGCSPublish(storageClient, bucketName, logger);
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+
+    return new GoogleGCSPublish(
+      storageClient,
+      bucketName,
+      legacyPathCasing,
+      logger,
+    );
   }
 
   constructor(
     private readonly storageClient: Storage,
     private readonly bucketName: string,
+    private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
     this.logger = logger;
+    this.legacyPathCasing = legacyPathCasing;
   }
 
   /**
@@ -147,9 +160,11 @@ export class GoogleGCSPublish implements PublisherBase {
           entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
         }/${entity.kind}/${entity.metadata.name}`;
 
-        const destination = lowerCaseEntityTripletInStoragePath(
-          `${entityRootDir}/${relativeFilePathPosix}`,
-        ); // GCS Bucket file relative path
+        const destination = this.legacyPathCasing
+          ? lowerCaseEntityTripletInStoragePath(
+              `${entityRootDir}/${relativeFilePathPosix}`,
+            )
+          : `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
@@ -174,7 +189,10 @@ export class GoogleGCSPublish implements PublisherBase {
 
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
-      const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+      const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+      const entityRootDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -206,7 +224,9 @@ export class GoogleGCSPublish implements PublisherBase {
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
       // filePath example - /default/component/documented-component/index.html
-      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
+      const filePath = this.legacyPathCasing
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -239,7 +259,11 @@ export class GoogleGCSPublish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     return new Promise(resolve => {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityRootDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
+
       this.storageClient
         .bucket(this.bucketName)
         .file(`${entityRootDir}/index.html`)

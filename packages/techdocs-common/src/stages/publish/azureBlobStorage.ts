@@ -32,6 +32,7 @@ import { Logger } from 'winston';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -241,7 +242,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
-    const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+    const entityRootDir = lowerCaseEntityTriplet(
+      `${entityName.namespace}/${entityName.kind}/${entityName.name}`,
+    );
     try {
       const techdocsMetadataJson = await this.download(
         this.containerName,
@@ -298,7 +301,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
-    const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+    const entityRootDir = lowerCaseEntityTriplet(
+      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`,
+    );
     return this.storageClient
       .getContainerClient(this.containerName)
       .getBlockBlobClient(`${entityRootDir}/index.html`)

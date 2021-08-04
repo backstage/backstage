@@ -32,6 +32,7 @@ import { Logger } from 'winston';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -238,7 +239,9 @@ export class AwsS3Publish implements PublisherBase {
   ): Promise<TechDocsMetadata> {
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
-        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+        const entityRootDir = lowerCaseEntityTriplet(
+          `${entityName.namespace}/${entityName.kind}/${entityName.name}`,
+        );
 
         const stream = this.storageClient
           .getObject({
@@ -310,7 +313,9 @@ export class AwsS3Publish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityRootDir = lowerCaseEntityTriplet(
+        `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`,
+      );
       await this.storageClient
         .headObject({
           Bucket: this.bucketName,

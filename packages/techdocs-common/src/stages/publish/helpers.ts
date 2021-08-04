@@ -84,15 +84,34 @@ export const getFileTreeRecursively = async (
 };
 
 /**
+ * Returns a lower-cased version of entity's triplet in the form of a path.
+ *
+ * Path must not include a starting slash.
+ *
+ * @example
+ * lowerCaseEntityTriplet('default/Component/backstage')
+ * // return default/component/backstage
+ */
+export const lowerCaseEntityTriplet = (originalPath: string): string => {
+  const [namespace, kind, name, ...parts] = originalPath.split('/');
+  const lowerNamespace = namespace.toLowerCase();
+  const lowerKind = kind.toLowerCase();
+  const lowerName = name.toLowerCase();
+  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+};
+
+/**
  * Returns the version of an object's storage path where the first three parts
  * of the path (the entity triplet of namespace, kind, and name) are
  * lower-cased.
  *
  * Path must not include a starting slash.
  *
+ * Throws an error if the path does not appear to be an entity triplet.
+ *
  * @example
- * lowerCaseEntityTripletInStoragePath('default/Component/backstage')
- * // return default/component/backstage
+ * lowerCaseEntityTripletInStoragePath('default/Component/backstage/file.txt')
+ * // return default/component/backstage/file.txt
  */
 export const lowerCaseEntityTripletInStoragePath = (
   originalPath: string,
@@ -105,9 +124,5 @@ export const lowerCaseEntityTripletInStoragePath = (
       `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
     );
   }
-  const [namespace, kind, name, ...parts] = originalPath.split('/');
-  const lowerNamespace = namespace.toLowerCase();
-  const lowerKind = kind.toLowerCase();
-  const lowerName = name.toLowerCase();
-  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+  return lowerCaseEntityTriplet(originalPath);
 };

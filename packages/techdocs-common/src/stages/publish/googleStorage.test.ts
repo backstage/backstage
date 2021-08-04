@@ -189,7 +189,10 @@ describe('GoogleGCSPublish', () => {
   describe('hasDocsBeenGenerated', () => {
     it('should return true if docs has been generated', async () => {
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getEntityRootDir({
+        ...entity,
+        kind: entity.kind.toLowerCase(),
+      });
 
       mockFs({
         [entityRootDir]: {
@@ -216,7 +219,10 @@ describe('GoogleGCSPublish', () => {
     it('should return tech docs metadata', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getEntityRootDir({
+        ...entity,
+        kind: entity.kind.toLowerCase(),
+      });
 
       mockFs({
         [entityRootDir]: {
@@ -238,7 +244,10 @@ describe('GoogleGCSPublish', () => {
     it('should return tech docs metadata when json encoded with single quotes', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getEntityRootDir({
+        ...entity,
+        kind: entity.kind.toLowerCase(),
+      });
 
       mockFs({
         [entityRootDir]: {
@@ -261,7 +270,10 @@ describe('GoogleGCSPublish', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getEntityRootDir({
+        ...entity,
+        kind: entity.kind.toLowerCase(),
+      });
 
       const fails = publisher.fetchTechDocsMetadata(entityNameMock);
 
@@ -277,7 +289,10 @@ describe('GoogleGCSPublish', () => {
   describe('docsRouter', () => {
     let app: express.Express;
     const entity = createMockEntity();
-    const entityRootDir = getEntityRootDir(entity);
+    const entityRootDir = getEntityRootDir({
+      ...entity,
+      kind: entity.kind.toLowerCase(),
+    });
 
     beforeEach(() => {
       app = express().use(publisher.docsRouter());
