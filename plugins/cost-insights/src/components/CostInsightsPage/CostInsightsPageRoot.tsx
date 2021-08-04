@@ -24,10 +24,15 @@ import { ScrollProvider } from '../../hooks/useScroll';
 import { ConfigProvider } from '../../hooks/useConfig';
 import { BillingDateProvider } from '../../hooks/useLastCompleteBillingDate';
 import { CostInsightsThemeProvider } from './CostInsightsThemeProvider';
+import { Currency } from '../../types';
 
-export const CostInsightsPageRoot = () => (
+export type CostInsightsPageProps = {
+  currencies?: Currency[];
+};
+
+export const CostInsightsPageRoot = ({ currencies }: CostInsightsPageProps) => (
   <CostInsightsThemeProvider>
-    <ConfigProvider>
+    <ConfigProvider currencies={currencies}>
       <LoadingProvider>
         <GroupsProvider>
           <BillingDateProvider>

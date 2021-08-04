@@ -68,7 +68,14 @@ const defaultState: ConfigContextProps = {
   currencies: defaultCurrencies,
 };
 
-export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
+export type ConfigProviderProps = {
+  currencies?: Currency[];
+};
+
+export const ConfigProvider = ({
+  currencies,
+  children,
+}: PropsWithChildren<ConfigProviderProps>) => {
   const c: BackstageConfig = useApi(configApiRef);
   const [config, setConfig] = useState(defaultState);
   const [loading, setLoading] = useState(true);
@@ -124,6 +131,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         icons,
+        currencies: currencies?.length ? currencies : defaultCurrencies,
       }));
 
       setLoading(false);

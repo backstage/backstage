@@ -21,8 +21,7 @@ import React, {
   PropsWithChildren,
 } from 'react';
 import { Currency } from '../types';
-import { findAlways } from '../utils/assert';
-import { defaultCurrencies } from '../utils/currency';
+import { useConfig } from './useConfig';
 
 export type CurrencyContextProps = {
   currency: Currency;
@@ -34,8 +33,11 @@ export const CurrencyContext = React.createContext<
 >(undefined);
 
 export const CurrencyProvider = ({ children }: PropsWithChildren<{}>) => {
-  const engineers = findAlways(defaultCurrencies, c => c.kind === null);
-  const [currency, setCurrency] = useState<Currency>(engineers);
+  const config = useConfig();
+  const engineers = config.currencies.find(currency => currency.kind === null);
+  const [currency, setCurrency] = useState<Currency>(
+    engineers || config.currencies[0],
+  );
   return (
     <CurrencyContext.Provider value={{ currency, setCurrency }}>
       {children}
