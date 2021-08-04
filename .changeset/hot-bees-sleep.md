@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': patch
+'@backstage/core-components': minor
 ---
 
 Remove unused props from InfoCard prop type
