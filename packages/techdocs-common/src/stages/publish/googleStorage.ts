@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   FileExistsResponse,
@@ -26,7 +30,11 @@ import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
@@ -135,8 +143,13 @@ export class GoogleGCSPublish implements PublisherBase {
           .join(path.posix.sep);
 
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
+        const entityRootDir = `${
+          entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+        }/${entity.kind}/${entity.metadata.name}`;
+
+        const destination = lowerCaseEntityTripletInStoragePath(
+          `${entityRootDir}/${relativeFilePathPosix}`,
+        ); // GCS Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
@@ -190,8 +203,10 @@ export class GoogleGCSPublish implements PublisherBase {
   docsRouter(): express.Handler {
     return (req, res) => {
       // Decode and trim the leading forward slash
-      // filePath example - /default/Component/documented-component/index.html
-      const filePath = decodeURI(req.path.replace(/^\//, ''));
+      const decodedUri = decodeURI(req.path.replace(/^\//, ''));
+
+      // filePath example - /default/component/documented-component/index.html
+      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
