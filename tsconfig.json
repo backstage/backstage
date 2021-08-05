@@ -4,6 +4,7 @@
     "packages/*/src",
     "plugins/*/src",
     "plugins/*/dev",
+    "plugins/*/cli",
     "plugins/*/migrations"
   ],
   "compilerOptions": {

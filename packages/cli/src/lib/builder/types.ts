@@ -22,4 +22,5 @@ export enum Output {
 
 export type BuildOptions = {
   outputs: Set<Output>;
+  withCli?: boolean;
 };

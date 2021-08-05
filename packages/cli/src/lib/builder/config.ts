@@ -38,6 +38,38 @@ export const makeConfigs = async (
 ): Promise<RollupOptions[]> => {
   const configs = new Array<RollupOptions>();
 
+  if (options.withCli) {
+    configs.push({
+      input: 'cli/index.ts',
+      output: [
+        {
+          dir: 'dist',
+          entryFileNames: 'cli.cjs.js',
+          chunkFileNames: 'cli/[name]-[hash].cjs.js',
+          format: 'commonjs',
+          sourcemap: true,
+        },
+      ],
+      preserveEntrySignatures: 'strict',
+      external: require('module').builtinModules,
+      plugins: [
+        peerDepsExternal({
+          includeDependencies: true,
+        }),
+        resolve({ mainFields: ['module', 'main'] }),
+        commonjs({
+          include: /node_modules/,
+          exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
+        }),
+        json(),
+        yaml(),
+        esbuild({
+          target: 'es2019',
+        }),
+      ],
+    });
+  }
+
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
     const mainFields = ['module', 'main'];

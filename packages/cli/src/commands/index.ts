@@ -43,6 +43,10 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('backend:build')
     .description('Build a backend plugin')
+    .option(
+      '--with-cli',
+      'Build an additional bundle from the cli/index.ts entrypoint (EXPERIMENTAL)',
+    )
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
@@ -97,6 +101,10 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('plugin:build')
     .description('Build a plugin')
+    .option(
+      '--with-cli',
+      'Build an additional bundle from the cli/index.ts entrypoint (EXPERIMENTAL)',
+    )
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program
@@ -117,6 +125,10 @@ export function registerCommands(program: CommanderStatic) {
     .command('build')
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
+    .option(
+      '--with-cli',
+      'Build an additional bundle from the cli/index.ts entrypoint (EXPERIMENTAL)',
+    )
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program

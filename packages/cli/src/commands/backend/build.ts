@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 
-export default async () => {
+export default async (cmd: Command) => {
   await buildPackage({
     outputs: new Set([Output.cjs, Output.types]),
+    withCli: cmd.withCli,
   });
 };

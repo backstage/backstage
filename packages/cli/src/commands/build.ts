@@ -33,5 +33,5 @@ export default async (cmd: Command) => {
     outputs = new Set([Output.types, Output.esm, Output.cjs]);
   }
 
-  await buildPackage({ outputs });
+  await buildPackage({ outputs, withCli: cmd.withCli });
 };
