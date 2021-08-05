@@ -68,7 +68,7 @@
     "@types/jest": "^26.0.7",
     "@types/jquery": "^3.3.34",
     "@types/node": "^14.14.32",
-    "@types/react-dom": "^16.9.8",
+    "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
     "cypress": "^7.3.0",
