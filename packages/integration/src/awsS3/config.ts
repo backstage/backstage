@@ -40,6 +40,11 @@ export type AwsS3IntegrationConfig = {
    * secretAccessKey
    */
   secretAccessKey?: string;
+
+  /**
+   * roleArn
+   */
+  roleArn?: string;
 };
 
 /**
@@ -54,6 +59,7 @@ export function readAwsS3IntegrationConfig(
   const host = config.getOptionalString('host') ?? AMAZON_AWS_HOST;
   const accessKeyId = config.getOptionalString('accessKeyId');
   const secretAccessKey = config.getOptionalString('secretAccessKey');
+  const roleArn = config.getOptionalString('roleArn');
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -61,7 +67,7 @@ export function readAwsS3IntegrationConfig(
     );
   }
 
-  return { host, accessKeyId, secretAccessKey };
+  return { host, accessKeyId, secretAccessKey, roleArn };
 }
 
 export function readAwsS3IntegrationConfigs(

@@ -183,6 +183,12 @@ export interface Config {
        * @visibility secret
        */
       secretAccessKey?: string;
+
+      /**
+       * ARN of the role to be assumed
+       * @visibility backend
+       */
+      roleArn?: string;
     }>;
   };
 }

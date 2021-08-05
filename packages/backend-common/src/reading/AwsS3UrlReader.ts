@@ -15,6 +15,7 @@
  */
 
 import aws, { Credentials, S3 } from 'aws-sdk';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
   ReadTreeResponse,
@@ -25,6 +26,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import { constant } from 'lodash';
 
 const parseURL = (
   url: string,
@@ -60,29 +62,15 @@ const parseURL = (
 };
 
 export class AwsS3UrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config, logger }) => {
+  static factory: ReaderFactory = ({ config }) => {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
-      let s3: S3;
-      if (
-        !integration.config.accessKeyId ||
-        !integration.config.secretAccessKey
-      ) {
-        logger.debug(
-          'integrations.awsS3 not found in app config. AWS S3 integration will use default AWS credentials if set in environment.',
-        );
-        s3 = new S3({});
-      } else {
-        const creds = new Credentials({
-          accessKeyId: integration.config.accessKeyId,
-          secretAccessKey: integration.config.secretAccessKey,
-        });
-        s3 = new S3({
-          apiVersion: '2006-03-01',
-          credentials: creds,
-        });
-      }
+      const creds = AwsS3UrlReader.buildCredentials(integration);
+      const s3 = new S3({
+        apiVersion: '2006-03-01',
+        credentials: creds,
+      });
       const reader = new AwsS3UrlReader(integration, s3);
       const predicate = (url: URL) =>
         url.host.endsWith(integration.config.host);
@@ -94,6 +82,41 @@ export class AwsS3UrlReader implements UrlReader {
     private readonly integration: AwsS3Integration,
     private readonly s3: S3,
   ) {}
+
+  private static buildCredentials(
+    integration?: AwsS3Integration,
+  ): Credentials | CredentialsOptions | undefined {
+    /*
+    Credentials is an optional config. 
+    If missing, the default ways of authenticating AWS SDK will be used.
+    */
+    if (!integration) {
+      return undefined;
+    }
+
+    const accessKeyId = integration.config.accessKeyId;
+    const secretAccessKey = integration.config.secretAccessKey;
+    let explicitCredentials: Credentials | undefined;
+    if (accessKeyId && secretAccessKey) {
+      explicitCredentials = new Credentials({
+        accessKeyId,
+        secretAccessKey,
+      });
+    }
+
+    const roleArn = integration.config.roleArn;
+    if (roleArn) {
+      return new aws.ChainableTemporaryCredentials({
+        masterCredentials: explicitCredentials,
+        params: {
+          RoleSessionName: 'backstage-aws-s3-url-reader',
+          RoleArn: roleArn,
+        },
+      });
+    }
+
+    return explicitCredentials;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
