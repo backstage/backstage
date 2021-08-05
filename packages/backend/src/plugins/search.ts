@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useHotCleanup } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  useHotCleanup,
+} from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
@@ -21,9 +25,34 @@ import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
   LunrSearchEngine,
+  SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+import { Logger } from 'winston';
 import { PluginEnvironment } from '../types';
+
+async function createSearchEngine({
+  logger,
+  database,
+  config,
+}: {
+  logger: Logger;
+  database: PluginDatabaseManager;
+  config: Config;
+}): Promise<SearchEngine> {
+  if (config.has('search.elasticsearch')) {
+    return await ElasticSearchSearchEngine.fromConfig({
+      logger,
+      config,
+    });
+  }
+
+  if (await PgSearchEngine.supported(database)) {
+    return await PgSearchEngine.from({ database });
+  }
+
+  return new LunrSearchEngine({ logger });
+}
 
 export default async function createPlugin({
   logger,
@@ -32,14 +61,7 @@ export default async function createPlugin({
   database,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
-  const searchEngine = config.has('search.elasticsearch')
-    ? await ElasticSearchSearchEngine.fromConfig({
-        logger,
-        config,
-      })
-    : (await PgSearchEngine.supported(database))
-    ? await PgSearchEngine.from({ database })
-    : new LunrSearchEngine({ logger });
+  const searchEngine = await createSearchEngine({ config, logger, database });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   // Collators are responsible for gathering documents known to plugins. This
