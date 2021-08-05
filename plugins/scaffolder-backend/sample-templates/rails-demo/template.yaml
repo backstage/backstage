@@ -20,8 +20,6 @@ spec:
           description: Unique name of the component
           ui:field: EntityNamePicker
           ui:autofocus: true
-          ui:options:
-            rows: 5
         owner:
           title: Owner
           type: string
