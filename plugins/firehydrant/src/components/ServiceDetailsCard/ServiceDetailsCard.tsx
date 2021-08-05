@@ -156,8 +156,14 @@ export const ServiceDetailsCard = () => {
   const startDate = moment().subtract(30, 'days').utc();
   const endDate = moment().utc();
 
+  // The Backstage service name in FireHydrant is a unique formatted string
+  // that requires the entity's kind, name, and namespace.
+  const fireHydrantServiceName = `${entity?.kind}:${
+    entity?.metadata?.namespace ?? 'default'
+  }/${entity?.metadata?.name}`;
+
   const { loading, value, error } = useServiceDetails({
-    serviceName: entity?.metadata?.name,
+    serviceName: fireHydrantServiceName,
   });
 
   const activeIncidents: string[] = value?.service?.active_incidents ?? [];
