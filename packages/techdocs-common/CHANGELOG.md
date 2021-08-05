@@ -1,5 +1,29 @@
 # @backstage/techdocs-common
 
+## 0.8.0
+
+### Minor Changes
+
+- 48ea3d25b: TechDocs has dropped all support for the long-ago deprecated git-based common
+  prepares as well as all corresponding values in `backstage.io/techdocs-ref`
+  annotations.
+
+  Entities whose `backstage.io/techdocs-ref` annotation values still begin with
+  `github:`, `gitlab:`, `bitbucket:`, or `azure/api:` will no longer be generated
+  by TechDocs. Be sure to update these values so that they align with their
+  expected format and your usage of TechDocs.
+
+  For details, see [this explainer on TechDocs ref annotation values][how].
+
+  [how]: https://backstage.io/docs/features/techdocs/how-to-guides#how-to-understand-techdocs-ref-annotation-values
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
 ## 0.7.1
 
 ### Patch Changes

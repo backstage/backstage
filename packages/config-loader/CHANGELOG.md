@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 0.6.6
+
+### Patch Changes
+
+- e9d3983ee: Add option to populate the `filteredKeys` property when processing configuration with a schema.
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.6.5
 
 ### Patch Changes
