@@ -20,6 +20,7 @@ import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+// TODO(Mike/Himanshu): Create a simple TextValuePicker so that it could be reused for creating custom field extensions with its own validators.
 export const EntityNamePicker = ({
   onChange,
   required,
