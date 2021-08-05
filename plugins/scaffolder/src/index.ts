@@ -30,3 +30,9 @@ export {
   scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';
+export {
+  EntityNamePicker,
+  EntityPicker,
+  OwnerPicker,
+  RepoUrlPicker,
+} from './components/fields';
