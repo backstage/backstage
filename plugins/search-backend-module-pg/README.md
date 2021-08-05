@@ -10,19 +10,7 @@ other plugins.
 
 > **Important**: The search plugin requires at least Postgres 11!
 
-## Setup
+## Getting started
 
-To use the `SearchEngine`, make sure that you have a Postgres database
-configured and make the following changes to your backend:
-
-1. Add a dependency on `@backstage/plugin-search-backend-module-pg` to your backend's `package.json`.
-2. Initialize the search engine. It is recommended to initialize it with a fallback to the lunr search engine if you are running Backstage for development locally with SQLite:
-
-```typescript
-// In packages/backend/src/plugins/search.ts
-
-// Initialize a connection to a search engine.
-const searchEngine = (await PgSearchEngine.supported(database))
-  ? await PgSearchEngine.from({ database })
-  : new LunrSearchEngine({ logger });
-```
+See [Backstage documentation](https://backstage.io/docs/features/search/search-engines#postgres)
+for details on how to setup Postgres based search for your Backstage instance.

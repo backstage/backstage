@@ -16,7 +16,7 @@ QueryTranslator interface. This modification can be done without touching
 provided search engines by using the exposed setter to set the modified query
 translator into the instance.
 
-```
+```typescript
 const searchEngine = new LunrSearchEngine({ logger });
 searchEngine.setTranslator(new MyNewAndBetterQueryTranslator());
 ```
@@ -32,6 +32,35 @@ Lunr can be instantiated like this:
 // app/backend/src/plugins/search.ts
 const searchEngine = new LunrSearchEngine({ logger });
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
+```
+
+## Postgres
+
+The Postgres based search engine only requires that postgres being configured as
+the database engine for Backstage. Therefore it targets setups that want to
+avoid maintaining another external service like elastic search. The search
+provides decent results and performs well with ten thousands of indexed
+documents. The connection to postgres is established via the database manager
+also used by other plugins.
+
+> **Important**: The search plugin requires at least Postgres 11!
+
+To use the `PgSearchEngine`, make sure that you have a Postgres database
+configured and make the following changes to your backend:
+
+1. Add a dependency on `@backstage/plugin-search-backend-module-pg` to your
+   backend's `package.json`.
+2. Initialize the search engine. It is recommended to initialize it with a
+   fallback to the lunr search engine if you are running Backstage for
+   development locally with SQLite:
+
+```typescript
+// In packages/backend/src/plugins/search.ts
+
+// Initialize a connection to a search engine.
+const searchEngine = (await PgSearchEngine.supported(database))
+  ? await PgSearchEngine.from({ database })
+  : new LunrSearchEngine({ logger });
 ```
 
 ## ElasticSearch
