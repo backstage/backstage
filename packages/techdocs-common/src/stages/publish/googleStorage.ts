@@ -99,8 +99,8 @@ export class GoogleGCSPublish implements PublisherBase {
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
-    this.logger = logger;
     this.legacyPathCasing = legacyPathCasing;
+    this.logger = logger;
   }
 
   /**
@@ -160,11 +160,10 @@ export class GoogleGCSPublish implements PublisherBase {
           entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
         }/${entity.kind}/${entity.metadata.name}`;
 
+        const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
         const destination = this.legacyPathCasing
-          ? lowerCaseEntityTripletInStoragePath(
-              `${entityRootDir}/${relativeFilePathPosix}`,
-            )
-          : `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
+          ? relativeFilePathTriplet
+          : lowerCaseEntityTripletInStoragePath(relativeFilePathTriplet); // GCS Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>

@@ -44,7 +44,12 @@ jest.spyOn(logger, 'error').mockReturnValue(logger);
 const createPublisherFromConfig = ({
   accountName = 'accountName',
   containerName = 'containerName',
-}: undefined | { accountName?: string; containerName?: string } = {}) => {
+  legacyUseCaseSensitiveTripletPaths = false,
+}: {
+  accountName?: string;
+  containerName?: string;
+  legacyUseCaseSensitiveTripletPaths?: boolean;
+} = {}) => {
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -58,6 +63,7 @@ const createPublisherFromConfig = ({
           containerName,
         },
       },
+      legacyUseCaseSensitiveTripletPaths,
     },
   });
 
@@ -105,32 +111,37 @@ describe('publishing with valid credentials', () => {
     (logger.error as jest.Mock).mockClear();
   });
 
+  const files = {
+    'index.html': '',
+    '404.html': '',
+    'techdocs_metadata.json': JSON.stringify(techdocsMetadata),
+    assets: {
+      'main.css': '',
+    },
+    attachments: {
+      'image.png': Buffer.from([2, 3, 5, 3, 5, 3, 5, 9, 1]),
+    },
+    html: {
+      'unsafe.html': '<html></html>',
+    },
+    img: {
+      'with spaces.png': 'found it',
+      'unsafe.svg': '<svg></svg>',
+    },
+    'some folder': {
+      'also with spaces.js': 'found it too',
+    },
+  };
+
   beforeAll(async () => {
     mockFs({
-      [localRootDir]: {
-        'index.html': 'file-content',
-        '404.html': '',
-        assets: {
-          'main.css': '',
-        },
-        'techdocs_metadata.json': JSON.stringify(techdocsMetadata),
-      },
-      [storageRootDir]: {
-        'index.html': '',
-        'techdocs_metadata.json': JSON.stringify(techdocsMetadata),
-        html: {
-          'unsafe.html': '<html></html>',
-        },
-        img: {
-          'with spaces.png': 'found it',
-          'unsafe.svg': '<svg></svg>',
-        },
-        'some folder': {
-          'also with spaces.js': 'found it too',
-        },
-      },
+      [localRootDir]: files,
+      [storageRootDir]: files,
       [storageSingleQuoteDir]: {
-        'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}`,
+        'techdocs_metadata.json': files['techdocs_metadata.json'].replace(
+          /"/g,
+          "'",
+        ),
       },
     });
   });
@@ -167,6 +178,18 @@ describe('publishing with valid credentials', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const publisher = createPublisherFromConfig();
+      expect(
+        await publisher.publish({
+          entity,
+          directory: localRootDir,
+        }),
+      ).toBeUndefined();
+    });
+
+    it('should publish a directory as well when legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
       expect(
         await publisher.publish({
           entity,
@@ -240,6 +263,13 @@ describe('publishing with valid credentials', () => {
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
     });
 
+    it('should return true if docs has been generated even if the legacy case is enabled', async () => {
+      const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+    });
+
     it('should return false if docs has not been generated', async () => {
       const publisher = createPublisherFromConfig();
       expect(
@@ -257,6 +287,15 @@ describe('publishing with valid credentials', () => {
   describe('fetchTechDocsMetadata', () => {
     it('should return tech docs metadata', async () => {
       const publisher = createPublisherFromConfig();
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+    });
+
+    it('should return tech docs metadata even if the legacy case is enabled', async () => {
+      const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
@@ -311,6 +350,24 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should pass expected object path to bucket', async () => {
+      // Ensures leading slash is trimmed and encoded path is decoded.
+      const pngResponse = await request(app).get(
+        `/${entityTripletPath}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass expected object path to bucket even if the legacy case is enabled', async () => {
+      const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      app = express().use(publisher.docsRouter());
       // Ensures leading slash is trimmed and encoded path is decoded.
       const pngResponse = await request(app).get(
         `/${entityTripletPath}/img/with%20spaces.png`,

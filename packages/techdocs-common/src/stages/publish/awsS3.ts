@@ -102,7 +102,17 @@ export class AwsS3Publish implements PublisherBase {
       ...(s3ForcePathStyle && { s3ForcePathStyle }),
     });
 
-    return new AwsS3Publish(storageClient, bucketName, logger);
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+
+    return new AwsS3Publish(
+      storageClient,
+      bucketName,
+      legacyPathCasing,
+      logger,
+    );
   }
 
   private static buildCredentials(
@@ -139,10 +149,12 @@ export class AwsS3Publish implements PublisherBase {
   constructor(
     private readonly storageClient: aws.S3,
     private readonly bucketName: string,
+    private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
+    this.legacyPathCasing = legacyPathCasing;
     this.logger = logger;
   }
 
@@ -204,9 +216,11 @@ export class AwsS3Publish implements PublisherBase {
         const entityRootDir = `${
           entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
         }/${entity.kind}/${entity.metadata.name}`;
-        const destination = lowerCaseEntityTripletInStoragePath(
-          `${entityRootDir}/${relativeFilePathPosix}`,
-        ); // S3 Bucket file relative path
+
+        const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
+        const destination = this.legacyPathCasing
+          ? relativeFilePathTriplet
+          : lowerCaseEntityTripletInStoragePath(relativeFilePathTriplet); // S3 Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() => {
@@ -239,9 +253,10 @@ export class AwsS3Publish implements PublisherBase {
   ): Promise<TechDocsMetadata> {
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
-        const entityRootDir = lowerCaseEntityTriplet(
-          `${entityName.namespace}/${entityName.kind}/${entityName.name}`,
-        );
+        const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+        const entityRootDir = this.legacyPathCasing
+          ? entityTriplet
+          : lowerCaseEntityTriplet(entityTriplet);
 
         const stream = this.storageClient
           .getObject({
@@ -282,7 +297,9 @@ export class AwsS3Publish implements PublisherBase {
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
       // filePath example - /default/component/documented-component/index.html
-      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
+      const filePath = this.legacyPathCasing
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -313,9 +330,11 @@ export class AwsS3Publish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
-      const entityRootDir = lowerCaseEntityTriplet(
-        `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`,
-      );
+      const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityRootDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
+
       await this.storageClient
         .headObject({
           Bucket: this.bucketName,

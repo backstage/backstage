@@ -89,16 +89,28 @@ export class AzureBlobStoragePublish implements PublisherBase {
       credential,
     );
 
-    return new AzureBlobStoragePublish(storageClient, containerName, logger);
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+
+    return new AzureBlobStoragePublish(
+      storageClient,
+      containerName,
+      legacyPathCasing,
+      logger,
+    );
   }
 
   constructor(
     private readonly storageClient: BlobServiceClient,
     private readonly containerName: string,
+    private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
     this.containerName = containerName;
+    this.legacyPathCasing = legacyPathCasing;
     this.logger = logger;
   }
 
@@ -167,9 +179,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
         const entityRootDir = `${
           entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
         }/${entity.kind}/${entity.metadata.name}`;
-        const destination = lowerCaseEntityTripletInStoragePath(
-          `${entityRootDir}/${relativeFilePathPosix}`,
-        ); // Azure Blob Storage Container file relative path
+
+        const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
+        const destination = this.legacyPathCasing
+          ? relativeFilePathTriplet
+          : lowerCaseEntityTripletInStoragePath(relativeFilePathTriplet); // Azure Blob Storage Container file relative path
+
         return limiter(async () => {
           const response = await this.storageClient
             .getContainerClient(this.containerName)
@@ -242,9 +257,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
-    const entityRootDir = lowerCaseEntityTriplet(
-      `${entityName.namespace}/${entityName.kind}/${entityName.name}`,
-    );
+    const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+    const entityRootDir = this.legacyPathCasing
+      ? entityTriplet
+      : lowerCaseEntityTriplet(entityTriplet);
+
     try {
       const techdocsMetadataJson = await this.download(
         this.containerName,
@@ -273,7 +290,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
       // filePath example - /default/Component/documented-component/index.html
-      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
+      const filePath = this.legacyPathCasing
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = platformPath.extname(filePath);
@@ -301,9 +320,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
-    const entityRootDir = lowerCaseEntityTriplet(
-      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`,
-    );
+    const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+    const entityRootDir = this.legacyPathCasing
+      ? entityTriplet
+      : lowerCaseEntityTriplet(entityTriplet);
+
     return this.storageClient
       .getContainerClient(this.containerName)
       .getBlockBlobClient(`${entityRootDir}/index.html`)

@@ -246,5 +246,10 @@ export interface Config {
      * @deprecated
      */
     storageUrl?: string;
+
+    /**
+     * (Optional)
+     */
+    legacyUseCaseSensitiveTripletPaths?: boolean;
   };
 }
