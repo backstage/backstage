@@ -17,6 +17,7 @@ spec:
           title: Name
           type: string
           description: Unique name of the component
+          ui:field: EntityNamePicker
           ui:autofocus: true
           ui:options:
             rows: 5

@@ -23,6 +23,7 @@ spec:
           title: Name
           type: string
           description: Unique name of the component
+          ui:field: EntityNamePicker
         java_package_name:
           title: Java Package Name
           type: string
