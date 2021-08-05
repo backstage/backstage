@@ -23,6 +23,7 @@ export const TextValuePicker = ({
   schema: { title, description },
   rawErrors,
   formData,
+  uiSchema: { 'ui:autofocus': autoFocus },
 }: FieldProps<string>) => (
   <TextField
     label={title}
@@ -32,5 +33,6 @@ export const TextValuePicker = ({
     onChange={({ target: { value } }) => onChange(value)}
     margin="normal"
     error={rawErrors?.length > 0 && !formData}
+    inputProps={{ autoFocus }}
   />
 );
