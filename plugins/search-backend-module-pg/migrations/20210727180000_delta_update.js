@@ -18,6 +18,9 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  // This database migration uses some postgres specific features (like bytea
+  // columns and build in functions) and can not be used with other database
+  // engines.
   await knex.schema.alterTable('documents', table => {
     // Extend the documents table with a column that allows to check whether a
     // document with the same content is already indexed.

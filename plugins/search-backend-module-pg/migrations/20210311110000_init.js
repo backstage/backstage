@@ -18,6 +18,8 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  // This database schema uses some postgres specific features (like tsvector
+  // and jsonb columns) and can not be used with other database engines.
   await knex.schema.createTable('documents', table => {
     table.comment('The table of documents');
     table
