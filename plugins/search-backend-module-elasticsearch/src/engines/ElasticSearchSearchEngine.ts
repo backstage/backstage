@@ -35,13 +35,6 @@ export type ConcreteElasticSearchQuery = {
   elasticSearchQuery: Object;
 };
 
-type ElasticConfigAuth = {
-  username: string;
-  password: string;
-  apiKey: string;
-  bearer: string;
-};
-
 type ElasticSearchQueryTranslator = (
   query: SearchQuery,
 ) => ConcreteElasticSearchQuery;
@@ -105,11 +98,15 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
     if (config.getOptionalString('provider') === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
+      const authConfig = config.getConfig('auth');
       return new Client({
         cloud: {
           id: config.getString('cloudId'),
         },
-        auth: config.get<ElasticConfigAuth>('auth'),
+        auth: {
+          username: authConfig.getString('username'),
+          password: authConfig.getString('password'),
+        },
       });
     }
     if (config.getOptionalString('provider') === 'aws') {
@@ -122,9 +119,20 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       });
     }
     logger.info('Initializing ElasticSearch search engine.');
+    const authConfig = config.getOptionalConfig('auth');
+    const auth =
+      authConfig &&
+      (authConfig.has('apiKey')
+        ? {
+            apiKey: authConfig.getString('apiKey'),
+          }
+        : {
+            username: authConfig.getString('username'),
+            password: authConfig.getString('password'),
+          });
     return new Client({
       node: config.getString('node'),
-      auth: config.get<ElasticConfigAuth>('auth'),
+      auth,
     });
   }
 
