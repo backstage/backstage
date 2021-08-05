@@ -24,9 +24,7 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 // Warning: (ae-missing-release-tag) "createCopyDocsUrlAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-function createCopyDocsUrlAction(
-  copyToClipboard: Function,
-): (
+function createCopyDocsUrlAction(copyToClipboard: Function): (
   row: DocsTableRow,
 ) => {
   icon: () => JSX.Element;
@@ -50,9 +48,7 @@ function createOwnerColumn(): TableColumn<DocsTableRow>;
 function createStarEntityAction(
   isStarredEntity: Function,
   toggleStarredEntity: Function,
-): ({
-  entity,
-}: DocsTableRow) => {
+): ({ entity }: DocsTableRow) => {
   cellStyle: {
     paddingLeft: string;
   };
@@ -65,6 +61,19 @@ function createStarEntityAction(
 //
 // @public (undocumented)
 function createTypeColumn(): TableColumn<DocsTableRow>;
+
+// Warning: (ae-missing-release-tag) "DefaultTechDocsHome" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DefaultTechDocsHome: ({
+  initialFilter,
+  columns,
+  actions,
+}: {
+  initialFilter?: UserListFilterKind | undefined;
+  columns?: TableColumn<DocsTableRow>[] | undefined;
+  actions?: TableProps<DocsTableRow>['actions'];
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DocsCardGrid" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -235,38 +244,21 @@ export const TechDocsCustomHome: ({
   tabsConfig: TabsConfig;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TechDocsHome" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TechDocsIndexPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const TechDocsHome: ({
-  initialFilter,
-  columns,
-  actions,
-}: {
-  initialFilter?: UserListFilterKind | undefined;
-  columns?: TableColumn<DocsTableRow>[] | undefined;
-  actions?:
-    | (
-        | Action<DocsTableRow>
-        | {
-            action: (rowData: DocsTableRow) => Action<DocsTableRow>;
-            position: string;
-          }
-        | ((rowData: DocsTableRow) => Action<DocsTableRow>)
-      )[]
-    | undefined;
-}) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "TechDocsHomeLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const TechDocsHomeLayout: ({ children }: Props) => JSX.Element;
+export const TechDocsIndexPage: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TechdocsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const TechdocsPage: () => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "TechDocsPageWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TechDocsPageWrapper: ({ children }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TechDocsPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

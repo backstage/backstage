@@ -21,7 +21,8 @@ export { TechDocsClient, TechDocsStorageClient } from './client';
 export type { DocsTableRow, PanelType } from './home/components';
 export {
   EntityListDocsTable,
-  TechDocsHomeLayout,
+  DefaultTechDocsHome,
+  TechDocsPageWrapper,
   TechDocsPicker,
 } from './home/components';
 export * from './components/DocsResultListItem';
@@ -30,7 +31,7 @@ export {
   DocsTable,
   EntityTechdocsContent,
   TechDocsCustomHome,
-  TechDocsHome,
+  TechDocsIndexPage,
   TechdocsPage,
   techdocsPlugin as plugin,
   techdocsPlugin,

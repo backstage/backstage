@@ -18,7 +18,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { TechDocsHome } from './TechDocsHome';
+import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
 import {
   ApiProvider,
@@ -71,7 +71,7 @@ describe('TechDocs Home', () => {
   it('should render a TechDocs home page', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <TechDocsHome />
+        <DefaultTechDocsHome />
       </ApiProvider>,
     );
 

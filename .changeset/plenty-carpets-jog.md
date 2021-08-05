@@ -1,10 +1,10 @@
 ---
-'@backstage/plugin-techdocs': patch
+'@backstage/create-app': patch
 ---
 
-Expose a new composable `TechDocsIndexPage` and a `DefaultTechDocsHome` with support for starring docs and filtering on owned, starred, owner, and tags.
+Use new composable `TechDocsIndexPage` and `DefaultTechDocsHome`
 
-You can migrate to the new UI view by making the following changes in your `App.tsx`:
+Make the following changes to your `App.tsx` to migrate existing apps:
 
 ```diff
 -    <Route path="/docs" element={<TechdocsPage />} />

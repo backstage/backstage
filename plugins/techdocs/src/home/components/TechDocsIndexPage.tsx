@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-export { EntityListDocsTable } from './EntityListDocsTable';
-export { DefaultTechDocsHome } from './DefaultTechDocsHome';
-export { TechDocsPageWrapper } from './TechDocsPageWrapper';
-export { TechDocsPicker } from './TechDocsPicker';
-export type { PanelType } from './TechDocsCustomHome';
-export type { DocsTableRow } from './types';
+import React from 'react';
+import { useOutlet } from 'react-router';
+import { LegacyTechDocsHome } from './LegacyTechDocsHome';
+
+export const TechDocsIndexPage = () => {
+  const outlet = useOutlet();
+
+  return outlet || <LegacyTechDocsHome />;
+};

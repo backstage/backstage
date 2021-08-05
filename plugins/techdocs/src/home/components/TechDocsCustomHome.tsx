@@ -28,7 +28,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { DocsTable } from './DocsTable';
 import { DocsCardGrid } from './DocsCardGrid';
-import { TechDocsHomeLayout } from './TechDocsHomeLayout';
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 import {
   CodeSnippet,
@@ -149,17 +149,17 @@ export const TechDocsCustomHome = ({
 
   if (loading) {
     return (
-      <TechDocsHomeLayout>
+      <TechDocsPageWrapper>
         <Content>
           <Progress />
         </Content>
-      </TechDocsHomeLayout>
+      </TechDocsPageWrapper>
     );
   }
 
   if (error) {
     return (
-      <TechDocsHomeLayout>
+      <TechDocsPageWrapper>
         <Content>
           <WarningPanel
             severity="error"
@@ -168,12 +168,12 @@ export const TechDocsCustomHome = ({
             <CodeSnippet language="text" text={error.toString()} />
           </WarningPanel>
         </Content>
-      </TechDocsHomeLayout>
+      </TechDocsPageWrapper>
     );
   }
 
   return (
-    <TechDocsHomeLayout>
+    <TechDocsPageWrapper>
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}
@@ -192,6 +192,6 @@ export const TechDocsCustomHome = ({
           />
         ))}
       </Content>
-    </TechDocsHomeLayout>
+    </TechDocsPageWrapper>
   );
 };

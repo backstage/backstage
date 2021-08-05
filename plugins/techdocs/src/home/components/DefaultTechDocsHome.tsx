@@ -35,11 +35,11 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { EntityListDocsTable } from './EntityListDocsTable';
-import { TechDocsHomeLayout } from './TechDocsHomeLayout';
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { DocsTableRow } from './types';
 
-export const TechDocsHome = ({
+export const DefaultTechDocsHome = ({
   initialFilter = 'all',
   columns,
   actions,
@@ -49,7 +49,7 @@ export const TechDocsHome = ({
   actions?: TableProps<DocsTableRow>['actions'];
 }) => {
   return (
-    <TechDocsHomeLayout>
+    <TechDocsPageWrapper>
       <Content>
         <ContentHeader title="">
           <SupportButton>
@@ -70,6 +70,6 @@ export const TechDocsHome = ({
           </FilteredEntityLayout>
         </EntityListProvider>
       </Content>
-    </TechDocsHomeLayout>
+    </TechDocsPageWrapper>
   );
 };

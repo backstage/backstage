@@ -23,7 +23,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-export const TechDocsHomeLayout = ({ children }: Props) => {
+export const TechDocsPageWrapper = ({ children }: Props) => {
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `Documentation available in ${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
