@@ -40,7 +40,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
-    "@types/react": "^16.9",
+    "@types/react": "*",
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -59,7 +59,6 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
-    "@types/react": "^16.9",
     "cross-fetch": "^3.0.6",
     "msw": "^0.29.0"
   },
