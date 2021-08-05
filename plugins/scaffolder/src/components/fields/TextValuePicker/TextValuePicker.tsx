@@ -13,8 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityNamePicker';
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
-export * from './TextValuePicker';
+import React from 'react';
+import { FieldProps } from '@rjsf/core';
+import { TextField } from '@material-ui/core';
+
+export const TextValuePicker = ({
+  onChange,
+  required,
+  schema: { title, description },
+  rawErrors,
+  formData,
+}: FieldProps<string>) => (
+  <TextField
+    label={title}
+    helperText={description}
+    required={required}
+    value={formData ?? ''}
+    onChange={({ target: { value } }) => onChange(value)}
+    margin="normal"
+    error={rawErrors?.length > 0 && !formData}
+  />
+);

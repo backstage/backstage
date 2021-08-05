@@ -35,4 +35,5 @@ export {
   EntityPicker,
   OwnerPicker,
   RepoUrlPicker,
+  TextValuePicker,
 } from './components/fields';

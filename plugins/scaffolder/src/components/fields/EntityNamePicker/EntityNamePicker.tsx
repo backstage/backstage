@@ -15,30 +15,11 @@
  */
 import React from 'react';
 import { FieldProps } from '@rjsf/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { TextValuePicker } from '../TextValuePicker';
 
-// TODO(Mike/Himanshu): Create a simple TextValuePicker so that it could be reused for creating custom field extensions with its own validators.
 export const EntityNamePicker = ({
-  onChange,
-  required,
   schema: { title = 'Name', description = 'Unique name of the component' },
-  rawErrors,
-  formData,
+  ...props
 }: FieldProps<string>) => (
-  <FormControl
-    margin="normal"
-    required={required}
-    error={rawErrors?.length > 0 && !formData}
-  >
-    <InputLabel htmlFor="nameInput">{title}</InputLabel>
-    <Input
-      id="nameInput"
-      onChange={({ target: { value } }) => onChange(value)}
-      value={formData ?? ''}
-    />
-    <FormHelperText>{description}</FormHelperText>
-  </FormControl>
+  <TextValuePicker schema={{ title, description }} {...props} />
 );
