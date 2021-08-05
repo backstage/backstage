@@ -80,7 +80,8 @@
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
-          "features/search/architecture"
+          "features/search/architecture",
+          "features/search/search-engines"
         ]
       },
       {
