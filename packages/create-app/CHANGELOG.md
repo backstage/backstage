@@ -1,5 +1,18 @@
 # @backstage/create-app
 
+## 0.3.34
+
+### Patch Changes
+
+- c189c5da5: fix typo in the comments of EntityPage component
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- 98dda80b4: Update `techdocs.generators` with the latest `techdocs.generator` config in `app-config.yaml`. See
+  https://backstage.io/docs/features/techdocs/configuration for reference and relevant PR
+  https://github.com/backstage/backstage/pull/6071/files for the changes.
+
 ## 0.3.33
 
 ### Patch Changes

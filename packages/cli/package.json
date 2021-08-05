@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -31,8 +31,8 @@
     "@babel/core": "^7.4.4",
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@backstage/cli-common": "^0.1.2",
-    "@backstage/config": "^0.1.5",
-    "@backstage/config-loader": "^0.6.5",
+    "@backstage/config": "^0.1.6",
+    "@backstage/config-loader": "^0.6.6",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
@@ -118,12 +118,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.8.7",
-    "@backstage/config": "^0.1.5",
-    "@backstage/core-components": "^0.2.0",
-    "@backstage/core-plugin-api": "^0.1.4",
-    "@backstage/core-app-api": "^0.1.6",
-    "@backstage/dev-utils": "^0.2.4",
+    "@backstage/backend-common": "^0.8.8",
+    "@backstage/config": "^0.1.6",
+    "@backstage/core-components": "^0.3.0",
+    "@backstage/core-plugin-api": "^0.1.5",
+    "@backstage/core-app-api": "^0.1.7",
+    "@backstage/dev-utils": "^0.2.5",
     "@backstage/test-utils": "^0.1.16",
     "@backstage/theme": "^0.2.9",
     "@types/diff": "^5.0.0",

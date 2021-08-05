@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.3.0
+
+### Minor Changes
+
+- 7bf006210: Remove unused props from InfoCard prop type
+
+### Patch Changes
+
+- c4d8ff963: Switched frontend identity code to use `token` instead of the deprecated `idToken` field
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 0.1.5
+
+### Patch Changes
+
+- c4d8ff963: Switched frontend identity code to use `token` instead of the deprecated `idToken` field
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.1.4
 
 ### Patch Changes
