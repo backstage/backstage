@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
@@ -83,7 +83,7 @@ export const OpenApiDefinitionWidget = ({ definition }: Props) => {
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} />
+      <SwaggerUI spec={def} deepLinking />
     </div>
   );
 };
