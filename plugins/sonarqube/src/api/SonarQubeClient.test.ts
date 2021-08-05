@@ -322,7 +322,7 @@ describe('SonarQubeClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
-        expect(req.headers.get('Authorization')).toBeUndefined();
+        expect(req.headers.has('Authorization')).toBeFalsy();
         return res(
           ctx.json({
             component: {
