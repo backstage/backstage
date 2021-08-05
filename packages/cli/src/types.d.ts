@@ -33,7 +33,7 @@ declare module '@rollup/plugin-yaml';
 declare module 'terser-webpack-plugin';
 
 declare module 'react-dev-utils/formatWebpackMessages' {
-  export default function(
+  export default function (
     stats: any,
   ): {
     errors: string[];
@@ -42,7 +42,7 @@ declare module 'react-dev-utils/formatWebpackMessages' {
 }
 
 declare module 'react-dev-utils/openBrowser' {
-  export default function(url: string): boolean;
+  export default function (url: string): boolean;
 }
 
 declare module 'react-dev-utils/ModuleScopePlugin' {
