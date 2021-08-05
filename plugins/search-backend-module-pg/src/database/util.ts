@@ -17,7 +17,7 @@ import { Knex } from 'knex';
 
 export async function queryPostgresMajorVersion(knex: Knex): Promise<number> {
   if (knex.client.config.client !== 'pg') {
-    throw new Error("Can' resolve version, not a postgres database");
+    throw new Error("Can't resolve version, not a postgres database");
   }
 
   const { rows } = await knex.raw('SHOW server_version_num');
