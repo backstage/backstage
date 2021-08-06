@@ -346,4 +346,68 @@ describe('transformSchemaToProps', () => {
       uiSchema: expectedUiSchema,
     });
   });
+
+  it('transforms schema with array items', () => {
+    const inputSchema = {
+      type: 'object',
+      properties: {
+        person: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              address: {
+                type: 'string',
+                'ui:widget': 'textarea',
+              },
+            },
+          },
+        },
+        accountNumber: {
+          type: 'number',
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        person: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              address: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        accountNumber: {
+          type: 'number',
+        },
+      },
+    };
+    const expectedUiSchema = {
+      accountNumber: {},
+      person: {
+        items: {
+          name: {},
+          address: {
+            'ui:widget': 'textarea',
+          },
+        },
+      },
+    };
+
+    expect(transformSchemaToProps(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
 });
