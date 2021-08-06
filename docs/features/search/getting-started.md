@@ -4,8 +4,6 @@ title: Getting Started with Search
 description: How to set up and install Backstage Search
 ---
 
-# Getting Started
-
 Search functions as a plugin to Backstage, so you will need to use Backstage to
 use Search.
 
