@@ -42,8 +42,12 @@
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+<<<<<<< HEAD:plugins/cloudbuild/package.json
     "react-hook-form": "^7.12.2",
     "react-lazylog": "^4.5.3",
+=======
+    "react-hook-form": "^6.15.4",
+>>>>>>> chore: reset register component as it's going away in another PR:plugins/register-component/package.json
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4"
