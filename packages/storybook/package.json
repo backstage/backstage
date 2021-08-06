@@ -7,12 +7,6 @@
     "start": "start-storybook -p 6006",
     "build-storybook": "build-storybook --output-dir dist"
   },
-  "workspaces": {
-    "nohoist": [
-      "@storybook/react/**",
-      "@storybook/addons/**"
-    ]
-  },
   "dependencies": {
     "@backstage/theme": "^0.2.0",
     "react": "^16.12.0",

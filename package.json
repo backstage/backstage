@@ -40,7 +40,8 @@
       "plugins/*"
     ],
     "nohoist": [
-      "**/@storybook/**"
+      "**/@storybook/**",
+      "**/@storybook"
     ]
   },
   "resolutions": {
