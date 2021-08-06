@@ -86,11 +86,7 @@ class GithubAppManager {
   ): Promise<{ accessToken: string }> {
     const { installationId, suspended } = await this.getInstallationData(owner);
     if (suspended) {
-      throw new Error(
-        `The GitHub application for ${[owner]
-          .filter(Boolean)
-          .join('/')} is suspended`,
-      );
+      throw new Error(`The GitHub application for ${owner} is suspended`);
     }
 
     const cacheKey = repo ? `${owner}/${repo}` : owner;
@@ -233,10 +229,7 @@ export class GithubCredentialsProvider {
     const parsed = parseGitUrl(opts.url);
 
     const owner = parsed.owner || parsed.name;
-    let repo = parsed.owner ? parsed.name : undefined;
-    // the github-discovery plugin passes an • as a repo name. This simply means it wants access to all repos
-    // that are available to the installation.
-    repo = repo === '*' ? undefined : repo;
+    const repo = parsed.owner ? parsed.name : undefined;
 
     let type: GithubCredentialType = 'app';
     let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);

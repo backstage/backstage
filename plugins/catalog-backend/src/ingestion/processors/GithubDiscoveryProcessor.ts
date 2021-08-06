@@ -25,6 +25,7 @@ import { Logger } from 'winston';
 import { getOrganizationRepositories } from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import parseGitUrl from 'git-url-parse';
 
 /**
  * Extracts repositories out of a GitHub org.
@@ -63,9 +64,15 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
         `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
       );
     }
+
+    // Building the org url here so that the github creds provider doesn't need to know
+    // about how to handle the wild card which is special for this processor.
+    const { source, organization } = parseGitUrl(location.target);
+    const orgUrl = `https://${source}/${organization}`;
+
     const { headers } = await GithubCredentialsProvider.create(
       gitHubConfig,
-    ).getCredentials({ url: location.target });
+    ).getCredentials({ url: orgUrl });
     const { org, repoSearchPath, catalogPath } = parseUrl(location.target);
 
     const client = graphql.defaults({
