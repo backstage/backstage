@@ -13,14 +13,20 @@ import { Entity } from '@backstage/catalog-model';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntityILertCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityILertCard: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "GetIncidentsCountOpts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GetIncidentsCountOpts = {
   states?: IncidentStatus[];
 };
 
+// Warning: (ae-missing-release-tag) "GetIncidentsOpts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GetIncidentsOpts = {
   maxResults?: number;
@@ -29,6 +35,8 @@ export type GetIncidentsOpts = {
   alertSources?: number[];
 };
 
+// Warning: (ae-missing-release-tag) "ILertApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ILertApi {
   // (undocumented)
@@ -43,6 +51,8 @@ export interface ILertApi {
     incident: Incident,
     responder: IncidentResponder,
   ): Promise<Incident>;
+  // Warning: (ae-forgotten-export) The symbol "EventRequest" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   createIncident(eventRequest: EventRequest): Promise<boolean>;
   // (undocumented)
@@ -51,30 +61,48 @@ export interface ILertApi {
   enableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
+  // Warning: (ae-forgotten-export) The symbol "OnCall" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchAlertSourceOnCalls(alertSource: AlertSource): Promise<OnCall[]>;
+  // Warning: (ae-forgotten-export) The symbol "AlertSource" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchAlertSources(): Promise<AlertSource[]>;
   // (undocumented)
   fetchIncident(id: number): Promise<Incident>;
+  // Warning: (ae-forgotten-export) The symbol "IncidentAction" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
+  // Warning: (ae-forgotten-export) The symbol "IncidentResponder" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
+  // Warning: (ae-forgotten-export) The symbol "Incident" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
   // (undocumented)
   fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
+  // Warning: (ae-forgotten-export) The symbol "Schedule" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchOnCallSchedules(): Promise<Schedule[]>;
   // (undocumented)
   fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
+  // Warning: (ae-forgotten-export) The symbol "UptimeMonitor" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
+  // Warning: (ae-forgotten-export) The symbol "User" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   fetchUsers(): Promise<User[]>;
   // (undocumented)
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
+  // Warning: (ae-forgotten-export) The symbol "EscalationPolicy" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   // (undocumented)
@@ -107,14 +135,21 @@ export interface ILertApi {
   ): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "ilertApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ilertApiRef: ApiRef<ILertApi>;
 
+// Warning: (ae-missing-release-tag) "ILertCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ILertCard: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "ILertClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class ILertClient implements ILertApi {
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(opts: Options);
   // (undocumented)
   acceptIncident(incident: Incident, userName: string): Promise<Incident>;
@@ -197,12 +232,18 @@ export class ILertClient implements ILertApi {
   ): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "ILertIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ILertIcon: IconComponent;
 
+// Warning: (ae-missing-release-tag) "ILertPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ILertPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "ilertPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const ilertPlugin: BackstagePlugin<
   {
@@ -213,22 +254,34 @@ const ilertPlugin: BackstagePlugin<
 export { ilertPlugin };
 export { ilertPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "iLertRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const iLertRouteRef: RouteRef<undefined>;
 
+// Warning: (ae-missing-release-tag) "isPluginApplicableToEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
 export { isPluginApplicableToEntity as isILertAvailable };
 export { isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "ILertPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "TableState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type TableState = {
   page: number;
   pageSize: number;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/api/types.d.ts:14:5 - (ae-forgotten-export) The symbol "IncidentStatus" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -31,7 +31,7 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
-    "@types/react": "^16.9",
+    "@types/react": "*",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },

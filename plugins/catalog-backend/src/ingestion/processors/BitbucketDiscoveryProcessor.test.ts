@@ -225,6 +225,34 @@ describe('BitbucketDiscoveryProcessor', () => {
         optional: true,
       });
     });
+
+    it.each`
+      target
+      ${'https://bitbucket.mycompany.com/projects/backstage/repos/*'}
+      ${'https://bitbucket.mycompany.com/projects/backstage/repos/*/'}
+      ${'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-*/'}
+    `("target '$target' adds default path to catalog", async ({ target }) => {
+      setupStubs([{ key: 'backstage', repos: ['techdocs-cli'] }]);
+
+      const location: LocationSpec = {
+        type: 'bitbucket-discovery',
+        target: target,
+      };
+
+      const emitter = jest.fn();
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledTimes(1);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
   });
 
   describe('Custom repository parser', () => {

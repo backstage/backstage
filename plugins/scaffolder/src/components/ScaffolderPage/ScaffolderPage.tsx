@@ -17,6 +17,7 @@
 import {
   Content,
   ContentHeader,
+  CreateButton,
   Header,
   Lifecycle,
   Page,
@@ -30,9 +31,8 @@ import {
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
@@ -57,23 +57,17 @@ export const ScaffolderPageContents = () => {
         pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a New Component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
       />
       <Content>
         <ContentHeader title="Available Templates">
-          {registerComponentLink && (
-            <Button
-              component={RouterLink}
-              variant="contained"
-              color="primary"
-              to={registerComponentLink()}
-            >
-              Register Existing Component
-            </Button>
-          )}
+          <CreateButton
+            title="Register Existing Component"
+            to={registerComponentLink && registerComponentLink()}
+          />
           <SupportButton>
             Create new software components using standard templates. Different
             templates create different kinds of components (services, websites,

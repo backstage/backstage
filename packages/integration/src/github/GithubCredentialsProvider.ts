@@ -142,7 +142,7 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login === owner,
+      inst => inst.account?.login?.toLowerCase() === owner.toLowerCase(),
     );
     if (installation) {
       return {

@@ -1,5 +1,90 @@
 # @backstage/plugin-techdocs
 
+## 0.10.3
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- db58cf06c: Avoid sanitize safe links in the header of document pages.
+- 1d65bd490: Fix Techdocs feedback icon link for GitLab URLs with subgroup(s) in path
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 11c370af2: Optimize load times by only fetching entities with the `backstage.io/techdocs-ref` annotation
+- 2b1ac002d: TechDocs now uses a "safe by default" sanitization library, rather than relying on its own, hard-coded list of allowable tags and attributes.
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+
+## 0.10.1
+
+### Patch Changes
+
+- 9266b80ab: Add search list item to display tech docs search results
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- 378cc6a54: Only update the `path` when the content is updated.
+  If content and path are updated independently, the frontend rendering is triggered twice on each navigation: Once for the `path` change (with the old content) and once for the new content.
+  This might result in a flickering rendering that is caused by the async frontend preprocessing, and the fact that replacing the shadow dom content is expensive.
+- 214e7c52d: Refactor the techdocs transformers to return `Promise`s and await all transformations.
+- e35b13afa: Handle error responses in `getTechDocsMetadata` and `getEntityMetadata` such that `<TechDocsPageHeader>` doesn't throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 94a54dd47: Added a `migrateDocsCase()` method to TechDocs publishers, along with
+  implementations for AWS, Azure, and GCS.
+
+  This change is in support of a future update to TechDocs that will allow for
+  case-insensitive entity triplet URL access to documentation pages which will
+  require a migration of existing documentation objects in external storage
+  solutions.
+
+  See [#4367](https://github.com/backstage/backstage/issues/4367) for details.
+
+### Patch Changes
+
+- 537c37b0f: Fix displaying owned documents list by fetching associated entity relations
+- 136a91974: Show a "Refresh" button to if the content is stale.
+  This removes the need to do a full page-reload to display more recent TechDocs content.
+- f1200f44c: Rewrite the `/sync/:namespace/:kind/:name` endpoint to support an event-stream as response.
+  This change allows the sync process to take longer than a normal HTTP timeout.
+  The stream also emits log events, so the caller can follow the build process in the frontend.
+- 3af126cdd: Provide a Drawer component to follow a running build.
+  This can be used to debug the rendering and get build logs in case an error occurs.
+- 2a4a3b32d: Techdocs: fix sidebars not adjusting position automatically
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.9.9
 
 ### Patch Changes

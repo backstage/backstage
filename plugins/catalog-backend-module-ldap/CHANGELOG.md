@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.2.2
+
+### Patch Changes
+
+- 2a2a2749b: chore(deps): bump `@types/ldapjs` from 1.0.10 to 2.2.0
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.1
+
+## 0.2.1
+
+### Patch Changes
+
+- afe3e4b54: Expose missing types used by the custom transformers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.0
+
 ## 0.2.0
 
 ### Minor Changes

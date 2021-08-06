@@ -132,6 +132,7 @@ export const createSamlProvider = (
         | SignatureAlgorithm
         | undefined,
       digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+      acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
 
       tokenIssuer,
       appUrl: globalConfig.appUrl,

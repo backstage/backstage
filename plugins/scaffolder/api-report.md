@@ -23,11 +23,15 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
+// Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
 ): Extension<() => null>;
 
+// Warning: (ae-missing-release-tag) "CustomFieldValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type CustomFieldValidator<T> =
   | ((data: T, field: FieldValidation) => void)
@@ -39,9 +43,13 @@ export type CustomFieldValidator<T> =
       },
     ) => void);
 
+// Warning: (ae-missing-release-tag) "EntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityPickerFieldExtension: () => null;
 
+// Warning: (ae-missing-release-tag) "FieldExtensionOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type FieldExtensionOptions<T = any> = {
   name: string;
@@ -49,12 +57,18 @@ export type FieldExtensionOptions<T = any> = {
   validation?: CustomFieldValidator<T>;
 };
 
+// Warning: (ae-missing-release-tag) "OwnerPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const OwnerPickerFieldExtension: () => null;
 
+// Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const RepoUrlPickerFieldExtension: () => null;
 
+// Warning: (ae-missing-release-tag) "ScaffolderApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ScaffolderApi {
   // (undocumented)
@@ -67,15 +81,25 @@ export interface ScaffolderApi {
       host: string;
     }[]
   >;
+  // Warning: (ae-forgotten-export) The symbol "ScaffolderTask" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getTask(taskId: string): Promise<ScaffolderTask>;
+  // Warning: (ae-forgotten-export) The symbol "TemplateParameterSchema" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getTemplateParameterSchema(
     templateName: EntityName,
   ): Promise<TemplateParameterSchema>;
+  // Warning: (ae-forgotten-export) The symbol "ListActionsResponse" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
+  // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   streamLogs({
     taskId,
@@ -86,9 +110,13 @@ export interface ScaffolderApi {
   }): Observable<LogEvent>;
 }
 
+// Warning: (ae-missing-release-tag) "scaffolderApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const scaffolderApiRef: ApiRef<ScaffolderApi>;
 
+// Warning: (ae-missing-release-tag) "ScaffolderClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class ScaffolderClient implements ScaffolderApi {
   constructor(options: {
@@ -114,6 +142,8 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // (undocumented)
   streamLogs({
@@ -125,12 +155,18 @@ export class ScaffolderClient implements ScaffolderApi {
   }): Observable<LogEvent>;
 }
 
+// Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ScaffolderFieldExtensions: React_2.ComponentType;
 
+// Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const ScaffolderPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const scaffolderPlugin: BackstagePlugin<
   {

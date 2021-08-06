@@ -5,6 +5,8 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "ExploreTool" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ExploreTool = {
   title: string;
@@ -15,12 +17,16 @@ export type ExploreTool = {
   lifecycle?: string;
 };
 
+// Warning: (ae-missing-release-tag) "ExploreToolsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ExploreToolsConfig {
   // (undocumented)
   getTools: () => Promise<ExploreTool[]>;
 }
 
+// Warning: (ae-missing-release-tag) "exploreToolsConfigRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const exploreToolsConfigRef: ApiRef<ExploreToolsConfig>;
 

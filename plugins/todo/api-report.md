@@ -9,12 +9,19 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
+// Warning: (ae-missing-release-tag) "EntityTodoContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityTodoContent: () => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "TodoApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "todoApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const todoApiRef: ApiRef<TodoApi>;
 
+// Warning: (ae-missing-release-tag) "todoPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const todoPlugin: BackstagePlugin<{}, {}>;
 

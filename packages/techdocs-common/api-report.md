@@ -5,56 +5,77 @@
 ```ts
 /// <reference types="node" />
 
-import { AzureIntegrationConfig } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
-import { GitHubIntegrationConfig } from '@backstage/integration';
-import { GitLabIntegrationConfig } from '@backstage/integration';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
+// Warning: (ae-missing-release-tag) "DirectoryPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export const checkoutGitRepository: (
-  repoUrl: string,
-  config: Config,
-  logger: Logger_2,
-) => Promise<string>;
-
-// @public (undocumented)
-export class CommonGitPreparer implements PreparerBase {
-  constructor(config: Config, logger: Logger_2);
+export class DirectoryPreparer implements PreparerBase {
+  constructor(config: Config, _logger: Logger_2, reader: UrlReader);
+  // Warning: (ae-forgotten-export) The symbol "PreparerResponse" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   prepare(
     entity: Entity,
     options?: {
+      logger?: Logger_2;
       etag?: string;
     },
   ): Promise<PreparerResponse>;
 }
 
-// @public (undocumented)
-export class DirectoryPreparer implements PreparerBase {
-  constructor(config: Config, logger: Logger_2, reader: UrlReader);
-  // (undocumented)
-  prepare(entity: Entity): Promise<PreparerResponse>;
-}
-
+// Warning: (ae-missing-release-tag) "GeneratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type GeneratorBase = {
   run(opts: GeneratorRunOptions): Promise<void>;
 };
 
+// Warning: (ae-missing-release-tag) "GeneratorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
 };
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (ae-missing-release-tag) "GeneratorRunOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type GeneratorRunOptions = {
+  inputDir: string;
+  outputDir: string;
+  parsedLocationAnnotation?: ParsedLocationAnnotation;
+  etag?: string;
+  logger: Logger_2;
+  logStream?: Writable;
+};
+
+// Warning: (ae-missing-release-tag) "Generators" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class Generators implements GeneratorBuilder {
   // (undocumented)
@@ -74,18 +95,8 @@ export class Generators implements GeneratorBuilder {
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase): void;
 }
 
-// @public (undocumented)
-export const getAzureIntegrationConfig: (
-  config: Config,
-  host: string,
-) => AzureIntegrationConfig;
-
-// @public (undocumented)
-export const getDefaultBranch: (
-  repositoryUrl: string,
-  config: Config,
-) => Promise<string>;
-
+// Warning: (ae-missing-release-tag) "getDocFilesFromRepository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const getDocFilesFromRepository: (
   reader: UrlReader,
@@ -98,57 +109,32 @@ export const getDocFilesFromRepository: (
     | undefined,
 ) => Promise<PreparerResponse>;
 
+// Warning: (ae-missing-release-tag) "getLocationForEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export function getGitHost(url: string): string;
+export const getLocationForEntity: (
+  entity: Entity,
+  scmIntegration: ScmIntegrationRegistry,
+) => ParsedLocationAnnotation;
 
-// @public (undocumented)
-export const getGitHubIntegrationConfig: (
-  config: Config,
-  host: string,
-) => GitHubIntegrationConfig;
-
-// @public (undocumented)
-export const getGitLabIntegrationConfig: (
-  config: Config,
-  host: string,
-) => GitLabIntegrationConfig;
-
-// @public (undocumented)
-export const getGitRepositoryTempFolder: (
-  repositoryUrl: string,
-  config: Config,
-) => Promise<string>;
-
-// @public (undocumented)
-export function getGitRepoType(url: string): string;
-
-// @public (undocumented)
-export const getLastCommitTimestamp: (
-  repositoryLocation: string,
-  logger: Logger_2,
-) => Promise<number>;
-
-// @public (undocumented)
-export const getLocationForEntity: (entity: Entity) => ParsedLocationAnnotation;
-
-// @public (undocumented)
-export const getTokenForGitRepo: (
-  repositoryUrl: string,
-  config: Config,
-) => Promise<string | undefined>;
-
+// Warning: (ae-missing-release-tag) "ParsedLocationAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
   target: string;
 };
 
+// Warning: (ae-missing-release-tag) "parseReferenceAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const parseReferenceAnnotation: (
   annotationName: string,
   entity: Entity,
 ) => ParsedLocationAnnotation;
 
+// Warning: (ae-missing-release-tag) "PreparerBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type PreparerBase = {
   prepare(
@@ -160,14 +146,20 @@ export type PreparerBase = {
   ): Promise<PreparerResponse>;
 };
 
+// Warning: (ae-missing-release-tag) "PreparerBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type PreparerBuilder = {
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
   get(entity: Entity): PreparerBase;
 };
 
+// Warning: (ae-missing-release-tag) "Preparers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class Preparers implements PreparerBuilder {
+  // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -179,8 +171,12 @@ export class Preparers implements PreparerBuilder {
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
 }
 
+// Warning: (ae-missing-release-tag) "Publisher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export class Publisher {
+  // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -188,15 +184,31 @@ export class Publisher {
   ): Promise<PublisherBase>;
 }
 
+// Warning: (ae-missing-release-tag) "PublisherBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export interface PublisherBase {
   docsRouter(): express.Handler;
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
+  // Warning: (ae-forgotten-export) The symbol "ReadinessResponse" needs to be exported by the entry point index.d.ts
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
+  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+  // Warning: (ae-forgotten-export) The symbol "MigrateRequest" needs to be exported by the entry point index.d.ts
+  migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (ae-forgotten-export) The symbol "PublishRequest" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "PublishResponse" needs to be exported by the entry point index.d.ts
   publish(request: PublishRequest): Promise<PublishResponse>;
 }
 
+// Warning: (ae-missing-release-tag) "PublisherType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type PublisherType =
   | 'local'
@@ -205,15 +217,13 @@ export type PublisherType =
   | 'azureBlobStorage'
   | 'openStackSwift';
 
-// @public
-export type RemoteProtocol =
-  | 'url'
-  | 'dir'
-  | 'github'
-  | 'gitlab'
-  | 'file'
-  | 'azure/api';
+// Warning: (ae-missing-release-tag) "RemoteProtocol" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RemoteProtocol = 'url' | 'dir';
 
+// Warning: (ae-missing-release-tag) "TechdocsGenerator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class TechdocsGenerator implements GeneratorBase {
   constructor({
@@ -226,14 +236,30 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
   });
   // (undocumented)
+  static fromConfig(
+    config: Config,
+    {
+      containerRunner,
+      logger,
+    }: {
+      containerRunner: ContainerRunner;
+      logger: Logger_2;
+    },
+  ): Promise<TechdocsGenerator>;
+  // (undocumented)
   run({
     inputDir,
     outputDir,
     parsedLocationAnnotation,
     etag,
+    logger: childLogger,
+    logStream,
   }: GeneratorRunOptions): Promise<void>;
 }
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (ae-missing-release-tag) "TechDocsMetadata" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type TechDocsMetadata = {
   site_name: string;
@@ -241,6 +267,20 @@ export type TechDocsMetadata = {
   etag: string;
 };
 
+// Warning: (ae-missing-release-tag) "transformDirLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const transformDirLocation: (
+  entity: Entity,
+  dirAnnotation: ParsedLocationAnnotation,
+  scmIntegrations: ScmIntegrationRegistry,
+) => {
+  type: 'dir' | 'url';
+  target: string;
+};
+
+// Warning: (ae-missing-release-tag) "UrlPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class UrlPreparer implements PreparerBase {
   constructor(reader: UrlReader, logger: Logger_2);
@@ -252,6 +292,14 @@ export class UrlPreparer implements PreparerBase {
     },
   ): Promise<PreparerResponse>;
 }
+
+// Warnings were encountered during analysis:
+//
+// src/stages/generate/types.d.ts:44:5 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
+// src/stages/prepare/types.d.ts:18:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/stages/prepare/types.d.ts:19:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/stages/prepare/types.d.ts:21:33 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/stages/prepare/types.d.ts:21:16 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 
 // (No @packageDocumentation comment for this package)
 ```

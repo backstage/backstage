@@ -7,14 +7,23 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-forgotten-export) The symbol "GitReleaseApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "gitReleaseManagerApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const gitReleaseManagerApiRef: ApiRef<GitReleaseApi>;
 
+// Warning: (ae-forgotten-export) The symbol "GitReleaseManager" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "GitReleaseManagerPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const GitReleaseManagerPage: GitReleaseManager;
 
+// Warning: (ae-missing-release-tag) "gitReleaseManagerPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const gitReleaseManagerPlugin: BackstagePlugin<
   {

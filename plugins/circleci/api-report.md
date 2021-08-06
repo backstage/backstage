@@ -24,11 +24,16 @@ export { BuildSummary };
 
 export { BuildWithSteps };
 
+// Warning: (ae-missing-release-tag) "CIRCLECI_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const CIRCLECI_ANNOTATION = 'circleci.com/project-slug';
 
+// Warning: (ae-missing-release-tag) "CircleCIApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class CircleCIApi {
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // (undocumented)
   getBuild(
@@ -55,20 +60,30 @@ export class CircleCIApi {
   ): Promise<BuildSummary>;
 }
 
+// Warning: (ae-missing-release-tag) "circleCIApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const circleCIApiRef: ApiRef<CircleCIApi>;
 
+// Warning: (ae-missing-release-tag) "circleCIBuildRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const circleCIBuildRouteRef: RouteRef<undefined>;
 
+// Warning: (ae-missing-release-tag) "circleCIPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const circleCIPlugin: BackstagePlugin<{}, {}>;
 export { circleCIPlugin };
 export { circleCIPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "circleCIRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const circleCIRouteRef: RouteRef<undefined>;
 
+// Warning: (ae-missing-release-tag) "EntityCircleCIContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityCircleCIContent: (_props: {
   entity?: Entity | undefined;
@@ -76,11 +91,16 @@ export const EntityCircleCIContent: (_props: {
 
 export { GitType };
 
+// Warning: (ae-missing-release-tag) "isCircleCIAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isCircleCIAvailable: (entity: Entity) => boolean;
 export { isCircleCIAvailable };
 export { isCircleCIAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
 

@@ -27,9 +27,9 @@ import { getRootLogger } from '../../logging';
 import {
   errorHandler,
   notFoundHandler,
-  requestLoggingHandler,
+  requestLoggingHandler as defaultRequestLoggingHandler,
 } from '../../middleware';
-import { ServiceBuilder } from '../types';
+import { RequestLoggingHandlerFactory, ServiceBuilder } from '../types';
 import {
   CspOptions,
   HttpsSettings,
@@ -65,6 +65,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
+  private requestLoggingHandler: RequestLoggingHandlerFactory | undefined;
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
@@ -144,6 +145,13 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setRequestLoggingHandler(
+    requestLoggingHandler: RequestLoggingHandlerFactory,
+  ) {
+    this.requestLoggingHandler = requestLoggingHandler;
+    return this;
+  }
+
   async start(): Promise<http.Server> {
     const app = express();
     const {
@@ -160,7 +168,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    app.use(requestLoggingHandler(logger));
+    app.use(
+      (this.requestLoggingHandler ?? defaultRequestLoggingHandler)(logger),
+    );
     for (const [root, route] of this.routers) {
       app.use(root, route);
     }

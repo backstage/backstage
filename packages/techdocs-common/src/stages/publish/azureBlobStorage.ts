@@ -25,7 +25,11 @@ import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
 import { default as path, default as platformPath } from 'path';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
@@ -288,5 +292,62 @@ export class AzureBlobStoragePublish implements PublisherBase {
       .getContainerClient(this.containerName)
       .getBlockBlobClient(`${entityRootDir}/index.html`)
       .exists();
+  }
+
+  protected async renameBlob(
+    originalName: string,
+    newName: string,
+    removeOriginal = false,
+  ): Promise<void> {
+    const container = this.storageClient.getContainerClient(this.containerName);
+    const blob = container.getBlobClient(newName);
+    const { url } = container.getBlobClient(originalName);
+    const response = await blob.beginCopyFromURL(url);
+    await response.pollUntilDone();
+    if (removeOriginal) {
+      await container.deleteBlob(originalName);
+    }
+  }
+
+  protected async renameBlobToLowerCase(
+    originalPath: string,
+    removeOriginal: boolean,
+  ) {
+    let newPath;
+    try {
+      newPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    } catch (e) {
+      this.logger.warn(e.message);
+      return;
+    }
+
+    if (originalPath === newPath) return;
+    try {
+      this.logger.verbose(`Migrating ${originalPath}`);
+      await this.renameBlob(originalPath, newPath, removeOriginal);
+    } catch (e) {
+      this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
+    }
+  }
+
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    const promises = [];
+    const limiter = limiterFactory(concurrency);
+    const container = this.storageClient.getContainerClient(this.containerName);
+
+    for await (const blob of container.listBlobsFlat()) {
+      promises.push(
+        limiter(
+          this.renameBlobToLowerCase.bind(this),
+          blob.name,
+          removeOriginal,
+        ),
+      );
+    }
+
+    await Promise.all(promises);
   }
 }

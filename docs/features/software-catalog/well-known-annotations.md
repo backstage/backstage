@@ -63,12 +63,18 @@ the `app-config.yaml` of a Backstage installation.
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
+    backstage.io/techdocs-ref: dir:.
 ```
 
-The value of this annotation is a location reference string (see above). If this
-annotation is specified, it is expected to point to a repository that the
-TechDocs system can read and generate docs from.
+The value of this annotation informs _where_ TechDocs source content is stored
+so that it can be read and docs can be generated from it. Most commonly, it's
+written as a path, relative to the location of the `catalog-info.yaml` itself,
+where the associated `mkdocs.yml` file can be found.
+
+In unusual situations where the documentation for a catalog entity does not live
+alongside the entity's source code, the value of this annotation can point to an
+absolute URL, matching the location reference string format outlined above, for
+example: `url:https://github.com/backstage/backstage/tree/master`
 
 ### backstage.io/view-url, backstage.io/edit-url
 
@@ -101,17 +107,21 @@ repository itself. If the URL points to a folder, it is important that it is
 suffixed with a `'/'` in order for relative path resolution to work
 consistently.
 
-### jenkins.io/github-folder
+### jenkins.io/job-full-name
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    jenkins.io/github-folder: folder-name/job-name
+    jenkins.io/job-full-name: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this
 entity.
+
+The value can be the format of just `[folder-path]` or
+`[instanceName]:[folder-path]`, if multiple instances are configured in
+`app-config.yaml`
 
 Specifying this annotation may enable Jenkins related features in Backstage for
 that entity.
@@ -303,6 +313,10 @@ annotation, with the same value format.
 This annotation allowed to load the API definition from another location. Use
 [substitution](./descriptor-format.md#substitutions-in-the-descriptor-format)
 instead.
+
+### jenkins.io/github-folder
+
+Use the `jenkins.io/job-full-name` instead.
 
 ## Links
 

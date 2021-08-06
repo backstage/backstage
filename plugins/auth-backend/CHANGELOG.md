@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.19
+
+### Patch Changes
+
+- 4edca1bd0: Allow to configure SAML auth `acceptedClockSkewMs`
+- b68f2c83c: Added the `disableRefresh` option to the `OAuth2` config
+- Updated dependencies
+  - @backstage/test-utils@0.1.16
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.18
+
+### Patch Changes
+
+- 2567c066d: TokenIssuer is now exported so it may be used by auth providers that are not bundled with Backstage
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+  - @backstage/test-utils@0.1.15
+
+## 0.3.17
+
+### Patch Changes
+
+- 40b3c60e2: Configuration updates for the `OpenID Connect` auth provider to allow `prompt` configuration and some sensible defaults.
+- f55f9df10: Add Sign In and Handler resolver for Microsoft provider
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
 ## 0.3.16
 
 ### Patch Changes

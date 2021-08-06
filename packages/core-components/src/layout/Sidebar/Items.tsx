@@ -44,7 +44,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     drawerWidthOpen,
     iconContainerWidth,
   } = sidebarConfig;
-
   return {
     root: {
       color: theme.palette.navigation.color,
@@ -96,6 +95,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       color: '#b5b5b5',
       fontWeight: 'bold',
       fontSize: theme.typography.fontSize,
+    },
+    searchFieldHTMLInput: {
+      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
     },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
@@ -165,7 +167,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <Badge
       color="secondary"
       variant="dot"
-      overlap="circle"
+      overlap="circular"
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
@@ -202,7 +204,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button {...childProps} ref={ref}>
+      <button aria-label={text} {...childProps} ref={ref}>
         {content}
       </button>
     );
@@ -214,6 +216,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       activeClassName={classes.selected}
       to={props.to}
       ref={ref}
+      aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
@@ -270,6 +273,9 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
           InputProps={{
             disableUnderline: true,
             className: classes.searchField,
+          }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
           }}
         />
       </SidebarItem>

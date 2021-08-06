@@ -150,6 +150,39 @@ permissions to:
 - `s3:ListBucket` - To retrieve bucket metadata
 - `s3:GetObject` - To retrieve files from the bucket
 
+> Note: If you need to migrate documentation objects from an older-style path
+> format including case-sensitive entity metadata, you will need to add some
+> additional permissions to be able to perform the migration, including:
+>
+> - `s3:PutBucketAcl` (for copying files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html))
+> - `s3:DeleteObject` and `s3:DeleteObjectVersion` (for deleting migrated files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html))
+>
+> ...And you will need to ensure the permissions apply to the bucket itself, as
+> well as all resources under the bucket. See the example policy below.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TechDocsWithMigration",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObjectVersion",
+        "s3:ListBucket",
+        "s3:DeleteObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": ["arn:aws:s3:::your-bucket", "arn:aws:s3:::your-bucket/*"]
+    }
+  ]
+}
+```
+
 **4a. (Recommended) Setup authentication the AWS way, using environment
 variables**
 

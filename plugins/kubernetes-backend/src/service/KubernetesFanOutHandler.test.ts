@@ -129,16 +129,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       entity: {
@@ -221,16 +221,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {
@@ -357,16 +357,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {
@@ -497,16 +497,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {

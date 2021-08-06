@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 0.5.9
+
+### Patch Changes
+
+- 3c50ff562: Fixed bug for comparing Organization name in `GithubCredentialsProvider`
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.5.8
 
 ### Patch Changes

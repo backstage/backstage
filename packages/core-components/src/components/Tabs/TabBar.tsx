@@ -20,6 +20,7 @@ import { BackstageTheme } from '@backstage/theme';
 
 interface StyledTabsProps {
   value: number | boolean;
+  selectionFollowsFocus: boolean;
   onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;
 }
 

@@ -24,8 +24,10 @@ import express from 'express';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
 import path from 'path';
+import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
   PublishRequest,
@@ -233,6 +235,25 @@ export class GoogleGCSPublish implements PublisherBase {
         .catch(() => {
           resolve(false);
         });
+    });
+  }
+
+  migrateDocsCase({ removeOriginal = false, concurrency = 25 }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Iterate through every file in the root of the publisher.
+      const allFileMetadata: Readable = this.storageClient
+        .bucket(this.bucketName)
+        .getFilesStream();
+      const migrateFiles = new MigrateWriteStream(
+        this.logger,
+        removeOriginal,
+        concurrency,
+      );
+      migrateFiles.on('finish', resolve).on('error', reject);
+      allFileMetadata.pipe(migrateFiles).on('error', error => {
+        migrateFiles.destroy();
+        reject(error);
+      });
     });
   }
 }

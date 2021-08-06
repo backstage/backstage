@@ -55,7 +55,7 @@ export const ItemCardGrid = (props: ItemCardGridProps) => {
   const { children, ...otherProps } = props;
   const classes = useStyles(otherProps);
   return (
-    <div role="grid" className={classes.root} {...otherProps}>
+    <div className={classes.root} {...otherProps}>
       {children}
     </div>
   );

@@ -18,13 +18,13 @@ import {
   DocumentCollator,
   DocumentDecorator,
   IndexableDocument,
+  SearchEngine,
 } from '@backstage/search-common';
 import { Logger } from 'winston';
 import { Scheduler } from './index';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-  SearchEngine,
 } from './types';
 
 interface CollatorEnvelope {

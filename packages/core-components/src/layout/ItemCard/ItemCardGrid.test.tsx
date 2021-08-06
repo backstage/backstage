@@ -27,24 +27,26 @@ describe('<ItemCardGrid />', () => {
         <Card>Hello!</Card>
       </ItemCardGrid>,
     );
-    expect(screen.getByRole('grid')).toBeInTheDocument();
     expect(screen.getByText('Hello!')).toBeInTheDocument();
   });
 
   it('renders custom styles', async () => {
     await renderInTestApp(
       <>
-        <ItemCardGrid>
+        <ItemCardGrid data-testid="cards-hello">
           <Card>Hello!</Card>
         </ItemCardGrid>
-        <ItemCardGrid classes={{ root: 'my-css-class' }}>
+        <ItemCardGrid
+          data-testid="cards-goodbye"
+          classes={{ root: 'my-css-class' }}
+        >
           <Card>Goodbye!</Card>
         </ItemCardGrid>
       </>,
     );
-    expect(screen.getAllByRole('grid')[0]).toHaveStyle({
+    expect(screen.getByTestId('cards-hello')).toHaveStyle({
       gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
     });
-    expect(screen.getAllByRole('grid')[1]).toHaveClass('my-css-class');
+    expect(screen.getByTestId('cards-goodbye')).toHaveClass('my-css-class');
   });
 });

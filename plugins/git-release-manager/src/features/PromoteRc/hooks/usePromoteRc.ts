@@ -16,7 +16,11 @@
 
 import { useState, useEffect } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
-import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
+import {
+  CardHook,
+  ComponentConfig,
+  PromoteRcOnSuccessArgs,
+} from '../../../types/types';
 
 import { GetLatestReleaseResult } from '../../../api/GitReleaseClient';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
@@ -27,17 +31,17 @@ import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
 
-interface PromoteRc {
+export interface UsePromoteRc {
   rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseVersion: string;
-  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
+  onSuccess?: ComponentConfig<PromoteRcOnSuccessArgs>['onSuccess'];
 }
 
 export function usePromoteRc({
   rcRelease,
   releaseVersion,
   onSuccess,
-}: PromoteRc): CardHook<void> {
+}: UsePromoteRc): CardHook<void> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
   const { project } = useProjectContext();
@@ -170,12 +174,16 @@ export function usePromoteRc({
 
       try {
         await onSuccess?.({
-          gitReleaseUrl: promotedReleaseRes.value.htmlUrl,
+          input: {
+            rcRelease,
+            releaseVersion,
+          },
           gitReleaseName: promotedReleaseRes.value.name,
-          previousTagUrl: rcRelease.htmlUrl,
+          gitReleaseUrl: promotedReleaseRes.value.htmlUrl,
           previousTag: rcRelease.tagName,
-          updatedTagUrl: promotedReleaseRes.value.htmlUrl,
+          previousTagUrl: rcRelease.htmlUrl,
           updatedTag: promotedReleaseRes.value.tagName,
+          updatedTagUrl: promotedReleaseRes.value.htmlUrl,
         });
       } catch (error) {
         asyncCatcher(error);

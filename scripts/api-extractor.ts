@@ -150,16 +150,11 @@ async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
-    const packagePath = resolvePath(__dirname, `../${packageDir}/package.json`);
+    const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(
-          __dirname,
-          '../dist-types',
-          packageDir,
-          'src/index.d.ts',
-        ),
+        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
         bundledPackages: [],
 
         compiler: {
@@ -190,7 +185,7 @@ async function runApiExtraction({
         },
 
         messages: {
-          // Silence warnings, as these will prevent the CI build to work
+          // Silence compiler warnings, as these will prevent the CI build to work
           compilerMessageReporting: {
             default: {
               logLevel: 'none' as ExtractorLogLevel.None,
@@ -200,14 +195,14 @@ async function runApiExtraction({
           },
           extractorMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
           tsdocMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
         },
@@ -217,8 +212,15 @@ async function runApiExtraction({
         projectFolder,
       },
       configObjectFullPath: projectFolder,
-      packageJsonFullPath: packagePath,
+      packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
     });
+
+    // The `packageFolder` needs to point to the location within `dist-types` in order for relative
+    // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
+    // which needs to point to the actual file, so we override `packageFolder` afterwards.
+    (extractorConfig as {
+      packageFolder: string;
+    }).packageFolder = packageFolder;
 
     if (!compilerState) {
       compilerState = CompilerState.create(extractorConfig, {

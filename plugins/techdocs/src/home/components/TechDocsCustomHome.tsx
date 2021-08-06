@@ -19,6 +19,7 @@ import { useAsync } from 'react-use';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {
+  CATALOG_FILTER_EXISTS,
   catalogApiRef,
   CatalogApi,
   isOwnerOf,
@@ -125,7 +126,17 @@ export const TechDocsCustomHome = ({
 
   const { value: entities, loading, error } = useAsync(async () => {
     const response = await catalogApi.getEntities({
-      fields: ['apiVersion', 'kind', 'metadata', 'spec.owner', 'spec.type'],
+      filter: {
+        'metadata.annotations.backstage.io/techdocs-ref': CATALOG_FILTER_EXISTS,
+      },
+      fields: [
+        'apiVersion',
+        'kind',
+        'metadata',
+        'relations',
+        'spec.owner',
+        'spec.type',
+      ],
     });
     return response.items.filter((entity: Entity) => {
       return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];

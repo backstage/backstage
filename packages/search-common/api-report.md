@@ -5,6 +5,8 @@
 ```ts
 import { JsonObject } from '@backstage/config';
 
+// Warning: (ae-missing-release-tag) "DocumentCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export interface DocumentCollator {
   // (undocumented)
@@ -12,6 +14,8 @@ export interface DocumentCollator {
   readonly type: string;
 }
 
+// Warning: (ae-missing-release-tag) "DocumentDecorator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export interface DocumentDecorator {
   // (undocumented)
@@ -19,6 +23,8 @@ export interface DocumentDecorator {
   readonly types?: string[];
 }
 
+// Warning: (ae-missing-release-tag) "IndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export interface IndexableDocument {
   location: string;
@@ -26,6 +32,22 @@ export interface IndexableDocument {
   title: string;
 }
 
+// Warning: (ae-missing-release-tag) "QueryTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type QueryTranslator = (query: SearchQuery) => unknown;
+
+// Warning: (ae-missing-release-tag) "SearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface SearchEngine {
+  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  query(query: SearchQuery): Promise<SearchResultSet>;
+  setTranslator(translator: QueryTranslator): void;
+}
+
+// Warning: (ae-missing-release-tag) "SearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface SearchQuery {
   // (undocumented)
@@ -38,6 +60,8 @@ export interface SearchQuery {
   types?: string[];
 }
 
+// Warning: (ae-missing-release-tag) "SearchResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface SearchResult {
   // (undocumented)
@@ -46,6 +70,8 @@ export interface SearchResult {
   type: string;
 }
 
+// Warning: (ae-missing-release-tag) "SearchResultSet" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface SearchResultSet {
   // (undocumented)
