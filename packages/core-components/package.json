@@ -39,7 +39,7 @@
     "@testing-library/react-hooks": "^3.4.2",
     "@types/dagre": "^0.7.44",
     "@types/prop-types": "^15.7.3",
-    "@types/react": "^16.9",
+    "@types/react": "*",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",
     "classnames": "^2.2.6",

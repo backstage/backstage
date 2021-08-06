@@ -38,7 +38,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@material-ui/styles": "^4.9.6",
-    "@types/react": "^16.9",
+    "@types/react": "*",
     "@types/recharts": "^1.8.14",
     "classnames": "^2.2.6",
     "history": "^5.0.0",

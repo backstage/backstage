@@ -68,7 +68,7 @@
     "@types/eventsource": "^1.1.5",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
-    "@types/react": "^16.9",
+    "@types/react": "*",
     "canvas": "^2.6.1",
     "cross-fetch": "^3.0.6",
     "msw": "^0.29.0"
