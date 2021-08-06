@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WebpackOptionsNormalized } from 'webpack';
+import { WebpackOptionsNormalized, WebpackPluginInstance } from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import { BundlingOptions } from './types';
 import { isParallelDefault } from '../parallel';
@@ -30,9 +30,9 @@ export const optimization = (
     ...(!isParallelDefault(options.parallel)
       ? {
           minimizer: [
-            new TerserPlugin({
+            (new TerserPlugin({
               parallel: options.parallel,
-            }),
+            }) as unknown) as WebpackPluginInstance,
           ],
         }
       : {}),

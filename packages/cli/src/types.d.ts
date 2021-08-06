@@ -29,9 +29,6 @@ declare module '@svgr/rollup' {
 }
 
 declare module '@rollup/plugin-yaml';
-
-declare module 'terser-webpack-plugin';
-
 declare module 'react-dev-utils/formatWebpackMessages' {
   export default function (
     stats: any,
