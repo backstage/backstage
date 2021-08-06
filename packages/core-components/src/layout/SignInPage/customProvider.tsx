@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegisterReturn } from 'react-hook-form';
 import {
   Typography,
   Button,
@@ -48,6 +48,13 @@ type Data = {
   idToken?: string;
 };
 
+const asInputRef = (renderResult: UseFormRegisterReturn) => {
+  const { ref, ...rest } = renderResult;
+  return {
+    inputRef: ref,
+    ...rest,
+  };
+};
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({
@@ -78,7 +85,7 @@ const Component: ProviderComponent = ({ onResult }) => {
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
-              {...register('userId', { required: true })}
+              {...asInputRef(register('userId', { required: true }))}
               label="User ID"
               margin="normal"
               error={Boolean(errors.userId)}
@@ -89,13 +96,15 @@ const Component: ProviderComponent = ({ onResult }) => {
           </FormControl>
           <FormControl>
             <TextField
-              {...register('idToken', {
-                required: false,
-                validate: token =>
-                  !token ||
-                  ID_TOKEN_REGEX.test(token) ||
-                  'Token is not a valid OpenID Connect JWT Token',
-              })}
+              {...asInputRef(
+                register('idToken', {
+                  required: false,
+                  validate: token =>
+                    !token ||
+                    ID_TOKEN_REGEX.test(token) ||
+                    'Token is not a valid OpenID Connect JWT Token',
+                }),
+              )}
               label="ID Token (optional)"
               margin="normal"
               autoComplete="off"
