@@ -116,7 +116,7 @@ In general, changesets are not needed for the documentation, build utilities, co
 
 1. Run `yarn changeset`
 2. Select which packages you want to include a changeset for
-3. Select impact of change that you're introducing (patch, minor, or major)
+3. Select impact of change that you're introducing, using `minor` for breaking changes and `patch` otherwise. We do not use `major` changes while packages are at version `0.x`.
 4. Add generated changeset to Git
 5. Push the commit with your changeset to the branch associated with your PR
 6. Accept our gratitude for making the release process easier on the maintainers
