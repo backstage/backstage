@@ -55,7 +55,10 @@ export class AwsIamKubernetesAuthTranslator
     });
   };
 
-  async getCredentials(assumeRole: string | undefined): Promise<SigningCreds> {
+  async getCredentials(
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<SigningCreds> {
     return new Promise<SigningCreds>(async (resolve, reject) => {
       const awsCreds = await this.awsGetCredentials();
 
@@ -73,10 +76,12 @@ export class AwsIamKubernetesAuthTranslator
       if (!assumeRole) return resolve(creds);
 
       try {
-        const params = {
+        const params: AWS.STS.Types.AssumeRoleRequest = {
           RoleArn: assumeRole,
           RoleSessionName: 'backstage-login',
         };
+        if (externalId) params.ExternalId = externalId;
+
         const assumedRole = await new AWS.STS().assumeRole(params).promise();
 
         if (!assumedRole.Credentials) {
@@ -97,9 +102,10 @@ export class AwsIamKubernetesAuthTranslator
   }
   async getBearerToken(
     clusterName: string,
-    assumeRole: string | undefined,
+    assumeRole?: string,
+    externalId?: string,
   ): Promise<string> {
-    const credentials = await this.getCredentials(assumeRole);
+    const credentials = await this.getCredentials(assumeRole, externalId);
 
     const request = {
       host: `sts.amazonaws.com`,
@@ -132,6 +138,7 @@ export class AwsIamKubernetesAuthTranslator
     clusterDetailsWithAuthToken.serviceAccountToken = await this.getBearerToken(
       clusterDetails.name,
       clusterDetails.assumeRole,
+      clusterDetails.externalId,
     );
     return clusterDetailsWithAuthToken;
   }
