@@ -96,7 +96,7 @@ optionally include the `allowedInstallationOwners` option.
 
 ```yaml
 appId: 1
-allowedInstallationOwners: [1234]
+allowedInstallationOwners: ['GlobexCorp']
 clientId: client id
 clientSecret: client secret
 webhookSecret: webhook secret
