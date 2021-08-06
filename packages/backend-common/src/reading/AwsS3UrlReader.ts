@@ -26,7 +26,6 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
-import { constant } from 'lodash';
 
 const parseURL = (
   url: string,
@@ -83,13 +82,13 @@ export class AwsS3UrlReader implements UrlReader {
     private readonly s3: S3,
   ) {}
 
+  /**
+   * If accesKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:
+   * https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/DefaultAWSCredentialsProviderChain.html
+   */
   private static buildCredentials(
     integration?: AwsS3Integration,
   ): Credentials | CredentialsOptions | undefined {
-    /*
-    Credentials is an optional config. 
-    If missing, the default ways of authenticating AWS SDK will be used.
-    */
     if (!integration) {
       return undefined;
     }
@@ -97,6 +96,7 @@ export class AwsS3UrlReader implements UrlReader {
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
     let explicitCredentials: Credentials | undefined;
+
     if (accessKeyId && secretAccessKey) {
       explicitCredentials = new Credentials({
         accessKeyId,

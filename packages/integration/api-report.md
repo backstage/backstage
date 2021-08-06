@@ -38,6 +38,7 @@ export type AwsS3IntegrationConfig = {
   host: string;
   accessKeyId?: string;
   secretAccessKey?: string;
+  roleArn?: string;
 };
 
 // Warning: (ae-missing-release-tag) "AzureIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
