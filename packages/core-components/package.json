@@ -33,7 +33,7 @@
     "@backstage/core-plugin-api": "^0.1.5",
     "@backstage/errors": "^0.1.1",
     "@backstage/theme": "^0.2.9",
-    "@material-table/core": "^3.1.0",
+    "@material-table/core": "^4.2.3",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
