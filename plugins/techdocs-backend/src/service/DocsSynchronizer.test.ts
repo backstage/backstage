@@ -31,6 +31,19 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
 
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: async () => {
+    return {
+      json: async () => {
+        return {
+          build_timestamp: 123,
+        };
+      },
+    };
+  },
+}));
+
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
 describe('DocsSynchronizer', () => {
@@ -199,6 +212,84 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.finish).toBeCalledTimes(0);
       expect(mockResponseHandler.error).toBeCalledTimes(1);
       expect(mockResponseHandler.error).toBeCalledWith(error);
+    });
+  });
+
+  describe('doCacheSync', () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        uid: '0',
+        name: 'test',
+        namespace: 'default',
+      },
+    };
+
+    it('should not check metadata too often', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(shouldCheckForUpdate).toBeCalledTimes(1);
+    });
+
+    it('should do nothing if source/cached metadata matches', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 123,
+      });
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+    });
+
+    it('should invalidate expected files when source/cached metadata differ', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 456,
+        files: ['index.html'],
+      });
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(cache.invalidateMultiple).toHaveBeenCalledWith([
+        'default/Component/test/index.html',
+      ]);
+    });
+
+    it('should gracefully handle errors', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockRejectedValue(
+        new Error(),
+      );
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
     });
   });
 });

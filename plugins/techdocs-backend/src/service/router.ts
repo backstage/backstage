@@ -190,6 +190,17 @@ export async function createRouter(
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
     if (config.getString('techdocs.builder') !== 'local') {
+      // However, if caching is enabled, take the opportunity to check and
+      // invalidate stale cache entries.
+      if (cache) {
+        await docsSynchronizer.doCacheSync({
+          responseHandler,
+          discovery,
+          token,
+          entity,
+        });
+        return;
+      }
       responseHandler.finish({ updated: false });
       return;
     }
