@@ -20,13 +20,13 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import mockFs from 'mock-fs';
-import os from 'os';
 import path from 'path';
+import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
 
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+const rootDir = (global as any).rootDir;
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -46,7 +46,7 @@ const createPublisherFromConfig = ({
   bucketName?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
 } = {}) => {
-  const mockConfig = new ConfigReader({
+  const config = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
       publisher: {
@@ -63,7 +63,7 @@ const createPublisherFromConfig = ({
     },
   });
 
-  return AwsS3Publish.fromConfig(mockConfig, logger);
+  return AwsS3Publish.fromConfig(config, logger);
 };
 
 describe('AwsS3Publish', () => {
@@ -72,7 +72,6 @@ describe('AwsS3Publish', () => {
     kind: 'Component',
     metadata: {
       name: 'backstage',
-
       namespace: 'default',
       annotations: {},
     },
@@ -90,18 +89,7 @@ describe('AwsS3Publish', () => {
     etag: 'etag',
   };
 
-  const localRootDir = getEntityRootDir(entity);
-  const storageRootDir = getEntityRootDir({
-    ...entity,
-    kind: entity.kind.toLowerCase(),
-  });
-  const storageSingleQuoteDir = getEntityRootDir({
-    metadata: {
-      namespace: 'storage',
-      name: 'quote',
-    },
-    kind: 'single',
-  } as Entity);
+  const directory = getEntityRootDir(entity);
 
   const files = {
     'index.html': '',
@@ -109,9 +97,6 @@ describe('AwsS3Publish', () => {
     'techdocs_metadata.json': JSON.stringify(techdocsMetadata),
     assets: {
       'main.css': '',
-    },
-    attachments: {
-      'image.png': Buffer.from([2, 3, 5, 3, 5, 3, 5, 9, 1]),
     },
     html: {
       'unsafe.html': '<html></html>',
@@ -127,14 +112,7 @@ describe('AwsS3Publish', () => {
 
   beforeAll(() => {
     mockFs({
-      [localRootDir]: files,
-      [storageRootDir]: files,
-      [storageSingleQuoteDir]: {
-        'techdocs_metadata.json': files['techdocs_metadata.json'].replace(
-          /"/g,
-          "'",
-        ),
-      },
+      [directory]: files,
     });
   });
 
@@ -163,24 +141,14 @@ describe('AwsS3Publish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const publisher = createPublisherFromConfig();
-      expect(
-        await publisher.publish({
-          entity,
-          directory: localRootDir,
-        }),
-      ).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
     });
 
     it('should publish a directory as well when legacy casing is used', async () => {
       const publisher = createPublisherFromConfig({
         legacyUseCaseSensitiveTripletPaths: true,
       });
-      expect(
-        await publisher.publish({
-          entity,
-          directory: localRootDir,
-        }),
-      ).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
     });
 
     it('should fail to publish a directory', async () => {
@@ -214,6 +182,7 @@ describe('AwsS3Publish', () => {
   describe('hasDocsBeenGenerated', () => {
     it('should return true if docs has been generated', async () => {
       const publisher = createPublisherFromConfig();
+      await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
     });
 
@@ -221,6 +190,7 @@ describe('AwsS3Publish', () => {
       const publisher = createPublisherFromConfig({
         legacyUseCaseSensitiveTripletPaths: true,
       });
+      await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
     });
 
@@ -241,6 +211,7 @@ describe('AwsS3Publish', () => {
   describe('fetchTechDocsMetadata', () => {
     it('should return tech docs metadata', async () => {
       const publisher = createPublisherFromConfig();
+      await publisher.publish({ entity, directory });
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
@@ -250,20 +221,32 @@ describe('AwsS3Publish', () => {
       const publisher = createPublisherFromConfig({
         legacyUseCaseSensitiveTripletPaths: true,
       });
+      await publisher.publish({ entity, directory });
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
     });
 
     it('should return tech docs metadata when json encoded with single quotes', async () => {
+      const techdocsMetadataPath = path.join(
+        directory,
+        'techdocs_metadata.json',
+      );
+      const techdocsMetadataContent = files['techdocs_metadata.json'];
+
+      fs.writeFileSync(
+        techdocsMetadataPath,
+        techdocsMetadataContent.replace(/"/g, "'"),
+      );
+
       const publisher = createPublisherFromConfig();
-      expect(
-        await publisher.fetchTechDocsMetadata({
-          namespace: 'storage',
-          kind: 'single',
-          name: 'quote',
-        }),
-      ).toStrictEqual(techdocsMetadata);
+      await publisher.publish({ entity, directory });
+
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+
+      fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);
     });
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
@@ -276,7 +259,6 @@ describe('AwsS3Publish', () => {
       };
 
       const techDocsMetadaFilePath = path.join(
-        rootDir,
         ...Object.values(invalidEntityName),
         'techdocs_metadata.json',
       );
@@ -284,7 +266,7 @@ describe('AwsS3Publish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed, The file ${techDocsMetadaFilePath} does not exist !`,
+        message: `TechDocs metadata fetch failed, The file ${techDocsMetadaFilePath} does not exist!`,
       });
     });
   });
@@ -294,8 +276,9 @@ describe('AwsS3Publish', () => {
 
     let app: express.Express;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       const publisher = createPublisherFromConfig();
+      await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
     });
 
@@ -317,6 +300,7 @@ describe('AwsS3Publish', () => {
       const publisher = createPublisherFromConfig({
         legacyUseCaseSensitiveTripletPaths: true,
       });
+      await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
       // Ensures leading slash is trimmed and encoded path is decoded.
       const pngResponse = await request(app).get(

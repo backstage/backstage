@@ -18,29 +18,8 @@ import type {
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
 import { EventEmitter } from 'events';
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
 
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-
-/**
- * @param sourceFile Relative path to entity root dir. Contains either / or \ as file separator
- * depending upon the OS.
- */
-const checkFileExists = async (sourceFile: string): Promise<boolean> => {
-  // sourceFile will always have / as file separator irrespective of OS since Azure expects /.
-  // Normalize sourceFile to OS specific path before checking if file exists.
-  const relativeFilePath = sourceFile.split(path.posix.sep).join(path.sep);
-  const filePath = path.join(rootDir, sourceFile);
-
-  try {
-    await fs.access(filePath, fs.constants.F_OK);
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
+const storage = new (global as any).StorageFilesMock();
 
 export class BlockBlobClient {
   private readonly blobName;
@@ -50,9 +29,7 @@ export class BlockBlobClient {
   }
 
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-    if (!fs.existsSync(source)) {
-      return Promise.reject(new Error(`The file ${source} does not exist`));
-    }
+    storage.writeFile(this.blobName, source);
     return Promise.resolve({
       _response: {
         request: {
@@ -65,20 +42,19 @@ export class BlockBlobClient {
   }
 
   exists() {
-    return checkFileExists(this.blobName);
+    return storage.fileExists(this.blobName);
   }
 
   download() {
-    const filePath = path.join(rootDir, this.blobName);
     const emitter = new EventEmitter();
     setTimeout(() => {
-      if (fs.existsSync(filePath)) {
-        emitter.emit('data', fs.readFileSync(filePath));
+      if (storage.fileExists(this.blobName)) {
+        emitter.emit('data', storage.readFile(this.blobName));
         emitter.emit('end');
       } else {
         emitter.emit(
           'error',
-          new Error(`The file ${filePath} does not exist !`),
+          new Error(`The file ${this.blobName} does not exist!`),
         );
       }
     }, 0);
@@ -89,7 +65,7 @@ export class BlockBlobClient {
 }
 
 class BlockBlobClientFailUpload extends BlockBlobClient {
-  uploadFile(source: string): Promise<BlobUploadCommonResponse> {
+  uploadFile(): Promise<BlobUploadCommonResponse> {
     return Promise.resolve({
       _response: {
         request: {
@@ -103,12 +79,6 @@ class BlockBlobClientFailUpload extends BlockBlobClient {
 }
 
 export class ContainerClient {
-  private readonly containerName;
-
-  constructor(containerName: string) {
-    this.containerName = containerName;
-  }
-
   getProperties(): Promise<ContainerGetPropertiesResponse> {
     return Promise.resolve({
       _response: {
@@ -153,18 +123,19 @@ export class BlobServiceClient {
   private readonly credential;
 
   constructor(url: string, credential?: StorageSharedKeyCredential) {
+    storage.emptyFiles();
     this.url = url;
     this.credential = credential;
   }
 
   getContainerClient(containerName: string) {
     if (containerName === 'bad_container') {
-      return new ContainerClientFailGetProperties(containerName);
+      return new ContainerClientFailGetProperties();
     }
-    if (this.credential.accountName === 'failupload') {
-      return new ContainerClientFailUpload(containerName);
+    if (this.credential.accountName === 'bad_account_credentials') {
+      return new ContainerClientFailUpload();
     }
-    return new ContainerClient(containerName);
+    return new ContainerClient();
   }
 }
 
