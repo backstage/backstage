@@ -67,39 +67,6 @@ describe('createCacheMiddleware', () => {
     });
   });
 
-  describe('invalidate', () => {
-    it('responds with 400 when no objects are provided', async () => {
-      const response = await request(app).post('/cache/invalidate');
-      expect(response.status).toBe(400);
-    });
-
-    it('responds with 500 if invalidation throws', async () => {
-      cache.invalidateMultiple.mockRejectedValueOnce(new Error());
-      const response = await request(app)
-        .post('/cache/invalidate')
-        .set('Content-Type', 'application/json')
-        .send({
-          objects: ['one/index.html', 'two/index.html'],
-        });
-
-      expect(response.status).toBe(500);
-    });
-
-    it('responds with 204 if invalidation succeeds', async () => {
-      const expectedObjects = ['one/index.html', 'two/index.html'];
-      cache.invalidateMultiple.mockResolvedValue([]);
-      await request(app)
-        .post('/cache/invalidate')
-        .set('Content-Type', 'application/json')
-        .send({
-          objects: expectedObjects,
-        })
-        .expect(204);
-
-      expect(cache.invalidateMultiple).toHaveBeenCalledWith(expectedObjects);
-    });
-  });
-
   describe('middleware', () => {
     it('does not apply to non-static/docs paths', async () => {
       await request(app)

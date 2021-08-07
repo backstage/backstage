@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Router, Request, json } from 'express';
+import { Router } from 'express';
 import router from 'express-promise-router';
 import { Logger } from 'winston';
 import { TechDocsCache } from '.';
-import { CacheInvalidationError } from './TechDocsCache';
-
-type CacheClearRequestParams = {
-  objects: string[];
-};
-
-type CacheClearRequest = Request<
-  any,
-  unknown,
-  CacheClearRequestParams,
-  unknown
->;
 
 type CacheMiddlewareOptions = {
   cache: TechDocsCache;
@@ -39,43 +27,8 @@ type ErrorCallback = (err?: Error) => void;
 
 export const createCacheMiddleware = ({
   cache,
-  logger,
 }: CacheMiddlewareOptions): Router => {
   const cacheMiddleware = router();
-
-  // And endpoint for handling cache invalidation external to the Backstage
-  // Backend (e.g. from the TechDocs CLI).
-  cacheMiddleware.use(json());
-  cacheMiddleware.post(
-    '/cache/invalidate',
-    async (req: CacheClearRequest, res) => {
-      if (req.body?.objects?.length) {
-        logger.debug(
-          `Clearing ${req.body.objects.length} cache entries: (eg: ${req.body.objects[0]})`,
-        );
-
-        try {
-          const invalidated = await cache.invalidateMultiple(req.body.objects);
-          logger.debug(
-            `Successfully invalidated ${invalidated.length} cache entries`,
-          );
-          res.status(204).send();
-        } catch (e) {
-          if (e instanceof CacheInvalidationError) {
-            const uniqueReasons = [
-              ...new Set(e.rejections.map(r => r.reason.message)),
-            ].join(', ');
-            logger.warn(
-              `Problem invalidating ${e.rejections.length} entries: ${uniqueReasons}`,
-            );
-          }
-          res.status(500).send();
-        }
-      } else {
-        res.status(400).send();
-      }
-    },
-  );
 
   // Middleware that, through socket monkey patching, captures responses as
   // they're sent over /static/docs/* and caches them. Subsequent requests are
