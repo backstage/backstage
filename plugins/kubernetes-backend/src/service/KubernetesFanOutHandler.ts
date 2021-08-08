@@ -25,6 +25,7 @@ import {
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
+import { KubernetestClusterFilter } from './KubernetesClusterFilter';
 
 export const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
   'pods',
@@ -75,16 +76,24 @@ export class KubernetesFanOutHandler {
       entityName,
     );
 
+    const clusterFilter = new KubernetestClusterFilter(
+      requestBody.entity?.metadata?.annotations?.[
+        'backstage.io/kubernetes-cluster-filter'
+      ] || '*',
+    );
+
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
-    const promises: Promise<ClusterDetails>[] = clusterDetails.map(cd => {
-      const kubernetesAuthTranslator: KubernetesAuthTranslator = KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-        cd.authProvider,
-      );
-      return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
-        cd,
-        requestBody,
-      );
-    });
+    const promises: Promise<ClusterDetails>[] = clusterDetails
+      .filter(cd => clusterFilter.isMatch(cd.name))
+      .map(cd => {
+        const kubernetesAuthTranslator: KubernetesAuthTranslator = KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+          cd.authProvider,
+        );
+        return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
+          cd,
+          requestBody,
+        );
+      });
     const clusterDetailsDecoratedForAuth: ClusterDetails[] = await Promise.all(
       promises,
     );
