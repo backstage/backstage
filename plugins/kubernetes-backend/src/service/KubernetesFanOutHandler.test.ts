@@ -337,6 +337,101 @@ describe('handleGetKubernetesObjectsForService', () => {
       ],
     });
   });
+  it('retrieve objects for two clusters with a filter, only one cluster should be inspected', async () => {
+    getClustersByServiceId.mockImplementation(() =>
+      Promise.resolve([
+        {
+          name: 'test-cluster',
+          authProvider: 'serviceAccount',
+        },
+        {
+          name: 'other-cluster',
+          authProvider: 'google',
+        },
+      ]),
+    );
+
+    mockFetch(fetchObjectsForService);
+
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
+        fetchObjectsForService,
+      },
+      serviceLocator: {
+        getClustersByServiceId,
+      },
+      customResources: [],
+    });
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      auth: {
+        google: 'google_token_123',
+      },
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: 'test-component',
+          annotations: {
+            'backstage.io/kubernetes-labels-selector':
+              'backstage.io/test-label=test-component',
+            'backstage.io/kubernetes-cluster-filter': 'test-*',
+          },
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'joe',
+        },
+      },
+    });
+
+    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: {
+            name: 'test-cluster',
+          },
+          errors: [],
+          resources: [
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-pods-test-component-test-cluster',
+                  },
+                },
+              ],
+              type: 'pods',
+            },
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-configmaps-test-component-test-cluster',
+                  },
+                },
+              ],
+              type: 'configmaps',
+            },
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-services-test-component-test-cluster',
+                  },
+                },
+              ],
+              type: 'services',
+            },
+          ],
+        },
+      ],
+    });
+  });
   it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
     getClustersByServiceId.mockImplementation(() =>
       Promise.resolve([
