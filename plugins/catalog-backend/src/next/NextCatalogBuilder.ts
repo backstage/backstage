@@ -15,6 +15,7 @@
  */
 
 import {
+  ObservableConfig,
   PluginDatabaseManager,
   resolvePackagePath,
   UrlReader,
@@ -79,7 +80,7 @@ import { Stitcher } from './stitching/Stitcher';
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
-  config: Config;
+  config: Config | ObservableConfig;
   reader: UrlReader;
 };
 
