@@ -18,7 +18,7 @@
     "@storybook/addon-links": "^6.1.11",
     "@storybook/addon-storysource": "^6.1.11",
     "@storybook/addons": "^6.1.11",
-    "@storybook/react": "^6.1.11",
+    "@storybook/react": "^6.3.6",
     "storybook-dark-mode": "^1.0.3"
   }
 }
