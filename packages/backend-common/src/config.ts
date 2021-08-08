@@ -18,8 +18,92 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader } from '@backstage/config';
+import { Config, ConfigReader, JsonValue } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
+
+export interface ObservableConfig extends Config {
+  subscribe(onChange: () => void): { unsubscribe: () => void };
+}
+
+class ObservableConfigProxy implements ObservableConfig {
+  private config: Config = new ConfigReader({});
+
+  private readonly subscribers: (() => void)[] = [];
+
+  constructor(private readonly logger: Logger) {}
+
+  setConfig(config: Config) {
+    this.config = config;
+    for (const subscriber of this.subscribers) {
+      try {
+        subscriber();
+      } catch (error) {
+        this.logger.error(`ObservableConfig subscriber threw error, ${error}`);
+      }
+    }
+  }
+
+  subscribe(onChange: () => void): { unsubscribe: () => void } {
+    this.subscribers.push(onChange);
+    return {
+      unsubscribe: () => {
+        const index = this.subscribers.indexOf(onChange);
+        if (index >= 0) {
+          this.subscribers.splice(index, 1);
+        }
+      },
+    };
+  }
+
+  has(key: string): boolean {
+    return this.config.has(key);
+  }
+  keys(): string[] {
+    return this.config.keys();
+  }
+  get<T = JsonValue>(key?: string): T {
+    return this.config.get(key);
+  }
+  getOptional<T = JsonValue>(key?: string): T | undefined {
+    return this.config.getOptional(key);
+  }
+  getConfig(key: string): Config {
+    return this.config.getConfig(key);
+  }
+  getOptionalConfig(key: string): Config | undefined {
+    return this.config.getOptionalConfig(key);
+  }
+  getConfigArray(key: string): Config[] {
+    return this.config.getConfigArray(key);
+  }
+  getOptionalConfigArray(key: string): Config[] | undefined {
+    return this.config.getOptionalConfigArray(key);
+  }
+  getNumber(key: string): number {
+    return this.config.getNumber(key);
+  }
+  getOptionalNumber(key: string): number | undefined {
+    return this.config.getOptionalNumber(key);
+  }
+  getBoolean(key: string): boolean {
+    return this.config.getBoolean(key);
+  }
+  getOptionalBoolean(key: string): boolean | undefined {
+    return this.config.getOptionalBoolean(key);
+  }
+  getString(key: string): string {
+    return this.config.getString(key);
+  }
+  getOptionalString(key: string): string | undefined {
+    return this.config.getOptionalString(key);
+  }
+  getStringArray(key: string): string[] {
+    return this.config.getStringArray(key);
+  }
+  getOptionalStringArray(key: string): string[] | undefined {
+    return this.config.getOptionalStringArray(key);
+  }
+}
 
 type Options = {
   logger: Logger;
@@ -27,23 +111,55 @@ type Options = {
   argv: string[];
 };
 
+// A global used to ensure that only a single file watcher is active at a time.
+let currentCancelFunc: () => void;
+
 /**
- * Load configuration for a Backend
+ * Load configuration for a Backend.
+ *
+ * This function should only be called once, during the initialization of the backend.
  */
-export async function loadBackendConfig(options: Options): Promise<Config> {
+export async function loadBackendConfig(
+  options: Options,
+): Promise<ObservableConfig> {
   const args = parseArgs(options.argv);
-  const configOpts: string[] = [args.config ?? []].flat();
+  const configPaths: string[] = [args.config ?? []].flat();
+
+  const config = new ObservableConfigProxy(options.logger);
 
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
+
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configOpts.map(opt => resolvePath(opt)),
+    configPaths: configPaths.map(opt => resolvePath(opt)),
+    watch: {
+      onChange(newConfigs) {
+        options.logger.info(
+          `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
+        );
+
+        config.setConfig(ConfigReader.fromConfigs(newConfigs));
+      },
+      stopSignal: new Promise(resolve => {
+        if (currentCancelFunc) {
+          currentCancelFunc();
+        }
+        currentCancelFunc = resolve;
+
+        // For reloads of this module we need to use a dispose handler rather than the global.
+        if (module.hot) {
+          module.hot.addDisposeHandler(resolve);
+        }
+      }),
+    },
   });
 
   options.logger.info(
     `Loaded config from ${configs.map(c => c.context).join(', ')}`,
   );
 
-  return ConfigReader.fromConfigs(configs);
+  config.setConfig(ConfigReader.fromConfigs(configs));
+
+  return config;
 }
