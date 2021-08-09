@@ -18,7 +18,7 @@ import { ReadStream } from 'fs';
 
 export { Credentials } from 'aws-sdk';
 
-const storage = new (global as any).StorageFilesMock();
+const storage = global.storageFilesMock;
 
 export class S3 {
   constructor() {

@@ -26,7 +26,7 @@ import { AwsS3Publish } from './awsS3';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
 
-const rootDir = (global as any).rootDir;
+const rootDir = global.rootDir;
 
 const getEntityRootDir = (entity: Entity) => {
   const {

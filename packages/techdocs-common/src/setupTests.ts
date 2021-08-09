@@ -18,18 +18,18 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+const rootDir: string = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const encoding = 'utf8';
 
-export class StorageFilesMock {
+class StorageFilesMock implements IStorageFilesMock {
   private files: Record<string, string>;
 
   constructor() {
     this.files = {};
   }
 
-  public emptyFiles() {
+  public emptyFiles(): void {
     this.files = {};
   }
 
@@ -56,6 +56,5 @@ export class StorageFilesMock {
   }
 }
 
-const _global = global as any;
-_global.rootDir = rootDir;
-_global.StorageFilesMock = StorageFilesMock;
+global.rootDir = rootDir;
+global.storageFilesMock = new StorageFilesMock();

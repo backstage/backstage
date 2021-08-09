@@ -15,7 +15,7 @@
  */
 import { Readable } from 'stream';
 
-const storage = new (global as any).StorageFilesMock();
+const storage = global.storageFilesMock;
 
 class GCSFile {
   private readonly path: string;
