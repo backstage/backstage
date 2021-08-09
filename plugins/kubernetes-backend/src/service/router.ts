@@ -23,6 +23,7 @@ import { MultiTenantServiceLocator } from '../service-locator/MultiTenantService
 import {
   ClusterDetails,
   KubernetesClustersSupplier,
+  KubernetesObjectTypes,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
   CustomResource,
@@ -133,13 +134,17 @@ export async function createRouter(
   );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
+  const objectTypesToFetch = options.config.getOptionalStringArray(
+    'kubernetes.objectTypes',
+  ) as KubernetesObjectTypes[];
 
-  const kubernetesFanOutHandler = new KubernetesFanOutHandler(
+  const kubernetesFanOutHandler = new KubernetesFanOutHandler({
     logger,
     fetcher,
     serviceLocator,
     customResources,
-  );
+    objectTypesToFetch,
+  });
 
   return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
 }

@@ -12,6 +12,6 @@ export type PluginEnvironment = {
   database: PluginDatabaseManager;
   cache: PluginCacheManager;
   config: Config;
-  reader: UrlReader
+  reader: UrlReader;
   discovery: PluginEndpointDiscovery;
 };

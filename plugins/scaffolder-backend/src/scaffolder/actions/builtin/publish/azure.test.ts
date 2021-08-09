@@ -233,6 +233,44 @@ describe('publish:azure', () => {
     });
   });
 
+  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        azure: [
+          { host: 'dev.azure.com', token: 'tokenlols' },
+          { host: 'myazurehostnotoken.com' },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations = ScmIntegrations.fromConfig(
+      customAuthorConfig,
+    );
+    const customAuthorAction = createPublishAzureAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+    }));
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
+    });
+  });
+
   it('should call output with the remoteUrl and the repoContentsUrl', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',

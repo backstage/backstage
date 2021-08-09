@@ -219,6 +219,52 @@ describe('publish:gitlab', () => {
     });
   });
 
+  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+          {
+            host: 'hosted.gitlab.com',
+            apiBaseUrl: 'https://api.hosted.gitlab.com',
+          },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations = ScmIntegrations.fromConfig(
+      customAuthorConfig,
+    );
+    const customAuthorAction = createPublishGitlabAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'http://mockurl.git',
+      auth: { username: 'oauth2', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
+    });
+  });
+
   it('should call output with the remoteUrl and repoContentsUrl', async () => {
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({

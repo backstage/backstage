@@ -23,7 +23,6 @@ import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { RemoteProtocol } from '../prepare/types';
 import { SupportedGeneratorKey } from './types';
 
 // TODO: Implement proper support for more generators.
@@ -94,12 +93,12 @@ export const runCommand = async ({
  * - (anything that is not valid as described above)
  *
  * @param {string} repoUrl URL supposed to be used as repo_url in mkdocs.yml
- * @param {RemoteProtocol} locationType Type of source code host - github, gitlab, dir, url, etc.
+ * @param {string} locationType Type of source code host - github, gitlab, dir, url, etc.
  * @returns {boolean}
  */
 export const isValidRepoUrlForMkdocs = (
   repoUrl: string,
-  locationType: RemoteProtocol,
+  locationType: string,
 ): boolean => {
   // Trim trailing slash
   const cleanRepoUrl = repoUrl.replace(/\/$/, '');
@@ -266,6 +265,8 @@ export const patchMkdocsYmlPreBuild = async (
     const repoUrl = getRepoUrlFromLocationAnnotation(parsedLocationAnnotation);
     if (repoUrl !== undefined) {
       // mkdocs.yml will not build with invalid repo_url. So, make sure it is valid.
+      // TODO: this is no longer working/meaningful because annotation type is
+      // now only ever "url" or "dir." Should be re-implemented!
       if (isValidRepoUrlForMkdocs(repoUrl, parsedLocationAnnotation.type)) {
         mkdocsYml.repo_url = repoUrl;
       }

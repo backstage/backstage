@@ -264,6 +264,9 @@ export function createPublishGithubAction(options: {
           password: token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 

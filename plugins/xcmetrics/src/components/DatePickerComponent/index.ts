@@ -13,24 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Button } from '@material-ui/core';
-import { createComponentRouteRef } from '../../routes';
-import { useRouteRef } from '@backstage/core-plugin-api';
-
-export const CreateComponentButton = () => {
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-
-  return createComponentLink ? (
-    <Button
-      component={RouterLink}
-      variant="contained"
-      color="primary"
-      to={createComponentLink()}
-    >
-      Create Component
-    </Button>
-  ) : null;
-};
+export * from './DatePickerComponent';

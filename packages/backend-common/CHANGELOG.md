@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.8.8
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/config-loader@0.6.6
+
 ## 0.8.7
 
 ### Patch Changes

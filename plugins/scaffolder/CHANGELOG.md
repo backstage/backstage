@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder
 
+## 0.10.3
+
+### Patch Changes
+
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
 ## 0.10.2
 
 ### Patch Changes

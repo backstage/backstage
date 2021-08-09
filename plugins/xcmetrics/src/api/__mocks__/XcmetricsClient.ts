@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Build, XcmetricsApi } from '../types';
+import { Build, BuildFilters, XcmetricsApi } from '../types';
 
 export const mockBuild = {
   userid: 'userid1',
@@ -28,7 +28,7 @@ export const mockBuild = {
   day: '2021-01-01',
   compilationEndTimestamp: '2021-01-01T00:00:01Z',
   tag: '',
-  projectName: 'Project',
+  projectName: 'ProjectName',
   compilationEndTimestampMicroseconds: 1,
   errorCount: 1,
   id: 'buildId',
@@ -61,6 +61,23 @@ export const XcmetricsClient: XcmetricsApi = {
       { ...mockBuild, id: '2', userid: 'userid2' },
     ]);
   },
+  getFilteredBuilds: (
+    _filters: BuildFilters,
+    _page?: number,
+    _perPage?: number,
+  ) => {
+    return Promise.resolve({
+      items: [
+        mockBuild,
+        { ...mockBuild, buildStatus: 'failed', projectName: 'ProjectName2' },
+      ],
+      metadata: {
+        per: 10,
+        total: 2,
+        page: 1,
+      },
+    });
+  },
   getBuildCounts: () => {
     return Promise.resolve([mockBuildCount, mockBuildCount]);
   },
@@ -69,5 +86,8 @@ export const XcmetricsClient: XcmetricsApi = {
   },
   getBuildTimes: (days: number) => {
     return Promise.resolve([mockBuildTime, mockBuildTime].slice(0, days));
+  },
+  getProjects: () => {
+    return Promise.resolve([mockBuild.projectName]);
   },
 };

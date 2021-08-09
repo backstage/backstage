@@ -75,6 +75,7 @@ dockerode
 Docusaurus
 env
 Env
+elasticsearch
 esbuild
 eslint
 etag
@@ -222,6 +223,7 @@ Routable
 rst
 rsync
 ruleset
+runbook
 sam
 sanitization
 scaffolded

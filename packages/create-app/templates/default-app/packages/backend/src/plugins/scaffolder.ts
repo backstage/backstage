@@ -3,9 +3,7 @@ import {
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  createRouter,
-} from '@backstage/plugin-scaffolder-backend';
+import { createRouter } from '@backstage/plugin-scaffolder-backend';
 import Docker from 'dockerode';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';

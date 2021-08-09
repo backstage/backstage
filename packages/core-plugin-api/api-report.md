@@ -196,6 +196,7 @@ export type AuthRequestOptions = {
 export type BackstageIdentity = {
   id: string;
   idToken: string;
+  token: string;
 };
 
 // Warning: (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration

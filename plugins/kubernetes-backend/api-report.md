@@ -51,6 +51,11 @@ export interface CustomResource {
   plural: string;
 }
 
+// Warning: (ae-missing-release-tag) "DEFAULT_OBJECTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DEFAULT_OBJECTS: KubernetesObjectTypes[];
+
 // Warning: (ae-missing-release-tag) "FetchResponseWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

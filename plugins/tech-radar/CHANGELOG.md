@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-radar
 
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
 ## 0.4.3
 
 ### Patch Changes

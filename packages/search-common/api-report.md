@@ -32,6 +32,20 @@ export interface IndexableDocument {
   title: string;
 }
 
+// Warning: (ae-missing-release-tag) "QueryTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type QueryTranslator = (query: SearchQuery) => unknown;
+
+// Warning: (ae-missing-release-tag) "SearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface SearchEngine {
+  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  query(query: SearchQuery): Promise<SearchResultSet>;
+  setTranslator(translator: QueryTranslator): void;
+}
+
 // Warning: (ae-missing-release-tag) "SearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

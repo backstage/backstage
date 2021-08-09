@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { CreateComponentButton } from './CreateComponentButton';
+export { ElasticSearchSearchEngine } from './ElasticSearchSearchEngine';
+export type { ConcreteElasticSearchQuery } from './ElasticSearchSearchEngine';
