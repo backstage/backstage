@@ -32,6 +32,7 @@ describe('GithubDiscoveryProcessor', () => {
         parseUrl('https://github.com/foo/proj/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj$/,
         catalogPath: '/blob/master/catalog.yaml',
       });
@@ -39,6 +40,7 @@ describe('GithubDiscoveryProcessor', () => {
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj.*$/,
         catalogPath: '/blob/master/catalog.yaml',
       });
