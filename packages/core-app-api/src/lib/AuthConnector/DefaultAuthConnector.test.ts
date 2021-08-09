@@ -126,8 +126,7 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url:
-        'http://my-host/api/auth/my-provider/start?scope=a%20b&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
@@ -175,8 +174,7 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url:
-        'http://my-host/api/auth/my-provider/start?scope=-ab-&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&env=production',
     });
   });
 });

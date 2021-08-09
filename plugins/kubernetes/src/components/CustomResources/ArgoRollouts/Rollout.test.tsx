@@ -58,10 +58,10 @@ describe('Rollout', () => {
   it('should render Paused Rollout with pause text', async () => {
     const wrapper = kubernetesProviders(groupedResources, new Set([]));
 
-    (pausedRollout.status.pauseConditions[0]
-      .startTime as any) = DateTime.local()
-      // millis * secs * mins = 45 mins
-      .minus(Duration.fromMillis(1000 * 60 * 45));
+    (pausedRollout.status.pauseConditions[0].startTime as any) =
+      DateTime.local()
+        // millis * secs * mins = 45 mins
+        .minus(Duration.fromMillis(1000 * 60 * 45));
 
     const { getByText } = render(
       wrapper(

@@ -72,9 +72,7 @@ export const RepoUrlPickerFieldExtension: () => null;
 // @public (undocumented)
 export interface ScaffolderApi {
   // (undocumented)
-  getIntegrationsList(options: {
-    allowedHosts: string[];
-  }): Promise<
+  getIntegrationsList(options: { allowedHosts: string[] }): Promise<
     {
       type: string;
       title: string;
@@ -125,9 +123,7 @@ export class ScaffolderClient implements ScaffolderApi {
     scmIntegrationsApi: ScmIntegrationRegistry;
   });
   // (undocumented)
-  getIntegrationsList(options: {
-    allowedHosts: string[];
-  }): Promise<
+  getIntegrationsList(options: { allowedHosts: string[] }): Promise<
     {
       type: string;
       title: string;

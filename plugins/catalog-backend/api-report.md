@@ -88,9 +88,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     logger: Logger_2;
   });
   // (undocumented)
-  extractInformationFromArn(
-    arn: string,
-  ): {
+  extractInformationFromArn(arn: string): {
     accountId: string;
     organizationId: string;
   };
@@ -596,7 +594,8 @@ export class DefaultCatalogCollator implements DocumentCollator {
 //
 // @public (undocumented)
 export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator {
+  implements CatalogProcessingOrchestrator
+{
   constructor(options: {
     processors: CatalogProcessor[];
     integrations: ScmIntegrationRegistry;

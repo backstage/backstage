@@ -26,9 +26,10 @@ import { LOCATION_ANNOTATION, SOURCE_LOCATION_ANNOTATION } from './annotation';
  * @param ref A string-form location reference, e.g. 'url:https://host'
  * @returns A location reference, e.g. { type: 'url', target: 'https://host' }
  */
-export function parseLocationReference(
-  ref: string,
-): { type: string; target: string } {
+export function parseLocationReference(ref: string): {
+  type: string;
+  target: string;
+} {
   if (typeof ref !== 'string') {
     throw new TypeError(
       `Unable to parse location reference '${ref}', unexpected argument ${typeof ref}`,
@@ -91,9 +92,10 @@ export function stringifyLocationReference(ref: {
  * using the UrlReader from @backstage/backend-common. If it is not of type 'url', the caller
  * needs to have explicit handling of each location type or signal that it is not supported.
  */
-export function getEntitySourceLocation(
-  entity: Entity,
-): { type: string; target: string } {
+export function getEntitySourceLocation(entity: Entity): {
+  type: string;
+  target: string;
+} {
   const locationRef =
     entity.metadata?.annotations?.[SOURCE_LOCATION_ANNOTATION] ??
     entity.metadata?.annotations?.[LOCATION_ANNOTATION];

@@ -28,9 +28,10 @@ import {
   DbSearchRow,
 } from './database/tables';
 
-function parsePagination(
-  input?: EntityPagination,
-): { limit?: number; offset?: number } {
+function parsePagination(input?: EntityPagination): {
+  limit?: number;
+  offset?: number;
+} {
   if (!input) {
     return {};
   }

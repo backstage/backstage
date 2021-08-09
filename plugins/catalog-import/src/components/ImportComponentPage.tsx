@@ -53,8 +53,7 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
               title="Register an existing component"
               deepLink={{
                 title: 'Learn more about the Software Catalog',
-                link:
-                  'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
+                link: 'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
               }}
             >
               <Typography variant="body2" paragraph>

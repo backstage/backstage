@@ -232,9 +232,9 @@ describe('GithubCredentialsProvider tests', () => {
       ],
       token: 'hardcoded_token',
     });
-    octokit.apps.listInstallations.mockResolvedValue(({
+    octokit.apps.listInstallations.mockResolvedValue({
       data: [],
-    } as unknown) as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
     await expect(
       githubProvider.getCredentials({

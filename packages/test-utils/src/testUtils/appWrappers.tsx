@@ -92,7 +92,7 @@ export function wrapInTestApp(
     apis: mockApis,
     // Bit of a hack to make sure that the default config loader isn't used
     // as that would force every single test to wait for config loading.
-    configLoader: (false as unknown) as undefined,
+    configLoader: false as unknown as undefined,
     components: {
       Progress,
       BootErrorPage,

@@ -330,9 +330,10 @@ describe('discovery', () => {
 });
 
 describe('v1 consumer', () => {
-  const RoutingContext = getGlobalSingleton<
-    Context<VersionedValue<{ 1: RouteResolver }>>
-  >('routing-context');
+  const RoutingContext =
+    getGlobalSingleton<Context<VersionedValue<{ 1: RouteResolver }>>>(
+      'routing-context',
+    );
 
   function useMockRouteRefV1(
     routeRef: AnyRouteRef,

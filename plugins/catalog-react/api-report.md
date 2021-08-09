@@ -516,9 +516,7 @@ export const entityRoute: RouteRef<{
 // Warning: (ae-missing-release-tag) "entityRouteParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function entityRouteParams(
-  entity: Entity,
-): {
+export function entityRouteParams(entity: Entity): {
   readonly kind: string;
   readonly namespace: string;
   readonly name: string;
@@ -721,7 +719,7 @@ export const useEntityFromUrl: () => EntityLoadingStatus;
 //
 // @public (undocumented)
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
 // Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -47,7 +47,7 @@ describe('useUnregisterEntityDialogState', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
-  const catalogApi = (catalogApiMock as Partial<CatalogApi>) as CatalogApi;
+  const catalogApi = catalogApiMock as Partial<CatalogApi> as CatalogApi;
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>

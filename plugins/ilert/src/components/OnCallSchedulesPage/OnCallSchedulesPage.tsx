@@ -26,10 +26,8 @@ import {
 } from '@backstage/core-components';
 
 export const OnCallSchedulesPage = () => {
-  const [
-    { onCallSchedules, isLoading, error },
-    { refetchOnCallSchedules },
-  ] = useOnCallSchedules();
+  const [{ onCallSchedules, isLoading, error }, { refetchOnCallSchedules }] =
+    useOnCallSchedules();
 
   if (error) {
     if (error instanceof AuthenticationError) {

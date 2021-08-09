@@ -30,9 +30,9 @@ export const optimization = (
     ...(!isParallelDefault(options.parallel)
       ? {
           minimizer: [
-            (new TerserPlugin({
+            new TerserPlugin({
               parallel: options.parallel,
-            }) as unknown) as WebpackPluginInstance,
+            }) as unknown as WebpackPluginInstance,
           ],
         }
       : {}),

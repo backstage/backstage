@@ -556,9 +556,10 @@ export class CommonDatabase implements Database {
   }
 }
 
-function parsePagination(
-  input?: EntityPagination,
-): { limit?: number; offset?: number } {
+function parsePagination(input?: EntityPagination): {
+  limit?: number;
+  offset?: number;
+} {
   if (!input) {
     return {};
   }

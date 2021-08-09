@@ -170,7 +170,8 @@ describe('<ProductInsights />', () => {
   }
 
   it('should render each product panel', async () => {
-    const noComputeEngineCostsRgx = /There are no Compute Engine costs within this time frame for your team's projects./;
+    const noComputeEngineCostsRgx =
+      /There are no Compute Engine costs within this time frame for your team's projects./;
     const { getByText } = await renderInContext(
       <ProductInsights
         onLoaded={jest.fn()}

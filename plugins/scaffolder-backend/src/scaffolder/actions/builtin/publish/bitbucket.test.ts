@@ -149,8 +149,7 @@ describe('publish:bitbucket', () => {
               links: {
                 self: [
                   {
-                    href:
-                      'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
                   },
                 ],
                 clone: [
@@ -363,9 +362,8 @@ describe('publish:bitbucket', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishBitbucketAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -430,9 +428,8 @@ describe('publish:bitbucket', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishBitbucketAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

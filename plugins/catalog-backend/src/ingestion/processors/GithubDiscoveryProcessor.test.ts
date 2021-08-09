@@ -21,9 +21,10 @@ import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
 
 jest.mock('./github');
-const mockGetOrganizationRepositories = getOrganizationRepositories as jest.MockedFunction<
-  typeof getOrganizationRepositories
->;
+const mockGetOrganizationRepositories =
+  getOrganizationRepositories as jest.MockedFunction<
+    typeof getOrganizationRepositories
+  >;
 
 describe('GithubDiscoveryProcessor', () => {
   describe('parseUrl', () => {

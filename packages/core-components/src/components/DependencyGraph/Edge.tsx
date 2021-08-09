@@ -71,10 +71,8 @@ export function Edge({
   React.useLayoutEffect(() => {
     // set the label width to the actual rendered width to properly layout graph
     if (labelRef.current) {
-      let {
-        height: renderedHeight,
-        width: renderedWidth,
-      } = labelRef.current.getBBox();
+      let { height: renderedHeight, width: renderedWidth } =
+        labelRef.current.getBBox();
       renderedHeight = Math.round(renderedHeight);
       renderedWidth = Math.round(renderedWidth);
 

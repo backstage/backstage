@@ -44,10 +44,8 @@ export const IncidentActionsMenu = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const callback = onIncidentChanged || ((_: Incident): void => {});
   const setProcessing = setIsLoading || ((_: boolean): void => {});
-  const [
-    isAssignIncidentModalOpened,
-    setIsAssignIncidentModalOpened,
-  ] = React.useState(false);
+  const [isAssignIncidentModalOpened, setIsAssignIncidentModalOpened] =
+    React.useState(false);
 
   const [{ incidentActions, isLoading }] = useIncidentActions(
     incident,

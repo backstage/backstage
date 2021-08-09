@@ -34,9 +34,8 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-const { useParams }: { useParams: jest.Mock } = jest.requireMock(
-  'react-router-dom',
-);
+const { useParams }: { useParams: jest.Mock } =
+  jest.requireMock('react-router-dom');
 
 describe('<Reader />', () => {
   it('should render Reader content', async () => {
@@ -44,11 +43,12 @@ describe('<Reader />', () => {
       entityId: 'Component::backstage',
     });
 
-    const scmIntegrationsApi: ScmIntegrationsApi = ScmIntegrationsApi.fromConfig(
-      new ConfigReader({
-        integrations: {},
-      }),
-    );
+    const scmIntegrationsApi: ScmIntegrationsApi =
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      );
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {};
 
     const apiRegistry = ApiRegistry.from([
