@@ -100,20 +100,21 @@ export const RepoUrlPicker = ({
     return await scaffolderApi.getIntegrationsList({ allowedHosts });
   });
 
-  const { host, type, owner, repo, organization, workspace, project } = splitFormData(formData);
+  const { host, owner, repo, organization, workspace, project } = splitFormData(
+    formData,
+  );
   const updateHost = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       onChange(
         serializeFormData({
           host: evt.target.value as string,
-          type: (integrations?getIntegrationTypeByHost(evt.target.value as string, integrations): undefined),
           owner,
           repo,
           organization,
           workspace,
           project,
         }),
-      )
+      );
     },
     [onChange, owner, repo, organization, workspace, project],
   );
@@ -160,7 +161,7 @@ export const RepoUrlPicker = ({
           project,
         }),
       ),
-    [onChange, host , type, owner, repo, workspace, project],
+    [onChange, host, owner, repo, workspace, project],
   );
 
   const updateWorkspace = useCallback(
@@ -206,7 +207,16 @@ export const RepoUrlPicker = ({
         }),
       );
     }
-  }, [onChange, integrations, host, type, owner, repo, organization, workspace, project]);
+  }, [
+    onChange,
+    integrations,
+    host,
+    owner,
+    repo,
+    organization,
+    workspace,
+    project,
+  ]);
 
   if (loading) {
     return <Progress />;
@@ -263,7 +273,11 @@ export const RepoUrlPicker = ({
               error={rawErrors?.length > 0 && !workspace}
             >
               <InputLabel htmlFor="wokrspaceInput">Workspace</InputLabel>
-              <Input id="wokrspaceInput" onChange={updateWorkspace} value={workspace} />
+              <Input
+                id="wokrspaceInput"
+                onChange={updateWorkspace}
+                value={workspace}
+              />
               <FormHelperText>
                 The workspace where the repository will be created
               </FormHelperText>
@@ -275,7 +289,11 @@ export const RepoUrlPicker = ({
             error={rawErrors?.length > 0 && !project}
           >
             <InputLabel htmlFor="wokrspaceInput">Project</InputLabel>
-            <Input id="wokrspaceInput" onChange={updateProject} value={project} />
+            <Input
+              id="wokrspaceInput"
+              onChange={updateProject}
+              value={project}
+            />
             <FormHelperText>
               The project where the repository will be created
             </FormHelperText>

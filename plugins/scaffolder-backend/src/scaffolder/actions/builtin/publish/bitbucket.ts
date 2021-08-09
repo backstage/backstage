@@ -33,7 +33,14 @@ const createBitbucketCloudRepository = async (opts: {
   repoVisibility: 'private' | 'public';
   authorization: string;
 }) => {
-  const { workspace, project, repo, description, repoVisibility, authorization } = opts;
+  const {
+    workspace,
+    project,
+    repo,
+    description,
+    repoVisibility,
+    authorization,
+  } = opts;
 
   const options: RequestInit = {
     method: 'POST',
@@ -115,7 +122,7 @@ const createBitbucketServerRepository = async (opts: {
 
   try {
     const baseUrl = apiBaseUrl ? apiBaseUrl : `https://${host}/rest/api/1.0`;
-    response = await fetch(`${baseUrl}/projects/${owner}/repos`, options);
+    response = await fetch(`${baseUrl}/projects/${project}/repos`, options);
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -162,10 +169,10 @@ const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
 const performEnableLFS = async (opts: {
   authorization: string;
   host: string;
-  owner: string;
+  project: string;
   repo: string;
 }) => {
-  const { authorization, host, owner, repo } = opts;
+  const { authorization, host, project, repo } = opts;
 
   const options: RequestInit = {
     method: 'PUT',
@@ -175,7 +182,7 @@ const performEnableLFS = async (opts: {
   };
 
   const { ok, status, statusText } = await fetch(
-    `https://${host}/rest/git-lfs/admin/projects/${owner}/repos/${repo}/enabled`,
+    `https://${host}/rest/git-lfs/admin/projects/${project}/repos/${repo}/enabled`,
     options,
   );
 
@@ -268,10 +275,10 @@ export function createPublishBitbucketAction(options: {
       // Workspace is only required for bitbucket cloud
       if (host === 'bitbucket.org') {
         if (!workspace) {
-            throw new InputError(
-              `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
-            );
-          }
+          throw new InputError(
+            `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
+          );
+        }
       }
 
       // Project is required for both bitbucket cloud and bitbucket server
@@ -293,9 +300,9 @@ export function createPublishBitbucketAction(options: {
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
       const createMethod =
-      host === 'bitbucket.org'
-        ? createBitbucketCloudRepository
-        : createBitbucketServerRepository;
+        host === 'bitbucket.org'
+          ? createBitbucketCloudRepository
+          : createBitbucketServerRepository;
 
       const { remoteUrl, repoContentsUrl } = await createMethod({
         authorization,
@@ -333,7 +340,7 @@ export function createPublishBitbucketAction(options: {
       });
 
       if (enableLFS && host !== 'bitbucket.org') {
-        await performEnableLFS({ authorization, host, owner, repo });
+        await performEnableLFS({ authorization, host, project, repo });
       }
 
       ctx.output('remoteUrl', remoteUrl);

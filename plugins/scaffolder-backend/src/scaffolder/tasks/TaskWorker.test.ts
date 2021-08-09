@@ -22,6 +22,7 @@ import { RepoSpec } from '../actions/builtin/publish/util';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker } from './TaskWorker';
+import { ScmIntegrations } from '@backstage/integration';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -188,6 +189,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
@@ -221,6 +223,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({
@@ -254,6 +257,7 @@ describe('TaskWorker', () => {
       workingDirectory: os.tmpdir(),
       actionRegistry,
       taskBroker: broker,
+      integrations,
     });
 
     const { taskId } = await broker.dispatch({

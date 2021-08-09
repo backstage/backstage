@@ -50,7 +50,7 @@ describe('publish:bitbucket', () => {
   const action = createPublishBitbucketAction({ integrations, config });
   const mockContext = {
     input: {
-      repoUrl: 'bitbucket.org?type=bitbucket&workspace=workspace&project=project&repo=repo',
+      repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
       repoVisibility: 'private',
     },
     workspacePath: 'lol',
@@ -70,21 +70,21 @@ describe('publish:bitbucket', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'bitbucket.org?type=bitbucket&project=project&repo=repo' },
+        input: { repoUrl: 'bitbucket.org?project=project&repo=repo' },
       }),
     ).rejects.toThrow(/missing workspace/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'bitbucket.org?type=bitbucket&workspace=workspace&repo=repo' },
+        input: { repoUrl: 'bitbucket.org?workspace=workspace&repo=repo' },
       }),
     ).rejects.toThrow(/missing project/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'bitbucket.org?type=bitbucket&workspace=workspace&project=project' },
+        input: { repoUrl: 'bitbucket.org?workspace=workspace&project=project' },
       }),
     ).rejects.toThrow(/missing repo/);
   });
@@ -93,7 +93,9 @@ describe('publish:bitbucket', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'missing.com?type=bitbucket&workspace=workspace&project=project&repo=repo' },
+        input: {
+          repoUrl: 'missing.com?workspace=workspace&project=project&repo=repo',
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -103,7 +105,8 @@ describe('publish:bitbucket', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'notoken.bitbucket.com?type=bitbucket&workspace=workspace&project=project&repo=repo',
+          repoUrl:
+            'notoken.bitbucket.com?workspace=workspace&project=project&repo=repo',
         },
       }),
     ).rejects.toThrow(/Authorization has not been provided for Bitbucket/);
@@ -116,7 +119,11 @@ describe('publish:bitbucket', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer tokenlols');
-          expect(req.body).toEqual({ is_private: true, scm: 'git', project: { key: 'project' } });
+          expect(req.body).toEqual({
+            is_private: true,
+            scm: 'git',
+            project: { key: 'project' },
+          });
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -176,7 +183,7 @@ describe('publish:bitbucket', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'hosted.bitbucket.com?type=bitbucket&project=project&repo=repo',
+        repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
       },
     });
   });

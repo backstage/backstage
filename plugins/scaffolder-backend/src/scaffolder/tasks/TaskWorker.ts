@@ -27,6 +27,7 @@ import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { isTruthy } from './helper';
 import { Task, TaskBroker } from './types';
+import { ScmIntegrations } from '@backstage/integration';
 
 type Options = {
   logger: Logger;
@@ -50,7 +51,7 @@ export class TaskWorker {
     });
 
     this.handlebars.registerHelper('projectSlug', repoUrl => {
-      const { owner, repo } = parseRepoUrl(repoUrl);
+      const { owner, repo } = parseRepoUrl(repoUrl, options.integrations);
       return `${owner}/${repo}`;
     });
 
