@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityNamePicker';
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
-export * from './TextValuePicker';
+
+import { FieldValidation } from '@rjsf/core';
+import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
+
+export const entityNamePickerValidation = (
+  value: string,
+  validation: FieldValidation,
+) => {
+  if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
+    validation.addError(
+      'must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+    );
+  }
+};

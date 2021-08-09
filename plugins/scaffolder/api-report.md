@@ -43,6 +43,31 @@ export type CustomFieldValidator<T> =
       },
     ) => void);
 
+// Warning: (ae-missing-release-tag) "EntityNamePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityNamePicker: ({
+  schema: { title, description },
+  ...props
+}: FieldProps<string>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "EntityNamePickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityNamePickerFieldExtension: () => null;
+
+// Warning: (ae-missing-release-tag) "EntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityPicker: ({
+  onChange,
+  schema: { title, description },
+  required,
+  uiSchema,
+  rawErrors,
+  formData,
+}: FieldProps<string>) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -57,10 +82,29 @@ export type FieldExtensionOptions<T = any> = {
   validation?: CustomFieldValidator<T>;
 };
 
+// Warning: (ae-missing-release-tag) "OwnerPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnerPicker: ({
+  schema: { title, description },
+  uiSchema,
+  ...props
+}: FieldProps<string>) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "OwnerPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const OwnerPickerFieldExtension: () => null;
+
+// Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const RepoUrlPicker: ({
+  onChange,
+  uiSchema,
+  rawErrors,
+  formData,
+}: FieldProps<string>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -174,6 +218,18 @@ const scaffolderPlugin: BackstagePlugin<
 >;
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
+
+// Warning: (ae-missing-release-tag) "TextValuePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TextValuePicker: ({
+  onChange,
+  required,
+  schema: { title, description },
+  rawErrors,
+  formData,
+  uiSchema: { 'ui:autofocus': autoFocus },
+}: FieldProps<string>) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

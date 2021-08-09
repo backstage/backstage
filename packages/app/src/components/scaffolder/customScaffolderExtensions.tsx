@@ -13,8 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityNamePicker';
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
-export * from './TextValuePicker';
+
+import type { FieldValidation } from '@rjsf/core';
+import {
+  createScaffolderFieldExtension,
+  TextValuePicker,
+  scaffolderPlugin,
+} from '@backstage/plugin-scaffolder';
+
+export const LowerCaseValuePickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    name: 'LowerCaseValuePicker',
+    component: TextValuePicker,
+    validation: (value: string, validation: FieldValidation) => {
+      if (value.toLowerCase() !== value) {
+        validation.addError('Only lowercase values are allowed.');
+      }
+    },
+  }),
+);

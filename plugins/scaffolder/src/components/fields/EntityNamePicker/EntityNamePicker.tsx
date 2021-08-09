@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityNamePicker';
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
-export * from './TextValuePicker';
+import React from 'react';
+import { FieldProps } from '@rjsf/core';
+import { TextValuePicker } from '../TextValuePicker';
+
+export const EntityNamePicker = ({
+  schema: { title = 'Name', description = 'Unique name of the component' },
+  ...props
+}: FieldProps<string>) => (
+  <TextValuePicker schema={{ title, description }} {...props} />
+);
