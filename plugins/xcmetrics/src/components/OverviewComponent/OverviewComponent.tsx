@@ -33,10 +33,11 @@ import { overviewColumns } from '../BuildTableColumns';
 
 export const OverviewComponent = () => {
   const client = useApi(xcmetricsApiRef);
-  const { value: builds, loading, error } = useAsync(
-    async () => client.getBuilds(),
-    [],
-  );
+  const {
+    value: builds,
+    loading,
+    error,
+  } = useAsync(async () => client.getBuilds(), []);
 
   if (loading) {
     return <Progress />;

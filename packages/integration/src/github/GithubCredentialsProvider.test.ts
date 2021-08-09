@@ -133,7 +133,7 @@ describe('GithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
-  it('should fail to issue tokens for an organization when the app is installed for a single repo', async () => {
+  it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
         etag: '123',
@@ -156,13 +156,12 @@ describe('GithubCredentialsProvider tests', () => {
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
-    await expect(
-      github.getCredentials({
-        url: 'https://github.com/backstage',
-      }),
-    ).rejects.toThrow(
-      'The Backstage GitHub application used in the backstage organization must be installed for the entire organization to be able to issue credentials without a specified repository.',
-    );
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+    const expectedToken = 'secret_token';
+    expect(headers).toEqual({ Authorization: `Bearer ${expectedToken}` });
+    expect(token).toEqual('secret_token');
   });
 
   it('should throw if the app is suspended', async () => {
@@ -232,9 +231,9 @@ describe('GithubCredentialsProvider tests', () => {
       ],
       token: 'hardcoded_token',
     });
-    octokit.apps.listInstallations.mockResolvedValue(({
+    octokit.apps.listInstallations.mockResolvedValue({
       data: [],
-    } as unknown) as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
     await expect(
       githubProvider.getCredentials({

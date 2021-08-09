@@ -202,14 +202,10 @@ describe('read microsoft graph', () => {
         'data:image/jpeg;base64,...',
       );
 
-      const {
-        groups,
-        groupMember,
-        groupMemberOf,
-        rootGroup,
-      } = await readMicrosoftGraphGroups(client, 'tenantid', {
-        groupFilter: 'securityEnabled eq false',
-      });
+      const { groups, groupMember, groupMemberOf, rootGroup } =
+        await readMicrosoftGraphGroups(client, 'tenantid', {
+          groupFilter: 'securityEnabled eq false',
+        });
 
       const expectedRootGroup = group({
         metadata: {

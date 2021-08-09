@@ -48,10 +48,11 @@ export const StatusMatrixComponent = () => {
   const classes = useStyles();
   const [measureRef, { width: rootWidth }] = useMeasure<HTMLDivElement>();
   const client = useApi(xcmetricsApiRef);
-  const { value: builds, loading, error } = useAsync(
-    async () => client.getBuildStatuses(300),
-    [],
-  );
+  const {
+    value: builds,
+    loading,
+    error,
+  } = useAsync(async () => client.getBuildStatuses(300), []);
 
   if (error) {
     return <Alert severity="error">{error.message}</Alert>;

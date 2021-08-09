@@ -124,7 +124,11 @@ export const TechDocsCustomHome = ({
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const configApi: ConfigApi = useApi(configApiRef);
 
-  const { value: entities, loading, error } = useAsync(async () => {
+  const {
+    value: entities,
+    loading,
+    error,
+  } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: {
         'metadata.annotations.backstage.io/techdocs-ref': CATALOG_FILTER_EXISTS,

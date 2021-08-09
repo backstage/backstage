@@ -403,14 +403,9 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   if (isPostgres) {
     print('Dropping old DBs');
     await Promise.all(
-      [
-        'catalog',
-        'scaffolder',
-        'auth',
-        'identity',
-        'proxy',
-        'techdocs',
-      ].map(name => dropDB(`backstage_plugin_${name}`)),
+      ['catalog', 'scaffolder', 'auth', 'identity', 'proxy', 'techdocs'].map(
+        name => dropDB(`backstage_plugin_${name}`),
+      ),
     );
     print('Created DBs');
   }

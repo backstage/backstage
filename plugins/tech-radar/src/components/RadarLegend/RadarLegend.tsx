@@ -271,13 +271,8 @@ const RadarLegend = (props: Props): JSX.Element => {
     return segments;
   };
 
-  const {
-    quadrants,
-    rings,
-    entries,
-    onEntryMouseEnter,
-    onEntryMouseLeave,
-  } = props;
+  const { quadrants, rings, entries, onEntryMouseEnter, onEntryMouseLeave } =
+    props;
 
   const segments: Segments = setupSegments(entries);
 

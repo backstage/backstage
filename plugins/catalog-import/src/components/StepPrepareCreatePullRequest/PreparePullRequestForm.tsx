@@ -49,19 +49,14 @@ type Props<TFieldValues extends Record<string, any>> = Pick<
  * @param render render the form elements
  */
 export const PreparePullRequestForm = <
-  TFieldValues extends Record<string, any>
+  TFieldValues extends Record<string, any>,
 >({
   defaultValues,
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
-  const {
-    handleSubmit,
-    watch,
-    control,
-    register,
-    errors,
-  } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+  const { handleSubmit, watch, control, register, errors } =
+    useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

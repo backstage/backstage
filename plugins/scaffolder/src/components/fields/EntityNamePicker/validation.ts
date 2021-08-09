@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-export {
-  registerComponentPlugin,
-  registerComponentPlugin as plugin,
-  RegisterComponentPage,
-} from './plugin';
-export { Router } from './components/Router';
+import { FieldValidation } from '@rjsf/core';
+import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
+
+export const entityNamePickerValidation = (
+  value: string,
+  validation: FieldValidation,
+) => {
+  if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
+    validation.addError(
+      'must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+    );
+  }
+};

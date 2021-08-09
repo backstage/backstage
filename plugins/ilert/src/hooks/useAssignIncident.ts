@@ -27,10 +27,8 @@ export const useAssignIncident = (incident: Incident | null, open: boolean) => {
   const [incidentRespondersList, setIncidentRespondersList] = React.useState<
     IncidentResponder[]
   >([]);
-  const [
-    incidentResponder,
-    setIncidentResponder,
-  ] = React.useState<IncidentResponder | null>(null);
+  const [incidentResponder, setIncidentResponder] =
+    React.useState<IncidentResponder | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { error, retry } = useAsyncRetry(async () => {

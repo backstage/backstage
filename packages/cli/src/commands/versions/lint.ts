@@ -55,11 +55,9 @@ export default async (cmd: Command) => {
     lockfile.replaceVersions(result.newVersions);
     await lockfile.save();
   } else {
-    const [
-      newVersionsForbidden,
-      newVersionsAllowed,
-    ] = partition(result.newVersions, ({ name }) =>
-      forbiddenDuplicatesFilter(name),
+    const [newVersionsForbidden, newVersionsAllowed] = partition(
+      result.newVersions,
+      ({ name }) => forbiddenDuplicatesFilter(name),
     );
     if (newVersionsForbidden.length && !fix) {
       success = false;

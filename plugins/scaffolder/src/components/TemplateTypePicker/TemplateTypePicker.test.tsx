@@ -65,17 +65,17 @@ const entities: Entity[] = [
 const apis = ApiRegistry.from([
   [
     catalogApiRef,
-    ({
+    {
       getEntities: jest
         .fn()
         .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as unknown) as CatalogApi,
+    } as unknown as CatalogApi,
   ],
   [
     alertApiRef,
-    ({
+    {
       post: jest.fn(),
-    } as unknown) as AlertApi,
+    } as unknown as AlertApi,
   ],
 ]);
 

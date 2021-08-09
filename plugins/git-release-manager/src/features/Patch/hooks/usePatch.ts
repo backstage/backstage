@@ -54,12 +54,8 @@ export function usePatch({
 }: UsePatch): CardHook<GetRecentCommitsResultSingle> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
-  const {
-    responseSteps,
-    addStepToResponseSteps,
-    asyncCatcher,
-    abortIfError,
-  } = useResponseSteps();
+  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
+    useResponseSteps();
 
   const releaseBranchName = latestRelease.targetCommitish;
 

@@ -34,12 +34,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityTagPicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
 
   const queryParamTags = [queryParameters.tags]
     .flat()

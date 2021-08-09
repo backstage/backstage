@@ -59,10 +59,11 @@ export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
       for (const authProviderStr of authProviders) {
         // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
         try {
-          requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-            authProviderStr,
-            requestBody,
-          );
+          requestBody =
+            await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+              authProviderStr,
+              requestBody,
+            );
         } catch (e) {
           setError(e.message);
           return;

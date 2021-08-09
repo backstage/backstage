@@ -54,12 +54,14 @@ export const OverviewTrendsComponent = () => {
   const theme = useTheme<BackstageTheme>();
   const classes = useStyles();
   const client = useApi(xcmetricsApiRef);
-  const buildCountsResult = useAsync(async () => client.getBuildCounts(days), [
-    days,
-  ]);
-  const buildTimesResult = useAsync(async () => client.getBuildTimes(days), [
-    days,
-  ]);
+  const buildCountsResult = useAsync(
+    async () => client.getBuildCounts(days),
+    [days],
+  );
+  const buildTimesResult = useAsync(
+    async () => client.getBuildTimes(days),
+    [days],
+  );
 
   if (buildCountsResult.loading && buildTimesResult.loading) {
     return <Progress />;

@@ -134,7 +134,7 @@ export function createSystemColumn<T extends Entity>(): TableColumn<T> {
 }
 
 export function createMetadataDescriptionColumn<
-  T extends Entity
+  T extends Entity,
 >(): TableColumn<T> {
   return {
     title: 'Description',
