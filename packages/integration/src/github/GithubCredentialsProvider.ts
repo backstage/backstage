@@ -85,11 +85,8 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string }> {
-    const {
-      installationId,
-      suspended,
-      repositorySelection,
-    } = await this.getInstallationData(owner);
+    const { installationId, suspended, repositorySelection } =
+      await this.getInstallationData(owner);
     if (suspended) {
       throw new Error(
         `The GitHub application for ${[owner, repo]

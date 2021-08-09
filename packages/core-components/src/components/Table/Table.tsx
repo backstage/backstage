@@ -285,9 +285,10 @@ export function Table<T extends object = {}>({
   const [filtersOpen, setFiltersOpen] = useState(
     calculatedInitialState.filtersOpen,
   );
-  const toggleFilters = useCallback(() => setFiltersOpen(v => !v), [
-    setFiltersOpen,
-  ]);
+  const toggleFilters = useCallback(
+    () => setFiltersOpen(v => !v),
+    [setFiltersOpen],
+  );
   const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
   const [selectedFilters, setSelectedFilters] = useState(

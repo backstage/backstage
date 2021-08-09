@@ -32,7 +32,11 @@ type Props = {
 export const EscalationPolicy = ({ policyId }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
-  const { value: users, loading, error } = useAsync(async () => {
+  const {
+    value: users,
+    loading,
+    error,
+  } = useAsync(async () => {
     const oncalls = await api.getOnCallByPolicyId(policyId);
     const usersItem = oncalls
       .sort((a, b) => a.escalation_level - b.escalation_level)

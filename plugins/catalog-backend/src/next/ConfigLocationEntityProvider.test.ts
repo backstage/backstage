@@ -31,9 +31,9 @@ describe('ConfigLocationEntityProvider', () => {
       },
     });
 
-    const mockConnection = ({
+    const mockConnection = {
       applyMutation: jest.fn(),
-    } as unknown) as EntityProviderConnection;
+    } as unknown as EntityProviderConnection;
     const locationProvider = new ConfigLocationEntityProvider(mockConfig);
 
     await locationProvider.connect(mockConnection);

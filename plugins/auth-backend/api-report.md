@@ -223,9 +223,7 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  handler(
-    req: express.Request,
-  ): Promise<{
+  handler(req: express.Request): Promise<{
     response: AuthResponse<OAuthProviderInfo>;
     refreshToken?: string;
   }>;

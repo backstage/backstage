@@ -19,10 +19,10 @@ import { GithubAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
 
-const mockFrameHandler = (jest.spyOn(
+const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
-) as unknown) as jest.MockedFunction<
+) as unknown as jest.MockedFunction<
   () => Promise<{
     result: Omit<OAuthResult, 'params'> & { params: { scope: string } };
   }>
@@ -87,7 +87,7 @@ describe('GithubAuthProvider', () => {
 
     it('when "email" is missing, it should be able to create the profile without it', async () => {
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
-      const fullProfile = ({
+      const fullProfile = {
         id: 'uid-123',
         username: 'jimmymarkum',
         provider: 'github',
@@ -99,7 +99,7 @@ describe('GithubAuthProvider', () => {
               'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
           },
         ],
-      } as unknown) as PassportProfile;
+      } as unknown as PassportProfile;
 
       const params = {
         scope: 'read:scope',
@@ -131,7 +131,7 @@ describe('GithubAuthProvider', () => {
 
     it('when "displayName" is missing, it should be able to create the profile and map "displayName" with "username"', async () => {
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
-      const fullProfile = ({
+      const fullProfile = {
         id: 'uid-123',
         username: 'jimmymarkum',
         provider: 'github',
@@ -143,7 +143,7 @@ describe('GithubAuthProvider', () => {
               'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
           },
         ],
-      } as unknown) as PassportProfile;
+      } as unknown as PassportProfile;
 
       const params = {
         scope: 'read:scope',

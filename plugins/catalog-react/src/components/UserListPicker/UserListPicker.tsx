@@ -129,12 +129,8 @@ export const UserListPicker = ({
     }))
     .filter(({ items }) => !!items.length);
 
-  const {
-    filters,
-    updateFilters,
-    backendEntities,
-    queryParameters,
-  } = useEntityListProvider();
+  const { filters, updateFilters, backendEntities, queryParameters } =
+    useEntityListProvider();
 
   const { isStarredEntity } = useStarredEntities();
   const { isOwnedEntity } = useEntityOwnership();
@@ -166,9 +162,8 @@ export const UserListPicker = ({
 
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
-  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] = useState(
-    backendEntities,
-  );
+  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
+    useState(backendEntities);
   useEffect(() => {
     const filterFn = reduceEntityFilters(
       compact(Object.values({ ...filters, user: undefined })),

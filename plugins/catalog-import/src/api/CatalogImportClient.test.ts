@@ -192,7 +192,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find locations from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: {
           total_count: 2,
           items: [
@@ -248,7 +248,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find repository from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: { total_count: 0, items: [] },
       });
 
@@ -312,7 +312,7 @@ describe('CatalogImportClient', () => {
       });
 
       expect(
-        ((new Octokit().git.createRef as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -320,7 +320,7 @@ describe('CatalogImportClient', () => {
         sha: 'any',
       });
       expect(
-        ((new Octokit().repos.createOrUpdateFileContents as any) as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
           .mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
@@ -331,7 +331,7 @@ describe('CatalogImportClient', () => {
         branch: 'backstage-integration',
       });
       expect(
-        ((new Octokit().pulls.create as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',

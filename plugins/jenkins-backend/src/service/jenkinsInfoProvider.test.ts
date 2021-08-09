@@ -20,9 +20,9 @@ import { ConfigReader } from '@backstage/config';
 import { Entity, EntityName } from '@backstage/catalog-model';
 
 describe('DefaultJenkinsInfoProvider', () => {
-  const mockCatalog: jest.Mocked<CatalogClient> = ({
+  const mockCatalog: jest.Mocked<CatalogClient> = {
     getEntityByName: jest.fn(),
-  } as any) as jest.Mocked<CatalogClient>;
+  } as any as jest.Mocked<CatalogClient>;
 
   const entityRef: EntityName = {
     kind: 'Component',

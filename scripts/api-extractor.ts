@@ -50,17 +50,16 @@ const {
 } = require('@rushstack/node-core-library/lib/PackageJsonLookup');
 
 const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;
-PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackageJsonFilePathForPatch(
-  path: string,
-) {
-  if (
-    path.includes('@material-ui') &&
-    !dirname(path).endsWith('@material-ui')
-  ) {
-    return undefined;
-  }
-  return old.call(this, path);
-};
+PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor =
+  function tryGetPackageJsonFilePathForPatch(path: string) {
+    if (
+      path.includes('@material-ui') &&
+      !dirname(path).endsWith('@material-ui')
+    ) {
+      return undefined;
+    }
+    return old.call(this, path);
+  };
 
 /**
  * Another monkey patch where we apply prettier to the API reports. This has to be patched into
@@ -73,15 +72,14 @@ const {
 
 const originalGenerateReviewFileContent =
   ApiReportGenerator.generateReviewFileContent;
-ApiReportGenerator.generateReviewFileContent = function decoratedGenerateReviewFileContent(
-  ...args
-) {
-  const content = originalGenerateReviewFileContent.apply(this, args);
-  return prettier.format(content, {
-    ...require('@spotify/prettier-config'),
-    parser: 'markdown',
-  });
-};
+ApiReportGenerator.generateReviewFileContent =
+  function decoratedGenerateReviewFileContent(...args) {
+    const content = originalGenerateReviewFileContent.apply(this, args);
+    return prettier.format(content, {
+      ...require('@spotify/prettier-config'),
+      parser: 'markdown',
+    });
+  };
 
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
@@ -218,9 +216,11 @@ async function runApiExtraction({
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative
     // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
     // which needs to point to the actual file, so we override `packageFolder` afterwards.
-    (extractorConfig as {
-      packageFolder: string;
-    }).packageFolder = packageFolder;
+    (
+      extractorConfig as {
+        packageFolder: string;
+      }
+    ).packageFolder = packageFolder;
 
     if (!compilerState) {
       compilerState = CompilerState.create(extractorConfig, {

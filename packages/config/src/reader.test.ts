@@ -64,9 +64,9 @@ function expectValidValues(config: ConfigReader) {
     strings: ['string1', 'string2'],
   });
   expect(config.getConfig('nested').getString('string')).toBe('string');
-  expect(
-    config.getOptionalConfig('nested')!.getStringArray('strings'),
-  ).toEqual(['string1', 'string2']);
+  expect(config.getOptionalConfig('nested')!.getStringArray('strings')).toEqual(
+    ['string1', 'string2'],
+  );
   expect(config.getOptional('missing')).toBe(undefined);
   expect(config.getOptionalConfig('missing')).toBe(undefined);
   expect(config.getOptionalConfigArray('missing')).toBe(undefined);
@@ -234,9 +234,9 @@ describe('ConfigReader', () => {
     expect(withLogCollector(() => config.getOptional('a'))).toMatchObject({
       warn: [],
     });
-    expect(
-      withLogCollector(() => config.getOptionalString('a')),
-    ).toMatchObject({ warn: [] });
+    expect(withLogCollector(() => config.getOptionalString('a'))).toMatchObject(
+      { warn: [] },
+    );
     expect(
       withLogCollector(() => config.getOptionalConfigArray('b')),
     ).toMatchObject({ warn: [] });

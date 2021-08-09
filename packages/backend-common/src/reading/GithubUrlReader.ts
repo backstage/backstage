@@ -39,10 +39,14 @@ import {
   ReadUrlResponse,
 } from './types';
 
-export type GhRepoResponse = RestEndpointMethodTypes['repos']['get']['response']['data'];
-export type GhBranchResponse = RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
-export type GhTreeResponse = RestEndpointMethodTypes['git']['getTree']['response']['data'];
-export type GhBlobResponse = RestEndpointMethodTypes['git']['getBlob']['response']['data'];
+export type GhRepoResponse =
+  RestEndpointMethodTypes['repos']['get']['response']['data'];
+export type GhBranchResponse =
+  RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+export type GhTreeResponse =
+  RestEndpointMethodTypes['git']['getTree']['response']['data'];
+export type GhBlobResponse =
+  RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
@@ -195,7 +199,7 @@ export class GithubUrlReader implements UrlReader {
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
-      stream: (archive.body as unknown) as Readable,
+      stream: archive.body as unknown as Readable,
       subpath,
       etag: sha,
       filter: options?.filter,
@@ -258,9 +262,7 @@ export class GithubUrlReader implements UrlReader {
     }));
   }
 
-  private async getRepoDetails(
-    url: string,
-  ): Promise<{
+  private async getRepoDetails(url: string): Promise<{
     repo: GhRepoResponse;
     branch: GhBranchResponse;
   }> {

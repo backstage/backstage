@@ -112,9 +112,7 @@ export interface TaskStore {
     eventBody: JsonObject;
   }): Promise<void>;
   heartbeatTask(taskId: string): Promise<void>;
-  listStaleTasks(options: {
-    timeoutS: number;
-  }): Promise<{
+  listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
 

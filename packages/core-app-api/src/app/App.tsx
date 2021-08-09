@@ -230,37 +230,33 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      const {
-        routePaths,
-        routeParents,
-        routeObjects,
-        featureFlags,
-      } = useMemo(() => {
-        const result = traverseElementTree({
-          root: children,
-          discoverers: [childDiscoverer, routeElementDiscoverer],
-          collectors: {
-            routePaths: routePathCollector,
-            routeParents: routeParentCollector,
-            routeObjects: routeObjectCollector,
-            collectedPlugins: pluginCollector,
-            featureFlags: featureFlagCollector,
-          },
-        });
+      const { routePaths, routeParents, routeObjects, featureFlags } =
+        useMemo(() => {
+          const result = traverseElementTree({
+            root: children,
+            discoverers: [childDiscoverer, routeElementDiscoverer],
+            collectors: {
+              routePaths: routePathCollector,
+              routeParents: routeParentCollector,
+              routeObjects: routeObjectCollector,
+              collectedPlugins: pluginCollector,
+              featureFlags: featureFlagCollector,
+            },
+          });
 
-        validateRoutes(result.routePaths, result.routeParents);
+          validateRoutes(result.routePaths, result.routeParents);
 
-        // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
-        //               the app, rather than having to wait for the provider to render.
-        //               For now we need to push the additional plugins we find during
-        //               collection and then make sure we initialize things afterwards.
-        result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
-        this.verifyPlugins(this.plugins);
+          // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
+          //               the app, rather than having to wait for the provider to render.
+          //               For now we need to push the additional plugins we find during
+          //               collection and then make sure we initialize things afterwards.
+          result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
+          this.verifyPlugins(this.plugins);
 
-        // Initialize APIs once all plugins are available
-        this.getApiHolder();
-        return result;
-      }, [children]);
+          // Initialize APIs once all plugins are available
+          this.getApiHolder();
+          return result;
+        }, [children]);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -329,10 +325,8 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getRouter(): ComponentType<{}> {
-    const {
-      Router: RouterComponent,
-      SignInPage: SignInPageComponent,
-    } = this.components;
+    const { Router: RouterComponent, SignInPage: SignInPageComponent } =
+      this.components;
 
     // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
     const SignInPageWrapper = ({

@@ -51,7 +51,7 @@ export type DefaultEntityFilters = {
 };
 
 export type EntityListContextProps<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
   /**
    * The currently registered filters, adhering to the shape of DefaultEntityFilters or an extension
@@ -215,7 +215,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 };
 
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)

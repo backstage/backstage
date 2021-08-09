@@ -30,9 +30,7 @@ declare module '@svgr/rollup' {
 
 declare module '@rollup/plugin-yaml';
 declare module 'react-dev-utils/formatWebpackMessages' {
-  export default function (
-    stats: any,
-  ): {
+  export default function (stats: any): {
     errors: string[];
     warnings: string[];
   };
@@ -46,7 +44,8 @@ declare module 'react-dev-utils/ModuleScopePlugin' {
   import webpack = require('webpack');
 
   export default class ModuleScopePlugin
-    implements webpack.WebpackPluginInstance {
+    implements webpack.WebpackPluginInstance
+  {
     constructor(
       appSrc: string | ReadonlyArray<string>,
       allowedFiles?: ReadonlyArray<string>,

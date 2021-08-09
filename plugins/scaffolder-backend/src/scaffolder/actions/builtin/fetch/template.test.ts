@@ -75,8 +75,8 @@ describe('fetch:template', () => {
     mockFs();
 
     action = createFetchTemplateAction({
-      reader: (Symbol('UrlReader') as unknown) as UrlReader,
-      integrations: (Symbol('Integrations') as unknown) as ScmIntegrations,
+      reader: Symbol('UrlReader') as unknown as UrlReader,
+      integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
   });
 
@@ -100,7 +100,7 @@ describe('fetch:template', () => {
     it('throws if copyWithoutRender parameter is not an array', async () => {
       await expect(() =>
         action.handler(
-          mockContext({ copyWithoutRender: ('abc' as unknown) as string[] }),
+          mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
         ),
       ).rejects.toThrowError(/copyWithoutRender must be an array/i);
     });

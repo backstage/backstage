@@ -19,9 +19,9 @@ import { FieldValidation } from '@rjsf/core';
 
 describe('RepoPicker Validation', () => {
   const fieldValidator = () =>
-    (({
+    ({
       addError: jest.fn(),
-    } as unknown) as FieldValidation);
+    } as unknown as FieldValidation);
 
   it('validates when no repo', () => {
     const mockFieldValidation = fieldValidator();

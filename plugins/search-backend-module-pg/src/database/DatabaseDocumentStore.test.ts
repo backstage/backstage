@@ -297,18 +297,18 @@ describe('DatabaseDocumentStore', () => {
         await store.transaction(async tx => {
           await store.prepareInsert(tx);
           await store.insertDocuments(tx, 'my-type', [
-            ({
+            {
               title: 'Lorem Ipsum',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
-            ({
+            } as unknown as IndexableDocument,
+            {
               title: 'Dolor sit amet',
               text: 'Hello World',
               myField: 'that',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
             {
               title: 'Hello World',
               text: 'Around the world',
@@ -349,18 +349,18 @@ describe('DatabaseDocumentStore', () => {
         await store.transaction(async tx => {
           await store.prepareInsert(tx);
           await store.insertDocuments(tx, 'my-type', [
-            ({
+            {
               title: 'Lorem Ipsum',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
-            ({
+            } as unknown as IndexableDocument,
+            {
               title: 'Dolor sit amet',
               text: 'Hello World',
               myField: 'that',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
             {
               title: 'Hello World',
               text: 'Around the world',
@@ -411,20 +411,20 @@ describe('DatabaseDocumentStore', () => {
         await store.transaction(async tx => {
           await store.prepareInsert(tx);
           await store.insertDocuments(tx, 'my-type', [
-            ({
+            {
               title: 'Lorem Ipsum',
               text: 'Hello World',
               myField: 'this',
               otherField: 'another',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
-            ({
+            } as unknown as IndexableDocument,
+            {
               title: 'Dolor sit amet',
               text: 'Hello World',
               myField: 'this',
               otherField: 'unknown',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
           ]);
           await store.completeInsert(tx, 'my-type');
         });
@@ -461,18 +461,18 @@ describe('DatabaseDocumentStore', () => {
         await store.transaction(async tx => {
           await store.prepareInsert(tx);
           await store.insertDocuments(tx, 'my-type', [
-            ({
+            {
               title: 'Lorem Ipsum',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
-            ({
+            } as unknown as IndexableDocument,
+            {
               title: 'Dolor sit amet',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
           ]);
           await store.completeInsert(tx, 'my-type');
         });
@@ -485,22 +485,22 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
-            document: ({
+            document: {
               title: 'Lorem Ipsum',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
             rank: expect.any(Number),
             type: 'my-type',
           },
           {
-            document: ({
+            document: {
               title: 'Dolor sit amet',
               text: 'Hello World',
               myField: 'this',
               location: 'LOCATION-1',
-            } as unknown) as IndexableDocument,
+            } as unknown as IndexableDocument,
             rank: expect.any(Number),
             type: 'my-type',
           },
