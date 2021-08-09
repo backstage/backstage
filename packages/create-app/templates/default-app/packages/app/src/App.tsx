@@ -6,11 +6,11 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-import';
-import { 
-  ScaffolderPage, 
-  scaffolderPlugin 
-} from '@backstage/plugin-scaffolder';
+import {
+  CatalogImportPage,
+  catalogImportPlugin,
+} from '@backstage/plugin-catalog-import';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
@@ -42,7 +42,7 @@ const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"

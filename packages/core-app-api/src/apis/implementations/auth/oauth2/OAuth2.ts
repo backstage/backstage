@@ -65,7 +65,8 @@ class OAuth2
     OpenIdConnectApi,
     ProfileInfoApi,
     BackstageIdentityApi,
-    SessionApi {
+    SessionApi
+{
   static create({
     discoveryApi,
     environment = 'development',

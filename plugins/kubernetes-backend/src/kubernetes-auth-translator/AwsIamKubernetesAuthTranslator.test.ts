@@ -14,15 +14,58 @@
  * limitations under the License.
  */
 import AWS from 'aws-sdk';
+import AWSMock from 'aws-sdk-mock';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
+import { get, def } from 'bdd-lazy-var';
 
 describe('AwsIamKubernetesAuthTranslator tests', () => {
+  let role: any = undefined;
+  const credentials: any = {
+    accessKeyId: 'bloop',
+    secretAccessKey: 'omg-so-secret',
+    sessionToken: 'token',
+  };
+
+  let assumeResponse: any = {
+    Credentials: {
+      AccessKeyId: credentials.accessKeyId,
+      SecretAccessKey: credentials.secretAccessKey,
+      SessionToken: credentials.sessionToken,
+    },
+  };
+
+  let credentialsResponse: any = new AWS.Credentials(credentials);
+
+  AWSMock.setSDKInstance(AWS);
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
-  it('returns a signed url for aws credentials', async () => {
+
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  def('subject', () => {
+    AWSMock.mock('STS', 'assumeRole', (_params: any, callback: Function) => {
+      callback(null, assumeResponse);
+    });
+
     const authTranslator = new AwsIamKubernetesAuthTranslator();
 
+    jest
+      .spyOn(authTranslator, 'awsGetCredentials')
+      .mockImplementation(async () => credentialsResponse);
+
+    return authTranslator.decorateClusterDetailsWithAuth({
+      assumeRole: role,
+      name: 'test-cluster',
+      url: '',
+      authProvider: 'aws',
+    });
+  });
+
+  it('returns a signed url for aws credentials', async () => {
     // These credentials are not real.
     // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
     AWS.config.credentials = new AWS.Credentials(
@@ -30,24 +73,47 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
     );
 
-    const clusterDetails = await authTranslator.decorateClusterDetailsWithAuth({
-      name: 'test-cluster',
-      url: '',
-      authProvider: 'aws',
-    });
-    expect(clusterDetails.serviceAccountToken).toBeDefined();
+    const subject = await get('subject');
+    expect(subject.serviceAccountToken).toBeDefined();
   });
 
-  it('throws when unable to get aws credentials', async () => {
-    AWS.config.credentials = undefined;
-    const authTranslator = new AwsIamKubernetesAuthTranslator();
-    const promise = authTranslator.decorateClusterDetailsWithAuth({
-      name: 'test-cluster',
-      url: '',
-      authProvider: 'aws',
-    });
-    await expect(promise).rejects.toThrow(
-      'Could not load credentials from any providers',
+  describe('When the role is assumed', () => {
+    // These credentials are not real.
+    // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
+    AWS.config.credentials = new AWS.Credentials(
+      'AKIAIOSFODNN7EXAMPLE',
+      'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
     );
+    role = 'SomeRole';
+
+    describe('When the role is valid', () => {
+      it('returns a signed url for aws credentials', async () => {
+        const subject = await get('subject');
+        expect(subject.serviceAccountToken).toBeDefined();
+      });
+    });
+
+    describe('When the role is invalid', () => {
+      it('returns the original AWS credentials', async () => {
+        assumeResponse = undefined;
+        await expect(get('subject')).rejects.toThrow(/Unable to assume role:/);
+      });
+    });
+  });
+
+  describe('When no creds are returned from AWS', () => {
+    it('throws unable to get aws credentials', async () => {
+      credentialsResponse = new Error();
+      await expect(get('subject')).rejects.toThrow('No AWS credentials found.');
+    });
+  });
+
+  describe('When invalid creds are returned from AWS', () => {
+    it('throws credentials are invalid to get aws credentials', async () => {
+      credentialsResponse = new AWS.Credentials(credentialsResponse);
+      await expect(get('subject')).rejects.toThrow(
+        'Invalid AWS credentials found.',
+      );
+    });
   });
 });

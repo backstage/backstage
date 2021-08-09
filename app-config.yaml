@@ -256,6 +256,8 @@ scaffolder:
   # defaultAuthor:
   #   name: Scaffolder
   #   email: scaffolder@backstage.io
+  # Use to customize the default commit message when new components are created
+  # defaultCommitMessage: 'Initial commit'
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'

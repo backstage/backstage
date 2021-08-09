@@ -113,12 +113,10 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     const credentialsProvider = GithubCredentialsProvider.create(gitHubConfig);
-    const {
-      headers,
-      type: tokenType,
-    } = await credentialsProvider.getCredentials({
-      url: orgUrl,
-    });
+    const { headers, type: tokenType } =
+      await credentialsProvider.getCredentials({
+        url: orgUrl,
+      });
 
     const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,

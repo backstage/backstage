@@ -25,6 +25,11 @@ export type AddLocationResponse = {
   entities: Entity[];
 };
 
+// Warning: (ae-missing-release-tag) "CATALOG_FILTER_EXISTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CATALOG_FILTER_EXISTS: unique symbol;
+
 // Warning: (ae-missing-release-tag) "CatalogApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -123,8 +128,8 @@ export class CatalogClient implements CatalogApi {
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
   filter?:
-    | Record<string, string | string[]>[]
-    | Record<string, string | string[]>
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
 };

@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export type BuildStatus = 'succeeded' | 'failed' | 'stopped';
 
-export type BuildItem = {
+export type Build = {
   userid: string;
   warningCount: number;
   duration: number;
@@ -44,8 +44,23 @@ export type BuildItem = {
   wasSuspended: boolean;
 };
 
-export type BuildsResult = {
-  items: BuildItem[];
+export type BuildStatusResult = Pick<Build, 'id' | 'buildStatus'>;
+
+export type BuildCount = {
+  day: string;
+  errors: number;
+  builds: number;
+};
+
+export type BuildTime = {
+  day: string;
+  durationP50: number;
+  durationP95: number;
+  totalDuration: number;
+};
+
+export type PaginationResult<T> = {
+  items: T[];
   metadata: {
     per: number;
     total: number;
@@ -53,8 +68,25 @@ export type BuildsResult = {
   };
 };
 
+export type BuildFilters = {
+  from: string; // ISO Date (e.g. "2021-01-01")
+  to: string; // ISO Date (e.g. "2021-01-02")
+  buildStatus?: BuildStatus;
+  project?: string;
+};
+
 export interface XcmetricsApi {
-  getBuilds(): Promise<BuildItem[]>;
+  getBuild(id: string): Promise<Build>;
+  getBuilds(limit?: number): Promise<Build[]>;
+  getFilteredBuilds(
+    filters: BuildFilters,
+    page?: number,
+    perPage?: number,
+  ): Promise<PaginationResult<Build>>;
+  getBuildCounts(days: number): Promise<BuildCount[]>;
+  getBuildTimes(days: number): Promise<BuildTime[]>;
+  getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;
+  getProjects(): Promise<string[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XcmetricsApi>({

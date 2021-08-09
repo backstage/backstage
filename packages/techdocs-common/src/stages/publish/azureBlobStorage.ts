@@ -323,7 +323,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
     if (originalPath === newPath) return;
     try {
-      this.logger.debug(`Migrating ${originalPath}`);
+      this.logger.verbose(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
       this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);

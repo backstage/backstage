@@ -73,6 +73,7 @@ export const HeaderTabs = ({
   return (
     <div className={styles.tabsWrapper}>
       <Tabs
+        selectionFollowsFocus
         indicatorColor="primary"
         textColor="inherit"
         variant="scrollable"

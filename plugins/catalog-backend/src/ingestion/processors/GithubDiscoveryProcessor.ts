@@ -56,8 +56,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const gitHubConfig = this.integrations.github.byUrl(location.target)
-      ?.config;
+    const gitHubConfig = this.integrations.github.byUrl(
+      location.target,
+    )?.config;
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
@@ -118,9 +119,12 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
  * Helpers
  */
 
-export function parseUrl(
-  urlString: string,
-): { org: string; repoSearchPath: RegExp; catalogPath: string; host: string } {
+export function parseUrl(urlString: string): {
+  org: string;
+  repoSearchPath: RegExp;
+  catalogPath: string;
+  host: string;
+} {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
 

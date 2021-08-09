@@ -231,9 +231,9 @@ describe('GithubCredentialsProvider tests', () => {
       ],
       token: 'hardcoded_token',
     });
-    octokit.apps.listInstallations.mockResolvedValue(({
+    octokit.apps.listInstallations.mockResolvedValue({
       data: [],
-    } as unknown) as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
     await expect(
       githubProvider.getCredentials({
@@ -252,5 +252,36 @@ describe('GithubCredentialsProvider tests', () => {
         url: 'https://github.com/backstage',
       }),
     ).resolves.toEqual({ headers: undefined, token: undefined, type: 'token' });
+  });
+
+  it('should to create a token for the organization ignoring case sensitive', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: {
+            login: 'BACKSTAGE',
+          },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+      data: {
+        expires_at: DateTime.local().plus({ hour: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+
+    expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
+    expect(token).toEqual('secret_token');
   });
 });

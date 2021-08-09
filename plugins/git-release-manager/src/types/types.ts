@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-export type ComponentConfig<Args> = {
+import { UseCreateReleaseCandidate } from '../features/CreateReleaseCandidate/hooks/useCreateReleaseCandidate';
+import { UsePatch } from '../features/Patch/hooks/usePatch';
+import { UsePromoteRc } from '../features/PromoteRc/hooks/usePromoteRc';
+
+export type ComponentConfig<OnSuccessArgs> = {
   omit?: boolean;
-  onSuccess?: (args: Args) => Promise<void> | void;
+  onSuccess?: (args: OnSuccessArgs) => Promise<void> | void;
 };
 
-interface CreateRcOnSuccessArgs {
-  gitReleaseUrl: string;
-  gitReleaseName: string | null;
+export interface CreateRcOnSuccessArgs {
+  input: Omit<UseCreateReleaseCandidate, 'onSuccess'>;
   comparisonUrl: string;
-  previousTag?: string;
   createdTag: string;
+  gitReleaseName: string | null;
+  gitReleaseUrl: string;
+  previousTag?: string;
 }
-export type ComponentConfigCreateRc = ComponentConfig<CreateRcOnSuccessArgs>;
 
-interface PromoteRcOnSuccessArgs {
+export interface PromoteRcOnSuccessArgs {
+  input: Omit<UsePromoteRc, 'onSuccess'>;
   gitReleaseUrl: string;
   gitReleaseName: string | null;
   previousTagUrl: string;
@@ -36,9 +41,9 @@ interface PromoteRcOnSuccessArgs {
   updatedTagUrl: string;
   updatedTag: string;
 }
-export type ComponentConfigPromoteRc = ComponentConfig<PromoteRcOnSuccessArgs>;
 
-interface PatchOnSuccessArgs {
+export interface PatchOnSuccessArgs {
+  input: Omit<UsePatch, 'onSuccess'>;
   updatedReleaseUrl: string;
   updatedReleaseName: string | null;
   previousTag: string;
@@ -46,7 +51,6 @@ interface PatchOnSuccessArgs {
   patchCommitUrl: string;
   patchCommitMessage: string;
 }
-export type ComponentConfigPatch = ComponentConfig<PatchOnSuccessArgs>;
 
 export interface ResponseStep {
   message: string | React.ReactNode;

@@ -18,75 +18,26 @@ import {
   ContentHeader,
   SupportButton,
   Progress,
-  StatusOK,
-  StatusError,
-  StatusWarning,
   Table,
-  TableColumn,
   EmptyState,
+  InfoCard,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { BuildItem, BuildStatus, xcmetricsApiRef } from '../../api';
+import { xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { Duration } from 'luxon';
-import { Chip } from '@material-ui/core';
-
-const formatStatus = (status: BuildStatus, warningCount: number) => {
-  const statusIcons = {
-    succeeded: <StatusOK />,
-    failed: <StatusError />,
-    stopped: <StatusWarning />,
-  };
-
-  return (
-    <>
-      {statusIcons[status]} {status[0].toUpperCase() + status.slice(1)}
-      {warningCount > 0 && ` with ${warningCount} warning`}
-      {warningCount > 1 && 's'}
-    </>
-  );
-};
-
-const columns: TableColumn<BuildItem>[] = [
-  {
-    title: 'Project',
-    field: 'projectName',
-  },
-  {
-    title: 'Schema',
-    field: 'schema',
-  },
-  {
-    title: 'Duration',
-    field: 'duration',
-    type: 'time',
-    searchable: false,
-    render: data => Duration.fromObject({ seconds: data.duration }).toISOTime(),
-  },
-  {
-    title: 'User',
-    field: 'userid',
-  },
-  {
-    title: 'Status',
-    field: 'buildStatus',
-    render: data => formatStatus(data.buildStatus, data.warningCount),
-  },
-  {
-    field: 'isCI',
-    render: data => data.isCi && <Chip label="CI" size="small" />,
-    width: '10',
-    sorting: false,
-  },
-];
+import { StatusMatrixComponent } from '../StatusMatrixComponent';
+import { Grid } from '@material-ui/core';
+import { OverviewTrendsComponent } from '../OverviewTrendsComponent';
+import { overviewColumns } from '../BuildTableColumns';
 
 export const OverviewComponent = () => {
   const client = useApi(xcmetricsApiRef);
-  const { value: builds, loading, error } = useAsync(
-    async (): Promise<BuildItem[]> => client.getBuilds(),
-    [],
-  );
+  const {
+    value: builds,
+    loading,
+    error,
+  } = useAsync(async () => client.getBuilds(), []);
 
   if (loading) {
     return <Progress />;
@@ -109,12 +60,31 @@ export const OverviewComponent = () => {
       <ContentHeader title="XCMetrics Dashboard">
         <SupportButton>Dashboard for XCMetrics</SupportButton>
       </ContentHeader>
-      <Table
-        options={{ paging: false, search: false }}
-        data={builds}
-        columns={columns}
-        title="Latest Builds"
-      />
+      <Grid container spacing={3} direction="row">
+        <Grid item xs={12} md={8} lg={8} xl={9}>
+          <Table
+            options={{
+              paging: false,
+              search: false,
+              sorting: false,
+              draggable: false,
+            }}
+            data={builds}
+            columns={overviewColumns}
+            title={
+              <>
+                Latest Builds
+                <StatusMatrixComponent />
+              </>
+            }
+          />
+        </Grid>
+        <Grid item xs={12} md={4} lg={4} xl={3}>
+          <InfoCard>
+            <OverviewTrendsComponent />
+          </InfoCard>
+        </Grid>
+      </Grid>
     </>
   );
 };

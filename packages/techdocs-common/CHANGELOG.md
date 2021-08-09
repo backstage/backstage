@@ -1,5 +1,134 @@
 # @backstage/techdocs-common
 
+## 0.8.0
+
+### Minor Changes
+
+- 48ea3d25b: TechDocs has dropped all support for the long-ago deprecated git-based common
+  prepares as well as all corresponding values in `backstage.io/techdocs-ref`
+  annotations.
+
+  Entities whose `backstage.io/techdocs-ref` annotation values still begin with
+  `github:`, `gitlab:`, `bitbucket:`, or `azure/api:` will no longer be generated
+  by TechDocs. Be sure to update these values so that they align with their
+  expected format and your usage of TechDocs.
+
+  For details, see [this explainer on TechDocs ref annotation values][how].
+
+  [how]: https://backstage.io/docs/features/techdocs/how-to-guides#how-to-understand-techdocs-ref-annotation-values
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
+## 0.7.1
+
+### Patch Changes
+
+- 59a5fa319: Migrated files are now printed when `techdocs-cli migrate` is run with the
+  `--verbose` flag set.
+- 54356336e: TechDocs generator stage now supports `mkdocs.yaml` file, in addition to `.yml`
+  depending on whichever is present at the time of generation. (Assumes the
+  latest `spotify/techdocs` container, running mkdocs `v1.2.2` or greater).
+
+## 0.7.0
+
+### Minor Changes
+
+- d32d01e5b: Improve the annotation `backstage.io/techdocs-ref: dir:<relative-target>` that links to a path that is relative to the source of the annotated entity.
+  This annotation works with the basic and the recommended flow, however, it will be most useful with the basic approach.
+
+  This change remove the deprecation of the `dir` reference and provides first-class support for it.
+  In addition, this change removes the support of the deprecated `github`, `gitlab`, and `azure/api` locations from the `dir` reference preparer.
+
+  #### Example Usage
+
+  The annotation is convenient if the documentation is stored in the same location, i.e. the same git repository, as the `catalog-info.yaml`.
+  While it is still supported to add full URLs such as `backstage.io/techdocs-ref: url:https://...` for custom setups, documentation is mostly stored in the same repository as the entity definition.
+  By automatically resolving the target relative to the registration location of the entity, the configuration overhead for this default setup is minimized.
+  Since it leverages the `@backstage/integrations` package for the URL resolution, this is compatible with every supported source.
+
+  Consider the following examples:
+
+  1. "I have a repository with a single `catalog-info.yaml` and a TechDocs page in the root folder!"
+
+  ```
+  https://github.com/backstage/example/tree/main/
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Component
+   |  > metadata:
+   |  >   name: example
+   |  >   annotations:
+   |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+   |  > spec: {}
+   |- docs/
+   |- mkdocs.yml
+  ```
+
+  2. "I have a repository with a single `catalog-info.yaml` and my TechDocs page in located in a folder!"
+
+  ```
+  https://bitbucket.org/my-owner/my-project/src/master/
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Component
+   |  > metadata:
+   |  >   name: example
+   |  >   annotations:
+   |  >     backstage.io/techdocs-ref: dir:./some-folder # -> subfolder
+   |  > spec: {}
+   |- some-folder/
+     |- docs/
+     |- mkdocs.yml
+  ```
+
+  3. "I have a mono repository that hosts multiple components!"
+
+  ```
+  https://dev.azure.com/organization/project/_git/repository
+   |- my-1st-module/
+     |- catalog-info.yaml
+     |  > apiVersion: backstage.io/v1alpha1
+     |  > kind: Component
+     |  > metadata:
+     |  >   name: my-1st-module
+     |  >   annotations:
+     |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+     |  > spec: {}
+     |- docs/
+     |- mkdocs.yml
+   |- my-2nd-module/
+     |- catalog-info.yaml
+     |  > apiVersion: backstage.io/v1alpha1
+     |  > kind: Component
+     |  > metadata:
+     |  >   name: my-2nd-module
+     |  >   annotations:
+     |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+     |  > spec: {}
+     |- docs/
+     |- mkdocs.yml
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Location
+   |  > metadata:
+   |  >   name: example
+   |  > spec:
+   |  >   targets:
+   |  >     - ./*/catalog-info.yaml
+  ```
+
+### Patch Changes
+
+- 6e5aed1c9: Fix validation of mkdocs.yml docs_dir
+- 250984333: Add link to https://backstage.io/docs/features/techdocs/configuration in the log warning message about updating techdocs.generate key.
+- Updated dependencies
+  - @backstage/backend-common@0.8.7
+
 ## 0.6.8
 
 ### Patch Changes

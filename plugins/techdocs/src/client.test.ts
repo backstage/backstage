@@ -21,9 +21,8 @@ import { NotFoundError } from '@backstage/errors';
 import EventSource from 'eventsource';
 import { TechDocsStorageClient } from './client';
 
-const MockedEventSource: jest.MockedClass<
-  typeof EventSource
-> = EventSource as any;
+const MockedEventSource: jest.MockedClass<typeof EventSource> =
+  EventSource as any;
 
 jest.mock('eventsource');
 
@@ -91,9 +90,7 @@ describe('TechDocsStorageClient', () => {
 
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: {} },
       );
@@ -119,9 +116,7 @@ describe('TechDocsStorageClient', () => {
 
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: { Authorization: 'Bearer token' } },
       );

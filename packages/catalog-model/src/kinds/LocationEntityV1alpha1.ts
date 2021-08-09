@@ -28,6 +28,5 @@ export interface LocationEntityV1alpha1 extends Entity {
   };
 }
 
-export const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const locationEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

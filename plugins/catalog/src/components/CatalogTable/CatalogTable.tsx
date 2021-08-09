@@ -80,7 +80,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     ({ entity }) => {
       const url = getEntityMetadataViewUrl(entity);
       return {
-        icon: () => <OpenInNew fontSize="small" />,
+        icon: () => <OpenInNew aria-label="View" fontSize="small" />,
         tooltip: 'View',
         disabled: !url,
         onClick: () => {
@@ -92,7 +92,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     ({ entity }) => {
       const url = getEntityMetadataEditUrl(entity);
       return {
-        icon: () => <Edit fontSize="small" />,
+        icon: () => <Edit aria-label="Edit" fontSize="small" />,
         tooltip: 'Edit',
         disabled: !url,
         onClick: () => {

@@ -36,12 +36,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityOwnerPicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
 
   const queryParamOwners = [queryParameters.owners]
     .flat()
@@ -81,6 +77,7 @@ export const EntityOwnerPicker = () => {
       <Typography variant="button">Owner</Typography>
       <Autocomplete<string>
         multiple
+        aria-label="Owner"
         options={availableOwners}
         value={selectedOwners}
         onChange={(_: object, value: string[]) => setSelectedOwners(value)}

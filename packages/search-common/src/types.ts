@@ -79,3 +79,31 @@ export interface DocumentDecorator {
   readonly types?: string[];
   execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
 }
+
+/**
+ * A type of function responsible for translating an abstract search query into
+ * a concrete query relevant to a particular search engine.
+ */
+export type QueryTranslator = (query: SearchQuery) => unknown;
+
+/**
+ * Interface that must be implemented by specific search engines, responsible
+ * for performing indexing and querying and translating abstract queries into
+ * concrete, search engine-specific queries.
+ */
+export interface SearchEngine {
+  /**
+   * Override the default translator provided by the SearchEngine.
+   */
+  setTranslator(translator: QueryTranslator): void;
+
+  /**
+   * Add the given documents to the SearchEngine index of the given type.
+   */
+  index(type: string, documents: IndexableDocument[]): Promise<void>;
+
+  /**
+   * Perform a search query against the SearchEngine.
+   */
+  query(query: SearchQuery): Promise<SearchResultSet>;
+}

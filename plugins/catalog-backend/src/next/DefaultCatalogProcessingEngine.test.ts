@@ -22,17 +22,17 @@ import { CatalogProcessingOrchestrator } from './processing/types';
 import { Stitcher } from './stitching/Stitcher';
 
 describe('DefaultCatalogProcessingEngine', () => {
-  const db = ({
+  const db = {
     transaction: jest.fn(),
     getProcessableEntities: jest.fn(),
     updateProcessedEntity: jest.fn(),
-  } as unknown) as jest.Mocked<DefaultProcessingDatabase>;
+  } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
   };
-  const stitcher = ({
+  const stitcher = {
     stitch: jest.fn(),
-  } as unknown) as jest.Mocked<Stitcher>;
+  } as unknown as jest.Mocked<Stitcher>;
 
   beforeEach(() => {
     jest.resetAllMocks();

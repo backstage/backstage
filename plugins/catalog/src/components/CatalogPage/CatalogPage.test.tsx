@@ -55,7 +55,7 @@ describe('CatalogPage', () => {
               name: 'Entity1',
             },
             spec: {
-              owner: 'tools@example.com',
+              owner: 'tools',
               type: 'service',
             },
             relations: [
@@ -72,7 +72,7 @@ describe('CatalogPage', () => {
               name: 'Entity2',
             },
             spec: {
-              owner: 'not-tools@example.com',
+              owner: 'not-tools',
               type: 'service',
             },
             relations: [
@@ -108,7 +108,8 @@ describe('CatalogPage', () => {
     displayName: 'Display Name',
   };
   const identityApi: Partial<IdentityApi> = {
-    getUserId: () => 'tools@example.com',
+    getUserId: () => 'tools',
+    getIdToken: async () => undefined,
     getProfile: () => testProfile,
   };
 

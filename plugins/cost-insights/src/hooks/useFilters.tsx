@@ -54,9 +54,8 @@ export const FilterProvider = ({ children }: PropsWithChildren<{}>) => {
   const groups = useGroups();
   const [error, setError] = useState<Maybe<Error>>(null);
   const [pageFilters, setPageFilters] = useState<Maybe<PageFilters>>(null);
-  const [productFilters, setProductFilters] = useState<Maybe<ProductFilters>>(
-    null,
-  );
+  const [productFilters, setProductFilters] =
+    useState<Maybe<ProductFilters>>(null);
 
   useEffect(() => {
     async function setPageFiltersFromLocation() {

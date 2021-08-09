@@ -149,8 +149,7 @@ describe('publish:bitbucket', () => {
               links: {
                 self: [
                   {
-                    href:
-                      'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
                   },
                 ],
                 clone: [
@@ -363,9 +362,8 @@ describe('publish:bitbucket', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishBitbucketAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -404,6 +402,73 @@ describe('publish:bitbucket', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
+    });
+  });
+
+  it('should call initAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        bitbucket: [
+          {
+            host: 'bitbucket.org',
+            token: 'tokenlols',
+          },
+          {
+            host: 'hosted.bitbucket.com',
+            token: 'thing',
+            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
+          },
+          {
+            host: 'notoken.bitbucket.com',
+          },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createPublishBitbucketAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/owner/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/owner/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 

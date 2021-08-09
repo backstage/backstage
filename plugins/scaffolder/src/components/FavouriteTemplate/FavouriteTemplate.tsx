@@ -57,10 +57,10 @@ export const favouriteTemplateIcon = (isStarred: boolean) =>
 export const FavouriteTemplate = (props: Props) => {
   const classes = useStyles();
   const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
-  const isStarred = useMemo(() => isStarredEntity(props.entity), [
-    isStarredEntity,
-    props.entity,
-  ]);
+  const isStarred = useMemo(
+    () => isStarredEntity(props.entity),
+    [isStarredEntity, props.entity],
+  );
   return (
     <IconButton
       color="inherit"

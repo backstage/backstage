@@ -16,7 +16,16 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { BuildItem, BuildsResult, XcmetricsApi } from './types';
+import { DateTime } from 'luxon';
+import {
+  Build,
+  BuildCount,
+  BuildFilters,
+  BuildStatusResult,
+  BuildTime,
+  PaginationResult,
+  XcmetricsApi,
+} from './types';
 
 interface Options {
   discoveryApi: DiscoveryApi;
@@ -29,14 +38,107 @@ export class XcmetricsClient implements XcmetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuilds(): Promise<BuildItem[]> {
+  async getBuild(id: string): Promise<Build> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build`);
+    const response = await fetch(`${baseUrl}/build/${id}`);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
 
-    return ((await response.json()) as BuildsResult).items;
+    return ((await response.json()) as Record<'build', Build>).build;
+  }
+
+  async getBuilds(limit: number = 10): Promise<Build[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build?per=${limit}`);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return ((await response.json()) as PaginationResult<Build>).items;
+  }
+
+  async getFilteredBuilds(
+    filters: BuildFilters,
+    page?: number,
+    perPage?: number,
+  ): Promise<PaginationResult<Build>> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build/filter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: DateTime.fromISO(filters.from)
+          .startOf('day')
+          .toISO({ suppressMilliseconds: true }),
+        to: DateTime.fromISO(filters.to)
+          .endOf('day')
+          .startOf('second')
+          .toISO({ suppressMilliseconds: true }),
+        status: filters.buildStatus,
+        projectName: filters.project,
+        page,
+        per: perPage,
+      }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as PaginationResult<Build>;
+  }
+
+  async getBuildCounts(days: number): Promise<BuildCount[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/count?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildCount[];
+  }
+
+  async getBuildTimes(days: number): Promise<BuildTime[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/time?days=${days}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as BuildTime[];
+  }
+
+  async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(
+      `${baseUrl}/statistics/build/status?per=${limit}`,
+    );
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return ((await response.json()) as PaginationResult<BuildStatusResult>)
+      .items;
+  }
+
+  async getProjects(): Promise<string[]> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}/build/project`);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return (await response.json()) as string[];
   }
 }

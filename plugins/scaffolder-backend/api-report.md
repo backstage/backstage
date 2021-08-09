@@ -107,6 +107,13 @@ export const createFilesystemDeleteAction: () => TemplateAction<any>;
 // @public (undocumented)
 export const createFilesystemRenameAction: () => TemplateAction<any>;
 
+// Warning: (ae-missing-release-tag) "createGithubActionsDispatchAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createGithubActionsDispatchAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction<any>;
+
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -164,7 +171,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export const createTemplateAction: <
   Input extends Partial<{
     [name: string]: JsonValue | Partial<JsonObject> | undefined;
-  }>
+  }>,
 >(
   templateAction: TemplateAction<Input>,
 ) => TemplateAction<any>;

@@ -138,7 +138,11 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
-  const { loading, error, value: results } = useAsync(async () => {
+  const {
+    loading,
+    error,
+    value: results,
+  } = useAsync(async () => {
     const entities = await catalogApi.getEntities();
     return entities.items.map((entity: Entity) => ({
       name: entity.metadata.name,

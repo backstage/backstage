@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme as createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
 

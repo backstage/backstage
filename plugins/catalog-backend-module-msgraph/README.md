@@ -89,9 +89,11 @@ export async function myGroupTransformer(
   groupPhoto?: string,
 ): Promise<GroupEntity | undefined> {
   if (
-    ((group as unknown) as {
-      creationOptions: string[];
-    }).creationOptions.includes('ProvisionGroupHomepage')
+    (
+      group as unknown as {
+        creationOptions: string[];
+      }
+    ).creationOptions.includes('ProvisionGroupHomepage')
   ) {
     return undefined;
   }

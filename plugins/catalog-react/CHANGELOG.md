@@ -1,5 +1,65 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/core-app-api@0.1.7
+
+## 0.4.0
+
+### Minor Changes
+
+- c5cb55803: Introduce the `useEntityOwnership` hook, which implements the full new ownership model.
+
+  This also means a breaking change to the interface of `UserListFilter`. It no longer
+  accepts a user entity as input, but rather a function that checks ownership of an
+  entity. This function is taken from the above mentioned hook output. So if you are
+  instantiating the filter yourself, you will change from something like
+
+  ```ts
+  const { entity } = useOwnUser();
+  const filter = new UserListFilter('owned', user, ...);
+  ```
+
+  to
+
+  ```ts
+  const { isOwnedEntity } = useEntityOwnership();
+  const filter = new UserListFilter('owned', isOwnedEntity, ...);
+  ```
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 11c370af2: Export `CATALOG_FILTER_EXISTS` symbol
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 043a4238f: Fix `EntityListProvider` to not update url if unmounted
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.1
+
+### Patch Changes
+
+- 221d7d060: added retry callback to useEntity hook
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/core-app-api@0.1.5
+
 ## 0.3.0
 
 ### Minor Changes

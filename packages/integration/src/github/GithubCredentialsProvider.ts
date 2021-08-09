@@ -91,6 +91,7 @@ class GithubAppManager {
 
     const cacheKey = repo ? `${owner}/${repo}` : owner;
 
+    // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
@@ -100,7 +101,8 @@ class GithubAppManager {
         const installationClient = new Octokit({
           auth: result.data.token,
         });
-        const repos = await installationClient.apps.listReposAccessibleToInstallation();
+        const repos =
+          await installationClient.apps.listReposAccessibleToInstallation();
         const hasRepo = repos.data.repositories.some(repository => {
           return repository.name === repo;
         });
@@ -126,7 +128,7 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login === owner,
+      inst => inst.account?.login?.toLowerCase() === owner.toLowerCase(),
     );
     if (installation) {
       return {

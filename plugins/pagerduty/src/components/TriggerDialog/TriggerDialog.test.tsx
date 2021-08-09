@@ -92,9 +92,8 @@ describe('TriggerDialog', () => {
     });
     expect(mockTriggerAlarmFn).toHaveBeenCalled();
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      integrationKey: entity!.metadata!.annotations![
-        'pagerduty.com/integration-key'
-      ],
+      integrationKey:
+        entity!.metadata!.annotations!['pagerduty.com/integration-key'],
       source: window.location.toString(),
       description,
       userName: 'guest@example.com',

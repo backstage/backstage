@@ -318,14 +318,12 @@ export function resolveRelations(
 
   // Make sure every group (except root) has at least one parent. If the parent is missing, add the root.
   if (rootGroup) {
-    const tenantId = rootGroup.metadata.annotations![
-      MICROSOFT_GRAPH_TENANT_ID_ANNOTATION
-    ];
+    const tenantId =
+      rootGroup.metadata.annotations![MICROSOFT_GRAPH_TENANT_ID_ANNOTATION];
 
     groups.forEach(group => {
-      const groupId = group.metadata.annotations![
-        MICROSOFT_GRAPH_GROUP_ID_ANNOTATION
-      ];
+      const groupId =
+        group.metadata.annotations![MICROSOFT_GRAPH_GROUP_ID_ANNOTATION];
 
       if (!groupId) {
         return;
@@ -392,15 +390,11 @@ export async function readMicrosoftGraphOrg(
     userFilter: options.userFilter,
     logger: options.logger,
   });
-  const {
-    groups,
-    rootGroup,
-    groupMember,
-    groupMemberOf,
-  } = await readMicrosoftGraphGroups(client, tenantId, {
-    groupFilter: options?.groupFilter,
-    transformer: options?.groupTransformer,
-  });
+  const { groups, rootGroup, groupMember, groupMemberOf } =
+    await readMicrosoftGraphGroups(client, tenantId, {
+      groupFilter: options?.groupFilter,
+      transformer: options?.groupTransformer,
+    });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
