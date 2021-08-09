@@ -21,4 +21,12 @@ Field extensions are a way to combine an ID, a `React` Component and a
 `validation` function together in a modular way that you can then use to pass to
 the `Scaffolder` frontend plugin in your own `App.tsx`.
 
-You can create your own Field Extension by us
+You can create your own Field Extension by using the `createScaffolderFieldExtension` `API` like below:
+
+```tsx
+//packages/app/scaffolder/
+const CustomFieldExtensionComponent = () => {
+
+}
+
+
