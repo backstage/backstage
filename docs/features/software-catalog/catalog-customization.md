@@ -187,7 +187,7 @@ new `CustomCatalogIndexPage`.
 # packages/app/src/App.tsx
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
 +    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
 ```
