@@ -137,18 +137,18 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * Directory structure used in the container is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
-    // First, retrieve a list of all individual files in currently existing
+    // First, try to retrieve a list of all individual files currently existing
     const remoteFolder = getCloudPathForLocalPath(entity);
-    let existingFiles: string[];
+    let existingFiles: string[] = [];
     try {
       existingFiles = await this.getAllBlobsFromContainer({
         prefix: remoteFolder,
         maxPageSize: BATCH_CONCURRENCY,
       });
     } catch (e) {
-      const errorMessage = `Unable to list file(s) to Azure. ${e}`;
-      this.logger.error(errorMessage);
-      throw new Error(errorMessage);
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
     }
 
     // Then, merge new files into the same folder
@@ -395,7 +395,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     let response = (await iterator.next()).value;
 
     do {
-      for (const blob of response.segment.blobItems) {
+      for (const blob of response?.segment?.blobItems ?? []) {
         blobs.push(blob.name);
       }
       iterator = container

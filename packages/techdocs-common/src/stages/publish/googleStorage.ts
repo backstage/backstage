@@ -117,9 +117,16 @@ export class GoogleGCSPublish implements PublisherBase {
   async publish({ entity, directory }: PublishRequest): Promise<void> {
     const bucket = this.storageClient.bucket(this.bucketName);
 
-    // First, retrieve a list of all individual files in currently existing
-    const remoteFolder = getCloudPathForLocalPath(entity);
-    const existingFiles = await this.getFilesForFolder(remoteFolder);
+    // First, try to retrieve a list of all individual files currently existing
+    let existingFiles: string[] = [];
+    try {
+      const remoteFolder = getCloudPathForLocalPath(entity);
+      existingFiles = await this.getFilesForFolder(remoteFolder);
+    } catch (e) {
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
+    }
 
     // Then, merge new files into the same folder
     let absoluteFilesToUpload;

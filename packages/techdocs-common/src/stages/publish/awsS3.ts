@@ -178,11 +178,18 @@ export class AwsS3Publish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
-    // First, retrieve a list of all individual files in currently existing
-    const remoteFolder = getCloudPathForLocalPath(entity);
-    const existingFiles = await this.getAllObjectsFromBucket({
-      prefix: remoteFolder,
-    });
+    // First, try to retrieve a list of all individual files currently existing
+    let existingFiles: string[] = [];
+    try {
+      const remoteFolder = getCloudPathForLocalPath(entity);
+      existingFiles = await this.getAllObjectsFromBucket({
+        prefix: remoteFolder,
+      });
+    } catch (e) {
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
+    }
 
     // Then, merge new files into the same folder
     let absoluteFilesToUpload;
