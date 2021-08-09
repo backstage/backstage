@@ -64,6 +64,7 @@ nav:
           - Getting Started: 'features/search/getting-started.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
+          - Search Engines: 'features/search/search-engines.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'

@@ -124,7 +124,7 @@ describe('helpers', () => {
       };
 
       const parsedLocationAnnotation2: ParsedLocationAnnotation = {
-        type: 'file',
+        type: 'file' as RemoteProtocol,
         target: '/home/user/workspace/docs-repository/catalog-info.yaml',
       };
 
@@ -147,7 +147,7 @@ describe('helpers', () => {
 
     it('should return correct target url for supported hosts', () => {
       const parsedLocationAnnotation1: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target: 'https://github.com/backstage/backstage.git',
       };
 
@@ -156,7 +156,7 @@ describe('helpers', () => {
       );
 
       const parsedLocationAnnotation2: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target: 'https://github.com/org/repo',
       };
 
@@ -165,7 +165,7 @@ describe('helpers', () => {
       );
 
       const parsedLocationAnnotation3: ParsedLocationAnnotation = {
-        type: 'gitlab',
+        type: 'gitlab' as RemoteProtocol,
         target: 'https://gitlab.com/org/repo',
       };
 
@@ -174,7 +174,7 @@ describe('helpers', () => {
       );
 
       const parsedLocationAnnotation4: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target:
           'github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
       };
@@ -200,7 +200,7 @@ describe('helpers', () => {
 
     it('should add repo_url to mkdocs.yml', async () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target: 'https://github.com/backstage/backstage',
       };
 
@@ -219,7 +219,7 @@ describe('helpers', () => {
 
     it('should add repo_url to mkdocs.yml that contains custom yaml tags', async () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target: 'https://github.com/backstage/backstage',
       };
 
@@ -241,7 +241,7 @@ describe('helpers', () => {
 
     it('should not override existing repo_url in mkdocs.yml', async () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
-        type: 'github',
+        type: 'github' as RemoteProtocol,
         target: 'https://github.com/neworg/newrepo',
       };
 

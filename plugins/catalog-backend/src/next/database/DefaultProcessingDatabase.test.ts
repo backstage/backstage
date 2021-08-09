@@ -79,10 +79,10 @@ describe('Default Processing Database', () => {
       'updates refresh state with varying location keys, %p',
       async databaseId => {
         const mockWarn = jest.fn();
-        const { db } = await createDatabase(databaseId, ({
+        const { db } = await createDatabase(databaseId, {
           debug: jest.fn(),
           warn: mockWarn,
-        } as unknown) as Logger);
+        } as unknown as Logger);
         await db.transaction(async tx => {
           const knexTx = tx as Knex.Transaction;
 

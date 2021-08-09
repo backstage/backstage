@@ -73,9 +73,8 @@ export const defaultClientFactory = async ({
     throw new InputError(`No integration for host ${host}`);
   }
 
-  const credentialsProvider = GithubCredentialsProvider.create(
-    integrationConfig,
-  );
+  const credentialsProvider =
+    GithubCredentialsProvider.create(integrationConfig);
 
   if (!credentialsProvider) {
     throw new InputError(

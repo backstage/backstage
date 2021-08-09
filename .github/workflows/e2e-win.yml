@@ -25,6 +25,13 @@ jobs:
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
+      # In order to have the create-app template function as if it was downloaded from NPM
+      # we need to make sure we checkout files with LF line endings only
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@v2
 
       - name: use node.js ${{ matrix.node-version }}

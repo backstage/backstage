@@ -28,7 +28,7 @@ import {
 import { stripFirstDirectoryFromPath } from './util';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
-const TarParseStream = (Parse as unknown) as { new (): ParseStream };
+const TarParseStream = Parse as unknown as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
 

@@ -59,7 +59,7 @@ export function readEnvConfig(env: {
 
 // Warnings were encountered during analysis:
 //
-// src/lib/schema/types.d.ts:77:5 - (ae-forgotten-export) The symbol "ConfigProcessingOptions" needs to be exported by the entry point index.d.ts
+// src/lib/schema/types.d.ts:83:5 - (ae-forgotten-export) The symbol "ConfigProcessingOptions" needs to be exported by the entry point index.d.ts
 // src/loader.d.ts:13:5 - (ae-forgotten-export) The symbol "EnvFunc" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

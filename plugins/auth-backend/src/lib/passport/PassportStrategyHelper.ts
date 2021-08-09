@@ -195,7 +195,7 @@ export const executeFetchUserProfileStrategy = async (
   accessToken: string,
 ): Promise<passport.Profile> => {
   return new Promise((resolve, reject) => {
-    const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
+    const anyStrategy = providerStrategy as unknown as ProviderStrategy;
     anyStrategy.userProfile(
       accessToken,
       (error: Error, rawProfile: passport.Profile) => {

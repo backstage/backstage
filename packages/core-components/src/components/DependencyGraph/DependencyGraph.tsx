@@ -132,10 +132,8 @@ export function DependencyGraph({
 
         container.call(zoom);
 
-        const {
-          width: newContainerWidth,
-          height: newContainerHeight,
-        } = node.getBoundingClientRect();
+        const { width: newContainerWidth, height: newContainerHeight } =
+          node.getBoundingClientRect();
         if (containerWidth !== newContainerWidth) {
           setContainerWidth(newContainerWidth);
         }

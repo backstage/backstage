@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 0.1.6
+
+### Patch Changes
+
+- e9d3983ee: Add warning when trying to access configuration values that have been filtered out by visibility.
+
 ## 0.1.5
 
 ### Patch Changes

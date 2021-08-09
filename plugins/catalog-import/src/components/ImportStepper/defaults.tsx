@@ -39,9 +39,10 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 export type StepperProviderOpts = {
   pullRequest?: {
     disable?: boolean;
-    preparePullRequest?: (
-      apis: StepperApis,
-    ) => { title?: string; body?: string };
+    preparePullRequest?: (apis: StepperApis) => {
+      title?: string;
+      body?: string;
+    };
   };
 };
 

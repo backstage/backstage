@@ -186,8 +186,7 @@ describe('ApiDocGenerator', () => {
         type: 'method',
         name: 'z',
         path: 'MyApiType.z',
-        text:
-          'z(a: Promise<readonly [{k: MySecondSubType}[]]>): Array<MyThirdSubType>',
+        text: 'z(a: Promise<readonly [{k: MySecondSubType}[]]>): Array<MyThirdSubType>',
         docs: ['Multiple', 'JsDoc', 'Comments'],
         links: [
           {

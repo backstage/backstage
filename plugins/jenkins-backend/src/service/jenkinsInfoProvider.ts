@@ -82,9 +82,8 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
     }
 
     // lookup `[jenkinsName#]jobFullName` from entity annotation
-    const jenkinsAndJobName = DefaultJenkinsInfoProvider.getEntityAnnotationValue(
-      entity,
-    );
+    const jenkinsAndJobName =
+      DefaultJenkinsInfoProvider.getEntityAnnotationValue(entity);
     if (!jenkinsAndJobName) {
       throw new Error(
         `Couldn't find jenkins annotation (${

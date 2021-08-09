@@ -68,12 +68,25 @@ export type PaginationResult<T> = {
   };
 };
 
+export type BuildFilters = {
+  from: string; // ISO Date (e.g. "2021-01-01")
+  to: string; // ISO Date (e.g. "2021-01-02")
+  buildStatus?: BuildStatus;
+  project?: string;
+};
+
 export interface XcmetricsApi {
   getBuild(id: string): Promise<Build>;
-  getBuilds(): Promise<Build[]>;
+  getBuilds(limit?: number): Promise<Build[]>;
+  getFilteredBuilds(
+    filters: BuildFilters,
+    page?: number,
+    perPage?: number,
+  ): Promise<PaginationResult<Build>>;
   getBuildCounts(days: number): Promise<BuildCount[]>;
   getBuildTimes(days: number): Promise<BuildTime[]>;
   getBuildStatuses(limit: number): Promise<BuildStatusResult[]>;
+  getProjects(): Promise<string[]>;
 }
 
 export const xcmetricsApiRef = createApiRef<XcmetricsApi>({

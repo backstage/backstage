@@ -19,7 +19,8 @@ import { ServiceAccountClusterDetails } from '../types/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
 export class ServiceAccountKubernetesAuthTranslator
-  implements KubernetesAuthTranslator {
+  implements KubernetesAuthTranslator
+{
   async decorateClusterDetailsWithAuth(
     clusterDetails: ServiceAccountClusterDetails,
     // To ignore TS6133 linting error where it detects 'requestBody' is declared but its value is never read.

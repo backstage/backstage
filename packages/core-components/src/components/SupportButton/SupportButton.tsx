@@ -15,21 +15,24 @@
  */
 
 import { useApp } from '@backstage/core-plugin-api';
-import { HelpIcon } from '../../icons';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Button,
   DialogActions,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
   makeStyles,
   Popover,
+  Typography,
+  useMediaQuery,
 } from '@material-ui/core';
 import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
+import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
 
 type SupportButtonProps = {
@@ -83,6 +86,9 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
+  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('sm'),
+  );
 
   const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);
@@ -95,15 +101,26 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
 
   return (
     <>
-      <Box ml={1}>
-        <Button
-          data-testid="support-button"
-          color="primary"
-          onClick={onClickHandler}
-          startIcon={<HelpIcon />}
-        >
-          Support
-        </Button>
+      <Box display="flex" ml={1}>
+        {isSmallScreen ? (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={onClickHandler}
+            data-testid="support-button"
+          >
+            <HelpIcon />
+          </IconButton>
+        ) : (
+          <Button
+            data-testid="support-button"
+            color="primary"
+            onClick={onClickHandler}
+            startIcon={<HelpIcon />}
+          >
+            Support
+          </Button>
+        )}
       </Box>
       <Popover
         data-testid="support-button-popover"

@@ -30,19 +30,19 @@ import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 import { Content, Header, Page } from '@backstage/core-components';
 
-const mockEntities = ([
+const mockEntities = [
   openapiApiEntity,
   asyncapiApiEntity,
   graphqlApiEntity,
   otherApiEntity,
-] as unknown) as Entity[];
+] as unknown as Entity[];
 
 createDevApp()
   .registerApi({
     api: catalogApiRef,
     deps: {},
     factory: () =>
-      (({
+      ({
         async getEntities() {
           return {
             items: mockEntities.slice(),
@@ -51,7 +51,7 @@ createDevApp()
         async getEntityByName(name: string) {
           return mockEntities.find(e => e.metadata.name === name);
         },
-      } as unknown) as typeof catalogApiRef.T),
+      } as unknown as typeof catalogApiRef.T),
   })
   .registerApi({
     api: apiDocsConfigRef,
@@ -72,7 +72,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="OpenAPI" />
         <Content>
-          <EntityProvider entity={(openapiApiEntity as any) as Entity}>
+          <EntityProvider entity={openapiApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -85,7 +85,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="AsyncAPI" />
         <Content>
-          <EntityProvider entity={(asyncapiApiEntity as any) as Entity}>
+          <EntityProvider entity={asyncapiApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -98,7 +98,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="GraphQL" />
         <Content>
-          <EntityProvider entity={(graphqlApiEntity as any) as Entity}>
+          <EntityProvider entity={graphqlApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -111,7 +111,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="Other" />
         <Content>
-          <EntityProvider entity={(otherApiEntity as any) as Entity}>
+          <EntityProvider entity={otherApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>

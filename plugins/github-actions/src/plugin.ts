@@ -56,14 +56,17 @@ export const EntityLatestGithubActionRunCard = githubActionsPlugin.provide(
   }),
 );
 
-export const EntityLatestGithubActionsForBranchCard = githubActionsPlugin.provide(
-  createComponentExtension({
-    component: {
-      lazy: () =>
-        import('./components/Cards').then(m => m.LatestWorkflowsForBranchCard),
-    },
-  }),
-);
+export const EntityLatestGithubActionsForBranchCard =
+  githubActionsPlugin.provide(
+    createComponentExtension({
+      component: {
+        lazy: () =>
+          import('./components/Cards').then(
+            m => m.LatestWorkflowsForBranchCard,
+          ),
+      },
+    }),
+  );
 
 export const EntityRecentGithubActionsRunsCard = githubActionsPlugin.provide(
   createComponentExtension({

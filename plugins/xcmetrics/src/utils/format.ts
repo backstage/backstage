@@ -23,8 +23,7 @@ export const formatDuration = (seconds: number) => {
 
   const h = duration.hours ? `${duration.hours} h` : '';
   const m = duration.minutes ? `${duration.minutes} m` : '';
-  const s =
-    duration.hours < 12 && duration.seconds ? `${duration.seconds} s` : '';
+  const s = duration.hours < 12 ? `${duration.seconds ?? 0} s` : '';
 
   return `${h} ${m} ${s}`;
 };

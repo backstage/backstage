@@ -467,6 +467,15 @@ export const CopyTextButton: {
   };
 };
 
+// Warning: (ae-forgotten-export) The symbol "CreateButtonProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CreateButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CreateButton: ({
+  title,
+  to,
+}: CreateButtonProps) => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "DashboardIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

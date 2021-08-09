@@ -46,13 +46,8 @@ export const createBuiltinActions = (options: {
   containerRunner: ContainerRunner;
   config: Config;
 }) => {
-  const {
-    reader,
-    integrations,
-    containerRunner,
-    catalogClient,
-    config,
-  } = options;
+  const { reader, integrations, containerRunner, catalogClient, config } =
+    options;
 
   return [
     createFetchPlainAction({

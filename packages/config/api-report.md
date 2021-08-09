@@ -9,6 +9,7 @@
 export type AppConfig = {
   context: string;
   data: JsonObject;
+  filteredKeys?: string[];
 };
 
 // Warning: (ae-missing-release-tag) "Config" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

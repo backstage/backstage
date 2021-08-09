@@ -158,7 +158,11 @@ export function SystemDiagramCard() {
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: catalogResponse } = useAsync(() => {
+  const {
+    loading,
+    error,
+    value: catalogResponse,
+  } = useAsync(() => {
     return catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],

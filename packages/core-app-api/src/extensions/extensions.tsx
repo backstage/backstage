@@ -28,7 +28,7 @@ const ERROR_MESSAGE = 'Import this from @backstage/core-plugin-api';
 
 /** @deprecated Import from @backstage/core-plugin-api instead */
 export function createRoutableExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(_options: {
   component: () => Promise<T>;
   mountPoint: RouteRef;
@@ -38,14 +38,14 @@ export function createRoutableExtension<
 
 /** @deprecated Import from @backstage/core-plugin-api instead */
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(_options: { component: ComponentLoader<T> }): Extension<T> {
   throw new Error(ERROR_MESSAGE);
 }
 
 /** @deprecated Import from @backstage/core-plugin-api instead */
 export function createReactExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(_options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;

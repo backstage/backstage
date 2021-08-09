@@ -220,24 +220,22 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
+export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> =
+  async (info, ctx) => {
+    const { profile } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
 
-  const userId = profile.email.split('@')[0];
+    const userId = profile.email.split('@')[0];
 
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
-  });
+    const token = await ctx.tokenIssuer.issueToken({
+      claims: { sub: userId, ent: [`user:default/${userId}`] },
+    });
 
-  return { id: userId, token };
-};
+    return { id: userId, token };
+  };
 
 export type MicrosoftProviderOptions = {
   /**

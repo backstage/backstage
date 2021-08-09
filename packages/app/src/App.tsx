@@ -41,7 +41,15 @@ import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import {
+  ScaffolderPage,
+  scaffolderPlugin,
+  ScaffolderFieldExtensions,
+  RepoUrlPickerFieldExtension,
+  OwnerPickerFieldExtension,
+  EntityPickerFieldExtension,
+  EntityNamePickerFieldExtension,
+} from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
@@ -54,6 +62,7 @@ import { apis } from './apis';
 import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
+import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -98,7 +107,7 @@ const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
@@ -108,7 +117,15 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderFieldExtensions>
+        <EntityPickerFieldExtension />
+        <EntityNamePickerFieldExtension />
+        <RepoUrlPickerFieldExtension />
+        <OwnerPickerFieldExtension />
+        <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
@@ -116,7 +133,6 @@ const routes = (
     />
     <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse" element={<LighthousePage />} />
-
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />

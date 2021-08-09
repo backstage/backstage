@@ -40,6 +40,5 @@ export interface TemplateEntityV1beta2 extends Entity {
   };
 }
 
-export const templateEntityV1beta2Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const templateEntityV1beta2Validator =
+  ajvCompiledJsonSchemaValidator(schema);

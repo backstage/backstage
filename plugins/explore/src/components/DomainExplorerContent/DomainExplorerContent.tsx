@@ -34,7 +34,11 @@ import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { value: entities, loading, error } = useAsync(async () => {
+  const {
+    value: entities,
+    loading,
+    error,
+  } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: { kind: 'domain' },
     });

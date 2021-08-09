@@ -37,9 +37,8 @@ import * as data from '../../__fixtures__/website-response.json';
 import AuditView from './index';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
-const { useParams }: { useParams: jest.Mock } = jest.requireMock(
-  'react-router-dom',
-);
+const { useParams }: { useParams: jest.Mock } =
+  jest.requireMock('react-router-dom');
 const websiteResponse = data as Website;
 
 describe('AuditView', () => {

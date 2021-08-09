@@ -229,9 +229,8 @@ describe('publish:github', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -273,9 +272,8 @@ describe('publish:github', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

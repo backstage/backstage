@@ -17,4 +17,8 @@
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export { LunrSearchEngine } from './engines';
-export type { SearchEngine } from './types';
+
+/**
+ * @deprecated Import from @backstage/search-common instead
+ */
+export type { SearchEngine } from '@backstage/search-common';

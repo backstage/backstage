@@ -167,7 +167,7 @@ export const useSearch: () => SearchContextValue;
 
 // Warnings were encountered during analysis:
 //
-// src/components/SearchContext/SearchContext.d.ts:18:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
+// src/components/SearchContext/SearchContext.d.ts:19:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 

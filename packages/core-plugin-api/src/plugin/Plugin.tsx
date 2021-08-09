@@ -26,8 +26,9 @@ import { AnyApiFactory } from '../apis';
 
 export class PluginImpl<
   Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes
-> implements BackstagePlugin<Routes, ExternalRoutes> {
+  ExternalRoutes extends AnyExternalRoutes,
+> implements BackstagePlugin<Routes, ExternalRoutes>
+{
   private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
@@ -81,7 +82,7 @@ export class PluginImpl<
 
 export function createPlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   config: PluginConfig<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {

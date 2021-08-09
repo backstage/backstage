@@ -26,8 +26,7 @@ jest.mock('react-text-truncate', () => {
 const validResult = {
   location: 'https://backstage.io/docs',
   title: 'Documentation',
-  text:
-    'Backstage is an open-source developer portal that puts the developer experience first.',
+  text: 'Backstage is an open-source developer portal that puts the developer experience first.',
   kind: 'library',
   namespace: '',
   name: 'Backstage',

@@ -28,10 +28,11 @@ interface TooltipContentProps {
 
 const TooltipContent = ({ buildId }: TooltipContentProps) => {
   const client = useApi(xcmetricsApiRef);
-  const { value: build, loading, error } = useAsync(
-    async () => client.getBuild(buildId),
-    [],
-  );
+  const {
+    value: build,
+    loading,
+    error,
+  } = useAsync(async () => client.getBuild(buildId), []);
 
   if (error) {
     return <div>{error.message}</div>;

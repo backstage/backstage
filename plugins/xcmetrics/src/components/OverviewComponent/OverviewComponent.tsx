@@ -13,76 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactChild } from 'react';
+import React from 'react';
 import {
   ContentHeader,
   SupportButton,
   Progress,
-  StatusOK,
-  StatusError,
-  StatusWarning,
   Table,
-  TableColumn,
   EmptyState,
   InfoCard,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Build, BuildStatus, xcmetricsApiRef } from '../../api';
+import { xcmetricsApiRef } from '../../api';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { StatusMatrixComponent } from '../StatusMatrixComponent';
-import { formatDuration, formatTime } from '../../utils';
-import { Chip, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { OverviewTrendsComponent } from '../OverviewTrendsComponent';
-
-const STATUS_ICONS: { [key in BuildStatus]: ReactChild } = {
-  succeeded: <StatusOK />,
-  failed: <StatusError />,
-  stopped: <StatusWarning />,
-};
-
-const columns: TableColumn<Build>[] = [
-  {
-    field: 'buildStatus',
-    render: data => STATUS_ICONS[data.buildStatus],
-  },
-  {
-    title: 'Project',
-    field: 'projectName',
-  },
-  {
-    title: 'Schema',
-    field: 'schema',
-  },
-  {
-    title: 'Started',
-    field: 'startedAt',
-    searchable: false,
-    render: data => formatTime(data.startTimestamp),
-  },
-  {
-    title: 'Duration',
-    field: 'duration',
-    render: data => formatDuration(data.duration),
-  },
-  {
-    title: 'User',
-    field: 'userid',
-  },
-  {
-    field: 'isCI',
-    render: data => data.isCi && <Chip label="CI" size="small" />,
-    width: '10',
-    sorting: false,
-  },
-];
+import { overviewColumns } from '../BuildTableColumns';
 
 export const OverviewComponent = () => {
   const client = useApi(xcmetricsApiRef);
-  const { value: builds, loading, error } = useAsync(
-    async () => client.getBuilds(),
-    [],
-  );
+  const {
+    value: builds,
+    loading,
+    error,
+  } = useAsync(async () => client.getBuilds(), []);
 
   if (loading) {
     return <Progress />;
@@ -108,9 +63,14 @@ export const OverviewComponent = () => {
       <Grid container spacing={3} direction="row">
         <Grid item xs={12} md={8} lg={8} xl={9}>
           <Table
-            options={{ paging: false, search: false }}
+            options={{
+              paging: false,
+              search: false,
+              sorting: false,
+              draggable: false,
+            }}
             data={builds}
-            columns={columns}
+            columns={overviewColumns}
             title={
               <>
                 Latest Builds

@@ -96,14 +96,14 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 
-export const MetadataList = withStyles(
-  listStyles,
-)(({ classes, children }: StyleProps) => (
-  <ul className={classes.root}>{children}</ul>
-));
+export const MetadataList = withStyles(listStyles)(
+  ({ classes, children }: StyleProps) => (
+    <ul className={classes.root}>{children}</ul>
+  ),
+);
 
-export const MetadataListItem = withStyles(
-  listItemStyles,
-)(({ classes, children }: StyleProps) => (
-  <li className={classes.root}>{children}</li>
-));
+export const MetadataListItem = withStyles(listItemStyles)(
+  ({ classes, children }: StyleProps) => (
+    <li className={classes.root}>{children}</li>
+  ),
+);

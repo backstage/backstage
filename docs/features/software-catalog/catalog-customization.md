@@ -36,7 +36,7 @@ export const CustomCatalogPage = ({
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <Content>
         <ContentHeader title="Components">
-          <CreateComponentButton />
+          <CreateButton title="Create Component" to={link} />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <EntityListProvider>
@@ -187,7 +187,7 @@ new `CustomCatalogIndexPage`.
 # packages/app/src/App.tsx
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
 +    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
 ```
