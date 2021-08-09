@@ -152,6 +152,7 @@ function withRoutingProvider(
       routeParents={routeParents}
       routeObjects={routeObjects}
       routeBindings={new Map(routeBindings)}
+      basePath=""
     >
       {root}
     </RoutingProvider>
@@ -367,6 +368,7 @@ describe('v1 consumer', () => {
             routeParents={new Map()}
             routeObjects={[]}
             routeBindings={new Map()}
+            basePath="/base"
             children={children}
           />
         ),
@@ -375,8 +377,8 @@ describe('v1 consumer', () => {
 
     expect(renderedHook.result.current).toBe(undefined);
     renderedHook.rerender({ routeRef: routeRef2 });
-    expect(renderedHook.result.current?.()).toBe('/foo');
+    expect(renderedHook.result.current?.()).toBe('/base/foo');
     renderedHook.rerender({ routeRef: routeRef3 });
-    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/bar/my-x');
+    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/base/bar/my-x');
   });
 });

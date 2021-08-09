@@ -107,6 +107,20 @@ export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   return result;
 }
 
+/**
+ * Get the app base path from the configured app baseUrl.
+ *
+ * The returned path does not have a trailing slash.
+ */
+function getBasePath(configApi: Config) {
+  let { pathname } = new URL(
+    configApi.getOptionalString('app.baseUrl') ?? '/',
+    'http://dummy.dev', // baseUrl can be specified as just a path
+  );
+  pathname = pathname.replace(/\/*$/, '');
+  return pathname;
+}
+
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
   icons: NonNullable<AppOptions['icons']>;
@@ -302,6 +316,7 @@ export class PrivateAppImpl implements BackstageApp {
                 routeParents={routeParents}
                 routeObjects={routeObjects}
                 routeBindings={generateBoundRoutes(this.bindRoutes)}
+                basePath={getBasePath(loadedConfig.api)}
               >
                 {children}
               </RoutingProvider>
@@ -339,14 +354,7 @@ export class PrivateAppImpl implements BackstageApp {
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
-
-      let { pathname } = new URL(
-        configApi.getOptionalString('app.baseUrl') ?? '/',
-        'http://dummy.dev', // baseUrl can be specified as just a path
-      );
-      if (pathname.endsWith('/')) {
-        pathname = pathname.replace(/\/$/, '');
-      }
+      const mountPath = `${getBasePath(configApi)}/*`;
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
@@ -361,7 +369,7 @@ export class PrivateAppImpl implements BackstageApp {
         return (
           <RouterComponent>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </RouterComponent>
         );
@@ -371,7 +379,7 @@ export class PrivateAppImpl implements BackstageApp {
         <RouterComponent>
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </SignInPageWrapper>
         </RouterComponent>
