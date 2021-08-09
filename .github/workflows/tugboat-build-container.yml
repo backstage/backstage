@@ -76,7 +76,7 @@ jobs:
         with:
           push: false
           context: .
-          dockerfile: packages/backend/Dockerfile
+          file: packages/backend/Dockerfile
           tags: backstage/build:${{ github.sha }}
     
 
