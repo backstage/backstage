@@ -26,7 +26,7 @@ import { GoogleGCSPublish } from './googleStorage';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Google Cloud Storage client library
 
-const rootDir = (global as any).rootDir;
+const rootDir = global.rootDir;
 
 const getEntityRootDir = (entity: Entity) => {
   const {

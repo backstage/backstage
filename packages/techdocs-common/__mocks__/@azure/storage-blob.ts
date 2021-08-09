@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
+import {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
 import { EventEmitter } from 'events';
 
-const storage = new (global as any).StorageFilesMock();
+const storage = global.storageFilesMock;
 
 export class BlockBlobClient {
   private readonly blobName;
