@@ -24,17 +24,18 @@ jest.mock('@backstage/catalog-model', () => ({
   },
 }));
 
-const mockIsValidObjectName = KubernetesValidatorFunctions.isValidObjectName as jest.MockedFunction<
-  typeof KubernetesValidatorFunctions.isValidObjectName
->;
+const mockIsValidObjectName =
+  KubernetesValidatorFunctions.isValidObjectName as jest.MockedFunction<
+    typeof KubernetesValidatorFunctions.isValidObjectName
+  >;
 
 describe('EntityNamePicker Validation', () => {
   let mockFieldValidation: FieldValidation;
 
   beforeEach(() => {
-    mockFieldValidation = ({
+    mockFieldValidation = {
       addError: jest.fn(),
-    } as unknown) as FieldValidation;
+    } as unknown as FieldValidation;
   });
 
   it('calls isValidObjectName to validate value', () => {
