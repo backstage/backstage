@@ -46,8 +46,8 @@ jobs:
       - name: Run Prettier on docs
         uses: creyD/prettier_action@v3.1
         with:
-          # Modifies commit only if prettier autofixed a Markdown file
-          prettier_options: --config docs/prettier.config.js --write docs/**/*.md
+          # Modifies commit only if prettier autofixed the ADOPTERS.md
+          prettier_options: --config docs/prettier.config.js --write ADOPTERS.md
           only_changed: true
           commit_message: 'Autofix documentation Markdown files using Prettier'
         env:
