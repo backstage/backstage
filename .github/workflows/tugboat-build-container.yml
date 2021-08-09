@@ -58,7 +58,7 @@ jobs:
         run: yarn tsc:full
   
       - name: build all packages
-        run: yarn workspace example-backend run build
+        run: yarn build
 
       - name: bundle example-backend
         run: yarn workspace example-backend backstage-cli backend:bundle
