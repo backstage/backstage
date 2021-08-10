@@ -57,6 +57,30 @@ if the original location delegates to another location. A common case is, that a
 location is registered as `bootstrap:bootstrap` which means that it is part of
 the `app-config.yaml` of a Backstage installation.
 
+### backstage.io/orphan
+
+This annotation is either absent, or present with the exact _string_ value
+`"true"`. It should never be added manually. Instead, the catalog itself injects
+the annotation as part of its processing loops, on entities that are found to
+have no registered locations or config locations that keep them "active" /
+"alive".
+
+For example, suppose that the user first registers a location URL pointing to a
+`Location` kind entity, which in turn refers to two `Component` kind entities in
+two other files nearby. The end result is that the catalog contains those three
+entities. Now suppose that the user edits the original `Location` entity to only
+refer to the first of the `Component` kind entities. This will intentionally
+_not_ lead to the other `Component` entity to be removed from the catalog (for
+safety reasons). Instead, it gains this orphan marker annotation, to make it
+clear that user action is required to completely remove it, if desired.
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/orphan: 'true'
+```
+
 ### backstage.io/techdocs-ref
 
 ```yaml
