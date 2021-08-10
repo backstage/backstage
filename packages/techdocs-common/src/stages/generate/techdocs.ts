@@ -19,7 +19,7 @@ import { Config } from '@backstage/config';
 import path from 'path';
 import { Logger } from 'winston';
 import {
-  addBuildTimestampMetadata,
+  createOrUpdateMetadata,
   getMkdocsYml,
   patchMkdocsYmlPreBuild,
   runCommand,
@@ -139,9 +139,9 @@ export class TechdocsGenerator implements GeneratorBase {
      * Post Generate steps
      */
 
-    // Add build timestamp to techdocs_metadata.json
+    // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
-    await addBuildTimestampMetadata(
+    await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
     );

@@ -31,6 +31,7 @@ import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -113,8 +114,13 @@ export class GoogleGCSPublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the GCS bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
     try {
+      const objects: string[] = [];
+
       // Note: GCS manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
@@ -137,6 +143,7 @@ export class GoogleGCSPublish implements PublisherBase {
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
+        objects.push(destination);
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
@@ -152,6 +159,7 @@ export class GoogleGCSPublish implements PublisherBase {
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
       );
+      return { objects };
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to Google Cloud Storage. ${e}`;
       this.logger.error(errorMessage);

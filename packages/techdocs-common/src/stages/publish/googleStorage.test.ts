@@ -144,7 +144,13 @@ describe('GoogleGCSPublish', () => {
           entity,
           directory: entityRootDir,
         }),
-      ).toBeUndefined();
+      ).toMatchObject({
+        objects: expect.arrayContaining([
+          'test-namespace/TestKind/test-component-name/404.html',
+          `test-namespace/TestKind/test-component-name/index.html`,
+          `test-namespace/TestKind/test-component-name/assets/main.css`,
+        ]),
+      });
       mockFs.restore();
     });
 
@@ -221,7 +227,7 @@ describe('GoogleGCSPublish', () => {
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json':
-            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag"}',
+            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag", "build_timestamp": 612741599}',
         },
       });
 
@@ -229,6 +235,7 @@ describe('GoogleGCSPublish', () => {
         site_name: 'backstage',
         site_description: 'site_content',
         etag: 'etag',
+        build_timestamp: 612741599,
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
@@ -243,7 +250,7 @@ describe('GoogleGCSPublish', () => {
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json':
-            "{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}",
+            "{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag', 'build_timestamp': 612741599}",
         },
       });
 
@@ -251,6 +258,7 @@ describe('GoogleGCSPublish', () => {
         site_name: 'backstage',
         site_description: 'site_content',
         etag: 'etag',
+        build_timestamp: 612741599,
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
