@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
-const AMAZON_AWS_HOST = '.amazonaws.com';
+const AMAZON_AWS_HOST = 'amazonaws.com';
 
 /**
  * The configuration parameters for a single AWS S3 provider.

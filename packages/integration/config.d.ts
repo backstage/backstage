@@ -168,7 +168,6 @@ export interface Config {
     awsS3?: Array<{
       /**
        * The host of the target that this matches on, e.g. "amazonaws.com".
-       *
        * @visibility frontend
        */
       host: string;

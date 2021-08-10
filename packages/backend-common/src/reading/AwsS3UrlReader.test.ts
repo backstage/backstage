@@ -147,7 +147,7 @@ describe('AwsS3UrlReader', () => {
       new AwsS3Integration(
         readAwsS3IntegrationConfig(
           new ConfigReader({
-            host: '.amazonaws.com',
+            host: 'amazonaws.com',
             accessKeyId: 'fake-access-key',
             secretAccessKey: 'fake-secret-key',
           }),
@@ -200,7 +200,7 @@ describe('AwsS3UrlReader', () => {
       new AwsS3Integration(
         readAwsS3IntegrationConfig(
           new ConfigReader({
-            host: '.amazonaws.com',
+            host: 'amazonaws.com',
             accessKeyId: 'fake-access-key',
             secretAccessKey: 'fake-secret-key',
           }),

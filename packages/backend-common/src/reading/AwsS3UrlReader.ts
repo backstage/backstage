@@ -33,7 +33,7 @@ const parseURL = (
   let { host, pathname } = new URL(url);
 
   /**
-   * Removes the trailing '/' from the pathname to be processed
+   * Removes the leading '/' from the pathname to be processed
    * as a parameter by AWS S3 SDK getObject method.
    */
   pathname = pathname.substr(1);

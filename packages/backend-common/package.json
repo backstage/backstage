@@ -40,7 +40,7 @@
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
     "archiver": "^5.0.2",
-    "aws-sdk": "^2.952.0",
+    "aws-sdk": "^2.840.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
     "cors": "^2.8.5",
