@@ -165,6 +165,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -211,6 +212,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         {
           name: 'test-cluster',
           authProvider: 'serviceAccount',
+          dashboardUrl: 'https://k8s.foo.coom',
         },
         {
           name: 'other-cluster',
@@ -260,6 +262,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
           },
           errors: [],
@@ -298,6 +301,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -396,6 +400,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -434,6 +439,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -536,6 +542,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -574,6 +581,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -612,6 +620,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
+            dashboardUrl: undefined,
             name: 'error-cluster',
           },
           errors: ['some random cluster error'],

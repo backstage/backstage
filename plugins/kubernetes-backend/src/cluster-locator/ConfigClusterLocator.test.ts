@@ -49,6 +49,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        dashboardUrl: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -66,6 +67,7 @@ describe('ConfigClusterLocator', () => {
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
           skipTLSVerify: false,
+          dashboardUrl: 'https://k8s.foo.com',
         },
         {
           name: 'cluster2',
@@ -83,6 +85,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        dashboardUrl: 'https://k8s.foo.com',
         serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -90,6 +93,7 @@ describe('ConfigClusterLocator', () => {
       },
       {
         name: 'cluster2',
+        dashboardUrl: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
@@ -133,6 +137,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         assumeRole: undefined,
+        dashboardUrl: undefined,
         name: 'cluster1',
         serviceAccountToken: 'token',
         externalId: undefined,
@@ -142,6 +147,7 @@ describe('ConfigClusterLocator', () => {
       },
       {
         assumeRole: 'SomeRole',
+        dashboardUrl: undefined,
         name: 'cluster2',
         externalId: undefined,
         serviceAccountToken: undefined,

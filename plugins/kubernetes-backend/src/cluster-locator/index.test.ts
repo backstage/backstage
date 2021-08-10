@@ -50,6 +50,7 @@ describe('getCombinedClusterDetails', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        dashboardUrl: undefined,
         serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -57,6 +58,7 @@ describe('getCombinedClusterDetails', () => {
       },
       {
         name: 'cluster2',
+        dashboardUrl: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
