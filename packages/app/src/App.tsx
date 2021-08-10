@@ -52,7 +52,11 @@ import {
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
-import { TechdocsPage } from '@backstage/plugin-techdocs';
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
@@ -116,7 +120,13 @@ const routes = (
       {entityPage}
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
-    <Route path="/docs" element={<TechdocsPage />} />
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    />
     <Route path="/create" element={<ScaffolderPage />}>
       <ScaffolderFieldExtensions>
         <EntityPickerFieldExtension />

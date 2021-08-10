@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentProps } from 'react';
-import { useStarredEntities } from '@backstage/plugin-catalog-react';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
 import Star from '@material-ui/icons/Star';
@@ -29,17 +29,17 @@ const YellowStar = withStyles({
   },
 })(Star);
 
-export const favouriteEntityTooltip = (isStarred: boolean) =>
+export const favoriteEntityTooltip = (isStarred: boolean) =>
   isStarred ? 'Remove from favorites' : 'Add to favorites';
 
-export const favouriteEntityIcon = (isStarred: boolean) =>
+export const favoriteEntityIcon = (isStarred: boolean) =>
   isStarred ? <YellowStar /> : <StarBorder />;
 
 /**
- * IconButton for showing if a current entity is starred and adding/removing it from the favourite entities
+ * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
  * @param props MaterialUI IconButton props extended by required `entity` prop
  */
-export const FavouriteEntity = (props: Props) => {
+export const FavoriteEntity = (props: Props) => {
   const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
   const isStarred = isStarredEntity(props.entity);
   return (
@@ -48,8 +48,8 @@ export const FavouriteEntity = (props: Props) => {
       {...props}
       onClick={() => toggleStarredEntity(props.entity)}
     >
-      <Tooltip title={favouriteEntityTooltip(isStarred)}>
-        {favouriteEntityIcon(isStarred)}
+      <Tooltip title={favoriteEntityTooltip(isStarred)}>
+        {favoriteEntityIcon(isStarred)}
       </Tooltip>
     </IconButton>
   );
