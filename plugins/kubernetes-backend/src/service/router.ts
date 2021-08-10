@@ -86,6 +86,7 @@ export const makeRouter = (
     res.json({
       items: clusterDetails.map(cd => ({
         name: cd.name,
+        dashboardUrl: cd.dashboardUrl,
         authProvider: cd.authProvider,
       })),
     });

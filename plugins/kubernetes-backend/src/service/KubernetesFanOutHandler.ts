@@ -114,6 +114,7 @@ export class KubernetesFanOutHandler {
             return {
               cluster: {
                 name: clusterDetailsItem.name,
+                dashboardUrl: clusterDetailsItem.dashboardUrl,
               },
               resources: result.responses,
               errors: result.errors,

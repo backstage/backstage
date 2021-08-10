@@ -80,6 +80,7 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  dashboardUrl?: string;
 }
 
 export interface GKEClusterDetails extends ClusterDetails {}

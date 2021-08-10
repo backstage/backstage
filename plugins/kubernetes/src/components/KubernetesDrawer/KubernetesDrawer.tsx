@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import {
   Button,
   Typography,
@@ -35,6 +35,8 @@ import {
   CodeSnippet,
   StructuredMetadataTable,
 } from '@backstage/core-components';
+import { ClusterContext } from '../../hooks';
+import { formatClusterLink } from '../../utils/clusterLinks';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,7 +58,7 @@ const useDrawerContentStyles = makeStyles((_: Theme) =>
     options: {
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'flex-end',
+      justifyContent: 'space-between',
     },
     icon: {
       fontSize: 20,
@@ -105,6 +107,12 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
   const classes = useDrawerContentStyles();
+  const cluster = useContext(ClusterContext);
+  const clusterLink = formatClusterLink(
+    cluster.dashboardUrl ?? '',
+    object,
+    kind,
+  );
 
   return (
     <>
@@ -136,6 +144,19 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         </IconButton>
       </div>
       <div className={classes.options}>
+        <div>
+          {clusterLink && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              href={clusterLink}
+              target="_blank"
+            >
+              Open Kubernetes Dashboard...
+            </Button>
+          )}
+        </div>
         <FormControlLabel
           control={
             <Switch

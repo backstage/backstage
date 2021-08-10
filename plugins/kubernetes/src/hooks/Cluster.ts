@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 
-export * from './useKubernetesObjects';
-export * from './PodNamesWithErrors';
-export * from './GroupedResponses';
-export * from './Cluster';
+export const ClusterContext = React.createContext<ClusterAttributes>({
+  name: '',
+});

@@ -32,8 +32,13 @@ export interface KubernetesRequestBody {
   entity: Entity;
 }
 
+export interface ClusterAttributes {
+  name: string;
+  dashboardUrl?: string;
+}
+
 export interface ClusterObjects {
-  cluster: { name: string };
+  cluster: ClusterAttributes;
   resources: FetchResponse[];
   errors: KubernetesFetchError[];
 }
