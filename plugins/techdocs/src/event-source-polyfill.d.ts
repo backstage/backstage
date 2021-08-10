@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityKindPicker';
-export * from './EntityLifecyclePicker';
-export * from './EntityOwnerPicker';
-export * from './EntityProvider';
-export * from './EntityRefLink';
-export * from './EntitySearchBar';
-export * from './EntityTable';
-export * from './EntityTagPicker';
-export * from './EntityTypePicker';
-export * from './FavoriteEntity';
-export * from './UserListPicker';
+
+declare module 'event-source-polyfill' {
+  export class EventSourcePolyfill extends EventSource {
+    constructor(
+      url: string,
+      options?: {
+        withCredentials?: boolean;
+        headers?: HeadersInit;
+      },
+    );
+  }
+}

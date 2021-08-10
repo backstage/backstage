@@ -130,12 +130,9 @@ Other ElasticSearch instances can be connected to by using standard
 ElasticSearch authentication methods and exposed URL, provided that the cluster
 supports that. The configuration options needed are the URL to the node and
 authentication information. Authentication can be handled by either providing
-username/password or an API key or a bearer token. In case both
-username/password combination and one of the tokens are provided, token takes
-precedence. For more information how to create an API key, see
-[Elastic documentation on API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html),
-and how to create a bearer token see
-[Elastic documentation on tokens.](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html)
+username/password or an API key. For more information how to create an API key,
+see
+[Elastic documentation on API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html).
 
 #### Configuration examples
 
@@ -148,16 +145,6 @@ search:
     auth:
       username: elastic
       password: changeme
-```
-
-##### With bearer token
-
-```yaml
-search:
-  elasticsearch:
-    node: http://localhost:9200
-    auth:
-      bearer: token
 ```
 
 ##### With API key

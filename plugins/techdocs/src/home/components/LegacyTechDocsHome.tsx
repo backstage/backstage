@@ -17,7 +17,7 @@
 import React from 'react';
 import { PanelType, TechDocsCustomHome } from './TechDocsCustomHome';
 
-export const TechDocsHome = () => {
+export const LegacyTechDocsHome = () => {
   const tabsConfig = [
     {
       label: 'Overview',

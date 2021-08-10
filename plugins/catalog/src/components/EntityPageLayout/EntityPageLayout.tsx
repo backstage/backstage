@@ -21,6 +21,7 @@ import {
 import {
   EntityContext,
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
@@ -28,7 +29,6 @@ import { Box } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { Tabbed } from './Tabbed';
 
@@ -54,7 +54,7 @@ const EntityPageTitle = ({
 }) => (
   <Box display="inline-flex" alignItems="center" height="1em">
     {title}
-    {entity && <FavouriteEntity entity={entity} />}
+    {entity && <FavoriteEntity entity={entity} />}
   </Box>
 );
 
