@@ -14,22 +14,36 @@
  * limitations under the License.
  */
 
+import { Link } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { FormHelperText, Grid, Typography } from '@material-ui/core';
+import { Button, FormHelperText, Grid, Typography } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { Alert } from '@material-ui/lab';
 import React, { useCallback, useState } from 'react';
 import { BackButton, NextButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult, ReviewResult } from '../useImportState';
-
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Link } from '@backstage/core-components';
 
 type Props = {
   prepareResult: PrepareResult;
   onReview: (result: ReviewResult) => void;
   onGoBack?: () => void;
 };
+
+function isConflictError(error: Error): string | undefined {
+  try {
+    const parse = JSON.parse(error.message);
+
+    if (parse.error.name === 'ConflictError') {
+      return parse.error.message;
+    }
+  } catch (_) {
+    // ignore
+  }
+
+  return undefined;
+}
 
 export const StepReviewLocation = ({
   prepareResult,
@@ -43,6 +57,8 @@ export const StepReviewLocation = ({
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
+  const [locationConflictMessage, setLocationConflictMessage] =
+    useState<string>();
 
   const handleImport = useCallback(async () => {
     setSubmitted(true);
@@ -81,12 +97,30 @@ export const StepReviewLocation = ({
             entities: [],
           })),
         });
+      } else if (isConflictError(e)) {
+        setLocationConflictMessage(isConflictError(e));
+        setSubmitted(false);
       } else {
         setError(e.message);
         setSubmitted(false);
       }
     }
   }, [prepareResult, onReview, catalogApi]);
+
+  const handleRefresh = useCallback(async () => {
+    setSubmitted(true);
+    setLocationConflictMessage(undefined);
+    try {
+      // TODO: do something
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // TODO: is this correct?
+      onReview(prepareResult as unknown as ReviewResult);
+    } catch (e) {
+      setError(e.message);
+      setSubmitted(false);
+    }
+  }, [onReview, prepareResult]);
 
   return (
     <>
@@ -120,6 +154,20 @@ export const StepReviewLocation = ({
       />
 
       {error && <FormHelperText error>{error}</FormHelperText>}
+
+      {locationConflictMessage && (
+        <Alert
+          variant="outlined"
+          severity="warning"
+          action={
+            <Button color="inherit" onClick={handleRefresh}>
+              Refresh
+            </Button>
+          }
+        >
+          This location is already registered. Do you want to refresh it?
+        </Alert>
+      )}
 
       <Grid container spacing={0}>
         {onGoBack && <BackButton onClick={onGoBack} disabled={submitted} />}
