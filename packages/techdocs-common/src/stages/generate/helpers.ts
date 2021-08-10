@@ -217,6 +217,10 @@ export const patchMkdocsYmlPreBuild = async (
   parsedLocationAnnotation: ParsedLocationAnnotation,
   scmIntegrations: ScmIntegrationRegistry,
 ) => {
+  // We only want to override the mkdocs.yml if it has actually changed. This is relevant if
+  // used with a 'dir' location on the file system as this would permanently update the file.
+  let didEdit = false;
+
   let mkdocsYmlFileString;
   try {
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
@@ -256,6 +260,7 @@ export const patchMkdocsYmlPreBuild = async (
     if (result.repo_url || result.edit_uri) {
       mkdocsYml.repo_url = result.repo_url;
       mkdocsYml.edit_uri = result.edit_uri;
+      didEdit = true;
 
       logger.info(
         `Set ${JSON.stringify(
@@ -266,11 +271,13 @@ export const patchMkdocsYmlPreBuild = async (
   }
 
   try {
-    await fs.writeFile(
-      mkdocsYmlPath,
-      yaml.dump(mkdocsYml, { schema: MKDOCS_SCHEMA }),
-      'utf8',
-    );
+    if (didEdit) {
+      await fs.writeFile(
+        mkdocsYmlPath,
+        yaml.dump(mkdocsYml, { schema: MKDOCS_SCHEMA }),
+        'utf8',
+      );
+    }
   } catch (error) {
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,

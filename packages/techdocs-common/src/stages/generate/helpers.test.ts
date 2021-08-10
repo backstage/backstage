@@ -61,6 +61,9 @@ const mkdocsYmlWithInvalidDocDir = fs.readFileSync(
 const mkdocsYmlWithInvalidDocDir2 = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir2.yml'),
 );
+const mkdocsYmlWithComments = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_comments.yml'),
+);
 const mockLogger = getVoidLogger();
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
@@ -163,6 +166,7 @@ describe('helpers', () => {
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
         '/mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
         '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
+        '/mkdocs_with_comments.yml': mkdocsYmlWithComments,
       });
     });
 
@@ -257,6 +261,28 @@ describe('helpers', () => {
       expect(updatedMkdocsYml.toString()).not.toContain(
         'https://github.com/neworg/newrepo',
       );
+    });
+
+    it('should not update mkdocs.yml if nothing should be changed', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'dir',
+        target: '/unsupported/path',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        '/mkdocs_with_comments.yml',
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile('/mkdocs_with_comments.yml');
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        '# This is a comment that is removed after editing',
+      );
+      expect(updatedMkdocsYml.toString()).not.toContain('edit_uri');
+      expect(updatedMkdocsYml.toString()).not.toContain('repo_url');
     });
   });
 
