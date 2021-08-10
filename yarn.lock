@@ -7198,9 +7198,9 @@
     "@types/react" "*"
 
 "@types/react-lazylog@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/@types/react-lazylog/-/react-lazylog-4.5.0.tgz#1677ac520f29ada2e95b8cd5f8ec54b897227278"
-  integrity sha512-yg0IhKtDRGqUUtXJwi9Y/sSmgX/gmVP0vu0cr5uAECmJnRQbAgsGoVUntQGtwH0Z7Y2iiTh+QW5LkOFsmtIisg==
+  version "4.5.1"
+  resolved "https://registry.npmjs.org/@types/react-lazylog/-/react-lazylog-4.5.1.tgz#babb5d814f7035b5434518769975e12f299356a8"
+  integrity sha512-g4yeosa1zYhu2BUJmuu2H2o0dsdRj0o8Omw3pBiVHdLHJaeYIyArvyMRR3bI/MxZxG4EaiRl8AOQ6zeM8P46jA==
   dependencies:
     "@types/react" "*"
     immutable ">=3.8.2"
