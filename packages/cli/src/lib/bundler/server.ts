@@ -52,7 +52,7 @@ export async function serveBundle(options: ServeOptions) {
       },
       static: {
         publicPath: config.output?.publicPath as string,
-        directory: paths.targetPublic,
+        directory: paths.targetPublic ?? '/',
       },
       historyApiFallback: {
         // Paths with dots should still use the history fallback.
