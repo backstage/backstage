@@ -162,7 +162,7 @@ export const EditProjectDialog = ({ entity, openEdit, handleClose }: Props) => {
     setStatus(selectedStatus);
   };
 
-  const handleTagChange = (event: ChangeEvent<{}>, values: string[]) => {
+  const handleTagChange = ({}, values: string[]) => {
     setTags(values);
   };
 

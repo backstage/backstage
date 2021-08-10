@@ -20,7 +20,6 @@ import React, {
   useEffect,
   useCallback,
   ChangeEvent,
-  MouseEvent,
 } from 'react';
 import {
   createStyles,
@@ -176,10 +175,7 @@ export const AddProjectDialog = ({ entities, openAdd, handleClose }: Props) => {
     setStatus(selectedStatus);
   };
 
-  const handleTagChange = (
-    event: MouseEvent<HTMLInputElement>,
-    values: string[],
-  ) => {
+  const handleTagChange = ({}, values: string[]) => {
     setTags(values);
   };
 
