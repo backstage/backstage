@@ -63,12 +63,18 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
-jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const loggerInfoSpy = jest.spyOn(logger, 'info');
+const loggerErrorSpy = jest.spyOn(logger, 'error');
 
-let publisher: PublisherBase;
-beforeEach(async () => {
-  mockFs.restore();
+const createPublisherMock = ({
+  accountName = 'accountName',
+  containerName = 'containerName',
+}:
+  | {
+      accountName?: string;
+      containerName?: string;
+    }
+  | undefined = {}) => {
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -76,16 +82,24 @@ beforeEach(async () => {
         type: 'azureBlobStorage',
         azureBlobStorage: {
           credentials: {
-            accountName: 'accountName',
+            accountName,
             accountKey: 'accountKey',
           },
-          containerName: 'containerName',
+          containerName,
         },
       },
     },
   });
 
-  publisher = AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+  return AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+};
+
+let publisher: PublisherBase;
+beforeEach(async () => {
+  loggerInfoSpy.mockClear();
+  loggerErrorSpy.mockClear();
+  mockFs.restore();
+  publisher = createPublisherMock();
 });
 
 describe('publishing with valid credentials', () => {
@@ -97,32 +111,15 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should reject incorrect config', async () => {
-      const mockConfig = new ConfigReader({
-        techdocs: {
-          requestUrl: 'http://localhost:7000',
-          publisher: {
-            type: 'azureBlobStorage',
-            azureBlobStorage: {
-              credentials: {
-                accountName: 'accountName',
-                accountKey: 'accountKey',
-              },
-              containerName: 'bad_container',
-            },
-          },
-        },
+      const errorPublisher = createPublisherMock({
+        containerName: 'bad_container',
       });
-
-      const errorPublisher = await AzureBlobStoragePublish.fromConfig(
-        mockConfig,
-        logger,
-      );
 
       expect(await errorPublisher.getReadiness()).toEqual({
         isAvailable: false,
       });
 
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
         expect.stringContaining(
           `Could not retrieve metadata about the Azure Blob Storage container bad_container.`,
         ),
@@ -146,6 +143,10 @@ describe('publishing with valid credentials', () => {
       });
     });
 
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     it('should publish a directory', async () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
@@ -156,7 +157,6 @@ describe('publishing with valid credentials', () => {
           directory: entityRootDir,
         }),
       ).toBeUndefined();
-      mockFs.restore();
     });
 
     it('should fail to publish a directory', async () => {
@@ -175,36 +175,18 @@ describe('publishing with valid credentials', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(
-          `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-        ),
-      });
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(wrongPathToGeneratedDirectory),
-      });
-
-      mockFs.restore();
+      await expect(fails).rejects.toThrow(
+        /Unable to upload file\(s\) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory/,
+      );
+      await expect(fails).rejects.toThrow(
+        new RegExp(wrongPathToGeneratedDirectory),
+      );
     });
 
     it('reports an error when bad account credentials', async () => {
-      const mockConfig = new ConfigReader({
-        techdocs: {
-          requestUrl: 'http://localhost:7000',
-          publisher: {
-            type: 'azureBlobStorage',
-            azureBlobStorage: {
-              credentials: {
-                accountName: 'failupload',
-                accountKey: 'accountKey',
-              },
-              containerName: 'containerName',
-            },
-          },
-        },
+      publisher = createPublisherMock({
+        accountName: 'failupload',
       });
-
-      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
 
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
@@ -225,20 +207,38 @@ describe('publishing with valid credentials', () => {
         error = e;
       }
 
-      expect(error.message).toContain(
-        `Unable to upload file(s) to Azure Blob Storage.`,
-      );
+      expect(error.message).toContain(`Unable to upload file(s) to Azure`);
 
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
+          `Unable to upload file(s) to Azure. Error: Upload failed for ${path.join(
             entityRootDir,
             'index.html',
           )} with status code 500`,
         ),
       );
+    });
 
-      mockFs.restore();
+    it('should delete stale files after upload', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const containerName = 'delete_stale_files_success';
+      publisher = createPublisherMock({ containerName });
+      await publisher.publish({ entity, directory });
+      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
+      );
+    });
+
+    it('should log error when the stale files deletion fails', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const containerName = 'delete_stale_files_error';
+      publisher = createPublisherMock({ containerName });
+      await publisher.publish({ entity, directory });
+      expect(loggerErrorSpy).toHaveBeenLastCalledWith(
+        'Unable to delete file(s) from Azure. Error: Message',
+      );
     });
   });
 

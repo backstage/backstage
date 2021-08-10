@@ -15,18 +15,19 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  FileExistsResponse,
-  Storage,
-  UploadResponse,
-} from '@google-cloud/storage';
+import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
-import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  bulkStorageOperation,
+  getCloudPathForLocalPath,
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  getStaleFiles,
+} from './helpers';
 import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
@@ -114,48 +115,72 @@ export class GoogleGCSPublish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    const bucket = this.storageClient.bucket(this.bucketName);
+
+    // First, try to retrieve a list of all individual files currently existing
+    let existingFiles: string[] = [];
     try {
-      // Note: GCS manages creation of parent directories if they do not exist.
-      // So collecting path of only the files is good enough.
-      const allFilesToUpload = await getFileTreeRecursively(directory);
+      const remoteFolder = getCloudPathForLocalPath(entity);
+      existingFiles = await this.getFilesForFolder(remoteFolder);
+    } catch (e) {
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
+    }
 
-      const limiter = createLimiter(10);
-      const uploadPromises: Array<Promise<UploadResponse>> = [];
-      allFilesToUpload.forEach(sourceFilePath => {
-        // Remove the absolute path prefix of the source directory
-        // Path of all files to upload, relative to the root of the source directory
-        // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = path.relative(directory, sourceFilePath);
+    // Then, merge new files into the same folder
+    let absoluteFilesToUpload;
+    try {
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
-        // Convert destination file path to a POSIX path for uploading.
-        // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
-        // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
-        const relativeFilePathPosix = relativeFilePath
-          .split(path.sep)
-          .join(path.posix.sep);
-
-        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
-
-        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(() =>
-          this.storageClient.bucket(this.bucketName).upload(sourceFilePath, {
-            destination,
-          }),
-        );
-        uploadPromises.push(uploadFile);
-      });
-
-      await Promise.all(uploadPromises);
+      await bulkStorageOperation(
+        async absoluteFilePath => {
+          const relativeFilePath = path.relative(directory, absoluteFilePath);
+          return await bucket.upload(absoluteFilePath, {
+            destination: getCloudPathForLocalPath(entity, relativeFilePath),
+          });
+        },
+        absoluteFilesToUpload,
+        { concurrencyLimit: 10 },
+      );
 
       this.logger.info(
-        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
       );
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to Google Cloud Storage. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
+    }
+
+    // Last, try to remove the files that were *only* present previously
+    try {
+      const relativeFilesToUpload = absoluteFilesToUpload.map(
+        absoluteFilePath =>
+          getCloudPathForLocalPath(
+            entity,
+            path.relative(directory, absoluteFilePath),
+          ),
+      );
+      const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
+
+      await bulkStorageOperation(
+        async relativeFilePath => {
+          return await bucket.file(relativeFilePath).delete();
+        },
+        staleFiles,
+        { concurrencyLimit: 10 },
+      );
+
+      this.logger.info(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
+      );
+    } catch (error) {
+      const errorMessage = `Unable to delete file(s) from Google Cloud Storage. ${error}`;
+      this.logger.error(errorMessage);
     }
   }
 
@@ -252,6 +277,31 @@ export class GoogleGCSPublish implements PublisherBase {
       allFileMetadata.pipe(migrateFiles).on('error', error => {
         migrateFiles.destroy();
         reject(error);
+      });
+    });
+  }
+
+  private getFilesForFolder(folder: string): Promise<string[]> {
+    const fileMetadataStream: Readable = this.storageClient
+      .bucket(this.bucketName)
+      .getFilesStream({ prefix: folder });
+
+    return new Promise((resolve, reject) => {
+      const files: string[] = [];
+
+      fileMetadataStream.on('error', error => {
+        // push file to file array
+        reject(error);
+      });
+
+      fileMetadataStream.on('data', (file: File) => {
+        // push file to file array
+        files.push(file.name);
+      });
+
+      fileMetadataStream.on('end', () => {
+        // resolve promise
+        resolve(files);
       });
     });
   }
