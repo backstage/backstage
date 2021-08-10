@@ -63,8 +63,6 @@ export const repoPickerValidation = (
         );
       }
     }
-
-    // if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
   } catch {
     validation.addError('Unable to parse the Repository URL');
   }

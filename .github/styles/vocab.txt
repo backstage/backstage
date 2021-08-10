@@ -15,6 +15,7 @@ Avro
 backrub
 Bigtable
 Billett
+Bitbucket
 Bitrise
 Blackbox
 bool
