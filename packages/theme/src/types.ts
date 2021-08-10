@@ -47,6 +47,7 @@ type PaletteAdditions = {
     background: string;
     indicator: string;
     color: string;
+    divider: string;
     selectedColor: string;
   };
   tabbar: {

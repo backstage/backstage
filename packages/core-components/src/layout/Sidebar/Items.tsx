@@ -344,13 +344,15 @@ export const SidebarSpacer = styled('div')({
   height: 8,
 });
 
-export const SidebarDivider = styled('hr')({
-  height: 1,
-  width: '100%',
-  background: '#383838',
-  border: 'none',
-  margin: '12px 0px',
-});
+export const SidebarDivider = styled('hr')(
+  ({ theme }: { theme: BackstageTheme }) => ({
+    height: 1,
+    width: '100%',
+    background: theme.palette.navigation.divider,
+    border: 'none',
+    margin: '12px 0px',
+  }),
+);
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',
