@@ -22,9 +22,9 @@ import {
   BackstageIdentity,
   AuthProviderConfig,
 } from '../../providers/types';
-import { InputError } from '@backstage/errors';
+import { InputError, NotAllowedError } from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
-import { verifyNonce } from './helpers';
+import { readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 import { OAuthHandlers, OAuthStartRequest, OAuthRefreshRequest } from './types';
 
@@ -40,6 +40,7 @@ export type Options = {
   cookiePath: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
+  isOriginAllowed: (origin: string) => boolean;
 };
 
 export class OAuthAdapter implements AuthProviderRouteHandlers {
@@ -61,6 +62,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       cookieDomain: url.hostname,
       cookiePath,
       secure,
+      isOriginAllowed: config.isOriginAllowed,
     });
   }
 
@@ -73,6 +75,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
     const env = req.query.env?.toString();
+    const origin = req.query.origin?.toString();
 
     if (!env) {
       throw new InputError('No env provided in request query parameters');
@@ -86,7 +89,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
-    const state = { nonce: nonce, env: env };
+    const state = { nonce, env, origin };
     const forwardReq = Object.assign(req, { scope, state });
 
     const { url, status } = await this.handlers.start(
@@ -103,7 +106,22 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
+    let appOrigin = this.options.appOrigin;
+
     try {
+      const state: any = readState(req.query.state?.toString() ?? '');
+
+      if (state.origin) {
+        try {
+          appOrigin = new URL(state.origin).origin;
+        } catch {
+          throw new NotAllowedError('App origin is invalid, failed to parse');
+        }
+        if (!this.options.isOriginAllowed(appOrigin)) {
+          throw new NotAllowedError(`Origin '${appOrigin}' is not allowed`);
+        }
+      }
+
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);
 
@@ -129,13 +147,13 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
-      return postMessageResponse(res, this.options.appOrigin, {
+      return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
         response,
       });
     } catch (error) {
       // post error message back to popup if failure
-      return postMessageResponse(res, this.options.appOrigin, {
+      return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
         error: {
           name: error.name,
