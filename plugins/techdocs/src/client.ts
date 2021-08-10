@@ -18,7 +18,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
-import EventSource from 'eventsource';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
@@ -214,7 +214,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const token = await this.identityApi.getIdToken();
 
     return new Promise((resolve, reject) => {
-      const source = new EventSource(url, {
+      // Polyfill is used to add support for custom headers and auth
+      const source = new EventSourcePolyfill(url, {
         withCredentials: true,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
