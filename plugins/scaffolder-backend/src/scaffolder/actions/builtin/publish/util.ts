@@ -61,7 +61,9 @@ export const parseRepoUrl = (
   const type = integrations.byHost(host)?.type;
 
   if (!type) {
-    throw new InputError(`Unable to find host ${host} in integrations`);
+    throw new InputError(
+      `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
   }
 
   if (type === 'bitbucket') {
