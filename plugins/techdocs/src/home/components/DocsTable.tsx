@@ -21,6 +21,7 @@ import { generatePath } from 'react-router-dom';
 import { IconButton, Tooltip } from '@material-ui/core';
 import ShareIcon from '@material-ui/icons/Share';
 import { Entity } from '@backstage/catalog-model';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { rootDocsRouteRef } from '../../routes';
 import {
   Table,
@@ -38,6 +39,12 @@ export const DocsTable = ({
   title?: string | undefined;
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
+  // Lower-case entity triplets by default, but allow override.
+  const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  )
+    ? (str: string) => str
+    : (str: string) => str.toLocaleLowerCase();
 
   if (!entities) return null;
 
@@ -48,9 +55,9 @@ export const DocsTable = ({
       owner: entity?.spec?.owner,
       type: entity?.spec?.type,
       docsUrl: generatePath(rootDocsRouteRef.path, {
-        namespace: entity.metadata.namespace ?? 'default',
-        kind: entity.kind,
-        name: entity.metadata.name,
+        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default'),
+        kind: toLowerMaybe(entity.kind),
+        name: toLowerMaybe(entity.metadata.name),
       }),
     };
   });

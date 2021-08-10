@@ -16,9 +16,33 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
 
+// Hacky way to mock a specific boolean config value.
+const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: (apiRef: any) => {
+    const actualUseApi = jest.requireActual(
+      '@backstage/core-plugin-api',
+    ).useApi;
+    const actualApi = actualUseApi(apiRef);
+    if (apiRef === configApiRef) {
+      const configReader = actualApi;
+      configReader.getOptionalBoolean = getOptionalBooleanMock;
+      return configReader;
+    }
+
+    return actualApi;
+  },
+}));
+
 describe('DocsTable test', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should render documents passed', async () => {
     const { findByText } = render(
       wrapInTestApp(
@@ -69,8 +93,56 @@ describe('DocsTable test', () => {
       ),
     );
 
-    expect(await findByText('testName')).toBeInTheDocument();
-    expect(await findByText('testName2')).toBeInTheDocument();
+    const link1 = await findByText('testName');
+    const link2 = await findByText('testName2');
+    expect(link1).toBeInTheDocument();
+    expect(link1.getAttribute('href')).toContain('/default/testkind/testname');
+    expect(link2).toBeInTheDocument();
+    expect(link2.getAttribute('href')).toContain(
+      '/default/testkind2/testname2',
+    );
+  });
+
+  it('should fall back to case-sensitive links when configured', async () => {
+    getOptionalBooleanMock.mockReturnValue(true);
+
+    const { findByText } = render(
+      wrapInTestApp(
+        <DocsTable
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                namespace: 'SomeNamespace',
+              },
+              spec: {
+                owner: 'user:owned',
+              },
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'owned',
+                  },
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />,
+      ),
+    );
+
+    const button = await findByText('testName');
+    expect(getOptionalBooleanMock).toHaveBeenCalledWith(
+      'techdocs.legacyUseCaseSensitiveTripletPaths',
+    );
+    expect(button.getAttribute('href')).toContain(
+      '/SomeNamespace/TestKind/testName',
+    );
   });
 
   it('should render empty state if no owned documents exist', async () => {
