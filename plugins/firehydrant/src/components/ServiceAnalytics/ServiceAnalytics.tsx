@@ -15,17 +15,18 @@
  */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import moment, { Moment } from 'moment';
-import Alert from '@material-ui/lab/Alert';
-import { Table, TableColumn, Progress } from '@backstage/core-components';
+import { DateTime } from 'luxon';
+import {
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+  Progress,
+} from '@backstage/core-components';
 
 const useStyles = makeStyles({
   container: {
     overflow: 'auto',
     width: '100%',
-    '& h5': {
-      fontSize: '18px !important',
-    },
     '& td': {
       minWidth: '145px',
     },
@@ -41,8 +42,8 @@ export const DenseTable = ({
   endDate,
 }: {
   service: object;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: DateTime;
+  endDate: DateTime;
 }) => {
   const classes = useStyles();
 
@@ -60,7 +61,9 @@ export const DenseTable = ({
     <div className={classes.container}>
       <Table
         title="Incident Analytics"
-        subtitle={`${startDate.format('ll')} - ${endDate.format('ll')}`}
+        subtitle={`${startDate.toFormat('MMMM dd, yyyy')} - ${endDate.toFormat(
+          'MMMM dd, yyyy',
+        )}`}
         options={{ paging: false, search: false }}
         columns={columns}
         data={[service]}
@@ -126,11 +129,10 @@ export const ServiceAnalytics = ({
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
-
-  const startDate = moment().subtract(30, 'days').utc();
-  const endDate = moment().utc();
+  const startDate = DateTime.now().minus({ days: 30 }).toUTC();
+  const endDate = DateTime.now().toUTC();
 
   // Transform and format the data to display in the table
   if (value.id) {
@@ -140,7 +142,7 @@ export const ServiceAnalytics = ({
           ? calcHealthiness({
               mttm: value.mttm,
               incidents: value.count,
-              range: endDate.diff(startDate, 'seconds'),
+              range: endDate.diff(startDate, 'seconds').as('seconds'),
             })
           : '100%',
       impacted: value.total_time ? secondsToDhms(value.total_time) : '-',

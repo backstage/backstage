@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { ServiceAnalytics } from '../ServiceAnalytics/ServiceAnalytics';
 import {
   Box,
@@ -32,20 +32,22 @@ import { Incident } from '../types';
 import { ServiceIncidentsResponse } from '../../api/types';
 import { useServiceDetails } from '../serviceDetails';
 import { useServiceAnalytics } from '../serviceAnalytics';
-import { InfoCard, Progress } from '@backstage/core-components';
+import {
+  InfoCard,
+  Link,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
-  infoCard: {
-    height: '342px',
-  },
   button: {
     color: '#3b2492',
     display: 'grid',
     gridGap: '4px',
     textAlign: 'center',
     justifyItems: 'center',
-    width: '102px',
+    width: '105px',
     backgroundColor: theme.palette.type === 'dark' ? '#f1edff' : '',
     '&:hover, &:focus': {
       backgroundColor: '#f1edff',
@@ -59,7 +61,8 @@ const useStyles = makeStyles(theme => ({
     },
     border: '1px solid #3b2492',
     borderRadius: '5px',
-    padding: '10px',
+    padding: '8px 10px',
+    textTransform: 'none',
   },
   buttonLink: {
     backgroundColor: '#3b2492',
@@ -101,19 +104,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     padding: '10px',
     background: '#f1edff',
-    color: theme.palette.type === 'dark' ? '#3b2492' : '#fff',
+    color: '#3b2492',
   },
 }));
-
-const ServiceWarning = ({ text }: { text: string }) => {
-  const classes = useStyles();
-  return (
-    <div className={classes.warning}>
-      <WarningIcon />
-      &nbsp;&nbsp;<span>{text}</span>
-    </div>
-  );
-};
 
 const ServiceAnalyticsView = ({
   serviceId,
@@ -121,8 +114,8 @@ const ServiceAnalyticsView = ({
   endDate,
 }: {
   serviceId: string;
-  startDate: moment.Moment;
-  endDate: moment.Moment;
+  startDate: DateTime;
+  endDate: DateTime;
 }) => {
   const {
     loading: analyticsLoading,
@@ -130,8 +123,8 @@ const ServiceAnalyticsView = ({
     error: analyticsError,
   } = useServiceAnalytics({
     serviceId,
-    startDate: startDate.format('YYYY-MM-DD'),
-    endDate: endDate.format('YYYY-MM-DD'),
+    startDate: startDate.toFormat('YYYY-MM-DD'),
+    endDate: endDate.toFormat('YYYY-MM-DD'),
   });
 
   return (
@@ -153,8 +146,8 @@ export const ServiceDetailsCard = () => {
     configApi.getOptionalString('firehydrant.baseUrl') ||
     'https://app.firehydrant.io';
 
-  const startDate = moment().subtract(30, 'days').utc();
-  const endDate = moment().utc();
+  const startDate = DateTime.now().minus({ days: 30 }).toUTC();
+  const endDate = DateTime.now().toUTC();
 
   // The Backstage service name in FireHydrant is a unique formatted string
   // that requires the entity's kind, name, and namespace.
@@ -181,9 +174,7 @@ export const ServiceDetailsCard = () => {
   }
 
   if (error) {
-    return (
-      <ServiceWarning text="There was an issue connecting to FireHydrant." />
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   const headerText: string = showServiceDetails
@@ -197,9 +188,12 @@ export const ServiceDetailsCard = () => {
   )},"value":${JSON.stringify(value?.service?.id)}}]}`;
 
   return (
-    <InfoCard className="infoCard">
+    <InfoCard>
       {!showServiceDetails && !loading && (
-        <ServiceWarning text="This service does not exist in FireHydrant." />
+        <div className={classes.warning}>
+          <WarningIcon />
+          &nbsp;&nbsp;<span>This service does not exist in FireHydrant.</span>
+        </div>
       )}
       {showServiceDetails && (
         <Box
@@ -216,11 +210,11 @@ export const ServiceDetailsCard = () => {
               className={classes.buttonLink}
               color="default"
               href={serviceIncidentsLink}
+              startIcon={<ExitToAppIcon />}
               target="_blank"
               variant="outlined"
             >
-              View service incidents&nbsp;&nbsp;
-              <ExitToAppIcon />
+              View service incidents
             </MaterialButton>
           </Box>
         </Box>
@@ -230,9 +224,14 @@ export const ServiceDetailsCard = () => {
           {incidents &&
             incidents?.slice(0, 5).map((incident: Incident, index: number) => (
               <div key={index}>
-                <a className={classes.link} href={incident.incident_url}>
+                <Link
+                  className={classes.link}
+                  to={incident.incident_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {incident.name}
-                </a>
+                </Link>
               </div>
             ))}
         </Box>
@@ -240,34 +239,55 @@ export const ServiceDetailsCard = () => {
       <Box paddingLeft="16px" marginTop="10px">
         <Typography variant="subtitle1">View in FireHydrant </Typography>
         <Box className={classes.buttonContainer} marginTop="10px">
-          <a
+          <MaterialButton
+            component={Link}
             target="_blank"
             rel="noopener"
             className={classes.button}
-            href={`${BASE_URL}/incidents/new`}
+            to={`${BASE_URL}/incidents/new`}
           >
-            <AddIcon className={classes.icon} />
-            <span>Declare an incident</span>
-          </a>
-          <a
+            <Box flexDirection="column">
+              <Box>
+                <AddIcon className={classes.icon} />
+              </Box>
+              <Box>
+                <span>Declare an incident</span>
+              </Box>
+            </Box>
+          </MaterialButton>
+          <MaterialButton
+            component={Link}
             target="_blank"
             rel="noopener"
             className={classes.button}
-            href={`${BASE_URL}/incidents`}
+            to={`${BASE_URL}/incidents`}
           >
-            <WhatshotIcon className={classes.icon} />
-            <span>View all incidents</span>
-          </a>
+            <Box flexDirection="column">
+              <Box>
+                <WhatshotIcon className={classes.icon} />
+              </Box>
+              <Box>
+                <span>View all incidents</span>
+              </Box>
+            </Box>
+          </MaterialButton>
           {showServiceDetails && (
-            <a
+            <MaterialButton
+              component={Link}
               target="_blank"
               rel="noopener"
               className={classes.button}
-              href={`${BASE_URL}/services/${value?.service?.id}`}
+              to={`${BASE_URL}/services/${value?.service?.id}`}
             >
-              <NotesIcon className={classes.icon} />
-              <span>View Service Details</span>
-            </a>
+              <Box flexDirection="column">
+                <Box>
+                  <NotesIcon className={classes.icon} />
+                </Box>
+                <Box>
+                  <span>View Service Details</span>
+                </Box>
+              </Box>
+            </MaterialButton>
           )}
         </Box>
       </Box>

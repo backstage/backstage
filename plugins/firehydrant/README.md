@@ -26,11 +26,11 @@ yarn add @backstage/plugin-firehydrant
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { FirehydrantPage } from '@backstage/plugin-firehydrant';
+import { FirehydrantCard } from '@backstage/plugin-firehydrant';
 
 // Add to code as a grid item
 <Grid item md={6}>
-  <FirehydrantPage />
+  <FirehydrantCard />
 </Grid>;
 ```
 
@@ -38,19 +38,12 @@ import { FirehydrantPage } from '@backstage/plugin-firehydrant';
 
 ```yaml
 proxy:
-'/firehydrant/api':
-  target: 'https://api.firehydrant.io/v1/'
-  changeOrigin: true
-  headers:
-    # Supply the token you generated from https://app.firehydrant.io/organizations/bots
-    Authorization: Bearer ${FIREHYDRANT_BOT_TOKEN}
-```
-
-as well as the default url configuration to `app-config.yaml`:
-
-```yaml
-firehydrant:
-  baseUrl: https://api.firehydrant.io
+  '/firehydrant/api':
+    target: 'https://api.firehydrant.io/v1/'
+    changeOrigin: true
+    headers:
+      # Supply the token you generated from https://app.firehydrant.io/organizations/bots
+      Authorization: Bearer ${FIREHYDRANT_BOT_TOKEN}
 ```
 
 Note: if you are not using environment variables, you can directly type the API Bot Token into `app-config.yaml`:

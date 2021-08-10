@@ -97,19 +97,18 @@ export class FireHydrantAPIClient implements FireHydrantAPI {
       incidents: [] as Incident[],
     };
 
-    if (response.ok) {
-      if (json.data?.length === 0) {
-        return servicesData;
-      }
-
-      servicesData.service = json.data[0];
-
-      const incidentsJson = await this.getServiceIncidents({
-        serviceId: json.data[0].id,
-      });
-
-      servicesData.incidents = incidentsJson;
+    if (json.data?.length === 0) {
+      return servicesData;
     }
+
+    servicesData.service = json.data[0];
+
+    const incidentsJson = await this.getServiceIncidents({
+      serviceId: json.data[0].id,
+    });
+
+    servicesData.incidents = incidentsJson;
+
     return servicesData;
   }
 

@@ -18,7 +18,7 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
-  createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
@@ -37,10 +37,13 @@ export const firehydrantPlugin = createPlugin({
   },
 });
 
-export const FirehydrantPage = firehydrantPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ServiceDetailsCard').then(m => m.ServiceDetailsCard),
-    mountPoint: rootRouteRef,
+export const FirehydrantCard = firehydrantPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ServiceDetailsCard').then(
+          m => m.ServiceDetailsCard,
+        ),
+    },
   }),
 );
