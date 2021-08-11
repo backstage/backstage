@@ -100,9 +100,8 @@ export const RepoUrlPicker = ({
     return await scaffolderApi.getIntegrationsList({ allowedHosts });
   });
 
-  const { host, owner, repo, organization, workspace, project } = splitFormData(
-    formData,
-  );
+  const { host, owner, repo, organization, workspace, project } =
+    splitFormData(formData);
   const updateHost = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       onChange(
