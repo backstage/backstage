@@ -88,8 +88,7 @@ export class CatalogIdentityClient {
     entityRefs,
     logger,
   }: MemberClaimQuery): Promise<string[]> {
-    let resolvedEntityRefs: Array<EntityName> = [];
-    resolvedEntityRefs = entityRefs
+    const resolvedEntityRefs = entityRefs
       .map((ref: string) => {
         try {
           const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'), {
@@ -98,7 +97,7 @@ export class CatalogIdentityClient {
           });
           return parsedRef;
         } catch {
-          logger?.debug(`Failed to parse entityRef from ${ref}, ignoring`);
+          logger?.warn(`Failed to parse entityRef from ${ref}, ignoring`);
           return null;
         }
       })
@@ -128,9 +127,9 @@ export class CatalogIdentityClient {
           .map(r => r.target) ?? [],
     );
 
-    const newEntityRefs = [...new Set(resolvedEntityRefs.concat(memberOf))].map(
-      stringifyEntityRef,
-    );
+    const newEntityRefs = [
+      ...new Set(resolvedEntityRefs.concat(memberOf).map(stringifyEntityRef)),
+    ];
 
     logger?.debug(`Found catalog membership: ${newEntityRefs.join()}`);
     return newEntityRefs;

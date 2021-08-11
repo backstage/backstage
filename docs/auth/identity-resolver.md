@@ -139,7 +139,7 @@ export default async function createPlugin({
               logger: ctx.logger,
             });
             const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, fullEnt },
+              claims: { sub, ent: fullEnt },
             });
             return { sub, token };
           },
