@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageTheme } from '@backstage/theme';
 import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core';
 import { ButtonTypeMap } from '@material-ui/core';
@@ -1604,6 +1605,13 @@ export const SidebarDivider: React_2.ComponentType<
   > &
     StyledComponentProps<'root'> & {
       className?: string | undefined;
+    } & Pick<
+      {
+        theme: BackstageTheme;
+      },
+      never
+    > & {
+      theme?: BackstageTheme | undefined;
     }
 >;
 
