@@ -98,6 +98,13 @@ export const createMicrosoftProvider: (
   options?: MicrosoftProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOktaProvider: (
+  _options?: OktaProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -301,6 +308,21 @@ export type OAuthStartRequest = express.Request<{}> & {
 export type OAuthState = {
   nonce: string;
   env: string;
+};
+
+// Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const oktaEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// Warning: (ae-missing-release-tag) "OktaProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OktaProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
 };
 
 // Warning: (ae-missing-release-tag) "postMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
