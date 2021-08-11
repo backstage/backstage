@@ -8,7 +8,7 @@ on:
 jobs:
   autofix-markdown:
     name: Autofix Markdown files using Prettier
-    runs-ons: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -43,22 +43,12 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
-      - name: Run Prettier on docs
+      - name: Run Prettier on ADOPTERS.md
         uses: creyD/prettier_action@v3.1
         with:
           # Modifies commit only if prettier autofixed the ADOPTERS.md
           prettier_options: --config docs/prettier.config.js --write ADOPTERS.md
           only_changed: true
-          commit_message: 'Autofix documentation Markdown files using Prettier'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Prettier on root
-        uses: creyD/prettier_action@v3.1
-        with:
-          # Modifies commit only if prettier autofixed a Markdown file
-          prettier_options: --write *.md
-          only_changed: true
-          commit_message: 'Autofix Markdown files using Prettier'
+          commit_message: 'Autofix ADOPTERS.md using Prettier'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
