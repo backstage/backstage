@@ -173,27 +173,27 @@ type WithRequestProps = Omit<BuildDetailsProps, 'buildData'> & {
   buildId: string;
 };
 
-export const withRequest = (Component: typeof BuildDetailsComponent) => ({
-  buildId,
-  ...props
-}: WithRequestProps) => {
-  const client = useApi(xcmetricsApiRef);
-  const { value: buildResponse, loading, error } = useAsync(
-    async () => client.getBuild(buildId),
-    [],
-  );
+export const withRequest =
+  (Component: typeof BuildDetailsComponent) =>
+  ({ buildId, ...props }: WithRequestProps) => {
+    const client = useApi(xcmetricsApiRef);
+    const {
+      value: buildResponse,
+      loading,
+      error,
+    } = useAsync(async () => client.getBuild(buildId), []);
 
-  if (loading) {
-    return <Progress />;
-  }
+    if (loading) {
+      return <Progress />;
+    }
 
-  if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
+    if (error) {
+      return <Alert severity="error">{error.message}</Alert>;
+    }
 
-  if (!buildResponse) {
-    return <Alert severity="error">Could not load build {buildId}</Alert>;
-  }
+    if (!buildResponse) {
+      return <Alert severity="error">Could not load build {buildId}</Alert>;
+    }
 
-  return <Component {...props} buildData={buildResponse} />;
-};
+    return <Component {...props} buildData={buildResponse} />;
+  };
