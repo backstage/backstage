@@ -172,7 +172,6 @@ export interface Config {
        */
       host: string;
       /**
-      /**
        * Account access key used to authenticate requests.
        * @visibility backend
        */
