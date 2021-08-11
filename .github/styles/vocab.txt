@@ -84,6 +84,8 @@ facto
 failover
 Fargate
 Figma
+firehydrant
+FireHydrant
 Firekube
 Fiverr
 gitbeaker
