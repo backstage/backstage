@@ -79,7 +79,7 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
-      - AWS S3: 
+      - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
