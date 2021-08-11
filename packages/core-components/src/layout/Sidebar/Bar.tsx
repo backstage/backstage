@@ -22,13 +22,9 @@ import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    zIndex: 1000,
-    position: 'relative',
-    overflow: 'visible',
-    width: theme.spacing(7) + 1,
-  },
   drawer: {
+    zIndex: 1000,
+    overflow: 'visible',
     display: 'flex',
     flexFlow: 'column nowrap',
     alignItems: 'flex-start',
@@ -128,28 +124,24 @@ export const Sidebar = ({
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   return (
-    <div
-      className={classes.root}
-      onMouseEnter={handleOpen}
-      onFocus={handleOpen}
-      onMouseLeave={handleClose}
-      onBlur={handleClose}
-      data-testid="sidebar-root"
+    <SidebarContext.Provider
+      value={{
+        isOpen,
+      }}
     >
-      <SidebarContext.Provider
-        value={{
-          isOpen,
-        }}
+      <div
+        onMouseEnter={handleOpen}
+        onFocus={handleOpen}
+        onMouseLeave={handleClose}
+        onBlur={handleClose}
+        data-testid="sidebar-root"
+        className={clsx(classes.drawer, {
+          [classes.drawerPeek]: state === State.Peek,
+          [classes.drawerOpen]: isOpen,
+        })}
       >
-        <div
-          className={clsx(classes.drawer, {
-            [classes.drawerPeek]: state === State.Peek,
-            [classes.drawerOpen]: isOpen,
-          })}
-        >
-          {children}
-        </div>
-      </SidebarContext.Provider>
-    </div>
+        {children}
+      </div>
+    </SidebarContext.Provider>
   );
 };

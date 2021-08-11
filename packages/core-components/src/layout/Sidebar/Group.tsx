@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
-export { BottomNavigation } from './BottomNavigation';
-export { SidebarGroup } from './Group';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
-export {
-  SidebarDivider,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarSpace,
-  SidebarSpacer,
-  SidebarScrollWrapper,
-} from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type { SidebarContextType } from './config';
+import { BottomNavigationAction } from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
+import React from 'react';
+
+/**
+ * If the page is mobile it should be BottomNavigationAction - otherwise just a fragment
+ * Links to page, which will be displayed
+ * - If 'to' Prop is not defined it will render a Menu page out of the children (if children given)
+ */
+export const SidebarGroup = ({ children }: React.PropsWithChildren<{}>) => {
+  return <BottomNavigationAction label="Recents" icon={<MenuIcon />} />;
+};
