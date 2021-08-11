@@ -165,20 +165,23 @@ export function getBitbucketRequestOptions(
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (ae-forgotten-export) The symbol "GithubCredentials" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "getGitHubFileFetchUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function getGitHubFileFetchUrl(
   url: string,
   config: GitHubIntegrationConfig,
+  credentials: GithubCredentials,
 ): string;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "getGitHubRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function getGitHubRequestOptions(
   config: GitHubIntegrationConfig,
+  credentials: GithubCredentials,
 ): RequestInit;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -228,7 +231,6 @@ export class GithubCredentialsProvider {
   // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
   // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (ae-forgotten-export) The symbol "GithubCredentials" needs to be exported by the entry point index.d.ts
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
