@@ -15,7 +15,8 @@
  */
 
 export { Sidebar } from './Bar';
-export type { SidebarClassKey } from './Bar';
+export { BottomNavigation } from './BottomNavigation';
+export { SidebarGroup } from './Group';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
 export {

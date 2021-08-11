@@ -133,20 +133,17 @@ export function Sidebar(props: PropsWithChildren<Props>) {
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   return (
-    <div
-      className={classes.root}
-      onMouseEnter={handleOpen}
-      onFocus={handleOpen}
-      onMouseLeave={handleClose}
-      onBlur={handleClose}
-      data-testid="sidebar-root"
+    <SidebarContext.Provider
+      value={{
+        isOpen,
+      }}
     >
-      <SidebarContext.Provider
-        value={{
-          isOpen,
-        }}
-      >
         <div
+        onMouseEnter={handleOpen}
+        onFocus={handleOpen}
+        onMouseLeave={handleClose}
+        onBlur={handleClose}
+        data-testid="sidebar-root"
           className={clsx(classes.drawer, {
             [classes.drawerOpen]: isOpen,
           })}
@@ -154,6 +151,5 @@ export function Sidebar(props: PropsWithChildren<Props>) {
           {children}
         </div>
       </SidebarContext.Provider>
-    </div>
   );
 }
