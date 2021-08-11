@@ -57,7 +57,7 @@
     "jsonschema": "^1.2.6",
     "knex": "^0.95.1",
     "lodash": "^4.17.21",
-    "luxon": "^1.26.0",
+    "luxon": "^2.0.2",
     "morgan": "^1.10.0",
     "nunjucks": "^3.2.3",
     "octokit-plugin-create-pull-request": "^3.9.3",

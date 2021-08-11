@@ -42,7 +42,7 @@
     "@types/recharts": "^1.8.14",
     "classnames": "^2.2.6",
     "history": "^5.0.0",
-    "luxon": "^1.26.0",
+    "luxon": "^2.0.2",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "react": "^16.13.1",

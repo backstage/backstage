@@ -32,7 +32,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@material-ui/pickers": "^3.3.10",
     "humanize-duration": "^3.26.0",
-    "luxon": "^1.26.0",
+    "luxon": "^2.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-use": "^17.2.4"

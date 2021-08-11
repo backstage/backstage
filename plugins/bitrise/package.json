@@ -30,7 +30,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "cross-fetch": "^3.0.6",
     "lodash": "^4.17.21",
-    "luxon": "^1.26.0",
+    "luxon": "^2.0.2",
     "qs": "^6.9.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

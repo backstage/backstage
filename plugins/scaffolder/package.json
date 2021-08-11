@@ -52,7 +52,7 @@
     "immer": "^9.0.1",
     "json-schema": "^0.3.0",
     "lodash": "^4.17.21",
-    "luxon": "^1.25.0",
+    "luxon": "^2.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
