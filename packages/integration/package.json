@@ -34,7 +34,7 @@
     "git-url-parse": "~11.4.4",
     "@octokit/rest": "^18.5.3",
     "@octokit/auth-app": "^3.4.0",
-    "luxon": "^1.25.0"
+    "luxon": "^2.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.7",
