@@ -163,7 +163,9 @@ export async function createRouter({
 }
 
 function createOriginFilter(config: Config): (origin: string) => boolean {
-  const allowedOrigins = config.getOptionalStringArray('auth.allowedOrigins');
+  const allowedOrigins = config.getOptionalStringArray(
+    'auth.experimentalExtraAllowedOrigins',
+  );
   if (!allowedOrigins || allowedOrigins.length === 0) {
     return () => false;
   }
