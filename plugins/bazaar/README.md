@@ -113,7 +113,7 @@ When a project has been added to the Bazaar it will be provided with an addition
 
 **Editing or removing the Bazaar information of a project**:
 
-The project can be editied or removed from the Bazaar card on the Entity Page. Similarly to adding a project, editing or removing a Bazaar project will create a pull request.
+The project can be edited or removed from the Bazaar card on the Entity Page. Similarly to adding a project, editing or removing a Bazaar project will create a pull request.
 
 ### TODOS:
 
@@ -130,7 +130,7 @@ The project can be editied or removed from the Bazaar card on the Entity Page. S
 
 - Bazaar tab on the EntityPage
 
-  - Fill Bazaar-tab with more content, for example images and achivements
+  - Fill Bazaar-tab with more content, for example images and achievements
   - Show all the members that have joined the project
 
 - Dialogs
@@ -138,5 +138,4 @@ The project can be editied or removed from the Bazaar card on the Entity Page. S
   - Extend the dialog for adding a project with more fields, e.g. chat link and the possibility to add images
 
 - Testing
-  - Add tests to all Bazaar components
-  - Add test to util functions
+  - Add tests to all the components
