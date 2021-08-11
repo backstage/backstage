@@ -15,15 +15,53 @@
  */
 
 import { FieldValidation } from '@rjsf/core';
+import { ApiHolder } from '@backstage/core-plugin-api';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 export const repoPickerValidation = (
   value: string,
   validation: FieldValidation,
+  context: { apiHolder: ApiHolder },
 ) => {
   try {
     const { host, searchParams } = new URL(`https://${value}`);
-    if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
-      validation.addError('Incomplete repository location provided');
+
+    const integrationApi = context.apiHolder.get(scmIntegrationsApiRef);
+
+    if (!host) {
+      validation.addError(
+        'Incomplete repository location provided, host not provided',
+      );
+    } else {
+      if (integrationApi?.byHost(host)?.type === 'bitbucket') {
+        // workspace is only applicable for bitbucket cloud
+        if (host === 'bitbucket.org' && !searchParams.get('workspace')) {
+          validation.addError(
+            'Incomplete repository location provided, workspace not provided',
+          );
+        }
+
+        if (!searchParams.get('project')) {
+          validation.addError(
+            'Incomplete repository location provided, project not provided',
+          );
+        }
+      }
+      // For anything other than bitbucket
+      else {
+        if (!searchParams.get('owner')) {
+          validation.addError(
+            'Incomplete repository location provided, owner not provided',
+          );
+        }
+      }
+
+      // Do this for all hosts
+      if (!searchParams.get('repo')) {
+        validation.addError(
+          'Incomplete repository location provided, repo not provided',
+        );
+      }
     }
   } catch {
     validation.addError('Unable to parse the Repository URL');

@@ -69,7 +69,13 @@ export function createGithubActionsDispatchAction(options: {
     async handler(ctx) {
       const { repoUrl, workflowId, branchOrTagName } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
