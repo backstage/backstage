@@ -119,6 +119,7 @@ export async function createConfig(
   plugins.push(
     new ProvidePlugin({
       process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
   );
 
