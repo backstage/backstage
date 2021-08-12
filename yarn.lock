@@ -2448,6 +2448,18 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
+"@backstage/integration@^0.5.8":
+  version "0.5.9"
+  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.5.9.tgz#9eeb2f570794b196a8e769d8628b68937863a0fc"
+  integrity sha512-SfYcIHMurasJ5AlNzvq/4+8VLx5ONZ1vZqSG9zX/jvASCyrQY+Ifumaj13XBBuykTv61eHaqsLcEFtd0zgBtpQ==
+  dependencies:
+    "@backstage/config" "^0.1.6"
+    "@octokit/auth-app" "^3.4.0"
+    "@octokit/rest" "^18.5.3"
+    cross-fetch "^3.0.6"
+    git-url-parse "~11.4.4"
+    luxon "^1.25.0"
+
 "@backstage/plugin-catalog-react@^0.3.0":
   version "0.3.1"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.3.1.tgz#d30a063a4ceb4d446310a687d19c987f55824fdb"
@@ -18716,7 +18728,7 @@ luxon@2.0.2, luxon@^2.0.2:
   resolved "https://registry.npmjs.org/luxon/-/luxon-2.0.2.tgz#11f2cd4a11655fdf92e076b5782d7ede5bcdd133"
   integrity sha512-ZRioYLCgRHrtTORaZX1mx+jtxKtKuI5ZDvHNAmqpUzGqSrR+tL4FVLn/CUGMA3h0+AKD1MAxGI5GnCqR5txNqg==
 
-luxon@^1.27.0:
+luxon@^1.25.0, luxon@^1.27.0:
   version "1.28.0"
   resolved "https://registry.npmjs.org/luxon/-/luxon-1.28.0.tgz#e7f96daad3938c06a62de0fb027115d251251fbf"
   integrity sha512-TfTiyvZhwBYM/7QdAVDh+7dBTBA29v4ik0Ce9zda3Mnf8on1S5KJI8P2jKFZ8+5C0jhmr0KwJEO/Wdpm0VeWJQ==

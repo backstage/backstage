@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.20
+
+### Patch Changes
+
+- 29f7cfffb: Added `resolveCatalogMembership` utility to query the catalog for additional authentication claims within sign-in resolvers.
+- 8bedb75ae: Update Luxon dependency to 2.x
+- bfe0ff93f: Add Sign In and Handler resolver for Okta provider
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+  - @backstage/test-utils@0.1.17
+
 ## 0.3.19
 
 ### Patch Changes

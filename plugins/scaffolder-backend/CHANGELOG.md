@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.1
+
 ## 0.14.2
 
 ### Patch Changes

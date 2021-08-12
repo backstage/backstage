@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -33,7 +33,7 @@
     "@backstage/config": "^0.1.6",
     "@backstage/config-loader": "^0.6.6",
     "@backstage/errors": "^0.1.1",
-    "@backstage/integration": "^0.5.9",
+    "@backstage/integration": "^0.6.0",
     "@google-cloud/storage": "^5.8.0",
     "@octokit/rest": "^18.5.3",
     "@types/cors": "^2.8.6",
@@ -76,8 +76,8 @@
     }
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.7",
-    "@backstage/test-utils": "^0.1.15",
+    "@backstage/cli": "^0.7.8",
+    "@backstage/test-utils": "^0.1.17",
     "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",
     "@types/concat-stream": "^1.6.0",
