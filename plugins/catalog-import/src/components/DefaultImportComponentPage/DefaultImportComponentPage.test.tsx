@@ -18,9 +18,9 @@ import { CatalogClient } from '@backstage/catalog-client';
 import {
   ApiProvider,
   ApiRegistry,
-  configApiRef,
   ConfigReader,
-} from '@backstage/core';
+} from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';

@@ -15,14 +15,13 @@
  */
 
 import {
-  configApiRef,
   Content,
   ContentHeader,
   Header,
   Page,
   SupportButton,
-  useApi,
-} from '@backstage/core';
+} from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';

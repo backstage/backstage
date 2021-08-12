@@ -17,9 +17,9 @@
 import {
   ApiProvider,
   ApiRegistry,
-  configApiRef,
   ConfigReader,
-} from '@backstage/core';
+} from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';

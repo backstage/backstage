@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigApi, configApiRef, InfoCard, useApi } from '@backstage/core';
-import { Typography } from '@material-ui/core';
+import { InfoCard } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Chip, Typography } from '@material-ui/core';
 import React from 'react';
 import { useImportOptions } from '../ImportOptionsContext';
 
