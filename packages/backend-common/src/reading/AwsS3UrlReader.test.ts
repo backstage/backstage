@@ -63,7 +63,7 @@ describe('AwsS3UrlReader', () => {
       },
     });
 
-    expect(entries).toHaveLength(2);
+    expect(entries).toHaveLength(1);
   });
 
   it('creates a reader with default credentials provider', () => {
@@ -78,7 +78,7 @@ describe('AwsS3UrlReader', () => {
       },
     });
 
-    expect(entries).toHaveLength(2);
+    expect(entries).toHaveLength(1);
   });
 
   describe('predicates', () => {
