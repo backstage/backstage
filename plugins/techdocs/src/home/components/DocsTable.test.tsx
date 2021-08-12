@@ -18,6 +18,7 @@ import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
+import { rootDocsRouteRef } from '../../routes';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -90,16 +91,23 @@ describe('DocsTable test', () => {
             },
           ]}
         />,
+        {
+          mountedRoutes: {
+            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
       ),
     );
 
     const link1 = await findByText('testName');
     const link2 = await findByText('testName2');
     expect(link1).toBeInTheDocument();
-    expect(link1.getAttribute('href')).toContain('/default/testkind/testname');
+    expect(link1.getAttribute('href')).toContain(
+      '/docs/default/testkind/testname',
+    );
     expect(link2).toBeInTheDocument();
     expect(link2.getAttribute('href')).toContain(
-      '/default/testkind2/testname2',
+      '/docs/default/testkind2/testname2',
     );
   });
 
@@ -133,6 +141,11 @@ describe('DocsTable test', () => {
             },
           ]}
         />,
+        {
+          mountedRoutes: {
+            '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
       ),
     );
 
@@ -141,12 +154,18 @@ describe('DocsTable test', () => {
       'techdocs.legacyUseCaseSensitiveTripletPaths',
     );
     expect(button.getAttribute('href')).toContain(
-      '/SomeNamespace/TestKind/testName',
+      '/techdocs/SomeNamespace/TestKind/testName',
     );
   });
 
   it('should render empty state if no owned documents exist', async () => {
-    const { findByText } = render(wrapInTestApp(<DocsTable entities={[]} />));
+    const { findByText } = render(
+      wrapInTestApp(<DocsTable entities={[]} />, {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      }),
+    );
 
     expect(await findByText('No documents to show')).toBeInTheDocument();
   });

@@ -16,9 +16,8 @@
 
 import React from 'react';
 import { useCopyToClipboard } from 'react-use';
-import { generatePath } from 'react-router-dom';
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   formatEntityRefTitle,
@@ -50,6 +49,8 @@ export const DocsTable = ({
   actions?: TableProps<DocsTableRow>['actions'];
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
+  const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
+
   // Lower-case entity triplets by default, but allow override.
   const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
     'techdocs.legacyUseCaseSensitiveTripletPaths',
@@ -65,7 +66,7 @@ export const DocsTable = ({
     return {
       entity,
       resolved: {
-        docsUrl: generatePath(rootDocsRouteRef.path, {
+        docsUrl: getRouteToReaderPageFor({
           namespace: toLowerMaybe(entity.metadata.namespace ?? 'default'),
           kind: toLowerMaybe(entity.kind),
           name: toLowerMaybe(entity.metadata.name),

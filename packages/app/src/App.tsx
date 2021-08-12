@@ -55,6 +55,7 @@ import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
+  techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
@@ -93,6 +94,7 @@ const app = createApp({
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
+      viewTechDoc: techdocsPlugin.routes.docRoot,
     });
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
