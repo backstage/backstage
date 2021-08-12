@@ -26,7 +26,12 @@ import { InputError, NotAllowedError } from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
 import { readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
-import { OAuthHandlers, OAuthStartRequest, OAuthRefreshRequest } from './types';
+import {
+  OAuthHandlers,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthState,
+} from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -109,7 +114,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     let appOrigin = this.options.appOrigin;
 
     try {
-      const state: any = readState(req.query.state?.toString() ?? '');
+      const state: OAuthState = readState(req.query.state?.toString() ?? '');
 
       if (state.origin) {
         try {
