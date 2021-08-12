@@ -17,7 +17,7 @@
 const octokit = {
   repos: {
     get: () => Promise.resolve({ data: { default_branch: 'main' } }),
-    createOrUpdateFileContents: jest.fn().mockImplementation(async () => {}),
+    createOrUpdateFileContents: jest.fn(async () => {}),
   },
   search: {
     code: jest.fn(),
@@ -26,10 +26,10 @@ const octokit = {
     getRef: async () => ({
       data: { object: { sha: 'any' } },
     }),
-    createRef: jest.fn().mockImplementation(async () => {}),
+    createRef: jest.fn(async () => {}),
   },
   pulls: {
-    create: jest.fn().mockImplementation(async () => ({
+    create: jest.fn(async () => ({
       data: {
         html_url: 'http://pull/request/0',
       },
@@ -46,6 +46,8 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
+import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
+import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
@@ -53,9 +55,6 @@ import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
-
-import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
@@ -117,6 +116,11 @@ describe('CatalogImportClient', () => {
       identityApi,
       catalogApi,
     });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('analyzeUrl', () => {
