@@ -58,7 +58,7 @@ export const ComponentTabs: ({
   title: string;
   tabs: {
     label: string;
-    Component: (props: any) => JSX.Element;
+    Component: () => JSX.Element;
   }[];
 }) => JSX.Element;
 
