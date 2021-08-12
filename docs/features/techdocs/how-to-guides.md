@@ -104,86 +104,43 @@ the repository. The archive does not have any git history attached to it. Also
 it is a compressed file. Hence the file size is significantly smaller than how
 much data git clone has to transfer.
 
-## How to use a custom TechDocs home page?
+## How to customize the TechDocs home page?
 
-### 1st way: TechDocsCustomHome with a custom configuration
+TechDocs uses a composability pattern similar to the Search and Catalog plugins
+in Backstage. While a default table experience, similar to the one provided by
+the Catalog plugin, is made available for ease-of-use, it's possible for you to
+provide a completely custom experience, tailored to the needs of your
+organization.
 
-As an example, in your main App.tsx:
+This is done in your `app` package. By default, you might see something like
+this in your `App.tsx`:
 
 ```tsx
-import {
-  TechDocsCustomHome,
-  PanelType,
-  TechDocsReaderPage,
-} from '@backstage/plugin-techdocs';
-import { Entity } from '@backstage/catalog-model';
-
-const tabsConfig = [
-  {
-    label: 'Custom Tab',
-    panels: [
-      {
-        title: 'Custom Documents Cards 1',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsCardGrid' as PanelType,
-        // optional, is applied to a container of the panel (excludes header of panel)
-        panelCSS: { maxHeight: '400px', overflow:'auto' },
-        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationOne'];
-    },
-      {
-        title: 'Custom Documents Cards 2',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsCardGrid' as PanelType,
-        panelCSS: { maxHeight: '400px', overflow:'auto' },
-        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationTwo'];
-      },
-    ],
-  },
-  {
-    label: 'Overview',
-    panels: [
-      {
-        title: 'Overview',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsTable' as PanelType,
-        filterPredicate: () => true,
-      },
-    ],
-  },
-];
-
-const routes = (
+const AppRoutes = () => {
   <FlatRoutes>
-    <Route
-      path="/docs"
-      element={<TechDocsCustomHome tabsConfig={tabsConfig} />}
-    />
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    />
-  </FlatRoutes>
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+  </FlatRoutes>;
+};
 ```
 
-An example of tabsConfig that corresponds to the default documentation home page
-can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
+But you can replace `<DefaultTechDocsHome />` with any React component, which
+will be rendered in its place. Most likely, you would want to create and
+maintain such a component in a new directory at
+`packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
 
-Currently `panelType` has DocsCardGrid and DocsTable available. We currently
-recommend that DocsCardGrid can be optionally vertically stacked by setting a
-maxHeight using `panelCSS`, and DocsTable to be in a tab by itself.
-
-### 2nd way: Custom home page plugin
-
-A custom home page plugin can be built that uses the components extensions
-DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
-array of documentation entities ( i.e.have a 'backstage.io/techdocs-ref'
-annotation ) as an 'entities' attribute.
-
-For a reference to the React structure of the default home page, please refer to
-`plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
+```tsx
+import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
+// ...
+const AppRoutes = () => {
+  <FlatRoutes>
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <CustomTechDocsHome />
+    </Route>
+  </FlatRoutes>;
+};
+```
 
 ## How to migrate from TechDocs Alpha to Beta
 
