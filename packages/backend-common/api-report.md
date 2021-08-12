@@ -386,24 +386,12 @@ export { isChildPath };
 // Warning: (ae-missing-release-tag) "loadBackendConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function loadBackendConfig(options: Options): Promise<ObservableConfig>;
+export function loadBackendConfig(options: Options): Promise<Config>;
 
 // Warning: (ae-missing-release-tag) "notFoundHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function notFoundHandler(): RequestHandler;
-
-// Warning: (ae-missing-release-tag) "ObservableConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface ObservableConfig extends Config {
-  // (undocumented)
-  subscribe(
-    onChange: () => void,
-  ): {
-    unsubscribe: () => void;
-  };
-}
 
 // Warning: (ae-missing-release-tag) "PluginCacheManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

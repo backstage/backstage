@@ -21,11 +21,7 @@ import { findPaths } from '@backstage/cli-common';
 import { Config, ConfigReader, JsonValue } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
 
-export interface ObservableConfig extends Config {
-  subscribe(onChange: () => void): { unsubscribe: () => void };
-}
-
-class ObservableConfigProxy implements ObservableConfig {
+class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
 
   private readonly subscribers: (() => void)[] = [];
@@ -38,7 +34,7 @@ class ObservableConfigProxy implements ObservableConfig {
       try {
         subscriber();
       } catch (error) {
-        this.logger.error(`ObservableConfig subscriber threw error, ${error}`);
+        this.logger.error(`Config subscriber threw error, ${error}`);
       }
     }
   }
@@ -119,9 +115,7 @@ let currentCancelFunc: () => void;
  *
  * This function should only be called once, during the initialization of the backend.
  */
-export async function loadBackendConfig(
-  options: Options,
-): Promise<ObservableConfig> {
+export async function loadBackendConfig(options: Options): Promise<Config> {
   const args = parseArgs(options.argv);
   const configPaths: string[] = [args.config ?? []].flat();
 

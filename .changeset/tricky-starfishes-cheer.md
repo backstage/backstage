@@ -2,4 +2,4 @@
 '@backstage/backend-common': patch
 ---
 
-Add support for watching configuration through a new `ObservableConfig` type that is now returned by `loadBackendConfig`.
+Add support for watching configuration by implementing the `subscribe` method in the configuration returned by `loadBackendConfig`.

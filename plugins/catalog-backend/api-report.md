@@ -21,7 +21,6 @@ import { Knex } from 'knex';
 import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { ObservableConfig } from '@backstage/backend-common';
 import { Organizations } from 'aws-sdk';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';

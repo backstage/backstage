@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  resolvePackagePath,
-  ObservableConfig,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import path from 'path';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
@@ -83,15 +80,12 @@ describe('ConfigLocationEntityProvider', () => {
       },
     };
 
-    const mockConfig: ObservableConfig = Object.assign(
-      new ConfigReader(mutableConfigData),
-      {
-        subscribe: (s: () => void) => {
-          subscriber = s;
-          return { unsubscribe: () => {} };
-        },
+    const mockConfig = Object.assign(new ConfigReader(mutableConfigData), {
+      subscribe: (s: () => void) => {
+        subscriber = s;
+        return { unsubscribe: () => {} };
       },
-    );
+    });
 
     const mockConnection = {
       applyMutation: jest.fn(),

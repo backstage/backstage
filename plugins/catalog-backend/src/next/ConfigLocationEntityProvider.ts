@@ -15,14 +15,13 @@
  */
 
 import { Config } from '@backstage/config';
-import { ObservableConfig } from '@backstage/backend-common';
 import path from 'path';
 import { getEntityLocationRef } from './processing/util';
 import { EntityProvider, EntityProviderConnection } from './types';
 import { locationSpecToLocationEntity } from './util';
 
 export class ConfigLocationEntityProvider implements EntityProvider {
-  constructor(private readonly config: Config | ObservableConfig) {}
+  constructor(private readonly config: Config) {}
 
   getProviderName(): string {
     return 'ConfigLocationProvider';
@@ -35,7 +34,7 @@ export class ConfigLocationEntityProvider implements EntityProvider {
       entities,
     });
 
-    if ('subscribe' in this.config) {
+    if (this.config.subscribe) {
       let currentKey = JSON.stringify(entities);
 
       this.config.subscribe(() => {
