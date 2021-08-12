@@ -6529,11 +6529,20 @@
   resolved "https://registry.npmjs.org/@types/diff/-/diff-5.0.0.tgz#eb71e94feae62548282c4889308a3dfb57e36020"
   integrity sha512-jrm2K65CokCCX4NmowtA+MfXyuprZC13jbRuwprs6/04z/EcFg/MCwYdsHn+zgV4CQBiATiI7AEq7y1sZCtWKA==
 
-"@types/dockerode@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.2.1.tgz#f713a8f6f1017c227845ab33239383da721207b9"
-  integrity sha512-AeZpdQMNqM8dtrEaaP81CbjdRVKNmFIMzgz5IlKIeS5uWEmjlEmENP444AGTEEF71r5TFuY9E4SkzZAO8lOF1A==
+"@types/docker-modem@*":
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/@types/docker-modem/-/docker-modem-3.0.1.tgz#2a29c914dd64c4c9213510d2ce75fa85232934df"
+  integrity sha512-ZUXPF0WNnvs7AxoQRijt+DW2jsXnWCk8ac28tTYzTpBNnOEIAw83A+pYkCXjTFdJHMTc+wUmwNr71Zy2TRjlWg==
   dependencies:
+    "@types/node" "*"
+    "@types/ssh2" "*"
+
+"@types/dockerode@^3.2.1":
+  version "3.2.7"
+  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.2.7.tgz#0bc1f583b0e1edc4ca0c6179ef251382df35dcb3"
+  integrity sha512-Y8hMRQTwsOjz4qm6yilZKKjB/Y7+2EOiY3RPN1Xtu63wEUEDVv+3Ou+sgiisPE9+pVe3bmwhnF+E1Iwj/o4J6w==
+  dependencies:
+    "@types/docker-modem" "*"
     "@types/node" "*"
 
 "@types/dompurify@^2.2.2":
@@ -6995,10 +7004,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>= 8", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^14.14.31", "@types/node@^14.14.32", "@types/node@^14.14.33":
-  version "14.17.3"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.17.3.tgz#6d327abaa4be34a74e421ed6409a0ae2f47f4c3d"
-  integrity sha512-e6ZowgGJmTuXa3GyaPbTGxX17tnThl2aSSizrFthQ7m9uLGZBXiGhgE55cjRZTF5kjZvYn9EOPOMljdjwbflxw==
+"@types/node@*", "@types/node@>= 8", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^14.0.10", "@types/node@^14.14.31", "@types/node@^14.14.32", "@types/node@^14.14.33":
+  version "14.17.8"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.17.8.tgz#813b73ab7d82ac06ddfd2458b13c88459a3b319f"
+  integrity sha512-0CHLt50GbUmH/6MrlBIKNdWCglvlyQKkorRf08/0DIi0ryuTPP+ijWLSI19SbDTHSKaagGDELiImY4BSikt61w==
 
 "@types/node@10.17.13":
   version "10.17.13"
@@ -7014,11 +7023,6 @@
   version "12.12.58"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.12.58.tgz#46dae9b2b9ee5992818c8f7cee01ff4ce03ab44c"
   integrity sha512-Be46CNIHWAagEfINOjmriSxuv7IVcqbGe+sDSg2SYCEz/0CRBy7LRASGfRbD8KZkqoePU73Wsx3UvOSFcq/9hA==
-
-"@types/node@^14.0.10":
-  version "14.17.8"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.17.8.tgz#813b73ab7d82ac06ddfd2458b13c88459a3b319f"
-  integrity sha512-0CHLt50GbUmH/6MrlBIKNdWCglvlyQKkorRf08/0DIi0ryuTPP+ijWLSI19SbDTHSKaagGDELiImY4BSikt61w==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -7367,6 +7371,14 @@
   integrity sha512-I7gixRPUvVIyJuCEvnmhr3KvA2dC0639kKswqD4H5b4/FOcnPtNU+qWLiXdKIqqX9twUvi5j0U1mwKE5CUsrfA==
   dependencies:
     "@types/node" "*"
+
+"@types/ssh2@*":
+  version "0.5.47"
+  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.47.tgz#67a8b35a0527b2bb668f6dea4c84be6ff1abdc19"
+  integrity sha512-ZhqJg8BRV7OsCi0KVqPr27lUMMmLEeHYw1VXUNGGDlQEDq9HTsKx+wYvi8E6oNC6gRZ7PV99ZMZmMr5vztcYYA==
+  dependencies:
+    "@types/node" "*"
+    "@types/ssh2-streams" "*"
 
 "@types/ssh2@^0.5.45":
   version "0.5.46"
