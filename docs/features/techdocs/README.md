@@ -60,17 +60,6 @@ providers are used.
 
 ## Project roadmap
 
-### **Ongoing work 🚧**
-
-**Beta release** -
-[Milestone](https://github.com/backstage/backstage/milestone/29)
-
-- It should be possible and easy to use TechDocs in most environments across
-  organizations.
-- Minimal bugs, better error handling and scalable backend and frontend.
-- Documentation Search
-- TechDocs Homepage with basic features
-
 ### **Future work 🔮**
 
 **General Availability (GA) release** -
