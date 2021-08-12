@@ -1,5 +1,15 @@
 # @backstage/plugin-rollbar
 
+## 0.3.12
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
 ## 0.3.11
 
 ### Patch Changes

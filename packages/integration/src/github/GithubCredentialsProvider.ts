@@ -250,11 +250,7 @@ export class GithubCredentialsProvider {
     }
 
     return {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       token,
       type,
     };

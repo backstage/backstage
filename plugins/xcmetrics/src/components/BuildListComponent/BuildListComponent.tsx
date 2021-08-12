@@ -17,12 +17,24 @@ import React, { useRef, useState } from 'react';
 import { Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { BuildFilters, xcmetricsApiRef } from '../../api';
-import { Grid } from '@material-ui/core';
+import { createStyles, Grid, makeStyles } from '@material-ui/core';
 import { BuildListFilterComponent as Filters } from '../BuildListFilterComponent';
 import { DateTime } from 'luxon';
 import { buildPageColumns } from '../BuildTableColumns';
+import { BuildDetailsComponent, withRequest } from '../BuildDetailsComponent';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles((theme: BackstageTheme) =>
+  createStyles({
+    detailPanel: {
+      padding: theme.spacing(2),
+      backgroundColor: theme.palette.background.paper,
+    },
+  }),
+);
 
 export const BuildListComponent = () => {
+  const classes = useStyles();
   const client = useApi(xcmetricsApiRef);
   const tableRef = useRef<any>();
 
@@ -67,6 +79,14 @@ export const BuildListComponent = () => {
               })
               .catch(reason => reject(reason));
           });
+        }}
+        detailPanel={rowData => {
+          const BuildDetails = withRequest(BuildDetailsComponent);
+          return (
+            <div className={classes.detailPanel}>
+              <BuildDetails buildId={(rowData as any).rowData.id} />
+            </div>
+          );
         }}
       />
     </Grid>
