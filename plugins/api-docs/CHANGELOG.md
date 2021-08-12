@@ -1,5 +1,17 @@
 # @backstage/plugin-api-docs
 
+## 0.6.6
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 0383314c9: Support deep linking in OpenAPI definitions.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-react@0.4.2
+
 ## 0.6.5
 
 ### Patch Changes

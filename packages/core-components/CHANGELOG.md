@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.3.1
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 55a5dbd54: Fix for `SidebarItem` matching the active route too broadly.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.6
+
 ## 0.3.0
 
 ### Minor Changes
