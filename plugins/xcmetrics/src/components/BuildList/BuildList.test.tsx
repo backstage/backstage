@@ -16,47 +16,67 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { XcmetricsLayout } from './XcmetricsLayout';
+import { BuildList } from './BuildList';
 import { xcmetricsApiRef } from '../../api';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
-jest.mock('../Overview', () => ({
-  Overview: () => 'OverviewComponent',
+jest.mock('../BuildListFilter', () => ({
+  BuildListFilter: () => 'BuildListFilter',
 }));
 
-jest.mock('../BuildList', () => ({
-  BuildList: () => 'BuildList',
+jest.mock('../BuildDetails', () => ({
+  withRequest: (component: any) => component,
+  BuildDetails: () => 'BuildDetails',
 }));
 
-describe('XcmetricsLayout', () => {
+describe('BuildList', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
-        <XcmetricsLayout />
+        <BuildList />
       </ApiProvider>,
     );
 
-    expect(rendered.getByText('Overview')).toBeInTheDocument();
     expect(rendered.getByText('Builds')).toBeInTheDocument();
-
-    expect(rendered.getByText('OverviewComponent')).toBeInTheDocument();
+    expect(
+      rendered.getByText(client.mockBuild.projectName),
+    ).toBeInTheDocument();
   });
 
-  it('should show a list of builds when the Builds tab is selected', async () => {
+  it('should show build details', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
-        <XcmetricsLayout />
+        <BuildList />
       </ApiProvider>,
     );
 
-    userEvent.click(rendered.getByText('Builds'));
-    expect(await rendered.findByText('BuildList')).toBeInTheDocument();
+    userEvent.click(
+      (await rendered.findAllByLabelText('Detail panel visiblity toggle'))[0],
+    );
+    expect(await rendered.findByText('BuildDetails')).toBeInTheDocument();
+  });
+
+  it('should show errors', async () => {
+    const message = 'error';
+    client.XcmetricsClient.getFilteredBuilds = jest
+      .fn()
+      .mockRejectedValue({ message });
+
+    const rendered = await renderInTestApp(
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
+      >
+        <BuildList />
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText(message)).toBeInTheDocument();
   });
 });

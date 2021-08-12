@@ -19,7 +19,7 @@ import React from 'react';
 import { TableColumn } from '@backstage/core-components';
 import { Build } from '../api';
 import { formatTime, formatDuration } from '../utils';
-import { StatusIconComponent as StatusIcon } from './StatusIconComponent';
+import { StatusIcon } from './StatusIcon';
 
 const baseColumns: TableColumn<Build>[] = [
   {
