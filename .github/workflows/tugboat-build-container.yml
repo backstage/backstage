@@ -10,9 +10,8 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
-   
+
     steps:
-    
       - uses: actions/checkout@v2
 
       # Beginning of yarn setup, keep in sync between all workflows.
@@ -60,18 +59,18 @@ jobs:
 
       - name: type checking and declarations
         run: yarn tsc:full
-  
+
       - name: build all packages
         run: yarn build
 
       - name: bundle example-backend
         run: yarn workspace example-backend backstage-cli backend:bundle
-     
-      - uses: docker/login-action@v1 
+
+      - uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -79,4 +78,3 @@ jobs:
           context: .
           file: packages/backend/Dockerfile
           tags: backstagetooling/PR:${{ github.sha }}
-    
