@@ -21,7 +21,7 @@ import { Alert } from '@material-ui/lab';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
 import { formatDuration, formatStatus, formatTime } from '../../utils';
-import { StatusIcon as StatusIcon } from '../StatusIcon';
+import { StatusIcon } from '../StatusIcon';
 import { BackstageTheme } from '@backstage/theme';
 import { Accordion } from '../Accordion';
 import { BuildTimeline } from '../BuildTimeline';
