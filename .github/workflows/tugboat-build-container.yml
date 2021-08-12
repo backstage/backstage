@@ -77,4 +77,4 @@ jobs:
           push: true
           context: .
           file: packages/backend/Dockerfile
-          tags: backstagetooling/PR:${{ github.sha }}
+          tags: backstagetooling/pr:${{ github.sha }}
