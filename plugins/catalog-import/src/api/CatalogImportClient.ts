@@ -340,6 +340,7 @@ export class CatalogImportClient implements CatalogImportApi {
           ),
         );
       });
+
     return {
       link: pullRequestResponse.data.html_url,
       location: `https://${githubIntegrationConfig.host}/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
