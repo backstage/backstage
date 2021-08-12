@@ -47,18 +47,21 @@ export const BuildDetailsComponent = ({
 }: BuildDetailsProps) => {
   const classes = useStyles();
   const client = useApi(xcmetricsApiRef);
-  const hostResult = useAsync(async () => client.getBuildHost(build.id), []);
+  const hostResult = useAsync(
+    async () => client.getBuildHost(build.id),
+    [build.id],
+  );
   const errorsResult = useAsync(
     async () => client.getBuildErrors(build.id),
-    [],
+    [build.id],
   );
   const warningsResult = useAsync(
     async () => client.getBuildWarnings(build.id),
-    [],
+    [build.id],
   );
   const metadataResult = useAsync(
     async () => client.getBuildMetadata(build.id),
-    [],
+    [build.id],
   );
 
   const buildDetails = {
