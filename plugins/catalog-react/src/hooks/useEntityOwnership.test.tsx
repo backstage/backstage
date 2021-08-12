@@ -46,8 +46,8 @@ describe('useEntityOwnership', () => {
     getEntityByName: jest.fn(),
   };
 
-  const identityApi = (mockIdentityApi as unknown) as IdentityApi;
-  const catalogApi = (mockCatalogApi as unknown) as CatalogApi;
+  const identityApi = mockIdentityApi as unknown as IdentityApi;
+  const catalogApi = mockCatalogApi as unknown as CatalogApi;
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ApiProvider

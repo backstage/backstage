@@ -1,5 +1,15 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.3
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+
 ## 0.11.2
 
 ### Patch Changes

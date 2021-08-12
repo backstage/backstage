@@ -38,6 +38,10 @@
     "packages": [
       "packages/*",
       "plugins/*"
+    ],
+    "nohoist": [
+      "**/@storybook/**",
+      "**/@storybook"
     ]
   },
   "resolutions": {
@@ -55,6 +59,7 @@
     "@microsoft/api-extractor-model": "^7.13.3"
   },
   "devDependencies": {
+    "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
     "@octokit/openapi-types": "^2.2.0",
     "@spotify/prettier-config": "^10.0.0",

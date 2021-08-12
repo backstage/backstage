@@ -255,9 +255,7 @@ export class JenkinsApiImpl {
     return scmInfo;
   }
 
-  private getTestReport(
-    build: JenkinsBuild,
-  ): {
+  private getTestReport(build: JenkinsBuild): {
     total: number;
     passed: number;
     skipped: number;

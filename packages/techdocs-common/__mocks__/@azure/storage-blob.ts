@@ -78,6 +78,36 @@ class BlockBlobClientFailUpload extends BlockBlobClient {
   }
 }
 
+class ContainerClientIterator {
+  private containerName: string;
+
+  constructor(containerName) {
+    this.containerName = containerName;
+  }
+
+  async next() {
+    if (
+      this.containerName === 'delete_stale_files_success' ||
+      this.containerName === 'delete_stale_files_error'
+    ) {
+      return {
+        value: {
+          segment: {
+            blobItems: [{ name: `stale_file.png` }],
+          },
+        },
+      };
+    }
+    return {
+      value: {
+        segment: {
+          blobItems: [],
+        },
+      },
+    };
+  }
+}
+
 export class ContainerClient {
   getProperties(): Promise<ContainerGetPropertiesResponse> {
     return Promise.resolve({
@@ -94,6 +124,20 @@ export class ContainerClient {
 
   getBlockBlobClient(blobName: string) {
     return new BlockBlobClient(blobName);
+  }
+
+  listBlobsFlat() {
+    return {
+      byPage: () => {
+        return new ContainerClientIterator(this.containerName);
+      },
+    };
+  }
+
+  deleteBlob() {
+    if (this.containerName === 'delete_stale_files_error') {
+      throw new Error('Message');
+    }
   }
 }
 

@@ -78,9 +78,10 @@ export default class TypescriptHighlighter implements Highlighter {
 
     // Order here is important, e.g. comments must be first to avoid string literals inside comments being highlighted
     return TypescriptHighlighter.highlighters
-      .reduce((parts, highlighter) => parts.flatMap(painter(...highlighter)), [
-        { text: fullText },
-      ])
+      .reduce(
+        (parts, highlighter) => parts.flatMap(painter(...highlighter)),
+        [{ text: fullText }],
+      )
       .map(({ text }) => text)
       .join('');
   }

@@ -36,6 +36,12 @@ const useStyles = makeStyles(theme => ({
   selected: {
     color: theme.palette.text.primary,
   },
+  tabRoot: {
+    '&:hover': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+  },
 }));
 
 export type Tab = {
@@ -89,7 +95,7 @@ export const HeaderTabs = ({
             key={tab.id}
             value={index}
             className={styles.defaultTab}
-            classes={{ selected: styles.selected }}
+            classes={{ selected: styles.selected, root: styles.tabRoot }}
           />
         ))}
       </Tabs>

@@ -63,12 +63,8 @@ export function useCreateReleaseCandidate({
     );
   }
 
-  const {
-    responseSteps,
-    addStepToResponseSteps,
-    asyncCatcher,
-    abortIfError,
-  } = useResponseSteps();
+  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
+    useResponseSteps();
 
   /**
    * (1) Get the default branch's most recent commit

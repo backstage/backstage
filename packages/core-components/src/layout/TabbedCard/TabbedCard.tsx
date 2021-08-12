@@ -98,6 +98,7 @@ const TabbedCard = ({
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
         <Tabs
+          selectionFollowsFocus
           classes={tabsClasses}
           value={value || selectedIndex}
           onChange={handleChange}
@@ -119,6 +120,11 @@ const useCardTabStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 2, 0, 0),
     padding: theme.spacing(0.5, 0, 0.5, 0),
     textTransform: 'none',
+    '&:hover': {
+      opacity: 1,
+      backgroundColor: 'transparent',
+      color: theme.palette.text.primary,
+    },
   },
   selected: {
     fontWeight: 'bold',

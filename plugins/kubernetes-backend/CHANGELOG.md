@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.13
+
+### Patch Changes
+
+- a0a8d3571: Add configuration option to the kubernetes object types. Config option is under `kubernetes.objectTypes`. Defaults to ['pods', 'services', 'configmaps', 'deployments', 'replicasets', 'horizontalpodautoscalers', 'ingresses']
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+
 ## 0.3.12
 
 ### Patch Changes

@@ -58,7 +58,7 @@ describe('publish:azure', () => {
     getGitApi: jest.fn().mockReturnValue(mockGitClient),
   };
 
-  ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+  (WebApi as unknown as jest.Mock).mockImplementation(() => mockGitApi);
 
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -209,9 +209,8 @@ describe('publish:azure', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishAzureAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -246,9 +245,8 @@ describe('publish:azure', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishAzureAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

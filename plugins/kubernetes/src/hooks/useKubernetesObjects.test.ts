@@ -94,12 +94,10 @@ describe('useKubernetesObjects', () => {
   it('should return objects', async () => {
     (useApi as any).mockReturnValue({
       getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
-      getObjectsByEntity: mockGetObjectsByEntity.mockResolvedValue(
-        mockResponse,
-      ),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockResolvedValue(
-        entityWithAuthToken,
-      ),
+      getObjectsByEntity:
+        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       useKubernetesObjects(entity),
@@ -118,9 +116,8 @@ describe('useKubernetesObjects', () => {
       getObjectsByEntity: mockGetObjectsByEntity.mockRejectedValue({
         message: 'some error',
       }),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockResolvedValue(
-        entityWithAuthToken,
-      ),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       useKubernetesObjects(entity),
@@ -157,9 +154,10 @@ describe('useKubernetesObjects', () => {
   it('should return error when decorateRequestBodyForAuth throws', async () => {
     (useApi as any).mockReturnValue({
       getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockRejectedValue(
-        { message: 'some-error' },
-      ),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockRejectedValue({
+          message: 'some-error',
+        }),
       getObjectsByEntity: mockGetObjectsByEntity,
     });
     const { result, waitForNextUpdate } = renderHook(() =>

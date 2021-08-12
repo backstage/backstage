@@ -58,11 +58,9 @@ export function* parseEntityYaml(
   }
 }
 
-export const defaultEntityDataParser: CatalogProcessorParser = async function* defaultEntityDataParser({
-  data,
-  location,
-}) {
-  for (const e of parseEntityYaml(data, location)) {
-    yield e;
-  }
-};
+export const defaultEntityDataParser: CatalogProcessorParser =
+  async function* defaultEntityDataParser({ data, location }) {
+    for (const e of parseEntityYaml(data, location)) {
+      yield e;
+    }
+  };

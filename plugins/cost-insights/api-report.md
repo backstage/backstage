@@ -100,7 +100,7 @@ export enum AlertDismissReason {
 // @public (undocumented)
 export type AlertForm<
   A extends Alert = any,
-  Data = any
+  Data = any,
 > = ForwardRefExoticComponent<
   AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
 >;

@@ -18,25 +18,36 @@ import React from 'react';
 import { useCopyToClipboard } from 'react-use';
 import { generatePath } from 'react-router-dom';
 
-import { IconButton, Tooltip } from '@material-ui/core';
-import ShareIcon from '@material-ui/icons/Share';
-import { Entity } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../routes';
 import {
-  Table,
-  EmptyState,
   Button,
-  SubvalueCell,
-  Link,
+  EmptyState,
+  Table,
+  TableColumn,
+  TableProps,
 } from '@backstage/core-components';
+import * as actionFactories from './actions';
+import * as columnFactories from './columns';
+import { DocsTableRow } from './types';
 
 export const DocsTable = ({
   entities,
   title,
+  loading,
+  columns,
+  actions,
 }: {
   entities: Entity[] | undefined;
   title?: string | undefined;
+  loading?: boolean | undefined;
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
   // Lower-case entity triplets by default, but allow override.
@@ -49,67 +60,48 @@ export const DocsTable = ({
   if (!entities) return null;
 
   const documents = entities.map(entity => {
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
     return {
-      name: entity.metadata.name,
-      description: entity.metadata.description,
-      owner: entity?.spec?.owner,
-      type: entity?.spec?.type,
-      docsUrl: generatePath(rootDocsRouteRef.path, {
-        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default'),
-        kind: toLowerMaybe(entity.kind),
-        name: toLowerMaybe(entity.metadata.name),
-      }),
+      entity,
+      resolved: {
+        docsUrl: generatePath(rootDocsRouteRef.path, {
+          namespace: toLowerMaybe(entity.metadata.namespace ?? 'default'),
+          kind: toLowerMaybe(entity.kind),
+          name: toLowerMaybe(entity.metadata.name),
+        }),
+        ownedByRelations,
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+      },
     };
   });
 
-  const columns = [
-    {
-      title: 'Document',
-      field: 'name',
-      highlight: true,
-      render: (row: any): React.ReactNode => (
-        <SubvalueCell
-          value={<Link to={row.docsUrl}>{row.name}</Link>}
-          subvalue={row.description}
-        />
-      ),
-    },
-    {
-      title: 'Owner',
-      field: 'owner',
-    },
-    {
-      title: 'Type',
-      field: 'type',
-    },
-    {
-      title: 'Actions',
-      width: '10%',
-      render: (row: any) => (
-        <Tooltip title="Click to copy documentation link to clipboard">
-          <IconButton
-            onClick={() =>
-              copyToClipboard(`${window.location.href}/${row.docsUrl}`)
-            }
-          >
-            <ShareIcon />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
+  const defaultColumns: TableColumn<DocsTableRow>[] = [
+    columnFactories.createNameColumn(),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createTypeColumn(),
+  ];
+
+  const defaultActions: TableProps<DocsTableRow>['actions'] = [
+    actionFactories.createCopyDocsUrlAction(copyToClipboard),
   ];
 
   return (
     <>
-      {documents && documents.length > 0 ? (
-        <Table
+      {loading || (documents && documents.length > 0) ? (
+        <Table<DocsTableRow>
+          isLoading={loading}
           options={{
             paging: true,
             pageSize: 20,
             search: true,
+            actionsColumnIndex: -1,
           }}
           data={documents}
-          columns={columns}
+          columns={columns || defaultColumns}
+          actions={actions || defaultActions}
           title={
             title
               ? `${title} (${documents.length})`

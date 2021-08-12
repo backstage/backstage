@@ -85,46 +85,44 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     const docPromises = entities.items
       .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
       .map((entity: Entity) =>
-        limit(
-          async (): Promise<TechDocsDocument[]> => {
-            const entityInfo = {
-              kind: entity.kind,
-              namespace: entity.metadata.namespace || 'default',
-              name: entity.metadata.name,
-            };
+        limit(async (): Promise<TechDocsDocument[]> => {
+          const entityInfo = {
+            kind: entity.kind,
+            namespace: entity.metadata.namespace || 'default',
+            name: entity.metadata.name,
+          };
 
-            try {
-              const searchIndexResponse = await fetch(
-                DefaultTechDocsCollator.constructDocsIndexUrl(
-                  techDocsBaseUrl,
-                  entityInfo,
-                ),
-              );
-              const searchIndex = await searchIndexResponse.json();
+          try {
+            const searchIndexResponse = await fetch(
+              DefaultTechDocsCollator.constructDocsIndexUrl(
+                techDocsBaseUrl,
+                entityInfo,
+              ),
+            );
+            const searchIndex = await searchIndexResponse.json();
 
-              return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-                title: unescape(doc.title),
-                text: unescape(doc.text || ''),
-                location: this.applyArgsToFormat(this.locationTemplate, {
-                  ...entityInfo,
-                  path: doc.location,
-                }),
+            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+              title: unescape(doc.title),
+              text: unescape(doc.text || ''),
+              location: this.applyArgsToFormat(this.locationTemplate, {
                 ...entityInfo,
-                componentType: entity.spec?.type?.toString() || 'other',
-                lifecycle: (entity.spec?.lifecycle as string) || '',
-                owner:
-                  entity.relations?.find(r => r.type === RELATION_OWNED_BY)
-                    ?.target?.name || '',
-              }));
-            } catch (e) {
-              this.logger.warn(
-                `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-                e,
-              );
-              return [];
-            }
-          },
-        ),
+                path: doc.location,
+              }),
+              ...entityInfo,
+              componentType: entity.spec?.type?.toString() || 'other',
+              lifecycle: (entity.spec?.lifecycle as string) || '',
+              owner:
+                entity.relations?.find(r => r.type === RELATION_OWNED_BY)
+                  ?.target?.name || '',
+            }));
+          } catch (e) {
+            this.logger.warn(
+              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+              e,
+            );
+            return [];
+          }
+        }),
       );
     return (await Promise.all(docPromises)).flat();
   }

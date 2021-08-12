@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import mime from 'mime-types';
+import path from 'path';
+import createLimiter from 'p-limit';
 import recursiveReadDir from 'recursive-readdir';
 
 /**
@@ -125,4 +128,50 @@ export const lowerCaseEntityTripletInStoragePath = (
     );
   }
   return lowerCaseEntityTriplet(originalPath);
+};
+
+// Only returns the files that existed previously and are not present anymore.
+export const getStaleFiles = (
+  newFiles: string[],
+  oldFiles: string[],
+): string[] => {
+  const staleFiles = new Set(oldFiles);
+  newFiles.forEach(newFile => {
+    staleFiles.delete(newFile);
+  });
+  return Array.from(staleFiles);
+};
+
+// Compose actual filename on remote bucket including entity information
+export const getCloudPathForLocalPath = (
+  entity: Entity,
+  localPath = '',
+  useLegacyPathCasing = false,
+): string => {
+  // Convert destination file path to a POSIX path for uploading.
+  // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
+  // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
+  const relativeFilePathPosix = localPath.split(path.sep).join(path.posix.sep);
+
+  // The / delimiter is intentional since it represents the cloud storage and not the local file system.
+  const entityRootDir = `${
+    entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+  }/${entity.kind}/${entity.metadata.name}`;
+
+  const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
+  const destination = useLegacyPathCasing
+    ? relativeFilePathTriplet
+    : lowerCaseEntityTripletInStoragePath(relativeFilePathTriplet);
+
+  return destination; // Remote storage file relative path
+};
+
+// Perform rate limited generic operations by passing a function and a list of arguments
+export const bulkStorageOperation = async <T>(
+  operation: (arg: T) => Promise<unknown>,
+  args: T[],
+  { concurrencyLimit } = { concurrencyLimit: 25 },
+) => {
+  const limiter = createLimiter(concurrencyLimit);
+  await Promise.all(args.map(arg => limiter(operation, arg)));
 };

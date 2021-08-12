@@ -38,6 +38,8 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
+const loggerInfoSpy = jest.spyOn(logger, 'info');
+const loggerErrorSpy = jest.spyOn(logger, 'error');
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
@@ -46,7 +48,7 @@ const createPublisherFromConfig = ({
   bucketName?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
 } = {}) => {
-  const config = new ConfigReader({
+  const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
       publisher: {
@@ -63,7 +65,7 @@ const createPublisherFromConfig = ({
     },
   });
 
-  return AwsS3Publish.fromConfig(config, logger);
+  return AwsS3Publish.fromConfig(mockConfig, logger);
 };
 
 describe('AwsS3Publish', () => {
@@ -110,13 +112,13 @@ describe('AwsS3Publish', () => {
     },
   };
 
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [directory]: files,
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 
@@ -176,6 +178,24 @@ describe('AwsS3Publish', () => {
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
+    });
+
+    it('should delete stale files after upload', async () => {
+      const bucketName = 'delete_stale_files_success';
+      const publisher = createPublisherFromConfig({ bucketName: bucketName });
+      await publisher.publish({ entity, directory });
+      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
+      );
+    });
+
+    it('should log error when the stale files deletion fails', async () => {
+      const bucketName = 'delete_stale_files_error';
+      const publisher = createPublisherFromConfig({ bucketName: bucketName });
+      await publisher.publish({ entity, directory });
+      expect(loggerErrorSpy).toHaveBeenLastCalledWith(
+        'Unable to delete file(s) from AWS S3. Error: Message',
+      );
     });
   });
 

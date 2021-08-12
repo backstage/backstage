@@ -18,9 +18,7 @@ import { EntityName, EntityRef } from '../types';
 import { ENTITY_DEFAULT_NAMESPACE } from './constants';
 import { Entity } from './Entity';
 
-function parseRefString(
-  ref: string,
-): {
+function parseRefString(ref: string): {
   kind?: string;
   namespace?: string;
   name: string;

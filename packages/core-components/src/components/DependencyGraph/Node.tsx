@@ -46,10 +46,8 @@ export function Node({
   React.useLayoutEffect(() => {
     // set the node width to the actual rendered width to properly layout graph
     if (nodeRef.current) {
-      let {
-        height: renderedHeight,
-        width: renderedWidth,
-      } = nodeRef.current.getBBox();
+      let { height: renderedHeight, width: renderedWidth } =
+        nodeRef.current.getBBox();
       renderedHeight = Math.round(renderedHeight);
       renderedWidth = Math.round(renderedWidth);
 

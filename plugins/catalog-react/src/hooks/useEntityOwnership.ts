@@ -131,9 +131,10 @@ export function useEntityOwnership(): {
   const isOwnedEntity = useMemo(() => {
     const myOwnerRefs = new Set(refs ?? []);
     return (entity: Entity | EntityName) => {
-      const entityOwnerRefs = ('metadata' in entity
-        ? getEntityRelations(entity, RELATION_OWNED_BY)
-        : [entity]
+      const entityOwnerRefs = (
+        'metadata' in entity
+          ? getEntityRelations(entity, RELATION_OWNED_BY)
+          : [entity]
       ).map(stringifyEntityRef);
       for (const ref of entityOwnerRefs) {
         if (myOwnerRefs.has(ref)) {

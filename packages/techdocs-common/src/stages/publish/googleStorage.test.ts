@@ -38,6 +38,8 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
+jest.spyOn(logger, 'info').mockReturnValue(logger);
+jest.spyOn(logger, 'error').mockReturnValue(logger);
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
@@ -59,7 +61,6 @@ const createPublisherFromConfig = ({
       legacyUseCaseSensitiveTripletPaths,
     },
   });
-
   return GoogleGCSPublish.fromConfig(config, logger);
 };
 
@@ -175,6 +176,24 @@ describe('GoogleGCSPublish', () => {
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
+    });
+
+    it('should delete stale files after upload', async () => {
+      const bucketName = 'delete_stale_files_success';
+      const publisher = createPublisherFromConfig({ bucketName });
+      await publisher.publish({ entity, directory });
+      expect(logger.info).toHaveBeenLastCalledWith(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
+      );
+    });
+
+    it('should log error when the stale files deletion fails', async () => {
+      const bucketName = 'delete_stale_files_error';
+      const publisher = createPublisherFromConfig({ bucketName });
+      await publisher.publish({ entity, directory });
+      expect(logger.error).toHaveBeenLastCalledWith(
+        'Unable to delete file(s) from Google Cloud Storage. Error: Message',
+      );
     });
   });
 

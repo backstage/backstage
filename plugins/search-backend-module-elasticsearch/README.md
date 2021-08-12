@@ -6,4 +6,4 @@ This module provides functionality to index and implement querying using Elastic
 
 ## Getting started
 
-See [Backstage documentation](https://backstage.io/docs/features/search/getting-started) for details on how to install and configure ElasticSearch for your Backstage instance.
+See [Backstage documentation](https://backstage.io/docs/features/search/search-engines#elasticsearch) for details on how to install and configure ElasticSearch for your Backstage instance.

@@ -33,7 +33,11 @@ import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-  const { value: tools, loading, error } = useAsync(async () => {
+  const {
+    value: tools,
+    loading,
+    error,
+  } = useAsync(async () => {
     return await exploreToolsConfigApi.getTools();
   }, [exploreToolsConfigApi]);
 

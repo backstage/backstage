@@ -194,9 +194,8 @@ describe('publish:gitlab', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishGitlabAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -239,9 +238,8 @@ describe('publish:gitlab', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishGitlabAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

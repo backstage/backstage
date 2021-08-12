@@ -53,7 +53,11 @@ export function useEntityTypeFilter(): EntityTypeReturn {
 
   // Load all valid spec.type values straight from the catalogApi, paying attention to only the
   // kind filter for a complete list.
-  const { error, loading, value: entities } = useAsync(async () => {
+  const {
+    error,
+    loading,
+    value: entities,
+  } = useAsync(async () => {
     if (kind) {
       const items = await catalogApi
         .getEntities({

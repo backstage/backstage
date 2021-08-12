@@ -30,7 +30,11 @@ export function useRelatedEntities(
   error: Error | undefined;
 } {
   const catalogApi = useApi(catalogApiRef);
-  const { loading, value: entities, error } = useAsync(async () => {
+  const {
+    loading,
+    value: entities,
+    error,
+  } = useAsync(async () => {
     const relations =
       entity.relations &&
       entity.relations.filter(
