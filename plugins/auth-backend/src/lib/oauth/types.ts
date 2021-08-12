@@ -107,9 +107,7 @@ export interface OAuthHandlers {
    * Handles the redirect from the auth provider when the user has signed in.
    * @param {express.Request} req
    */
-  handler(
-    req: express.Request,
-  ): Promise<{
+  handler(req: express.Request): Promise<{
     response: AuthResponse<OAuthProviderInfo>;
     refreshToken?: string;
   }>;
