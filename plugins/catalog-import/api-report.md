@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigApi } from '@backstage/core-plugin-api';
+import { Context } from 'react';
 import { Controller } from 'react-hook-form';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -114,11 +115,11 @@ export class CatalogImportClient implements CatalogImportApi {
   }>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "StepperProviderOpts" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ImportOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CatalogImportPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CatalogImportPage: (opts: StepperProviderOpts) => JSX.Element;
+export const CatalogImportPage: (opts: ImportOptions) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "catalogImportPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -144,6 +145,11 @@ export function defaultGenerateStepper(
   defaults: StepperProvider,
 ): StepperProvider;
 
+// Warning: (ae-missing-release-tag) "DefaultImportComponentPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DefaultImportComponentPage: () => JSX.Element;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntityListComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -155,7 +161,17 @@ export const EntityListComponent: ({
   onItemClick,
   firstListItem,
   withLinks,
-}: Props_2) => JSX.Element;
+}: Props) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ImportInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ImportInfoCard: () => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ImportOptionsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ImportOptionsContext: Context<ImportOptions>;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ImportStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -165,8 +181,7 @@ export const ImportStepper: ({
   initialUrl,
   generateStepper,
   variant,
-  opts,
-}: Props) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -206,7 +221,7 @@ export const PreviewPullRequestComponent: ({
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (opts: StepperProviderOpts) => JSX.Element;
+export const Router: (opts: ImportOptions) => JSX.Element;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -233,6 +248,11 @@ export const StepPrepareCreatePullRequest: ({
   defaultTitle,
   defaultBody,
 }: Props_8) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "useImportOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const useImportOptions: () => ImportOptions;
 
 // Warnings were encountered during analysis:
 //

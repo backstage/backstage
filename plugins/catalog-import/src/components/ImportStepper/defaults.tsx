@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core-plugin-api';
 import {
   Box,
   Checkbox,
