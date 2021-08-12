@@ -18,12 +18,18 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { BuildListComponent } from './BuildListComponent';
 import { xcmetricsApiRef } from '../../api';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
 jest.mock('../BuildListFilterComponent', () => ({
   BuildListFilterComponent: () => 'BuildListFilterComponent',
+}));
+
+jest.mock('../BuildDetailsComponent', () => ({
+  withRequest: (component: any) => component,
+  BuildDetailsComponent: () => 'BuildDetailsComponent',
 }));
 
 describe('BuildListComponent', () => {
@@ -39,6 +45,23 @@ describe('BuildListComponent', () => {
     expect(rendered.getByText('Builds')).toBeInTheDocument();
     expect(
       rendered.getByText(client.mockBuild.projectName),
+    ).toBeInTheDocument();
+  });
+
+  it('should show build details', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
+      >
+        <BuildListComponent />
+      </ApiProvider>,
+    );
+
+    userEvent.click(
+      (await rendered.findAllByLabelText('Detail panel visiblity toggle'))[0],
+    );
+    expect(
+      await rendered.findByText('BuildDetailsComponent'),
     ).toBeInTheDocument();
   });
 

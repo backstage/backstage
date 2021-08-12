@@ -24,7 +24,7 @@ import {
 import { OverviewComponent } from '../OverviewComponent';
 import { buildsRouteRef, rootRouteRef } from '../../routes';
 import { RouteRef, SubRouteRef } from '@backstage/core-plugin-api';
-import { BuildListComponent } from '../BuildListComponent';
+import { BuildsPage } from '../BuildsPage';
 
 export interface TabConfig {
   routeRef: RouteRef | SubRouteRef;
@@ -41,7 +41,7 @@ const TABS: TabConfig[] = [
   {
     routeRef: buildsRouteRef,
     title: 'Builds',
-    component: <BuildListComponent />,
+    component: <BuildsPage />,
   },
 ];
 
