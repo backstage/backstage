@@ -89,8 +89,8 @@ export const PreformattedTextComponent = ({
         tabIndex={expandable ? 0 : undefined}
       >
         <pre className={cn(classes.pre, expandable && classes.expandable)}>
-          {text.slice(0, maxChars - 3).trim()}
-          {text.length > maxChars && '...'}
+          {text.slice(0, maxChars - 1).trim()}
+          {text.length > maxChars - 1 && '…'}
         </pre>
       </div>
 
