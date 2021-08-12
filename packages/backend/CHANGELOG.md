@@ -1,5 +1,24 @@
 # example-backend
 
+## 0.2.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.3.20
+  - @backstage/integration@0.6.0
+  - @backstage/plugin-scaffolder-backend@0.15.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-kubernetes-backend@0.3.14
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.2
+  - @backstage/plugin-search-backend-module-pg@0.1.1
+  - @backstage/plugin-catalog-backend@0.13.2
+  - @backstage/plugin-code-coverage-backend@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-rails@0.1.4
+  - @backstage/plugin-techdocs-backend@0.9.2
+  - @backstage/plugin-todo-backend@0.1.9
+  - example-app@0.2.41
+
 ## 0.2.38
 
 ### Patch Changes

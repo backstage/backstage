@@ -68,21 +68,21 @@ describe('publish:azure', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob' },
+        input: { repoUrl: 'dev.azure.com?repo=bob' },
       }),
     ).rejects.toThrow(/missing owner/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner' },
+        input: { repoUrl: 'dev.azure.com?owner=owner' },
       }),
     ).rejects.toThrow(/missing repo/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner&repo=repo' },
+        input: { repoUrl: 'dev.azure.com?owner=owner&repo=repo' },
       }),
     ).rejects.toThrow(/missing organization/);
   });

@@ -28,15 +28,16 @@ interface TooltipContentProps {
 
 const TooltipContent = ({ buildId }: TooltipContentProps) => {
   const client = useApi(xcmetricsApiRef);
-  const {
-    value: build,
-    loading,
-    error,
-  } = useAsync(async () => client.getBuild(buildId), []);
+  const { value, loading, error } = useAsync(
+    async () => client.getBuild(buildId),
+    [],
+  );
 
   if (error) {
     return <div>{error.message}</div>;
-  } else if (loading || !build) {
+  }
+
+  if (loading || !value?.build) {
     return <Progress style={{ width: 100 }} />;
   }
 
@@ -45,15 +46,15 @@ const TooltipContent = ({ buildId }: TooltipContentProps) => {
       <tbody>
         <tr>
           <td>Started</td>
-          <td>{new Date(build.startTimestamp).toLocaleString()}</td>
+          <td>{new Date(value.build.startTimestamp).toLocaleString()}</td>
         </tr>
         <tr>
           <td>Duration</td>
-          <td>{formatDuration(build.duration)}</td>
+          <td>{formatDuration(value.build.duration)}</td>
         </tr>
         <tr>
           <td>Status</td>
-          <td>{formatStatus(build.buildStatus)}</td>
+          <td>{formatStatus(value.build.buildStatus)}</td>
         </tr>
       </tbody>
     </table>

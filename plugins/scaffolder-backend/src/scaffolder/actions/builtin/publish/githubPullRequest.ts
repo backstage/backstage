@@ -173,7 +173,13 @@ export const createPublishGithubPullRequestAction = ({
         sourcePath,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath

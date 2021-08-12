@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 7894421f1: Added UI Schema support for array items for example, support EntityPicker within an array field
+- fa84fe44e: - Adds a new field `EntityNamePicker` that can be used in scaffolder templates to accept and validate an entity name. This field is registered by default, and can be used in templates by setting the `ui:field` property to `EntityNamePicker`. If you've customized your scaffolder field extensions, you can include this one by adding it when registering the scaffolder route:
+
+  ```diff
+  import {
+    ScaffolderFieldExtensions,
+  +   EntityNamePickerFieldExtension,
+  } from '@backstage/plugin-scaffolder';
+
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderFieldExtensions>
+        {/* ...custom field extensions... */}
+
+  +       <EntityNamePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>;
+  ```
+
+  - Adds a new generic field `TextValuePicker` to be used when writing custom field extensions that use a standard UI with custom validation. An example of doing this can be found in `packages/app/src/components/scaffolder/customScaffolderExtensions.tsx`.
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
 ## 0.10.3
 
 ### Patch Changes

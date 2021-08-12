@@ -18,6 +18,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { XcmetricsLayout } from './XcmetricsLayout';
 import { xcmetricsApiRef } from '../../api';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
@@ -44,5 +45,7 @@ describe('XcmetricsLayout', () => {
     expect(rendered.getByText('Builds')).toBeInTheDocument();
 
     expect(rendered.getByText('OverviewComponent')).toBeInTheDocument();
+    userEvent.click(rendered.getByText('Builds'));
+    expect(await rendered.findByText('BuildListComponent')).toBeInTheDocument();
   });
 });
