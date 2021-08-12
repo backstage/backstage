@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
