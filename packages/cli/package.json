@@ -56,6 +56,7 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "bfj": "^7.0.2",
+    "buffer": "^6.0.3",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^6.1.0",
