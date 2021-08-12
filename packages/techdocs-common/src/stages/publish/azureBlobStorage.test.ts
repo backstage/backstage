@@ -175,12 +175,15 @@ describe('publishing with valid credentials', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      await expect(fails).rejects.toThrow(
-        /Unable to upload file\(s\) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory/,
-      );
-      await expect(fails).rejects.toThrow(
-        new RegExp(wrongPathToGeneratedDirectory),
-      );
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          'Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory',
+        ),
+      });
+
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
     });
 
     it('reports an error when bad account credentials', async () => {
