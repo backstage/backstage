@@ -17,19 +17,19 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
 import {
-  GitHubIntegrationConfig,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { Base64 } from 'js-base64';
-import { Octokit } from '@octokit/rest';
-import { PartialEntity } from '../types';
-import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
-import { getGithubIntegrationConfig } from './GitHub';
-import {
   DiscoveryApi,
   IdentityApi,
   OAuthApi,
 } from '@backstage/core-plugin-api';
+import {
+  GitHubIntegrationConfig,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
+import { Octokit } from '@octokit/rest';
+import { Base64 } from 'js-base64';
+import { PartialEntity } from '../types';
+import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
+import { getGithubIntegrationConfig } from './GitHub';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -53,7 +53,7 @@ export class CatalogImportClient implements CatalogImportApi {
   }
 
   async analyzeUrl(url: string): Promise<AnalyzeResult> {
-    if (url.match(/\.ya?ml$/)) {
+    if (new URL(url).pathname.match(/\.ya?ml$/)) {
       const location = await this.catalogApi.addLocation({
         type: 'url',
         target: url,
@@ -340,7 +340,6 @@ export class CatalogImportClient implements CatalogImportApi {
           ),
         );
       });
-
     return {
       link: pullRequestResponse.data.html_url,
       location: `https://${githubIntegrationConfig.host}/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,

@@ -171,6 +171,53 @@ describe('CatalogImportClient', () => {
       });
     });
 
+    it('should add yaml location, if url includes query parameters', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'http://example.com/folder/catalog-info.yaml?branch=test',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity',
+                namespace: 'my-namespace',
+              },
+            ],
+            target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        dryRun: true,
+      });
+    });
+
     it('should reject for integrations that are not github ones', async () => {
       await expect(
         catalogImportClient.analyzeUrl(
