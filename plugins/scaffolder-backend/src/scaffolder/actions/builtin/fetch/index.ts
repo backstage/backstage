@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { createFetchPartialAction } from './partial';
 export { createFetchPlainAction } from './plain';
 export { createFetchTemplateAction } from './template';
 export { fetchContents } from './helpers';
