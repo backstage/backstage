@@ -29,13 +29,13 @@ describe('readAwsS3IntegrationConfig', () => {
   it('reads all values', () => {
     const output = readAwsS3IntegrationConfig(
       buildConfig({
-        host: '.amazonaws.com',
+        host: 'amazonaws.com',
         accessKeyId: 'fake-key',
         secretAccessKey: 'fake-secret-key',
       }),
     );
     expect(output).toEqual({
-      host: '.amazonaws.com',
+      host: 'amazonaws.com',
       accessKeyId: 'fake-key',
       secretAccessKey: 'fake-secret-key',
     });
@@ -51,14 +51,14 @@ describe('readAwsS3IntegrationConfigs', () => {
     const output = readAwsS3IntegrationConfigs(
       buildConfig([
         {
-          host: '.amazonaws.com',
+          host: 'amazonaws.com',
           accessKeyId: 'key',
           secretAccessKey: 'secret',
         },
       ]),
     );
     expect(output).toContainEqual({
-      host: '.amazonaws.com',
+      host: 'amazonaws.com',
       accessKeyId: 'key',
       secretAccessKey: 'secret',
     });
@@ -68,7 +68,7 @@ describe('readAwsS3IntegrationConfigs', () => {
     const output = readAwsS3IntegrationConfigs(buildConfig([]));
     expect(output).toEqual([
       {
-        host: '.amazonaws.com',
+        host: 'amazonaws.com',
       },
     ]);
   });

@@ -34,7 +34,7 @@ describe('AwsS3Integration', () => {
     });
     expect(integrations.list().length).toBe(2); // including default
     expect(integrations.list()[0].config.host).toBe('a.com');
-    expect(integrations.list()[1].config.host).toBe('.amazonaws.com');
+    expect(integrations.list()[1].config.host).toBe('amazonaws.com');
   });
 
   it('returns the basics', () => {
