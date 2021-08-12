@@ -20,6 +20,7 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
+import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -57,12 +58,14 @@ import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
-import { Navigate, Route } from 'react-router';
+import { Route, Navigate } from 'react-router';
 import { apis } from './apis';
 import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import { HomePage } from './components/home/HomePage';
+
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -107,7 +110,11 @@ const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="catalog" />
+    <Navigate key="/" to="/catalog" />
+    {/* TODO(rubenl): Move this to / once its more mature and components exist */}
+    <Route path="/home" element={<HomepageCompositionRoot />}>
+      <HomePage />
+    </Route>
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"

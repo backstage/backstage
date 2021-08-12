@@ -23,6 +23,7 @@
     "@backstage/plugin-gcp-projects": "^0.3.2",
     "@backstage/plugin-github-actions": "^0.4.16",
     "@backstage/plugin-graphiql": "^0.2.14",
+    "@backstage/plugin-home": "^0.1.1",
     "@backstage/plugin-jenkins": "^0.5.3",
     "@backstage/plugin-kafka": "^0.2.13",
     "@backstage/plugin-kubernetes": "^0.4.11",
