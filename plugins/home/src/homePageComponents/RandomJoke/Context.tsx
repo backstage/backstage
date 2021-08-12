@@ -16,10 +16,7 @@
 
 import React, { createContext } from 'react';
 
-export enum JokeType {
-  'programming' = 'programming',
-  'any' = 'any',
-}
+export type JokeType = 'any' | 'programming';
 
 type Joke = {
   setup: string;
@@ -49,7 +46,7 @@ export const ContextProvider = ({
   children,
   defaultCategory,
 }: {
-  children: React.ReactNode;
+  children: JSX.Element;
   defaultCategory?: JokeType;
 }) => {
   const [loading, setLoading] = React.useState(true);

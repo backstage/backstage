@@ -1,8 +1,6 @@
 # Home
 
-Welcome to the home plugin!
-
-_This plugin was created through the Backstage CLI_
+Development is ongoing. You can follow the progress and contribute at the Backstage [Home Project Board](https://github.com/backstage/backstage/projects/7) or reach out to us in the [`#support` Discord channel](https://discord.com/channels/687207715902193673/687235481154617364).
 
 ## Overview
 
@@ -53,7 +51,7 @@ import { HomePage } from './components/home/HomePage';
 
 ### Creating Components
 
-The Home Page can be composed with regular React components, so there's no magic in creating components to be used for composition 🪄 🎩 . However, in order to assure that your component fits into a diverse set of Home Pages, there's an extension creator for this purpose, that creates a Card-based layout, for consistency between components. The extension creator requires two fields: `title` and `content`. Additionally, you can optionally provide `settings`, `actions` and `contextProvider` as well. These parts will be combined to create a card, where the `content`, `actions` and `settings` will be wrapped within the `contextProvider` in order to be able to access to context and effectively communicate with one another.
+The Home Page can be composed with regular React components, so there's no magic in creating components to be used for composition 🪄 🎩 . However, in order to assure that your component fits into a diverse set of Home Pages, there's an extension creator for this purpose, that creates a Card-based layout, for consistency between components (read more about extensions [here](https://backstage.io/docs/plugins/composability#extensions)). The extension creator requires two fields: `title` and `content`. Additionally, you can optionally provide `settings`, `actions` and `contextProvider` as well. These parts will be combined to create a card, where the `content`, `actions` and `settings` will be wrapped within the `contextProvider` in order to be able to access to context and effectively communicate with one another.
 
 Finally, the `createCardExtension` also accepts a generic, such that Component Developers can indicate to App Integrators what custom props their component will accept, such as the example below where the default category of the random jokes can be set.
 
@@ -101,6 +99,6 @@ Additionally, the App Integrator is provided an escape hatch in case the way the
 
 ## Contributing
 
-We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for every to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components, than can then be used by everyone when composing their own Home Page.
+We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for every to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components, than can then be used by everyone when composing their own Home Page. If they are tightly coupled to an existing plugin, it is recommended to allow them to live within that plugin, for convenience and to limit complex dependencies. On the other hand, if there's no clear plugin that the component is based on, it's also fine to contribute them into the [home plugin](/plugins/home/src/homePageComponents)
 
 Additionally, the API is at a very early state, so contributing with additional use cases may expose weaknesses in the current solution that we may iterate on, to provide more flexibility and ease of use for those who wish to develop components for the Home Page.

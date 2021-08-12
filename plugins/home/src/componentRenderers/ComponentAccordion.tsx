@@ -44,10 +44,10 @@ export const ComponentAccordion = ({
   ...childProps
 }: {
   title: string;
-  Content: React.LazyExoticComponent<(props: any) => JSX.Element>;
-  Actions?: React.LazyExoticComponent<(props: any) => JSX.Element>;
-  Settings?: React.LazyExoticComponent<(props: any) => JSX.Element>;
-  ContextProvider?: React.LazyExoticComponent<(props: any) => JSX.Element>;
+  Content: () => JSX.Element;
+  Actions?: () => JSX.Element;
+  Settings?: () => JSX.Element;
+  ContextProvider?: (props: any) => JSX.Element;
 }) => {
   const classes = useStyles();
   const [settingsIsExpanded, setSettingsIsExpanded] = React.useState(false);

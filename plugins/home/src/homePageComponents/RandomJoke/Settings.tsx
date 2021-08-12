@@ -25,6 +25,7 @@ import { useRandomJoke, JokeType } from './Context';
 
 export const Settings = () => {
   const { type, handleChangeType } = useRandomJoke();
+  const JOKE_TYPES: JokeType[] = ['any' as JokeType, 'programming' as JokeType];
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">Joke Type</FormLabel>
@@ -33,7 +34,7 @@ export const Settings = () => {
         value={type}
         onChange={e => handleChangeType(e.target.value)}
       >
-        {Object.values(JokeType).map(t => (
+        {JOKE_TYPES.map(t => (
           <FormControlLabel
             key={t}
             value={t}

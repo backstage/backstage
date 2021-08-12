@@ -14,126 +14,110 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { IconButton } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
 
-type Component = (props: any) => JSX.Element;
-type ComponentProps = {
-  title?: string;
+export type ComponentRenderer = {
+  Renderer?: (props: RendererProps) => JSX.Element;
 };
+
 type ComponentParts = {
-  Content: React.LazyExoticComponent<Component>;
-  Actions?: React.LazyExoticComponent<Component>;
-  Settings?: React.LazyExoticComponent<Component>;
-  ContextProvider?: React.LazyExoticComponent<Component>;
+  Content: () => JSX.Element;
+  Actions?: () => JSX.Element;
+  Settings?: () => JSX.Element;
+  ContextProvider?: (props: any) => JSX.Element;
 };
 
-type ComponentRenderer = {
-  Renderer?: (props: { title: string } & ComponentParts) => JSX.Element;
-};
-
-const lazyLoadedComponent = (component: () => Promise<Component>) =>
-  lazy(() => component().then(inner => ({ default: inner })));
+type RendererProps = { title: string } & ComponentParts;
 
 export function createCardExtension<T>({
   title,
-  content,
-  actions,
-  contextProvider,
-  settings,
+  components,
 }: {
   title: string;
-  content: () => Promise<Component>;
-  actions?: () => Promise<Component>;
-  contextProvider?: () => Promise<Component>;
-  settings?: () => Promise<Component>;
+  components: () => Promise<ComponentParts>;
 }) {
-  const Content = lazyLoadedComponent(content);
-  const Actions = actions ? lazyLoadedComponent(actions) : null;
-  const Settings = settings ? lazyLoadedComponent(settings) : null;
-  const ContextProvider = contextProvider
-    ? lazyLoadedComponent(contextProvider)
-    : null;
-
-  const CardExtension = ({
-    Renderer,
-    title: overrideTitle,
-    ...childProps
-  }: ComponentRenderer & ComponentProps & T) => {
-    const app = useApp();
-    const { Progress } = app.getComponents();
-    const [settingsOpen, setSettingsOpen] = React.useState(false);
-
-    if (Renderer) {
-      return (
-        <Suspense fallback={<Progress />}>
-          <Renderer
-            title={overrideTitle || title}
-            {...{
-              Content,
-              ...(Actions ? { Actions } : {}),
-              ...(Settings ? { Settings } : {}),
-              ...(ContextProvider ? { ContextProvider } : {}),
-              ...childProps,
-            }}
-          />
-        </Suspense>
-      );
-    }
-
-    const cardProps = {
-      title: overrideTitle ?? title,
-      ...(Settings
-        ? {
-            action: (
-              <IconButton onClick={() => setSettingsOpen(true)}>
-                <SettingsIcon>Settings</SettingsIcon>
-              </IconButton>
-            ),
-          }
-        : {}),
-      ...(Actions
-        ? {
-            actions: <Actions />,
-          }
-        : {}),
-    };
-
-    const innerContent = (
-      <InfoCard {...cardProps}>
-        {Settings && (
-          <SettingsModal
-            open={settingsOpen}
-            componentName={title}
-            close={() => setSettingsOpen(false)}
-          >
-            <Settings />
-          </SettingsModal>
-        )}
-        <Content />
-      </InfoCard>
-    );
-
-    return (
-      <Suspense fallback={<Progress />}>
-        {ContextProvider ? (
-          <ContextProvider {...childProps}>{innerContent}</ContextProvider>
-        ) : (
-          innerContent
-        )}
-      </Suspense>
-    );
-  };
-
   return createReactExtension({
     component: {
-      sync: (props: ComponentRenderer & ComponentProps & T) => (
-        <CardExtension {...props} />
-      ),
+      lazy: () =>
+        components().then(({ Content, Actions, Settings, ContextProvider }) => {
+          const CardExtension = ({
+            Renderer,
+            title: overrideTitle,
+            ...childProps
+          }: ComponentRenderer & { title?: string } & T) => {
+            const app = useApp();
+            const { Progress } = app.getComponents();
+            const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+            if (Renderer) {
+              return (
+                <Suspense fallback={<Progress />}>
+                  <Renderer
+                    title={overrideTitle || title}
+                    {...{
+                      Content,
+                      ...(Actions ? { Actions } : {}),
+                      ...(Settings ? { Settings } : {}),
+                      ...(ContextProvider ? { ContextProvider } : {}),
+                      ...childProps,
+                    }}
+                  />
+                </Suspense>
+              );
+            }
+
+            const cardProps = {
+              title: overrideTitle ?? title,
+              ...(Settings
+                ? {
+                    action: (
+                      <IconButton onClick={() => setSettingsOpen(true)}>
+                        <SettingsIcon>Settings</SettingsIcon>
+                      </IconButton>
+                    ),
+                  }
+                : {}),
+              ...(Actions
+                ? {
+                    actions: <Actions />,
+                  }
+                : {}),
+            };
+
+            const innerContent = (
+              <InfoCard {...cardProps}>
+                {Settings && (
+                  <SettingsModal
+                    open={settingsOpen}
+                    componentName={title}
+                    close={() => setSettingsOpen(false)}
+                  >
+                    <Settings />
+                  </SettingsModal>
+                )}
+                <Content />
+              </InfoCard>
+            );
+
+            return (
+              <Suspense fallback={<Progress />}>
+                {ContextProvider ? (
+                  <ContextProvider {...childProps}>
+                    {innerContent}
+                  </ContextProvider>
+                ) : (
+                  innerContent
+                )}
+              </Suspense>
+            );
+          };
+          return CardExtension;
+        }),
     },
   });
 }

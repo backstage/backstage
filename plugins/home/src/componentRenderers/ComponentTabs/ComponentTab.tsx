@@ -23,8 +23,8 @@ export const ComponentTab = ({
   ...childProps
 }: {
   title: string;
-  Content: React.LazyExoticComponent<(props: any) => JSX.Element>;
-  ContextProvider?: React.LazyExoticComponent<(props: any) => JSX.Element>;
+  Content: () => JSX.Element;
+  ContextProvider?: (props: any) => JSX.Element;
 }) => {
   return ContextProvider ? (
     <ContextProvider {...childProps}>

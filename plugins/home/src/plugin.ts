@@ -61,17 +61,10 @@ export const ComponentTab = homePlugin.provide(
 );
 
 export const RandomJokeHomePageComponent = homePlugin.provide(
-  createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
+  createCardExtension<{
+    defaultCategory?: 'any' | 'programming';
+  }>({
     title: 'Random Joke',
-    content: () =>
-      import('./homePageComponents/RandomJoke/Content').then(m => m.Content),
-    actions: () =>
-      import('./homePageComponents/RandomJoke/Actions').then(m => m.Actions),
-    contextProvider: () =>
-      import('./homePageComponents/RandomJoke/Context').then(
-        m => m.ContextProvider,
-      ),
-    settings: () =>
-      import('./homePageComponents/RandomJoke/Settings').then(m => m.Settings),
+    components: () => import('./homePageComponents/RandomJoke'),
   }),
 );
