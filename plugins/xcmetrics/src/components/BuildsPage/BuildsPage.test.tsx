@@ -17,27 +17,27 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { BuildsPage } from './BuildsPage';
 
-jest.mock('../BuildDetailsComponent', () => ({
+jest.mock('../BuildDetails', () => ({
   withRequest: (component: any) => component,
-  BuildDetailsComponent: () => 'BuildDetailsComponent',
+  BuildDetails: () => 'BuildDetails',
 }));
 
-jest.mock('../BuildListComponent', () => ({
-  BuildListComponent: () => 'BuildListComponent',
+jest.mock('../BuildList', () => ({
+  BuildList: () => 'BuildList',
 }));
 
-describe('BuildPageComponent', () => {
-  it('should render BuildDetailsWithDataComponent if build id is provided in path', async () => {
+describe('BuildPage', () => {
+  it('should render BuildDetails if build id is provided in path', async () => {
     const rendered = await renderInTestApp(<BuildsPage />, {
       routeEntries: [`/buildId`],
     });
 
-    expect(rendered.getByText('BuildDetailsComponent')).toBeInTheDocument();
+    expect(rendered.getByText('BuildDetails')).toBeInTheDocument();
   });
 
-  it('should render BuildListComponent if no build id is provided in path', async () => {
+  it('should render BuildList if no build id is provided in path', async () => {
     const rendered = await renderInTestApp(<BuildsPage />);
 
-    expect(rendered.getByText('BuildListComponent')).toBeInTheDocument();
+    expect(rendered.getByText('BuildList')).toBeInTheDocument();
   });
 });

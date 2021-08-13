@@ -16,22 +16,22 @@
 import React from 'react';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
 import { buildsRouteRef } from '../../routes';
-import { BuildListComponent } from '../BuildListComponent';
-import { BuildDetailsComponent, withRequest } from '../BuildDetailsComponent';
+import { BuildList } from '../BuildList';
+import { BuildDetails, withRequest } from '../BuildDetails';
 import { InfoCard } from '@backstage/core-components';
 
 export const BuildsPage = () => {
   const { '*': buildId } = useRouteRefParams(buildsRouteRef) ?? { '*': '' };
 
   if (buildId) {
-    const BuildDetails = withRequest(BuildDetailsComponent);
+    const BuildDetailsWithRequest = withRequest(BuildDetails);
 
     return (
       <InfoCard title="Build Details" subheader={buildId}>
-        <BuildDetails buildId={buildId} showId={false} />
+        <BuildDetailsWithRequest buildId={buildId} showId={false} />
       </InfoCard>
     );
   }
 
-  return <BuildListComponent />;
+  return <BuildList />;
 };

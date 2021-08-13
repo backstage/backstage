@@ -13,4 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { XcmetricsLayout } from './XcmetricsLayout';
+import React from 'react';
+import { TrendLine } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
+
+interface TrendProps {
+  data?: number[];
+  title: string;
+  color: string;
+}
+
+export const Trend = ({ data, title, color }: TrendProps) => {
+  const emptyData = [0, 0];
+  const max = Math.max(...(data ?? emptyData));
+
+  return (
+    <>
+      <Typography variant="overline">{title}</Typography>
+      <TrendLine
+        data={data ?? emptyData}
+        title={title}
+        max={max}
+        color={data && color}
+      />
+    </>
+  );
+};

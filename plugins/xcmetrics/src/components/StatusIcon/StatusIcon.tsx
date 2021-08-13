@@ -13,4 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { XcmetricsLayout } from './XcmetricsLayout';
+import React from 'react';
+import {
+  StatusError,
+  StatusOK,
+  StatusWarning,
+} from '@backstage/core-components';
+import { BuildStatus } from '../../api';
+
+const STATUS_ICONS: { [key in BuildStatus]: JSX.Element } = {
+  succeeded: <StatusOK />,
+  failed: <StatusError />,
+  stopped: <StatusWarning />,
+};
+
+interface StatusIconProps {
+  buildStatus: BuildStatus;
+}
+
+export const StatusIcon = ({ buildStatus }: StatusIconProps) =>
+  STATUS_ICONS[buildStatus];

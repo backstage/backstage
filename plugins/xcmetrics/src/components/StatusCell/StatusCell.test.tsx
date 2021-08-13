@@ -16,47 +16,39 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { XcmetricsLayout } from './XcmetricsLayout';
-import { xcmetricsApiRef } from '../../api';
 import userEvent from '@testing-library/user-event';
+import { StatusCell } from './StatusCell';
+import { xcmetricsApiRef } from '../../api';
+import { formatDuration, formatStatus } from '../../utils';
 
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
-jest.mock('../Overview', () => ({
-  Overview: () => 'OverviewComponent',
-}));
-
-jest.mock('../BuildList', () => ({
-  BuildList: () => 'BuildList',
-}));
-
-describe('XcmetricsLayout', () => {
+describe('StatusCell', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
       >
-        <XcmetricsLayout />
+        <StatusCell
+          buildStatus={{
+            id: client.mockBuild.id,
+            buildStatus: client.mockBuild.buildStatus,
+          }}
+          size={10}
+          spacing={10}
+        />
       </ApiProvider>,
     );
 
-    expect(rendered.getByText('Overview')).toBeInTheDocument();
-    expect(rendered.getByText('Builds')).toBeInTheDocument();
-
-    expect(rendered.getByText('OverviewComponent')).toBeInTheDocument();
-  });
-
-  it('should show a list of builds when the Builds tab is selected', async () => {
-    const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
-        <XcmetricsLayout />
-      </ApiProvider>,
-    );
-
-    userEvent.click(rendered.getByText('Builds'));
-    expect(await rendered.findByText('BuildList')).toBeInTheDocument();
+    userEvent.hover(rendered.getByTestId(client.mockBuild.id));
+    expect(
+      await rendered.findByText(formatStatus(client.mockBuild.buildStatus)),
+    ).toBeInTheDocument();
+    expect(
+      await rendered.findByText(
+        formatDuration(client.mockBuild.duration).trim(),
+      ),
+    ).toBeInTheDocument();
   });
 });
