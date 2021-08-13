@@ -56,7 +56,11 @@ export const EscalationPolicy = ({ users, team }: Props) => {
   const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
 
-  const { value: userNames, loading, error } = useAsync(async () => {
+  const {
+    value: userNames,
+    loading,
+    error,
+  } = useAsync(async () => {
     const oncalls = await api.getOnCallUsers();
     const teamUsernames = oncalls
       .filter(oncall => oncall.team?.name === team)

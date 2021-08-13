@@ -98,6 +98,13 @@ export const createMicrosoftProvider: (
   options?: MicrosoftProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOktaProvider: (
+  _options?: OktaProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -223,9 +230,7 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  handler(
-    req: express.Request,
-  ): Promise<{
+  handler(req: express.Request): Promise<{
     response: AuthResponse<OAuthProviderInfo>;
     refreshToken?: string;
   }>;
@@ -305,6 +310,21 @@ export type OAuthState = {
   env: string;
 };
 
+// Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const oktaEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// Warning: (ae-missing-release-tag) "OktaProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OktaProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "postMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -346,6 +366,16 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
 }
 
+// Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type TokenIssuer = {
+  issueToken(params: TokenParams): Promise<string>;
+  listPublicKeys(): Promise<{
+    keys: AnyJWK[];
+  }>;
+};
+
 // Warning: (ae-missing-release-tag) "verifyNonce" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -366,9 +396,10 @@ export type WebMessageResponse =
 
 // Warnings were encountered during analysis:
 //
+// src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+// src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/google/provider.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:105:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:108:5 - (ae-forgotten-export) The symbol "TokenIssuer" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:111:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:128:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 

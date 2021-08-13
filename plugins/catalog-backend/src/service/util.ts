@@ -52,7 +52,7 @@ export async function validateRequestBody<T>(
     throw new InputError(`Malformed request: ${e}`);
   }
 
-  return (body as unknown) as T;
+  return body as unknown as T;
 }
 
 export function disallowReadonlyMode(readonly: boolean) {

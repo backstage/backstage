@@ -128,7 +128,11 @@ export const MembersListCard = (_props: {
   };
   const pageSize = 50;
 
-  const { loading, error, value: members } = useAsync(async () => {
+  const {
+    loading,
+    error,
+    value: members,
+  } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: { kind: 'User' },
     });

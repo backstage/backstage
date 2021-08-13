@@ -60,7 +60,7 @@ export const defaultConfigLoader: AppConfigLoader = async (
   if (!Array.isArray(appConfig)) {
     throw new Error('Static configuration has invalid format');
   }
-  const configs = (appConfig.slice() as unknown) as AppConfig[];
+  const configs = appConfig.slice() as unknown as AppConfig[];
 
   // Avoiding this string also being replaced at runtime
   if (

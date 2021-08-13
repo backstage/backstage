@@ -117,7 +117,7 @@ const DataGrid = () => (
         xs={12}
         container
         spacing={2}
-        justify="space-between"
+        justifyContent="space-between"
         direction="row"
       >
         <Grid item xs={12} md={6}>

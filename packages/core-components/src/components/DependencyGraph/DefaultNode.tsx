@@ -38,10 +38,8 @@ export function DefaultNode({ node: { id } }: RenderNodeProps) {
   React.useLayoutEffect(() => {
     // set the width to the length of the ID
     if (idRef.current) {
-      let {
-        height: renderedHeight,
-        width: renderedWidth,
-      } = idRef.current.getBBox();
+      let { height: renderedHeight, width: renderedWidth } =
+        idRef.current.getBBox();
       renderedHeight = Math.round(renderedHeight);
       renderedWidth = Math.round(renderedWidth);
 

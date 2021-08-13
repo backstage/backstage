@@ -21,10 +21,10 @@ import { getVoidLogger } from '../../../../../packages/backend-common/src';
 import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 
-const mockFrameHandler = (jest.spyOn(
+const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
-) as unknown) as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
+) as unknown as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('GitlabAuthProvider', () => {
   it('should transform to type OAuthResponse', async () => {

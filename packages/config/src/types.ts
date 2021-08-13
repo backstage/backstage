@@ -22,6 +22,7 @@ export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 export type AppConfig = {
   context: string;
   data: JsonObject;
+  filteredKeys?: string[];
 };
 
 export type Config = {

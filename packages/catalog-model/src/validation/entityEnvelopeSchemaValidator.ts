@@ -41,7 +41,7 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * @see https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema
  */
 export function entityEnvelopeSchemaValidator<
-  T extends EntityEnvelope = EntityEnvelope
+  T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T {
   const validate = compileAjvSchema(
     schema ? (schema as Schema) : entityEnvelopeSchema,

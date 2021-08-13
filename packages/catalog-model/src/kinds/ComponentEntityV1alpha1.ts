@@ -33,6 +33,5 @@ export interface ComponentEntityV1alpha1 extends Entity {
   };
 }
 
-export const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const componentEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

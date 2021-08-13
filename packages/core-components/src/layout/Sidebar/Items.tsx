@@ -34,7 +34,12 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { NavLink, NavLinkProps } from 'react-router-dom';
+import {
+  Link,
+  NavLinkProps,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
 const useStyles = makeStyles<BackstageTheme>(theme => {
@@ -44,7 +49,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     drawerWidthOpen,
     iconContainerWidth,
   } = sidebarConfig;
-
   return {
     root: {
       color: theme.palette.navigation.color,
@@ -97,6 +101,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       fontWeight: 'bold',
       fontSize: theme.typography.fontSize,
     },
+    searchFieldHTMLInput: {
+      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+    },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
     },
@@ -145,6 +152,54 @@ function isButtonItem(
   return (props as SidebarItemLinkProps).to === undefined;
 }
 
+// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
+//               This is needed because react-router doesn't handle the path comparison
+//               properly yet, matching for example /foobar with /foo.
+export const WorkaroundNavLink = React.forwardRef<
+  HTMLAnchorElement,
+  NavLinkProps
+>(function WorkaroundNavLinkWithRef(
+  {
+    to,
+    end,
+    style,
+    className,
+    activeStyle,
+    caseSensitive,
+    activeClassName = 'active',
+    'aria-current': ariaCurrentProp = 'page',
+    ...rest
+  },
+  ref,
+) {
+  let { pathname: locationPathname } = useLocation();
+  let { pathname: toPathname } = useResolvedPath(to);
+
+  if (!caseSensitive) {
+    locationPathname = locationPathname.toLowerCase();
+    toPathname = toPathname.toLowerCase();
+  }
+
+  let isActive = locationPathname === toPathname;
+  if (!isActive && !end) {
+    // This is the behavior that is different from the original NavLink
+    isActive = locationPathname.startsWith(`${toPathname}/`);
+  }
+
+  const ariaCurrent = isActive ? ariaCurrentProp : undefined;
+
+  return (
+    <Link
+      {...rest}
+      to={to}
+      ref={ref}
+      aria-current={ariaCurrent}
+      style={{ ...style, ...(isActive ? activeStyle : undefined) }}
+      className={clsx([className, isActive ? activeClassName : undefined])}
+    />
+  );
+});
+
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   const {
     icon: Icon,
@@ -165,7 +220,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <Badge
       color="secondary"
       variant="dot"
-      overlap="circle"
+      overlap="circular"
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
@@ -202,22 +257,23 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button {...childProps} ref={ref}>
+      <button aria-label={text} {...childProps} ref={ref}>
         {content}
       </button>
     );
   }
 
   return (
-    <NavLink
+    <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
       to={props.to}
       ref={ref}
+      aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
-    </NavLink>
+    </WorkaroundNavLink>
   );
 });
 
@@ -270,6 +326,9 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
           InputProps={{
             disableUnderline: true,
             className: classes.searchField,
+          }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
           }}
         />
       </SidebarItem>

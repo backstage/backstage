@@ -37,9 +37,8 @@ export class GitReleaseClient implements GitReleaseApi {
   }) {
     this.githubAuthApi = githubAuthApi;
 
-    const gitHubIntegrations = ScmIntegrations.fromConfig(
-      configApi,
-    ).github.list();
+    const gitHubIntegrations =
+      ScmIntegrations.fromConfig(configApi).github.list();
     const { host, apiBaseUrl } = this.getGithubIntegrationConfig({
       gitHubIntegrations,
     });
@@ -555,15 +554,11 @@ export interface GitReleaseApi {
     owners: string[];
   }>;
 
-  getRepositories: (args: {
-    owner: OwnerRepo['owner'];
-  }) => Promise<{
+  getRepositories: (args: { owner: OwnerRepo['owner'] }) => Promise<{
     repositories: string[];
   }>;
 
-  getUser: (
-    args: OwnerRepo,
-  ) => Promise<{
+  getUser: (args: OwnerRepo) => Promise<{
     user: {
       username: string;
       email?: string;
@@ -589,9 +584,7 @@ export interface GitReleaseApi {
     }[];
   }>;
 
-  getLatestRelease: (
-    args: OwnerRepo,
-  ) => Promise<{
+  getLatestRelease: (args: OwnerRepo) => Promise<{
     latestRelease: {
       targetCommitish: string;
       tagName: string;
@@ -602,9 +595,7 @@ export interface GitReleaseApi {
     } | null;
   }>;
 
-  getRepository: (
-    args: OwnerRepo,
-  ) => Promise<{
+  getRepository: (args: OwnerRepo) => Promise<{
     repository: {
       pushPermissions: boolean | undefined;
       defaultBranch: string;
@@ -765,9 +756,7 @@ export interface GitReleaseApi {
   /**
    * Get all tags in descending order
    */
-  getAllTags: (
-    args: OwnerRepo,
-  ) => Promise<{
+  getAllTags: (args: OwnerRepo) => Promise<{
     tags: Array<{
       tagName: string;
       tagSha: string;
@@ -775,9 +764,7 @@ export interface GitReleaseApi {
     }>;
   }>;
 
-  getAllReleases: (
-    args: OwnerRepo,
-  ) => Promise<{
+  getAllReleases: (args: OwnerRepo) => Promise<{
     releases: Array<{
       id: number;
       name: string | null;

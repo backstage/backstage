@@ -38,13 +38,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 export const TemplateTypePicker = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  const {
-    error,
-    loading,
-    availableTypes,
-    selectedTypes,
-    setSelectedTypes,
-  } = useEntityTypeFilter();
+  const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
+    useEntityTypeFilter();
 
   if (loading) return <Progress />;
 

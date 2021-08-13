@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiFactory } from '@backstage/core-plugin-api';
+import { AppTheme } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createPlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';

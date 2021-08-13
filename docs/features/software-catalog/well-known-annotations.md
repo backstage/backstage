@@ -57,18 +57,48 @@ if the original location delegates to another location. A common case is, that a
 location is registered as `bootstrap:bootstrap` which means that it is part of
 the `app-config.yaml` of a Backstage installation.
 
+### backstage.io/orphan
+
+This annotation is either absent, or present with the exact _string_ value
+`"true"`. It should never be added manually. Instead, the catalog itself injects
+the annotation as part of its processing loops, on entities that are found to
+have no registered locations or config locations that keep them "active" /
+"alive".
+
+For example, suppose that the user first registers a location URL pointing to a
+`Location` kind entity, which in turn refers to two `Component` kind entities in
+two other files nearby. The end result is that the catalog contains those three
+entities. Now suppose that the user edits the original `Location` entity to only
+refer to the first of the `Component` kind entities. This will intentionally
+_not_ lead to the other `Component` entity to be removed from the catalog (for
+safety reasons). Instead, it gains this orphan marker annotation, to make it
+clear that user action is required to completely remove it, if desired.
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/orphan: 'true'
+```
+
 ### backstage.io/techdocs-ref
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
+    backstage.io/techdocs-ref: dir:.
 ```
 
-The value of this annotation is a location reference string (see above). If this
-annotation is specified, it is expected to point to a repository that the
-TechDocs system can read and generate docs from.
+The value of this annotation informs _where_ TechDocs source content is stored
+so that it can be read and docs can be generated from it. Most commonly, it's
+written as a path, relative to the location of the `catalog-info.yaml` itself,
+where the associated `mkdocs.yml` file can be found.
+
+In unusual situations where the documentation for a catalog entity does not live
+alongside the entity's source code, the value of this annotation can point to an
+absolute URL, matching the location reference string format outlined above, for
+example: `url:https://github.com/backstage/backstage/tree/master`
 
 ### backstage.io/view-url, backstage.io/edit-url
 

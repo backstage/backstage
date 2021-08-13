@@ -25,6 +25,11 @@ export type AddLocationResponse = {
   entities: Entity[];
 };
 
+// Warning: (ae-missing-release-tag) "CATALOG_FILTER_EXISTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CATALOG_FILTER_EXISTS: unique symbol;
+
 // Warning: (ae-missing-release-tag) "CatalogApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -34,8 +39,6 @@ export interface CatalogApi {
     location: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
-  // Warning: (ae-forgotten-export) The symbol "CatalogRequestOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getEntities(
     request?: CatalogEntitiesRequest,
@@ -125,8 +128,8 @@ export class CatalogClient implements CatalogApi {
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
   filter?:
-    | Record<string, string | string[]>[]
-    | Record<string, string | string[]>
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
 };
@@ -136,6 +139,13 @@ export type CatalogEntitiesRequest = {
 // @public (undocumented)
 export type CatalogListResponse<T> = {
   items: T[];
+};
+
+// Warning: (ae-missing-release-tag) "CatalogRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogRequestOptions = {
+  token?: string;
 };
 
 // Warning: (ae-missing-release-tag) "ENTITY_STATUS_CATALOG_PROCESSING_TYPE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

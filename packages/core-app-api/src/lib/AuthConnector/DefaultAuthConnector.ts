@@ -61,7 +61,8 @@ function defaultJoinScopes(scopes: Set<string>) {
  * via the OAuthRequestApi.
  */
 export class DefaultAuthConnector<AuthSession>
-  implements AuthConnector<AuthSession> {
+  implements AuthConnector<AuthSession>
+{
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string;
   private readonly provider: AuthProvider & { id: string };

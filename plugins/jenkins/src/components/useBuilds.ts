@@ -53,7 +53,11 @@ export function useBuilds({ branch }: { branch?: string } = {}) {
     }
   };
 
-  const { loading, value: projects, retry } = useAsyncRetry(async () => {
+  const {
+    loading,
+    value: projects,
+    retry,
+  } = useAsyncRetry(async () => {
     try {
       const build = await api.getProjects({
         entity: getEntityName(entity),

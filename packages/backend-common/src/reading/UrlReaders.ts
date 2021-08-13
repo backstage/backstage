@@ -25,6 +25,7 @@ import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
+import { AwsS3UrlReader } from './AwsS3UrlReader';
 
 type CreateOptions = {
   /** Root config object */
@@ -74,6 +75,7 @@ export class UrlReaders {
         GithubUrlReader.factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
+        AwsS3UrlReader.factory,
         FetchUrlReader.factory,
       ]),
     });

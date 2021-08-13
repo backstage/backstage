@@ -178,7 +178,7 @@ export const ImportStepper: ({
 //
 // @public
 export const PreparePullRequestForm: <
-  TFieldValues extends Record<string, any>
+  TFieldValues extends Record<string, any>,
 >({
   defaultValues,
   onSubmit,

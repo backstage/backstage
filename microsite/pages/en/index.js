@@ -212,9 +212,9 @@ class Index extends React.Component {
                 Backstage Software Templates{' '}
                 <a
                   title="Submit feedback for this feature. Click to learn more about this release."
-                  href="https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates"
+                  href="https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta"
                 >
-                  (alpha)
+                  (beta)
                 </a>
               </Block.Subtitle>
               <Block.Title small>Standards can set you free</Block.Title>
@@ -292,7 +292,7 @@ class Index extends React.Component {
             Build your own software templates
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/index.md`}
+            href={`https://backstage.io/docs/features/software-templates`}
           >
             Contribute
           </ActionBlock.Link>

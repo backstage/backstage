@@ -26,6 +26,7 @@ import {
   MockStorageApi,
   renderWithEffects,
   wrapInTestApp,
+  mockBreakpoint,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
@@ -54,7 +55,7 @@ describe('CatalogPage', () => {
               name: 'Entity1',
             },
             spec: {
-              owner: 'tools@example.com',
+              owner: 'tools',
               type: 'service',
             },
             relations: [
@@ -71,7 +72,7 @@ describe('CatalogPage', () => {
               name: 'Entity2',
             },
             spec: {
-              owner: 'not-tools@example.com',
+              owner: 'not-tools',
               type: 'service',
             },
             relations: [
@@ -107,7 +108,8 @@ describe('CatalogPage', () => {
     displayName: 'Display Name',
   };
   const identityApi: Partial<IdentityApi> = {
-    getUserId: () => 'tools@example.com',
+    getUserId: () => 'tools',
+    getIdToken: async () => undefined,
     getProfile: () => testProfile,
   };
 
@@ -243,5 +245,14 @@ describe('CatalogPage', () => {
     await expect(
       screen.findByText(/Starred \(1\)/),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should wrap filter in drawer on smaller screens', async () => {
+    mockBreakpoint({ matches: true });
+    const { getByRole } = await renderWrapped(<CatalogPage />);
+    const button = getByRole('button', { name: 'Filters' });
+    expect(getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(getByRole('presentation')).toBeVisible();
   });
 });

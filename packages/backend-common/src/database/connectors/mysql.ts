@@ -149,7 +149,7 @@ export async function ensureMysqlDatabaseExists(
 ) {
   const admin = createMysqlDatabaseClient(dbConfig, {
     connection: {
-      database: (null as unknown) as string,
+      database: null as unknown as string,
     },
   });
 

@@ -1,5 +1,36 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.20
+
+### Patch Changes
+
+- 29f7cfffb: Added `resolveCatalogMembership` utility to query the catalog for additional authentication claims within sign-in resolvers.
+- 8bedb75ae: Update Luxon dependency to 2.x
+- bfe0ff93f: Add Sign In and Handler resolver for Okta provider
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+  - @backstage/test-utils@0.1.17
+
+## 0.3.19
+
+### Patch Changes
+
+- 4edca1bd0: Allow to configure SAML auth `acceptedClockSkewMs`
+- b68f2c83c: Added the `disableRefresh` option to the `OAuth2` config
+- Updated dependencies
+  - @backstage/test-utils@0.1.16
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.18
+
+### Patch Changes
+
+- 2567c066d: TokenIssuer is now exported so it may be used by auth providers that are not bundled with Backstage
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+  - @backstage/test-utils@0.1.15
+
 ## 0.3.17
 
 ### Patch Changes

@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, Fragment, PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
@@ -31,12 +31,11 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(2),
       textAlign: props.textAlign,
     },
     leftItemsBox: {
       flex: '1 1 auto',
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
@@ -47,25 +46,25 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       alignItems: 'center',
       marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
     description: {},
     title: {
       display: 'inline-flex',
+      marginBottom: 0,
     },
   }));
 
-type DefaultTitleProps = {
+type ContentHeaderTitleProps = {
   title?: string;
-  className: string;
+  className?: string;
 };
 
-const DefaultTitle = ({
+const ContentHeaderTitle = ({
   title = 'Unknown page',
   className,
-}: DefaultTitleProps) => (
+}: ContentHeaderTitleProps) => (
   <Typography
     variant="h4"
     component="h2"
@@ -77,7 +76,7 @@ const DefaultTitle = ({
 );
 
 type ContentHeaderProps = {
-  title?: DefaultTitleProps['title'];
+  title?: ContentHeaderTitleProps['title'];
   titleComponent?: ComponentType;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
@@ -95,10 +94,10 @@ export const ContentHeader = ({
   const renderedTitle = TitleComponent ? (
     <TitleComponent />
   ) : (
-    <DefaultTitle title={title} className={classes.title} />
+    <ContentHeaderTitle title={title} className={classes.title} />
   );
   return (
-    <Fragment>
+    <>
       <Helmet title={title} />
       <div className={classes.container}>
         <div className={classes.leftItemsBox}>
@@ -111,6 +110,6 @@ export const ContentHeader = ({
         </div>
         <div className={classes.rightItemsBox}>{children}</div>
       </div>
-    </Fragment>
+    </>
   );
 };

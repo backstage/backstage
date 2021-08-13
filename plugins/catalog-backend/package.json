@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,12 +29,12 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.8.6",
-    "@backstage/catalog-client": "^0.3.16",
+    "@backstage/backend-common": "^0.8.9",
+    "@backstage/catalog-client": "^0.3.18",
     "@backstage/catalog-model": "^0.9.0",
     "@backstage/config": "^0.1.5",
     "@backstage/errors": "^0.1.1",
-    "@backstage/integration": "^0.5.8",
+    "@backstage/integration": "^0.6.0",
     "@backstage/plugin-search-backend-node": "^0.4.0",
     "@backstage/search-common": "^0.1.2",
     "@octokit/graphql": "^4.5.8",
@@ -61,9 +61,9 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.4",
-    "@backstage/cli": "^0.7.4",
-    "@backstage/test-utils": "^0.1.14",
+    "@backstage/backend-test-utils": "^0.1.5",
+    "@backstage/cli": "^0.7.8",
+    "@backstage/test-utils": "^0.1.17",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/lodash": "^4.14.151",

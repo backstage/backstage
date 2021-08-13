@@ -48,14 +48,4 @@ export type PreparerBuilder = {
   get(entity: Entity): PreparerBase;
 };
 
-/**
- * Everything except `url` will be deprecated.
- * Read more https://github.com/backstage/backstage/issues/4409
- */
-export type RemoteProtocol =
-  | 'url'
-  | 'dir'
-  | 'github'
-  | 'gitlab'
-  | 'file'
-  | 'azure/api';
+export type RemoteProtocol = 'url' | 'dir';

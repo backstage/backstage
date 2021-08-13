@@ -75,8 +75,9 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       return false;
     }
 
-    const gitHubConfig = this.integrations.github.byUrl(location.target)
-      ?.config;
+    const gitHubConfig = this.integrations.github.byUrl(
+      location.target,
+    )?.config;
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
@@ -93,12 +94,10 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     for (const orgConfig of orgsToProcess) {
       try {
-        const {
-          headers,
-          type: tokenType,
-        } = await credentialsProvider.getCredentials({
-          url: `${baseUrl}/${orgConfig.name}`,
-        });
+        const { headers, type: tokenType } =
+          await credentialsProvider.getCredentials({
+            url: `${baseUrl}/${orgConfig.name}`,
+          });
         const client = graphql.defaults({
           baseUrl: gitHubConfig.apiBaseUrl,
           headers,

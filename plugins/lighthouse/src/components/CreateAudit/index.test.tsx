@@ -35,9 +35,8 @@ import CreateAudit from './index';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
 
-const { useNavigate }: { useNavigate: jest.Mock } = jest.requireMock(
-  'react-router-dom',
-);
+const { useNavigate }: { useNavigate: jest.Mock } =
+  jest.requireMock('react-router-dom');
 const createAuditResponse = data as Audit;
 
 // TODO add act() to these tests without breaking them!

@@ -16,6 +16,7 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import {
   BlobServiceClient,
+  ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { Entity, EntityName } from '@backstage/catalog-model';
@@ -26,8 +27,11 @@ import limiterFactory from 'p-limit';
 import { default as path, default as platformPath } from 'path';
 import { Logger } from 'winston';
 import {
+  bulkStorageOperation,
+  getCloudPathForLocalPath,
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  getStaleFiles,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -133,74 +137,100 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * Directory structure used in the container is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    // First, try to retrieve a list of all individual files currently existing
+    const remoteFolder = getCloudPathForLocalPath(entity);
+    let existingFiles: string[] = [];
     try {
-      // Note: Azure Blob Storage manages creation of parent directories if they do not exist.
-      // So collecting path of only the files is good enough.
-      const allFilesToUpload = await getFileTreeRecursively(directory);
+      existingFiles = await this.getAllBlobsFromContainer({
+        prefix: remoteFolder,
+        maxPageSize: BATCH_CONCURRENCY,
+      });
+    } catch (e) {
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
+    }
 
-      // Bound the number of concurrent batches. We want a bit of concurrency for
-      // performance reasons, but not so much that we starve the connection pool
-      // or start thrashing.
-      const limiter = limiterFactory(BATCH_CONCURRENCY);
+    // Then, merge new files into the same folder
+    let absoluteFilesToUpload;
+    let container: ContainerClient;
+    try {
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
-      const promises = allFilesToUpload.map(sourceFilePath => {
-        // Remove the absolute path prefix of the source directory
-        // Path of all files to upload, relative to the root of the source directory
-        // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = path.normalize(
-          path.relative(directory, sourceFilePath),
-        );
-
-        // Convert destination file path to a POSIX path for uploading.
-        // Azure Blob Storage expects / as path separator and relativeFilePath will contain \\ on Windows.
-        // https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata#blob-names
-        const relativeFilePathPosix = relativeFilePath
-          .split(path.sep)
-          .join(path.posix.sep);
-
-        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Azure Blob Storage Container file relative path
-        return limiter(async () => {
-          const response = await this.storageClient
-            .getContainerClient(this.containerName)
-            .getBlockBlobClient(destination)
-            .uploadFile(sourceFilePath);
+      container = this.storageClient.getContainerClient(this.containerName);
+      const failedOperations: Error[] = [];
+      await bulkStorageOperation(
+        async absoluteFilePath => {
+          const relativeFilePath = path.normalize(
+            path.relative(directory, absoluteFilePath),
+          );
+          const response = await container
+            .getBlockBlobClient(
+              getCloudPathForLocalPath(entity, relativeFilePath),
+            )
+            .uploadFile(absoluteFilePath);
 
           if (response._response.status >= 400) {
-            return {
-              ...response,
-              error: new Error(
-                `Upload failed for ${sourceFilePath} with status code ${response._response.status}`,
+            failedOperations.push(
+              new Error(
+                `Upload failed for ${absoluteFilePath} with status code ${response._response.status}`,
               ),
-            };
+            );
           }
-          return {
-            ...response,
-            error: undefined,
-          };
-        });
-      });
 
-      const responses = await Promise.all(promises);
+          return response;
+        },
+        absoluteFilesToUpload,
+        { concurrencyLimit: BATCH_CONCURRENCY },
+      );
 
-      const failed = responses.filter(r => r.error);
-      if (failed.length === 0) {
-        this.logger.info(
-          `Successfully uploaded the ${responses.length} generated file(s) for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
-        );
-      } else {
+      if (failedOperations.length > 0) {
         throw new Error(
-          failed
-            .map(r => r.error?.message)
+          failedOperations
+            .map(r => r.message)
             .filter(Boolean)
             .join(' '),
         );
       }
+
+      this.logger.info(
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
+      );
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. ${e}`;
+      const errorMessage = `Unable to upload file(s) to Azure. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
+    }
+
+    // Last, try to remove the files that were *only* present previously
+    try {
+      const relativeFilesToUpload = absoluteFilesToUpload.map(
+        absoluteFilePath =>
+          getCloudPathForLocalPath(
+            entity,
+            path.relative(directory, absoluteFilePath),
+          ),
+      );
+
+      const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
+
+      await bulkStorageOperation(
+        async relativeFilePath => {
+          return await container.deleteBlob(relativeFilePath);
+        },
+        staleFiles,
+        { concurrencyLimit: BATCH_CONCURRENCY },
+      );
+
+      this.logger.info(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
+      );
+    } catch (error) {
+      const errorMessage = `Unable to delete file(s) from Azure. ${error}`;
+      this.logger.error(errorMessage);
     }
   }
 
@@ -323,7 +353,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
     if (originalPath === newPath) return;
     try {
-      this.logger.debug(`Migrating ${originalPath}`);
+      this.logger.verbose(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
       this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
@@ -349,5 +379,31 @@ export class AzureBlobStoragePublish implements PublisherBase {
     }
 
     await Promise.all(promises);
+  }
+
+  protected async getAllBlobsFromContainer({
+    prefix,
+    maxPageSize,
+  }: {
+    prefix: string;
+    maxPageSize: number;
+  }): Promise<string[]> {
+    const blobs: string[] = [];
+    const container = this.storageClient.getContainerClient(this.containerName);
+
+    let iterator = container.listBlobsFlat({ prefix }).byPage({ maxPageSize });
+    let response = (await iterator.next()).value;
+
+    do {
+      for (const blob of response?.segment?.blobItems ?? []) {
+        blobs.push(blob.name);
+      }
+      iterator = container
+        .listBlobsFlat({ prefix })
+        .byPage({ continuationToken: response.continuationToken, maxPageSize });
+      response = (await iterator.next()).value;
+    } while (response && response.continuationToken);
+
+    return blobs;
   }
 }

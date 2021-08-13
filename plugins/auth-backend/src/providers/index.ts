@@ -17,6 +17,7 @@
 export * from './gitlab';
 export * from './google';
 export * from './microsoft';
+export * from './okta';
 export { factories as defaultAuthProviderFactories } from './factories';
 
 // Export the minimal interface required for implementing a

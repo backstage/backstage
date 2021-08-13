@@ -93,6 +93,14 @@ export type GithubAppConfig = {
    * Client secrets can be generated at https://github.com/organizations/$org/settings/apps/$AppName
    */
   clientSecret: string;
+  /**
+   * List of installation owners allowed to be used by this GitHub app. The GitHub UI does not provide a way to list the installations.
+   * However you can list the installations with the GitHub API. You can find the list of installations here:
+   * https://api.github.com/app/installations
+   * The relevant documentation for this is here.
+   * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
+   */
+  allowedInstallationOwners?: string[];
 };
 
 /**
@@ -113,6 +121,9 @@ export function readGitHubIntegrationConfig(
     clientSecret: c.getString('clientSecret'),
     webhookSecret: c.getString('webhookSecret'),
     privateKey: c.getString('privateKey'),
+    allowedInstallationOwners: c.getOptionalStringArray(
+      'allowedInstallationOwners',
+    ),
   }));
 
   if (!isValidHost(host)) {

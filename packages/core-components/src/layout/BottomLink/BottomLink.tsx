@@ -15,13 +15,7 @@
  */
 
 import React from 'react';
-import {
-  ListItem,
-  ListItemIcon,
-  Divider,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import { Divider, Typography, makeStyles } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
@@ -54,16 +48,14 @@ export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
     <div>
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
-        <ListItem className={classes.root}>
-          <ListItemText>
+        <Box display="flex" alignItems="center" className={classes.root}>
+          <Typography>
             <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
               {title}
             </Box>
-          </ListItemText>
-          <ListItemIcon>
-            <ArrowIcon className={classes.arrow} />
-          </ListItemIcon>
-        </ListItem>
+          </Typography>
+          <ArrowIcon className={classes.arrow} />
+        </Box>
       </Link>
     </div>
   );

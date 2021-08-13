@@ -4,8 +4,6 @@ title: Search Concepts
 description: Documentation on Backstage Search Concepts
 ---
 
-# Search Concepts
-
 Backstage Search lets you find the right information you are looking for in the
 Backstage ecosystem.
 

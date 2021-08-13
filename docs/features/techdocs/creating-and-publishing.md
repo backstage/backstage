@@ -66,9 +66,7 @@ Update your component's entity description by adding the following lines to its
 ```yaml
 metadata:
   annotations:
-    backstage.io/techdocs-ref: url:https://github.com/org/repo
-    # Or
-    # backstage.io/techdocs-ref: url:https://github.com/org/repo/tree/branchName/subFolder
+    backstage.io/techdocs-ref: dir:.
 ```
 
 The

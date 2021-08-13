@@ -1,5 +1,41 @@
 # @backstage/backend-common
 
+## 0.8.9
+
+### Patch Changes
+
+- f7ce7c565: Use a more informative error message when URL reading isn't allowed due to no reader matching the target URL.
+- ce1958021: Pass on credentials to the integrations package, so that it can properly pick the API route when using GitHub apps based auth
+- Updated dependencies
+  - @backstage/integration@0.6.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/config-loader@0.6.6
+
+## 0.8.7
+
+### Patch Changes
+
+- f25357273: Implement the etag functionality in the `readUrl` method of `FetchUrlReader`.
+- bdd6ab5f1: It's possible to customize the request logging handler when building the service. For example in your `backend`
+
+  ```
+    const service = createServiceBuilder(module)
+      .loadConfig(config)
+      .setRequestLoggingHandler((logger?: Logger): RequestHandler => {
+        const actualLogger = (logger || getRootLogger()).child({
+          type: 'incomingRequest',
+        });
+        return expressWinston.logger({ ...
+  ```
+
 ## 0.8.6
 
 ### Patch Changes

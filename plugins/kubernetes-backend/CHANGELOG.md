@@ -1,5 +1,38 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.14
+
+### Patch Changes
+
+- bbcd92afa: Adds ability to send an ExternalId with the assume role request to AWS
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+
+## 0.3.13
+
+### Patch Changes
+
+- a0a8d3571: Add configuration option to the kubernetes object types. Config option is under `kubernetes.objectTypes`. Defaults to ['pods', 'services', 'configmaps', 'deployments', 'replicasets', 'horizontalpodautoscalers', 'ingresses']
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+
+## 0.3.12
+
+### Patch Changes
+
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.3
+
+## 0.3.11
+
+### Patch Changes
+
+- 5bd57f8f5: Support assume role on kubernetes api configuration for AWS.
+- Updated dependencies
+  - @backstage/backend-common@0.8.7
+
 ## 0.3.10
 
 ### Patch Changes
