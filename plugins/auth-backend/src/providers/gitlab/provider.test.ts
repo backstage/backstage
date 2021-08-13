@@ -132,6 +132,13 @@ describe('GitlabAuthProvider', () => {
       baseUrl: 'mock',
       catalogIdentityClient: (catalogIdentityClient as unknown) as CatalogIdentityClient,
       tokenIssuer: (tokenIssuer as unknown) as TokenIssuer,
+      authHandler: async ({ fullProfile }) => ({
+        profile: {
+          email: fullProfile.emails![0]!.value,
+          displayName: fullProfile.displayName,
+          picture: 'http://gitlab.com/lols',
+        },
+      }),
       logger: getVoidLogger(),
     });
     for (const test of tests) {
