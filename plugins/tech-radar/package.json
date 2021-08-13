@@ -37,7 +37,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "color": "^4.0.1",
-    "d3-force": "^2.0.1",
+    "d3-force": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
