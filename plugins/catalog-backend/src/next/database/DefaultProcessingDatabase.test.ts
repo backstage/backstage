@@ -32,6 +32,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
+import { createRandomRefreshInterval } from '../refresh';
 
 describe('Default Processing Database', () => {
   const defaultLogger = getVoidLogger();
@@ -50,8 +51,10 @@ describe('Default Processing Database', () => {
       db: new DefaultProcessingDatabase({
         database: knex,
         logger,
-        refreshIntervalSeconds: 100,
-        refreshSpreadSeconds: { min: 10, max: 60 },
+        refreshInterval: createRandomRefreshInterval({
+          minSeconds: 100,
+          maxSeconds: 150,
+        }),
       }),
     };
   }
@@ -999,7 +1002,7 @@ describe('Default Processing Database', () => {
           zone: 'utc',
         });
         expect(nextUpdate.diff(now, 'seconds').seconds).toBeGreaterThanOrEqual(
-          110,
+          100,
         );
       },
       60_000,
