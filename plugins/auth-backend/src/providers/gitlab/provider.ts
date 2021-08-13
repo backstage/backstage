@@ -72,13 +72,9 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   info,
   ctx,
 ) => {
-  const { profile } = info;
+  const { result } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const id = extractGitLabUserId(profile);
+  const id = result.fullProfile.username || result.fullProfile.id;
 
   const token = await ctx.tokenIssuer.issueToken({
     claims: { sub: id, ent: [`user:default/${id}`] },
@@ -90,9 +86,18 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   fullProfile,
   params,
-}) => ({
-  profile: makeProfileInfo(fullProfile, params.id_token),
-});
+}) => {
+  fullProfile.photos = [
+    ...(fullProfile.photos ?? []),
+    ...((fullProfile as FullProfile).avatarUrl
+      ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
+      : []),
+  ];
+
+  return {
+    profile: makeProfileInfo(fullProfile, params.id_token),
+  };
+};
 
 export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
@@ -180,8 +185,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const transformedResult = this.transformResult(result);
-    const { profile } = await this.authHandler(transformedResult);
+    const { profile } = await this.authHandler(result);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -208,30 +212,6 @@ export class GitlabAuthProvider implements OAuthHandlers {
     }
 
     return response;
-  }
-
-  private transformResult(result: OAuthResult): OAuthResult {
-    const { fullProfile, ...authResult } = result;
-
-    fullProfile.photos = [
-      ...(fullProfile.photos ?? []),
-      ...((fullProfile as FullProfile).avatarUrl
-        ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
-        : []),
-    ];
-
-    const profile = makeProfileInfo(fullProfile);
-
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
-
-    fullProfile.id = extractGitLabUserId(profile);
-
-    return {
-      ...authResult,
-      fullProfile,
-    };
   }
 }
 
