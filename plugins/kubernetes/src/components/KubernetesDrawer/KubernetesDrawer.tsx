@@ -32,6 +32,7 @@ import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import jsYaml from 'js-yaml';
 import {
+  Button as BackstageButton,
   CodeSnippet,
   StructuredMetadataTable,
   Link,
@@ -147,7 +148,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
       <div className={classes.options}>
         <div>
           {clusterLink && (
-            <Button
+            <BackstageButton
               variant="contained"
               color="primary"
               size="small"
@@ -155,7 +156,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
               to={clusterLink}
             >
               Open Kubernetes Dashboard...
-            </Button>
+            </BackstageButton>
           )}
         </div>
         <FormControlLabel
