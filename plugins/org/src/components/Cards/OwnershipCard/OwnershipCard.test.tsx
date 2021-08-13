@@ -125,29 +125,17 @@ describe('OwnershipCard', () => {
       </ApiProvider>,
     );
 
-    expect(getByText('Services')).toBeInTheDocument();
+    expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
-      queryByText(getByText('Services').parentElement!, '1'),
+      queryByText(getByText('OPENAPI').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(getByText('Documentation')).toBeInTheDocument();
+    expect(getByText('SERVICE')).toBeInTheDocument();
     expect(
-      queryByText(getByText('Documentation').parentElement!, '0'),
+      queryByText(getByText('SERVICE').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(getByText('APIs')).toBeInTheDocument();
+    expect(getByText('LIBRARY')).toBeInTheDocument();
     expect(
-      queryByText(getByText('APIs').parentElement!, '1'),
-    ).toBeInTheDocument();
-    expect(getByText('Libraries')).toBeInTheDocument();
-    expect(
-      queryByText(getByText('Libraries').parentElement!, '1'),
-    ).toBeInTheDocument();
-    expect(getByText('Websites')).toBeInTheDocument();
-    expect(
-      queryByText(getByText('Websites').parentElement!, '0'),
-    ).toBeInTheDocument();
-    expect(getByText('Tools')).toBeInTheDocument();
-    expect(
-      queryByText(getByText('Tools').parentElement!, '0'),
+      queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
   });
 });
