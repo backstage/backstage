@@ -34,6 +34,17 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 }
 
+// Warning: (ae-missing-release-tag) "JenkinsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class JenkinsConfig {
+  constructor(instances: JenkinsInstanceConfig[]);
+  static fromConfig(config: Config): JenkinsConfig;
+  getInstanceConfig(jenkinsName?: string): JenkinsInstanceConfig;
+  // (undocumented)
+  readonly instances: JenkinsInstanceConfig[];
+}
+
 // Warning: (ae-missing-release-tag) "JenkinsInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -55,6 +66,20 @@ export interface JenkinsInfoProvider {
     entityRef: EntityName;
     jobFullName?: string;
   }): Promise<JenkinsInfo>;
+}
+
+// Warning: (ae-missing-release-tag) "JenkinsInstanceConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface JenkinsInstanceConfig {
+  // (undocumented)
+  apiKey: string;
+  // (undocumented)
+  baseUrl: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  username: string;
 }
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
