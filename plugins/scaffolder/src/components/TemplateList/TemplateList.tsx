@@ -26,10 +26,10 @@ import { Link, Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
 export type TemplateListProps = {
-  renderTemplateCard?: Function | undefined;
+  templateCard?: Function | undefined;
 };
 
-export const TemplateList = ({ renderTemplateCard }: TemplateListProps) => {
+export const TemplateList = ({ templateCard }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
   return (
     <>
@@ -55,8 +55,8 @@ export const TemplateList = ({ renderTemplateCard }: TemplateListProps) => {
         {entities &&
           entities?.length > 0 &&
           entities.map((template, i) =>
-            renderTemplateCard ? (
-              renderTemplateCard(i, template)
+            templateCard ? (
+              templateCard(i, template)
             ) : (
               <TemplateCard
                 key={i}
