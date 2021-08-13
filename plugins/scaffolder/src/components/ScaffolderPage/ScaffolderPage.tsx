@@ -46,7 +46,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ScaffolderPageContents = () => {
+export type ScaffolderPageProps = {
+  renderTemplateCard: Function | undefined;
+};
+
+export const ScaffolderPageContents = ({
+  renderTemplateCard,
+}: ScaffolderPageProps) => {
   const styles = useStyles();
 
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
@@ -87,7 +93,7 @@ export const ScaffolderPageContents = () => {
             <EntityTagPicker />
           </div>
           <div>
-            <TemplateList />
+            <TemplateList renderTemplateCard={renderTemplateCard} />
           </div>
         </div>
       </Content>
@@ -95,8 +101,8 @@ export const ScaffolderPageContents = () => {
   );
 };
 
-export const ScaffolderPage = () => (
+export const ScaffolderPage = ({ renderTemplateCard }: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents />
+    <ScaffolderPageContents renderTemplateCard={renderTemplateCard} />
   </EntityListProvider>
 );
