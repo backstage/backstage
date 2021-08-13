@@ -26,6 +26,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import { Readable } from 'stream';
 
 const parseURL = (
   url: string,
@@ -158,8 +159,62 @@ export class AwsS3UrlReader implements UrlReader {
     }
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
-    throw new Error('AwsS3Reader does not implement readTree');
+  async readTree(url: string): Promise<ReadTreeResponse> {
+    try {
+      const { path, bucket, region } = parseURL(url);
+      aws.config.update({ region: region });
+
+      let moreKeys = true;
+      let awsS3Readables: Readable[] = [];
+      let continuationToken = '';
+
+      while (moreKeys) {
+        let params;
+        if (continuationToken === '') {
+          params = {
+            Bucket: bucket,
+            Prefix: path,
+          };
+        } else {
+          params = {
+            Bucket: bucket,
+            Prefix: path,
+            ContinuationToken: continuationToken,
+          };
+        }
+        const { Contents, IsTruncated, NextContinuationToken } = await this.s3
+          .listObjectsV2(params)
+          .promise();
+
+        const responses = await Promise.all(
+          (Contents || []).map(({ Key }) => {
+            const s3Response = this.s3
+              .getObject({ Bucket: bucket, Key: String(Key) })
+              .createReadStream();
+            Object.defineProperty(s3Response, 'path', {
+              value: String(Key),
+              writable: false,
+            });
+            return s3Response;
+          }),
+        );
+
+        if (IsTruncated) {
+          continuationToken = String(NextContinuationToken);
+        } else {
+          continuationToken = '';
+          moreKeys = false;
+        }
+        awsS3Readables = awsS3Readables.concat(responses);
+      }
+
+      return await this.treeResponseFactory.fromReadableArray({
+        stream: awsS3Readables,
+        etag: '',
+      });
+    } catch (e) {
+      throw new Error(`Could not retrieve file tree from S3: ${e.message}`);
+    }
   }
 
   async search(): Promise<SearchResponse> {
