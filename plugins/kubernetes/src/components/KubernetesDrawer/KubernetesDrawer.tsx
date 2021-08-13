@@ -34,6 +34,7 @@ import jsYaml from 'js-yaml';
 import {
   CodeSnippet,
   StructuredMetadataTable,
+  Link,
 } from '@backstage/core-components';
 import { ClusterContext } from '../../hooks';
 import { formatClusterLink } from '../../utils/clusterLinks';
@@ -108,11 +109,11 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
 
   const classes = useDrawerContentStyles();
   const cluster = useContext(ClusterContext);
-  const clusterLink = formatClusterLink(
-    cluster.dashboardUrl ?? '',
+  const clusterLink = formatClusterLink({
+    dashboardUrl: cluster.dashboardUrl,
     object,
     kind,
-  );
+  });
 
   return (
     <>
@@ -150,8 +151,8 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
               variant="contained"
               color="primary"
               size="small"
-              href={clusterLink}
-              target="_blank"
+              component={Link}
+              to={clusterLink}
             >
               Open Kubernetes Dashboard...
             </Button>

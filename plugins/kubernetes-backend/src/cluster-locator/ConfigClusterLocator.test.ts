@@ -49,7 +49,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
-        dashboardUrl: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -93,7 +92,6 @@ describe('ConfigClusterLocator', () => {
       },
       {
         name: 'cluster2',
-        dashboardUrl: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
@@ -137,7 +135,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         assumeRole: undefined,
-        dashboardUrl: undefined,
         name: 'cluster1',
         serviceAccountToken: 'token',
         externalId: undefined,
@@ -147,7 +144,6 @@ describe('ConfigClusterLocator', () => {
       },
       {
         assumeRole: 'SomeRole',
-        dashboardUrl: undefined,
         name: 'cluster2',
         externalId: undefined,
         serviceAccountToken: undefined,

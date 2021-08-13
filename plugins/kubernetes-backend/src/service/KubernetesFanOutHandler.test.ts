@@ -165,7 +165,6 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -301,7 +300,6 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -400,7 +398,6 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -439,7 +436,6 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -542,7 +538,6 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -581,7 +576,6 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -620,7 +614,6 @@ describe('handleGetKubernetesObjectsForService', () => {
         },
         {
           cluster: {
-            dashboardUrl: undefined,
             name: 'error-cluster',
           },
           errors: ['some random cluster error'],

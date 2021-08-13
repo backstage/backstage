@@ -14,33 +14,37 @@
  * limitations under the License.
  */
 
-const KindMappings: any = {
+const KindMappings: Record<string, string> = {
   deployment: 'deployment',
   ingress: 'ingress',
   service: 'service',
   horizontalpodautoscaler: 'deployment',
 };
 
-export function formatClusterLink(
-  dashboardUrl: string,
-  object: any,
-  kind: string,
-) {
-  if (!dashboardUrl) {
+export function formatClusterLink(options: {
+  dashboardUrl?: string;
+  object: any;
+  kind: string;
+}) {
+  if (!options.dashboardUrl) {
     return undefined;
   }
-  if (!object) {
-    return dashboardUrl;
+  if (!options.object) {
+    return options.dashboardUrl;
   }
-  const host = dashboardUrl.endsWith('/') ? dashboardUrl : `${dashboardUrl}/`;
-  const name = object.metadata?.name;
-  const namespace = object.metadata?.namespace;
-  const validKind = KindMappings[kind.toLocaleLowerCase()];
+  const host = options.dashboardUrl.endsWith('/')
+    ? options.dashboardUrl
+    : `${options.dashboardUrl}/`;
+  const name = options.object.metadata?.name;
+  const namespace = options.object.metadata?.namespace;
+  const validKind = KindMappings[options.kind.toLocaleLowerCase()];
   if (validKind && name && namespace) {
-    return `${host}#/${validKind}/${namespace}/${name}?namespace=${namespace}`;
+    return `${host}#/${encodeURIComponent(validKind)}/${encodeURIComponent(
+      namespace,
+    )}/${encodeURIComponent(name)}?namespace=${encodeURIComponent(namespace)}`;
   }
   if (namespace) {
-    return `${host}#/workloads?namespace=${namespace}`;
+    return `${host}#/workloads?namespace=${encodeURIComponent(namespace)}`;
   }
-  return dashboardUrl;
+  return options.dashboardUrl;
 }
