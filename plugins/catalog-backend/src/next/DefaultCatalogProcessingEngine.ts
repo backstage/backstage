@@ -162,10 +162,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           const hash = hashBuilder.digest('hex');
           if (hash === previousHash) {
-            console.log('skipping ', entityRef);
+            // If nothing changed in our produced outputs, we cannot have any
+            // significant effect on our surroundings; therefore, we just abort
+            // without any updates / stitching.
             return;
           }
-          console.log('going ahead with ', entityRef);
 
           // If the result was marked as not OK, it signals that some part of the
           // processing pipeline threw an exception. This can happen both as part of
