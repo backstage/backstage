@@ -23,9 +23,11 @@ import {
   Content,
   Header,
   HeaderLabel,
+  Link,
   Page,
   Progress,
   RoutedTabs,
+  WarningPanel,
 } from '@backstage/core-components';
 import {
   attachComponentData,
@@ -245,6 +247,19 @@ export const EntityLayout = ({
           <Alert severity="error">{error.toString()}</Alert>
         </Content>
       )}
+
+      {!loading && !error && !entity && (
+        <Content>
+          <WarningPanel title="Entity not found">
+            There is no {kind} with the requested{' '}
+            <Link to="https://backstage.io/docs/features/software-catalog/references">
+              kind, namespace, and name
+            </Link>
+            .
+          </WarningPanel>
+        </Content>
+      )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}
