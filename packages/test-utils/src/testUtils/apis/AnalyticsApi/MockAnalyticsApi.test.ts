@@ -23,11 +23,16 @@ describe('MockAnalyticsApi', () => {
 
   it('should collect events', () => {
     const api = new MockAnalyticsApi();
-    const tracker = api.getDecoratedTracker({ domain });
 
-    tracker.captureEvent('verb-1', 'noun-1');
-    tracker.captureEvent('verb-2', 'noun-2', 42);
-    tracker.captureEvent('verb-3', 'noun-3', 1337, { some: 'context' });
+    api.captureEvent({ verb: 'verb-1', noun: 'noun-1', domain });
+    api.captureEvent({ verb: 'verb-2', noun: 'noun-2', value: 42, domain });
+    api.captureEvent({
+      verb: 'verb-3',
+      noun: 'noun-3',
+      value: 1337,
+      context: { some: 'context' },
+      domain,
+    });
 
     expect(api.getEvents()[0]).toMatchObject({
       noun: 'noun-1',

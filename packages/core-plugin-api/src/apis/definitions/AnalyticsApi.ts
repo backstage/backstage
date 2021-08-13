@@ -109,13 +109,10 @@ export type AnalyticsTracker = {
  */
 export type AnalyticsApi = {
   /**
-   * Retrieves a tracker decorated with a given analytics domain.
+   * Primary event handler responsible for compiling and forwarding events to
+   * an analytics system.
    */
-  getDecoratedTracker({
-    domain,
-  }: {
-    domain: AnalyticsDomainValue;
-  }): AnalyticsTracker;
+  captureEvent(event: DomainDecoratedAnalyticsEvent): void;
 };
 
 export const analyticsApiRef: ApiRef<AnalyticsApi> = createApiRef({

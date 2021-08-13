@@ -17,9 +17,9 @@
 import ReactGA from 'react-ga';
 import {
   AnalyticsApi,
-  AnalyticsTracker,
   AnalyticsDomainValue,
   AnalyticsEventContext,
+  DomainDecoratedAnalyticsEvent,
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 
@@ -93,30 +93,17 @@ export class GoogleAnalytics implements AnalyticsApi {
   }
 
   /**
-   * Returns the Google Analytics tracker to API consumers.
-   */
-  getDecoratedTracker({
-    domain,
-  }: {
-    domain: AnalyticsDomainValue;
-  }): AnalyticsTracker {
-    return {
-      captureEvent: (...args) => this.captureEvent(domain, ...args),
-    };
-  }
-
-  /**
    * Primary event capture implementation. Handles core navigate event as a
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).
    */
-  private captureEvent(
-    domain: AnalyticsDomainValue,
-    verb: string,
-    noun: string,
-    value?: number,
-    context?: AnalyticsEventContext,
-  ) {
+  captureEvent({
+    domain,
+    verb,
+    noun,
+    value,
+    context,
+  }: DomainDecoratedAnalyticsEvent) {
     const customMetadata = this.getCustomDimensionMetrics(domain, context);
 
     if (verb === 'navigate' && domain?.componentName === 'App') {

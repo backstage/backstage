@@ -4,8 +4,6 @@
 
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
-import { AnalyticsDomainValue } from '@backstage/core-plugin-api';
-import { AnalyticsTracker } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { DomainDecoratedAnalyticsEvent } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -24,11 +22,13 @@ import { StorageValueChange } from '@backstage/core-plugin-api';
 // @public (undocumented)
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
-  getDecoratedTracker({
+  captureEvent({
+    verb,
+    noun,
+    value,
+    context,
     domain,
-  }: {
-    domain: AnalyticsDomainValue;
-  }): AnalyticsTracker;
+  }: DomainDecoratedAnalyticsEvent): void;
   // (undocumented)
   getEvents(): DomainDecoratedAnalyticsEvent[];
 }

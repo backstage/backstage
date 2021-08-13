@@ -24,7 +24,21 @@ import { useApi } from '../apis';
 function useTracker(): AnalyticsTracker {
   const analyticsApi = useApi(analyticsApiRef);
   const domain = useAnalyticsDomain();
-  return analyticsApi.getDecoratedTracker({ domain });
+  return {
+    captureEvent: (verb, noun, value, context) => {
+      try {
+        analyticsApi.captureEvent({
+          verb,
+          noun,
+          value,
+          context,
+          domain,
+        });
+      } catch {
+        // Just don't throw on an instrumentation problem.
+      }
+    },
+  };
 }
 
 /**

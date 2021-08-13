@@ -38,11 +38,7 @@ export type AlertMessage = {
 //
 // @public
 export type AnalyticsApi = {
-  getDecoratedTracker({
-    domain,
-  }: {
-    domain: AnalyticsDomainValue;
-  }): AnalyticsTracker;
+  captureEvent(event: DomainDecoratedAnalyticsEvent): void;
 };
 
 // Warning: (ae-missing-release-tag) "analyticsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

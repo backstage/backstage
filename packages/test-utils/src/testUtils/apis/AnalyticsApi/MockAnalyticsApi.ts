@@ -16,30 +16,26 @@
 
 import {
   AnalyticsApi,
-  AnalyticsDomainValue,
-  AnalyticsTracker,
   DomainDecoratedAnalyticsEvent,
 } from '@backstage/core-plugin-api';
 
 export class MockAnalyticsApi implements AnalyticsApi {
   private events: DomainDecoratedAnalyticsEvent[] = [];
 
-  getDecoratedTracker({
+  captureEvent({
+    verb,
+    noun,
+    value,
+    context,
     domain,
-  }: {
-    domain: AnalyticsDomainValue;
-  }): AnalyticsTracker {
-    return {
-      captureEvent: (verb, noun, value, context) => {
-        this.events.push({
-          verb,
-          noun,
-          domain,
-          ...(value !== undefined ? { value } : {}),
-          ...(context !== undefined ? { context } : {}),
-        });
-      },
-    };
+  }: DomainDecoratedAnalyticsEvent) {
+    this.events.push({
+      verb,
+      noun,
+      domain,
+      ...(value !== undefined ? { value } : {}),
+      ...(context !== undefined ? { context } : {}),
+    });
   }
 
   getEvents(): DomainDecoratedAnalyticsEvent[] {

@@ -35,27 +35,27 @@ describe('useAnalytics', () => {
   });
 
   it('returns tracker from defined analytics api', () => {
-    const expectedFunction = 'capture function';
-    const getDecoratedTracker = jest.fn().mockReturnValue({
-      captureEvent: expectedFunction,
-    });
+    const captureEvent = jest.fn();
 
     // Simulate useApi returning a valid tracker.
-    mocked(useApi).mockReturnValue({ getDecoratedTracker });
+    mocked(useApi).mockReturnValue({ captureEvent });
 
-    // The getDecoratedTracker method of the underlying implementation should
-    // have been called with the domain provided.
+    // Calling the captureEvent method of the underlying implementation should
+    // pass along the given event as well as the default domain.
     const { result } = renderHook(() => useAnalytics());
-    expect(getDecoratedTracker).toHaveBeenCalledWith({
+    result.current.captureEvent('a verb', 'a noun', 42, { some: 'value' });
+    expect(captureEvent).toHaveBeenCalledWith({
+      verb: 'a verb',
+      noun: 'a noun',
+      value: 42,
+      context: {
+        some: 'value',
+      },
       domain: {
         componentName: 'App',
         pluginId: 'root',
         routeRef: 'unknown',
       },
     });
-
-    // And the returned tracker's captureEvent should have come from the API
-    // implementation.
-    expect(result.current.captureEvent).toBe(expectedFunction);
   });
 });

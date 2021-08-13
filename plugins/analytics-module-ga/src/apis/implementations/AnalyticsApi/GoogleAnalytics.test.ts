@@ -38,7 +38,7 @@ describe('GoogleAnalytics', () => {
 
     it('returns implementation', () => {
       const api = GoogleAnalytics.fromConfig(basicValidConfig);
-      expect(api.getDecoratedTracker).toBeDefined();
+      expect(api.captureEvent).toBeDefined();
 
       // Initializes GA with tracking ID.
       expect(ReactGA.testModeAPI.calls[0]).toEqual([
@@ -94,8 +94,11 @@ describe('GoogleAnalytics', () => {
 
     it('tracks basic pageview', () => {
       const api = GoogleAnalytics.fromConfig(basicValidConfig);
-      const tracker = api.getDecoratedTracker({ domain });
-      tracker.captureEvent('navigate', '/');
+      api.captureEvent({
+        verb: 'navigate',
+        noun: '/',
+        domain,
+      });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
@@ -107,12 +110,16 @@ describe('GoogleAnalytics', () => {
 
     it('tracks basic event', () => {
       const api = GoogleAnalytics.fromConfig(basicValidConfig);
-      const tracker = api.getDecoratedTracker({ domain });
 
       const expectedAction = 'click';
       const expectedLabel = 'on something';
       const expectedValue = 42;
-      tracker.captureEvent(expectedAction, expectedLabel, expectedValue);
+      api.captureEvent({
+        verb: expectedAction,
+        noun: expectedLabel,
+        value: expectedValue,
+        domain,
+      });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
@@ -127,8 +134,11 @@ describe('GoogleAnalytics', () => {
 
     it('captures configured custom dimensions/metrics on pageviews', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
-      const tracker = api.getDecoratedTracker({ domain });
-      tracker.captureEvent('navigate', '/a-page');
+      api.captureEvent({
+        verb: 'navigate',
+        noun: '/a-page',
+        domain,
+      });
 
       // Expect a set command first.
       const [setCommand, setData] = ReactGA.testModeAPI.calls[1];
@@ -149,14 +159,19 @@ describe('GoogleAnalytics', () => {
 
     it('captures configured custom dimensions/metrics on events', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
-      const tracker = api.getDecoratedTracker({ domain });
 
       const expectedAction = 'search';
       const expectedLabel = 'some query';
       const expectedValue = 5;
-      tracker.captureEvent(expectedAction, expectedLabel, expectedValue, {
-        extraDimension: false,
-        extraMetric: 0,
+      api.captureEvent({
+        verb: expectedAction,
+        noun: expectedLabel,
+        value: expectedValue,
+        context: {
+          extraDimension: false,
+          extraMetric: 0,
+        },
+        domain,
       });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
@@ -176,10 +191,14 @@ describe('GoogleAnalytics', () => {
 
     it('does not pass non-numeric data on metrics', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
-      const tracker = api.getDecoratedTracker({ domain });
 
-      tracker.captureEvent('verb', 'noun', undefined, {
-        extraMetric: 'not a number',
+      api.captureEvent({
+        verb: 'verb',
+        noun: 'noun',
+        context: {
+          extraMetric: 'not a number',
+        },
+        domain,
       });
 
       const [, data] = ReactGA.testModeAPI.calls[1];
