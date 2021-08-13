@@ -37,3 +37,5 @@ export {
   RepoUrlPicker,
   TextValuePicker,
 } from './components/fields';
+export { FavouriteTemplate } from './components/FavouriteTemplate';
+export { rootRouteRef as scaffolderRootRouteRef } from './routes';
