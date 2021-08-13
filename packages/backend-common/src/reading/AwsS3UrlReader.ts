@@ -19,6 +19,7 @@ import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
   ReadUrlOptions,
   ReadUrlResponse,
   SearchResponse,
@@ -62,7 +63,7 @@ const parseURL = (
 };
 
 export class AwsS3UrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
@@ -71,7 +72,7 @@ export class AwsS3UrlReader implements UrlReader {
         apiVersion: '2006-03-01',
         credentials: creds,
       });
-      const reader = new AwsS3UrlReader(integration, s3);
+      const reader = new AwsS3UrlReader(integration, s3, treeResponseFactory);
       const predicate = (url: URL) =>
         url.host.endsWith(integration.config.host);
       return { reader, predicate };
@@ -81,6 +82,7 @@ export class AwsS3UrlReader implements UrlReader {
   constructor(
     private readonly integration: AwsS3Integration,
     private readonly s3: S3,
+    private readonly treeResponseFactory: ReadTreeResponseFactory,
   ) {}
 
   /**
