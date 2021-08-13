@@ -79,7 +79,7 @@ export class GithubAuthProvider implements OAuthHandlers {
     const profile = makeProfileInfo(
       {
         ...fullProfile,
-        id: fullProfile.username || fullProfile.id,
+        id: fullProfile.id,
         displayName:
           fullProfile.displayName || fullProfile.username || fullProfile.id,
       },
@@ -95,7 +95,7 @@ export class GithubAuthProvider implements OAuthHandlers {
           expiresInSeconds: params.expires_in,
         },
         backstageIdentity: {
-          id: fullProfile.username || fullProfile.id,
+          id: fullProfile.id,
         },
       },
     };

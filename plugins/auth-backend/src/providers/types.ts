@@ -196,10 +196,6 @@ export type ProfileInfo = {
    * signed in user.
    */
   picture?: string;
-  /**
-   * Username of the signed in user.
-   */
-  username?: string;
 };
 
 export type SignInInfo<AuthResult> = {
