@@ -113,6 +113,7 @@ export class NextCatalogBuilder {
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
   private refreshIntervalSeconds = 100;
+  private refreshSpreadSeconds = { min: 10, max: 60 };
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -149,6 +150,15 @@ export class NextCatalogBuilder {
    */
   setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder {
     this.refreshIntervalSeconds = seconds;
+    return this;
+  }
+
+  /**
+   * Refresh spread configures configures the minimum and maximum number of seconds
+   * to wait between refreshes in addition to the configured refresh interval.
+   */
+  setRefreshSpreadSeconds(min: number, max: number): NextCatalogBuilder {
+    this.refreshSpreadSeconds = { min, max };
     return this;
   }
 
@@ -286,6 +296,7 @@ export class NextCatalogBuilder {
       database: dbClient,
       logger,
       refreshIntervalSeconds: this.refreshIntervalSeconds,
+      refreshSpreadSeconds: this.refreshSpreadSeconds,
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({

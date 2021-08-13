@@ -49,6 +49,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: Logger;
       refreshIntervalSeconds: number;
+      refreshSpreadSeconds: {
+        min: number;
+        max: number;
+      };
     },
   ) {}
 
@@ -447,6 +451,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
+  // Returns the next update timestamp by combining refresh interval and refresh spread
+  private getNextUpdateAt(tx: Knex.Transaction): Knex.MaybeRawColumn<string> {
+    const { min, max } = this.options.refreshSpreadSeconds;
+    const refreshSpread = Math.floor(Math.random() * (max - min + 1)) + min;
+    const nextUpdate = this.options.refreshIntervalSeconds + refreshSpread;
+
+    return tx.client.config.client === 'sqlite3'
+      ? tx.raw(`datetime('now', ?)`, [`${nextUpdate} seconds`])
+      : tx.raw(`now() + interval '${Number(nextUpdate)} seconds'`);
+  }
+
   async getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
@@ -473,16 +488,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at:
-          tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [
-                `${this.options.refreshIntervalSeconds} seconds`,
-              ])
-            : tx.raw(
-                `now() + interval '${Number(
-                  this.options.refreshIntervalSeconds,
-                )} seconds'`,
-              ),
+        next_update_at: this.getNextUpdateAt(tx),
       });
 
     return {
