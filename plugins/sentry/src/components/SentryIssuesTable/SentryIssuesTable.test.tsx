@@ -69,4 +69,23 @@ describe('SentryIssuesTable', () => {
     expect(await table.findByText('101')).toBeInTheDocument();
     expect(await table.findByText('202')).toBeInTheDocument();
   });
+  it('should render statsFor in table subtitle', async () => {
+    const issues: SentryIssue[] = [
+      {
+        ...mockIssue,
+        metadata: {
+          type: 'Exception',
+          value: 'exception was thrown',
+        },
+        count: '101',
+        userCount: 202,
+      },
+    ];
+    const table = await render(
+      <ThemeProvider theme={lightTheme}>
+        <SentryIssuesTable sentryIssues={issues} statsFor="24h" />
+      </ThemeProvider>,
+    );
+    expect(await table.findByText('For 24h')).toBeInTheDocument();
+  });
 });
