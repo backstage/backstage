@@ -25,7 +25,11 @@ import { useEntityListProvider } from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
-export const TemplateList = () => {
+export type TemplateListProps = {
+  renderTemplateCard?: Function | undefined;
+};
+
+export const TemplateList = ({ renderTemplateCard }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
   return (
     <>
@@ -50,12 +54,16 @@ export const TemplateList = () => {
       <ItemCardGrid>
         {entities &&
           entities?.length > 0 &&
-          entities.map((template, i) => (
-            <TemplateCard
-              key={i}
-              template={template as TemplateEntityV1beta2}
-            />
-          ))}
+          entities.map((template, i) =>
+            renderTemplateCard ? (
+              renderTemplateCard(i, template)
+            ) : (
+              <TemplateCard
+                key={i}
+                template={template as TemplateEntityV1beta2}
+              />
+            ),
+          )}
       </ItemCardGrid>
     </>
   );
