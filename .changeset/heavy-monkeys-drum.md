@@ -2,8 +2,10 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-Add `fetch:partial` templating action.
+Add partial templating to `fetch:template` action.
 
-- For all files with extension `.njk`, apply templating logic and strip extension. The extension is configurable.
-- All other files get copied.
-- All output paths are subject to applying templating logic.
+If an `extension` input is given, only files with that extension get their content processed. If `extension` is `true`, the `.njk` extension is used. The `extension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+All other files get copied.
+
+All output paths are subject to applying templating logic.

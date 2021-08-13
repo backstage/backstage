@@ -38,13 +38,21 @@ import { isBinaryFile } from 'isbinaryfile';
  */
 nunjucks.installJinjaCompat();
 
+type CookieCompatInput = {
+  copyWithoutRender?: string[];
+  cookiecutterCompat?: boolean;
+};
+
+type ExtensionInput = {
+  extension?: string | boolean;
+};
+
 export type FetchTemplateInput = {
   url: string;
   targetPath?: string;
   values: any;
-  copyWithoutRender?: string[];
-  cookiecutterCompat?: boolean;
-};
+} & CookieCompatInput &
+  ExtensionInput;
 
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
@@ -93,6 +101,11 @@ export function createFetchTemplateAction(options: {
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
           },
+          extension: {
+            title: 'Extension to Process (.njk)',
+            description: 'Extension to use for templated files.',
+            type: ['string', 'boolean'],
+          },
         },
       },
     },
@@ -112,6 +125,23 @@ export function createFetchTemplateAction(options: {
         throw new InputError(
           'Fetch action input copyWithoutRender must be an Array',
         );
+      }
+
+      if (
+        ctx.input.extension &&
+        (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
+      ) {
+        throw new InputError(
+          'Fetch action input extension incompatible with copyWithoutRender and cookiecutterCompat',
+        );
+      }
+
+      let extension: string | false = false;
+      if (ctx.input.extension) {
+        extension =
+          typeof ctx.input.extension === 'boolean'
+            ? '.njk'
+            : ctx.input.extension;
       }
 
       await fetchContents({
@@ -190,14 +220,20 @@ export function createFetchTemplateAction(options: {
       );
 
       for (const location of allEntriesInTemplate) {
-        const shouldCopyWithoutRender = nonTemplatedEntries.has(location);
+        let shouldCopyWithoutRender = nonTemplatedEntries.has(location);
 
-        const outputPath = resolvePath(
-          outputDir,
-          shouldCopyWithoutRender
-            ? location
-            : templater.renderString(location, context),
-        );
+        let localOutputPath = location;
+        if (extension) {
+          if (localOutputPath.endsWith(extension)) {
+            localOutputPath = localOutputPath.slice(0, -extension.length);
+          } else {
+            shouldCopyWithoutRender = true;
+          }
+          localOutputPath = templater.renderString(localOutputPath, context);
+        } else if (!shouldCopyWithoutRender) {
+          localOutputPath = templater.renderString(localOutputPath, context);
+        }
+        const outputPath = resolvePath(outputDir, localOutputPath);
 
         if (shouldCopyWithoutRender) {
           ctx.logger.info(

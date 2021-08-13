@@ -24,11 +24,7 @@ import {
 } from './catalog';
 
 import { createDebugLogAction } from './debug';
-import {
-  createFetchPartialAction,
-  createFetchPlainAction,
-  createFetchTemplateAction,
-} from './fetch';
+import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
 import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
@@ -64,10 +60,6 @@ export const createBuiltinActions = (options: {
       containerRunner,
     }),
     createFetchTemplateAction({
-      integrations,
-      reader,
-    }),
-    createFetchPartialAction({
       integrations,
       reader,
     }),
