@@ -20,6 +20,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
+import { createHash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
 import { CatalogProcessingOrchestrator } from './processing/types';
@@ -125,7 +127,14 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       },
       processTask: async item => {
         try {
-          const { id, state, unprocessedEntity, entityRef, locationKey } = item;
+          const {
+            id,
+            state,
+            unprocessedEntity,
+            entityRef,
+            locationKey,
+            hash: previousHash,
+          } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
             state,
@@ -142,6 +151,22 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             result.errors.map(e => serializeError(e)),
           );
 
+          let hashBuilder = createHash('sha1').update(errorsString);
+          if (result.ok) {
+            hashBuilder = hashBuilder
+              .update(stableStringify({ ...result.completedEntity }))
+              .update(stableStringify([...result.deferredEntities]))
+              .update(stableStringify([...result.relations]))
+              .update(stableStringify({ ...result.state }));
+          }
+
+          const hash = hashBuilder.digest('hex');
+          if (hash === previousHash) {
+            console.log('skipping ', entityRef);
+            return;
+          }
+          console.log('going ahead with ', entityRef);
+
           // If the result was marked as not OK, it signals that some part of the
           // processing pipeline threw an exception. This can happen both as part of
           // non-catastrophic things such as due to validation errors, as well as if
@@ -154,6 +179,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,
                 errors: errorsString,
+                hash,
               });
             });
             await this.stitcher.stitch(
@@ -167,6 +193,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             await this.processingDatabase.updateProcessedEntity(tx, {
               id,
               processedEntity: result.completedEntity,
+              hash,
               state: result.state,
               errors: errorsString,
               relations: result.relations,

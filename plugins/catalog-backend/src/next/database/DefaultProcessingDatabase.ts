@@ -60,6 +60,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const {
       id,
       processedEntity,
+      hash,
       state,
       errors,
       relations,
@@ -69,6 +70,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
+        hash,
         cache: JSON.stringify(state),
         errors,
         location_key: locationKey,
@@ -492,6 +494,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             processedEntity: i.processed_entity
               ? (JSON.parse(i.processed_entity) as Entity)
               : undefined,
+            hash: i.hash,
             nextUpdateAt: i.next_update_at,
             lastDiscoveryAt: i.last_discovery_at,
             state: i.cache

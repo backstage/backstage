@@ -206,6 +206,7 @@ describe('Default Processing Database', () => {
             db.updateProcessedEntity(tx, {
               id,
               processedEntity,
+              hash: '',
               state: new Map<string, JsonObject>(),
               relations: [],
               deferredEntities: [],
@@ -224,6 +225,7 @@ describe('Default Processing Database', () => {
         const options = {
           id,
           processedEntity,
+          hash: '',
           state: new Map<string, JsonObject>(),
           relations: [],
           deferredEntities: [],
@@ -250,7 +252,11 @@ describe('Default Processing Database', () => {
 
         await db.transaction(tx =>
           expect(
-            db.updateProcessedEntity(tx, { ...options, locationKey: 'fail' }),
+            db.updateProcessedEntity(tx, {
+              ...options,
+              hash: '',
+              locationKey: 'fail',
+            }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'fail'`,
           ),
@@ -280,6 +286,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            hash: '',
             state,
             relations: [],
             deferredEntities: [],
@@ -336,6 +343,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            hash: '',
             state: new Map<string, JsonObject>(),
             relations: relations,
             deferredEntities: [],
@@ -387,6 +395,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            hash: '',
             state: new Map<string, JsonObject>(),
             relations: [],
             deferredEntities,
