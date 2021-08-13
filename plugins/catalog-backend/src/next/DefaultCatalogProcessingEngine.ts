@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
-import { createHash } from 'crypto';
+import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
@@ -91,6 +91,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly processingDatabase: ProcessingDatabase,
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
+    private readonly createHash: () => Hash,
   ) {}
 
   async start() {
@@ -133,7 +134,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             unprocessedEntity,
             entityRef,
             locationKey,
-            hash: previousHash,
+            resultHash: previousResultHash,
           } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
@@ -151,17 +152,17 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             result.errors.map(e => serializeError(e)),
           );
 
-          let hashBuilder = createHash('sha1').update(errorsString);
+          let hashBuilder = this.createHash().update(errorsString);
           if (result.ok) {
             hashBuilder = hashBuilder
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
               .update(stableStringify([...result.relations]))
-              .update(stableStringify({ ...result.state }));
+              .update(stableStringify(Object.fromEntries(result.state)));
           }
 
-          const hash = hashBuilder.digest('hex');
-          if (hash === previousHash) {
+          const resultHash = hashBuilder.digest('hex');
+          if (resultHash === previousResultHash) {
             // If nothing changed in our produced outputs, we cannot have any
             // significant effect on our surroundings; therefore, we just abort
             // without any updates / stitching.
@@ -180,7 +181,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,
                 errors: errorsString,
-                hash,
+                resultHash,
               });
             });
             await this.stitcher.stitch(
@@ -194,7 +195,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             await this.processingDatabase.updateProcessedEntity(tx, {
               id,
               processedEntity: result.completedEntity,
-              hash,
+              resultHash,
               state: result.state,
               errors: errorsString,
               relations: result.relations,

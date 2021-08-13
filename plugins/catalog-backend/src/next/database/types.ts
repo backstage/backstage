@@ -34,7 +34,7 @@ export type AddUnprocessedEntitiesResult = {};
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
-  hash: string;
+  resultHash: string;
   state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
@@ -45,7 +45,7 @@ export type UpdateProcessedEntityOptions = {
 export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
-  hash: string;
+  resultHash: string;
 };
 
 export type RefreshStateItem = {
@@ -53,7 +53,7 @@ export type RefreshStateItem = {
   entityRef: string;
   unprocessedEntity: Entity;
   processedEntity?: Entity;
-  hash: string;
+  resultHash: string;
   nextUpdateAt: string;
   lastDiscoveryAt: string; // remove?
   state: Map<string, JsonObject>;
