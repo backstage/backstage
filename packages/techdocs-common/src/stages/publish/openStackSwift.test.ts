@@ -75,11 +75,11 @@ beforeEach(() => {
         type: 'openStackSwift',
         openStackSwift: {
           credentials: {
-            username: 'mockuser',
-            password: 'verystrongpass',
+            id: 'mockid',
+            secret: 'verystrongsecret',
           },
           authUrl: 'mockauthurl',
-          region: 'mockregion',
+          swiftUrl: 'mockSwiftUrl',
           containerName: 'mock',
         },
       },
@@ -105,11 +105,11 @@ describe('OpenStackSwiftPublish', () => {
             type: 'openStackSwift',
             openStackSwift: {
               credentials: {
-                username: 'mockuser',
-                password: 'verystrongpass',
+                id: 'mockId',
+                secret: 'mockSecret',
               },
               authUrl: 'mockauthurl',
-              region: 'mockregion',
+              swiftUrl: 'mockSwiftUrl',
               containerName: 'errorBucket',
             },
           },
