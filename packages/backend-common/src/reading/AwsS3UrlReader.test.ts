@@ -26,14 +26,16 @@ import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
 
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
+
 describe('AwsS3UrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
       config: new ConfigReader(config),
       logger: getVoidLogger(),
-      treeResponseFactory: DefaultReadTreeResponseFactory.create({
-        config: new ConfigReader({}),
-      }),
+      treeResponseFactory,
     });
   };
 
@@ -154,6 +156,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ),
       s3,
+      treeResponseFactory,
     );
 
     it('returns contents of an object in a bucket', async () => {
@@ -207,6 +210,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ),
       s3,
+      treeResponseFactory,
     );
 
     it('returns contents of an object in a bucket', async () => {
