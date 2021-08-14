@@ -259,6 +259,8 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
+    - type: aws-read-tree
+      target: https://seant-splunk.s3.us-east-2.amazonaws.com
 
 scaffolder:
   # Use to customize default commit author info used when new components are created
