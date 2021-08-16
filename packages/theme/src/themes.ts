@@ -66,7 +66,6 @@ export const lightTheme = createTheme({
       background: '#171717',
       indicator: '#9BF0E1',
       color: '#b5b5b5',
-      divider: '#383838',
       selectedColor: '#FFF',
     },
     pinSidebarButton: {
@@ -133,7 +132,6 @@ export const darkTheme = createTheme({
       background: '#424242',
       indicator: '#9BF0E1',
       color: '#b5b5b5',
-      divider: '#383838',
       selectedColor: '#FFF',
     },
     pinSidebarButton: {

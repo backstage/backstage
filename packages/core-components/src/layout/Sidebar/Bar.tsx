@@ -42,7 +42,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
-    borderRight: `1px solid ${theme.palette.navigation.divider}`,
+    borderRight: `1px solid #383838`,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
