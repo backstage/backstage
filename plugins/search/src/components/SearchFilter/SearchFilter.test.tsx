@@ -32,7 +32,7 @@ describe('SearchFilter', () => {
     term: '',
     filters: {},
     types: [],
-    pageCursor: '',
+    page: {},
   };
 
   const name = 'field';

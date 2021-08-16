@@ -38,7 +38,7 @@ describe('SearchContext', () => {
 
   const initialState = {
     term: '',
-    pageCursor: '',
+    page: {},
     filters: {},
     types: ['*'],
   };
@@ -93,22 +93,26 @@ describe('SearchContext', () => {
       initialProps: {
         initialState: {
           ...initialState,
-          pageCursor: '1',
+          page: { offset: 0, limit: 25 },
         },
       },
     });
 
     await waitForNextUpdate();
 
-    expect(result.current.pageCursor).toBe('1');
+    expect(result.current.page).toEqual({ offset: 0, limit: 25 });
 
     act(() => {
       result.current.setTerm('first term');
     });
 
+    act(() => {
+      result.current.setPage({ offset: 75, limit: 25 });
+    });
+
     await waitForNextUpdate();
 
-    expect(result.current.pageCursor).toBe('1');
+    expect(result.current.page).toEqual({ offset: 75, limit: 25 });
 
     act(() => {
       result.current.setTerm('second term');
@@ -116,7 +120,7 @@ describe('SearchContext', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.pageCursor).toBe('');
+    expect(result.current.page).toEqual({ offset: 0, limit: 25 });
   });
 
   describe('Performs search (and sets results)', () => {
@@ -139,7 +143,10 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
-        ...initialState,
+        filters: {},
+        types: ['*'],
+        limit: undefined,
+        offset: undefined,
         term,
       });
     });
@@ -163,12 +170,15 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
-        ...initialState,
         filters,
+        types: ['*'],
+        limit: undefined,
+        offset: undefined,
+        term: '',
       });
     });
 
-    it('When pageCursor is set', async () => {
+    it('When page is set', async () => {
       const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
         wrapper,
         initialProps: {
@@ -178,17 +188,20 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      const pageCursor = 'pageCursor';
+      const page = { offset: 25, limit: 50 };
 
       act(() => {
-        result.current.setPageCursor(pageCursor);
+        result.current.setPage(page);
       });
 
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
-        ...initialState,
-        pageCursor,
+        filters: {},
+        types: ['*'],
+        limit: 50,
+        offset: 25,
+        term: '',
       });
     });
 
@@ -211,8 +224,11 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
-        ...initialState,
         types,
+        filters: {},
+        limit: undefined,
+        offset: undefined,
+        term: '',
       });
     });
   });

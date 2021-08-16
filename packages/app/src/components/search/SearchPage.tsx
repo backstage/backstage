@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
-import Pagination from '@material-ui/lab/Pagination';
+import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
+  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
   SearchType,
-  DefaultResultListItem,
 } from '@backstage/plugin-search';
-import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
-import { SearchResultSet } from '@backstage/search-common';
+import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -42,59 +40,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(2),
   },
 }));
-
-// TODO: Move this into the search plugin once pagination is natively supported.
-// See: https://github.com/backstage/backstage/issues/6062
-const SearchResultList = ({ results }: SearchResultSet) => {
-  const pageSize = 10;
-  const [page, setPage] = useState(1);
-  const changePage = (_: any, pageIndex: number) => {
-    setPage(pageIndex);
-  };
-  const pageAmount = Math.ceil((results.length || 0) / pageSize);
-  return (
-    <>
-      <List>
-        {results
-          .slice(pageSize * (page - 1), pageSize * page)
-          .map(({ type, document }) => {
-            switch (type) {
-              case 'software-catalog':
-                return (
-                  <CatalogResultListItem
-                    key={document.location}
-                    result={document}
-                  />
-                );
-              case 'techdocs':
-                return (
-                  <DocsResultListItem
-                    key={document.location}
-                    result={document}
-                  />
-                );
-              default:
-                return (
-                  <DefaultResultListItem
-                    key={document.location}
-                    result={document}
-                  />
-                );
-            }
-          })}
-      </List>
-      {pageAmount > 1 && (
-        <Pagination
-          count={pageAmount}
-          page={page}
-          onChange={changePage}
-          showFirstButton
-          showLastButton
-        />
-      )}
-    </>
-  );
-};
 
 const SearchPage = () => {
   const classes = useStyles();
@@ -129,7 +74,35 @@ const SearchPage = () => {
           </Grid>
           <Grid item xs={9}>
             <SearchResult>
-              {({ results }) => <SearchResultList results={results} />}
+              {({ results }) => (
+                <List>
+                  {results.map(({ type, document }) => {
+                    switch (type) {
+                      case 'software-catalog':
+                        return (
+                          <CatalogResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                      case 'techdocs':
+                        return (
+                          <DocsResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                      default:
+                        return (
+                          <DefaultResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                    }
+                  })}
+                </List>
+              )}
             </SearchResult>
           </Grid>
         </Grid>

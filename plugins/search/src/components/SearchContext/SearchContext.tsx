@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
-import { useAsync, usePrevious } from 'react-use';
-import { SearchResultSet } from '@backstage/search-common';
-import { searchApiRef } from '../../apis';
-import { AsyncState } from 'react-use/lib/useAsync';
 import { JsonObject } from '@backstage/config';
 import { useApi } from '@backstage/core-plugin-api';
+import { SearchResultSet } from '@backstage/search-common';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { useAsync, usePrevious } from 'react-use';
+import { AsyncState } from 'react-use/lib/useAsync';
+import { searchApiRef } from '../../apis';
+
+type Page = { limit?: number; offset?: number };
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
@@ -36,13 +38,13 @@ type SearchContextValue = {
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
   filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  pageCursor: string;
-  setPageCursor: React.Dispatch<React.SetStateAction<string>>;
+  page: Page;
+  setPage: React.Dispatch<React.SetStateAction<Page>>;
 };
 
 type SettableSearchContext = Omit<
   SearchContextValue,
-  'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPageCursor'
+  'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPage'
 >;
 
 export const SearchContext = createContext<SearchContextValue | undefined>(
@@ -52,14 +54,14 @@ export const SearchContext = createContext<SearchContextValue | undefined>(
 export const SearchContextProvider = ({
   initialState = {
     term: '',
-    pageCursor: '',
+    page: {},
     filters: {},
     types: [],
   },
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const searchApi = useApi(searchApiRef);
-  const [pageCursor, setPageCursor] = useState<string>(initialState.pageCursor);
+  const [page, setPage] = useState<Page>(initialState.page);
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
@@ -70,18 +72,19 @@ export const SearchContextProvider = ({
       searchApi.query({
         term,
         filters,
-        pageCursor,
+        offset: page?.offset,
+        limit: page?.limit,
         types,
       }),
-    [term, filters, types, pageCursor],
+    [term, filters, types, page],
   );
 
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.
     if (term && prevTerm && term !== prevTerm) {
-      setPageCursor('');
+      setPage(initialState.page);
     }
-  }, [term, prevTerm]);
+  }, [term, prevTerm, initialState.page]);
 
   const value: SearchContextValue = {
     result,
@@ -91,8 +94,8 @@ export const SearchContextProvider = ({
     setTerm,
     types,
     setTypes,
-    pageCursor,
-    setPageCursor,
+    page,
+    setPage,
   };
 
   return <SearchContext.Provider value={value} children={children} />;
