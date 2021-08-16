@@ -27,6 +27,7 @@ describe('PgSearchEngine', () => {
       transaction: jest.fn(),
       insertDocuments: jest.fn(),
       query: jest.fn(),
+      count: jest.fn(),
       completeInsert: jest.fn(),
       prepareInsert: jest.fn(),
     };
@@ -44,24 +45,55 @@ describe('PgSearchEngine', () => {
       await searchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
+        offset: 25,
+        limit: 50,
       });
 
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
+        offset: 25,
+        limit: 50,
+      });
+    });
+
+    it('should pass offset and limit', async () => {
+      const actualTranslatedQuery = searchEngine.translator({
+        term: 'Hello',
+        offset: 25,
+        limit: 50,
+      }) as PgSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        pgTerm: '("Hello" | "Hello":*)',
+        offset: 25,
+        limit: 50,
+      });
+    });
+
+    it('should have maximum limit of 100', async () => {
+      const actualTranslatedQuery = searchEngine.translator({
+        term: 'Hello',
+        offset: 25,
+        limit: 1000,
+      }) as PgSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        pgTerm: '("Hello" | "Hello":*)',
+        offset: 25,
+        limit: 100,
       });
     });
 
     it('should return translated query term', async () => {
       const actualTranslatedQuery = searchEngine.translator({
         term: 'Hello World',
-        pageCursor: '',
       }) as PgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 0,
+        limit: 25,
       });
     });
 
@@ -81,13 +113,14 @@ describe('PgSearchEngine', () => {
         term: 'testTerm',
         filters: { kind: 'testKind' },
         types: ['my-filter'],
-        pageCursor: '',
       }) as PgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         pgTerm: '("testTerm" | "testTerm":*)',
         fields: { kind: 'testKind' },
         types: ['my-filter'],
+        offset: 0,
+        limit: 25,
       });
     });
   });
@@ -138,6 +171,7 @@ describe('PgSearchEngine', () => {
   describe('query', () => {
     it('should perform query', async () => {
       database.transaction.mockImplementation(fn => fn(tx));
+      database.count.mockResolvedValue(1337);
       database.query.mockResolvedValue([
         {
           document: {
@@ -151,7 +185,6 @@ describe('PgSearchEngine', () => {
 
       const results = await searchEngine.query({
         term: 'Hello World',
-        pageCursor: '',
       });
 
       expect(results).toEqual({
@@ -165,10 +198,18 @@ describe('PgSearchEngine', () => {
             type: 'my-type',
           },
         ],
+        totalCount: 1337,
       });
-      expect(database.transaction).toHaveBeenCalledTimes(1);
+      expect(database.transaction).toHaveBeenCalledTimes(2);
       expect(database.query).toHaveBeenCalledWith(tx, {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 0,
+        limit: 25,
+      });
+      expect(database.count).toHaveBeenCalledWith(tx, {
+        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 0,
+        limit: 25,
       });
     });
   });

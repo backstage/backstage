@@ -20,6 +20,8 @@ export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;
   types?: string[];
   pgTerm?: string;
+  offset: number;
+  limit: number;
 }
 
 export interface DatabaseStore {
@@ -35,6 +37,7 @@ export interface DatabaseStore {
     tx: Knex.Transaction,
     pgQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
+  count(tx: Knex.Transaction, pgQuery: PgSearchQuery): Promise<number>;
 }
 
 export interface RawDocumentRow {
