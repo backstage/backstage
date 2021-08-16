@@ -140,6 +140,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     term,
     filters = {},
     types,
+    offset,
+    limit,
   }: SearchQuery): ConcreteElasticSearchQuery {
     const filter = Object.entries(filters)
       .filter(([_, value]) => Boolean(value))
@@ -172,9 +174,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       elasticSearchQuery: esb
         .requestBodySearch()
         .query(esb.boolQuery().filter(filter).must([query]))
-        // TODO: Replace size limit with page cursor after pagination approach decided
-        // See: https://github.com/backstage/backstage/issues/6062
-        .size(100)
+        .from(offset ?? 0)
+        .size(Math.min(limit ?? 25, 100))
         .toJSON(),
       documentTypes: types,
     };
@@ -262,6 +263,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           type: this.getTypeFromIndex(d._index),
           document: d._source,
         })),
+        totalCount: result.body.hits.total.value,
       };
     } catch (e) {
       this.logger.error(
