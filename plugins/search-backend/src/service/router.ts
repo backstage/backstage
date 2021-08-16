@@ -46,7 +46,13 @@ export async function createRouter({
       );
 
       try {
-        const results = await engine?.query(req.query);
+        const results = await engine?.query({
+          term,
+          types,
+          filters,
+          offset: offset ? Number(offset) : undefined,
+          limit: limit ? Number(limit) : undefined,
+        });
         res.send(results);
       } catch (err) {
         throw new Error(
