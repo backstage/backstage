@@ -27,6 +27,8 @@ import { Logger } from 'winston';
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
+  offset: number;
+  limit: number;
 };
 
 type LunrResultEnvelope = {
@@ -50,6 +52,8 @@ export class LunrSearchEngine implements SearchEngine {
     term,
     filters,
     types,
+    offset,
+    limit,
   }: SearchQuery): ConcreteLunrQuery => {
     return {
       lunrQueryBuilder: q => {
@@ -107,6 +111,8 @@ export class LunrSearchEngine implements SearchEngine {
         }
       },
       documentTypes: types,
+      offset: offset ?? 0,
+      limit: Math.min(limit ?? 25, 100),
     };
   };
 
@@ -141,7 +147,7 @@ export class LunrSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const { lunrQueryBuilder, documentTypes } = this.translator(
+    const { lunrQueryBuilder, documentTypes, offset, limit } = this.translator(
       query,
     ) as ConcreteLunrQuery;
 
@@ -179,9 +185,10 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Translate results into SearchResultSet
     const realResultSet: SearchResultSet = {
-      results: results.map(d => {
+      results: results.slice(offset, offset + limit).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),
+      totalCount: results.length,
     };
 
     return realResultSet;
