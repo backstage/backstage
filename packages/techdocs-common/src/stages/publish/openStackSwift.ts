@@ -137,7 +137,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
-      const limiter = createLimiter(25);
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<unknown>> = [];
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
