@@ -446,7 +446,7 @@ techdocs:
 ##### Step 1: Change the credential keys
 
 Since the new SDK uses _Application Credentials_ to authenticate OpenStack, we
-need to change the the keys `credentials.username` to `credentials.id`,
+need to change the keys `credentials.username` to `credentials.id`,
 `credentials.password` to `credentials.secret` and use Application Credential ID
 and secret here. For more detail about credentials look
 [here](https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential).
