@@ -29,6 +29,18 @@ import { Config } from '@backstage/config';
 import { createTodoParser } from './createTodoParser';
 import path from 'path';
 
+const excludedExtensions = [
+  '.png',
+  '.svg',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.raw',
+  '.lock',
+  '.ico',
+];
+const MAX_FILE_SIZE = 200000;
+
 type Options = {
   logger: Logger;
   reader: UrlReader;
@@ -48,6 +60,7 @@ export class TodoScmReader implements TodoReader {
   private readonly integrations: ScmIntegrations;
 
   private readonly cache = new Map<string, CacheItem>();
+  private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
 
   static fromConfig(config: Config, options: Omit<Options, 'integrations'>) {
     return new TodoScmReader({
@@ -66,7 +79,13 @@ export class TodoScmReader implements TodoReader {
   async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
     const cacheItem = this.cache.get(url);
     try {
-      const newCacheItem = await this.doReadTodos({ url }, cacheItem?.etag);
+      const inFlightRead = this.inFlightReads.get(url);
+      if (inFlightRead) {
+        return (await inFlightRead).result;
+      }
+      const newRead = this.doReadTodos({ url }, cacheItem?.etag);
+      this.inFlightReads.set(url, newRead);
+      const newCacheItem = await newRead;
       this.cache.set(url, newCacheItem);
       return newCacheItem.result;
     } catch (error) {
@@ -81,24 +100,17 @@ export class TodoScmReader implements TodoReader {
     { url }: ReadTodosOptions,
     etag?: string,
   ): Promise<CacheItem> {
-    const shouldNotInclude = [
-      '.png',
-      '.svg',
-      '.jpg',
-      '.jpeg',
-      '.gif',
-      '.raw',
-      '.lock',
-      '.ico',
-    ];
     const tree = await this.reader.readTree(url, {
       etag,
-      filter(filePath) {
+      filter(filePath, info) {
         const extname = path.extname(filePath);
+        if (info && info.size > MAX_FILE_SIZE) {
+          return false;
+        }
         return (
           !filePath.startsWith('.') &&
           !filePath.includes('/.') &&
-          !shouldNotInclude.includes(extname)
+          !excludedExtensions.includes(extname)
         );
       },
     });
