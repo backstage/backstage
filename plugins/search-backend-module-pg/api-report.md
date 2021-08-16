@@ -18,6 +18,8 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
+  count(tx: Knex.Transaction, searchQuery: PgSearchQuery): Promise<number>;
+  // (undocumented)
   static create(knex: Knex): Promise<DatabaseDocumentStore>;
   // (undocumented)
   insertDocuments(
@@ -32,7 +34,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields }: PgSearchQuery,
+    searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
   // (undocumented)
   static supported(knex: Knex): Promise<boolean>;
@@ -46,6 +48,8 @@ export class DatabaseDocumentStore implements DatabaseStore {
 export interface DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
+  // (undocumented)
+  count(tx: Knex.Transaction, pgQuery: PgSearchQuery): Promise<number>;
   // (undocumented)
   insertDocuments(
     tx: Knex.Transaction,
@@ -92,6 +96,10 @@ export class PgSearchEngine implements SearchEngine {
 export interface PgSearchQuery {
   // (undocumented)
   fields?: Record<string, string | string[]>;
+  // (undocumented)
+  limit: number;
+  // (undocumented)
+  offset: number;
   // (undocumented)
   pgTerm?: string;
   // (undocumented)

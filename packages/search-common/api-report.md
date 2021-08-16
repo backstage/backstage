@@ -53,7 +53,9 @@ export interface SearchQuery {
   // (undocumented)
   filters?: JsonObject;
   // (undocumented)
-  pageCursor: string;
+  limit?: number;
+  // (undocumented)
+  offset?: number;
   // (undocumented)
   term: string;
   // (undocumented)
@@ -76,6 +78,8 @@ export interface SearchResult {
 export interface SearchResultSet {
   // (undocumented)
   results: SearchResult[];
+  // (undocumented)
+  totalCount: number;
 }
 
 // (No @packageDocumentation comment for this package)
