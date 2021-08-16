@@ -33,7 +33,7 @@ const checkFileExists = async (Key: string): Promise<boolean> => {
   const filePath = path.join(rootDir, Key);
 
   try {
-    fs.accessSync(filePath, fs.constants.F_OK);
+    await fs.access(filePath, fs.constants.F_OK);
     return true;
   } catch (err) {
     return false;
@@ -78,7 +78,7 @@ export class SwiftClient {
       const filePath = path.join(rootDir, destination);
       const fileBuffer = await streamToBuffer(stream);
 
-      fs.writeFileSync(filePath, fileBuffer);
+      await fs.writeFile(filePath, fileBuffer);
       const fileExists = await checkFileExists(destination);
 
       if (fileExists) {
