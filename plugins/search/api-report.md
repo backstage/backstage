@@ -148,8 +148,10 @@ export { searchPlugin };
 // @public (undocumented)
 export const SearchResult: ({
   children,
+  initialPageSize,
 }: {
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
+  initialPageSize?: number | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
