@@ -14,15 +14,50 @@
  * limitations under the License.
  */
 
-import { BottomNavigationAction } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import {
+  BottomNavigationAction,
+  BottomNavigationActionProps,
+  makeStyles,
+} from '@material-ui/core';
 import React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+
+interface SidebarGroupProps extends BottomNavigationActionProps {
+  to?: string;
+  injectedSelected?: boolean;
+}
+
+const useStyles = makeStyles({
+  label: {
+    display: 'none',
+  },
+});
 
 /**
  * If the page is mobile it should be BottomNavigationAction - otherwise just a fragment
  * Links to page, which will be displayed
  * - If 'to' Prop is not defined it will render a Menu page out of the children (if children given)
  */
-export const SidebarGroup = ({ children }: React.PropsWithChildren<{}>) => {
-  return <BottomNavigationAction label="Recents" icon={<MenuIcon />} />;
+export const SidebarGroup = ({
+  to,
+  label,
+  icon,
+  onClick,
+  injectedSelected,
+}: React.PropsWithChildren<SidebarGroupProps>) => {
+  const classes = useStyles();
+  const location = useLocation();
+
+  return (
+    <BottomNavigationAction
+      label={label}
+      icon={icon}
+      component={NavLink}
+      to={to ? to : location.pathname}
+      onClick={onClick}
+      value={to}
+      selected={injectedSelected}
+      classes={classes}
+    />
+  );
 };

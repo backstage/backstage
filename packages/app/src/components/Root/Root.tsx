@@ -14,35 +14,44 @@
  * limitations under the License.
  */
 
-import React, { useContext, PropsWithChildren } from 'react';
-import { Link, makeStyles } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
-import MapIcon from '@material-ui/icons/MyLocation';
-import LayersIcon from '@material-ui/icons/Layers';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import MoneyIcon from '@material-ui/icons/MonetizationOn';
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
-import { NavLink } from 'react-router-dom';
+import {
+  MobileSidebar,
+  sidebarConfig,
+  SidebarContext,
+  SidebarDivider,
+  SidebarGroup,
+  SidebarItem,
+  SidebarPage,
+  SidebarScrollWrapper,
+  SidebarSpace,
+} from '@backstage/core-components';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 import { SidebarSearch } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
-  Sidebar,
-  SidebarPage,
-  sidebarConfig,
-  SidebarContext,
-  SidebarItem,
-  SidebarDivider,
-  SidebarSpace,
-  SidebarScrollWrapper,
+  Settings as SidebarSettings,
+  UserSettingsSignInAvatar,
+} from '@backstage/plugin-user-settings';
+import {
   BottomNavigation,
-  SidebarGroup,
-} from '@backstage/core-components';
+  BottomNavigationAction,
+  Link,
+  makeStyles,
+} from '@material-ui/core';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import HomeIcon from '@material-ui/icons/Home';
+import LayersIcon from '@material-ui/icons/Layers';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import MenuIcon from '@material-ui/icons/Menu';
+import MoneyIcon from '@material-ui/icons/MonetizationOn';
+import MapIcon from '@material-ui/icons/MyLocation';
+import SearchIcon from '@material-ui/icons/Search';
+import React, { PropsWithChildren, useContext, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -77,37 +86,52 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
-  <SidebarPage>
-    <Sidebar>
-      <SidebarLogo />
-      <SidebarSearch />
-      <SidebarDivider />
-      {/* Global nav, not org-specific */}
-      <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-      <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-      <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-      {/* End global nav */}
-      <SidebarDivider />
-      <SidebarScrollWrapper>
-        <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-        <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-        <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
-        <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-      </SidebarScrollWrapper>
-      <SidebarDivider />
-      <Shortcuts />
-      <SidebarSpace />
-      <SidebarDivider />
-      <SidebarSettings />
-    </Sidebar>
-    <BottomNavigation>
-      <SidebarGroup />
-      <SidebarGroup />
-      <SidebarGroup />
-    </BottomNavigation>
-    {children}
-  </SidebarPage>
-);
+export const Root = ({ children }: PropsWithChildren<{}>) => {
+  return (
+    <SidebarPage>
+      <MobileSidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearch />
+        </SidebarGroup>
+        <SidebarDivider />
+        {/* Global nav, not org-specific */}
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+          <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+          <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+          <SidebarItem
+            icon={CreateComponentIcon}
+            to="create"
+            text="Create..."
+          />
+          {/* End global nav */}
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+            <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+            <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+            <SidebarItem
+              icon={MoneyIcon}
+              to="cost-insights"
+              text="Cost Insights"
+            />
+            <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          </SidebarScrollWrapper>
+          <SidebarDivider />
+          <Shortcuts />
+        </SidebarGroup>
+        <SidebarSpace />
+        <SidebarDivider />
+        <SidebarGroup
+          label="Settings"
+          icon={<UserSettingsSignInAvatar />}
+          to="/settings"
+        >
+          <SidebarSettings />
+        </SidebarGroup>
+      </MobileSidebar>
+      {children}
+    </SidebarPage>
+  );
+};
