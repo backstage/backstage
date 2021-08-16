@@ -193,6 +193,83 @@ describe('DatabaseDocumentStore', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should return requested range, %p',
+      async databaseId => {
+        const { store } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'test', [
+            {
+              title: 'Lorem Ipsum',
+              text: 'Hello World',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'Hello World',
+              text: 'Around the world',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'Another one',
+              text: 'From the next page',
+              location: 'LOCATION-1',
+            },
+          ]);
+          await store.completeInsert(tx, 'test');
+        });
+
+        const rows = await store.transaction(tx =>
+          store.query(tx, { pgTerm: 'Hello & World', offset: 1, limit: 1 }),
+        );
+
+        expect(rows).toEqual([
+          {
+            document: {
+              location: 'LOCATION-1',
+              text: 'Hello World',
+              title: 'Lorem Ipsum',
+            },
+            rank: expect.any(Number),
+            type: 'test',
+          },
+        ]);
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'count by term, %p',
+      async databaseId => {
+        const { store } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'test', [
+            {
+              title: 'Lorem Ipsum',
+              text: 'Hello World',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'Hello World',
+              text: 'Around the world',
+              location: 'LOCATION-1',
+            },
+          ]);
+          await store.completeInsert(tx, 'test');
+        });
+
+        const totalCount = await store.transaction(tx =>
+          store.count(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
+        );
+
+        expect(totalCount).toEqual(2);
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
       'query by term, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -215,7 +292,7 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World' }),
+          store.query(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
         );
 
         expect(rows).toEqual([
@@ -271,7 +348,12 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', types: ['my-type'] }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            types: ['my-type'],
+            offset: 0,
+            limit: 25,
+          }),
         );
 
         expect(rows).toEqual([
@@ -322,6 +404,8 @@ describe('DatabaseDocumentStore', () => {
           store.query(tx, {
             pgTerm: 'Hello & World',
             fields: { myField: 'this' },
+            offset: 0,
+            limit: 25,
           }),
         );
 
@@ -374,6 +458,8 @@ describe('DatabaseDocumentStore', () => {
           store.query(tx, {
             pgTerm: 'Hello & World',
             fields: { myField: ['this', 'that'] },
+            offset: 0,
+            limit: 25,
           }),
         );
 
@@ -433,6 +519,8 @@ describe('DatabaseDocumentStore', () => {
           store.query(tx, {
             pgTerm: 'Hello & World',
             fields: { myField: 'this', otherField: 'another' },
+            offset: 0,
+            limit: 25,
           }),
         );
 
@@ -480,6 +568,8 @@ describe('DatabaseDocumentStore', () => {
         const rows = await store.transaction(tx =>
           store.query(tx, {
             fields: { myField: 'this' },
+            offset: 0,
+            limit: 25,
           }),
         );
 

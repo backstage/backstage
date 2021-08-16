@@ -56,6 +56,8 @@ export class PgSearchEngine implements SearchEngine {
         .join('&'),
       fields: query.filters as Record<string, string | string[]>,
       types: query.types,
+      offset: query.offset ?? 0,
+      limit: Math.min(query.limit ?? 25, 100),
     };
   }
 
@@ -79,14 +81,19 @@ export class PgSearchEngine implements SearchEngine {
   async query(query: SearchQuery): Promise<SearchResultSet> {
     const pgQuery = this.translator(query);
 
-    const rows = await this.databaseStore.transaction(async tx =>
-      this.databaseStore.query(tx, pgQuery),
-    );
+    const [rows, totalCount] = await Promise.all([
+      this.databaseStore.transaction(async tx =>
+        this.databaseStore.query(tx, pgQuery),
+      ),
+      this.databaseStore.transaction(async tx =>
+        this.databaseStore.count(tx, pgQuery),
+      ),
+    ]);
     const results = rows.map(({ type, document }) => ({
       type,
       document,
     }));
 
-    return { results };
+    return { results, totalCount };
   }
 }
