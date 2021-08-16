@@ -20,16 +20,20 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
+import { Pagination } from '@material-ui/lab';
 import React from 'react';
 import { useSearch } from '../SearchContext';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
+  initialPageSize?: number;
 };
 
-const SearchResultComponent = ({ children }: Props) => {
+const SearchResultComponent = ({ children, initialPageSize = 25 }: Props) => {
   const {
     result: { loading, error, value },
+    page,
+    setPage,
   } = useSearch();
 
   if (loading) {
@@ -48,7 +52,25 @@ const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return children({ results: value.results });
+  const pageSize = page.limit ?? initialPageSize;
+  const totalPages = Math.ceil(value.totalCount / pageSize);
+  const currentPage = page.offset ? Math.floor(page.offset / pageSize) + 1 : 1;
+
+  const handlePageChange = (_: React.ChangeEvent<unknown>, pageNum: number) => {
+    setPage({ offset: (pageNum - 1) * pageSize, limit: pageSize });
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      {children({ results: value.results })}
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+      />
+    </>
+  );
 };
 
 export { SearchResultComponent as SearchResult };

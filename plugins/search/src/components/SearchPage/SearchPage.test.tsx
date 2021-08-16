@@ -74,21 +74,25 @@ describe('SearchPage', () => {
     const expectedTerm = 'justin bieber';
     const expectedTypes = ['software-catalog'];
     const expectedFilters = { [expectedFilterField]: expectedFilterValue };
-    const expectedPageCursor = 'page2-or-something';
+    const expectedOffset = 25;
+    const expectedLimit = 50;
 
-    // e.g. ?query=petstore&pageCursor=1&filters[lifecycle][]=experimental&filters[kind]=Component
+    // e.g. ?query=petstore&offset=25&limit=50&filters[lifecycle][]=experimental&filters[kind]=Component
     (useLocation as jest.Mock).mockReturnValueOnce({
-      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
+      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&offset=${expectedOffset}&limit=${expectedLimit}`,
     });
 
     // When we render the page...
     await renderInTestApp(<SearchPage />);
 
-    // Then search context should be set with these values...
-    expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
-    expect(setTypesMock).toHaveBeenCalledWith(expectedTypes);
-    expect(setPageCursorMock).toHaveBeenCalledWith(expectedPageCursor);
-    expect(setFiltersMock).toHaveBeenCalledWith(expectedFilters);
+    // Then search context should be initialized with these values...
+    const calls = (SearchContextProvider as jest.Mock).mock.calls[0];
+    const actualInitialState = calls[0].initialState;
+    expect(actualInitialState.term).toEqual(expectedTerm);
+    expect(actualInitialState.types).toEqual(expectedTypes);
+    expect(actualInitialState.page.limit).toEqual(expectedLimit);
+    expect(actualInitialState.page.offset).toEqual(expectedOffset);
+    expect(actualInitialState.filters).toStrictEqual(expectedFilters);
   });
 
   it('renders provided router element', async () => {
@@ -108,7 +112,7 @@ describe('SearchPage', () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
       term: 'bieber',
       types: ['software-catalog'],
-      pageCursor: 'page2-or-something',
+      page: { offset: 25, limit: 50 },
       filters: { anyKey: 'anyValue' },
       setTerm: setTermMock,
       setTypes: setTypesMock,
@@ -116,7 +120,7 @@ describe('SearchPage', () => {
       setPageCursor: setPageCursorMock,
     });
     const expectedLocation = encodeURI(
-      '?query=bieber&types[]=software-catalog&pageCursor=page2-or-something&filters[anyKey]=anyValue',
+      '?query=bieber&types[]=software-catalog&offset=25&limit=50&filters[anyKey]=anyValue',
     );
 
     await renderInTestApp(<SearchPage />);

@@ -24,6 +24,7 @@ jest.mock('../SearchContext', () => ({
   ...jest.requireActual('../SearchContext'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
+    page: {},
   }),
 }));
 
@@ -93,16 +94,73 @@ describe('SearchResult', () => {
 
   it('Calls children with results set to result.value', async () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
-      result: { loading: false, error: '', value: { results: [] } },
+      result: {
+        loading: false,
+        error: '',
+        value: {
+          totalCount: 1,
+          results: [
+            {
+              type: 'some-type',
+              document: {
+                title: 'some-title',
+                text: 'some-text',
+                location: 'some-location',
+              },
+            },
+          ],
+        },
+      },
+      page: {},
     });
 
-    await renderInTestApp(
+    const { getByText } = await renderInTestApp(
       <SearchResult>
         {({ results }) => {
-          expect(results).toEqual([]);
-          return <></>;
+          return <>Results {results.length}</>;
         }}
       </SearchResult>,
     );
+
+    expect(getByText('Results 1')).toBeInTheDocument();
+  });
+
+  it('Starts on initial page if no offset is set', async () => {
+    (useSearch as jest.Mock).mockReturnValueOnce({
+      page: {},
+      result: {
+        loading: false,
+        error: '',
+        value: { results: [{}], totalCount: 100 },
+      },
+    });
+
+    const { getByLabelText } = await renderInTestApp(
+      <SearchResult>{({}) => <></>}</SearchResult>,
+    );
+
+    expect(getByLabelText('page 1')).toHaveAttribute('aria-current', 'true');
+    expect(getByLabelText('Go to page 2')).toBeInTheDocument();
+    expect(getByLabelText('Go to page 3')).toBeInTheDocument();
+    expect(getByLabelText('Go to page 4')).toBeInTheDocument();
+  });
+
+  it('Shows the right page', async () => {
+    (useSearch as jest.Mock).mockReturnValueOnce({
+      page: { offset: 25 },
+      result: {
+        loading: false,
+        error: '',
+        value: { results: [{}], totalCount: 63 },
+      },
+    });
+
+    const { getByLabelText } = await renderInTestApp(
+      <SearchResult>{({}) => <></>}</SearchResult>,
+    );
+
+    expect(getByLabelText('Go to page 1')).toBeInTheDocument();
+    expect(getByLabelText('page 2')).toHaveAttribute('aria-current', 'true');
+    expect(getByLabelText('Go to page 3')).toBeInTheDocument();
   });
 });

@@ -21,7 +21,7 @@ describe('apis', () => {
     term: '',
     filters: {},
     types: [],
-    pageCursor: '',
+    page: {},
   };
 
   const baseUrl = 'https://base-url.com/';
@@ -53,7 +53,7 @@ describe('apis', () => {
   it('Fetch is called with expected URL (including stringified Q params)', async () => {
     await client.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=&pageCursor=`, {
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
       headers: {},
     });
   });
@@ -65,7 +65,7 @@ describe('apis', () => {
     });
     await authedClient.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=&pageCursor=`, {
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   });
