@@ -105,6 +105,49 @@ describe('fetch:template', () => {
       ).rejects.toThrowError(/copyWithoutRender must be an array/i);
     });
 
+    it('throws if copyWithoutRender is used with extension', async () => {
+      await expect(() =>
+        action.handler(
+          mockContext({
+            copyWithoutRender: ['abc'],
+            extension: true,
+          }),
+        ),
+      ).rejects.toThrowError(
+        /input extension incompatible with copyWithoutRender and cookiecutterCompat/,
+      );
+    });
+
+    it('throws if cookiecutterCompat is used with extension', async () => {
+      await expect(() =>
+        action.handler(
+          mockContext({
+            cookiecutterCompat: true,
+            extension: true,
+          }),
+        ),
+      ).rejects.toThrowError(
+        /input extension incompatible with copyWithoutRender and cookiecutterCompat/,
+      );
+    });
+
+    it('throws if extension string lacks a leading dot', async () => {
+      await expect(() =>
+        action.handler(
+          mockContext({
+            extension: 'njk',
+          }),
+        ),
+      ).rejects.toThrowError(/extension needs to start with a `.`/);
+      await expect(() =>
+        action.handler(
+          mockContext({
+            extension: '.',
+          }),
+        ),
+      ).rejects.toThrowError(/extension needs to start with a `.`/);
+    });
+
     describe('with valid input', () => {
       let context: ActionContext<FetchTemplateInput>;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -138,10 +138,15 @@ export function createFetchTemplateAction(options: {
 
       let extension: string | false = false;
       if (ctx.input.extension) {
-        extension =
-          typeof ctx.input.extension === 'boolean'
-            ? '.njk'
-            : ctx.input.extension;
+        extension = ctx.input.extension === true ? '.njk' : ctx.input.extension;
+      }
+      if (
+        extension !== false &&
+        (extension.length < 2 || !extension.startsWith('.'))
+      ) {
+        throw new InputError(
+          'Fetch action input extension needs to start with a `.`',
+        );
       }
 
       await fetchContents({
@@ -224,7 +229,7 @@ export function createFetchTemplateAction(options: {
 
         let localOutputPath = location;
         if (extension) {
-          if (localOutputPath.endsWith(extension)) {
+          if (extname(localOutputPath) === extension) {
             localOutputPath = localOutputPath.slice(0, -extension.length);
           } else {
             shouldCopyWithoutRender = true;
