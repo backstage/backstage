@@ -20,11 +20,8 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
-<<<<<<< HEAD
 import { Logger } from 'winston';
-=======
 import { DateTime } from 'luxon';
->>>>>>> d31a82869 (Catalog: Add refresh spread functionality)
 import { DatabaseManager } from './DatabaseManager';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
