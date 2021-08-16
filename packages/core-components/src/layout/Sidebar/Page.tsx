@@ -25,19 +25,11 @@ import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 
-export type SidebarPageClassKey = 'root';
-
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
-  {
-    root: {
-      width: '100%',
-      minHeight: '100%',
-      transition: 'padding-left 0.1s ease-out',
-      paddingLeft: ({ isPinned }) =>
-        isPinned
-          ? sidebarConfig.drawerWidthOpen
-          : sidebarConfig.drawerWidthClosed,
-    },
+const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>({
+  root: {
+    width: '100%',
+    minHeight: '100%',
+    transition: 'padding-left 0.1s ease-out',
   },
   { name: 'BackstageSidebarPage' },
 );
