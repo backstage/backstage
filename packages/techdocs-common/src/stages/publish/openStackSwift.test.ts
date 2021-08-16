@@ -29,7 +29,7 @@ import path from 'path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
 
-// NOTE: /packages/techdocs-common/__mocks__ is being used to mock pkgcloud client library
+// NOTE: /packages/techdocs-common/__mocks__ is being used to mock @trendyol-js/openstack-swift-sdk client library
 
 const createMockEntity = (annotations = {}): Entity => {
   return {
