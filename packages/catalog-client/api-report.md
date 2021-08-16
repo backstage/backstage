@@ -25,11 +25,6 @@ export type AddLocationResponse = {
   entities: Entity[];
 };
 
-// Warning: (ae-missing-release-tag) "CATALOG_FILTER_EXISTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CATALOG_FILTER_EXISTS: unique symbol;
-
 // Warning: (ae-missing-release-tag) "CatalogApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -76,50 +71,59 @@ export interface CatalogApi {
   ): Promise<void>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "CatalogApi" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CatalogClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export class CatalogClient implements CatalogApi {
-  constructor(options: { discoveryApi: DiscoveryApi });
+export class CatalogClient implements CatalogApi_2 {
+  constructor(options: { discoveryApi: DiscoveryApi_2 });
+  // Warning: (ae-forgotten-export) The symbol "AddLocationRequest" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "AddLocationResponse" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   addLocation(
-    { type, target, dryRun, presence }: AddLocationRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<AddLocationResponse>;
+    { type, target, dryRun, presence }: AddLocationRequest_2,
+    options?: CatalogRequestOptions_2,
+  ): Promise<AddLocationResponse_2>;
+  // Warning: (ae-forgotten-export) The symbol "CatalogEntitiesRequest" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "CatalogListResponse" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getEntities(
-    request?: CatalogEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+    request?: CatalogEntitiesRequest_2,
+    options?: CatalogRequestOptions_2,
+  ): Promise<CatalogListResponse_2<Entity>>;
   // (undocumented)
   getEntityByName(
     compoundName: EntityName,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<Entity | undefined>;
   // (undocumented)
   getLocationByEntity(
     entity: Entity,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<Location_2 | undefined>;
+  // Warning: (ae-forgotten-export) The symbol "CatalogRequestOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getLocationById(
     id: string,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   removeEntityByUid(
     uid: string,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<void>;
   // (undocumented)
   removeLocationById(
     id: string,
-    options?: CatalogRequestOptions,
+    options?: CatalogRequestOptions_2,
   ): Promise<void>;
 }
 
@@ -128,8 +132,8 @@ export class CatalogClient implements CatalogApi {
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
   filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
+    | Record<string, string | string[]>[]
+    | Record<string, string | string[]>
     | undefined;
   fields?: string[] | undefined;
 };
@@ -148,11 +152,12 @@ export type CatalogRequestOptions = {
   token?: string;
 };
 
-// Warning: (ae-missing-release-tag) "ENTITY_STATUS_CATALOG_PROCESSING_TYPE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "DiscoveryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
-  'backstage.io/catalog-processing';
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
+};
 
 // Warnings were encountered during analysis:
 //
