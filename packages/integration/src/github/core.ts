@@ -16,6 +16,7 @@
 
 import parseGitUrl from 'git-url-parse';
 import { GitHubIntegrationConfig } from './config';
+import { GithubCredentials } from './GithubCredentialsProvider';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -32,6 +33,7 @@ import { GitHubIntegrationConfig } from './config';
 export function getGitHubFileFetchUrl(
   url: string,
   config: GitHubIntegrationConfig,
+  credentials: GithubCredentials,
 ): string {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
@@ -49,7 +51,7 @@ export function getGitHubFileFetchUrl(
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
-    if (chooseEndpoint(config) === 'api') {
+    if (chooseEndpoint(config, credentials) === 'api') {
       return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`;
     }
     return `${config.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`;
@@ -61,25 +63,31 @@ export function getGitHubFileFetchUrl(
 /**
  * Gets the request options necessary to make requests to a given provider.
  *
+ * @deprecated This function is no longer used internally
  * @param config The relevant provider config
  */
 export function getGitHubRequestOptions(
   config: GitHubIntegrationConfig,
+  credentials: GithubCredentials,
 ): RequestInit {
   const headers: HeadersInit = {};
 
-  if (chooseEndpoint(config) === 'api') {
+  if (chooseEndpoint(config, credentials) === 'api') {
     headers.Accept = 'application/vnd.github.v3.raw';
   }
-  if (config.token) {
-    headers.Authorization = `token ${config.token}`;
+
+  if (credentials.token) {
+    headers.Authorization = `token ${credentials.token}`;
   }
 
   return { headers };
 }
 
-export function chooseEndpoint(config: GitHubIntegrationConfig): 'api' | 'raw' {
-  if (config.apiBaseUrl && (config.token || !config.rawBaseUrl)) {
+export function chooseEndpoint(
+  config: GitHubIntegrationConfig,
+  credentials: GithubCredentials,
+): 'api' | 'raw' {
+  if (config.apiBaseUrl && (credentials.token || !config.rawBaseUrl)) {
     return 'api';
   }
   return 'raw';

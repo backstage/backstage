@@ -119,6 +119,7 @@ export async function createConfig(
   plugins.push(
     new ProvidePlugin({
       process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
   );
 
@@ -208,7 +209,7 @@ export async function createConfig(
     output: {
       path: paths.targetDist,
       publicPath: validBaseUrl.pathname,
-      filename: isDev ? '[name].js' : 'static/[name].[hash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
         : 'static/[name].[chunkhash:8].chunk.js',
@@ -317,6 +318,7 @@ export async function createBackendConfig(
       new RunScriptWebpackPlugin({
         name: 'main.js',
         nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+        args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled

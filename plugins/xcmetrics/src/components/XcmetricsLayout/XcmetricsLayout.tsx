@@ -21,10 +21,10 @@ import {
   Page,
   TabbedLayout,
 } from '@backstage/core-components';
-import { OverviewComponent } from '../OverviewComponent';
+import { Overview } from '../Overview';
 import { buildsRouteRef, rootRouteRef } from '../../routes';
 import { RouteRef, SubRouteRef } from '@backstage/core-plugin-api';
-import { BuildListComponent } from '../BuildListComponent';
+import { BuildsPage } from '../BuildsPage';
 
 export interface TabConfig {
   routeRef: RouteRef | SubRouteRef;
@@ -36,12 +36,12 @@ const TABS: TabConfig[] = [
   {
     routeRef: rootRouteRef,
     title: 'Overview',
-    component: <OverviewComponent />,
+    component: <Overview />,
   },
   {
     routeRef: buildsRouteRef,
     title: 'Builds',
-    component: <BuildListComponent />,
+    component: <BuildsPage />,
   },
 ];
 

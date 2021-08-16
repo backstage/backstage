@@ -15,6 +15,7 @@ Avro
 backrub
 Bigtable
 Billett
+Bitbucket
 Bitrise
 Blackbox
 bool
@@ -84,6 +85,8 @@ facto
 failover
 Fargate
 Figma
+firehydrant
+FireHydrant
 Firekube
 Fiverr
 gitbeaker

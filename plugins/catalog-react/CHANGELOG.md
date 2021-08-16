@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.2
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- a440d3b38: Move and rename `FavoriteEntity` component to `catalog-react`
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
 ## 0.4.1
 
 ### Patch Changes

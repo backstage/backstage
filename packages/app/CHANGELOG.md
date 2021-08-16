@@ -1,5 +1,33 @@
 # example-app
 
+## 0.2.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cost-insights@0.11.4
+  - @backstage/plugin-github-actions@0.4.16
+  - @backstage/plugin-jenkins@0.5.3
+  - @backstage/plugin-kubernetes@0.4.11
+  - @backstage/plugin-pagerduty@0.3.11
+  - @backstage/plugin-scaffolder@0.11.0
+  - @backstage/plugin-sentry@0.3.18
+  - @backstage/plugin-techdocs@0.10.4
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-api-docs@0.6.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-import@0.5.17
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/plugin-explore@0.3.13
+  - @backstage/plugin-lighthouse@0.2.23
+  - @backstage/plugin-rollbar@0.3.12
+  - @backstage/plugin-search@0.4.7
+  - @backstage/plugin-tech-radar@0.4.5
+  - @backstage/cli@0.7.8
+  - @backstage/integration-react@0.1.7
+
 ## 0.2.40
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/test-utils
 
+## 0.1.17
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/test-utils-core@0.1.2
+
 ## 0.1.16
 
 ### Patch Changes

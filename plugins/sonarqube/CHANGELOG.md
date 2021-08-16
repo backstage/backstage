@@ -1,5 +1,18 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.0
+
+### Minor Changes
+
+- 8db48b968: Use IdentityApi to provide Auth Token for SonarQubeClient Api calls
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
 ## 0.1.24
 
 ### Patch Changes

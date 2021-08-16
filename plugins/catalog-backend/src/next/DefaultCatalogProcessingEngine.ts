@@ -20,6 +20,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
+import { Hash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
 import { CatalogProcessingOrchestrator } from './processing/types';
@@ -89,6 +91,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly processingDatabase: ProcessingDatabase,
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
+    private readonly createHash: () => Hash,
   ) {}
 
   async start() {
@@ -125,7 +128,14 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       },
       processTask: async item => {
         try {
-          const { id, state, unprocessedEntity, entityRef, locationKey } = item;
+          const {
+            id,
+            state,
+            unprocessedEntity,
+            entityRef,
+            locationKey,
+            resultHash: previousResultHash,
+          } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
             state,
@@ -142,6 +152,23 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             result.errors.map(e => serializeError(e)),
           );
 
+          let hashBuilder = this.createHash().update(errorsString);
+          if (result.ok) {
+            hashBuilder = hashBuilder
+              .update(stableStringify({ ...result.completedEntity }))
+              .update(stableStringify([...result.deferredEntities]))
+              .update(stableStringify([...result.relations]))
+              .update(stableStringify(Object.fromEntries(result.state)));
+          }
+
+          const resultHash = hashBuilder.digest('hex');
+          if (resultHash === previousResultHash) {
+            // If nothing changed in our produced outputs, we cannot have any
+            // significant effect on our surroundings; therefore, we just abort
+            // without any updates / stitching.
+            return;
+          }
+
           // If the result was marked as not OK, it signals that some part of the
           // processing pipeline threw an exception. This can happen both as part of
           // non-catastrophic things such as due to validation errors, as well as if
@@ -154,6 +181,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,
                 errors: errorsString,
+                resultHash,
               });
             });
             await this.stitcher.stitch(
@@ -167,6 +195,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             await this.processingDatabase.updateProcessedEntity(tx, {
               id,
               processedEntity: result.completedEntity,
+              resultHash,
               state: result.state,
               errors: errorsString,
               relations: result.relations,

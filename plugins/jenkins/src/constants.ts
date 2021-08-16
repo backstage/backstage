@@ -13,4 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
+// @deprecated The legacy annotation used for identifing Jenkins jobs, use
+// JENKINS_ANNOTATION instead.
+export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';

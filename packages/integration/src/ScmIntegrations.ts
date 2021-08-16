@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
@@ -24,6 +25,7 @@ import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
 
 type IntegrationsByType = {
+  awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
@@ -35,6 +37,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   static fromConfig(config: Config): ScmIntegrations {
     return new ScmIntegrations({
+      awsS3: AwsS3Integration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
       bitbucket: BitbucketIntegration.factory({ config }),
       github: GitHubIntegration.factory({ config }),
@@ -44,6 +47,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   constructor(integrationsByType: IntegrationsByType) {
     this.byType = integrationsByType;
+  }
+
+  get awsS3(): ScmIntegrationsGroup<AwsS3Integration> {
+    return this.byType.awsS3;
   }
 
   get azure(): ScmIntegrationsGroup<AzureIntegration> {

@@ -1,5 +1,14 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.2
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
 ## 0.2.1
 
 ### Patch Changes

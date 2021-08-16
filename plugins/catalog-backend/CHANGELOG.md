@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
 ## 0.13.1
 
 ### Patch Changes

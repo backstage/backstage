@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.8.9
+
+### Patch Changes
+
+- f7ce7c565: Use a more informative error message when URL reading isn't allowed due to no reader matching the target URL.
+- ce1958021: Pass on credentials to the integrations package, so that it can properly pick the API route when using GitHub apps based auth
+- Updated dependencies
+  - @backstage/integration@0.6.0
+
 ## 0.8.8
 
 ### Patch Changes

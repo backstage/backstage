@@ -15,26 +15,16 @@
  */
 
 import { Chip } from '@material-ui/core';
-import React, { ReactChild } from 'react';
-import {
-  StatusOK,
-  StatusError,
-  StatusWarning,
-  TableColumn,
-} from '@backstage/core-components';
-import { Build, BuildStatus } from '../api';
+import React from 'react';
+import { TableColumn } from '@backstage/core-components';
+import { Build } from '../api';
 import { formatTime, formatDuration } from '../utils';
-
-const STATUS_ICONS: { [key in BuildStatus]: ReactChild } = {
-  succeeded: <StatusOK />,
-  failed: <StatusError />,
-  stopped: <StatusWarning />,
-};
+import { StatusIcon } from './StatusIcon';
 
 const baseColumns: TableColumn<Build>[] = [
   {
     field: 'buildStatus',
-    render: data => STATUS_ICONS[data.buildStatus],
+    render: data => <StatusIcon buildStatus={data.buildStatus} />,
   },
   {
     title: 'Project',

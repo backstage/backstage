@@ -20,9 +20,14 @@ import { DateTime } from 'luxon';
 import {
   Build,
   BuildCount,
+  BuildError,
   BuildFilters,
+  BuildHost,
+  BuildMetadata,
+  BuildResponse,
   BuildStatusResult,
   BuildTime,
+  BuildWarning,
   PaginationResult,
   XcmetricsApi,
 } from './types';
@@ -38,25 +43,13 @@ export class XcmetricsClient implements XcmetricsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getBuild(id: string): Promise<Build> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build/${id}`);
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return ((await response.json()) as Record<'build', Build>).build;
+  async getBuild(id: string): Promise<BuildResponse> {
+    const response = await this.get(`/build/${id}`);
+    return (await response.json()) as BuildResponse;
   }
 
   async getBuilds(limit: number = 10): Promise<Build[]> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build?per=${limit}`);
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
+    const response = await this.get(`/build?per=${limit}`);
     return ((await response.json()) as PaginationResult<Build>).items;
   }
 
@@ -65,80 +58,88 @@ export class XcmetricsClient implements XcmetricsApi {
     page?: number,
     perPage?: number,
   ): Promise<PaginationResult<Build>> {
+    const response = await this.post('/build/filter', {
+      from: DateTime.fromISO(filters.from)
+        .startOf('day')
+        .toISO({ suppressMilliseconds: true }),
+      to: DateTime.fromISO(filters.to)
+        .endOf('day')
+        .startOf('second')
+        .toISO({ suppressMilliseconds: true }),
+      status: filters.buildStatus,
+      projectName: filters.project,
+      page,
+      per: perPage,
+    });
+
+    return (await response.json()) as PaginationResult<Build>;
+  }
+
+  async getBuildCounts(days: number): Promise<BuildCount[]> {
+    const response = await this.get(`/statistics/build/count?days=${days}`);
+    return (await response.json()) as BuildCount[];
+  }
+
+  async getBuildErrors(buildId: string): Promise<BuildError[]> {
+    const response = await this.get(`/build/error/${buildId}`);
+    return (await response.json()) as BuildError[];
+  }
+
+  async getBuildHost(buildId: string): Promise<BuildHost> {
+    const response = await this.get(`/build/host/${buildId}`);
+    return (await response.json()) as BuildHost;
+  }
+
+  async getBuildMetadata(buildId: string): Promise<BuildMetadata> {
+    const response = await this.get(`/build/metadata/${buildId}`);
+    return ((await response.json()) as Record<'metadata', BuildMetadata>)
+      .metadata;
+  }
+
+  async getBuildTimes(days: number): Promise<BuildTime[]> {
+    const response = await this.get(`/statistics/build/time?days=${days}`);
+    return (await response.json()) as BuildTime[];
+  }
+
+  async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {
+    const response = await this.get(`/statistics/build/status?per=${limit}`);
+    return ((await response.json()) as PaginationResult<BuildStatusResult>)
+      .items;
+  }
+
+  async getBuildWarnings(buildId: string): Promise<BuildWarning[]> {
+    const response = await this.get(`/build/warning/${buildId}`);
+    return (await response.json()) as BuildWarning[];
+  }
+
+  async getProjects(): Promise<string[]> {
+    const response = await this.get('/build/project');
+    return (await response.json()) as string[];
+  }
+
+  private async get(path: string): Promise<Response> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build/filter`, {
+    const response = await fetch(`${baseUrl}${path}`);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response;
+  }
+
+  private async post(path: string, body: Object): Promise<Response> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
+    const response = await fetch(`${baseUrl}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: DateTime.fromISO(filters.from)
-          .startOf('day')
-          .toISO({ suppressMilliseconds: true }),
-        to: DateTime.fromISO(filters.to)
-          .endOf('day')
-          .startOf('second')
-          .toISO({ suppressMilliseconds: true }),
-        status: filters.buildStatus,
-        projectName: filters.project,
-        page,
-        per: perPage,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
 
-    return (await response.json()) as PaginationResult<Build>;
-  }
-
-  async getBuildCounts(days: number): Promise<BuildCount[]> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(
-      `${baseUrl}/statistics/build/count?days=${days}`,
-    );
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return (await response.json()) as BuildCount[];
-  }
-
-  async getBuildTimes(days: number): Promise<BuildTime[]> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(
-      `${baseUrl}/statistics/build/time?days=${days}`,
-    );
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return (await response.json()) as BuildTime[];
-  }
-
-  async getBuildStatuses(limit: number): Promise<BuildStatusResult[]> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(
-      `${baseUrl}/statistics/build/status?per=${limit}`,
-    );
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return ((await response.json()) as PaginationResult<BuildStatusResult>)
-      .items;
-  }
-
-  async getProjects(): Promise<string[]> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/xcmetrics`;
-    const response = await fetch(`${baseUrl}/build/project`);
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return (await response.json()) as string[];
+    return response;
   }
 }

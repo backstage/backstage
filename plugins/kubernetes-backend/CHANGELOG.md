@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.14
+
+### Patch Changes
+
+- bbcd92afa: Adds ability to send an ExternalId with the assume role request to AWS
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+
 ## 0.3.13
 
 ### Patch Changes

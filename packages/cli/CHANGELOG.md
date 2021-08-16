@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.7.8
+
+### Patch Changes
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+
 ## 0.7.7
 
 ### Patch Changes

@@ -15,6 +15,7 @@
  */
 
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
+import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
@@ -25,6 +26,7 @@ import { GitLabIntegration } from './gitlab/GitLabIntegration';
  */
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
+  awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;

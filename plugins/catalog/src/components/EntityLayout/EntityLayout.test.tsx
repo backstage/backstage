@@ -61,6 +61,30 @@ describe('EntityLayout', () => {
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
+  it('renders error message when entity is not found', async () => {
+    const noEntityData = {
+      ...mockEntityData,
+      entity: undefined,
+    };
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityContext.Provider value={noEntityData}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityContext.Provider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Warning: Entity not found')).toBeInTheDocument();
+    expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
+  });
+
   it('navigates when user clicks different tab', async () => {
     const rendered = await renderInTestApp(
       <Routes>

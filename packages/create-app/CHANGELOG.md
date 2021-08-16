@@ -1,5 +1,83 @@
 # @backstage/create-app
 
+## 0.3.35
+
+### Patch Changes
+
+- 362ea5a72: Updated the index page redirect to work with apps served on a different base path than `/`.
+
+  To apply this change to an existing app, remove the `/` prefix from the target route in the `Navigate` element in `packages/app/src/App.tsx`:
+
+  ```diff
+  -<Navigate key="/" to="/catalog" />
+  +<Navigate key="/" to="catalog" />
+  ```
+
+- 80582cbec: Use new composable `TechDocsIndexPage` and `DefaultTechDocsHome`
+
+  Make the following changes to your `App.tsx` to migrate existing apps:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+- 56c773909: Add a complete prettier setup to the created project. Prettier used to only be added as a dependency to create apps, but there wasn't a complete setup included that makes it easy to run prettier. That has now changed, and the new `prettier:check` command can be used to check the formatting of the files in your created project.
+
+  To apply this change to an existing app, a couple of changes need to be made.
+
+  Create a `.prettierignore` file at the root of your repository with the following contents:
+
+  ```
+  dist
+  dist-types
+  coverage
+  .vscode
+  ```
+
+  Next update the root `package.json` by bumping the prettier version and adding the new `prettier:check` command:
+
+  ```diff
+     "scripts": {
+       ...
+  +    "prettier:check": "prettier --check .",
+       ...
+     },
+     ...
+     "dependencies": {
+       ...
+  -    "prettier": "^1.19.1"
+  +    "prettier": "^2.3.2"
+     }
+  ```
+
+  Finally run `yarn prettier --write .` on your project to update the existing formatting.
+
+- 9f8f8dd6b: Removed the `/` prefix in the catalog `SidebarItem` element, as it is no longer needed.
+
+  To apply this change to an existing app, remove the `/` prefix from the catalog and any other sidebar items in `packages/app/src/components/Root/Root.ts`:
+
+  ```diff
+  -<SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+  +<SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+  ```
+
+- 56c773909: Switched `@types/react-dom` dependency to of the app package to request `*` rather than a specific version.
+
+  To apply this change to an existing app, change the following in `packages/app/package.json`:
+
+  ```diff
+  -    "@types/react-dom": "^16.9.8",
+  +    "@types/react-dom": "*",
+  ```
+
 ## 0.3.34
 
 ### Patch Changes

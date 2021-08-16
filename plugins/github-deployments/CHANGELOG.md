@@ -1,5 +1,17 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.14
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
 ## 0.1.13
 
 ### Patch Changes

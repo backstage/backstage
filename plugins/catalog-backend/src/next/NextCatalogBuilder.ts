@@ -31,6 +31,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { createHash } from 'crypto';
 import lodash from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -310,6 +311,7 @@ export class NextCatalogBuilder {
       processingDatabase,
       orchestrator,
       stitcher,
+      () => createHash('sha1'),
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
