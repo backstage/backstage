@@ -338,6 +338,8 @@ describe('fetch:template', () => {
             'empty-dir-${{ values.count }}': {},
             'static.txt': 'static content',
             '${{ values.name }}.txt': 'static content',
+            '${{ values.name }}.txt.jinja2':
+              '${{ values.name }}: ${{ values.count }}',
             subdir: {
               'templated-content.txt.njk':
                 '${{ values.name }}: ${{ values.count }}',
@@ -363,6 +365,12 @@ describe('fetch:template', () => {
       await expect(
         fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
       ).resolves.toEqual('static content');
+    });
+
+    it('copies jinja2 files with templated names successfully', async () => {
+      await expect(
+        fs.readFile(`${workspacePath}/target/test-project.txt.jinja2`, 'utf-8'),
+      ).resolves.toEqual('${{ values.name }}: ${{ values.count }}');
     });
 
     it('copies files with templated content successfully', async () => {
