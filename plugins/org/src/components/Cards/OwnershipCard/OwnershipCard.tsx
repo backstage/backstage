@@ -224,7 +224,6 @@ export const OwnershipCard = ({
     })) as Array<{
       counter: number;
       className: BoxTypes;
-      entities: Entity[];
       name: string;
       url: string;
     }>;
