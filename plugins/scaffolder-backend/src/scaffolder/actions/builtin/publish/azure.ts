@@ -80,7 +80,10 @@ export function createPublishAzureAction(options: {
     async handler(ctx) {
       const { repoUrl, defaultBranch = 'master' } = ctx.input;
 
-      const { owner, repo, host, organization } = parseRepoUrl(repoUrl);
+      const { owner, repo, host, organization } = parseRepoUrl(
+        repoUrl,
+        integrations,
+      );
 
       if (!organization) {
         throw new InputError(

@@ -91,15 +91,20 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const ghUrl = getGitHubFileFetchUrl(url, this.integration.config);
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
+    const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
+    const ghUrl = getGitHubFileFetchUrl(
+      url,
+      this.integration.config,
+      credentials,
+    );
+
     let response: Response;
     try {
-      response = await fetch(ghUrl.toString(), {
+      response = await fetch(ghUrl, {
         headers: {
-          ...headers,
+          ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
           Accept: 'application/vnd.github.v3.raw',
         },

@@ -77,6 +77,10 @@ class GCSFile {
     });
     return readable;
   }
+
+  delete() {
+    return Promise.resolve();
+  }
 }
 
 class Bucket {
@@ -105,7 +109,27 @@ class Bucket {
   }
 
   file(destinationFilePath: string) {
+    if (this.bucketName === 'delete_stale_files_error') {
+      throw Error('Message');
+    }
     return new GCSFile(destinationFilePath);
+  }
+
+  getFilesStream() {
+    const readable = new Readable();
+    readable._read = () => {};
+
+    process.nextTick(() => {
+      if (
+        this.bucketName === 'delete_stale_files_success' ||
+        this.bucketName === 'delete_stale_files_error'
+      ) {
+        readable.emit('data', { name: 'stale-file.png' });
+      }
+      readable.emit('end');
+    });
+
+    return readable;
   }
 }
 

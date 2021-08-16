@@ -26,7 +26,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
     return;
   }
 
-  const { properties, anyOf, oneOf, allOf, dependencies } = schema;
+  const { properties, items, anyOf, oneOf, allOf, dependencies } = schema;
 
   for (const propName in schema) {
     if (!schema.hasOwnProperty(propName)) {
@@ -53,6 +53,12 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
       uiSchema[propName] = innerUiSchema;
       extractUiSchema(schemaNode, innerUiSchema);
     }
+  }
+
+  if (isObject(items)) {
+    const innerUiSchema = {};
+    uiSchema.items = innerUiSchema;
+    extractUiSchema(items, innerUiSchema);
   }
 
   if (Array.isArray(anyOf)) {

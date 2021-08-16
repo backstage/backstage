@@ -23,9 +23,11 @@ import {
   Content,
   Header,
   HeaderLabel,
+  Link,
   Page,
   Progress,
   RoutedTabs,
+  WarningPanel,
 } from '@backstage/core-components';
 import {
   attachComponentData,
@@ -35,6 +37,7 @@ import {
 import {
   EntityContext,
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
@@ -43,7 +46,6 @@ import { Alert } from '@material-ui/lab';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 type SubRoute = {
@@ -79,7 +81,7 @@ const EntityLayoutTitle = ({
       >
         {title}
       </Box>
-      {entity && <FavouriteEntity entity={entity} />}
+      {entity && <FavoriteEntity entity={entity} />}
     </Box>
   );
 };
@@ -245,6 +247,19 @@ export const EntityLayout = ({
           <Alert severity="error">{error.toString()}</Alert>
         </Content>
       )}
+
+      {!loading && !error && !entity && (
+        <Content>
+          <WarningPanel title="Entity not found">
+            There is no {kind} with the requested{' '}
+            <Link to="https://backstage.io/docs/features/software-catalog/references">
+              kind, namespace, and name
+            </Link>
+            .
+          </WarningPanel>
+        </Content>
+      )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}

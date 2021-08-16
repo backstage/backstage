@@ -18,14 +18,24 @@ import { BuildStatus } from '../api';
 
 export const formatDuration = (seconds: number) => {
   const duration = Duration.fromObject({
-    seconds: Math.round(seconds),
-  }).shiftTo('hours', 'minutes', 'seconds');
+    seconds: seconds,
+  }).shiftTo('hours', 'minutes', 'seconds', 'milliseconds');
+
+  if (duration.hours + duration.minutes + duration.seconds === 0) {
+    return `${Math.round(duration.milliseconds)} ms`;
+  }
 
   const h = duration.hours ? `${duration.hours} h` : '';
   const m = duration.minutes ? `${duration.minutes} m` : '';
   const s = duration.hours < 12 ? `${duration.seconds ?? 0} s` : '';
 
   return `${h} ${m} ${s}`;
+};
+
+export const formatSecondsInterval = ([start, end]: [number, number]) => {
+  return `${Math.round(start * 100) / 100} s - ${
+    Math.round(end * 100) / 100
+  } s`;
 };
 
 export const formatTime = (timestamp: string) => {
