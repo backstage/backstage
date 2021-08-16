@@ -235,7 +235,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
         filePath,
       );
 
-      if (downloadResponse && !(downloadResponse instanceof NotFound)) {
+      if (!(downloadResponse instanceof NotFound)) {
         const stream = downloadResponse.data;
 
         try {

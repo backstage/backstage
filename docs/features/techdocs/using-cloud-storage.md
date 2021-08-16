@@ -399,7 +399,7 @@ techdocs:
 
 Set the configs in your `app-config.yaml` to point to your container name.
 
-https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
+https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential
 for more details.
 
 ```yaml
@@ -409,13 +409,10 @@ techdocs:
     openStackSwift:
       containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        username: ${OPENSTACK_SWIFT_STORAGE_USERNAME}
-        password: ${OPENSTACK_SWIFT_STORAGE_PASSWORD}
+        id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+        secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
       authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
-      keystoneAuthVersion: ${OPENSTACK_SWIFT_STORAGE_AUTH_VERSION}
-      domainId: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_ID}
-      domainName: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME}
-      region: ${OPENSTACK_SWIFT_STORAGE_REGION}
+      swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
 ```
 
 **4. That's it!**
