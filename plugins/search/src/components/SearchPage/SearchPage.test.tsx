@@ -77,17 +77,20 @@ describe('SearchPage', () => {
 
     // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
     (useLocation as jest.Mock).mockReturnValueOnce({
-      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
+      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&offset=${expectedOffset}&limit=${expectedLimit}`,
     });
 
     // When we render the page...
     await renderInTestApp(<SearchPage />);
 
-    // Then search context should be set with these values...
-    expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
-    expect(setTypesMock).toHaveBeenCalledWith(expectedTypes);
-    expect(setPageCursorMock).toHaveBeenCalledWith(expectedPageCursor);
-    expect(setFiltersMock).toHaveBeenCalledWith(expectedFilters);
+    // Then search context should be initialized with these values...
+    const calls = (SearchContextProvider as jest.Mock).mock.calls[0];
+    const actualInitialState = calls[0].initialState;
+    expect(actualInitialState.term).toEqual(expectedTerm);
+    expect(actualInitialState.types).toEqual(expectedTypes);
+    expect(actualInitialState.page.limit).toEqual(expectedLimit);
+    expect(actualInitialState.page.offset).toEqual(expectedOffset);
+    expect(actualInitialState.filters).toStrictEqual(expectedFilters);
   });
 
   it('renders provided router element', async () => {

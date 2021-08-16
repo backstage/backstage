@@ -84,7 +84,7 @@ export const SearchContextProvider = ({
         pageCursor: pageCursor,
         types,
       }),
-    [term, filters, types, pageCursor],
+    [term, filters, types, page],
   );
 
   const hasNextPage =

@@ -1,4 +1,4 @@
-/*
+w/*
  * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +20,20 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
+import { Pagination } from '@material-ui/lab';
 import React from 'react';
 import { useSearch } from '../SearchContext';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
+  initialPageSize?: number;
 };
 
 export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
+    page,
+    setPage,
   } = useSearch();
 
   if (loading) {
