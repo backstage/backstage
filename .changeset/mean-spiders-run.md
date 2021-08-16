@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-todo-backend': minor
+'@backstage/plugin-todo-backend': patch
 ---
 
-images will be ignored and files bigger than 200Kb will also be ignored so that the todo plugin doesn't stay hanging
+Ignore images and files that are larger than 200KB.
