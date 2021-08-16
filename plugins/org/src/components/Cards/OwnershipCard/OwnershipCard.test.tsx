@@ -25,7 +25,12 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
 import React from 'react';
 import { OwnershipCard } from './OwnershipCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 
 describe('OwnershipCard', () => {
   const userEntity: GroupEntity = {
@@ -118,8 +123,19 @@ describe('OwnershipCard', () => {
       ] as any,
     });
 
+    const configApi: ConfigApi = new ConfigReader({
+      app: {
+        baseUrl: 'http://localhost:3000',
+      },
+    });
+
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [configApiRef, configApi],
+          [catalogApiRef, catalogApi],
+        ])}
+      >
         <EntityProvider entity={userEntity}>
           <OwnershipCard />
         </EntityProvider>
