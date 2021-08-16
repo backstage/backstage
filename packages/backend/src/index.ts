@@ -36,6 +36,7 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
+import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
@@ -72,6 +73,7 @@ function makeCreateEnv(config: Config) {
 }
 
 async function main() {
+  metricsInit();
   const logger = getRootLogger();
 
   logger.info(
@@ -124,6 +126,7 @@ async function main() {
   const service = createServiceBuilder(module)
     .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
+    .addRouter('', metricsHandler())
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 

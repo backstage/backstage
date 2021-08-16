@@ -468,6 +468,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
 
+    const nextRefresh = Math.random() * (150 - 100) + 100;
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
@@ -476,12 +477,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [
-                `${this.options.refreshInterval()} seconds`,
-              ])
-            : tx.raw(
-                `now() + interval '${this.options.refreshInterval()} seconds'`,
-              ),
+            ? tx.raw(`datetime('now', ?)`, [`${nextRefresh} seconds`])
+            : tx.raw(`now() + interval '${Number(nextRefresh)} seconds'`),
       });
 
     return {
