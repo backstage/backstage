@@ -58,7 +58,7 @@ export type ReadTreeOptions = {
    *
    * If no filter is provided all files are extracted.
    */
-  filter?(path: string): boolean;
+  filter?(path: string, info?: { size: number }): boolean;
 
   /**
    * An etag can be provided to check whether readTree's response has changed from a previous execution.
@@ -114,7 +114,7 @@ export type FromArchiveOptions = {
   // etag of the blob
   etag: string;
   // Filter passed on from the ReadTreeOptions
-  filter?: (path: string) => boolean;
+  filter?: (path: string, info?: { size: number }) => boolean;
 };
 
 export interface ReadTreeResponseFactory {
