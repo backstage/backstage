@@ -131,23 +131,6 @@ describe('fetch:template', () => {
       );
     });
 
-    it('throws if extension string lacks a leading dot', async () => {
-      await expect(() =>
-        action.handler(
-          mockContext({
-            extension: 'njk',
-          }),
-        ),
-      ).rejects.toThrowError(/extension needs to start with a `.`/);
-      await expect(() =>
-        action.handler(
-          mockContext({
-            extension: '.',
-          }),
-        ),
-      ).rejects.toThrowError(/extension needs to start with a `.`/);
-    });
-
     describe('with valid input', () => {
       let context: ActionContext<FetchTemplateInput>;
 

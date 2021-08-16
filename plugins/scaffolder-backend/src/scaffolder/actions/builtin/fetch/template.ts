@@ -139,14 +139,9 @@ export function createFetchTemplateAction(options: {
       let extension: string | false = false;
       if (ctx.input.extension) {
         extension = ctx.input.extension === true ? '.njk' : ctx.input.extension;
-      }
-      if (
-        extension !== false &&
-        (extension.length < 2 || !extension.startsWith('.'))
-      ) {
-        throw new InputError(
-          'Fetch action input extension needs to start with a `.`',
-        );
+        if (!extension.startsWith('.')) {
+          extension = `.${extension}`;
+        }
       }
 
       await fetchContents({
@@ -225,24 +220,25 @@ export function createFetchTemplateAction(options: {
       );
 
       for (const location of allEntriesInTemplate) {
-        let shouldCopyWithoutRender = nonTemplatedEntries.has(location);
+        let renderFilename = !nonTemplatedEntries.has(location);
+        let renderContents = renderFilename;
 
         let localOutputPath = location;
         if (extension) {
-          if (extname(localOutputPath) === extension) {
+          renderFilename = true;
+          renderContents = extname(localOutputPath) === extension;
+          if (renderContents) {
             localOutputPath = localOutputPath.slice(0, -extension.length);
-          } else {
-            shouldCopyWithoutRender = true;
           }
-          localOutputPath = templater.renderString(localOutputPath, context);
-        } else if (!shouldCopyWithoutRender) {
+        }
+        if (renderFilename) {
           localOutputPath = templater.renderString(localOutputPath, context);
         }
         const outputPath = resolvePath(outputDir, localOutputPath);
 
-        if (shouldCopyWithoutRender) {
+        if (!renderContents) {
           ctx.logger.info(
-            `Copying file/directory ${location} without processing since it matches a pattern in "copyWithoutRender".`,
+            `Copying file/directory ${location} without processing.`,
           );
         }
 
@@ -266,9 +262,9 @@ export function createFetchTemplateAction(options: {
             const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
             await fs.outputFile(
               outputPath,
-              shouldCopyWithoutRender
-                ? inputFileContents
-                : templater.renderString(inputFileContents, context),
+              renderContents
+                ? templater.renderString(inputFileContents, context)
+                : inputFileContents,
             );
           }
         }
