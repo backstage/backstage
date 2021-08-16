@@ -26,6 +26,17 @@ export type AppConfig = {
 };
 
 export type Config = {
+  /**
+   * Subscribes to the configuration object in order to receive a notification
+   * whenever any value within the configuration has changed.
+   *
+   * This method is optional to implement, and consumers need to check if it is
+   * implemented before invoking it.
+   */
+  subscribe?(onChange: () => void): {
+    unsubscribe: () => void;
+  };
+
   has(key: string): boolean;
 
   keys(): string[];
