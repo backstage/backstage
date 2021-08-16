@@ -132,6 +132,8 @@ want to have those as well as your new one, you'll need to do the following:
 ```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 
+const integrations = ScmIntegrations.fromConfig(config);
+
 const builtInActions = createBuiltinActions({
   containerRunner,
   integrations,
