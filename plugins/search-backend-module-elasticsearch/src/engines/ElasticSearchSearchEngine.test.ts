@@ -87,13 +87,11 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
     });
 
@@ -104,7 +102,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind' },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -132,6 +129,79 @@ describe('ElasticSearchSearchEngine', () => {
             },
           },
         },
+        from: 0,
+        size: 25,
+      });
+    });
+
+    it('should pass offset and limit', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        types: ['indexName'],
+        term: 'testTerm',
+        offset: 25,
+        limit: 50,
+      }) as ConcreteElasticSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: ['indexName'],
+        elasticSearchQuery: expect.any(Object),
+      });
+
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+
+      expect(queryBody).toEqual({
+        query: {
+          bool: {
+            filter: [],
+            must: {
+              multi_match: {
+                query: 'testTerm',
+                fields: ['*'],
+                fuzziness: 'auto',
+                minimum_should_match: 1,
+              },
+            },
+          },
+        },
+        from: 25,
+        size: 50,
+      });
+    });
+
+    it('should have maximum limit of 100', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        types: ['indexName'],
+        term: 'testTerm',
+        offset: 25,
+        limit: 500,
+      }) as ConcreteElasticSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: ['indexName'],
+        elasticSearchQuery: expect.any(Object),
+      });
+
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+
+      expect(queryBody).toEqual({
+        query: {
+          bool: {
+            filter: [],
+            must: {
+              multi_match: {
+                query: 'testTerm',
+                fields: ['*'],
+                fuzziness: 'auto',
+                minimum_should_match: 1,
+              },
+            },
+          },
+        },
+        from: 25,
         size: 100,
       });
     });
@@ -143,7 +213,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind', namespace: 'testNameSpace' },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -178,7 +247,8 @@ describe('ElasticSearchSearchEngine', () => {
             ],
           },
         },
-        size: 100,
+        from: 0,
+        size: 25,
       });
     });
 
@@ -189,7 +259,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: ['testKind', 'kastTeint'] },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -228,7 +297,8 @@ describe('ElasticSearchSearchEngine', () => {
             },
           },
         },
-        size: 100,
+        from: 0,
+        size: 25,
       });
     });
 
@@ -239,7 +309,6 @@ describe('ElasticSearchSearchEngine', () => {
           types: ['indexName'],
           term: 'testTerm',
           filters: { kind: { a: 'b' } },
-          pageCursor: '',
         }) as ConcreteElasticSearchQuery;
       expect(actualTranslatedQuery).toThrow();
     });
@@ -315,11 +384,10 @@ describe('ElasticSearchSearchEngine', () => {
       const mockedSearchResult = await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       // Should return 0 results as nothing is indexed here
-      expect(mockedSearchResult).toMatchObject({ results: [] });
+      expect(mockedSearchResult).toMatchObject({ results: [], totalCount: 0 });
     });
 
     it('should handle index/search type filtering correctly', async () => {
@@ -327,7 +395,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       expect(elasticSearchQuerySpy).toHaveBeenCalled();
@@ -346,7 +413,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: '*__search',
       });
@@ -359,7 +427,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: '',
         filters: {},
-        pageCursor: '',
       });
 
       expect(elasticSearchQuerySpy).toHaveBeenCalled();
@@ -373,7 +440,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: '*__search',
       });
@@ -386,7 +454,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: '',
         filters: {},
-        pageCursor: '',
         types: ['test-type'],
       });
 
@@ -401,7 +468,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: ['test-type__search'],
       });
