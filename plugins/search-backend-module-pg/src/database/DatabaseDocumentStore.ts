@@ -136,6 +136,36 @@ export class DatabaseDocumentStore implements DatabaseStore {
     // WHERE query @@ body AND (document @> '{"kind": "API"}')
     // ORDER BY rank DESC
     // LIMIT 10;
+    const query = this.buildQuery(tx, searchQuery);
+
+    query.select('type', 'document');
+
+    const { pgTerm, limit, offset } = searchQuery;
+
+    if (pgTerm) {
+      query
+        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
+        .orderBy('rank', 'desc');
+    } else {
+      query.select(tx.raw('1 as rank'));
+    }
+
+    return await query.offset(offset).limit(limit);
+  }
+
+  async count(
+    tx: Knex.Transaction,
+    searchQuery: PgSearchQuery,
+  ): Promise<number> {
+    const query = this.buildQuery(tx, searchQuery);
+    const [row] = await query.count();
+    return Number(row.count);
+  }
+
+  private buildQuery(
+    tx: Knex.Transaction,
+    { types, pgTerm, fields }: PgSearchQuery,
+  ) {
     const query = tx<DocumentResultRow>('documents');
 
     if (pgTerm) {

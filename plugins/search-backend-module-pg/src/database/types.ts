@@ -37,6 +37,7 @@ export interface DatabaseStore {
     tx: Knex.Transaction,
     pgQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
+  count(tx: Knex.Transaction, pgQuery: PgSearchQuery): Promise<number>;
 }
 
 export interface RawDocumentRow {

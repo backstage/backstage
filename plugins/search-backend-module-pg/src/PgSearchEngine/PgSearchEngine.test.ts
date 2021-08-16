@@ -32,6 +32,7 @@ describe('PgSearchEngine', () => {
       transaction: jest.fn(),
       insertDocuments: jest.fn(),
       query: jest.fn(),
+      count: jest.fn(),
       completeInsert: jest.fn(),
       prepareInsert: jest.fn(),
     };
@@ -179,6 +180,7 @@ describe('PgSearchEngine', () => {
   describe('query', () => {
     it('should perform query', async () => {
       database.transaction.mockImplementation(fn => fn(tx));
+      database.count.mockResolvedValue(1337);
       database.query.mockResolvedValue([
         {
           document: {
@@ -207,7 +209,7 @@ describe('PgSearchEngine', () => {
         ],
         nextPageCursor: undefined,
       });
-      expect(database.transaction).toHaveBeenCalledTimes(1);
+      expect(database.transaction).toHaveBeenCalledTimes(2);
       expect(database.query).toHaveBeenCalledWith(tx, {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
