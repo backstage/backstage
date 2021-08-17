@@ -66,6 +66,21 @@ describe('Default Processing Database', () => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
   };
 
+  const parseDate = (date: string | Date): DateTime => {
+    const parsedDate =
+      typeof date === 'string'
+        ? DateTime.fromSQL(date, { zone: 'UTC' })
+        : DateTime.fromJSDate(date);
+
+    if (!parsedDate.isValid) {
+      throw new Error(
+        `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
+      );
+    }
+
+    return parsedDate;
+  };
+
   describe('addUprocessedEntities', () => {
     function mockEntity(name: string, type: string): Entity {
       return {
@@ -995,9 +1010,7 @@ describe('Default Processing Database', () => {
         const result = await knex<DbRefreshStateRow>('refresh_state')
           .where('entity_ref', 'location:default/new-root')
           .select();
-        const nextUpdate = DateTime.fromSQL(result[0].next_update_at, {
-          zone: 'utc',
-        });
+        const nextUpdate = parseDate(result[0].next_update_at);
         expect(nextUpdate.diff(now, 'seconds').seconds).toBeGreaterThanOrEqual(
           100,
         );

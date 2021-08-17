@@ -29,6 +29,6 @@ export function createRandomRefreshInterval(options: {
 }): RefreshIntervalFunction {
   const { minSeconds, maxSeconds } = options;
   return () => {
-    return Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
+    return Math.random() * (maxSeconds - minSeconds) + minSeconds;
   };
 }
