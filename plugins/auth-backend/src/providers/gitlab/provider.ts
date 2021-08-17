@@ -31,7 +31,6 @@ import {
   AuthProviderFactory,
   SignInResolver,
   AuthHandler,
-  ProfileInfo,
 } from '../types';
 import {
   OAuthAdapter,
@@ -90,9 +89,13 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   info,
   ctx,
 ) => {
-  const { result } = info;
+  const { profile, result } = info;
 
-  const id = result.fullProfile.username || result.fullProfile.id;
+  let id = result.fullProfile.id;
+
+  if (profile.email) {
+    id = profile.email.split('@')[0];
+  }
 
   const token = await ctx.tokenIssuer.issueToken({
     claims: { sub: id, ent: [`user:default/${id}`] },
@@ -104,18 +107,9 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   fullProfile,
   params,
-}) => {
-  fullProfile.photos = [
-    ...(fullProfile.photos ?? []),
-    ...((fullProfile as FullProfile).avatarUrl
-      ? [{ value: (fullProfile as FullProfile).avatarUrl as string }]
-      : []),
-  ];
-
-  return {
-    profile: makeProfileInfo(fullProfile, params.id_token),
-  };
-};
+}) => ({
+  profile: makeProfileInfo(fullProfile, params.id_token),
+});
 
 export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
