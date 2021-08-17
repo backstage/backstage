@@ -84,39 +84,6 @@ class Connection implements EntityProviderConnection {
   }
 }
 
-/*
-export class Metrics {
-  private readonly processedEntities = new Counter({
-    name: 'processed_entities',
-    help: 'Amount of entities processed',
-  });
-  private readonly processingDuration = new Histogram({
-    name: 'processing_duration',
-    help: 'Processing duration',
-  });
-  private readonly processingQueueDelay = new Histogram({
-    name: 'processing_queue_delay',
-    help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
-  });
-
-  async markProcess(item: RefreshStateItem, inner: () => Promise<void>) {
-    this.processedEntities.add(1);
-    this.processingQueueDelay.add(
-      DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
-        .diffNow()
-        .as('seconds'),
-    );
-    const endTimer = this.processingDuration.startTimer();
-
-    try {
-      await inner();
-    } finally {
-      endTimer();
-    }
-  }
-}
-*/
-
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private stopFunc?: () => void;
   private readonly metrics = {
