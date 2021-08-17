@@ -15,4 +15,4 @@
  */
 
 export { GitLabClient, paginated } from './client';
-export type { GitLabProject } from "./types";
+export type { GitLabProject } from './types';
