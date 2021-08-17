@@ -6555,9 +6555,9 @@
     "@types/d3-path" "^1"
 
 "@types/d3-shape@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@types/d3-shape/-/d3-shape-3.0.1.tgz#8cebf5f3d56dd81674e1822279db58a38848a250"
-  integrity sha512-HnpwE2zl45cOaXLLo0zR4OfRQM9u9sI/ESb0w41PrrsQfkibj8pVIS8VYMSem2Wf5RuWxcgy3/8Kw2/FcIqAEQ==
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@types/d3-shape/-/d3-shape-3.0.2.tgz#4b1ca4ddaac294e76b712429726d40365cd1e8ca"
+  integrity sha512-5+ButCmIfNX8id5seZ7jKj3igdcxx+S9IDBiT35fQGTLZUfkFgTv+oBH34xgeoWDKpWcMITSzBILWQtBoN5Piw==
   dependencies:
     "@types/d3-path" "*"
 
