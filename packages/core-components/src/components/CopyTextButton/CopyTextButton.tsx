@@ -18,7 +18,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { IconButton, Tooltip } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import PropTypes from 'prop-types';
-import React, { MouseEventHandler, useRef, useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 
 /**
  * Copy text button with visual feedback in the form of
@@ -52,43 +52,35 @@ export const CopyTextButton = (props: Props) => {
     ...props,
   };
   const errorApi = useApi(errorApiRef);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
 
   const handleCopyClick: MouseEventHandler = e => {
     e.stopPropagation();
     setOpen(true);
 
-    try {
-      if (inputRef.current) {
-        inputRef.current.select();
-        document.execCommand('copy');
-      }
-    } catch (error) {
-      errorApi.post(error);
-    }
+    navigator.clipboard.writeText(text).then(
+      () => {
+        /* clipboard successfully set */
+      },
+      error => {
+        errorApi.post(error);
+      },
+    );
   };
 
   return (
-    <>
-      <textarea
-        ref={inputRef}
-        style={{ position: 'absolute', top: -9999, left: -9999 }}
-        defaultValue={text}
-      />
-      <Tooltip
-        id="copy-test-tooltip"
-        title={tooltipText}
-        placement="top"
-        leaveDelay={tooltipDelay}
-        onClose={() => setOpen(false)}
-        open={open}
-      >
-        <IconButton onClick={handleCopyClick}>
-          <CopyIcon />
-        </IconButton>
-      </Tooltip>
-    </>
+    <Tooltip
+      id="copy-test-tooltip"
+      title={tooltipText}
+      placement="top"
+      leaveDelay={tooltipDelay}
+      onClose={() => setOpen(false)}
+      open={open}
+    >
+      <IconButton onClick={handleCopyClick}>
+        <CopyIcon />
+      </IconButton>
+    </Tooltip>
   );
 };
 
