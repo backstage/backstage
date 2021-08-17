@@ -244,9 +244,7 @@ export interface OAuthProviderHandlers {
     req: express.Request,
     options: Record<string, string>,
   ): Promise<RedirectInfo>;
-  handler(
-    req: express.Request,
-  ): Promise<{
+  handler(req: express.Request): Promise<{
     response: AuthResponse<OAuthProviderInfo>;
     refreshToken?: string;
   }>;

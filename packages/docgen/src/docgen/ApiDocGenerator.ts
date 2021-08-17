@@ -127,9 +127,9 @@ export default class ApiDocGenerator {
     );
     const docs = this.getNodeDocs(declaration);
 
-    const membersAndTypes = Array.from(
-      interfaceMembers.values(),
-    ).flatMap(fieldSymbol => this.getMemberInfo(name, fieldSymbol));
+    const membersAndTypes = Array.from(interfaceMembers.values()).flatMap(
+      fieldSymbol => this.getMemberInfo(name, fieldSymbol),
+    );
 
     const members = membersAndTypes.map(t => t.member);
     const dependentTypes = this.flattenTypes(
@@ -174,9 +174,8 @@ export default class ApiDocGenerator {
   ): { member: FieldInfo; dependentTypes: TypeInfo[] } {
     const declaration = symbol.valueDeclaration;
 
-    const { links, infos: dependentTypes } = this.findAllTypeReferences(
-      declaration,
-    );
+    const { links, infos: dependentTypes } =
+      this.findAllTypeReferences(declaration);
 
     let type: FieldInfo['type'] = 'prop';
     if (

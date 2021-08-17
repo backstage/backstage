@@ -19,8 +19,8 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import * as uuid from 'uuid';
+import { Logger } from 'winston';
 import { DatabaseManager } from './DatabaseManager';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
@@ -79,10 +79,10 @@ describe('Default Processing Database', () => {
       'updates refresh state with varying location keys, %p',
       async databaseId => {
         const mockWarn = jest.fn();
-        const { db } = await createDatabase(databaseId, ({
+        const { db } = await createDatabase(databaseId, {
           debug: jest.fn(),
           warn: mockWarn,
-        } as unknown) as Logger);
+        } as unknown as Logger);
         await db.transaction(async tx => {
           const knexTx = tx as Knex.Transaction;
 
@@ -206,6 +206,7 @@ describe('Default Processing Database', () => {
             db.updateProcessedEntity(tx, {
               id,
               processedEntity,
+              resultHash: '',
               state: new Map<string, JsonObject>(),
               relations: [],
               deferredEntities: [],
@@ -224,6 +225,7 @@ describe('Default Processing Database', () => {
         const options = {
           id,
           processedEntity,
+          resultHash: '',
           state: new Map<string, JsonObject>(),
           relations: [],
           deferredEntities: [],
@@ -250,7 +252,11 @@ describe('Default Processing Database', () => {
 
         await db.transaction(tx =>
           expect(
-            db.updateProcessedEntity(tx, { ...options, locationKey: 'fail' }),
+            db.updateProcessedEntity(tx, {
+              ...options,
+              resultHash: '',
+              locationKey: 'fail',
+            }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'fail'`,
           ),
@@ -280,6 +286,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state,
             relations: [],
             deferredEntities: [],
@@ -295,7 +302,9 @@ describe('Default Processing Database', () => {
         expect(entities[0].processed_entity).toEqual(
           JSON.stringify(processedEntity),
         );
-        expect(entities[0].cache).toEqual(JSON.stringify(state));
+        expect(entities[0].cache).toEqual(
+          JSON.stringify(Object.fromEntries(state)),
+        );
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
       },
@@ -336,6 +345,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state: new Map<string, JsonObject>(),
             relations: relations,
             deferredEntities: [],
@@ -387,6 +397,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state: new Map<string, JsonObject>(),
             relations: [],
             deferredEntities,

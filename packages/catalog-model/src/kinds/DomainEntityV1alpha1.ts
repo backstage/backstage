@@ -26,6 +26,5 @@ export interface DomainEntityV1alpha1 extends Entity {
   };
 }
 
-export const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const domainEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

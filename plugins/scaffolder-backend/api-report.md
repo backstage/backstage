@@ -171,7 +171,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export const createTemplateAction: <
   Input extends Partial<{
     [name: string]: JsonValue | Partial<JsonObject> | undefined;
-  }>
+  }>,
 >(
   templateAction: TemplateAction<Input>,
 ) => TemplateAction<any>;

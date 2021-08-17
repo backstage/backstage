@@ -74,7 +74,7 @@ describe('<FossaCard />', () => {
 
     fossaApi.getFindingSummary.mockRejectedValue(new Error('My Error'));
 
-    const { getByText } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <FossaCard />
@@ -82,7 +82,7 @@ describe('<FossaCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText(/Warning: My Error/i)).toBeInTheDocument();
+    expect(getAllByText(/Error: My Error/i).length).not.toBe(0);
   });
 
   it('shows empty', async () => {

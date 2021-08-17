@@ -152,12 +152,21 @@ integrations:
     - host: bitbucket.org
       username: ${BITBUCKET_USERNAME}
       appPassword: ${BITBUCKET_APP_PASSWORD}
+    ### Example for how to add your bitbucket server instance using the API:
+    # - host: server.bitbucket.com
+    #   apiBaseUrl: server.bitbucket.com
+    #   username: ${BITBUCKET_SERVER_USERNAME}
+    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
-#  googleGcs:
-#    clientEmail: 'example@example.com'
-#    privateKey: ${GCS_PRIVATE_KEY}
+  #  googleGcs:
+  #    clientEmail: 'example@example.com'
+  #    privateKey: ${GCS_PRIVATE_KEY}
+  awsS3:
+    - host: amazonaws.com
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
   rules:
@@ -256,6 +265,8 @@ scaffolder:
   # defaultAuthor:
   #   name: Scaffolder
   #   email: scaffolder@backstage.io
+  # Use to customize the default commit message when new components are created
+  # defaultCommitMessage: 'Initial commit'
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'

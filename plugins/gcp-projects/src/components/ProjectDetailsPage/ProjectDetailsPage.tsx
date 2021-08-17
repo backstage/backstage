@@ -59,7 +59,11 @@ const DetailsPage = () => {
   const api = useApi(gcpApiRef);
   const classes = useStyles();
 
-  const { loading, error, value: details } = useAsync(
+  const {
+    loading,
+    error,
+    value: details,
+  } = useAsync(
     async () =>
       api.getProject(
         decodeURIComponent(location.search.split('projectId=')[1]),

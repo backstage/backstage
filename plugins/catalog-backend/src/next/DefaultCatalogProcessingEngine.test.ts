@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Hash } from 'crypto';
 import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
@@ -22,17 +23,21 @@ import { CatalogProcessingOrchestrator } from './processing/types';
 import { Stitcher } from './stitching/Stitcher';
 
 describe('DefaultCatalogProcessingEngine', () => {
-  const db = ({
+  const db = {
     transaction: jest.fn(),
     getProcessableEntities: jest.fn(),
     updateProcessedEntity: jest.fn(),
-  } as unknown) as jest.Mocked<DefaultProcessingDatabase>;
+  } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
   };
-  const stitcher = ({
+  const stitcher = {
     stitch: jest.fn(),
-  } as unknown) as jest.Mocked<Stitcher>;
+  } as unknown as jest.Mocked<Stitcher>;
+  const hash = {
+    update: () => hash,
+    digest: jest.fn(),
+  } as unknown as jest.Mocked<Hash>;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -57,6 +62,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       db,
       orchestrator,
       stitcher,
+      () => hash,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -76,6 +82,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               kind: 'Location',
               metadata: { name: 'test' },
             },
+            resultHash: '',
             state: new Map(),
             nextUpdateAt: '',
             lastDiscoveryAt: '',
@@ -117,6 +124,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       db,
       orchestrator,
       stitcher,
+      () => hash,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -137,6 +145,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               kind: 'Location',
               metadata: { name: 'test' },
             },
+            resultHash: '',
             state: new Map(),
             nextUpdateAt: '',
             lastDiscoveryAt: '',
@@ -156,6 +165,73 @@ describe('DefaultCatalogProcessingEngine', () => {
         state: expect.anything(),
       });
     });
+    await engine.stop();
+  });
+
+  it('runs fully when hash mismatches, early-outs when hash matches', async () => {
+    const entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'test' },
+    };
+
+    const refreshState = {
+      id: '',
+      entityRef: '',
+      unprocessedEntity: entity,
+      resultHash: 'the matching hash',
+      state: new Map(),
+      nextUpdateAt: '',
+      lastDiscoveryAt: '',
+    };
+
+    hash.digest.mockReturnValue('the matching hash');
+
+    orchestrator.process.mockResolvedValue({
+      ok: true,
+      completedEntity: entity,
+      relations: [],
+      errors: [],
+      deferredEntities: [],
+      state: new Map(),
+    });
+
+    const engine = new DefaultCatalogProcessingEngine(
+      getVoidLogger(),
+      [],
+      db,
+      orchestrator,
+      stitcher,
+      () => hash,
+    );
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    db.getProcessableEntities
+      .mockResolvedValueOnce({
+        items: [{ ...refreshState, resultHash: 'NOT RIGHT' }],
+      })
+      .mockResolvedValue({ items: [] });
+
+    await engine.start();
+
+    await waitForExpect(() => {
+      expect(orchestrator.process).toBeCalledTimes(1);
+      expect(hash.digest).toBeCalledTimes(1);
+      expect(db.updateProcessedEntity).toBeCalledTimes(1);
+    });
+
+    db.getProcessableEntities
+      .mockReset()
+      .mockResolvedValueOnce({ items: [refreshState] })
+      .mockResolvedValue({ items: [] });
+
+    await waitForExpect(() => {
+      expect(orchestrator.process).toBeCalledTimes(2);
+      expect(hash.digest).toBeCalledTimes(2);
+      expect(db.updateProcessedEntity).toBeCalledTimes(1);
+    });
+
     await engine.stop();
   });
 });

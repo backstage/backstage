@@ -65,7 +65,7 @@ const ClusterSummary = ({
     <Grid
       container
       direction="row"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       <Grid
@@ -73,7 +73,7 @@ const ClusterSummary = ({
         item
         container
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
         spacing={0}
       >
@@ -92,7 +92,7 @@ const ClusterSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -208,7 +208,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               {kubernetesObjects?.items.length <= 0 && (
                 <Grid
                   container
-                  justify="space-around"
+                  justifyContent="space-around"
                   direction="row"
                   alignItems="center"
                   spacing={2}

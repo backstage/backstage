@@ -18,10 +18,10 @@ import { GitlabAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
 
-const mockFrameHandler = (jest.spyOn(
+const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
-) as unknown) as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
+) as unknown as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('GitlabAuthProvider', () => {
   it('should transform to type OAuthResponse', async () => {

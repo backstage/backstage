@@ -123,7 +123,11 @@ export const AuditViewContent = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const { loading, error, value: nextValue } = useAsync(
+  const {
+    loading,
+    error,
+    value: nextValue,
+  } = useAsync(
     async () => await lighthouseApi.getWebsiteForAuditId(params.id),
     [params.id],
   );

@@ -110,9 +110,7 @@ export class DatabaseManager {
    * @returns Object with client type returned as `client` and boolean representing whether
    * or not the client was overridden as `overridden`
    */
-  private getClientType(
-    pluginId: string,
-  ): {
+  private getClientType(pluginId: string): {
     client: string;
     overridden: boolean;
   } {

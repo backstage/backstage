@@ -47,14 +47,13 @@ import MTable, {
   MTableHeader,
   MTableToolbar,
   Options,
-} from 'material-table';
+} from '@material-table/core';
 import React, {
   forwardRef,
   MutableRefObject,
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
@@ -286,9 +285,10 @@ export function Table<T extends object = {}>({
   const [filtersOpen, setFiltersOpen] = useState(
     calculatedInitialState.filtersOpen,
   );
-  const toggleFilters = useCallback(() => setFiltersOpen(v => !v), [
-    setFiltersOpen,
-  ]);
+  const toggleFilters = useCallback(
+    () => setFiltersOpen(v => !v),
+    [setFiltersOpen],
+  );
   const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
   const [selectedFilters, setSelectedFilters] = useState(
@@ -298,13 +298,6 @@ export function Table<T extends object = {}>({
   const MTColumns = convertColumns(columns, theme);
 
   const [search, setSearch] = useState(calculatedInitialState.search);
-  const toolbarRef = useRef<any>();
-
-  useEffect(() => {
-    if (toolbarRef.current) {
-      toolbarRef.current.onSearchChange(search);
-    }
-  }, [search, toolbarRef]);
 
   useEffect(() => {
     if (onStateChange) {
@@ -440,7 +433,6 @@ export function Table<T extends object = {}>({
     toolbarProps => {
       return (
         <TableToolbar
-          toolbarRef={toolbarRef}
           setSearch={setSearch}
           hasFilters={hasFilters}
           selectedFiltersLength={selectedFiltersLength}
@@ -449,7 +441,7 @@ export function Table<T extends object = {}>({
         />
       );
     },
-    [toggleFilters, hasFilters, selectedFiltersLength, setSearch, toolbarRef],
+    [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
   );
 
   const hasNoRows = typeof data !== 'function' && data.length === 0;

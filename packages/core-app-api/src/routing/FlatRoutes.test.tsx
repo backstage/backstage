@@ -37,11 +37,11 @@ function makeRouteRenderer(node: ReactNode) {
       <Wrapper>
         <AppContextProvider
           appContext={
-            ({
+            {
               getComponents: () => ({
                 NotFoundErrorPage: () => <>Not Found</>,
               }),
-            } as unknown) as AppContext
+            } as unknown as AppContext
           }
         >
           <MemoryRouter initialEntries={[path]} children={node} />

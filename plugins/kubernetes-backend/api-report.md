@@ -16,6 +16,8 @@ import { Logger as Logger_2 } from 'winston';
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
+  // (undocumented)
+  externalId?: string;
 }
 
 // Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -50,6 +52,11 @@ export interface CustomResource {
   // (undocumented)
   plural: string;
 }
+
+// Warning: (ae-missing-release-tag) "DEFAULT_OBJECTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DEFAULT_OBJECTS: KubernetesObjectTypes[];
 
 // Warning: (ae-missing-release-tag) "FetchResponseWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

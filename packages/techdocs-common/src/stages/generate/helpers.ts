@@ -19,11 +19,10 @@ import { isChildPath } from '@backstage/backend-common';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import { resolve as resolvePath } from 'path';
+import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { RemoteProtocol } from '../prepare/types';
 import { SupportedGeneratorKey } from './types';
 
 // TODO: Implement proper support for more generators.
@@ -94,12 +93,12 @@ export const runCommand = async ({
  * - (anything that is not valid as described above)
  *
  * @param {string} repoUrl URL supposed to be used as repo_url in mkdocs.yml
- * @param {RemoteProtocol} locationType Type of source code host - github, gitlab, dir, url, etc.
+ * @param {string} locationType Type of source code host - github, gitlab, dir, url, etc.
  * @returns {boolean}
  */
 export const isValidRepoUrlForMkdocs = (
   repoUrl: string,
-  locationType: RemoteProtocol,
+  locationType: string,
 ): boolean => {
   // Trim trailing slash
   const cleanRepoUrl = repoUrl.replace(/\/$/, '');
@@ -156,25 +155,49 @@ const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
+ * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
+ * depending on which is present (MkDocs supports both as of v1.2.2).
+ *
+ * @param {string} inputDir base dir to be searched for either an mkdocs.yml or
+ *   mkdocs.yaml file.
+ */
+export const getMkdocsYml = async (
+  inputDir: string,
+): Promise<{ path: string; content: string }> => {
+  let mkdocsYmlPath: string;
+  let mkdocsYmlFileString: string;
+  try {
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch {
+    try {
+      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    } catch (error) {
+      throw new Error(
+        `Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation: ${error.message}`,
+      );
+    }
+  }
+
+  return {
+    path: mkdocsYmlPath,
+    content: mkdocsYmlFileString,
+  };
+};
+
+/**
  * Validating mkdocs config file for incorrect/insecure values
  * Throws on invalid configs
  *
  * @param {string} inputDir base dir to be used as a docs_dir path validity check
- * @param {string} mkdocsYmlPath Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param {string} mkdocsYmlFileString The string contents of the loaded
+ *   mkdocs.yml or equivalent of a docs site
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
-  mkdocsYmlPath: string,
+  mkdocsYmlFileString: string,
 ) => {
-  let mkdocsYmlFileString;
-  try {
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch (error) {
-    throw new Error(
-      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before for validation: ${error.message}`,
-    );
-  }
-
   const mkdocsYml: any = yaml.load(mkdocsYmlFileString, {
     schema: MKDOCS_SCHEMA,
   });
@@ -242,6 +265,8 @@ export const patchMkdocsYmlPreBuild = async (
     const repoUrl = getRepoUrlFromLocationAnnotation(parsedLocationAnnotation);
     if (repoUrl !== undefined) {
       // mkdocs.yml will not build with invalid repo_url. So, make sure it is valid.
+      // TODO: this is no longer working/meaningful because annotation type is
+      // now only ever "url" or "dir." Should be re-implemented!
       if (isValidRepoUrlForMkdocs(repoUrl, parsedLocationAnnotation.type)) {
         mkdocsYml.repo_url = repoUrl;
       }

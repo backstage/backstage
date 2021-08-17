@@ -26,7 +26,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
     return;
   }
 
-  const { properties, anyOf, oneOf, allOf, dependencies } = schema;
+  const { properties, items, anyOf, oneOf, allOf, dependencies } = schema;
 
   for (const propName in schema) {
     if (!schema.hasOwnProperty(propName)) {
@@ -53,6 +53,12 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
       uiSchema[propName] = innerUiSchema;
       extractUiSchema(schemaNode, innerUiSchema);
     }
+  }
+
+  if (isObject(items)) {
+    const innerUiSchema = {};
+    uiSchema.items = innerUiSchema;
+    extractUiSchema(items, innerUiSchema);
   }
 
   if (Array.isArray(anyOf)) {
@@ -93,9 +99,10 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
   }
 }
 
-export function transformSchemaToProps(
-  inputSchema: JsonObject,
-): { schema: FormProps<any>['schema']; uiSchema: FormProps<any>['uiSchema'] } {
+export function transformSchemaToProps(inputSchema: JsonObject): {
+  schema: FormProps<any>['schema'];
+  uiSchema: FormProps<any>['uiSchema'];
+} {
   inputSchema.type = inputSchema.type || 'object';
   const schema = JSON.parse(JSON.stringify(inputSchema));
   delete schema.title; // Rendered separately

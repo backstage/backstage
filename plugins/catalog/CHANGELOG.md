@@ -1,5 +1,75 @@
 # @backstage/plugin-catalog
 
+## 0.6.11
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- a440d3b38: Move and rename `FavoriteEntity` component to `catalog-react`
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.6.10
+
+### Patch Changes
+
+- cf4635f93: Fix bug with re-rendering the EntityRoutes when the entity changes but the route does not
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.6.9
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+  - @backstage/catalog-client@0.3.18
+
 ## 0.6.8
 
 ### Patch Changes

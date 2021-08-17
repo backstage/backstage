@@ -30,12 +30,12 @@ export const BarChartSteps = ({
   onClick,
 }: BarChartStepsProps) => {
   const classes = useStyles();
-  const handleOnClick = (index: number) => (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.preventDefault();
-    onClick(index);
-  };
+  const handleOnClick =
+    (index: number) =>
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault();
+      onClick(index);
+    };
 
   return (
     <div className={classes.steps}>

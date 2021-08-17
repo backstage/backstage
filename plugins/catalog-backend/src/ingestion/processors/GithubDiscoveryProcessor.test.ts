@@ -21,9 +21,10 @@ import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
 
 jest.mock('./github');
-const mockGetOrganizationRepositories = getOrganizationRepositories as jest.MockedFunction<
-  typeof getOrganizationRepositories
->;
+const mockGetOrganizationRepositories =
+  getOrganizationRepositories as jest.MockedFunction<
+    typeof getOrganizationRepositories
+  >;
 
 describe('GithubDiscoveryProcessor', () => {
   describe('parseUrl', () => {
@@ -32,6 +33,7 @@ describe('GithubDiscoveryProcessor', () => {
         parseUrl('https://github.com/foo/proj/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj$/,
         catalogPath: '/blob/master/catalog.yaml',
       });
@@ -39,6 +41,7 @@ describe('GithubDiscoveryProcessor', () => {
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj.*$/,
         catalogPath: '/blob/master/catalog.yaml',
       });

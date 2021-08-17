@@ -23,7 +23,6 @@ import { DateTime } from 'luxon';
 type InstallationData = {
   installationId: number;
   suspended: boolean;
-  repositorySelection: 'selected' | 'all';
 };
 
 class Cache {
@@ -67,8 +66,10 @@ class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly cache = new Cache();
+  private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
+    this.allowedInstallationOwners = config.allowedInstallationOwners;
     this.baseAuthConfig = {
       appId: config.appId,
       privateKey: config.privateKey,
@@ -85,34 +86,41 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string }> {
-    const {
-      installationId,
-      suspended,
-      repositorySelection,
-    } = await this.getInstallationData(owner);
-    if (suspended) {
-      throw new Error(
-        `The GitHub application for ${[owner, repo]
-          .filter(Boolean)
-          .join('/')} is suspended`,
-      );
+    const { installationId, suspended } = await this.getInstallationData(owner);
+    if (this.allowedInstallationOwners) {
+      if (!this.allowedInstallationOwners?.includes(owner)) {
+        throw new Error(
+          `The GitHub application for ${owner} is not included in the allowed installation list (${installationId}).`,
+        );
+      }
     }
-    if (repositorySelection !== 'all' && !repo) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization must be installed for the entire organization to be able to issue credentials without a specified repository.`,
-      );
+    if (suspended) {
+      throw new Error(`The GitHub application for ${owner} is suspended`);
     }
 
-    const cacheKey = !repo ? owner : `${owner}/${repo}`;
-    const repositories = repositorySelection !== 'all' ? [repo!] : undefined;
+    const cacheKey = repo ? `${owner}/${repo}` : owner;
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         headers: HEADERS,
-        repositories,
       });
+      if (repo && result.data.repository_selection === 'selected') {
+        const installationClient = new Octokit({
+          auth: result.data.token,
+        });
+        const repos =
+          await installationClient.apps.listReposAccessibleToInstallation();
+        const hasRepo = repos.data.repositories.some(repository => {
+          return repository.name === repo;
+        });
+        if (!hasRepo) {
+          throw new Error(
+            `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+          );
+        }
+      }
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
@@ -129,13 +137,12 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login === owner,
+      inst => inst.account?.login?.toLowerCase() === owner.toLowerCase(),
     );
     if (installation) {
       return {
         installationId: installation.id,
         suspended: Boolean(installation.suspended_by),
-        repositorySelection: installation.repository_selection,
       };
     }
     const notFoundError = new Error(
@@ -243,11 +250,7 @@ export class GithubCredentialsProvider {
     }
 
     return {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       token,
       type,
     };

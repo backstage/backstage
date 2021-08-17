@@ -45,9 +45,8 @@ jest.mock('./TechDocsPageHeader', () => {
   };
 });
 
-const { useParams }: { useParams: jest.Mock } = jest.requireMock(
-  'react-router-dom',
-);
+const { useParams }: { useParams: jest.Mock } =
+  jest.requireMock('react-router-dom');
 
 describe('<TechDocsPage />', () => {
   it('should render techdocs page', async () => {
@@ -55,11 +54,12 @@ describe('<TechDocsPage />', () => {
       entityId: 'Component::backstage',
     });
 
-    const scmIntegrationsApi: ScmIntegrationsApi = ScmIntegrationsApi.fromConfig(
-      new ConfigReader({
-        integrations: {},
-      }),
-    );
+    const scmIntegrationsApi: ScmIntegrationsApi =
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      );
     const techdocsApi: Partial<TechDocsApi> = {
       getEntityMetadata: () =>
         Promise.resolve({

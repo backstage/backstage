@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.1
+
+## 0.14.2
+
+### Patch Changes
+
+- 6cf48c609: Add the `scaffolder.defaultCommitMessage`, which defaults to `Initial commit`, so it can be customized.
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
 ## 0.14.1
 
 ### Patch Changes

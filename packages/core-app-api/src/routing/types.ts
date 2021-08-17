@@ -75,7 +75,7 @@ export function isSubRouteRef<Params extends AnyParams>(
 
 export function isExternalRouteRef<
   Params extends AnyParams,
-  Optional extends boolean
+  Optional extends boolean,
 >(
   routeRef:
     | RouteRef<Params>

@@ -90,6 +90,7 @@ export async function createRouter(
       taskBroker,
       actionRegistry,
       workingDirectory,
+      integrations,
     });
     workers.push(worker);
   }

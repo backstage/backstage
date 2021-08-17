@@ -63,12 +63,10 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
-jest.spyOn(logger, 'info').mockReturnValue(logger);
+const loggerInfoSpy = jest.spyOn(logger, 'info').mockReturnValue(logger);
+const loggerErrorSpy = jest.spyOn(logger, 'error').mockReturnValue(logger);
 
-let publisher: PublisherBase;
-
-beforeEach(async () => {
-  mockFs.restore();
+const createPublisherMock = (bucketName: string) => {
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -76,13 +74,21 @@ beforeEach(async () => {
         type: 'googleGcs',
         googleGcs: {
           credentials: '{}',
-          bucketName: 'bucketName',
+          bucketName,
         },
       },
     },
   });
+  return GoogleGCSPublish.fromConfig(mockConfig, logger);
+};
 
-  publisher = await GoogleGCSPublish.fromConfig(mockConfig, logger);
+let publisher: PublisherBase;
+
+beforeEach(async () => {
+  loggerInfoSpy.mockClear();
+  loggerErrorSpy.mockClear();
+  mockFs.restore();
+  publisher = createPublisherMock('bucketName');
 });
 
 describe('GoogleGCSPublish', () => {
@@ -94,20 +100,7 @@ describe('GoogleGCSPublish', () => {
     });
 
     it('should reject incorrect config', async () => {
-      const mockConfig = new ConfigReader({
-        techdocs: {
-          requestUrl: 'http://localhost:7000',
-          publisher: {
-            type: 'googleGcs',
-            googleGcs: {
-              credentials: '{}',
-              bucketName: 'errorBucket',
-            },
-          },
-        },
-      });
-
-      const errorPublisher = GoogleGCSPublish.fromConfig(mockConfig, logger);
+      const errorPublisher = createPublisherMock('errorBucket');
 
       expect(await errorPublisher.getReadiness()).toEqual({
         isAvailable: false,
@@ -145,7 +138,6 @@ describe('GoogleGCSPublish', () => {
           directory: entityRootDir,
         }),
       ).toBeUndefined();
-      mockFs.restore();
     });
 
     it('should fail to publish a directory', async () => {
@@ -181,8 +173,28 @@ describe('GoogleGCSPublish', () => {
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
+    });
 
-      mockFs.restore();
+    it('should delete stale files after upload', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const bucketName = 'delete_stale_files_success';
+      publisher = createPublisherMock(bucketName);
+      await publisher.publish({ entity, directory });
+      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
+      );
+    });
+
+    it('should log error when the stale files deletion fails', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const bucketName = 'delete_stale_files_error';
+      publisher = createPublisherMock(bucketName);
+      await publisher.publish({ entity, directory });
+      expect(loggerErrorSpy).toHaveBeenLastCalledWith(
+        'Unable to delete file(s) from Google Cloud Storage. Error: Message',
+      );
     });
   });
 

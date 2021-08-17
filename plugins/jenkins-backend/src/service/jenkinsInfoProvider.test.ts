@@ -14,15 +14,154 @@
  * limitations under the License.
  */
 
-import { DefaultJenkinsInfoProvider, JenkinsInfo } from './jenkinsInfoProvider';
 import { CatalogClient } from '@backstage/catalog-client';
-import { ConfigReader } from '@backstage/config';
 import { Entity, EntityName } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import {
+  DefaultJenkinsInfoProvider,
+  JenkinsConfig,
+  JenkinsInfo,
+} from './jenkinsInfoProvider';
+
+describe('JenkinsConfig', () => {
+  it('Reads simple config and annotation', async () => {
+    const config = JenkinsConfig.fromConfig(
+      new ConfigReader({
+        jenkins: {
+          baseUrl: 'https://jenkins.example.com',
+          username: 'backstage - bot',
+          apiKey: '123456789abcdef0123456789abcedf012',
+        },
+      }),
+    );
+
+    expect(config.instances).toEqual([
+      {
+        name: 'default',
+        baseUrl: 'https://jenkins.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+    ]);
+  });
+
+  it('Reads named default config and annotation', async () => {
+    const config = JenkinsConfig.fromConfig(
+      new ConfigReader({
+        jenkins: {
+          instances: [
+            {
+              name: 'default',
+              baseUrl: 'https://jenkins.example.com',
+              username: 'backstage - bot',
+              apiKey: '123456789abcdef0123456789abcedf012',
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(config.instances).toEqual([
+      {
+        name: 'default',
+        baseUrl: 'https://jenkins.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+    ]);
+  });
+
+  it('Parses named default config (amongst named other configs)', async () => {
+    const config = JenkinsConfig.fromConfig(
+      new ConfigReader({
+        jenkins: {
+          instances: [
+            {
+              name: 'default',
+              baseUrl: 'https://jenkins.example.com',
+              username: 'backstage - bot',
+              apiKey: '123456789abcdef0123456789abcedf012',
+            },
+            {
+              name: 'other',
+              baseUrl: 'https://jenkins-other.example.com',
+              username: 'backstage - bot',
+              apiKey: '123456789abcdef0123456789abcedf012',
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(config.instances).toEqual([
+      {
+        name: 'default',
+        baseUrl: 'https://jenkins.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+      {
+        name: 'other',
+        baseUrl: 'https://jenkins-other.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+    ]);
+  });
+
+  it('Gets default Jenkins instance', async () => {
+    const config = new JenkinsConfig([
+      {
+        name: 'default',
+        baseUrl: 'https://jenkins.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+      {
+        name: 'other',
+        baseUrl: 'https://jenkins-other.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+    ]);
+
+    expect(config.getInstanceConfig()).toEqual({
+      name: 'default',
+      baseUrl: 'https://jenkins.example.com',
+      username: 'backstage - bot',
+      apiKey: '123456789abcdef0123456789abcedf012',
+    });
+  });
+
+  it('Gets named Jenkins instance', async () => {
+    const config = new JenkinsConfig([
+      {
+        name: 'default',
+        baseUrl: 'https://jenkins.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+      {
+        name: 'other',
+        baseUrl: 'https://jenkins-other.example.com',
+        username: 'backstage - bot',
+        apiKey: '123456789abcdef0123456789abcedf012',
+      },
+    ]);
+
+    expect(config.getInstanceConfig('other')).toEqual({
+      name: 'other',
+      baseUrl: 'https://jenkins-other.example.com',
+      username: 'backstage - bot',
+      apiKey: '123456789abcdef0123456789abcedf012',
+    });
+  });
+});
 
 describe('DefaultJenkinsInfoProvider', () => {
-  const mockCatalog: jest.Mocked<CatalogClient> = ({
+  const mockCatalog: jest.Mocked<CatalogClient> = {
     getEntityByName: jest.fn(),
-  } as any) as jest.Mocked<CatalogClient>;
+  } as any as jest.Mocked<CatalogClient>;
 
   const entityRef: EntityName = {
     kind: 'Component',
