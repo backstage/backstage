@@ -19,7 +19,8 @@ import {
   Location,
   ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '../../api';
 import {
   act,
   renderHook,

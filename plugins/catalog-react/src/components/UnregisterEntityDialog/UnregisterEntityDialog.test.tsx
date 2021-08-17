@@ -21,7 +21,7 @@ import React from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { CatalogClient } from '@backstage/catalog-client';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '../../api';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';

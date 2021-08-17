@@ -39,6 +39,7 @@ import {
   EntityRefLinks,
   FavoriteEntity,
   getEntityRelations,
+  UnregisterEntityDialog,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
@@ -46,7 +47,6 @@ import { Alert } from '@material-ui/lab';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 type SubRoute = {
   path: string;

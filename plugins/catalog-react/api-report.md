@@ -715,6 +715,17 @@ export function reduceEntityFilters(
 // @public (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "UnregisterEntityDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UnregisterEntityDialog: ({
+  open,
+  onConfirm,
+  onClose,
+  entity,
+}: Props_3) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "useEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
