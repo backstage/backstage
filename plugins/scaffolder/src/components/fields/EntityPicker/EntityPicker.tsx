@@ -59,7 +59,7 @@ export const EntityPicker = ({
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        id={idSchema && idSchema.$id}
+        id={idSchema?.$id}
         value={(formData as string) || ''}
         loading={loading}
         onChange={onSelect}

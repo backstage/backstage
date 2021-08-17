@@ -28,7 +28,7 @@ export const TextValuePicker = ({
   placeholder,
 }: FieldProps<string>) => (
   <TextField
-    id={idSchema && idSchema.$id}
+    id={idSchema?.$id}
     label={title}
     placeholder={placeholder}
     helperText={description}
