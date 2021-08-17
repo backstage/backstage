@@ -21,24 +21,24 @@ describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
     it('should throw error if cookie nonce missing', () => {
       const state = { nonce: 'NONCE', env: 'development' };
-      const mockRequest = ({
+      const mockRequest = {
         cookies: {},
         query: {
           state: encodeState(state),
         },
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Auth response is missing cookie nonce');
     });
 
     it('should throw error if state nonce missing', () => {
-      const mockRequest = ({
+      const mockRequest = {
         cookies: {
           'providera-nonce': 'NONCE',
         },
         query: {},
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Invalid state passed via request');
@@ -46,14 +46,14 @@ describe('OAuthProvider Utils', () => {
 
     it('should throw error if nonce mismatch', () => {
       const state = { nonce: 'NONCEB', env: 'development' };
-      const mockRequest = ({
+      const mockRequest = {
         cookies: {
           'providera-nonce': 'NONCEA',
         },
         query: {
           state: encodeState(state),
         },
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Invalid nonce');
@@ -61,14 +61,14 @@ describe('OAuthProvider Utils', () => {
 
     it('should not throw any error if nonce matches', () => {
       const state = { nonce: 'NONCE', env: 'development' };
-      const mockRequest = ({
+      const mockRequest = {
         cookies: {
           'providera-nonce': 'NONCE',
         },
         query: {
           state: encodeState(state),
         },
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
       }).not.toThrow();

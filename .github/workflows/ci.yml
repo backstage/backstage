@@ -109,7 +109,7 @@ jobs:
         run: node scripts/verify-links.js
 
       - name: prettier
-        run: yarn prettier:check
+        run: yarn prettier:check '!ADOPTERS.md'
 
       - name: lock
         run: yarn lock:check

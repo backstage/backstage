@@ -1,5 +1,28 @@
 # @backstage/plugin-search
 
+## 0.4.7
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.4.6
+
+### Patch Changes
+
+- b917365cf: Change `<SearchType>` design to follow Figma and be similar to existing multi
+  selects in Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/search-common@0.1.3
+  - @backstage/plugin-catalog-react@0.4.1
+
 ## 0.4.5
 
 ### Patch Changes

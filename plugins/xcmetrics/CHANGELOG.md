@@ -1,5 +1,23 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.2
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.2.1
+
+### Patch Changes
+
+- f6f664357: New page for browsing all builds with filtering and pagination capabilities
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
 ## 0.2.0
 
 ### Minor Changes

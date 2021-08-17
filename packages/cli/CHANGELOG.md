@@ -1,5 +1,21 @@
 # @backstage/cli
 
+## 0.7.8
+
+### Patch Changes
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+
+## 0.7.7
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- e9d3983ee: Keep track of filtered configuration values when running frontend in development mode.
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/config-loader@0.6.6
+
 ## 0.7.6
 
 ### Patch Changes

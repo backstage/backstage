@@ -1,5 +1,25 @@
 # @backstage/plugin-git-release-manager
 
+## 0.2.3
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+
 ## 0.2.1
 
 ### Patch Changes

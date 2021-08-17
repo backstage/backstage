@@ -159,15 +159,13 @@ export const WorkflowRunsTable = ({
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName ?? '/').split('/');
-  const [
-    { runs, ...tableProps },
-    { retry, setPage, setPageSize },
-  ] = useWorkflowRuns({
-    hostname,
-    owner,
-    repo,
-    branch,
-  });
+  const [{ runs, ...tableProps }, { retry, setPage, setPageSize }] =
+    useWorkflowRuns({
+      hostname,
+      owner,
+      repo,
+      branch,
+    });
 
   const githubHost = hostname || 'github.com';
 

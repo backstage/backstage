@@ -29,7 +29,8 @@ import ObservableImpl from 'zen-observable';
  * See http://reactivex.io/documentation/subject.html
  */
 export class PublishSubject<T>
-  implements Observable<T>, ZenObservable.SubscriptionObserver<T> {
+  implements Observable<T>, ZenObservable.SubscriptionObserver<T>
+{
   private isClosed = false;
   private terminatingError?: Error;
 
@@ -121,7 +122,8 @@ export class PublishSubject<T>
  * See http://reactivex.io/documentation/subject.html
  */
 export class BehaviorSubject<T>
-  implements Observable<T>, ZenObservable.SubscriptionObserver<T> {
+  implements Observable<T>, ZenObservable.SubscriptionObserver<T>
+{
   private isClosed = false;
   private currentValue: T;
   private terminatingError?: Error;

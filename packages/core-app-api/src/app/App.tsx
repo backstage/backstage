@@ -107,6 +107,20 @@ export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   return result;
 }
 
+/**
+ * Get the app base path from the configured app baseUrl.
+ *
+ * The returned path does not have a trailing slash.
+ */
+function getBasePath(configApi: Config) {
+  let { pathname } = new URL(
+    configApi.getOptionalString('app.baseUrl') ?? '/',
+    'http://dummy.dev', // baseUrl can be specified as just a path
+  );
+  pathname = pathname.replace(/\/*$/, '');
+  return pathname;
+}
+
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
   icons: NonNullable<AppOptions['icons']>;
@@ -216,37 +230,33 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      const {
-        routePaths,
-        routeParents,
-        routeObjects,
-        featureFlags,
-      } = useMemo(() => {
-        const result = traverseElementTree({
-          root: children,
-          discoverers: [childDiscoverer, routeElementDiscoverer],
-          collectors: {
-            routePaths: routePathCollector,
-            routeParents: routeParentCollector,
-            routeObjects: routeObjectCollector,
-            collectedPlugins: pluginCollector,
-            featureFlags: featureFlagCollector,
-          },
-        });
+      const { routePaths, routeParents, routeObjects, featureFlags } =
+        useMemo(() => {
+          const result = traverseElementTree({
+            root: children,
+            discoverers: [childDiscoverer, routeElementDiscoverer],
+            collectors: {
+              routePaths: routePathCollector,
+              routeParents: routeParentCollector,
+              routeObjects: routeObjectCollector,
+              collectedPlugins: pluginCollector,
+              featureFlags: featureFlagCollector,
+            },
+          });
 
-        validateRoutes(result.routePaths, result.routeParents);
+          validateRoutes(result.routePaths, result.routeParents);
 
-        // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
-        //               the app, rather than having to wait for the provider to render.
-        //               For now we need to push the additional plugins we find during
-        //               collection and then make sure we initialize things afterwards.
-        result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
-        this.verifyPlugins(this.plugins);
+          // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
+          //               the app, rather than having to wait for the provider to render.
+          //               For now we need to push the additional plugins we find during
+          //               collection and then make sure we initialize things afterwards.
+          result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
+          this.verifyPlugins(this.plugins);
 
-        // Initialize APIs once all plugins are available
-        this.getApiHolder();
-        return result;
-      }, [children]);
+          // Initialize APIs once all plugins are available
+          this.getApiHolder();
+          return result;
+        }, [children]);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -302,6 +312,7 @@ export class PrivateAppImpl implements BackstageApp {
                 routeParents={routeParents}
                 routeObjects={routeObjects}
                 routeBindings={generateBoundRoutes(this.bindRoutes)}
+                basePath={getBasePath(loadedConfig.api)}
               >
                 {children}
               </RoutingProvider>
@@ -314,10 +325,8 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getRouter(): ComponentType<{}> {
-    const {
-      Router: RouterComponent,
-      SignInPage: SignInPageComponent,
-    } = this.components;
+    const { Router: RouterComponent, SignInPage: SignInPageComponent } =
+      this.components;
 
     // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
     const SignInPageWrapper = ({
@@ -339,14 +348,7 @@ export class PrivateAppImpl implements BackstageApp {
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
-
-      let { pathname } = new URL(
-        configApi.getOptionalString('app.baseUrl') ?? '/',
-        'http://dummy.dev', // baseUrl can be specified as just a path
-      );
-      if (pathname.endsWith('/')) {
-        pathname = pathname.replace(/\/$/, '');
-      }
+      const mountPath = `${getBasePath(configApi)}/*`;
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
@@ -361,7 +363,7 @@ export class PrivateAppImpl implements BackstageApp {
         return (
           <RouterComponent>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </RouterComponent>
         );
@@ -371,7 +373,7 @@ export class PrivateAppImpl implements BackstageApp {
         <RouterComponent>
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </SignInPageWrapper>
         </RouterComponent>

@@ -154,14 +154,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
   async start(): Promise<http.Server> {
     const app = express();
-    const {
-      port,
-      host,
-      logger,
-      corsOptions,
-      httpsSettings,
-      helmetOptions,
-    } = this.getOptions();
+    const { port, host, logger, corsOptions, httpsSettings, helmetOptions } =
+      this.getOptions();
 
     app.use(helmet(helmetOptions));
     if (corsOptions) {

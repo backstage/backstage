@@ -65,21 +65,19 @@ export const getTagDates = async ({
   }
 
   if (startTag.tagType === 'tag' && endTag.tagType === 'tag') {
-    const [
-      { tag: startTagResponse },
-      { tag: endTagResponse },
-    ] = await Promise.all([
-      pluginApiClient.getTag({
-        owner: project.owner,
-        repo: project.repo,
-        tagSha: startTag.tagSha,
-      }),
-      pluginApiClient.getTag({
-        owner: project.owner,
-        repo: project.repo,
-        tagSha: endTag.tagSha,
-      }),
-    ]);
+    const [{ tag: startTagResponse }, { tag: endTagResponse }] =
+      await Promise.all([
+        pluginApiClient.getTag({
+          owner: project.owner,
+          repo: project.repo,
+          tagSha: startTag.tagSha,
+        }),
+        pluginApiClient.getTag({
+          owner: project.owner,
+          repo: project.repo,
+          tagSha: endTag.tagSha,
+        }),
+      ]);
 
     return {
       startDate: startTagResponse.date,

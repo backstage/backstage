@@ -1,5 +1,49 @@
 # @backstage/plugin-techdocs
 
+## 0.10.4
+
+### Patch Changes
+
+- a440d3b38: Expose a new composable `TechDocsIndexPage` and a `DefaultTechDocsHome` with support for starring docs and filtering on owned, starred, owner, and tags.
+
+  You can migrate to the new UI view by making the following changes in your `App.tsx`:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 8a3e46591: Switch `EventSource` implementation with header support from a Node.js API-based one to an XHR-based one.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.10.3
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- db58cf06c: Avoid sanitize safe links in the header of document pages.
+- 1d65bd490: Fix Techdocs feedback icon link for GitLab URLs with subgroup(s) in path
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
 ## 0.10.2
 
 ### Patch Changes

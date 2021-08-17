@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/techdocs-common@0.8.1
+
+## 0.9.1
+
+### Patch Changes
+
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/techdocs-common@0.8.0
+  - @backstage/search-common@0.1.3
+
 ## 0.9.0
 
 ### Minor Changes

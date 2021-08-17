@@ -110,4 +110,39 @@ describe('sanitizeDOM', () => {
 
     expect(shadowDom.querySelectorAll('link').length).toEqual(1);
   });
+
+  describe('safe head links', () => {
+    let shadowDom: ShadowRoot;
+
+    beforeEach(async () => {
+      shadowDom = await createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
+        preTransformers: [sanitizeDOM()],
+        postTransformers: [],
+      });
+    });
+
+    it('should not sanitize the techdocs css', async () => {
+      const techdocsCss = shadowDom.querySelector(
+        'link[href$="main.fe0cca5b.min.css"]',
+      );
+      const rel = techdocsCss!.getAttribute('rel');
+      expect(rel).toBe('stylesheet');
+    });
+
+    it('should not sanitize google fonts', async () => {
+      const googleFonts = shadowDom.querySelector(
+        'link[href^="https://fonts.googleapis.com"]',
+      );
+      const rel = googleFonts!.getAttribute('rel');
+      expect(rel).toBe('stylesheet');
+    });
+
+    it('should not sanitize gstatic fonts', async () => {
+      const gstaticFonts = shadowDom.querySelector(
+        'link[href^="https://fonts.gstatic.com"]',
+      );
+      const rel = gstaticFonts!.getAttribute('rel');
+      expect(rel).toBe('preconnect');
+    });
+  });
 });

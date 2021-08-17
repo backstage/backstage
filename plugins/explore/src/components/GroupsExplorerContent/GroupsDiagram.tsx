@@ -119,7 +119,11 @@ export function GroupsDiagram() {
   const catalogApi = useApi(catalogApiRef);
   const organizationName =
     configApi.getOptionalString('organization.name') ?? 'Backstage';
-  const { loading, error, value: catalogResponse } = useAsync(() => {
+  const {
+    loading,
+    error,
+    value: catalogResponse,
+  } = useAsync(() => {
     return catalogApi.getEntities({
       filter: {
         kind: ['Group'],

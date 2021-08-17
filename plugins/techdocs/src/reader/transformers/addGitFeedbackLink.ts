@@ -19,6 +19,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import parseGitUrl from 'git-url-parse';
 
 // requires repo
 export const addGitFeedbackLink = (
@@ -50,7 +51,8 @@ export const addGitFeedbackLink = (
     const issueDesc = encodeURIComponent(
       `Page source:\n${sourceAnchor.href}\n\nFeedback:`,
     );
-    const repoPath = sourceURL.pathname.split('/').slice(0, 3).join('/');
+    const gitInfo = parseGitUrl(sourceURL.pathname);
+    const repoPath = `/${gitInfo.organization}/${gitInfo.name}`;
 
     const feedbackLink = sourceAnchor.cloneNode() as HTMLAnchorElement;
     switch (integration?.type) {

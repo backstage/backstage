@@ -21,8 +21,6 @@ import { EntityProvider, EntityProviderConnection } from './types';
 import { locationSpecToLocationEntity } from './util';
 
 export class ConfigLocationEntityProvider implements EntityProvider {
-  private connection: EntityProviderConnection | undefined;
-
   constructor(private readonly config: Config) {}
 
   getProviderName(): string {
@@ -30,12 +28,35 @@ export class ConfigLocationEntityProvider implements EntityProvider {
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
-    this.connection = connection;
+    const entities = this.getEntitiesFromConfig();
+    await connection.applyMutation({
+      type: 'full',
+      entities,
+    });
 
+    if (this.config.subscribe) {
+      let currentKey = JSON.stringify(entities);
+
+      this.config.subscribe(() => {
+        const newEntities = this.getEntitiesFromConfig();
+        const newKey = JSON.stringify(newEntities);
+
+        if (currentKey !== newKey) {
+          currentKey = newKey;
+          connection.applyMutation({
+            type: 'full',
+            entities: newEntities,
+          });
+        }
+      });
+    }
+  }
+
+  private getEntitiesFromConfig() {
     const locationConfigs =
       this.config.getOptionalConfigArray('catalog.locations') ?? [];
 
-    const entities = locationConfigs.map(location => {
+    return locationConfigs.map(location => {
       const type = location.getString('type');
       const target = location.getString('target');
       const entity = locationSpecToLocationEntity({
@@ -44,11 +65,6 @@ export class ConfigLocationEntityProvider implements EntityProvider {
       });
       const locationKey = getEntityLocationRef(entity);
       return { entity, locationKey };
-    });
-
-    await this.connection.applyMutation({
-      type: 'full',
-      entities,
     });
   }
 }

@@ -1,5 +1,25 @@
 # @backstage/plugin-sentry
 
+## 0.3.18
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
 ## 0.3.16
 
 ### Patch Changes

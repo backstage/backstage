@@ -58,7 +58,7 @@ describe('publish:azure', () => {
     getGitApi: jest.fn().mockReturnValue(mockGitClient),
   };
 
-  ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+  (WebApi as unknown as jest.Mock).mockImplementation(() => mockGitApi);
 
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -68,21 +68,21 @@ describe('publish:azure', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob' },
+        input: { repoUrl: 'dev.azure.com?repo=bob' },
       }),
     ).rejects.toThrow(/missing owner/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner' },
+        input: { repoUrl: 'dev.azure.com?owner=owner' },
       }),
     ).rejects.toThrow(/missing repo/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner&repo=repo' },
+        input: { repoUrl: 'dev.azure.com?owner=owner&repo=repo' },
       }),
     ).rejects.toThrow(/missing organization/);
   });
@@ -209,9 +209,8 @@ describe('publish:azure', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishAzureAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -246,9 +245,8 @@ describe('publish:azure', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishAzureAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

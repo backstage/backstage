@@ -104,8 +104,7 @@ export async function createRouter(
         // The Cache-Control header instructs the browser to not cache html files since it might
         // link to static assets from recently deployed versions.
         if (
-          ((express.static.mime as unknown) as Mime).lookup(path) ===
-          'text/html'
+          (express.static.mime as unknown as Mime).lookup(path) === 'text/html'
         ) {
           res.setHeader('Cache-Control', 'no-store, max-age=0');
         }

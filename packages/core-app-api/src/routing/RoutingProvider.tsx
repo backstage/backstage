@@ -38,6 +38,7 @@ type ProviderProps = {
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  basePath?: string;
   children: ReactNode;
 };
 
@@ -46,6 +47,7 @@ export const RoutingProvider = ({
   routeParents,
   routeObjects,
   routeBindings,
+  basePath = '',
   children,
 }: ProviderProps) => {
   const resolver = new RouteResolver(
@@ -53,6 +55,7 @@ export const RoutingProvider = ({
     routeParents,
     routeObjects,
     routeBindings,
+    basePath,
   );
 
   const versionedValue = createVersionedValueMap({ 1: resolver });
