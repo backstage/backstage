@@ -165,8 +165,8 @@ export class NextCatalogBuilder {
   }
 
   /**
-   * Refresh spread configures configures the minimum and maximum number of seconds
-   * to wait between refreshes in addition to the configured refresh interval.
+   * Overwrites the default refresh interval function used to spread
+   * entity updates in the catalog.
    */
   setRefreshInterval(
     refreshInterval: RefreshIntervalFunction,

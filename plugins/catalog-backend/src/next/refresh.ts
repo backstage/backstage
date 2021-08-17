@@ -20,10 +20,8 @@
 export type RefreshIntervalFunction = () => number;
 
 /**
- * @param {number} options.minSeconds The minimum number of seconds between refreshes
- * @param {number} options.maxSeconds The maximum number of seconds between refreshes
+ * Creates a function that returns a random refresh interval between minSeconds and maxSeconds.
  * @returns {RefreshIntervalFunction} that provides the next refresh interval
- *
  */
 export function createRandomRefreshInterval(options: {
   minSeconds: number;
