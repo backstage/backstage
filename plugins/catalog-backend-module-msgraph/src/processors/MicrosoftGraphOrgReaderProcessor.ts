@@ -28,6 +28,7 @@ import {
   MicrosoftGraphProviderConfig,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
+  UserTransformer,
 } from '../microsoftGraph';
 
 /**
@@ -36,11 +37,16 @@ import {
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
   private readonly logger: Logger;
+  private readonly userTransformer?: UserTransformer;
   private readonly groupTransformer?: GroupTransformer;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; groupTransformer?: GroupTransformer },
+    options: {
+      logger: Logger;
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+    },
   ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
@@ -52,10 +58,12 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.userTransformer = options.userTransformer;
     this.groupTransformer = options.groupTransformer;
   }
 
@@ -89,6 +97,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       {
         userFilter: provider.userFilter,
         groupFilter: provider.groupFilter,
+        userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,
         logger: this.logger,
       },
