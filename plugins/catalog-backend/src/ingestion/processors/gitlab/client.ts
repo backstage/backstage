@@ -31,6 +31,18 @@ export class GitLabClient {
   }
 
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
+    if (options?.group) {
+      return this.pagedRequest(
+        `${this.config.apiBaseUrl}/groups/${encodeURIComponent(
+          options?.group,
+        )}/projects`,
+        {
+          ...options,
+          include_subgroups: true,
+        },
+      );
+    }
+
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
   }
 
@@ -69,7 +81,8 @@ export class GitLabClient {
 }
 
 export type ListOptions = {
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | boolean | undefined;
+  group?: string;
   per_page?: number | undefined;
   page?: number | undefined;
 };
