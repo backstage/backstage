@@ -17,8 +17,10 @@
 import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
-import { ProfileInfo, RedirectInfo } from '../../providers/types';
 import { InternalOAuthError } from 'passport-oauth2';
+
+import { PassportProfile } from './types';
+import { ProfileInfo, RedirectInfo } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -27,7 +29,7 @@ export type PassportDoneCallback<Res, Private = never> = (
 ) => void;
 
 export const makeProfileInfo = (
-  profile: passport.Profile,
+  profile: PassportProfile,
   idToken?: string,
 ): ProfileInfo => {
   let email: string | undefined = undefined;
@@ -37,7 +39,9 @@ export const makeProfileInfo = (
   }
 
   let picture: string | undefined = undefined;
-  if (profile.photos && profile.photos.length > 0) {
+  if (profile.avatarUrl) {
+    picture = profile.avatarUrl;
+  } else if (profile.photos && profile.photos.length > 0) {
     const [firstPhoto] = profile.photos;
     picture = firstPhoto.value;
   }
@@ -194,12 +198,12 @@ type ProviderStrategy = {
 export const executeFetchUserProfileStrategy = async (
   providerStrategy: passport.Strategy,
   accessToken: string,
-): Promise<passport.Profile> => {
+): Promise<PassportProfile> => {
   return new Promise((resolve, reject) => {
     const anyStrategy = providerStrategy as unknown as ProviderStrategy;
     anyStrategy.userProfile(
       accessToken,
-      (error: Error, rawProfile: passport.Profile) => {
+      (error: Error, rawProfile: PassportProfile) => {
         if (error) {
           reject(error);
         } else {
