@@ -17,28 +17,47 @@
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
-import {
-  GitLabDiscoveryProcessor,
-} from './GitLabDiscoveryProcessor';
+import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { GitLabProject } from "./gitlab";
+import { GitLabProject } from './gitlab';
 
 const server = setupServer();
 
-function setupFakeGitLab(
-  callback: (request: {
-    page: number;
-  }) => { data: GitLabProject[]; nextPage?: number },
+const PROJECTS_URL = 'https://gitlab.fake/api/v4/projects';
+const GROUP_PROJECTS_URL =
+  'https://gitlab.fake/api/v4/groups/group%2Fsubgroup/projects';
+
+const PROJECT_LOCATION: LocationSpec = {
+  type: 'gitlab-discovery',
+  target: 'https://gitlab.fake/blob/*/catalog-info.yaml',
+};
+const PROJECT_LOCATION_MASTER_BRANCH: LocationSpec = {
+  type: 'gitlab-discovery',
+  target: 'https://gitlab.fake/blob/master/catalog-info.yaml',
+};
+const GROUP_LOCATION: LocationSpec = {
+  type: 'gitlab-discovery',
+  target: 'https://gitlab.fake/group/subgroup/blob/*/catalog-info.yaml',
+};
+
+function setupFakeServer(
+  url: string,
+  callback: (request: { page: number; include_subgroups: boolean }) => {
+    data: GitLabProject[];
+    nextPage?: number;
+  },
 ) {
   server.use(
-    rest.get('https://gitlab.fake/api/v4/projects', (req, res, ctx) => {
+    rest.get(url, (req, res, ctx) => {
       if (req.headers.get('private-token') !== 'test-token') {
         return res(ctx.status(401), ctx.json({}));
       }
       const page = req.url.searchParams.get('page');
+      const include_subgroups = req.url.searchParams.get('include_subgroups');
       const response = callback({
         page: parseInt(page!, 10),
+        include_subgroups: include_subgroups === 'true',
       });
 
       // Filter the fake results based on the `last_activity_after` parameter
@@ -97,15 +116,43 @@ describe('GitlabDiscoveryProcessor', () => {
     jest.useRealTimers();
   });
 
-  const location: LocationSpec = {
-    type: 'gitlab-discovery',
-    target: 'https://gitlab.fake/north-star',
-  };
+  describe('parseUrl', () => {
+    it('parses well formed URLs', () => {
+      expect(
+        parseUrl('https://gitlab.com/group/subgroup/blob/master/catalog.yaml'),
+      ).toEqual({
+        group: 'group/subgroup',
+        host: 'gitlab.com',
+        branch: 'master',
+        catalogPath: 'catalog.yaml',
+      });
+      expect(
+        parseUrl('https://gitlab.com/blob/*/subfolder/catalog.yaml'),
+      ).toEqual({
+        group: undefined,
+        host: 'gitlab.com',
+        branch: '*',
+        catalogPath: 'subfolder/catalog.yaml',
+      });
+    });
+
+    it('throws on incorrectly formed URLs', () => {
+      expect(() => parseUrl('https://gitlab.com')).toThrow();
+      expect(() => parseUrl('https://gitlab.com//')).toThrow();
+      expect(() => parseUrl('https://gitlab.com/foo')).toThrow();
+      expect(() => parseUrl('https://gitlab.com//foo')).toThrow();
+      expect(() => parseUrl('https://gitlab.com/org/teams')).toThrow();
+      expect(() => parseUrl('https://gitlab.com/org//teams')).toThrow();
+      expect(() =>
+        parseUrl('https://gitlab.com/org//teams/blob/catalog.yaml'),
+      ).toThrow();
+    });
+  });
 
   describe('handles repositories', () => {
     it('pages through all repositories', async () => {
       const processor = getProcessor();
-      setupFakeGitLab(request => {
+      setupFakeServer(PROJECTS_URL, request => {
         switch (request.page) {
           case 1:
             return {
@@ -145,7 +192,7 @@ describe('GitlabDiscoveryProcessor', () => {
       });
 
       const result: any[] = [];
-      await processor.readLocation(location, false, e => {
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
         result.push(e);
       });
       expect(result).toEqual([
@@ -168,9 +215,78 @@ describe('GitlabDiscoveryProcessor', () => {
       ]);
     });
 
+    it('can force a branch name', async () => {
+      const processor = getProcessor();
+      setupFakeServer(PROJECTS_URL, request => {
+        switch (request.page) {
+          case 1:
+            return {
+              data: [
+                {
+                  id: 1,
+                  archived: false,
+                  default_branch: 'main',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/1',
+                },
+              ],
+            };
+          default:
+            throw new Error('Invalid request');
+        }
+      });
+
+      const result: any[] = [];
+      await processor.readLocation(PROJECT_LOCATION_MASTER_BRANCH, false, e => {
+        result.push(e);
+      });
+      expect(result).toEqual([
+        {
+          type: 'location',
+          location: {
+            type: 'url',
+            target: 'https://gitlab.fake/1/-/blob/master/catalog-info.yaml',
+          },
+          optional: true,
+        },
+      ]);
+    });
+
+    it('can filter based on group', async () => {
+      const processor = getProcessor();
+      setupFakeServer(GROUP_PROJECTS_URL, request => {
+        if (!request.include_subgroups) {
+          throw new Error('include_subgroups should be set');
+        }
+        switch (request.page) {
+          case 1:
+            return {
+              data: [
+                {
+                  id: 1,
+                  archived: false,
+                  default_branch: 'main',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/1',
+                },
+              ],
+            };
+          default:
+            throw new Error('Invalid request');
+        }
+      });
+
+      const result: any[] = [];
+      await processor.readLocation(GROUP_LOCATION, false, e => {
+        result.push(e);
+      });
+      // If everything was set up correctly, we should have received the fake repo specified above
+      expect(result).toHaveLength(1);
+    });
+
     it('uses the previous scan timestamp to filter', async () => {
       const processor = getProcessor();
-      setupFakeGitLab(request => {
+      setupFakeServer(PROJECTS_URL, request => {
         switch (request.page) {
           case 1:
             return {
@@ -199,7 +315,7 @@ describe('GitlabDiscoveryProcessor', () => {
       const result: any[] = [];
 
       // First scan should find all repos, since no last activity was cached
-      await processor.readLocation(location, false, e => {
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
         result.push(e);
       });
       expect(result).toHaveLength(2);
@@ -207,7 +323,7 @@ describe('GitlabDiscoveryProcessor', () => {
       // Second scan should have used the mocked Date to set the last scanned time to 2001
       // This should result in only the second repo being scanned, since that has a timestamp of 2002
       const result2: any[] = [];
-      await processor.readLocation(location, false, e => {
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
         result2.push(e);
       });
       expect(result2).toHaveLength(1);
@@ -217,7 +333,7 @@ describe('GitlabDiscoveryProcessor', () => {
   describe('handles failure', () => {
     it('invalid token', async () => {
       // Setup an empty fake gitlab, since we don't care about actual results
-      setupFakeGitLab(_ => {
+      setupFakeServer(PROJECTS_URL, _ => {
         return {
           data: [],
         };
@@ -226,7 +342,7 @@ describe('GitlabDiscoveryProcessor', () => {
       const config = getConfig();
       config.integrations.gitlab[0].token = 'invalid';
       await expect(
-        getProcessor(config).readLocation(location, false, _ => {}),
+        getProcessor(config).readLocation(PROJECT_LOCATION, false, _ => {}),
       ).rejects.toThrow(/Unauthorized/);
     });
 
@@ -234,14 +350,14 @@ describe('GitlabDiscoveryProcessor', () => {
       const config = getConfig();
       delete config.integrations;
       await expect(
-        getProcessor(config).readLocation(location, false, _ => {}),
+        getProcessor(config).readLocation(PROJECT_LOCATION, false, _ => {}),
       ).rejects.toThrow(/no GitLab integration/);
     });
 
     it('location type', async () => {
       const incorrectLocation: LocationSpec = {
         type: 'something-that-is-not-gitlab-discovery',
-        target: 'https://gitlab.fake/north-star',
+        target: 'https://gitlab.fake/oh-dear',
       };
 
       await expect(
