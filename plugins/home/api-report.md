@@ -7,8 +7,6 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Extension } from '@backstage/core-plugin-api';
-import { LazyExoticComponent } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -24,12 +22,10 @@ export const ComponentAccordion: ({
   ...childProps
 }: {
   title: string;
-  Content: LazyExoticComponent<(props: any) => JSX.Element>;
-  Actions?: LazyExoticComponent<(props: any) => JSX.Element> | undefined;
-  Settings?: LazyExoticComponent<(props: any) => JSX.Element> | undefined;
-  ContextProvider?:
-    | LazyExoticComponent<(props: any) => JSX.Element>
-    | undefined;
+  Content: () => JSX.Element;
+  Actions?: (() => JSX.Element) | undefined;
+  Settings?: (() => JSX.Element) | undefined;
+  ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ComponentTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -42,10 +38,8 @@ export const ComponentTab: ({
   ...childProps
 }: {
   title: string;
-  Content: LazyExoticComponent<(props: any) => JSX.Element>;
-  ContextProvider?:
-    | LazyExoticComponent<(props: any) => JSX.Element>
-    | undefined;
+  Content: () => JSX.Element;
+  ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ComponentTabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -63,23 +57,24 @@ export const ComponentTabs: ({
 }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ComponentRenderer" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ComponentProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createCardExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function createCardExtension<T>({
   title,
-  content,
-  actions,
-  contextProvider,
-  settings,
+  components,
 }: {
   title: string;
-  content: () => Promise<Component>;
-  actions?: () => Promise<Component>;
-  contextProvider?: () => Promise<Component>;
-  settings?: () => Promise<Component>;
-}): Extension<(props: ComponentRenderer & ComponentProps & T) => JSX.Element>;
+  components: () => Promise<ComponentParts>;
+}): Extension<
+  ({
+    Renderer,
+    title: overrideTitle,
+    ...childProps
+  }: ComponentRenderer & {
+    title?: string;
+  } & T) => JSX.Element
+>;
 
 // Warning: (ae-missing-release-tag) "HomepageCompositionRoot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -102,32 +97,15 @@ export const homePlugin: BackstagePlugin<
 // Warning: (ae-missing-release-tag) "RandomJokeHomePageComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RandomJokeHomePageComponent: (
-  props: {
-    Renderer?:
-      | ((
-          props: {
-            title: string;
-          } & {
-            Content: LazyExoticComponent<(props: any) => JSX.Element>;
-            Actions?:
-              | LazyExoticComponent<(props: any) => JSX.Element>
-              | undefined;
-            Settings?:
-              | LazyExoticComponent<(props: any) => JSX.Element>
-              | undefined;
-            ContextProvider?:
-              | LazyExoticComponent<(props: any) => JSX.Element>
-              | undefined;
-          },
-        ) => JSX.Element)
-      | undefined;
-  } & {
-    title?: string | undefined;
-  } & {
-    defaultCategory?: 'any' | 'programming' | undefined;
-  },
-) => JSX.Element;
+export const RandomJokeHomePageComponent: ({
+  Renderer,
+  title: overrideTitle,
+  ...childProps
+}: ComponentRenderer & {
+  title?: string | undefined;
+} & {
+  defaultCategory?: 'any' | 'programming' | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SettingsModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -146,7 +124,7 @@ export const SettingsModal: ({
 
 // Warnings were encountered during analysis:
 //
-// src/extensions.d.ts:19:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
+// src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```
