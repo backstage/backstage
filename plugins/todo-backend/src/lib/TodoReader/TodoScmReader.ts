@@ -77,22 +77,26 @@ export class TodoScmReader implements TodoReader {
   }
 
   async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
+    const inFlightRead = this.inFlightReads.get(url);
+    if (inFlightRead) {
+      return inFlightRead.then(read => read.result);
+    }
+
     const cacheItem = this.cache.get(url);
-    try {
-      const inFlightRead = this.inFlightReads.get(url);
-      if (inFlightRead) {
-        return (await inFlightRead).result;
+    const newRead = this.doReadTodos({ url }, cacheItem?.etag).catch(error => {
+      if (cacheItem && error.name === 'NotModifiedError') {
+        return cacheItem;
       }
-      const newRead = this.doReadTodos({ url }, cacheItem?.etag);
-      this.inFlightReads.set(url, newRead);
+      throw error;
+    });
+
+    this.inFlightReads.set(url, newRead);
+    try {
       const newCacheItem = await newRead;
       this.cache.set(url, newCacheItem);
       return newCacheItem.result;
-    } catch (error) {
-      if (cacheItem && error.name === 'NotModifiedError') {
-        return cacheItem.result;
-      }
-      throw error;
+    } finally {
+      this.inFlightReads.delete(url);
     }
   }
 
