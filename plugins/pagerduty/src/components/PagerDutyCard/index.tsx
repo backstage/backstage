@@ -29,13 +29,14 @@ import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
-import { CardTab, TabbedCard } from './TabbedCard';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
   Progress,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
+  TabbedCard,
+  CardTab,
 } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -45,7 +46,8 @@ export const PagerDutyCard = () => {
   const { integrationKey } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
-  const [refreshChangeEvents, setRefreshChangeEvents] = useState<boolean>(false);
+  const [refreshChangeEvents, setRefreshChangeEvents] =
+    useState<boolean>(false);
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
@@ -60,7 +62,11 @@ export const PagerDutyCard = () => {
     setRefreshChangeEvents(x => !x);
   }, []);
 
-  const { value: service, loading, error } = useAsync(async () => {
+  const {
+    value: service,
+    loading,
+    error,
+  } = useAsync(async () => {
     const services = await api.getServiceByIntegrationKey(
       integrationKey as string,
     );

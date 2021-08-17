@@ -20,7 +20,8 @@ import { ChangeEventListItem } from './ChangeEventListItem';
 import { ChangeEventEmptyState } from './ChangeEventEmptyState';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
-import { useApi, Progress } from '@backstage/core';
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress } from '@backstage/core-components';
 import { Alert } from '@material-ui/lab';
 
 type Props = {
