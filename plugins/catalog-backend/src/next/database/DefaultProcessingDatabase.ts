@@ -24,6 +24,7 @@ import type { Logger } from 'winston';
 import { Transaction } from '../../database';
 import { DeferredEntity } from '../processing/types';
 import { RefreshIntervalFunction } from '../refresh';
+import { initDatabaseMetrics } from './metrics';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
@@ -51,7 +52,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       logger: Logger;
       refreshInterval: RefreshIntervalFunction;
     },
-  ) {}
+  ) {
+    initDatabaseMetrics(options.database);
+  }
 
   async updateProcessedEntity(
     txOpaque: Transaction,

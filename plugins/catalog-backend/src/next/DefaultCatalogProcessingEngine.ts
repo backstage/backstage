@@ -34,7 +34,7 @@ import {
   EntityProviderConnection,
   EntityProviderMutation,
 } from './types';
-import { Counter, Histogram, Summary } from 'prom-client';
+import { Counter, Summary } from 'prom-client';
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
