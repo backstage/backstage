@@ -28,6 +28,7 @@ import { Logger } from 'winston';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
+  getContentTypeForExtension,
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
@@ -203,11 +204,13 @@ export class AwsS3Publish implements PublisherBase {
         async absoluteFilePath => {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
           const fileStream = fs.createReadStream(absoluteFilePath);
+          const fileExtension = path.extname(relativeFilePath);
 
           const params = {
             Bucket: this.bucketName,
             Key: getCloudPathForLocalPath(entity, relativeFilePath),
             Body: fileStream,
+            ContentType: getContentTypeForExtension(fileExtension, false),
           };
 
           return this.storageClient.upload(params).promise();

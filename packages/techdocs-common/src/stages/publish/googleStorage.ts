@@ -139,7 +139,10 @@ export class GoogleGCSPublish implements PublisherBase {
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
+          const fileExtension = path.extname(relativeFilePath);
+
           return await bucket.upload(absoluteFilePath, {
+            metadata: getHeadersForFileExtension(fileExtension, false),
             destination: getCloudPathForLocalPath(entity, relativeFilePath),
           });
         },

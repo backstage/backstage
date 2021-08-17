@@ -54,6 +54,34 @@ describe('getHeadersForFileExtension', () => {
   );
 });
 
+describe('getHeadersForFileExtension without override', () => {
+  const correctMapOfExtensions = [
+    ['.html', 'text/html; charset=utf-8'],
+    ['.htm', 'text/html; charset=utf-8'],
+    ['.HTML', 'text/html; charset=utf-8'],
+    ['.dhtml', 'text/plain; charset=utf-8'],
+    ['.xhtml', 'application/xhtml+xml'],
+    ['.xml', 'application/xml'],
+    ['.css', 'text/css; charset=utf-8'],
+    ['.png', 'image/png'],
+    ['.jpg', 'image/jpeg'],
+    ['.jpeg', 'image/jpeg'],
+    ['.svg', 'image/svg+xml'],
+    ['.SVG', 'image/svg+xml'],
+    ['.json', 'application/json; charset=utf-8'],
+    ['.this-in-not-an-extension', 'text/plain; charset=utf-8'],
+  ];
+
+  test.each(correctMapOfExtensions)(
+    'check content-type for %s extension',
+    (extension, expectedContentType) => {
+      const headers = getHeadersForFileExtension(extension, false);
+      expect(headers).toHaveProperty('Content-Type');
+      expect(headers['Content-Type'].toLowerCase()).toBe(expectedContentType);
+    },
+  );
+});
+
 describe('getFileTreeRecursively', () => {
   const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 

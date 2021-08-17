@@ -23,12 +23,15 @@ import recursiveReadDir from 'recursive-readdir';
  * Helper to get the expected content-type for a given file extension. Also
  * takes XSS mitigation into account.
  */
-const getContentTypeForExtension = (ext: string): string => {
+export const getContentTypeForExtension = (
+  ext: string,
+  overrideMimeType: boolean = true,
+): string => {
   const defaultContentType = 'text/plain; charset=utf-8';
 
   // Prevent sanitization bypass by preventing browsers from directly rendering
   // the contents of untrusted files.
-  if (ext.match(/htm|xml|svg/i)) {
+  if (overrideMimeType && ext.match(/htm|xml|svg/i)) {
     return defaultContentType;
   }
 
@@ -46,9 +49,10 @@ export type responseHeadersType = {
  */
 export const getHeadersForFileExtension = (
   fileExtension: string,
+  overrideMimeType: boolean = true,
 ): responseHeadersType => {
   return {
-    'Content-Type': getContentTypeForExtension(fileExtension),
+    'Content-Type': getContentTypeForExtension(fileExtension, overrideMimeType),
   };
 };
 

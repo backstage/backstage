@@ -167,11 +167,15 @@ export class AzureBlobStoragePublish implements PublisherBase {
           const relativeFilePath = path.normalize(
             path.relative(directory, absoluteFilePath),
           );
+          const fileExtension = path.extname(relativeFilePath);
+
           const response = await container
             .getBlockBlobClient(
               getCloudPathForLocalPath(entity, relativeFilePath),
             )
-            .uploadFile(absoluteFilePath);
+            .uploadFile(absoluteFilePath, {
+              metadata: getHeadersForFileExtension(fileExtension, false),
+            });
 
           if (response._response.status >= 400) {
             failedOperations.push(
