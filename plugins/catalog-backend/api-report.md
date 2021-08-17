@@ -771,6 +771,27 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
+// Warning: (ae-missing-release-tag) "GitLabDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class GitLabDiscoveryProcessor implements CatalogProcessor {
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GitLabDiscoveryProcessor;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+  // (undocumented)
+  updateLastActivity(): Promise<string | undefined>;
+}
+
 // Warning: (ae-missing-release-tag) "HigherOrderOperation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
