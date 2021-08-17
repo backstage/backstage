@@ -58,7 +58,7 @@ import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
-import { Route, Navigate } from 'react-router';
+import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
@@ -110,7 +110,7 @@ const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
     <Route path="/home" element={<HomepageCompositionRoot />}>
       <HomePage />

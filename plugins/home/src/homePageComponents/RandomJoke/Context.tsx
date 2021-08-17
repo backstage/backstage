@@ -87,13 +87,13 @@ export const ContextProvider = ({
 };
 
 export const useRandomJoke = () => {
-  const context = React.useContext(Context);
+  const value = React.useContext(Context);
 
-  if (context === undefined) {
-    throw new Error('useRandomJoke must be used within a RandomQuoteProvider');
+  if (value === undefined) {
+    throw new Error('useRandomJoke must be used within a RandomJokeProvider');
   }
 
-  return context;
+  return value;
 };
 
 export default Context;

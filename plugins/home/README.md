@@ -51,7 +51,7 @@ import { HomePage } from './components/home/HomePage';
 
 ### Creating Components
 
-The Home Page can be composed with regular React components, so there's no magic in creating components to be used for composition 🪄 🎩 . However, in order to assure that your component fits into a diverse set of Home Pages, there's an extension creator for this purpose, that creates a Card-based layout, for consistency between components (read more about extensions [here](https://backstage.io/docs/plugins/composability#extensions)). The extension creator requires two fields: `title` and `content`. Additionally, you can optionally provide `settings`, `actions` and `contextProvider` as well. These parts will be combined to create a card, where the `content`, `actions` and `settings` will be wrapped within the `contextProvider` in order to be able to access to context and effectively communicate with one another.
+The Home Page can be composed with regular React components, so there's no magic in creating components to be used for composition 🪄 🎩 . However, in order to assure that your component fits into a diverse set of Home Pages, there's an extension creator for this purpose, that creates a Card-based layout, for consistency between components (read more about extensions [here](https://backstage.io/docs/plugins/composability#extensions)). The extension creator requires two fields: `title` and `components`. The `components` field is expected to be an asynchronous import that should at least contain a `Content` field. Additionally, you can optionally provide `settings`, `actions` and `contextProvider` as well. These parts will be combined to create a card, where the `content`, `actions` and `settings` will be wrapped within the `contextProvider` in order to be able to access to context and effectively communicate with one another.
 
 Finally, the `createCardExtension` also accepts a generic, such that Component Developers can indicate to App Integrators what custom props their component will accept, such as the example below where the default category of the random jokes can be set.
 
@@ -59,16 +59,7 @@ Finally, the `createCardExtension` also accepts a generic, such that Component D
 export const RandomJokeHomePageComponent = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
     title: 'Random Joke',
-    content: () =>
-      import('./homePageComponents/RandomJoke/Content').then(m => m.Content),
-    actions: () =>
-      import('./homePageComponents/RandomJoke/Actions').then(m => m.Actions),
-    contextProvider: () =>
-      import('./homePageComponents/RandomJoke/Context').then(
-        m => m.ContextProvider,
-      ),
-    settings: () =>
-      import('./homePageComponents/RandomJoke/Settings').then(m => m.Settings),
+    components: () => import('./homePageComponents/RandomJoke'),
   }),
 );
 ```

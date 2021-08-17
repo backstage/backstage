@@ -61,9 +61,7 @@ export const ComponentTab = homePlugin.provide(
 );
 
 export const RandomJokeHomePageComponent = homePlugin.provide(
-  createCardExtension<{
-    defaultCategory?: 'any' | 'programming';
-  }>({
+  createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
   }),
