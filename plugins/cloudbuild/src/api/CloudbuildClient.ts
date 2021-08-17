@@ -60,7 +60,8 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
 
-    const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
+    const builds: ActionsListWorkflowRunsForRepoResponseData =
+      await workflowRuns.json();
 
     return builds;
   }

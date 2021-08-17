@@ -312,14 +312,6 @@ configuration.
 
 Stability: `1`
 
-### `register-component` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/register-component/)
-
-A frontend plugin that allows the user to register entity locations in the
-catalog.
-
-Stability: `0`. This plugin is likely to be replaced by a generic entity import
-plugin instead.
-
 ### `scaffolder` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
 
 The frontend scaffolder plugin where one can browse templates and initiate

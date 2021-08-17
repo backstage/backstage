@@ -34,6 +34,11 @@ export type AuthProviderConfig = {
    * The base URL of the app as provided by app.baseUrl
    */
   appUrl: string;
+
+  /**
+   * A function that is called to check whether an origin other than the apps default one is allowed.
+   */
+  isOriginAllowed: (origin: string) => boolean;
 };
 
 export type RedirectInfo = {

@@ -100,6 +100,7 @@ export const ErrorPanel = ({
 }: PropsWithChildren<ErrorPanelProps>) => {
   return (
     <WarningPanel
+      severity="error"
       title={title ?? error.message}
       defaultExpanded={defaultExpanded}
     >

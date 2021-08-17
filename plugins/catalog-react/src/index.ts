@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export type { CatalogApi } from '@backstage/catalog-client';
+export { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 export { catalogApiRef } from './api';
 export * from './components';
 export * from './hooks';

@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.13.1
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence. For example you can now query with `/entities?filter=metadata.annotations.blah` to fetch all entities that has the particular property defined.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.18
+
 ## 0.13.0
 
 ### Minor Changes
@@ -434,13 +450,11 @@
   and lets the other processors take care of further processing.
 
   ```typescript
-  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-    client,
-    repository,
-  }) {
-    // Custom logic for interpret the matching repository.
-    // See defaultRepositoryParser for an example
-  };
+  const customRepositoryParser: BitbucketRepositoryParser =
+    async function* customRepositoryParser({ client, repository }) {
+      // Custom logic for interpret the matching repository.
+      // See defaultRepositoryParser for an example
+    };
 
   const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
     parser: customRepositoryParser,
@@ -912,7 +926,6 @@
   spec:
     type: website
   ---
-
   ```
 
   This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.

@@ -35,8 +35,12 @@ import {
   EntityLayout,
   EntityLinksCard,
   EntitySwitch,
+  EntityOrphanWarning,
+  EntityProcessingErrorsPanel,
   isComponentType,
   isKind,
+  hasCatalogProcessingErrors,
+  isOrphan,
 } from '@backstage/plugin-catalog';
 import {
   isGithubActionsAvailable,
@@ -80,6 +84,22 @@ const cicdContent = (
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
@@ -160,7 +180,7 @@ const websiteEntityPage = (
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
  * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
- * since this does not default. If no breakpoints are used, the items will equitably share the asvailable space.
+ * since this does not default. If no breakpoints are used, the items will equitably share the available space.
  * https://material-ui.com/components/grid/#basic-grid.
  */
 

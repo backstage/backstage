@@ -21,9 +21,10 @@ import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
 
 describe('MicrosoftGraphClient', () => {
-  const confidentialClientApplication: jest.Mocked<msal.ConfidentialClientApplication> = {
-    acquireTokenByClientCredential: jest.fn(),
-  } as any;
+  const confidentialClientApplication: jest.Mocked<msal.ConfidentialClientApplication> =
+    {
+      acquireTokenByClientCredential: jest.fn(),
+    } as any;
   let client: MicrosoftGraphClient;
   const worker = setupServer();
 

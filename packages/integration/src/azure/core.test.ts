@@ -43,26 +43,22 @@ describe('azure core', () => {
   describe('getAzureFileFetchUrl', () => {
     it.each([
       {
-        url:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
       },
       {
-        url:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
       },
       {
-        url:
-          'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         result:
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
       },
       {
-        url:
-          'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
       },

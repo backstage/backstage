@@ -18,10 +18,11 @@ import {
   IndexableDocument,
   SearchQuery,
   SearchResultSet,
+  QueryTranslator,
+  SearchEngine,
 } from '@backstage/search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
-import { QueryTranslator, SearchEngine } from '../types';
 
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;

@@ -34,6 +34,5 @@ export interface GroupEntityV1alpha1 extends Entity {
   };
 }
 
-export const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const groupEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

@@ -76,10 +76,8 @@ export function createCatalogRegisterAction(options: {
       if ('catalogInfoUrl' in input) {
         catalogInfoUrl = input.catalogInfoUrl;
       } else {
-        const {
-          repoContentsUrl,
-          catalogInfoPath = '/catalog-info.yaml',
-        } = input;
+        const { repoContentsUrl, catalogInfoPath = '/catalog-info.yaml' } =
+          input;
         const integration = integrations.byUrl(repoContentsUrl);
         if (!integration) {
           throw new InputError(

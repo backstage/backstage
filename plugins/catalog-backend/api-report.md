@@ -88,9 +88,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     logger: Logger_2;
   });
   // (undocumented)
-  extractInformationFromArn(
-    arn: string,
-  ): {
+  extractInformationFromArn(arn: string): {
     accountId: string;
     organizationId: string;
   };
@@ -596,7 +594,8 @@ export class DefaultCatalogCollator implements DocumentCollator {
 //
 // @public (undocumented)
 export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator {
+  implements CatalogProcessingOrchestrator
+{
   constructor(options: {
     processors: CatalogProcessor[];
     integrations: ScmIntegrationRegistry;
@@ -636,6 +635,7 @@ export type EntitiesCatalog = {
 export type EntitiesSearchFilter = {
   key: string;
   matchValueIn?: string[];
+  matchValueExists?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1077,16 +1077,16 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/catalog/types.d.ts:44:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:45:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:75:5 - (ae-forgotten-export) The symbol "LocationUpdateLogEvent" needs to be exported by the entry point index.d.ts
-// src/database/types.d.ts:121:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:127:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:128:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:142:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:143:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:144:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:125:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:131:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:132:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:146:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:159:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:160:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:161:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:147:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:148:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:150:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:163:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:164:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/database/types.d.ts:165:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 // src/ingestion/processors/types.d.ts:7:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/processors/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

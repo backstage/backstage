@@ -164,15 +164,16 @@ export const PatchBody = ({
         {gitDataResponse.value.recentCommitsOnDefaultBranch.map(
           (commit, index) => {
             // FIXME: Performance improvement opportunity: Convert to object lookup
-            const commitExistsOnReleaseBranch = !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
-              releaseBranchCommit =>
-                releaseBranchCommit.sha === commit.sha ||
-                // The selected patch commit's sha is included in the commit message,
-                // which means it's part of a previous patch
-                releaseBranchCommit.commit.message.includes(
-                  getPatchCommitSuffix({ commitSha: commit.sha }),
-                ),
-            );
+            const commitExistsOnReleaseBranch =
+              !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
+                releaseBranchCommit =>
+                  releaseBranchCommit.sha === commit.sha ||
+                  // The selected patch commit's sha is included in the commit message,
+                  // which means it's part of a previous patch
+                  releaseBranchCommit.commit.message.includes(
+                    getPatchCommitSuffix({ commitSha: commit.sha }),
+                  ),
+              );
             const hasNoParent = !commit.firstParentSha;
 
             return (

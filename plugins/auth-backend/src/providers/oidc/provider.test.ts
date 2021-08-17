@@ -70,7 +70,7 @@ describe('OidcAuthProvider', () => {
       rest.get('https://oidc.test/.well-known/openid-configuration', handler),
     );
     const provider = new OidcAuthProvider(clientMetadata);
-    const { strategy } = ((await (provider as any).implementation) as any) as {
+    const { strategy } = (await (provider as any).implementation) as any as {
       strategy: {
         _client: ClientMetadata;
         _issuer: IssuerMetadata;
@@ -138,7 +138,7 @@ describe('OidcAuthProvider', () => {
     const req = {
       method: 'GET',
       url: 'https://oidc.test/?code=test2',
-      session: ({ 'oidc:oidc.test': 'test' } as any) as Session,
+      session: { 'oidc:oidc.test': 'test' } as any as Session,
     } as express.Request;
     await provider.handler(req);
     expect(requestSequence).toEqual([0, 1, 2].map(i => requests[i].url));

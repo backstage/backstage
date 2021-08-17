@@ -84,7 +84,13 @@ export function createPublishGitlabAction(options: {
         defaultBranch = 'master',
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const integrationConfig = integrations.gitlab.byHost(host);
 
@@ -137,6 +143,9 @@ export function createPublishGitlabAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 

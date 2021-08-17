@@ -27,9 +27,8 @@ export class ScmIntegrationsApi {
   }
 }
 
-export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry> = createApiRef(
-  {
+export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry> =
+  createApiRef({
     id: 'integration.scmintegrations',
     description: 'All of the registered SCM integrations of your config',
-  },
-);
+  });

@@ -47,13 +47,8 @@ export interface RouterOptions {
 export async function createNextRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const {
-    entitiesCatalog,
-    locationAnalyzer,
-    locationService,
-    config,
-    logger,
-  } = options;
+  const { entitiesCatalog, locationAnalyzer, locationService, config, logger } =
+    options;
 
   const router = Router();
   router.use(express.json());

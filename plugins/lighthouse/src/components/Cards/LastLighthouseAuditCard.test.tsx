@@ -93,7 +93,9 @@ describe('<LastLighthouseAuditCard />', () => {
     describe('where a category score is not a number', () => {
       beforeEach(() => {
         entityWebsite = { ...entityWebsite };
-        (entityWebsite.lastAudit as AuditCompleted).categories.accessibility.score = NaN;
+        (
+          entityWebsite.lastAudit as AuditCompleted
+        ).categories.accessibility.score = NaN;
       });
 
       afterEach(() => {

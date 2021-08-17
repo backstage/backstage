@@ -204,7 +204,7 @@ techdocs:
   builder: 'local'
   publisher:
     type: 'local'
-  generators:
+  generator:
     techdocs: local
 ```
 

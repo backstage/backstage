@@ -41,7 +41,12 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
 
-  const { value: entity, error, loading, retry: refresh } = useAsyncRetry(
+  const {
+    value: entity,
+    error,
+    loading,
+    retry: refresh,
+  } = useAsyncRetry(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );

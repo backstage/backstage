@@ -161,21 +161,17 @@ describe('TemplatePage', () => {
       ],
     });
 
-    const {
-      findByText,
-      findByLabelText,
-      findAllByRole,
-      findByRole,
-    } = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <TemplatePage />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/create/actions': rootRouteRef,
+    const { findByText, findByLabelText, findAllByRole, findByRole } =
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <TemplatePage />
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create/actions': rootRouteRef,
+          },
         },
-      },
-    );
+      );
 
     expect(await findByText('Fill in some steps')).toBeInTheDocument();
 

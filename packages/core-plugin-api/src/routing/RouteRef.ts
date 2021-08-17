@@ -32,7 +32,8 @@ export type RouteRefConfig<Params extends AnyParams> = {
 };
 
 export class RouteRefImpl<Params extends AnyParams>
-  implements RouteRef<Params> {
+  implements RouteRef<Params>
+{
   readonly [routeRefType] = 'absolute';
 
   constructor(
@@ -70,7 +71,7 @@ export function createRouteRef<
   // ParamKey is here to make sure the Params type properly has its keys narrowed down
   // to only the elements of params. Defaulting to never makes sure we end up with
   // Param = {} if the params array is empty.
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(config: {
   /** The id of the route ref, used to identify it when printed */
   id?: string;

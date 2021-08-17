@@ -30,29 +30,30 @@ export const isStatusSnoozed = createStatusHandler(AlertStatus.Snoozed);
 export const isStatusAccepted = createStatusHandler(AlertStatus.Accepted);
 export const isStatusDismissed = createStatusHandler(AlertStatus.Dismissed);
 
-const createAlertEventHandler = (
-  onEvent: 'onSnoozed' | 'onAccepted' | 'onDismissed',
-) => (alert: Maybe<Alert>): boolean => hasProperty(alert, onEvent);
+const createAlertEventHandler =
+  (onEvent: 'onSnoozed' | 'onAccepted' | 'onDismissed') =>
+  (alert: Maybe<Alert>): boolean =>
+    hasProperty(alert, onEvent);
 export const isSnoozeEnabled = createAlertEventHandler('onSnoozed');
 export const isAcceptEnabled = createAlertEventHandler('onAccepted');
 export const isDismissEnabled = createAlertEventHandler('onDismissed');
 
-const createFormEnabledHandler = (
-  Form: 'SnoozeForm' | 'AcceptForm' | 'DismissForm',
-) => (alert: Maybe<Alert>): boolean => {
-  if (!alert) return false;
-  if (alert[Form] === null) return false;
-  switch (Form) {
-    case 'SnoozeForm':
-      return isSnoozeEnabled(alert);
-    case 'AcceptForm':
-      return isAcceptEnabled(alert);
-    case 'DismissForm':
-      return isDismissEnabled(alert);
-    default:
-      return false;
-  }
-};
+const createFormEnabledHandler =
+  (Form: 'SnoozeForm' | 'AcceptForm' | 'DismissForm') =>
+  (alert: Maybe<Alert>): boolean => {
+    if (!alert) return false;
+    if (alert[Form] === null) return false;
+    switch (Form) {
+      case 'SnoozeForm':
+        return isSnoozeEnabled(alert);
+      case 'AcceptForm':
+        return isAcceptEnabled(alert);
+      case 'DismissForm':
+        return isDismissEnabled(alert);
+      default:
+        return false;
+    }
+  };
 export const isSnoozeFormEnabled = createFormEnabledHandler('SnoozeForm');
 export const isAcceptFormEnabled = createFormEnabledHandler('AcceptForm');
 export const isDismissFormEnabled = createFormEnabledHandler('DismissForm');

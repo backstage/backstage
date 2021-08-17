@@ -32,6 +32,7 @@ import { Config } from '@backstage/config';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
+import { Minimatch } from 'minimatch';
 
 type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -88,6 +89,8 @@ export async function createRouter({
   const providersConfig = config.getConfig('auth.providers');
   const configuredProviders = providersConfig.keys();
 
+  const isOriginAllowed = createOriginFilter(config);
+
   for (const [providerId, providerFactory] of Object.entries(
     allProviderFactories,
   )) {
@@ -96,7 +99,7 @@ export async function createRouter({
       try {
         const provider = providerFactory({
           providerId,
-          globalConfig: { baseUrl: authUrl, appUrl },
+          globalConfig: { baseUrl: authUrl, appUrl, isOriginAllowed },
           config: providersConfig.getConfig(providerId),
           logger,
           tokenIssuer,
@@ -157,4 +160,23 @@ export async function createRouter({
   });
 
   return router;
+}
+
+export function createOriginFilter(
+  config: Config,
+): (origin: string) => boolean {
+  const allowedOrigins = config.getOptionalStringArray(
+    'auth.experimentalExtraAllowedOrigins',
+  );
+  if (!allowedOrigins || allowedOrigins.length === 0) {
+    return () => false;
+  }
+
+  const allowedOriginPatterns = allowedOrigins.map(
+    pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+  );
+
+  return origin => {
+    return allowedOriginPatterns.some(pattern => pattern.match(origin));
+  };
 }

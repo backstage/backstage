@@ -17,6 +17,10 @@
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 import { EntityPicker } from './components/fields/EntityPicker';
+import {
+  entityNamePickerValidation,
+  EntityNamePicker,
+} from './components/fields/EntityNamePicker';
 import { OwnerPicker } from './components/fields/OwnerPicker';
 import {
   repoPickerValidation,
@@ -58,6 +62,14 @@ export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityPicker,
     name: 'EntityPicker',
+  }),
+);
+
+export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityNamePicker,
+    name: 'EntityNamePicker',
+    validation: entityNamePickerValidation,
   }),
 );
 

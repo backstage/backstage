@@ -32,7 +32,7 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 export const Router = () => {
   const outlet = useOutlet();
 
-  const foundExtensions = useElementFilter(outlet, elements =>
+  const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -42,9 +42,15 @@ export const Router = () => {
       }),
   );
 
-  const fieldExtensions = foundExtensions.length
-    ? foundExtensions
-    : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
+  const fieldExtensions = [
+    ...customFieldExtensions,
+    ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
+      ({ name }) =>
+        !customFieldExtensions.some(
+          customFieldExtension => customFieldExtension.name === name,
+        ),
+    ),
+  ];
 
   return (
     <Routes>

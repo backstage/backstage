@@ -18,14 +18,14 @@ import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
-import EventSource from 'eventsource';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { TechDocsStorageClient } from './client';
 
-const MockedEventSource: jest.MockedClass<
-  typeof EventSource
-> = EventSource as any;
+const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
+  typeof EventSourcePolyfill
+>;
 
-jest.mock('eventsource');
+jest.mock('event-source-polyfill');
 
 const mockEntity = {
   kind: 'Component',
@@ -83,7 +83,7 @@ describe('TechDocsStorageClient', () => {
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
@@ -91,9 +91,7 @@ describe('TechDocsStorageClient', () => {
 
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: {} },
       );
@@ -109,7 +107,7 @@ describe('TechDocsStorageClient', () => {
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
@@ -119,9 +117,7 @@ describe('TechDocsStorageClient', () => {
 
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: { Authorization: 'Bearer token' } },
       );
@@ -137,7 +133,7 @@ describe('TechDocsStorageClient', () => {
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
@@ -158,7 +154,7 @@ describe('TechDocsStorageClient', () => {
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": true}' } as any);
           }
         },
@@ -179,11 +175,11 @@ describe('TechDocsStorageClient', () => {
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'log') {
+          if (type === 'log' && typeof fn === 'function') {
             fn({ data: '"A log message"' } as any);
           }
 
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
@@ -215,7 +211,7 @@ describe('TechDocsStorageClient', () => {
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
 
-      instance.onerror({
+      instance.onerror?.({
         status: 404,
         message: 'Some not found warning',
       } as any);
@@ -241,7 +237,7 @@ describe('TechDocsStorageClient', () => {
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
 
-      instance.onerror({
+      instance.onerror?.({
         type: 'error',
         data: 'Some other error',
       } as any);

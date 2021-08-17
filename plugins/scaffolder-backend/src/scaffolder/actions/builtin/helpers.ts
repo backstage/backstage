@@ -62,6 +62,7 @@ export async function initRepoAndPush({
   auth,
   logger,
   defaultBranch = 'master',
+  commitMessage = 'Initial commit',
   gitAuthorInfo,
 }: {
   dir: string;
@@ -69,6 +70,7 @@ export async function initRepoAndPush({
   auth: { username: string; password: string };
   logger: Logger;
   defaultBranch?: string;
+  commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<void> {
   const git = Git.fromAuth({
@@ -100,7 +102,7 @@ export async function initRepoAndPush({
 
   await git.commit({
     dir,
-    message: 'Initial commit',
+    message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
   });

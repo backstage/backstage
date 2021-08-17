@@ -51,8 +51,7 @@ describe('AzureIntegration', () => {
       expect(
         integration.resolveUrl({
           url: '../a.yaml',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
         }),
       ).toBe(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
@@ -61,8 +60,7 @@ describe('AzureIntegration', () => {
       expect(
         integration.resolveUrl({
           url: '/a.yaml',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
           lineNumber: 14,
         }),
       ).toBe(
@@ -81,8 +79,7 @@ describe('AzureIntegration', () => {
       expect(
         integration.resolveUrl({
           url: 'https://absolute.com/path',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
         }),
       ).toBe('https://absolute.com/path');
     });

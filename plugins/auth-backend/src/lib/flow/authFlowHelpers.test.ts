@@ -32,10 +32,10 @@ describe('oauth helpers', () => {
   describe('postMessageResponse', () => {
     const appOrigin = 'http://localhost:3000';
     it('should post a message back with payload success', () => {
-      const mockResponse = ({
+      const mockResponse = {
         end: jest.fn().mockReturnThis(),
         setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
+      } as unknown as express.Response;
 
       const data: WebMessageResponse = {
         type: 'authorization_response',
@@ -64,10 +64,10 @@ describe('oauth helpers', () => {
     });
 
     it('should post a message back with payload error', () => {
-      const mockResponse = ({
+      const mockResponse = {
         end: jest.fn().mockReturnThis(),
         setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
+      } as unknown as express.Response;
 
       const data: WebMessageResponse = {
         type: 'authorization_response',
@@ -84,13 +84,13 @@ describe('oauth helpers', () => {
     it('should call postMessage twice but only one of them with target *', () => {
       let responseBody = '';
 
-      const mockResponse = ({
+      const mockResponse = {
         end: jest.fn(body => {
           responseBody = body;
           return this;
         }),
         setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
+      } as unknown as express.Response;
 
       const data: WebMessageResponse = {
         type: 'authorization_response',
@@ -128,10 +128,10 @@ describe('oauth helpers', () => {
     });
 
     it('handles single quotes and unicode chars safely', () => {
-      const mockResponse = ({
+      const mockResponse = {
         end: jest.fn().mockReturnThis(),
         setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
+      } as unknown as express.Response;
 
       const data: WebMessageResponse = {
         type: 'authorization_response',
@@ -164,23 +164,23 @@ describe('oauth helpers', () => {
 
   describe('ensuresXRequestedWith', () => {
     it('should return false if no header present', () => {
-      const mockRequest = ({
+      const mockRequest = {
         header: () => jest.fn(),
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(ensuresXRequestedWith(mockRequest)).toBe(false);
     });
 
     it('should return false if header present with incorrect value', () => {
-      const mockRequest = ({
+      const mockRequest = {
         header: () => 'INVALID',
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(ensuresXRequestedWith(mockRequest)).toBe(false);
     });
 
     it('should return true if header present with correct value', () => {
-      const mockRequest = ({
+      const mockRequest = {
         header: () => 'XMLHttpRequest',
-      } as unknown) as express.Request;
+      } as unknown as express.Request;
       expect(ensuresXRequestedWith(mockRequest)).toBe(true);
     });
   });
