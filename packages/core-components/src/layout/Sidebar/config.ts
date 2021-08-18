@@ -35,6 +35,7 @@ export const sidebarConfig = {
   selectedIndicatorWidth: 3,
   userBadgePadding,
   userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
+  mobileSidebarHeight: 56,
 };
 
 export const SIDEBAR_INTRO_LOCAL_STORAGE =

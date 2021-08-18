@@ -32,12 +32,7 @@ import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Link,
-  makeStyles,
-} from '@material-ui/core';
+import { Link, makeStyles } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -48,7 +43,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';

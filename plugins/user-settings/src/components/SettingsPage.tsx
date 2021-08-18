@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
+import { Header, Page, TabbedLayout } from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
+import { useMediaQuery } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
-import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.up('xs'),
+  );
+
   return (
     <Page themeId="home">
-      <Header title="Settings" />
-
+      {!isMobileScreen && <Header title="Settings" />}
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
           <UserSettingsGeneral />

@@ -14,83 +14,128 @@
  * limitations under the License.
  */
 
-import { BottomNavigation, Box, makeStyles } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  BottomNavigation,
+  Box,
+  IconButton,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import React, { createContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { SidebarGroup } from './Group';
+import { sidebarConfig } from './config';
+import { SidebarGroup } from './SidebarGroup';
+import CloseIcon from '@material-ui/icons/Close';
 
-const useStyles = makeStyles({
+type MobileSidebarContextType = {
+  selectedMenuItemIndex: number;
+  setSelectedMenuItemIndex: React.Dispatch<React.SetStateAction<number>>;
+};
+
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     position: 'fixed',
+    backgroundColor: theme.palette.navigation.background,
+    color: theme.palette.navigation.color,
     bottom: 0,
     left: 0,
     right: 0,
     zIndex: 1000,
+    borderTop: '1px solid #383838',
   },
+
+  overlay: {
+    background: theme.palette.navigation.background,
+    width: '100%',
+    flex: '0 1 auto',
+    height: `calc(100% - ${sidebarConfig.mobileSidebarHeight}px)`,
+    overflow: 'auto',
+    position: 'fixed',
+    zIndex: 500,
+  },
+
+  overlayHeader: {
+    display: 'flex',
+    color: theme.palette.bursts.fontColor,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+  },
+
+  overlayHeaderClose: {
+    color: theme.palette.bursts.fontColor,
+  },
+}));
+
+const OverlayMenu = ({
+  children,
+  label,
+  onClose,
+}: React.PropsWithChildren<{ label: string; onClose: () => void }>) => {
+  const classes = useStyles();
+
+  return (
+    <Box className={classes.overlay}>
+      <Box className={classes.overlayHeader}>
+        <Typography variant="h3">{label}</Typography>
+        <IconButton
+          onClick={onClose}
+          classes={{ root: classes.overlayHeaderClose }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <Box>{children}</Box>
+    </Box>
+  );
+};
+
+export const MobileSidebarContext = createContext<MobileSidebarContextType>({
+  selectedMenuItemIndex: -1,
+  setSelectedMenuItemIndex: () => {},
 });
-
-const OverlayMenu = ({ children }: React.PropsWithChildren<{}>) => (
-  <Box
-    style={{
-      background: 'black',
-      width: '100%',
-      height: '100%',
-      position: 'fixed',
-      zIndex: 500,
-    }}
-  >
-    {children}
-  </Box>
-);
-
-let currentLocation: string;
 
 /**
  * Filters for sidebar groups and reorders them to create a custom BottomNavigation
  */
 export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
   const classes = useStyles();
-  const [value, setValue] = useState<number | undefined>();
-  const [menu, setMenu] = useState<React.ReactNode | undefined>();
   const location = useLocation();
+  const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
+    useState<number>(-1);
 
   useEffect(() => {
-    if (menu && currentLocation !== location.pathname) {
-      setMenu(undefined);
-      setValue(undefined);
-    }
-    currentLocation = location.pathname;
-  }, [location, menu]);
+    // This is getting triggered to often - fix me!
+    setSelectedMenuItemIndex(-1);
+  }, [location.pathname]);
+
+  const sidebarGroups = React.Children.map(children, child =>
+    React.isValidElement(child) && child.type === SidebarGroup ? child : null,
+  );
+
+  if (!sidebarGroups) {
+    // error api
+    return null; // think about the exception state
+  }
+
+  const shouldShowGroupChildren =
+    selectedMenuItemIndex >= 0 &&
+    !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <React.Fragment>
-      {value && menu && <OverlayMenu children={menu} />}
+    <MobileSidebarContext.Provider
+      value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
+    >
+      {shouldShowGroupChildren && (
+        <OverlayMenu
+          {...sidebarGroups[selectedMenuItemIndex].props}
+          onClose={() => setSelectedMenuItemIndex(-1)}
+        />
+      )}
       <BottomNavigation className={classes.root}>
-        {React.Children.map(children, (child, index) => {
-          if (
-            React.isValidElement(child) &&
-            (child as React.ReactElement).type === SidebarGroup
-          ) {
-            if (index === value && !menu && !child.props.to) {
-              setMenu(child.props.children);
-            }
-            return React.cloneElement(child, {
-              injectedSelected: value
-                ? index === value
-                : location.pathname === child.props.to,
-              onClick: () => {
-                if (index === value && menu) {
-                  setValue(undefined);
-                  setMenu(undefined);
-                } else {
-                  setValue(index);
-                }
-              },
-            });
-          }
-          return null;
-        })}
+        {sidebarGroups}
       </BottomNavigation>
-    </React.Fragment>
+    </MobileSidebarContext.Provider>
   );
 };

@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
-import Pagination from '@material-ui/lab/Pagination';
+import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
+  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
   SearchType,
-  DefaultResultListItem,
 } from '@backstage/plugin-search';
-import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { SearchResultSet } from '@backstage/search-common';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  Grid,
+  List,
+  makeStyles,
+  Paper,
+  Theme,
+  useMediaQuery,
+} from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -96,9 +104,16 @@ const SearchResultList = ({ results }: SearchResultSet) => {
 
 const SearchPage = () => {
   const classes = useStyles();
+  // Think about abstraction to utils here
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.up('xs'),
+  );
+
   return (
     <Page themeId="home">
-      <Header title="Search" subtitle={<Lifecycle alpha />} />
+      {!isMobileScreen && (
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+      )}
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
@@ -106,26 +121,28 @@ const SearchPage = () => {
               <SearchBar debounceTime={100} />
             </Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.filters}>
-              <SearchType
-                values={['techdocs', 'software-catalog']}
-                name="type"
-                defaultValue="software-catalog"
-              />
-              <SearchFilter.Select
-                className={classes.filter}
-                name="kind"
-                values={['Component', 'Template']}
-              />
-              <SearchFilter.Checkbox
-                className={classes.filter}
-                name="lifecycle"
-                values={['experimental', 'production']}
-              />
-            </Paper>
-          </Grid>
-          <Grid item xs={9}>
+          {!isMobileScreen && (
+            <Grid item xs={3}>
+              <Paper className={classes.filters}>
+                <SearchType
+                  values={['techdocs', 'software-catalog']}
+                  name="type"
+                  defaultValue="software-catalog"
+                />
+                <SearchFilter.Select
+                  className={classes.filter}
+                  name="kind"
+                  values={['Component', 'Template']}
+                />
+                <SearchFilter.Checkbox
+                  className={classes.filter}
+                  name="lifecycle"
+                  values={['experimental', 'production']}
+                />
+              </Paper>
+            </Grid>
+          )}
+          <Grid item xs>
             <SearchResult>
               {({ results }) => <SearchResultList results={results} />}
             </SearchResult>
