@@ -21,6 +21,10 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef, ErrorApi } from '@backstage/core-plugin-api';
+// should we add this to dev dependencies?
+// (already a dependency of react-use)
+// eslint-disable-next-line import/no-extraneous-dependencies
+import copy from 'copy-to-clipboard';
 
 jest.mock('popper.js', () => {
   const PopperJS = jest.requireActual('popper.js');
@@ -51,14 +55,16 @@ const apiRegistry = ApiRegistry.from([
   ],
 ]);
 
+jest.mock('copy-to-clipboard', () => jest.fn());
+
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByDisplayValue } = await renderInTestApp(
+    const { getByTestId } = await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <CopyTextButton {...props} />
       </ApiProvider>,
     );
-    getByDisplayValue('mockText');
+    expect(getByTestId('copy-button')).toBeInTheDocument();
   });
 
   it('displays tooltip on click', async () => {
@@ -74,7 +80,7 @@ describe('<CopyTextButton />', () => {
     act(() => {
       jest.runAllTimers();
     });
-    expect(document.execCommand).toHaveBeenCalled();
+    expect(copy).toHaveBeenCalledWith('mockText');
     rendered.getByText('mockTooltip');
     jest.useRealTimers();
   });
