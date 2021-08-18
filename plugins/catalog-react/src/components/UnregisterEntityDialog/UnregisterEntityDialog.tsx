@@ -155,8 +155,8 @@ const Contents = ({
     return (
       <>
         <DialogContentText>
-          This entity does not seem to originate from a location. You therefore
-          only have the option to delete it outright from the catalog.
+          This entity does not seem to originate from a registered location. You
+          therefore only have the option to delete it outright from the catalog.
         </DialogContentText>
         <Button
           variant="contained"
