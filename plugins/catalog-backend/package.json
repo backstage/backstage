@@ -61,6 +61,7 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
+    "aws-sdk-mock": "^5.2.1",
     "@backstage/backend-test-utils": "^0.1.5",
     "@backstage/cli": "^0.7.8",
     "@backstage/test-utils": "^0.1.17",
