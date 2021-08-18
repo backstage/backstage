@@ -26,6 +26,7 @@ import {
   GroupTransformer,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
+  OrganizationTransformer,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
   UserTransformer,
@@ -39,6 +40,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly logger: Logger;
   private readonly userTransformer?: UserTransformer;
   private readonly groupTransformer?: GroupTransformer;
+  private readonly organizationTransformer?: OrganizationTransformer;
 
   static fromConfig(
     config: Config,
@@ -46,6 +48,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       logger: Logger;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
+      organizationTransformer?: OrganizationTransformer;
     },
   ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
@@ -60,11 +63,13 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     logger: Logger;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
     this.userTransformer = options.userTransformer;
     this.groupTransformer = options.groupTransformer;
+    this.organizationTransformer = options.organizationTransformer;
   }
 
   async readLocation(
@@ -99,6 +104,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
         groupFilter: provider.groupFilter,
         userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,
+        organizationTransformer: this.organizationTransformer,
         logger: this.logger,
       },
     );
