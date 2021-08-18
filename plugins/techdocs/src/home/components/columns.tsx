@@ -19,6 +19,10 @@ import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { DocsTableRow } from './types';
 
+function formatTitle(entity): String {
+  return entity.metadata.title || entity.metadata.name;
+}
+
 export function createNameColumn(): TableColumn<DocsTableRow> {
   return {
     title: 'Document',
@@ -26,9 +30,7 @@ export function createNameColumn(): TableColumn<DocsTableRow> {
     highlight: true,
     render: (row: DocsTableRow) => (
       <SubvalueCell
-        value={
-          <Link to={row.resolved.docsUrl}>{row.entity.metadata.name}</Link>
-        }
+        value={<Link to={row.resolved.docsUrl}>{formatTitle(row.entity)}</Link>}
         subvalue={row.entity.metadata.description}
       />
     ),
