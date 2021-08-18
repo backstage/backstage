@@ -382,12 +382,14 @@ export async function readMicrosoftGraphOrg(
   options: {
     userFilter?: string;
     groupFilter?: string;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
     userFilter: options.userFilter,
+    transformer: options.userTransformer,
     logger: options.logger,
   });
   const { groups, rootGroup, groupMember, groupMemberOf } =
