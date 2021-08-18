@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
@@ -28,9 +29,39 @@ import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { S3 } from 'aws-sdk';
 import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
+
+// Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3UrlReader implements UrlReader {
+  // Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
+  constructor(
+    integration: AwsS3Integration,
+    s3: S3,
+    treeResponseFactory: ReadTreeResponseFactory,
+  );
+  // Warning: (ae-forgotten-export) The symbol "ReaderFactory" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string): Promise<ReadTreeResponse>;
+  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
 
 // Warning: (ae-missing-release-tag) "AzureUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -162,6 +193,27 @@ export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   static fromConfig(config: Config): DatabaseManager;
+}
+
+// Warning: (ae-missing-release-tag) "DefaultReadTreeResponseFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
+  constructor(workDir: string);
+  // (undocumented)
+  static create(options: { config: Config }): DefaultReadTreeResponseFactory;
+  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse>;
+  // Warning: (ae-forgotten-export) The symbol "FromArchiveOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
 }
 
 // Warning: (ae-missing-release-tag) "DockerContainerRunner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
