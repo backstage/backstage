@@ -1,11 +1,11 @@
 ---
-title: Gitlab
+title: GitLab
 author: Loblaw
 authorUrl: https://github.com/loblaw-sre/backstage-plugin-gitlab
 category: CI/CD
-description: View Gitlab pipelines, merge requests, languages and contributors.
+description: View GitLab pipelines, merge requests, languages and contributors.
 documentation: https://github.com/loblaw-sre/backstage-plugin-gitlab
-iconUrl: https://about.gitlab.com/images/icons/logos/slp-logo.svg
+iconUrl: https://about.gitlab.com/images/press/logo/png/gitlab-icon-rgb.png
 npmPackageName: '@loblaw/backstage-plugin-gitlab'
 tags:
   - ci
