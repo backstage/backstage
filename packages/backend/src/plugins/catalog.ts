@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AwsS3ReadTreeProcessor } from '/Users/seantan/backstage/plugins/catalog-backend/src/ingestion/processors/AwsS3ReadTreeProcessor';
 import {
   CatalogBuilder,
   createRouter,
@@ -25,7 +24,6 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new AwsS3ReadTreeProcessor(env.reader));
   const {
     entitiesCatalog,
     locationAnalyzer,
