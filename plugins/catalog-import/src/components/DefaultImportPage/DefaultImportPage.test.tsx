@@ -62,6 +62,7 @@ describe('<DefaultImportPage />', () => {
           identityApi,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
+          configApi: {} as any,
         }),
       );
   });

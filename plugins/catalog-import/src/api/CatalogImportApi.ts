@@ -42,6 +42,10 @@ export type AnalyzeResult =
 export interface CatalogImportApi {
   analyzeUrl(url: string): Promise<AnalyzeResult>;
 
+  preparePullRequest?(): {
+    title: string;
+    body: string;
+  };
   submitPullRequest(options: {
     repositoryUrl: string;
     fileContent: string;

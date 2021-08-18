@@ -23,19 +23,35 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
+import { CatalogImportApi, catalogImportApiRef } from '../../api';
 import { ImportInfoCard } from './ImportInfoCard';
 
 describe('<ImportInfoCard />', () => {
   let apis: ApiRegistry;
+  let catalogImportApi: jest.Mocked<CatalogImportApi>;
 
   beforeEach(() => {
+    catalogImportApi = {
+      analyzeUrl: jest.fn(),
+      submitPullRequest: jest.fn(),
+    };
+
     apis = ApiRegistry.with(
       configApiRef,
-      new ConfigReader({ integrations: {} }),
-    );
+      new ConfigReader({
+        integrations: {
+          github: [{ token: 'my-token' }],
+        },
+      }),
+    ).with(catalogImportApiRef, catalogImportApi);
   });
 
   it('renders without exploding', async () => {
+    apis = ApiRegistry.with(
+      configApiRef,
+      new ConfigReader({ integrations: {} }),
+    ).with(catalogImportApiRef, catalogImportApi);
+
     await act(async () => {
       const { getByText } = render(
         wrapInTestApp(
@@ -46,6 +62,40 @@ describe('<ImportInfoCard />', () => {
       );
 
       expect(getByText('Register an existing component')).toBeInTheDocument();
+    });
+  });
+
+  it('renders section on GitHub discovery if supported', async () => {
+    catalogImportApi.preparePullRequest = () => ({ title: '', body: '' });
+
+    await act(async () => {
+      const { getByText } = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <ImportInfoCard />
+          </ApiProvider>,
+        ),
+      );
+
+      expect(getByText(/The wizard discovers all/)).toBeInTheDocument();
+    });
+  });
+
+  it('renders section on pull requests if supported', async () => {
+    catalogImportApi.preparePullRequest = () => ({ title: '', body: '' });
+
+    await act(async () => {
+      const { getByText } = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <ImportInfoCard />
+          </ApiProvider>,
+        ),
+      );
+
+      expect(
+        getByText(/the wizard will prepare a Pull Request/),
+      ).toBeInTheDocument();
     });
   });
 });

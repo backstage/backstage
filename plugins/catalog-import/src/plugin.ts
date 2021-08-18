@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { catalogImportApiRef, CatalogImportClient } from './api';
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -26,6 +24,9 @@ import {
   githubAuthApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogImportApiRef, CatalogImportClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -43,6 +44,7 @@ export const catalogImportPlugin = createPlugin({
         identityApi: identityApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
         catalogApi: catalogApiRef,
+        configApi: configApiRef,
       },
       factory: ({
         discoveryApi,
@@ -50,6 +52,7 @@ export const catalogImportPlugin = createPlugin({
         identityApi,
         scmIntegrationsApi,
         catalogApi,
+        configApi,
       }) =>
         new CatalogImportClient({
           discoveryApi,
@@ -57,6 +60,7 @@ export const catalogImportPlugin = createPlugin({
           scmIntegrationsApi,
           identityApi,
           catalogApi,
+          configApi,
         }),
     }),
   ],

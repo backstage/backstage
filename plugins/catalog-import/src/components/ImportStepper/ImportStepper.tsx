@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { InfoCard, InfoCardVariants } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { Step, StepContent, Stepper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useMemo } from 'react';
-import { useImportOptions } from '../ImportOptionsContext';
-import { ImportOptions } from '../types';
+import { catalogImportApiRef } from '../../api';
 import { ImportFlows, ImportState, useImportState } from '../useImportState';
 import {
   defaultGenerateStepper,
@@ -26,9 +27,6 @@ import {
   StepConfiguration,
   StepperProvider,
 } from './defaults';
-
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
   stepperRoot: {
@@ -43,8 +41,6 @@ type Props = {
     defaults: StepperProvider,
   ) => StepperProvider;
   variant?: InfoCardVariants;
-  /// @deprecated Pass import options via ImportOptionsContext instead.
-  opts?: ImportOptions;
 };
 
 export const ImportStepper = ({
@@ -52,10 +48,9 @@ export const ImportStepper = ({
   generateStepper = defaultGenerateStepper,
   variant,
 }: Props) => {
-  const configApi = useApi(configApiRef);
+  const catalogImportApi = useApi(catalogImportApiRef);
   const classes = useStyles();
   const state = useImportState({ initialUrl });
-  const opts = useImportOptions();
 
   const states = useMemo<StepperProvider>(
     () => generateStepper(state.activeFlow, defaultStepper),
@@ -81,25 +76,25 @@ export const ImportStepper = ({
         {render(
           states.analyze(
             state as Extract<ImportState, { activeState: 'analyze' }>,
-            { apis: { configApi }, opts },
+            { apis: { catalogImportApi } },
           ),
         )}
         {render(
           states.prepare(
             state as Extract<ImportState, { activeState: 'prepare' }>,
-            { apis: { configApi }, opts },
+            { apis: { catalogImportApi } },
           ),
         )}
         {render(
           states.review(
             state as Extract<ImportState, { activeState: 'review' }>,
-            { apis: { configApi }, opts },
+            { apis: { catalogImportApi } },
           ),
         )}
         {render(
           states.finish(
             state as Extract<ImportState, { activeState: 'finish' }>,
-            { apis: { configApi }, opts },
+            { apis: { catalogImportApi } },
           ),
         )}
       </Stepper>

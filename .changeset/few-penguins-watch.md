@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-catalog-import': minor
 ---
 
 Add initial support for customizing the catalog import page.
@@ -33,3 +33,13 @@ is used.
   </Page>
 </Route>
 ```
+
+Previously it was possible to disable and customize the automatic pull request
+feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+`pullRequest.preparePullRequest`). This functionality is moved to the
+`CatalogImportApi` which now provides an optional `preparePullRequest()`
+function. The function can either be overridden to generate a different content
+for the pull request, or removed to disable this feature.
+
+The export of the long term deprecated legacy `<Router>` is removed, migrate to
+`<CatalogImportPage>` instead.

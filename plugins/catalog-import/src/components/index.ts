@@ -17,7 +17,6 @@
 export * from './DefaultImportPage';
 export * from './EntityListComponent';
 export * from './ImportInfoCard';
-export * from './ImportOptionsContext';
 export * from './ImportStepper';
 export * from './StepInitAnalyzeUrl';
 export * from './StepPrepareCreatePullRequest';

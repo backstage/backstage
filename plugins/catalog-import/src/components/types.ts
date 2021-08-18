@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core-plugin-api';
-
-export type ImportOptions = {
-  pullRequest?: {
-    disable?: boolean;
-    preparePullRequest?: (
-      apis: StepperApis,
-    ) => { title?: string; body?: string };
-  };
-};
+import { CatalogImportApi } from '../api';
 
 export type StepperApis = {
-  configApi: ConfigApi;
+  catalogImportApi: CatalogImportApi;
 };

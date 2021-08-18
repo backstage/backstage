@@ -18,12 +18,12 @@ import { InfoCard } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Chip, Typography } from '@material-ui/core';
 import React from 'react';
-import { useImportOptions } from '../ImportOptionsContext';
+import { catalogImportApiRef } from '../../api';
 
 export const ImportInfoCard = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
-  const opts = useImportOptions();
+  const catalogImportApi = useApi(catalogImportApiRef);
 
   const integrations = configApi.getConfig('integrations');
   const hasGithubIntegration = integrations.has('github');
@@ -33,8 +33,7 @@ export const ImportInfoCard = () => {
       title="Register an existing component"
       deepLink={{
         title: 'Learn more about the Software Catalog',
-        link:
-          'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
+        link: 'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
       }}
     >
       <Typography variant="body2" paragraph>
@@ -65,7 +64,7 @@ export const ImportInfoCard = () => {
             repository, previews the entities, and adds them to the {appTitle}{' '}
             catalog.
           </Typography>
-          {!opts?.pullRequest?.disable && (
+          {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
               If no entities are found, the wizard will prepare a Pull Request
               that adds an example <code>catalog-info.yaml</code> and prepares

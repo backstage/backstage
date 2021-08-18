@@ -17,15 +17,9 @@
 import React from 'react';
 import { useOutlet } from 'react-router';
 import { DefaultImportPage } from '../DefaultImportPage';
-import { ImportOptionsContext } from '../ImportOptionsContext';
-import { ImportOptions } from '../types';
 
-export const ImportPage = (opts: ImportOptions) => {
+export const ImportPage = () => {
   const outlet = useOutlet();
 
-  return (
-    <ImportOptionsContext.Provider value={opts}>
-      {outlet || <DefaultImportPage />}
-    </ImportOptionsContext.Provider>
-  );
+  return outlet || <DefaultImportPage />;
 };

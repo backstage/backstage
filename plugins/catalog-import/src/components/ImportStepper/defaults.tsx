@@ -34,7 +34,7 @@ import {
 } from '../StepPrepareCreatePullRequest';
 import { StepPrepareSelectLocations } from '../StepPrepareSelectLocations';
 import { StepReviewLocation } from '../StepReviewLocation';
-import { ImportOptions, StepperApis } from '../types';
+import { StepperApis } from '../types';
 import { ImportFlows, ImportState } from '../useImportState';
 
 export type StepConfiguration = {
@@ -45,40 +45,21 @@ export type StepConfiguration = {
 export type StepperProvider = {
   analyze: (
     s: Extract<ImportState, { activeState: 'analyze' }>,
-    opts: { apis: StepperApis; opts?: ImportOptions },
+    opts: { apis: StepperApis },
   ) => StepConfiguration;
   prepare: (
     s: Extract<ImportState, { activeState: 'prepare' }>,
-    opts: { apis: StepperApis; opts?: ImportOptions },
+    opts: { apis: StepperApis },
   ) => StepConfiguration;
   review: (
     s: Extract<ImportState, { activeState: 'review' }>,
-    opts: { apis: StepperApis; opts?: ImportOptions },
+    opts: { apis: StepperApis },
   ) => StepConfiguration;
   finish: (
     s: Extract<ImportState, { activeState: 'finish' }>,
-    opts: { apis: StepperApis; opts?: ImportOptions },
+    opts: { apis: StepperApis },
   ) => StepConfiguration;
 };
-
-function defaultPreparePullRequest(
-  apis: StepperApis,
-  { title, body }: { title?: string; body?: string } = {},
-) {
-  const appTitle = apis.configApi.getOptionalString('app.title') ?? 'Backstage';
-  const appBaseUrl = apis.configApi.getString('app.baseUrl');
-
-  return {
-    title: title ?? 'Add catalog-info.yaml config file',
-    body:
-      body ??
-      `This pull request adds a **Backstage entity metadata file** \
-to this repository so that the component can be added to the \
-[${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
-the component will become available.\n\nFor more information, read an \
-[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`,
-  };
-}
 
 /**
  * The default stepper generation function.
@@ -155,12 +136,8 @@ export function defaultGenerateStepper(
             return defaults.prepare(state, opts);
           }
 
-          const preparePullRequest =
-            opts?.opts?.pullRequest?.preparePullRequest;
-          const { title, body } = defaultPreparePullRequest(
-            opts.apis,
-            preparePullRequest ? preparePullRequest(opts.apis) : {},
-          );
+          const { title, body } =
+            opts.apis.catalogImportApi.preparePullRequest!();
 
           return {
             stepLabel: <StepLabel>Create Pull Request</StepLabel>,
@@ -285,14 +262,14 @@ export function defaultGenerateStepper(
 }
 
 export const defaultStepper: StepperProvider = {
-  analyze: (state, { opts }) => ({
+  analyze: (state, { apis }) => ({
     stepLabel: <StepLabel>Select URL</StepLabel>,
     content: (
       <StepInitAnalyzeUrl
         key="analyze"
         analysisUrl={state.analysisUrl}
         onAnalysis={state.onAnalysis}
-        disablePullRequest={opts?.pullRequest?.disable}
+        disablePullRequest={!apis.catalogImportApi.preparePullRequest}
       />
     ),
   }),

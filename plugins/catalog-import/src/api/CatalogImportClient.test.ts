@@ -115,6 +115,7 @@ describe('CatalogImportClient', () => {
       scmIntegrationsApi,
       identityApi,
       catalogApi,
+      configApi: new ConfigReader({}),
     });
   });
 

@@ -25,8 +25,14 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
+import { useOutlet } from 'react-router';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportPage } from './ImportPage';
+
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useOutlet: jest.fn(),
+}));
 
 describe('<ImportPage />', () => {
   const identityApi = {
@@ -62,9 +68,12 @@ describe('<ImportPage />', () => {
           identityApi,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
+          configApi: new ConfigReader({}),
         }),
       );
   });
+
+  afterEach(() => jest.resetAllMocks());
 
   it('renders without exploding', async () => {
     await act(async () => {
@@ -79,6 +88,22 @@ describe('<ImportPage />', () => {
       expect(
         getByText('Start tracking your component in Backstage'),
       ).toBeInTheDocument();
+    });
+  });
+
+  it('renders with custom children', async () => {
+    (useOutlet as jest.Mock).mockReturnValue(<div>Hello World</div>);
+
+    await act(async () => {
+      const { getByText } = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <ImportPage />
+          </ApiProvider>,
+        ),
+      );
+
+      expect(getByText('Hello World')).toBeInTheDocument();
     });
   });
 });
