@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -14,24 +15,34 @@
  * limitations under the License.
  */
 
+import { BackstageTheme } from '@backstage/theme';
 import {
   BottomNavigationAction,
   BottomNavigationActionProps,
   makeStyles,
 } from '@material-ui/core';
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Link } from '../../components';
+import { MobileSidebarContext } from './MobileSidebar';
 
 interface SidebarGroupProps extends BottomNavigationActionProps {
   to?: string;
-  injectedSelected?: boolean;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  root: {
+    color: theme.palette.navigation.color,
+  },
+
+  selected: {
+    color: `${theme.palette.navigation.selectedColor}!important`,
+  },
+
   label: {
     display: 'none',
   },
-});
+}));
 
 /**
  * If the page is mobile it should be BottomNavigationAction - otherwise just a fragment
@@ -42,21 +53,35 @@ export const SidebarGroup = ({
   to,
   label,
   icon,
-  onClick,
-  injectedSelected,
+  value,
 }: React.PropsWithChildren<SidebarGroupProps>) => {
   const classes = useStyles();
   const location = useLocation();
+  const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
+    useContext(MobileSidebarContext);
+
+  const onChange = (_, value) => {
+    if (value === selectedMenuItemIndex && to !== location.pathname) {
+      setSelectedMenuItemIndex(-1);
+    } else if (value !== selectedMenuItemIndex) {
+      setSelectedMenuItemIndex(value);
+    }
+  };
+
+  const selected =
+    value === selectedMenuItemIndex ||
+    (selectedMenuItemIndex >= 0 && to === location.pathname);
 
   return (
+    // @ts-ignore Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     <BottomNavigationAction
       label={label}
       icon={icon}
-      component={NavLink}
+      component={Link}
       to={to ? to : location.pathname}
-      onClick={onClick}
-      value={to}
-      selected={injectedSelected}
+      onChange={onChange}
+      value={value}
+      selected={selected}
       classes={classes}
     />
   );
