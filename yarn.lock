@@ -3073,14 +3073,15 @@
     stream-events "^1.0.1"
     xdg-basedir "^4.0.0"
 
-"@graphiql/toolkit@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.1.1.tgz#a7da3ba460ceae27bcdc8f03831ca4f88f90f3d7"
-  integrity sha512-cvsuaPkOA6/TZOdqEdvzqr7i+or2STTpSsteyDkrUXrwftRnH9ZfiUwnHPyf0AC2cKMwpP/Dny/UTS6CLC8ZNQ==
+"@graphiql/toolkit@^0.2.0":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.2.2.tgz#193d570afcf686c9ee61c92054c1782b9f3c1255"
+  integrity sha512-kDgYhqnS4p4LqSo1KvLd3tbX8Hhdj0ZrgQuGsosjjEnahiPYmmylxUL1p9lj6348OsypcTlCncGpEjeb9S3TiQ==
   dependencies:
-    "@n1ru4l/push-pull-async-iterable-iterator" "^2.0.1"
-    graphql-ws "^4.1.0"
-    meros "^1.1.2"
+    "@n1ru4l/push-pull-async-iterable-iterator" "^2.1.4"
+    graphql-ws "^4.3.2"
+    meros "^1.1.4"
+  optionalDependencies:
     subscriptions-transport-ws "^0.9.18"
 
 "@graphql-codegen/cli@^1.21.3":
@@ -4740,10 +4741,10 @@
     strict-event-emitter "^0.2.0"
     xmldom "^0.6.0"
 
-"@n1ru4l/push-pull-async-iterable-iterator@^2.0.1":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-2.1.2.tgz#e486bf86c4c29e78601694a26f31c2dec0c08d9b"
-  integrity sha512-KwZGeX2XK7Xj9ksWwei5923QnqIGoEuLlh3O46OW9vc8hQxjzmMTKCgJMVZ5ne5xaWFQYDT2dMpbUhq6hEOhxA==
+"@n1ru4l/push-pull-async-iterable-iterator@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.npmjs.org/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-2.1.4.tgz#a90225474352f9f159bff979905f707b9c6bcf04"
+  integrity sha512-qLIvoOUJ+zritv+BlzcBMePKNjKQzH9Rb2i9W98YXxf/M62Lye8qH0peyiU8yJ1tL0kfulWi31BoK10E6BKJeA==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
@@ -12528,7 +12529,7 @@ downshift@^6.0.15:
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-dset@^3.0.0:
+dset@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/dset/-/dset-3.1.0.tgz#23feb6df93816ea452566308b1374d6e869b0d7b"
   integrity sha512-7xTQ5DzyE59Nn+7ZgXDXjKAGSGmXZHqttMVVz1r4QNfmGpyj+cm2YtI3II0c/+4zS4a9yq2mBhgdeq2QnpcYlw==
@@ -14893,15 +14894,15 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.0.0-alpha.10:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.4.0.tgz#8b17c988720a9da5ea3ebf7ff9d86939b462655e"
-  integrity sha512-E/Xzfu3YnifdINrK6dKHD1G0qnWkYYK2gHQ//vApUadMb4I4lZQ399ZKt5nqM5kzrATf5FDUTuSpnkaeSoARkQ==
+  version "1.4.2"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.4.2.tgz#a1dc1a4d8d35f60c90d6d8a9eb62a99756e9fd9b"
+  integrity sha512-TQDuuU/ZqTWV1yQDpVEiKskg0IYA+Wck37DYrrFzLlpgZWRbWiyab1PyHKiRep7J540CgScBg6C/gGCymKyO3g==
   dependencies:
-    "@graphiql/toolkit" "^0.1.0"
+    "@graphiql/toolkit" "^0.2.0"
     codemirror "^5.54.0"
     codemirror-graphql "^1.0.0"
     copy-to-clipboard "^3.2.0"
-    dset "^3.0.0"
+    dset "^3.1.0"
     entities "^2.0.0"
     graphql-language-service "^3.1.2"
     markdown-it "^10.0.0"
@@ -15030,7 +15031,12 @@ graphql-type-json@^0.3.2:
   resolved "https://registry.npmjs.org/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
   integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
 
-graphql-ws@^4.1.0, graphql-ws@^4.4.1:
+graphql-ws@^4.3.2:
+  version "4.9.0"
+  resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-4.9.0.tgz#5cfd8bb490b35e86583d8322f5d5d099c26e365c"
+  integrity sha512-sHkK9+lUm20/BGawNEWNtVAeJzhZeBg21VmvmLoT5NdGVeZWv5PdIhkcayQIAgjSyyQ17WMKmbDijIPG2On+Ag==
+
+graphql-ws@^4.4.1:
   version "4.7.0"
   resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-4.7.0.tgz#b323fbf35a3736eed85dac24c0054d6d10c93e62"
   integrity sha512-Md8SsmC9ZlsogFPd3Ot8HbIAAqsHh8Xoq7j4AmcIat1Bh6k91tjVyQvA0Au1/BolXSYq+RDvib6rATU2Hcf1Xw==
@@ -19183,7 +19189,7 @@ merge@^2.1.0:
   resolved "https://registry.npmjs.org/merge/-/merge-2.1.1.tgz#59ef4bf7e0b3e879186436e8481c06a6c162ca98"
   integrity sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==
 
-meros@1.1.4, meros@^1.1.2:
+meros@1.1.4, meros@^1.1.4:
   version "1.1.4"
   resolved "https://registry.npmjs.org/meros/-/meros-1.1.4.tgz#c17994d3133db8b23807f62bec7f0cb276cfd948"
   integrity sha512-E9ZXfK9iQfG9s73ars9qvvvbSIkJZF5yOo9j4tcwM5tN8mUKfj/EKN5PzOr3ZH0y5wL7dLAHw3RVEfpQV9Q7VQ==
