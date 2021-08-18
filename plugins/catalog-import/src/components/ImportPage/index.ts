@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DefaultImportComponentPage } from './DefaultImportComponentPage';
+export { ImportPage } from './ImportPage';

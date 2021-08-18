@@ -27,7 +27,7 @@ import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
-export const DefaultImportComponentPage = () => {
+export const DefaultImportPage = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 

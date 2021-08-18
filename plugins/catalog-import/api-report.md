@@ -145,10 +145,10 @@ export function defaultGenerateStepper(
   defaults: StepperProvider,
 ): StepperProvider;
 
-// Warning: (ae-missing-release-tag) "DefaultImportComponentPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "DefaultImportPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const DefaultImportComponentPage: () => JSX.Element;
+export const DefaultImportPage: () => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntityListComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

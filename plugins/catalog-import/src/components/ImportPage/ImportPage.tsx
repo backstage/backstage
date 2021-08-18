@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,18 @@
  * limitations under the License.
  */
 
-export { ImportComponentPage } from './ImportComponentPage';
+import React from 'react';
+import { useOutlet } from 'react-router';
+import { DefaultImportPage } from '../DefaultImportPage';
+import { ImportOptionsContext } from '../ImportOptionsContext';
+import { ImportOptions } from '../types';
+
+export const ImportPage = (opts: ImportOptions) => {
+  const outlet = useOutlet();
+
+  return (
+    <ImportOptionsContext.Provider value={opts}>
+      {outlet || <DefaultImportPage />}
+    </ImportOptionsContext.Provider>
+  );
+};

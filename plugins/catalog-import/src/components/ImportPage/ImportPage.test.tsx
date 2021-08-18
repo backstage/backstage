@@ -26,9 +26,9 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
-import { DefaultImportComponentPage } from './DefaultImportComponentPage';
+import { ImportPage } from './ImportPage';
 
-describe('<DefaultImportComponentPage />', () => {
+describe('<ImportPage />', () => {
   const identityApi = {
     getUserId: () => {
       return 'user';
@@ -71,7 +71,7 @@ describe('<DefaultImportComponentPage />', () => {
       const { getByText } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <DefaultImportComponentPage />
+            <ImportPage />
           </ApiProvider>,
         ),
       );

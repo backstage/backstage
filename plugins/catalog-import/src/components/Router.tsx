@@ -16,12 +16,12 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
+import { ImportPage } from './ImportPage';
 import { ImportOptions } from './types';
 
-/// @deprecated, use ImportComponentPage instead.
+/// @deprecated, use ImportPage instead.
 export const Router = (opts: ImportOptions) => (
   <Routes>
-    <Route element={<ImportComponentPage {...opts} />} />
+    <Route element={<ImportPage {...opts} />} />
   </Routes>
 );

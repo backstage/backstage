@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from './DefaultImportComponentPage';
+export * from './DefaultImportPage';
 export * from './EntityListComponent';
 export * from './ImportInfoCard';
 export * from './ImportOptionsContext';
