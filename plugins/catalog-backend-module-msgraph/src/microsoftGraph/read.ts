@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import limiterFactory from 'p-limit';
+import { Logger } from 'winston';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -33,7 +34,6 @@ import {
   OrganizationTransformer,
   UserTransformer,
 } from './types';
-import { Logger } from 'winston';
 
 export async function defaultUserTransformer(
   user: MicrosoftGraph.User,
@@ -212,7 +212,11 @@ export async function defaultGroupTransformer(
 export async function readMicrosoftGraphGroups(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { groupFilter?: string; transformer?: GroupTransformer },
+  options?: {
+    groupFilter?: string;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+  },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
   rootGroup: GroupEntity | undefined; // With all relations empty
@@ -224,13 +228,15 @@ export async function readMicrosoftGraphGroups(
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const limiter = limiterFactory(10);
 
-  const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId);
+  const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId, {
+    transformer: options?.organizationTransformer,
+  });
   if (rootGroup) {
     groupMember.set(rootGroup.metadata.name, new Set<string>());
     groups.push(rootGroup);
   }
 
-  const transformer = options?.transformer ?? defaultGroupTransformer;
+  const transformer = options?.groupTransformer ?? defaultGroupTransformer;
   const promises: Promise<void>[] = [];
 
   for await (const group of client.getGroups({
@@ -384,6 +390,7 @@ export async function readMicrosoftGraphOrg(
     groupFilter?: string;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
     logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
@@ -395,7 +402,8 @@ export async function readMicrosoftGraphOrg(
   const { groups, rootGroup, groupMember, groupMemberOf } =
     await readMicrosoftGraphGroups(client, tenantId, {
       groupFilter: options?.groupFilter,
-      transformer: options?.groupTransformer,
+      groupTransformer: options?.groupTransformer,
+      organizationTransformer: options?.organizationTransformer,
     });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
