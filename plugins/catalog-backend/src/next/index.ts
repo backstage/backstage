@@ -17,6 +17,11 @@
 export { NextCatalogBuilder } from './NextCatalogBuilder';
 export { createNextRouter } from './NextRouter';
 export * from './processing';
-export * from './stitching';
-export type { RefreshIntervalFunction } from './refresh';
 export { createRandomRefreshInterval } from './refresh';
+export type { RefreshIntervalFunction } from './refresh';
+export * from './stitching';
+export type {
+  EntityProvider,
+  EntityProviderConnection,
+  EntityProviderMutation,
+} from './types';

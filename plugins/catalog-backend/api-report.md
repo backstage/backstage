@@ -699,6 +699,38 @@ export type EntityProcessingResult =
       errors: Error[];
     };
 
+// Warning: (ae-missing-release-tag) "EntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  getProviderName(): string;
+}
+
+// Warning: (ae-missing-release-tag) "EntityProviderConnection" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EntityProviderConnection {
+  // (undocumented)
+  applyMutation(mutation: EntityProviderMutation): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "EntityProviderMutation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityProviderMutation =
+  | {
+      type: 'full';
+      entities: DeferredEntity[];
+    }
+  | {
+      type: 'delta';
+      added: DeferredEntity[];
+      removed: DeferredEntity[];
+    };
+
 // Warning: (ae-missing-release-tag) "FileReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -899,7 +931,6 @@ export class NextCatalogBuilder {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-forgotten-export) The symbol "EntityProvider" needs to be exported by the entry point index.d.ts
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
