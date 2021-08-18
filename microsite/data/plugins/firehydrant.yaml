@@ -3,7 +3,7 @@ title: FireHydrant
 author: FireHydrant
 authorUrl: https://firehydrant.io/
 category: Incident Management
-description: The FireHydrant plugin brings incident management to Backstage, and it displays service incidents information such as active incidents and incident analytics.
+description: View service incidents information from FireHydrant, such as active incidents and incident metrics, directly within Backstage.
 documentation: https://github.com/backstage/backstage/blob/master/plugins/firehydrant/README.md
 iconUrl: https://raw.githubusercontent.com/backstage/backstage/master/plugins/firehydrant/doc/firehydrant_logo.png
 npmPackageName: '@backstage/plugin-firehydrant'
