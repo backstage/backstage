@@ -325,7 +325,7 @@ spec:
   output:
     links:
       - url: '{{steps.publish.output.remoteUrl}}'
-        title: 'Go to Repo'
+        text: 'Go to Repo'
 ```
 
 ## Questions?
