@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export { createPluginRouter } from './createPluginRouter';
-export { createServiceBuilder } from './createServiceBuilder';
-export { createStatusCheckRouter } from './createStatusCheckRouter';
-export type { CreatePluginRouterOptions } from './createPluginRouter';
-export type { ServiceBuilder, RequestLoggingHandlerFactory } from './types';
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+import { PluginCacheManager } from './cache';
+import { PluginDatabaseManager } from './database';
+import { UrlReader } from './reading';
+import { PluginEndpointDiscovery } from './discovery';
+
+export type PluginEnvironment = {
+  logger: Logger;
+  cache: PluginCacheManager;
+  database: PluginDatabaseManager;
+  config: Config;
+  reader: UrlReader;
+  discovery: PluginEndpointDiscovery;
+};
