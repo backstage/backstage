@@ -44,7 +44,7 @@ type CookieCompatInput = {
 };
 
 type ExtensionInput = {
-  extension?: string | boolean;
+  templateFileExtension?: string | boolean;
 };
 
 export type FetchTemplateInput = {
@@ -101,9 +101,10 @@ export function createFetchTemplateAction(options: {
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
           },
-          extension: {
-            title: 'Extension to Process (.njk)',
-            description: 'Extension to use for templated files.',
+          templateFileExtension: {
+            title: 'Template File Extension',
+            description:
+              'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
             type: ['string', 'boolean'],
           },
         },
@@ -128,7 +129,7 @@ export function createFetchTemplateAction(options: {
       }
 
       if (
-        ctx.input.extension &&
+        ctx.input.templateFileExtension &&
         (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
       ) {
         throw new InputError(
@@ -137,8 +138,11 @@ export function createFetchTemplateAction(options: {
       }
 
       let extension: string | false = false;
-      if (ctx.input.extension) {
-        extension = ctx.input.extension === true ? '.njk' : ctx.input.extension;
+      if (ctx.input.templateFileExtension) {
+        extension =
+          ctx.input.templateFileExtension === true
+            ? '.njk'
+            : ctx.input.templateFileExtension;
         if (!extension.startsWith('.')) {
           extension = `.${extension}`;
         }
@@ -220,8 +224,8 @@ export function createFetchTemplateAction(options: {
       );
 
       for (const location of allEntriesInTemplate) {
-        let renderFilename = !nonTemplatedEntries.has(location);
-        let renderContents = renderFilename;
+        let renderFilename: boolean;
+        let renderContents: boolean;
 
         let localOutputPath = location;
         if (extension) {
@@ -230,6 +234,8 @@ export function createFetchTemplateAction(options: {
           if (renderContents) {
             localOutputPath = localOutputPath.slice(0, -extension.length);
           }
+        } else {
+          renderFilename = renderContents = !nonTemplatedEntries.has(location);
         }
         if (renderFilename) {
           localOutputPath = templater.renderString(localOutputPath, context);

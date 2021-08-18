@@ -110,7 +110,7 @@ describe('fetch:template', () => {
         action.handler(
           mockContext({
             copyWithoutRender: ['abc'],
-            extension: true,
+            templateFileExtension: true,
           }),
         ),
       ).rejects.toThrowError(
@@ -123,7 +123,7 @@ describe('fetch:template', () => {
         action.handler(
           mockContext({
             cookiecutterCompat: true,
-            extension: true,
+            templateFileExtension: true,
           }),
         ),
       ).rejects.toThrowError(
@@ -329,7 +329,7 @@ describe('fetch:template', () => {
           count: 1234,
           itemList: ['first', 'second', 'third'],
         },
-        extension: true,
+        templateFileExtension: true,
       });
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
@@ -406,7 +406,7 @@ describe('fetch:template', () => {
 
     beforeEach(async () => {
       context = mockContext({
-        extension: '.jinja2',
+        templateFileExtension: '.jinja2',
         values: {
           name: 'test-project',
           count: 1234,
