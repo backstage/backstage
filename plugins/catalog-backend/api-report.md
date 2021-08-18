@@ -419,6 +419,16 @@ export function createNextRouter(
   options: RouterOptions_2,
 ): Promise<express.Router>;
 
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// Warning: (ae-missing-release-tag) "createRandomRefreshInterval" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function createRandomRefreshInterval(options: {
+  minSeconds: number;
+  maxSeconds: number;
+}): RefreshIntervalFunction;
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -914,6 +924,9 @@ export class NextCatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): NextCatalogBuilder;
+  setRefreshInterval(
+    refreshInterval: RefreshIntervalFunction,
+  ): NextCatalogBuilder;
   setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder;
 }
 
@@ -986,6 +999,11 @@ export type RecursivePartial<T> = {
     ? RecursivePartial<T[P]>
     : T[P];
 };
+
+// Warning: (ae-missing-release-tag) "RefreshIntervalFunction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type RefreshIntervalFunction = () => number;
 
 // Warning: (ae-missing-release-tag) "relation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1107,8 +1125,8 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:49:5 - (ae-forgotten-export) The symbol "AnalyzeLocationExistingEntity" needs to be exported by the entry point index.d.ts
 // src/ingestion/types.d.ts:50:5 - (ae-forgotten-export) The symbol "AnalyzeLocationGenerateEntity" needs to be exported by the entry point index.d.ts
-// src/next/NextCatalogBuilder.d.ts:140:9 - (ae-forgotten-export) The symbol "CatalogProcessingEngine" needs to be exported by the entry point index.d.ts
-// src/next/NextCatalogBuilder.d.ts:141:9 - (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
+// src/next/NextCatalogBuilder.d.ts:147:9 - (ae-forgotten-export) The symbol "CatalogProcessingEngine" needs to be exported by the entry point index.d.ts
+// src/next/NextCatalogBuilder.d.ts:148:9 - (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 // src/next/processing/types.d.ts:11:5 - (ae-forgotten-export) The symbol "DeferredEntity" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

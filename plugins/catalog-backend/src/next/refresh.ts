@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-export { NextCatalogBuilder } from './NextCatalogBuilder';
-export { createNextRouter } from './NextRouter';
-export * from './processing';
-export * from './stitching';
-export type { RefreshIntervalFunction } from './refresh';
-export { createRandomRefreshInterval } from './refresh';
+/**
+ * Function that returns the catalog refresh interval in seconds.
+ */
+export type RefreshIntervalFunction = () => number;
+
+/**
+ * Creates a function that returns a random refresh interval between minSeconds and maxSeconds.
+ * @returns {RefreshIntervalFunction} that provides the next refresh interval
+ */
+export function createRandomRefreshInterval(options: {
+  minSeconds: number;
+  maxSeconds: number;
+}): RefreshIntervalFunction {
+  const { minSeconds, maxSeconds } = options;
+  return () => {
+    return Math.random() * (maxSeconds - minSeconds) + minSeconds;
+  };
+}

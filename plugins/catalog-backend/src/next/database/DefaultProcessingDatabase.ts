@@ -23,6 +23,7 @@ import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
 import { Transaction } from '../../database';
 import { DeferredEntity } from '../processing/types';
+import { RefreshIntervalFunction } from '../refresh';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
@@ -48,7 +49,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     private readonly options: {
       database: Knex;
       logger: Logger;
-      refreshIntervalSeconds: number;
+      refreshInterval: RefreshIntervalFunction;
     },
   ) {}
 
@@ -476,12 +477,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         next_update_at:
           tx.client.config.client === 'sqlite3'
             ? tx.raw(`datetime('now', ?)`, [
-                `${this.options.refreshIntervalSeconds} seconds`,
+                `${this.options.refreshInterval()} seconds`,
               ])
             : tx.raw(
-                `now() + interval '${Number(
-                  this.options.refreshIntervalSeconds,
-                )} seconds'`,
+                `now() + interval '${this.options.refreshInterval()} seconds'`,
               ),
       });
 
