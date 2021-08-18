@@ -242,7 +242,7 @@ export function createFetchTemplateAction(options: {
         }
         const outputPath = resolvePath(outputDir, localOutputPath);
 
-        if (!renderContents) {
+        if (!renderContents && !extension) {
           ctx.logger.info(
             `Copying file/directory ${location} without processing.`,
           );
