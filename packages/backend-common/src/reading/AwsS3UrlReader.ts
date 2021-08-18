@@ -188,9 +188,12 @@ export class AwsS3UrlReader implements UrlReader {
           .listObjectsV2(params)
           .promise();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> First go
+=======
+>>>>>>> Preparing for PR
         const responses = await Promise.all(
           (Contents || []).map(({ Key }) => {
             const s3Response = this.s3
