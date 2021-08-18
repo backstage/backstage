@@ -121,6 +121,20 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
+// Warning: (ae-missing-release-tag) "AwsS3ReadTreeProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3ReadTreeProcessor implements CatalogProcessor {
+  constructor(reader: UrlReader);
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
+  ): Promise<boolean>;
+}
+
 // Warning: (ae-missing-release-tag) "BitbucketDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
