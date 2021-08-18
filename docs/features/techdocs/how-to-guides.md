@@ -152,7 +152,7 @@ The beta version of TechDocs (v0.x.y) made a breaking change to the way TechDocs
 content was accessed and stored, allowing pages to be accessed with
 case-insensitive entity triplet paths (e.g. `/docs/namespace/kind/name` whereas
 in prior versions, they could only be accessed at `/docs/namespace/Kind/name`).
-In order to enable this change, documentation has be stored in an external
+In order to enable this change, documentation has to be stored in an external
 storage provider using an object key whose entity triplet is lower-cased.
 
 New installations of TechDocs since the beta version will work fine with no
