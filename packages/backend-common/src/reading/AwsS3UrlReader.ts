@@ -187,7 +187,6 @@ export class AwsS3UrlReader implements UrlReader {
         const { Contents, IsTruncated, NextContinuationToken } = await this.s3
           .listObjectsV2(params)
           .promise();
-
         const responses = await Promise.all(
           (Contents || []).map(({ Key }) => {
             const s3Response = this.s3
