@@ -173,14 +173,6 @@ export type FromReadableArrayOptions = {
   // etag of the file tree
   etag: string;
 };
-
-export type FromReadableArrayOptions = {
-  // An array of readable streams
-  stream: Readable[];
-  // etag of the file tree
-  etag: string;
-};
-
 export interface ReadTreeResponseFactory {
   fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
   fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
