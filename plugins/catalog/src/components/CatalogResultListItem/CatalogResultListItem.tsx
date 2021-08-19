@@ -31,6 +31,7 @@ const useStyles = makeStyles({
   },
   itemText: {
     width: '100%',
+    wordBreak: 'break-all',
     marginBottom: '1rem',
   },
 });

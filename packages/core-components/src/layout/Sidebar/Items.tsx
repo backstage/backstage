@@ -38,36 +38,82 @@ import {
 } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
-export type SidebarItemClassKey =
-  | 'root'
-  | 'buttonItem'
-  | 'closed'
-  | 'open'
-  | 'label'
-  | 'iconContainer'
-  | 'searchRoot'
-  | 'searchField'
-  | 'searchFieldHTMLInput'
-  | 'searchContainer'
-  | 'secondaryAction'
-  | 'selected';
 
-const useStyles = makeStyles<BackstageTheme>(
-  theme => {
-    const {
-      selectedIndicatorWidth,
-      drawerWidthClosed,
-      drawerWidthOpen,
-      iconContainerWidth,
-    } = sidebarConfig;
-    return {
-      root: {
-        color: theme.palette.navigation.color,
-        display: 'flex',
-        flexFlow: 'row nowrap',
-        alignItems: 'center',
-        height: 48,
-        cursor: 'pointer',
+const useStyles = makeStyles<BackstageTheme>(theme => {
+  const {
+    selectedIndicatorWidth,
+    drawerWidthClosed,
+    drawerWidthOpen,
+    iconContainerWidth,
+  } = sidebarConfig;
+  return {
+    root: {
+      color: theme.palette.navigation.color,
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
+      height: 48,
+      cursor: 'pointer',
+    },
+    buttonItem: {
+      background: 'none',
+      border: 'none',
+      width: 'auto',
+      margin: 0,
+      padding: 0,
+      textAlign: 'inherit',
+      font: 'inherit',
+    },
+    closed: {
+      width: drawerWidthClosed,
+      justifyContent: 'center',
+    },
+    open: {
+      // Does not apply  on mobile
+      // width: drawerWidthOpen,
+    },
+    label: {
+      // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+      fontWeight: 'bold',
+      whiteSpace: 'nowrap',
+      lineHeight: 'auto',
+      flex: '3 1 auto',
+      width: '110px',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
+    },
+    iconContainer: {
+      boxSizing: 'border-box',
+      height: '100%',
+      width: iconContainerWidth,
+      marginRight: -theme.spacing(2),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    searchRoot: {
+      marginBottom: 12,
+    },
+    searchField: {
+      color: '#b5b5b5',
+      fontWeight: 'bold',
+      fontSize: theme.typography.fontSize,
+    },
+    searchFieldHTMLInput: {
+      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+    },
+    searchContainer: {
+      width: drawerWidthOpen - iconContainerWidth,
+    },
+    secondaryAction: {
+      width: theme.spacing(6),
+      textAlign: 'center',
+      marginRight: theme.spacing(1),
+    },
+    selected: {
+      '&$root': {
+        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+        color: theme.palette.navigation.selectedColor,
       },
       buttonItem: {
         background: 'none',
@@ -136,7 +182,7 @@ const useStyles = makeStyles<BackstageTheme>(
         },
       },
     };
-  },
+  }},
   { name: 'BackstageSidebarItem' },
 );
 
