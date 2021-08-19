@@ -102,6 +102,17 @@ describe('PgSearchEngine', () => {
       });
     });
 
+    it('should sanitize query term', async () => {
+      const actualTranslatedQuery = searchEngine.translator({
+        term: 'H&e|l!l*o W\0o(r)l:d',
+        pageCursor: '',
+      }) as PgSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+      });
+    });
+
     it('should return translated query with filters', async () => {
       const actualTranslatedQuery = searchEngine.translator({
         term: 'testTerm',
