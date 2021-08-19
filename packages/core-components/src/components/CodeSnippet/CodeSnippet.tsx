@@ -42,7 +42,7 @@ export const CodeSnippet = ({
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
   return (
-    <div style={{ position: 'relative' }} data-testid="code-snippet">
+    <div style={{ position: 'relative' }}>
       <SyntaxHighlighter
         customStyle={customStyle}
         language={language}

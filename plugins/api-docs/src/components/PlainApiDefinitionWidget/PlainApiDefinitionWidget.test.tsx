@@ -20,10 +20,13 @@ import { PlainApiDefinitionWidget } from './PlainApiDefinitionWidget';
 
 describe('<PlainApiDefinitionWidget />', () => {
   it('renders plain text', async () => {
-    const { getByTestId } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <PlainApiDefinitionWidget definition="Hello World" language="yaml" />,
     );
 
-    expect(getByTestId('code-snippet')).toMatchSnapshot();
+    expect(
+      getAllByText((_text, element) => element?.textContent === 'Hello World')
+        .length,
+    ).toBeGreaterThan(0);
   });
 });
