@@ -23,13 +23,15 @@ import {
 } from '@backstage/core-components';
 import { useEntityListProvider } from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
-import { TemplateCard } from '../TemplateCard';
+import { TemplateCard, TemplateCardProps } from '../TemplateCard';
+
+export type Props = TemplateCardProps;
 
 export type TemplateListProps = {
-  templateCard?: Function | undefined;
+  TemplateCardComponent?: (props: Props) => JSX.Element | null;
 };
 
-export const TemplateList = ({ templateCard }: TemplateListProps) => {
+export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
   return (
     <>
@@ -55,8 +57,11 @@ export const TemplateList = ({ templateCard }: TemplateListProps) => {
         {entities &&
           entities?.length > 0 &&
           entities.map((template, i) =>
-            templateCard ? (
-              templateCard(i, template)
+            TemplateCardComponent ? (
+              <TemplateCardComponent
+                key={i}
+                template={template as TemplateEntityV1beta2}
+              />
             ) : (
               <TemplateCard
                 key={i}
