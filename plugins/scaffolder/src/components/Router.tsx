@@ -30,10 +30,10 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 
 type RouterProps = {
-  templateCard?: Function | undefined;
+  TemplateCardComponent?: (props: any) => JSX.Element | null;
 };
 
-export const Router = ({ templateCard }: RouterProps) => {
+export const Router = ({ TemplateCardComponent }: RouterProps) => {
   const outlet = useOutlet();
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
@@ -60,7 +60,9 @@ export const Router = ({ templateCard }: RouterProps) => {
     <Routes>
       <Route
         path="/"
-        element={<ScaffolderPage templateCard={templateCard} />}
+        element={
+          <ScaffolderPage TemplateCardComponent={TemplateCardComponent} />
+        }
       />
       <Route
         path="/templates/:templateName"

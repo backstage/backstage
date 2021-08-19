@@ -47,11 +47,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export type ScaffolderPageProps = {
-  templateCard: Function | undefined;
+  TemplateCardComponent?: (props: any) => JSX.Element | null;
 };
 
 export const ScaffolderPageContents = ({
-  templateCard,
+  TemplateCardComponent,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
 
@@ -93,7 +93,7 @@ export const ScaffolderPageContents = ({
             <EntityTagPicker />
           </div>
           <div>
-            <TemplateList templateCard={templateCard} />
+            <TemplateList TemplateCardComponent={TemplateCardComponent} />
           </div>
         </div>
       </Content>
@@ -101,8 +101,10 @@ export const ScaffolderPageContents = ({
   );
 };
 
-export const ScaffolderPage = ({ templateCard }: ScaffolderPageProps) => (
+export const ScaffolderPage = ({
+  TemplateCardComponent,
+}: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents templateCard={templateCard} />
+    <ScaffolderPageContents TemplateCardComponent={TemplateCardComponent} />
   </EntityListProvider>
 );
