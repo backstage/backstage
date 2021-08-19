@@ -24,6 +24,7 @@ import {
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '../../components';
+import { sidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
 
 interface SidebarGroupProps extends BottomNavigationActionProps {
@@ -32,11 +33,15 @@ interface SidebarGroupProps extends BottomNavigationActionProps {
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
+    flexGrow: 0,
+    margin: `0 ${theme.spacing(2)}px`,
     color: theme.palette.navigation.color,
   },
 
   selected: {
     color: `${theme.palette.navigation.selectedColor}!important`,
+    borderTop: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+    marginTop: '-1px',
   },
 
   label: {
@@ -60,17 +65,19 @@ export const SidebarGroup = ({
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
-  const onChange = (_, value) => {
-    if (value === selectedMenuItemIndex && to !== location.pathname) {
+  const onChange = (_: React.ChangeEvent<{}>, value: number) => {
+    if (value === selectedMenuItemIndex) {
       setSelectedMenuItemIndex(-1);
-    } else if (value !== selectedMenuItemIndex) {
+    } else {
       setSelectedMenuItemIndex(value);
     }
   };
 
   const selected =
-    value === selectedMenuItemIndex ||
-    (selectedMenuItemIndex >= 0 && to === location.pathname);
+    (value === selectedMenuItemIndex && selectedMenuItemIndex >= 0) ||
+    (!(value === selectedMenuItemIndex) &&
+      !(selectedMenuItemIndex >= 0) &&
+      to === location.pathname);
 
   return (
     // @ts-ignore Material UI issue: https://github.com/mui-org/material-ui/issues/27820

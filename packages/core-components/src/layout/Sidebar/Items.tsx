@@ -72,7 +72,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       justifyContent: 'center',
     },
     open: {
-      width: drawerWidthOpen,
+      // Does not apply  on mobile
+      // width: drawerWidthOpen,
     },
     label: {
       // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs

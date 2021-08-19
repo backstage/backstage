@@ -23,7 +23,7 @@ export const UserSettingsAppearanceCard = () => (
   <InfoCard title="Appearance">
     <List dense>
       <UserSettingsThemeToggle />
-      <UserSettingsPinToggle />
+      {/* <UserSettingsPinToggle /> */}
     </List>
   </InfoCard>
 );
