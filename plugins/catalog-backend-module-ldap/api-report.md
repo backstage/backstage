@@ -7,6 +7,8 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Client } from 'ldapjs';
 import { Config } from '@backstage/config';
+import { EntityProvider } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import { LocationSpec } from '@backstage/catalog-model';
@@ -87,7 +89,7 @@ export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';
 //
 // @public
 export class LdapClient {
-  constructor(client: Client);
+  constructor(client: Client, logger: Logger_2);
   // Warning: (ae-forgotten-export) The symbol "BindConfig" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -101,6 +103,36 @@ export class LdapClient {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
+}
+
+// Warning: (ae-missing-release-tag) "LdapOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class LdapOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    provider: LdapProviderConfig;
+    logger: Logger_2;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    configRoot: Config,
+    options: {
+      id: string;
+      target: string;
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+      logger: Logger_2;
+    },
+  ): LdapOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  read(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "LdapOrgReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
