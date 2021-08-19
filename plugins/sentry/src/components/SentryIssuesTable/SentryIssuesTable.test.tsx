@@ -86,6 +86,6 @@ describe('SentryIssuesTable', () => {
         <SentryIssuesTable sentryIssues={issues} statsFor="24h" />
       </ThemeProvider>,
     );
-    expect(await table.findByText('For 24h')).toBeInTheDocument();
+    expect(await table.findByText('Last 24h')).toBeInTheDocument();
   });
 });

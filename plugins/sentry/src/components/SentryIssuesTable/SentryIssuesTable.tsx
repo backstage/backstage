@@ -71,7 +71,7 @@ const SentryIssuesTable = ({
       columns={columns}
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="Sentry issues"
-      subtitle={statsFor ? `For ${statsFor}` : undefined}
+      subtitle={statsFor ? `Last ${statsFor}` : undefined}
       data={sentryIssues}
     />
   );
