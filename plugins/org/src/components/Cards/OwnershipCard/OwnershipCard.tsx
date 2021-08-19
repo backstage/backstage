@@ -31,16 +31,24 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-
+import { generatePath } from 'react-router';
+import qs from 'qs';
 import {
   InfoCard,
   InfoCardVariants,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
 type BoxTypes = 'box1' | 'box2' | 'box3' | 'box4' | 'box5' | 'box6';
+
+type EntityTypeProps = {
+  name: string;
+  kind: string;
+  type: string;
+  count: number;
+};
 
 const createPageTheme = (
   theme: BackstageTheme,
@@ -89,17 +97,6 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
   }),
 );
 
-const listEntitiesBy = (entities: Array<Entity>, kind: string, type?: string) =>
-  entities.filter(
-    e => e.kind === kind && (type ? e?.spec?.type === type : true),
-  );
-
-const countEntitiesBy = (
-  entities: Array<Entity>,
-  kind: string,
-  type?: string,
-) => listEntitiesBy(entities, kind, type).length;
-
 const EntityCountTile = ({
   counter,
   className,
@@ -134,14 +131,20 @@ const EntityCountTile = ({
 
 const getFilteredUrl = (
   owner: Entity,
-  type: string,
-  entityKind: string,
-  baseUrl: string,
+  selectedEntity: EntityTypeProps,
 ): string => {
   const ownerName = owner.metadata.name;
-  const filteredUrl = `
-    ${baseUrl}/catalog/?filters[kind]=${entityKind}&filters[type][0]=${type}&filters[user]=all&filters[owners][0]=${ownerName}
-  `;
+  const kind = selectedEntity.kind;
+  const type = selectedEntity.type;
+  const queryParams = qs.stringify({
+    filters: {
+      kind,
+      type,
+      owners: ownerName,
+      user: 'all',
+    },
+  });
+  const filteredUrl = generatePath(`/catalog/?${queryParams}`);
 
   return filteredUrl;
 };
@@ -155,7 +158,6 @@ export const OwnershipCard = ({
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
-  const baseUrl = useApi(configApiRef).getString('app.baseUrl');
 
   const {
     loading,
@@ -180,47 +182,37 @@ export const OwnershipCard = ({
       isOwnerOf(entity, component),
     );
 
-    // Get key-value pair of Entity type and its kind
-    const entityKindObject = ownedEntitiesList.reduce((acc, ownedEntity) => {
-      if (typeof ownedEntity.spec?.type !== 'string') return acc;
+    const counts = ownedEntitiesList.reduce(
+      (acc: EntityTypeProps[], ownedEntity) => {
+        if (typeof ownedEntity.spec?.type !== 'string') return acc;
 
-      const entityType = ownedEntity.spec.type.toLocaleLowerCase('en-US');
-      acc[entityType] = ownedEntity.kind;
-      return acc;
-    }, {} as Record<string, string>);
+        const match = acc.find(
+          x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
+        );
+        const name = ownedEntity.metadata.name;
+        if (match) {
+          match.count += 1;
+        } else {
+          acc.push({
+            name,
+            kind: ownedEntity.kind,
+            type: ownedEntity.spec?.type?.toString(),
+            count: 1,
+          });
+        }
+        return acc;
+      },
+      [],
+    );
 
-    // Sort by entity count descending, so the most common types appear on top
-    const countByType = ownedEntitiesList.reduce((acc, ownedEntity) => {
-      if (typeof ownedEntity.spec?.type !== 'string') return acc;
+    // Return top N (six) entities to be displayed in ownership boxes
+    const topN = counts.sort((a, b) => b.count - a.count).slice(0, 6);
 
-      const entityType = ownedEntity.spec.type.toLocaleLowerCase('en-US');
-      if (!acc[entityType]) {
-        acc[entityType] = 0;
-      }
-      acc[entityType] += 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    // Get top 6 entity types to be displayed in OwnershipCard
-    const topSixEntityTypes = Object.entries(countByType)
-      .sort(([, count1], [, count2]) => count2 - count1)
-      .map(([type]) => type)
-      .slice(0, 6);
-
-    return topSixEntityTypes.map((entityType, index) => ({
-      counter: countEntitiesBy(
-        ownedEntitiesList,
-        entityKindObject[entityType],
-        entityType,
-      ),
+    return topN.map((topEntity, index) => ({
+      counter: topEntity.count,
       className: `box${index + 1}`,
-      name: entityType.toLocaleUpperCase('en-US'),
-      url: getFilteredUrl(
-        entity,
-        entityType,
-        entityKindObject[entityType],
-        baseUrl,
-      ),
+      name: topEntity.type.toLocaleUpperCase('en-US'),
+      url: getFilteredUrl(entity, topEntity),
     })) as Array<{
       counter: number;
       className: BoxTypes;
