@@ -52,16 +52,20 @@ export function initDatabaseMetrics(knex: Knex) {
       name: 'catalog_registered_locations_count',
       help: 'Total amount of registered locations in the catalog',
       async collect() {
-        const total = await knex<DbLocationsRow>('locations').count();
-        this.set(total[0]['count(*)'] as number);
+        const total = await knex<DbLocationsRow>('locations').count({
+          count: '*',
+        });
+        this.set(Number(total[0].count));
       },
     }),
     relations: createGaugeMetric({
       name: 'catalog_relations_count',
       help: 'Total amount of relations between entities',
       async collect() {
-        const total = await knex<DbRelationsRow>('relations').count();
-        this.set(total[0]['count(*)'] as number);
+        const total = await knex<DbRelationsRow>('relations').count({
+          count: '*',
+        });
+        this.set(Number(total[0].count));
       },
     }),
   };
