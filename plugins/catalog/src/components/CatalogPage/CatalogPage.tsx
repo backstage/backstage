@@ -25,7 +25,6 @@ import {
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  EntityKindPicker,
   EntityLifecyclePicker,
   EntityListProvider,
   EntityOwnerPicker,

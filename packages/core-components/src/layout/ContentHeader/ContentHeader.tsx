@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
