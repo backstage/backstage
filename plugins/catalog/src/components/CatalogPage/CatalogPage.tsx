@@ -43,6 +43,7 @@ import {
   EntityListContainer,
   FilterContainer,
 } from '../FilteredEntityLayout';
+import { CatalogKindHeader } from './CatalogKindHeader';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
@@ -61,18 +62,17 @@ export const CatalogPage = ({
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
-      <Content>
-        <ContentHeader title="Components">
-          <CreateButton
-            title="Create Component"
-            to={createComponentLink && createComponentLink()}
-          />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <EntityListProvider>
+      <EntityListProvider>
+        <Content>
+          <ContentHeader titleComponent={<CatalogKindHeader />}>
+            <CreateButton
+              title="Create Component"
+              to={createComponentLink && createComponentLink()}
+            />
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
           <FilteredEntityLayout>
             <FilterContainer>
-              <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
@@ -83,8 +83,8 @@ export const CatalogPage = ({
               <CatalogTable columns={columns} actions={actions} />
             </EntityListContainer>
           </FilteredEntityLayout>
-        </EntityListProvider>
-      </Content>
+        </Content>
+      </EntityListProvider>
     </PageWithHeader>
   );
 };
