@@ -84,7 +84,7 @@ export const SearchContextProvider = ({
         pageCursor: pageCursor,
         types,
       }),
-    [term, filters, types, page],
+    [term, filters, types, pageCursor],
   );
 
   const hasNextPage =
@@ -129,3 +129,7 @@ export const useSearch = () => {
   }
   return context;
 };
+
+function resetScrollPosition() {
+  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+}

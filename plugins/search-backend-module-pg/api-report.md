@@ -26,8 +26,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
-  count(tx: Knex.Transaction, searchQuery: PgSearchQuery): Promise<number>;
-  // (undocumented)
   static create(knex: Knex): Promise<DatabaseDocumentStore>;
   // (undocumented)
   insertDocuments(
@@ -56,8 +54,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
 export interface DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
-  // (undocumented)
-  count(tx: Knex.Transaction, pgQuery: PgSearchQuery): Promise<number>;
   // (undocumented)
   insertDocuments(
     tx: Knex.Transaction,

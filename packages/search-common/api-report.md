@@ -81,7 +81,9 @@ export interface SearchResultSet {
   // (undocumented)
   results: SearchResult[];
   // (undocumented)
-  totalCount: number;
+  previousPageCursor?: string;
+  // (undocumented)
+  results: SearchResult[];
 }
 
 // (No @packageDocumentation comment for this package)

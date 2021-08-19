@@ -32,7 +32,6 @@ describe('PgSearchEngine', () => {
       transaction: jest.fn(),
       insertDocuments: jest.fn(),
       query: jest.fn(),
-      count: jest.fn(),
       completeInsert: jest.fn(),
       prepareInsert: jest.fn(),
     };
@@ -107,10 +106,13 @@ describe('PgSearchEngine', () => {
       const actualTranslatedQuery = searchEngine.translator({
         term: 'H&e|l!l*o W\0o(r)l:d',
         pageCursor: '',
-      }) as PgSearchQuery;
+      }) as ConcretePgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
-        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        pgQuery: {
+          pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        },
+        pageSize: 25,
       });
     });
 
@@ -180,7 +182,6 @@ describe('PgSearchEngine', () => {
   describe('query', () => {
     it('should perform query', async () => {
       database.transaction.mockImplementation(fn => fn(tx));
-      database.count.mockResolvedValue(1337);
       database.query.mockResolvedValue([
         {
           document: {
@@ -209,7 +210,7 @@ describe('PgSearchEngine', () => {
         ],
         nextPageCursor: undefined,
       });
-      expect(database.transaction).toHaveBeenCalledTimes(2);
+      expect(database.transaction).toHaveBeenCalledTimes(1);
       expect(database.query).toHaveBeenCalledWith(tx, {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
@@ -299,6 +300,22 @@ describe('PgSearchEngine', () => {
         limit: 26,
       });
     });
+  });
+});
+
+describe('decodePageCursor', () => {
+  test('should decode page', () => {
+    expect(decodePageCursor('MQ==')).toEqual({ page: 1 });
+  });
+
+  test('should fallback to first page if empty', () => {
+    expect(decodePageCursor()).toEqual({ page: 0 });
+  });
+});
+
+describe('encodePageCursor', () => {
+  test('should encode page', () => {
+    expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
   });
 });
 

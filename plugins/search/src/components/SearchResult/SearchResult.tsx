@@ -20,20 +20,17 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
-import { Pagination } from '@material-ui/lab';
 import React from 'react';
 import { useSearch } from '../SearchContext';
+import { SearchResultPager } from '../SearchResultPager';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
-  initialPageSize?: number;
 };
 
 export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
-    page,
-    setPage,
   } = useSearch();
 
   if (loading) {

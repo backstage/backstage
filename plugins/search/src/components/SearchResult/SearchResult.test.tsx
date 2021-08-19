@@ -24,7 +24,6 @@ jest.mock('../SearchContext', () => ({
   ...jest.requireActual('../SearchContext'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
-    page: {},
   }),
 }));
 
