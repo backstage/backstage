@@ -4,20 +4,24 @@ The shortcuts plugin allows a user to have easy access to pages within a Backsta
 
 ## Usage
 
-Install the package:
+### Install the package:
 
 ```bash
 yarn add @backstage/plugin-shortcuts
 ```
 
-Add it to your App's `plugins.ts` file:
+### Register plugin:
+
+This plugin requires explicit registration, so you will need to add it to your App's `plugins.ts` file:
 
 ```ts
 // ...
 export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
 ```
 
-Add the `<Shortcuts />` component within your `<Sidebar>`:
+If you don't have a `plugins.ts` see: [troubleshoot](#troubleshoot)
+
+### Add the `<Shortcuts />` component within your `<Sidebar>`:
 
 ```tsx
 import { Sidebar, SidebarDivider, SidebarSpace } from '@backstage/core';
@@ -49,4 +53,34 @@ export const apis = [
     factory: () => new CustomShortcutsImpl(),
   }),
 ];
+```
+
+# Troubleshoot
+
+If you don't have a `plugins.ts` you can create a new one on `packages/app/src/plugins.ts` and then add this lines to your `App.tsx` if there is other plugins that requires explicit registration:
+
+```diff
++ import * as plugins from './plugins';
+
+const app = createApp({
+  apis,
++   plugins: Object.values(plugins),
+  bindRoutes({ bind }) {
+    /* ... */
+  },
+});
+```
+
+Or simply edit `App.tsx` with:
+
+```diff
++ import { shortcutsPlugin } from '@backstage/plugin-shortcuts
+
+const app = createApp({
+  apis,
++   plugins: [shortcutsPlugin],
+  bindRoutes({ bind }) {
+    /* ... */
+  },
+});
 ```
