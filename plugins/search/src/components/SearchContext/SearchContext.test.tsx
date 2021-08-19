@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import { renderHook, act } from '@testing-library/react-hooks';
-
-import { useSearch, SearchContextProvider } from './SearchContext';
-
 import { useApi } from '@backstage/core-plugin-api';
+import { render, screen, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+import React from 'react';
+import { SearchContextProvider, useSearch } from './SearchContext';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -38,7 +36,6 @@ describe('SearchContext', () => {
 
   const initialState = {
     term: '',
-    page: {},
     filters: {},
     types: ['*'],
   };
@@ -46,6 +43,7 @@ describe('SearchContext', () => {
   beforeEach(() => {
     query.mockResolvedValue({});
     (useApi as jest.Mock).mockReturnValue({ query: query });
+    window.scrollTo = jest.fn();
   });
 
   afterAll(() => {
@@ -93,26 +91,26 @@ describe('SearchContext', () => {
       initialProps: {
         initialState: {
           ...initialState,
-          page: { offset: 0, limit: 25 },
+          pageCursor: 'SOMEPAGE',
         },
       },
     });
 
     await waitForNextUpdate();
 
-    expect(result.current.page).toEqual({ offset: 0, limit: 25 });
+    expect(result.current.pageCursor).toEqual('SOMEPAGE');
 
     act(() => {
       result.current.setTerm('first term');
     });
 
     act(() => {
-      result.current.setPage({ offset: 75, limit: 25 });
+      result.current.setPageCursor('OTHERPAGE');
     });
 
     await waitForNextUpdate();
 
-    expect(result.current.page).toEqual({ offset: 75, limit: 25 });
+    expect(result.current.pageCursor).toEqual('OTHERPAGE');
 
     act(() => {
       result.current.setTerm('second term');
@@ -120,7 +118,7 @@ describe('SearchContext', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.page).toEqual({ offset: 0, limit: 25 });
+    expect(result.current.pageCursor).toEqual(undefined);
   });
 
   describe('Performs search (and sets results)', () => {
@@ -145,8 +143,6 @@ describe('SearchContext', () => {
       expect(query).toHaveBeenLastCalledWith({
         filters: {},
         types: ['*'],
-        limit: undefined,
-        offset: undefined,
         term,
       });
     });
@@ -172,8 +168,6 @@ describe('SearchContext', () => {
       expect(query).toHaveBeenLastCalledWith({
         filters,
         types: ['*'],
-        limit: undefined,
-        offset: undefined,
         term: '',
       });
     });
@@ -188,10 +182,8 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      const page = { offset: 25, limit: 50 };
-
       act(() => {
-        result.current.setPage(page);
+        result.current.setPageCursor('SOMEPAGE');
       });
 
       await waitForNextUpdate();
@@ -199,8 +191,7 @@ describe('SearchContext', () => {
       expect(query).toHaveBeenLastCalledWith({
         filters: {},
         types: ['*'],
-        limit: 50,
-        offset: 25,
+        pageCursor: 'SOMEPAGE',
         term: '',
       });
     });
@@ -226,9 +217,71 @@ describe('SearchContext', () => {
       expect(query).toHaveBeenLastCalledWith({
         types,
         filters: {},
-        limit: undefined,
-        offset: undefined,
         term: '',
+      });
+    });
+
+    it('provides function for fetch the next page', async () => {
+      query.mockResolvedValue({
+        results: [],
+        nextPageCursor: 'NEXT',
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.fetchNextPage).toBeDefined();
+      expect(result.current.fetchPreviousPage).toBeUndefined();
+
+      act(() => {
+        result.current.fetchNextPage!();
+      });
+
+      await waitForNextUpdate();
+
+      expect(query).toHaveBeenLastCalledWith({
+        types: ['*'],
+        filters: {},
+        term: '',
+        pageCursor: 'NEXT',
+      });
+    });
+
+    it('provides function for fetch the previous page', async () => {
+      query.mockResolvedValue({
+        results: [],
+        previousPageCursor: 'PREVIOUS',
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.fetchNextPage).toBeUndefined();
+      expect(result.current.fetchPreviousPage).toBeDefined();
+
+      act(() => {
+        result.current.fetchPreviousPage!();
+      });
+
+      await waitForNextUpdate();
+
+      expect(query).toHaveBeenLastCalledWith({
+        types: ['*'],
+        filters: {},
+        term: '',
+        pageCursor: 'PREVIOUS',
       });
     });
   });

@@ -239,37 +239,6 @@ describe('DatabaseDocumentStore', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'count by term, %p',
-      async databaseId => {
-        const { store } = await createStore(databaseId);
-
-        await store.transaction(async tx => {
-          await store.prepareInsert(tx);
-          await store.insertDocuments(tx, 'test', [
-            {
-              title: 'Lorem Ipsum',
-              text: 'Hello World',
-              location: 'LOCATION-1',
-            },
-            {
-              title: 'Hello World',
-              text: 'Around the world',
-              location: 'LOCATION-1',
-            },
-          ]);
-          await store.completeInsert(tx, 'test');
-        });
-
-        const totalCount = await store.transaction(tx =>
-          store.count(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
-        );
-
-        expect(totalCount).toEqual(2);
-      },
-      60_000,
-    );
-
-    it.each(databases.eachSupportedId())(
       'query by term, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);

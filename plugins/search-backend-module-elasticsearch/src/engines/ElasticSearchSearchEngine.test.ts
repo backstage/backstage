@@ -16,12 +16,14 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/search-common';
-import {
-  ConcreteElasticSearchQuery,
-  ElasticSearchSearchEngine,
-} from './ElasticSearchSearchEngine';
 import { Client } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
+import {
+  ConcreteElasticSearchQuery,
+  decodePageCursor,
+  ElasticSearchSearchEngine,
+  encodePageCursor,
+} from './ElasticSearchSearchEngine';
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
@@ -134,14 +136,13 @@ describe('ElasticSearchSearchEngine', () => {
       });
     });
 
-    it('should pass offset and limit', async () => {
+    it('should pass page cursor', async () => {
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
       const actualTranslatedQuery = translatorUnderTest({
         types: ['indexName'],
         term: 'testTerm',
-        offset: 25,
-        limit: 50,
+        pageCursor: 'MQ==',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -166,43 +167,7 @@ describe('ElasticSearchSearchEngine', () => {
           },
         },
         from: 25,
-        size: 50,
-      });
-    });
-
-    it('should have maximum limit of 100', async () => {
-      const translatorUnderTest = inspectableSearchEngine.getTranslator();
-
-      const actualTranslatedQuery = translatorUnderTest({
-        types: ['indexName'],
-        term: 'testTerm',
-        offset: 25,
-        limit: 500,
-      }) as ConcreteElasticSearchQuery;
-
-      expect(actualTranslatedQuery).toMatchObject({
-        documentTypes: ['indexName'],
-        elasticSearchQuery: expect.any(Object),
-      });
-
-      const queryBody = actualTranslatedQuery.elasticSearchQuery;
-
-      expect(queryBody).toEqual({
-        query: {
-          bool: {
-            filter: [],
-            must: {
-              multi_match: {
-                query: 'testTerm',
-                fields: ['*'],
-                fuzziness: 'auto',
-                minimum_should_match: 1,
-              },
-            },
-          },
-        },
-        from: 25,
-        size: 100,
+        size: 25,
       });
     });
 
@@ -387,7 +352,103 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       // Should return 0 results as nothing is indexed here
-      expect(mockedSearchResult).toMatchObject({ results: [], totalCount: 0 });
+      expect(mockedSearchResult).toMatchObject({
+        results: [],
+        nextPageCursor: undefined,
+      });
+    });
+
+    it('should perform search query with more results than one page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'eq' },
+              hits: Array(25)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(25)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            })),
+        ),
+        nextPageCursor: 'MQ==',
+      });
+    });
+
+    it('should perform search query for second page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'eq' },
+              hits: Array(30)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                }))
+                .slice(25),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+        pageCursor: 'MQ==',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(30)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            }))
+            .slice(25),
+        ),
+        previousPageCursor: 'MA==',
+      });
     });
 
     it('should handle index/search type filtering correctly', async () => {
@@ -496,5 +557,21 @@ describe('ElasticSearchSearchEngine', () => {
         { title: 'testTerm', text: 'testText', location: 'test/location' },
       ]);
     });
+  });
+});
+
+describe('decodePageCursor', () => {
+  test('should decode page', () => {
+    expect(decodePageCursor('MQ==')).toEqual({ page: 1 });
+  });
+
+  test('should fallback to first page if empty', () => {
+    expect(decodePageCursor()).toEqual({ page: 0 });
+  });
+});
+
+describe('encodePageCursor', () => {
+  test('should encode page', () => {
+    expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
   });
 });

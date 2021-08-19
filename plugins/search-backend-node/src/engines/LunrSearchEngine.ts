@@ -27,8 +27,7 @@ import { Logger } from 'winston';
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
-  offset: number;
-  limit: number;
+  pageSize: number;
 };
 
 type LunrResultEnvelope = {
@@ -52,9 +51,9 @@ export class LunrSearchEngine implements SearchEngine {
     term,
     filters,
     types,
-    offset,
-    limit,
   }: SearchQuery): ConcreteLunrQuery => {
+    const pageSize = 25;
+
     return {
       lunrQueryBuilder: q => {
         const termToken = lunr.tokenizer(term);
@@ -111,8 +110,7 @@ export class LunrSearchEngine implements SearchEngine {
         }
       },
       documentTypes: types,
-      offset: offset ?? 0,
-      limit: Math.min(limit ?? 25, 100),
+      pageSize,
     };
   };
 
@@ -147,7 +145,7 @@ export class LunrSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const { lunrQueryBuilder, documentTypes, offset, limit } = this.translator(
+    const { lunrQueryBuilder, documentTypes, pageSize } = this.translator(
       query,
     ) as ConcreteLunrQuery;
 
@@ -183,14 +181,41 @@ export class LunrSearchEngine implements SearchEngine {
       return doc2.result.score - doc1.result.score;
     });
 
+    // Perform paging
+    const { page } = decodePageCursor(query.pageCursor);
+    const offset = page * pageSize;
+    const hasPreviousPage = page > 0;
+    const hasNextPage = results.length > offset + pageSize;
+    const nextPageCursor = hasNextPage
+      ? encodePageCursor({ page: page + 1 })
+      : undefined;
+    const previousPageCursor = hasPreviousPage
+      ? encodePageCursor({ page: page - 1 })
+      : undefined;
+
     // Translate results into SearchResultSet
     const realResultSet: SearchResultSet = {
-      results: results.slice(offset, offset + limit).map(d => {
+      results: results.slice(offset, offset + pageSize).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),
-      totalCount: results.length,
+      nextPageCursor,
+      previousPageCursor,
     };
 
     return realResultSet;
   }
+}
+
+export function decodePageCursor(pageCursor?: string): { page: number } {
+  if (!pageCursor) {
+    return { page: 0 };
+  }
+
+  return {
+    page: Number(Buffer.from(pageCursor, 'base64').toString('utf-8')),
+  };
+}
+
+export function encodePageCursor({ page }: { page: number }): string {
+  return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }

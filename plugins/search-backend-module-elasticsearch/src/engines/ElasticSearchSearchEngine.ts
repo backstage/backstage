@@ -15,24 +15,25 @@
  */
 
 import {
-  IndexableDocument,
-  SearchQuery,
-  SearchResultSet,
-  SearchEngine,
-} from '@backstage/search-common';
-import { Logger } from 'winston';
-import esb from 'elastic-builder';
-import { Client } from '@elastic/elasticsearch';
+  awsGetCredentials,
+  createAWSConnection,
+} from '@acuris/aws-es-connection';
 import { Config } from '@backstage/config';
 import {
-  createAWSConnection,
-  awsGetCredentials,
-} from '@acuris/aws-es-connection';
+  IndexableDocument,
+  SearchEngine,
+  SearchQuery,
+  SearchResultSet,
+} from '@backstage/search-common';
+import { Client } from '@elastic/elasticsearch';
+import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
+import { Logger } from 'winston';
 
 export type ConcreteElasticSearchQuery = {
   documentTypes?: string[];
   elasticSearchQuery: Object;
+  pageSize: number;
 };
 
 type ElasticSearchQueryTranslator = (
@@ -140,8 +141,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     term,
     filters = {},
     types,
-    offset,
-    limit,
+    pageCursor,
   }: SearchQuery): ConcreteElasticSearchQuery {
     const filter = Object.entries(filters)
       .filter(([_, value]) => Boolean(value))
@@ -169,15 +169,18 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           .multiMatchQuery(['*'], term)
           .fuzziness('auto')
           .minimumShouldMatch(1);
+    const pageSize = 25;
+    const { page } = decodePageCursor(pageCursor);
 
     return {
       elasticSearchQuery: esb
         .requestBodySearch()
         .query(esb.boolQuery().filter(filter).must([query]))
-        .from(offset ?? 0)
-        .size(Math.min(limit ?? 25, 100))
+        .from(page * pageSize)
+        .size(pageSize)
         .toJSON(),
       documentTypes: types,
+      pageSize,
     };
   }
 
@@ -249,7 +252,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const { elasticSearchQuery, documentTypes } = this.translator(query);
+    const { elasticSearchQuery, documentTypes, pageSize } =
+      this.translator(query);
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');
@@ -258,12 +262,23 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         index: queryIndices,
         body: elasticSearchQuery,
       });
+      const { page } = decodePageCursor(query.pageCursor);
+      const hasNextPage = result.body.hits.total.value > page * pageSize;
+      const hasPreviousPage = page > 0;
+      const nextPageCursor = hasNextPage
+        ? encodePageCursor({ page: page + 1 })
+        : undefined;
+      const previousPageCursor = hasPreviousPage
+        ? encodePageCursor({ page: page - 1 })
+        : undefined;
+
       return {
         results: result.body.hits.hits.map((d: ElasticSearchResult) => ({
           type: this.getTypeFromIndex(d._index),
           document: d._source,
         })),
-        totalCount: result.body.hits.total.value,
+        nextPageCursor,
+        previousPageCursor,
       };
     } catch (e) {
       this.logger.error(
@@ -290,4 +305,18 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     const postFix = this.aliasPostfix ? `__${this.aliasPostfix}` : '';
     return `${this.indexPrefix}${type}${postFix}`;
   }
+}
+
+export function decodePageCursor(pageCursor?: string): { page: number } {
+  if (!pageCursor) {
+    return { page: 0 };
+  }
+
+  return {
+    page: Number(Buffer.from(pageCursor, 'base64').toString('utf-8')),
+  };
+}
+
+export function encodePageCursor({ page }: { page: number }): string {
+  return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }

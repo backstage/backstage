@@ -17,7 +17,12 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import lunr from 'lunr';
 import { SearchEngine } from '@backstage/search-common';
-import { ConcreteLunrQuery, LunrSearchEngine } from './LunrSearchEngine';
+import {
+  ConcreteLunrQuery,
+  LunrSearchEngine,
+  decodePageCursor,
+  encodePageCursor,
+} from './LunrSearchEngine';
 
 /**
  * Just used to test the default translator shipped with LunrSearchEngine.
@@ -48,12 +53,14 @@ describe('LunrSearchEngine', () => {
       await testLunrSearchEngine.query({
         term: 'testTerm',
         filters: {},
+        pageCursor: 'MQ==',
       });
 
       // Then: the translator is invoked with expected args.
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
+        pageCursor: 'MQ==',
       });
     });
 
@@ -66,15 +73,12 @@ describe('LunrSearchEngine', () => {
       const actualTranslatedQuery = translatorUnderTest({
         term: 'testTerm',
         filters: {},
-        offset: 0,
-        limit: 50,
       }) as ConcreteLunrQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: undefined,
         lunrQueryBuilder: expect.any(Function),
-        offset: 0,
-        limit: 50,
+        pageSize: 25,
       });
 
       const query: jest.Mocked<lunr.Query> = {
@@ -115,52 +119,7 @@ describe('LunrSearchEngine', () => {
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: undefined,
         lunrQueryBuilder: expect.any(Function),
-        offset: 0,
-        limit: 25,
-      });
-
-      const query: jest.Mocked<lunr.Query> = {
-        allFields: [],
-        clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
-      };
-
-      actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
-
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
-        boost: 100,
-        usePipeline: true,
-      });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
-        boost: 10,
-        usePipeline: false,
-        wildcard: lunr.Query.wildcard.TRAILING,
-      });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
-        boost: 1,
-        usePipeline: false,
-        editDistance: 2,
-      });
-    });
-
-    it('should have maximum limit', async () => {
-      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
-        logger: getVoidLogger(),
-      });
-      const translatorUnderTest = inspectableSearchEngine.getTranslator();
-
-      const actualTranslatedQuery = translatorUnderTest({
-        term: 'testTerm',
-        offset: 0,
-        limit: 1000,
-      }) as ConcreteLunrQuery;
-
-      expect(actualTranslatedQuery).toMatchObject({
-        documentTypes: undefined,
-        lunrQueryBuilder: expect.any(Function),
-        offset: 0,
-        limit: 100,
+        pageSize: 25,
       });
 
       const query: jest.Mocked<lunr.Query> = {
@@ -328,7 +287,10 @@ describe('LunrSearchEngine', () => {
       });
 
       // Should return 0 results as nothing is indexed here
-      expect(mockedSearchResult).toMatchObject({ results: [], totalCount: 0 });
+      expect(mockedSearchResult).toMatchObject({
+        results: [],
+        nextPageCursor: undefined,
+      });
     });
 
     it('should perform search query and return 0 results on no match', async () => {
@@ -350,7 +312,10 @@ describe('LunrSearchEngine', () => {
       });
 
       // Should return 0 results as we are mocking the indexing of 1 document but with no match on the fields
-      expect(mockedSearchResult).toMatchObject({ results: [], totalCount: 0 });
+      expect(mockedSearchResult).toMatchObject({
+        results: [],
+        nextPageCursor: undefined,
+      });
     });
 
     it('should perform search query and return all results on empty term', async () => {
@@ -382,7 +347,7 @@ describe('LunrSearchEngine', () => {
             type: 'test-index',
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -414,7 +379,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -446,7 +411,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -479,7 +444,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -512,7 +477,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -545,7 +510,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -585,7 +550,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -627,7 +592,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -667,7 +632,7 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 1,
+        nextPageCursor: undefined,
       });
     });
 
@@ -725,8 +690,74 @@ describe('LunrSearchEngine', () => {
             },
           },
         ],
-        totalCount: 2,
+        nextPageCursor: undefined,
       });
+    });
+
+    it('should return next page cursor if results exceed page size', async () => {
+      const mockDocuments = Array(30)
+        .fill(0)
+        .map((_, i) => ({
+          title: 'testTitle',
+          text: 'testText',
+          location: `test/location/${i}`,
+        }));
+
+      await testLunrSearchEngine.index('test-index', mockDocuments);
+
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitle',
+        types: ['test-index'],
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: Array(25)
+          .fill(0)
+          .map((_, i) => ({
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: `test/location/${i}`,
+            },
+            type: 'test-index',
+          })),
+        nextPageCursor: 'MQ==',
+        previousPageCursor: undefined,
+      });
+    });
+  });
+
+  it('should return previous page cursor if on another page', async () => {
+    const mockDocuments = Array(30)
+      .fill(0)
+      .map((_, i) => ({
+        title: 'testTitle',
+        text: 'testText',
+        location: `test/location/${i}`,
+      }));
+
+    await testLunrSearchEngine.index('test-index', mockDocuments);
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'testTitle',
+      types: ['test-index'],
+      pageCursor: 'MQ==',
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: Array(30)
+        .fill(0)
+        .map((_, i) => ({
+          document: {
+            title: 'testTitle',
+            text: 'testText',
+            location: `test/location/${i}`,
+          },
+          type: 'test-index',
+        }))
+        .slice(25),
+      nextPageCursor: undefined,
+      previousPageCursor: 'MA==',
     });
   });
 
@@ -748,5 +779,21 @@ describe('LunrSearchEngine', () => {
         { title: 'testTerm', text: 'testText', location: 'test/location' },
       ]);
     });
+  });
+});
+
+describe('decodePageCursor', () => {
+  test('should decode page', () => {
+    expect(decodePageCursor('MQ==')).toEqual({ page: 1 });
+  });
+
+  test('should fallback to first page if empty', () => {
+    expect(decodePageCursor()).toEqual({ page: 0 });
+  });
+});
+
+describe('encodePageCursor', () => {
+  test('should encode page', () => {
+    expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
   });
 });

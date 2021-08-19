@@ -21,7 +21,6 @@ describe('apis', () => {
     term: '',
     filters: {},
     types: [],
-    page: {},
   };
 
   const baseUrl = 'https://base-url.com/';
