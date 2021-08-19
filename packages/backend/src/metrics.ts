@@ -20,6 +20,10 @@ import promBundle from 'express-prom-bundle';
 import prom from 'prom-client';
 import * as url from 'url';
 
+/**
+ * Experimental Prometheus metrics used to benchmark the performance of the
+ * software catalog. Use this at your own risk.
+ */
 const rootRegEx = new RegExp('^/([^/]*)/.*');
 const apiRegEx = new RegExp('^/api/([^/]*)/.*');
 
