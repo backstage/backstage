@@ -53,6 +53,12 @@
       "examples": ["default", "admin"],
       "minLength": 1
     },
+    "title": {
+      "type": "string",
+      "description": "A nice display name of the entity, to be presented in user interfaces instead of the name property, when available.",
+      "examples": ["React SSR Template"],
+      "minLength": 1
+    },
     "description": {
       "type": "string",
       "description": "A short (typically relatively few words, on one line) description of the entity."

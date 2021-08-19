@@ -245,6 +245,22 @@ the entity belongs to the `"default"` namespace.
 Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
 i.e. not Backstage specific but the same as in Kubernetes.
 
+### `title` [optional]
+
+A nice display name of the entity, to be presented in user interfaces instead of
+the `name` property above, when available.
+
+This field is sometimes useful when the `name` is cumbersome or ends up being
+perceived as overly technical. The title generally does not have as stringent
+format requirements on it, so it may contain special characters and be more
+explanatory. Do keep it very short though, and avoid situations where a title
+can be confused with the name of another entity, or where two entities share a
+title.
+
+Note that this is only for display purposes, and may be ignored by some parts of
+the code. [Entity references](references.md) still always make use of the `name`
+property for example, not the title.
+
 ### `description` [optional]
 
 A human readable description of the entity, to be shown in Backstage. Should be
@@ -689,12 +705,6 @@ shape, this kind has the following structure.
 ### `apiVersion` and `kind` [required]
 
 Exactly equal to `backstage.io/v1beta2` and `Template`, respectively.
-
-### `metadata.title` [required]
-
-The nice display name for the template as a string, e.g. `React SSR Template`.
-This field is required as is used to reference the template to the user instead
-of the `metadata.name` field.
 
 ### `metadata.tags` [optional]
 
