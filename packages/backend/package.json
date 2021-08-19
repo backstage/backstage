@@ -58,9 +58,11 @@
     "example-app": "^0.2.41",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express-prom-bundle": "^6.3.6",
     "knex": "^0.95.1",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",
+    "prom-client": "^13.2.0",
     "sqlite3": "^5.0.1",
     "winston": "^3.2.1"
   },
