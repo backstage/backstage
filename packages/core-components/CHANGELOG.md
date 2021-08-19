@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.3.2
+
+### Patch Changes
+
+- a3f3cff3b: Change the default hover experience for the sidebar to be not jumpy & add visual separation between sidebar & Entity Page tabs for dark mode.
+- 6b1afe8c0: Add a configurable `palette.bursts.gradient` property to the Backstage theme, to support customizing the gradients in the `ItemCard` header.
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/theme@0.2.10
+
 ## 0.3.1
 
 ### Patch Changes
