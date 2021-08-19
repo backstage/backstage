@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -26,6 +26,7 @@ import { EntityKindFilter, EntityTypeFilter } from '../../filters';
 
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderWithEffects } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {
@@ -79,7 +80,7 @@ const apis = ApiRegistry.from([
 
 describe('<EntityTypePicker/>', () => {
   it('renders available entity types', async () => {
-    const rendered = render(
+    const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{ filters: { kind: new EntityKindFilter('component') } }}
@@ -104,7 +105,7 @@ describe('<EntityTypePicker/>', () => {
 
   it('sets the selected type filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{

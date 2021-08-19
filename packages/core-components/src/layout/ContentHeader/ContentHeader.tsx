@@ -77,7 +77,7 @@ const ContentHeaderTitle = ({
 
 type ContentHeaderProps = {
   title?: ContentHeaderTitleProps['title'];
-  titleComponent?: ComponentType;
+  titleComponent?: JSX.Element;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
 };
@@ -92,7 +92,7 @@ export const ContentHeader = ({
   const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
-    <TitleComponent />
+    TitleComponent
   ) : (
     <ContentHeaderTitle title={title} className={classes.title} />
   );
