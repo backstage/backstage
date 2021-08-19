@@ -19,12 +19,9 @@ import { fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef, ErrorApi } from '@backstage/core-plugin-api';
-// should we add this to dev dependencies?
-// (already a dependency of react-use)
-// eslint-disable-next-line import/no-extraneous-dependencies
-import copy from 'copy-to-clipboard';
+import { useCopyToClipboard } from 'react-use';
 
 jest.mock('popper.js', () => {
   const PopperJS = jest.requireActual('popper.js');
@@ -34,6 +31,17 @@ jest.mock('popper.js', () => {
     update() {}
     destroy() {}
     scheduleUpdate() {}
+  };
+});
+
+jest.mock('react-use', () => {
+  const original = jest.requireActual('react-use');
+
+  return {
+    ...original,
+    useCopyToClipboard: jest
+      .fn()
+      .mockImplementation(original.useCopyToClipboard),
   };
 });
 
@@ -47,29 +55,30 @@ const apiRegistry = ApiRegistry.from([
   [
     errorApiRef,
     {
-      post(error) {
-        throw error;
-      },
+      post: jest.fn(),
       error$: jest.fn(),
     } as ErrorApi,
   ],
 ]);
 
-jest.mock('copy-to-clipboard', () => jest.fn());
-
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByTestId } = await renderInTestApp(
+    const { getByTitle, queryByText } = await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <CopyTextButton {...props} />
       </ApiProvider>,
     );
-    expect(getByTestId('copy-button')).toBeInTheDocument();
+    expect(getByTitle('mockTooltip')).toBeInTheDocument();
+    expect(queryByText('mockTooltip')).not.toBeInTheDocument();
   });
 
-  it('displays tooltip on click', async () => {
+  it('displays tooltip and copy the text on click', async () => {
     jest.useFakeTimers();
-    document.execCommand = jest.fn();
+
+    const spy = useCopyToClipboard as jest.Mock;
+    const copy = jest.fn();
+    spy.mockReturnValue([{}, copy]);
+
     const rendered = await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <CopyTextButton {...props} />
@@ -83,5 +92,19 @@ describe('<CopyTextButton />', () => {
     expect(copy).toHaveBeenCalledWith('mockText');
     rendered.getByText('mockTooltip');
     jest.useRealTimers();
+  });
+
+  it('reports copy errors', async () => {
+    const spy = useCopyToClipboard as jest.Mock;
+
+    const error = new Error('just an error');
+    spy.mockReturnValue([{ error }, jest.fn()]);
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <CopyTextButton {...props} />
+      </ApiProvider>,
+    );
+    expect(apiRegistry.get(errorApiRef)?.post).toHaveBeenCalledWith(error);
   });
 });

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { IconButton, Tooltip } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import PropTypes from 'prop-types';
-import React, { MouseEventHandler, useState } from 'react';
+import React, { MouseEventHandler, useEffect, useState } from 'react';
 import { useCopyToClipboard } from 'react-use';
 
 /**
@@ -51,8 +52,15 @@ export const CopyTextButton = (props: Props) => {
     ...defaultProps,
     ...props,
   };
+  const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
-  const [, copyToClipboard] = useCopyToClipboard();
+  const [{ error }, copyToClipboard] = useCopyToClipboard();
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
 
   const handleCopyClick: MouseEventHandler = e => {
     e.stopPropagation();
@@ -71,7 +79,7 @@ export const CopyTextButton = (props: Props) => {
         open={open}
       >
         <IconButton onClick={handleCopyClick}>
-          <CopyIcon data-testid="copy-button" />
+          <CopyIcon />
         </IconButton>
       </Tooltip>
     </>
