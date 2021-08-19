@@ -21,6 +21,7 @@ import React, { useRef, useState, useContext, PropsWithChildren } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
+import { MobileSidebar } from './MobileSidebar';
 
 export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
 
@@ -80,12 +81,11 @@ type Props = {
   closeDelayMs?: number;
 };
 
-export function Sidebar(props: PropsWithChildren<Props>) {
-  const {
-    openDelayMs = sidebarConfig.defaultOpenDelayMs,
-    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-    children,
-  } = props;
+const DesktopSidebar = ({
+  openDelayMs = sidebarConfig.defaultOpenDelayMs,
+  closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+  children,
+}: PropsWithChildren<Props>) => {
   const classes = useStyles();
   const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
@@ -138,18 +138,30 @@ export function Sidebar(props: PropsWithChildren<Props>) {
         isOpen,
       }}
     >
-        <div
+      <div
         onMouseEnter={handleOpen}
         onFocus={handleOpen}
         onMouseLeave={handleClose}
         onBlur={handleClose}
         data-testid="sidebar-root"
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: isOpen,
-          })}
-        >
-          {children}
-        </div>
-      </SidebarContext.Provider>
+        className={clsx(classes.drawer, {
+          [classes.drawerOpen]: isOpen,
+        })}
+      >
+        {children}
+      </div>
+    </SidebarContext.Provider>
   );
-}
+};
+
+export const Sidebar = ({ children }: React.PropsWithChildren<{}>) => {
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
+
+  return isMobileScreen ? (
+    <MobileSidebar>{children}</MobileSidebar>
+  ) : (
+    <DesktopSidebar>{children}</DesktopSidebar>
+  );
+};

@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { List } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
+import { List, useMediaQuery } from '@material-ui/core';
+import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
-export const UserSettingsAppearanceCard = () => (
-  <InfoCard title="Appearance" variant="gridItem">
-    <List dense>
-      <UserSettingsThemeToggle />
-      {/* <UserSettingsPinToggle /> */}
-    </List>
-  </InfoCard>
-);
+export const UserSettingsAppearanceCard = () => {
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
+
+  return (
+    <InfoCard title="Appearance" variant="gridItem">
+      <List dense>
+        <UserSettingsThemeToggle />
+        {!isMobileScreen && <UserSettingsPinToggle />}
+      </List>
+    </InfoCard>
+  );
+};

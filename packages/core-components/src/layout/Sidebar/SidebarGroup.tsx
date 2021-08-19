@@ -20,6 +20,7 @@ import {
   BottomNavigationAction,
   BottomNavigationActionProps,
   makeStyles,
+  useMediaQuery,
 } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -59,11 +60,15 @@ export const SidebarGroup = ({
   label,
   icon,
   value,
+  children,
 }: React.PropsWithChildren<SidebarGroupProps>) => {
   const classes = useStyles();
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
 
   const onChange = (_: React.ChangeEvent<{}>, value: number) => {
     if (value === selectedMenuItemIndex) {
@@ -79,8 +84,9 @@ export const SidebarGroup = ({
       !(selectedMenuItemIndex >= 0) &&
       to === location.pathname);
 
-  return (
-    // @ts-ignore Material UI issue: https://github.com/mui-org/material-ui/issues/27820
+  return isMobileScreen ? (
+    // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
+    // @ts-ignore
     <BottomNavigationAction
       label={label}
       icon={icon}
@@ -91,5 +97,7 @@ export const SidebarGroup = ({
       selected={selected}
       classes={classes}
     />
+  ) : (
+    <>{children}</>
   );
 };

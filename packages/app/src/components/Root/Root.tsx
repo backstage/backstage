@@ -15,7 +15,7 @@
  */
 
 import {
-  MobileSidebar,
+  Sidebar,
   sidebarConfig,
   SidebarContext,
   SidebarDivider,
@@ -84,7 +84,7 @@ const SidebarLogo = () => {
 export const Root = ({ children }: PropsWithChildren<{}>) => {
   return (
     <SidebarPage>
-      <MobileSidebar>
+      <Sidebar>
         <SidebarLogo />
         <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
           <SidebarSearch />
@@ -125,7 +125,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
         >
           <SidebarSettings />
         </SidebarGroup>
-      </MobileSidebar>
+      </Sidebar>
       {children}
     </SidebarPage>
   );
