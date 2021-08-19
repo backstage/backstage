@@ -15,14 +15,14 @@
  */
 
 import { Knex } from 'knex';
-import { Gauge } from 'prom-client';
 import { DbLocationsRow } from '../../database/types';
+import { createGaugeMetric } from '../metrics';
 import { DbRefreshStateRow, DbRelationsRow } from './tables';
 
 export function initDatabaseMetrics(knex: Knex) {
   const seen = new Set<string>();
   return {
-    entities_count: new Gauge({
+    entities_count: createGaugeMetric({
       name: 'catalog_entities_count',
       help: 'Total amount of entities in the catalog',
       labelNames: ['kind'],
@@ -48,7 +48,7 @@ export function initDatabaseMetrics(knex: Knex) {
         });
       },
     }),
-    registered_locations: new Gauge({
+    registered_locations: createGaugeMetric({
       name: 'catalog_registered_locations_count',
       help: 'Total amount of registered locations in the catalog',
       async collect() {
@@ -56,7 +56,7 @@ export function initDatabaseMetrics(knex: Knex) {
         this.set(total[0]['count(*)'] as number);
       },
     }),
-    relations: new Gauge({
+    relations: createGaugeMetric({
       name: 'catalog_relations_count',
       help: 'Total amount of relations between entities',
       async collect() {

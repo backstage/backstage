@@ -25,6 +25,7 @@ import stableStringify from 'fast-json-stable-stringify';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import { createCounterMetric, createSummaryMetric } from './metrics';
 import { CatalogProcessingOrchestrator } from './processing/types';
 import { Stitcher } from './stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
@@ -34,7 +35,6 @@ import {
   EntityProviderConnection,
   EntityProviderMutation,
 } from './types';
-import { Counter, Summary } from 'prom-client';
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
@@ -87,15 +87,15 @@ class Connection implements EntityProviderConnection {
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private stopFunc?: () => void;
   private readonly metrics = {
-    processedEntities: new Counter({
+    processedEntities: createCounterMetric({
       name: 'catalog_processed_entities_count',
       help: 'Amount of entities processed',
     }),
-    processingDuration: new Summary({
+    processingDuration: createSummaryMetric({
       name: 'catalog_processing_duration_seconds',
       help: 'Processing duration',
     }),
-    processingQueueDelay: new Summary({
+    processingQueueDelay: createSummaryMetric({
       name: 'catalog_processing_queue_delay_seconds',
       help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
     }),
