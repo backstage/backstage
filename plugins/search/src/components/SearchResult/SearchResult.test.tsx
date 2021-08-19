@@ -24,7 +24,6 @@ jest.mock('../SearchContext', () => ({
   ...jest.requireActual('../SearchContext'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
-    page: {},
   }),
 }));
 
@@ -111,7 +110,6 @@ describe('SearchResult', () => {
           ],
         },
       },
-      page: {},
     });
 
     const { getByText } = await renderInTestApp(
@@ -123,44 +121,5 @@ describe('SearchResult', () => {
     );
 
     expect(getByText('Results 1')).toBeInTheDocument();
-  });
-
-  it('Starts on initial page if no offset is set', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
-      page: {},
-      result: {
-        loading: false,
-        error: '',
-        value: { results: [{}], totalCount: 100 },
-      },
-    });
-
-    const { getByLabelText } = await renderInTestApp(
-      <SearchResult>{({}) => <></>}</SearchResult>,
-    );
-
-    expect(getByLabelText('page 1')).toHaveAttribute('aria-current', 'true');
-    expect(getByLabelText('Go to page 2')).toBeInTheDocument();
-    expect(getByLabelText('Go to page 3')).toBeInTheDocument();
-    expect(getByLabelText('Go to page 4')).toBeInTheDocument();
-  });
-
-  it('Shows the right page', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
-      page: { offset: 25 },
-      result: {
-        loading: false,
-        error: '',
-        value: { results: [{}], totalCount: 63 },
-      },
-    });
-
-    const { getByLabelText } = await renderInTestApp(
-      <SearchResult>{({}) => <></>}</SearchResult>,
-    );
-
-    expect(getByLabelText('Go to page 1')).toBeInTheDocument();
-    expect(getByLabelText('page 2')).toHaveAttribute('aria-current', 'true');
-    expect(getByLabelText('Go to page 3')).toBeInTheDocument();
   });
 });

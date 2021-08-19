@@ -20,6 +20,7 @@ import { SearchResultSet } from '@backstage/search-common';
 import React, {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -27,8 +28,6 @@ import React, {
 import { useAsync, usePrevious } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { searchApiRef } from '../../apis';
-
-type Page = { limit?: number; offset?: number };
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
@@ -38,13 +37,21 @@ type SearchContextValue = {
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
   filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  page: Page;
-  setPage: React.Dispatch<React.SetStateAction<Page>>;
+  pageCursor?: string;
+  setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
+  fetchNextPage?: React.DispatchWithoutAction;
+  fetchPreviousPage?: React.DispatchWithoutAction;
 };
 
 type SettableSearchContext = Omit<
   SearchContextValue,
-  'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPage'
+  | 'result'
+  | 'setTerm'
+  | 'setTypes'
+  | 'setFilters'
+  | 'setPageCursor'
+  | 'fetchNextPage'
+  | 'fetchPreviousPage'
 >;
 
 export const SearchContext = createContext<SearchContextValue | undefined>(
@@ -54,14 +61,16 @@ export const SearchContext = createContext<SearchContextValue | undefined>(
 export const SearchContextProvider = ({
   initialState = {
     term: '',
-    page: {},
+    pageCursor: undefined,
     filters: {},
     types: [],
   },
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const searchApi = useApi(searchApiRef);
-  const [page, setPage] = useState<Page>(initialState.page);
+  const [pageCursor, setPageCursor] = useState<string | undefined>(
+    initialState.pageCursor,
+  );
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
@@ -72,19 +81,31 @@ export const SearchContextProvider = ({
       searchApi.query({
         term,
         filters,
-        offset: page?.offset,
-        limit: page?.limit,
+        pageCursor: pageCursor,
         types,
       }),
-    [term, filters, types, page],
+    [term, filters, types, pageCursor],
   );
+
+  const hasNextPage =
+    !result.loading && !result.error && result.value?.nextPageCursor;
+  const hasPreviousPage =
+    !result.loading && !result.error && result.value?.previousPageCursor;
+  const fetchNextPage = useCallback(() => {
+    setPageCursor(result.value?.nextPageCursor);
+    resetScrollPosition();
+  }, [result.value?.nextPageCursor]);
+  const fetchPreviousPage = useCallback(() => {
+    setPageCursor(result.value?.previousPageCursor);
+    resetScrollPosition();
+  }, [result.value?.previousPageCursor]);
 
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.
     if (term && prevTerm && term !== prevTerm) {
-      setPage(initialState.page);
+      setPageCursor(undefined);
     }
-  }, [term, prevTerm, initialState.page]);
+  }, [term, prevTerm, initialState.pageCursor]);
 
   const value: SearchContextValue = {
     result,
@@ -94,8 +115,10 @@ export const SearchContextProvider = ({
     setTerm,
     types,
     setTypes,
-    page,
-    setPage,
+    pageCursor,
+    setPageCursor,
+    fetchNextPage: hasNextPage ? fetchNextPage : undefined,
+    fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
   return <SearchContext.Provider value={value} children={children} />;
@@ -108,3 +131,7 @@ export const useSearch = () => {
   }
   return context;
 };
+
+function resetScrollPosition() {
+  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+}

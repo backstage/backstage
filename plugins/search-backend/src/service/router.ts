@@ -36,21 +36,17 @@ export async function createRouter({
       req: express.Request<any, unknown, unknown, SearchQuery>,
       res: express.Response<SearchResultSet>,
     ) => {
-      const { term, filters = {}, types, offset, limit } = req.query;
+      const { term, filters = {}, types, pageCursor } = req.query;
       logger.info(
         `Search request received: term="${term}", filters=${JSON.stringify(
           filters,
-        )}, offset=${offset ?? ''}, limit=${limit ?? ''}`,
+        )}, types=${types ? types.join(',') : ''}, pageCursor=${
+          pageCursor ?? ''
+        }`,
       );
 
       try {
-        const results = await engine?.query({
-          term,
-          types,
-          filters,
-          offset: offset ? Number(offset) : undefined,
-          limit: limit ? Number(limit) : undefined,
-        });
+        const results = await engine?.query(req.query);
         res.send(results);
       } catch (err) {
         throw new Error(

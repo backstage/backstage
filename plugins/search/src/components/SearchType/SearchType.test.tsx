@@ -31,7 +31,6 @@ describe('SearchType', () => {
     term: '',
     filters: {},
     types: [],
-    page: {},
   };
 
   const name = 'field';

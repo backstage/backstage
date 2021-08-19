@@ -7,4 +7,4 @@
 '@backstage/plugin-search-backend-node': patch
 ---
 
-Implement `offset` and `limit` based paging in search.
+Implement optional `pageCursor` based paging in search.

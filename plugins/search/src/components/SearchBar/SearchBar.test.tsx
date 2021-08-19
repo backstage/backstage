@@ -30,7 +30,6 @@ jest.mock('@backstage/core-plugin-api', () => ({
 describe('SearchBar', () => {
   const initialState = {
     term: '',
-    page: {},
     filters: {},
     types: ['*'],
   };
