@@ -1,5 +1,16 @@
 # @backstage/plugin-sentry
 
+## 0.3.19
+
+### Patch Changes
+
+- 0e7595d19: Do not show [No Type] when issue metadata includes title instead of type
+- d8e4afc62: Render the statsFor property in sentry issues table
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
 ## 0.3.18
 
 ### Patch Changes
