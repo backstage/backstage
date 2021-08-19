@@ -20,6 +20,7 @@ import React, { useRef, useState, useContext, PropsWithChildren } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
+import { MobileSidebar } from './MobileSidebar';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   drawer: {
@@ -72,7 +73,7 @@ type Props = {
   closeDelayMs?: number;
 };
 
-export const Sidebar = ({
+const DesktopSidebar = ({
   openDelayMs = sidebarConfig.defaultOpenDelayMs,
   closeDelayMs = sidebarConfig.defaultCloseDelayMs,
   children,
@@ -143,5 +144,17 @@ export const Sidebar = ({
         {children}
       </div>
     </SidebarContext.Provider>
+  );
+};
+
+export const Sidebar = ({ children }: React.PropsWithChildren<{}>) => {
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
+
+  return isMobileScreen ? (
+    <MobileSidebar>{children}</MobileSidebar>
+  ) : (
+    <DesktopSidebar>{children}</DesktopSidebar>
   );
 };

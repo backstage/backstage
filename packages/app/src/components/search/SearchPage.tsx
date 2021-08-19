@@ -104,9 +104,8 @@ const SearchResultList = ({ results }: SearchResultSet) => {
 
 const SearchPage = () => {
   const classes = useStyles();
-  // Think about abstraction to utils here
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.up('xs'),
+    theme.breakpoints.down('xs'),
   );
 
   return (

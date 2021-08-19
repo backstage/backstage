@@ -28,7 +28,7 @@ type Props = {
 
 export const SettingsPage = ({ providerSettings }: Props) => {
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.up('xs'),
+    theme.breakpoints.down('xs'),
   );
 
   return (
