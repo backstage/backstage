@@ -1,5 +1,16 @@
 # @backstage/dev-utils
 
+## 0.2.7
+
+### Patch Changes
+
+- be2cd4740: Fixed busy refresh loop that happened when registering a page at `/`.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
 ## 0.2.6
 
 ### Patch Changes

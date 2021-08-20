@@ -64,6 +64,7 @@ describe('OAuthAdapter', () => {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
     },
+    isOriginAllowed: () => false,
   };
 
   it('sets the correct headers in start', async () => {
@@ -105,6 +106,7 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
     const state = { nonce: 'nonce', env: 'development' };
@@ -139,6 +141,7 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
+      isOriginAllowed: () => false,
     });
 
     const mockRequest = {
@@ -164,6 +167,7 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
     const mockRequest = {
@@ -190,6 +194,7 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
     const mockRequest = {
@@ -220,6 +225,7 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
+      isOriginAllowed: () => false,
     });
 
     const mockRequest = {

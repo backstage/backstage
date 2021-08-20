@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.1
+
+### Patch Changes
+
+- 5bab4fe2a: Previously when supplying custom scaffolder field extensions, it was necessary to also include the default ones if they were needed. Since the field extensions are keyed by name, there's no harm in leaving the default ones in place when adding custom ones - if templates don't refer to them they will be ignored, and if custom ones are introduced with the same name, the custom ones will take priority over the default ones.
+
+  Users configuring custom field extensions can remove the default ones from the scaffolder route after this change, and they'll still be available:
+
+  ```diff
+      <Route path="/create" element={<ScaffolderPage />}>
+        <ScaffolderFieldExtensions>
+  -        <EntityPickerFieldExtension />
+  -        <EntityNamePickerFieldExtension />
+  -        <RepoUrlPickerFieldExtension />
+  -        <OwnerPickerFieldExtension />
+          <LowerCaseValuePickerFieldExtension />
+        </ScaffolderFieldExtensions>
+      </Route>
+  ```
+
+- 24d0e1ea1: Set `id` in `<TextValuePicker>`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/config@0.1.7
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
 ## 0.11.0
 
 ### Minor Changes

@@ -23,6 +23,9 @@ import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
 import { Transaction } from '../../database';
 import { DeferredEntity } from '../processing/types';
+import { RefreshIntervalFunction } from '../refresh';
+import { rethrowError, timestampToDateTime } from './conversion';
+import { initDatabaseMetrics } from './metrics';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
@@ -48,9 +51,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     private readonly options: {
       database: Knex;
       logger: Logger;
-      refreshIntervalSeconds: number;
+      refreshInterval: RefreshIntervalFunction;
     },
-  ) {}
+  ) {
+    initDatabaseMetrics(options.database);
+  }
 
   async updateProcessedEntity(
     txOpaque: Transaction,
@@ -467,6 +472,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
 
+    const interval = this.options.refreshInterval();
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
@@ -475,14 +481,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [
-                `${this.options.refreshIntervalSeconds} seconds`,
-              ])
-            : tx.raw(
-                `now() + interval '${Number(
-                  this.options.refreshIntervalSeconds,
-                )} seconds'`,
-              ),
+            ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
+            : tx.raw(`now() + interval '${interval} seconds'`),
       });
 
     return {
@@ -496,8 +496,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               ? (JSON.parse(i.processed_entity) as Entity)
               : undefined,
             resultHash: i.result_hash || '',
-            nextUpdateAt: i.next_update_at,
-            lastDiscoveryAt: i.last_discovery_at,
+            nextUpdateAt: timestampToDateTime(i.next_update_at),
+            lastDiscoveryAt: timestampToDateTime(i.last_discovery_at),
             state: i.cache
               ? JSON.parse(i.cache)
               : new Map<string, JsonObject>(),
@@ -527,15 +527,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       return result!;
     } catch (e) {
       this.options.logger.debug(`Error during transaction, ${e}`);
-
-      if (
-        /SQLITE_CONSTRAINT: UNIQUE/.test(e.message) ||
-        /unique constraint/.test(e.message)
-      ) {
-        throw new ConflictError(`Rejected due to a conflicting entity`, e);
-      }
-
-      throw e;
+      throw rethrowError(e);
     }
   }
 }

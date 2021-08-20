@@ -74,6 +74,8 @@ export async function collectConfigSchemas(
     const pkg = await fs.readJson(pkgPath);
     const depNames = [
       ...Object.keys(pkg.dependencies ?? {}),
+      ...Object.keys(pkg.devDependencies ?? {}),
+      ...Object.keys(pkg.optionalDependencies ?? {}),
       ...Object.keys(pkg.peerDependencies ?? {}),
     ];
 

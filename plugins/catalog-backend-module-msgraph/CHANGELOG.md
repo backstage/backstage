@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.3
+
+### Patch Changes
+
+- 77cdc5a84: Pass along a `UserTransformer` to the read step
+- be498d22f: Pass along a `OrganizationTransformer` to the read step
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.3
+  - @backstage/config@0.1.7
+
 ## 0.2.2
 
 ### Patch Changes

@@ -81,5 +81,5 @@ export const SentryIssuesWidget = ({
     );
   }
 
-  return <SentryIssuesTable sentryIssues={value || []} />;
+  return <SentryIssuesTable sentryIssues={value || []} statsFor={statsFor} />;
 };

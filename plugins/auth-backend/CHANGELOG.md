@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.22
+
+### Patch Changes
+
+- 79d24a966: Fix an issue where the default app origin was not allowed to authenticate users.
+
+## 0.3.21
+
+### Patch Changes
+
+- 72a31c29a: Add support for additional app origins
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+
 ## 0.3.20
 
 ### Patch Changes

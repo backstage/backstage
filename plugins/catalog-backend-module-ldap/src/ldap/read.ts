@@ -38,7 +38,7 @@ export async function defaultUserTransformer(
   const { set, map } = config;
 
   const entity: UserEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
+    apiVersion: 'backstage.io/v1beta1',
     kind: 'User',
     metadata: {
       name: '',
@@ -133,7 +133,7 @@ export async function defaultGroupTransformer(
 ): Promise<GroupEntity | undefined> {
   const { set, map } = config;
   const entity: GroupEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
+    apiVersion: 'backstage.io/v1beta1',
     kind: 'Group',
     metadata: {
       name: '',
