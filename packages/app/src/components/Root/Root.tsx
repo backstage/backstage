@@ -81,52 +81,42 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => {
-  return (
-    <SidebarPage>
-      <Sidebar>
-        <SidebarLogo />
-        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-          <SidebarSearch />
-        </SidebarGroup>
-        <SidebarDivider />
-        {/* Global nav, not org-specific */}
-        <SidebarGroup label="Menu" icon={<MenuIcon />}>
-          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-          <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-          <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-          <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-          <SidebarItem
-            icon={CreateComponentIcon}
-            to="create"
-            text="Create..."
-          />
-          {/* End global nav */}
-          <SidebarDivider />
-          <SidebarScrollWrapper>
-            <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-            <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-            <SidebarItem
-              icon={MoneyIcon}
-              to="cost-insights"
-              text="Cost Insights"
-            />
-            <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-          </SidebarScrollWrapper>
-          <SidebarDivider />
-          <Shortcuts />
-        </SidebarGroup>
-        <SidebarSpace />
-        <SidebarDivider />
-        <SidebarGroup
-          label="Settings"
-          icon={<UserSettingsSignInAvatar />}
-          to="/settings"
-        >
-          <SidebarSettings />
-        </SidebarGroup>
-      </Sidebar>
-      {children}
-    </SidebarPage>
-  );
-};
+export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    <Sidebar>
+      <SidebarLogo />
+      {/* <SidebarGroup label="Search" icon={<SearchIcon />} to="/search"> */}
+      <SidebarSearch />
+      {/* </SidebarGroup> */}
+      <SidebarDivider />
+      {/* Global nav, not org-specific */}
+      {/* <SidebarGroup label="Menu" icon={<MenuIcon />}> */}
+      <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+      <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+      <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+      {/* End global nav */}
+      <SidebarDivider />
+      <SidebarScrollWrapper>
+        <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+        <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+        <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+        <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+      </SidebarScrollWrapper>
+      <SidebarDivider />
+      <Shortcuts />
+      {/* </SidebarGroup> */}
+      <SidebarSpace />
+      <SidebarDivider />
+      {/* <SidebarGroup
+        label="Settings"
+        icon={<UserSettingsSignInAvatar />}
+        to="/settings"
+      > */}
+      <SidebarSettings />
+      {/* </SidebarGroup> */}
+    </Sidebar>
+    {children}
+  </SidebarPage>
+);
