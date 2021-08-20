@@ -753,7 +753,11 @@ export const useEntityFromUrl: () => EntityLoadingStatus;
 // Warning: (ae-missing-release-tag) "useEntityKinds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function useEntityKinds(): string[];
+export function useEntityKinds(): {
+  error: Error | undefined;
+  loading: boolean;
+  kinds: string[] | undefined;
+};
 
 // Warning: (ae-missing-release-tag) "useEntityListProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
