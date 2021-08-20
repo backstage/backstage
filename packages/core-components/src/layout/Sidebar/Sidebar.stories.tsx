@@ -16,11 +16,13 @@
 
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
+import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import {
   Sidebar,
   SidebarDivider,
+  SidebarGroup,
   SidebarIntro,
   SidebarItem,
   SidebarSearchField,
@@ -44,13 +46,15 @@ const handleSearch = (input: string) => {
 
 export const SampleSidebar = () => (
   <Sidebar>
-    <SidebarSearchField onSearch={handleSearch} to="/search" />
-    <SidebarDivider />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-    <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
-    <SidebarDivider />
-    <SidebarIntro />
-    <SidebarSpace />
+    <SidebarGroup label="Menu" icon={MenuIcon}>
+      <SidebarSearchField onSearch={handleSearch} to="/search" />
+      <SidebarDivider />
+      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
+      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+      <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      <SidebarDivider />
+      <SidebarIntro />
+      <SidebarSpace />
+    </SidebarGroup>
   </Sidebar>
 );

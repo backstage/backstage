@@ -22,11 +22,12 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import MenuIcon from '@material-ui/icons/Menu';
 import React, { createContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { sidebarConfig } from './config';
 import { SidebarGroup } from './SidebarGroup';
-import CloseIcon from '@material-ui/icons/Close';
 
 type MobileSidebarContextType = {
   selectedMenuItemIndex: number;
@@ -115,8 +116,14 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
   );
 
   if (!sidebarGroups) {
-    // error api
     return null; // think about the exception state
+  } else if (!sidebarGroups.length) {
+    // Render default SidebarGroup if no
+    sidebarGroups.push(
+      <SidebarGroup label="Menu" icon={<MenuIcon />}>
+        {children}
+      </SidebarGroup>,
+    );
   }
 
   const shouldShowGroupChildren =
