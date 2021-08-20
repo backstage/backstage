@@ -65,7 +65,7 @@ const apis = ApiRegistry.from([
       getEntities: jest
         .fn()
         .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as unknown as CatalogApi,
+    } as Partial<CatalogApi>,
   ],
 ]);
 
