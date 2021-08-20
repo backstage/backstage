@@ -19,7 +19,7 @@ This plugin requires explicit registration, so you will need to add it to your A
 export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
 ```
 
-If you don't have a `plugins.ts` see: [troubleshoot](#troubleshoot)
+If you don't have a `plugins.ts` file see: [troubleshooting](#troubleshooting)
 
 ### Add the `<Shortcuts />` component within your `<Sidebar>`:
 
@@ -55,9 +55,9 @@ export const apis = [
 ];
 ```
 
-# Troubleshoot
+# Troubleshooting
 
-If you don't have a `plugins.ts` you can create a new one on `packages/app/src/plugins.ts` and then add this lines to your `App.tsx` if there is other plugins that requires explicit registration:
+If you don't have a `plugins.ts` file, you can create it with the path `packages/app/src/plugins.ts` and then import it into your `App.tsx`:
 
 ```diff
 + import * as plugins from './plugins';
