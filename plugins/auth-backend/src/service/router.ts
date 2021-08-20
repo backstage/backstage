@@ -165,18 +165,22 @@ export async function createRouter({
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {
+  const appUrl = config.getString('app.baseUrl');
+  const { origin: appOrigin } = new URL(appUrl);
+
   const allowedOrigins = config.getOptionalStringArray(
     'auth.experimentalExtraAllowedOrigins',
   );
-  if (!allowedOrigins || allowedOrigins.length === 0) {
-    return () => false;
-  }
 
-  const allowedOriginPatterns = allowedOrigins.map(
-    pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
-  );
+  const allowedOriginPatterns =
+    allowedOrigins?.map(
+      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+    ) ?? [];
 
   return origin => {
+    if (origin === appOrigin) {
+      return true;
+    }
     return allowedOriginPatterns.some(pattern => pattern.match(origin));
   };
 }
