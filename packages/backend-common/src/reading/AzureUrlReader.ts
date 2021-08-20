@@ -70,7 +70,7 @@ export class AzureUrlReader implements UrlReader {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return Buffer.from(await response.text());
+      return Buffer.from(await response.arrayBuffer());
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;

@@ -39,6 +39,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
+    borderRight: `1px solid #383838`,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
@@ -57,14 +58,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       duration: theme.transitions.duration.shorter,
     }),
   },
-  drawerPeek: {
-    width: sidebarConfig.drawerWidthClosed + 4,
-  },
 }));
 
 enum State {
   Closed,
-  Peek,
+  Idle,
   Open,
 }
 
@@ -100,7 +98,7 @@ const DesktopSidebar = ({
         setState(State.Open);
       }, openDelayMs);
 
-      setState(State.Peek);
+      setState(State.Idle);
     }
   };
 
@@ -112,7 +110,7 @@ const DesktopSidebar = ({
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
     }
-    if (state === State.Peek) {
+    if (state === State.Idle) {
       setState(State.Closed);
     } else if (state === State.Open) {
       hoverTimerRef.current = window.setTimeout(() => {
@@ -137,7 +135,6 @@ const DesktopSidebar = ({
         onBlur={handleClose}
         data-testid="sidebar-root"
         className={clsx(classes.drawer, {
-          [classes.drawerPeek]: state === State.Peek,
           [classes.drawerOpen]: isOpen,
         })}
       >

@@ -37,7 +37,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     private readonly subPath: string,
     private readonly workDir: string,
     public readonly etag: string,
-    private readonly filter?: (path: string) => boolean,
+    private readonly filter?: (path: string, info: { size: number }) => boolean,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
@@ -75,7 +75,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       }
     }
     if (this.filter) {
-      return this.filter(this.getInnerPath(entry.path));
+      return this.filter(this.getInnerPath(entry.path), {
+        size:
+          (entry.vars as { uncompressedSize?: number }).uncompressedSize ??
+          entry.vars.compressedSize,
+      });
     }
     return true;
   }

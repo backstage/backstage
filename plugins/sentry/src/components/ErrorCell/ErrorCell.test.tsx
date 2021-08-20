@@ -44,4 +44,24 @@ describe('Sentry error cell component', () => {
       'http://example.com',
     );
   });
+  it('should render the title if type is not present', async () => {
+    const testIssue = {
+      ...mockIssue,
+      title: 'Exception: Could not load credentials from any providers',
+      count: '1',
+      metadata: {},
+      userCount: 2,
+      permalink: 'http://example.com',
+    };
+    const cell = render(
+      <ThemeProvider theme={lightTheme}>
+        <ErrorCell sentryIssue={testIssue} />
+      </ThemeProvider>,
+    );
+    const errorType = await cell.findByText('Exception: Could not load cr...');
+    expect(errorType.closest('a')).toHaveAttribute(
+      'href',
+      'http://example.com',
+    );
+  });
 });

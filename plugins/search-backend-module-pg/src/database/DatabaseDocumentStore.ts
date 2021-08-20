@@ -34,18 +34,18 @@ export class DatabaseDocumentStore implements DatabaseStore {
     try {
       const majorVersion = await queryPostgresMajorVersion(knex);
 
-      if (majorVersion < 11) {
+      if (majorVersion < 12) {
         // We are using some features (like generated columns) that aren't
         // available in older postgres versions.
         throw new Error(
-          `The PgSearchEngine requires at least postgres version 11 (but is running on ${majorVersion})`,
+          `The PgSearchEngine requires at least postgres version 12 (but is running on ${majorVersion})`,
         );
       }
     } catch {
       // Actually both mysql and sqlite have a full text search, too. We could
       // implement them separately or add them here.
       throw new Error(
-        'The PgSearchEngine is only supported when using a postgres database (>=11.x)',
+        'The PgSearchEngine is only supported when using a postgres database (>=12.x)',
       );
     }
 
@@ -59,7 +59,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
     try {
       const majorVersion = await queryPostgresMajorVersion(knex);
 
-      return majorVersion >= 11;
+      return majorVersion >= 12;
     } catch {
       return false;
     }

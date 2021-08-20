@@ -38,7 +38,7 @@ export async function createRouter({
     ) => {
       const { term, filters = {}, pageCursor = '' } = req.query;
       logger.info(
-        `Search request received: ${term}, ${JSON.stringify(
+        `Search request received: term="${term}", filters=${JSON.stringify(
           filters,
         )}, ${pageCursor}`,
       );

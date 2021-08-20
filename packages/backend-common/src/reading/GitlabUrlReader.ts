@@ -84,7 +84,7 @@ export class GitlabUrlReader implements UrlReader {
 
     if (response.ok) {
       return {
-        buffer: async () => Buffer.from(await response.text()),
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
         etag: response.headers.get('ETag') ?? undefined,
       };
     }

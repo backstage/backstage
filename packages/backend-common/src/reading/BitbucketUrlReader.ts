@@ -86,7 +86,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return Buffer.from(await response.text());
+      return Buffer.from(await response.arrayBuffer());
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;

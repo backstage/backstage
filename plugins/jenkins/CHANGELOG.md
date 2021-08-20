@@ -1,5 +1,15 @@
 # @backstage/plugin-jenkins
 
+## 0.5.4
+
+### Patch Changes
+
+- d7d1f6fb9: Make `isJenkinsAvailable` recognise both the old and the new Jenkins annotation.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
 ## 0.5.3
 
 ### Patch Changes

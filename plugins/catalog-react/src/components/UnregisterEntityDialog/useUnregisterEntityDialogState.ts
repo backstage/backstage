@@ -20,7 +20,7 @@ import {
   getEntityName,
   ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '../../api';
 import { useCallback } from 'react';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';

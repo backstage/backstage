@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { FieldProps } from '@rjsf/core';
 import { TextField } from '@material-ui/core';
+import { FieldProps } from '@rjsf/core';
+import React from 'react';
 
 export const TextValuePicker = ({
   onChange,
@@ -24,9 +24,13 @@ export const TextValuePicker = ({
   rawErrors,
   formData,
   uiSchema: { 'ui:autofocus': autoFocus },
+  idSchema,
+  placeholder,
 }: FieldProps<string>) => (
   <TextField
+    id={idSchema?.$id}
     label={title}
+    placeholder={placeholder}
     helperText={description}
     required={required}
     value={formData ?? ''}

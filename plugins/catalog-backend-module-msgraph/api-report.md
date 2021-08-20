@@ -111,14 +111,18 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger_2;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
+      organizationTransformer?: OrganizationTransformer;
     },
   ): MicrosoftGraphOrgReaderProcessor;
   // (undocumented)
@@ -170,7 +174,9 @@ export function readMicrosoftGraphOrg(
   options: {
     userFilter?: string;
     groupFilter?: string;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
     logger: Logger_2;
   },
 ): Promise<{

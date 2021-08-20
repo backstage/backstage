@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.10
+
+### Patch Changes
+
+- 6b1afe8c0: Add a configurable `palette.bursts.gradient` property to the Backstage theme, to support customizing the gradients in the `ItemCard` header.
+
 ## 0.2.9
 
 ### Patch Changes

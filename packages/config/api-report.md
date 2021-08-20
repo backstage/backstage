@@ -16,6 +16,9 @@ export type AppConfig = {
 //
 // @public (undocumented)
 export type Config = {
+  subscribe?(onChange: () => void): {
+    unsubscribe: () => void;
+  };
   has(key: string): boolean;
   keys(): string[];
   get<T = JsonValue>(key?: string): T;

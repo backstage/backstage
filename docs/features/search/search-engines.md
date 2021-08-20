@@ -43,7 +43,7 @@ provides decent results and performs well with ten thousands of indexed
 documents. The connection to postgres is established via the database manager
 also used by other plugins.
 
-> **Important**: The search plugin requires at least Postgres 11!
+> **Important**: The search plugin requires at least Postgres 12!
 
 To use the `PgSearchEngine`, make sure that you have a Postgres database
 configured and make the following changes to your backend:

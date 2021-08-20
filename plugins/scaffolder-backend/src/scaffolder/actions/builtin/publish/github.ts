@@ -49,6 +49,7 @@ export function createPublishGithubAction(options: {
     access?: string;
     defaultBranch?: string;
     sourcePath?: string;
+    requireCodeOwnerReviews?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
     topics?: string[];
@@ -74,6 +75,11 @@ export function createPublishGithubAction(options: {
             title: 'Repository Access',
             description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
+          },
+          requireCodeOwnerReviews: {
+            title:
+              'Require an approved review in PR including files with a designated Code Owner',
+            type: 'boolean',
           },
           repoVisibility: {
             title: 'Repository Visibility',
@@ -138,6 +144,7 @@ export function createPublishGithubAction(options: {
         repoUrl,
         description,
         access,
+        requireCodeOwnerReviews = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
         collaborators,
@@ -283,6 +290,7 @@ export function createPublishGithubAction(options: {
           repoName: newRepo.name,
           logger: ctx.logger,
           defaultBranch,
+          requireCodeOwnerReviews,
         });
       } catch (e) {
         ctx.logger.warn(

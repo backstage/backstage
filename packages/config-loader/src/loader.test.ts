@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
 import mockFs from 'mock-fs';
+import fs from 'fs-extra';
 
 describe('loadConfig', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     process.env.MY_SECRET = 'is-secret';
     process.env.SUBSTITUTE_ME = 'substituted';
 
@@ -63,7 +65,7 @@ describe('loadConfig', () => {
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 
@@ -170,4 +172,81 @@ describe('loadConfig', () => {
       },
     ]);
   });
+
+  it('watches config files', async () => {
+    const onChange = defer<AppConfig[]>();
+    const stopSignal = defer<void>();
+
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: [],
+        watch: {
+          onChange: onChange.resolve,
+          stopSignal: stopSignal.promise,
+        },
+      }),
+    ).resolves.toEqual([
+      {
+        context: 'app-config.yaml',
+        data: {
+          app: {
+            title: 'Example App',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+    ]);
+
+    await fs.writeJson('/root/app-config.yaml', {
+      app: {
+        title: 'New Title',
+      },
+    });
+    await expect(onChange.promise).resolves.toEqual([
+      {
+        context: 'app-config.yaml',
+        data: {
+          app: {
+            title: 'New Title',
+          },
+        },
+      },
+    ]);
+
+    stopSignal.resolve();
+  });
+
+  it('stops watching config files', async () => {
+    const stopSignal = defer<void>();
+
+    await loadConfig({
+      configRoot: '/root',
+      configPaths: [],
+      watch: {
+        onChange: () => {
+          expect('not').toBe('called');
+        },
+        stopSignal: stopSignal.promise,
+      },
+    });
+
+    stopSignal.resolve();
+
+    await fs.writeJson('/root/app-config.yaml', {
+      app: {
+        title: 'New Title',
+      },
+    });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  });
+
+  function defer<T>() {
+    let resolve: (value: T) => void;
+    const promise = new Promise<T>(_resolve => {
+      resolve = _resolve;
+    });
+    return { promise, resolve: resolve! };
+  }
 });

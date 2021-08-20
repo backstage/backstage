@@ -152,7 +152,10 @@ export class DefaultAuthConnector<AuthSession>
 
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
-    const popupUrl = await this.buildUrl('/start', { scope });
+    const popupUrl = await this.buildUrl('/start', {
+      scope,
+      origin: location.origin,
+    });
 
     const payload = await showLoginPopup({
       url: popupUrl,

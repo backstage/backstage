@@ -114,6 +114,48 @@ describe('read microsoft graph', () => {
       expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
     });
+
+    it('should read users with custom transformer', async () => {
+      async function* getExampleUsers() {
+        yield {
+          id: 'userid',
+          displayName: 'User Name',
+          mail: 'user.name@example.com',
+        };
+      }
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsers(client, {
+        userFilter: 'accountEnabled eq true',
+        transformer: async () => ({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        }),
+        logger: getVoidLogger(),
+      });
+
+      expect(users).toEqual([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        },
+      ]);
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        filter: 'accountEnabled eq true',
+      });
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+    });
   });
 
   describe('readMicrosoftGraphOrganization', () => {

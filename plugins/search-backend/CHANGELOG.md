@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- 64baedea5: Improve search query logging message
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+
 ## 0.2.3
 
 ### Patch Changes

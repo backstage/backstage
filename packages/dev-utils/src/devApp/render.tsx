@@ -227,7 +227,11 @@ class DevAppBuilder {
 
     const DevApp = hot(hotModule)(this.build());
 
-    if (window.location.pathname === '/' && this.defaultPage) {
+    if (
+      window.location.pathname === '/' &&
+      this.defaultPage &&
+      this.defaultPage !== '/'
+    ) {
       window.location.pathname = this.defaultPage;
     }
 

@@ -66,6 +66,7 @@ export const EntityPicker: ({
   uiSchema,
   rawErrors,
   formData,
+  idSchema,
 }: FieldProps<string>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -229,6 +230,8 @@ export const TextValuePicker: ({
   rawErrors,
   formData,
   uiSchema: { 'ui:autofocus': autoFocus },
+  idSchema,
+  placeholder,
 }: FieldProps<string>) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)

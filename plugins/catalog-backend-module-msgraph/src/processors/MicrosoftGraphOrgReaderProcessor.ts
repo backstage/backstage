@@ -26,8 +26,10 @@ import {
   GroupTransformer,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
+  OrganizationTransformer,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
+  UserTransformer,
 } from '../microsoftGraph';
 
 /**
@@ -36,11 +38,18 @@ import {
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
   private readonly logger: Logger;
+  private readonly userTransformer?: UserTransformer;
   private readonly groupTransformer?: GroupTransformer;
+  private readonly organizationTransformer?: OrganizationTransformer;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; groupTransformer?: GroupTransformer },
+    options: {
+      logger: Logger;
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+      organizationTransformer?: OrganizationTransformer;
+    },
   ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
@@ -52,11 +61,15 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.userTransformer = options.userTransformer;
     this.groupTransformer = options.groupTransformer;
+    this.organizationTransformer = options.organizationTransformer;
   }
 
   async readLocation(
@@ -89,7 +102,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       {
         userFilter: provider.userFilter,
         groupFilter: provider.groupFilter,
+        userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,
+        organizationTransformer: this.organizationTransformer,
         logger: this.logger,
       },
     );

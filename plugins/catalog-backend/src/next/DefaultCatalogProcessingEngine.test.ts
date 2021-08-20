@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Hash } from 'crypto';
+import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
@@ -84,8 +85,8 @@ describe('DefaultCatalogProcessingEngine', () => {
             },
             resultHash: '',
             state: new Map(),
-            nextUpdateAt: '',
-            lastDiscoveryAt: '',
+            nextUpdateAt: DateTime.now(),
+            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });
@@ -147,8 +148,8 @@ describe('DefaultCatalogProcessingEngine', () => {
             },
             resultHash: '',
             state: new Map(),
-            nextUpdateAt: '',
-            lastDiscoveryAt: '',
+            nextUpdateAt: DateTime.now(),
+            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });
@@ -181,8 +182,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       unprocessedEntity: entity,
       resultHash: 'the matching hash',
       state: new Map(),
-      nextUpdateAt: '',
-      lastDiscoveryAt: '',
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
     };
 
     hash.digest.mockReturnValue('the matching hash');

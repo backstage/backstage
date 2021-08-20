@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.21
+
+### Patch Changes
+
+- 72a31c29a: Add support for additional app origins
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+
 ## 0.3.20
 
 ### Patch Changes

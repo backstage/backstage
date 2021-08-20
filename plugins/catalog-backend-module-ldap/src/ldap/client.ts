@@ -47,7 +47,7 @@ export class LdapClient {
     });
 
     if (!bind) {
-      return new LdapClient(client);
+      return new LdapClient(client, logger);
     }
 
     return new Promise<LdapClient>((resolve, reject) => {
@@ -56,13 +56,16 @@ export class LdapClient {
         if (err) {
           reject(`LDAP bind failed for ${dn}, ${errorString(err)}`);
         } else {
-          resolve(new LdapClient(client));
+          resolve(new LdapClient(client, logger));
         }
       });
     });
   }
 
-  constructor(private readonly client: Client) {}
+  constructor(
+    private readonly client: Client,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Performs an LDAP search operation.
@@ -72,9 +75,13 @@ export class LdapClient {
    */
   async search(dn: string, options: SearchOptions): Promise<SearchEntry[]> {
     try {
-      return await new Promise<SearchEntry[]>((resolve, reject) => {
-        const output: SearchEntry[] = [];
+      const output: SearchEntry[] = [];
 
+      const logInterval = setInterval(() => {
+        this.logger.debug(`Read ${output.length} LDAP entries so far...`);
+      }, 5000);
+
+      const search = new Promise<SearchEntry[]>((resolve, reject) => {
         this.client.search(dn, options, (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
@@ -103,6 +110,10 @@ export class LdapClient {
             }
           });
         });
+      });
+
+      return await search.finally(() => {
+        clearInterval(logInterval);
       });
     } catch (e) {
       throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);

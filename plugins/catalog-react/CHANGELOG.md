@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.3
+
+### Patch Changes
+
+- 3bc009287: Clarified messaging around configured locations in the `UnregisterEntityDialog`.
+- 2105d608f: Migrate and export `UnregisterEntityDialog` component from `catalog-react` package
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+
 ## 0.4.2
 
 ### Patch Changes
