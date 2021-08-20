@@ -41,8 +41,6 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-type BoxTypes = 'box1' | 'box2' | 'box3' | 'box4' | 'box5' | 'box6';
-
 type EntityTypeProps = {
   name: string;
   kind: string;
@@ -76,44 +74,35 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     bold: {
       fontWeight: theme.typography.fontWeightBold,
     },
-    box1: {
-      background: createPageTheme(theme, 'home', 'service'),
-    },
-    box2: {
-      background: createPageTheme(theme, 'home', 'website'),
-    },
-    box3: {
-      background: createPageTheme(theme, 'home', 'library'),
-    },
-    box4: {
-      background: createPageTheme(theme, 'home', 'documentation'),
-    },
-    box5: {
-      background: createPageTheme(theme, 'home', 'home'),
-    },
-    box6: {
-      background: createPageTheme(theme, 'home', 'tool'),
+    entityTypeBox: {
+      background: (props: { type: string }) =>
+        createPageTheme(theme, props.type, props.type),
     },
   }),
 );
 
 const EntityCountTile = ({
   counter,
-  className,
+  type,
   name,
-  url,
+  queryParams,
 }: {
   counter: number;
-  className: BoxTypes;
+  type: string;
   name: string;
-  url: string;
+  queryParams: string;
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ type });
 
   return (
-    <Link href={url} target="_blank" rel="noreferrer noopenner" variant="body2">
+    <Link
+      href={generatePath(`/catalog/?${queryParams}`)}
+      target="_blank"
+      rel="noreferrer noopenner"
+      variant="body2"
+    >
       <Box
-        className={`${classes.card} ${classes[className]}`}
+        className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
         flexDirection="column"
         alignItems="center"
@@ -129,7 +118,7 @@ const EntityCountTile = ({
   );
 };
 
-const getFilteredUrl = (
+const getQueryParams = (
   owner: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
@@ -144,9 +133,8 @@ const getFilteredUrl = (
       user: 'all',
     },
   });
-  const filteredUrl = generatePath(`/catalog/?${queryParams}`);
 
-  return filteredUrl;
+  return queryParams;
 };
 
 export const OwnershipCard = ({
@@ -196,7 +184,7 @@ export const OwnershipCard = ({
           acc.push({
             name,
             kind: ownedEntity.kind,
-            type: ownedEntity.spec?.type?.toString(),
+            type: ownedEntity.spec?.type,
             count: 1,
           });
         }
@@ -208,16 +196,16 @@ export const OwnershipCard = ({
     // Return top N (six) entities to be displayed in ownership boxes
     const topN = counts.sort((a, b) => b.count - a.count).slice(0, 6);
 
-    return topN.map((topEntity, index) => ({
+    return topN.map(topEntity => ({
       counter: topEntity.count,
-      className: `box${index + 1}`,
+      type: topEntity.type,
       name: topEntity.type.toLocaleUpperCase('en-US'),
-      url: getFilteredUrl(entity, topEntity),
+      queryParams: getQueryParams(entity, topEntity),
     })) as Array<{
       counter: number;
-      className: BoxTypes;
+      type: string;
       name: string;
-      url: string;
+      queryParams: string;
     }>;
   }, [catalogApi, entity]);
 
@@ -234,9 +222,9 @@ export const OwnershipCard = ({
           <Grid item xs={6} md={6} lg={4} key={c.name}>
             <EntityCountTile
               counter={c.counter}
-              className={c.className}
+              type={c.type}
               name={c.name}
-              url={c.url}
+              queryParams={c.queryParams}
             />
           </Grid>
         ))}
