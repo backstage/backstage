@@ -45,13 +45,29 @@ const useTechRadarLoader = (id: string | undefined) => {
   return { loading, value, error };
 };
 
-const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
+const RadarComponent = (
+  props: TechRadarComponentProps,
+  searchText: string,
+): JSX.Element => {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
     loaderResponse: TechRadarLoaderResponse | undefined,
   ): Array<Entry> => {
-    return loaderResponse!.entries.map(entry => {
+    let filteredArray = loaderResponse!.entries;
+    if (!(props.searchText === '')) {
+      // Compare the name or the description with the search input text
+      filteredArray = loaderResponse!.entries.filter(
+        element =>
+          element.title
+            .toLowerCase()
+            .includes(props.searchText.toLowerCase()) ||
+          element.timeline[0].description
+            ?.toLowerCase()
+            .includes(props.searchText.toLowerCase()),
+      );
+    }
+    return filteredArray.map(entry => {
       return {
         id: entry.key,
         quadrant: loaderResponse!.quadrants.find(q => q.id === entry.quadrant)!,

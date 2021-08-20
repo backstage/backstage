@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     gridArea: 'pageContent',
     minWidth: 0,
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(3),
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),

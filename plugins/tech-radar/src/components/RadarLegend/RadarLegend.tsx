@@ -32,21 +32,25 @@ export type Props = {
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
+  foreignObject: {
+    overflowY: 'visible',
+  },
   quadrant: {
     height: '100%',
     width: '100%',
-    overflow: 'hidden',
+    overflowY: 'visible',
     pointerEvents: 'none',
   },
   quadrantHeading: {
     pointerEvents: 'none',
     userSelect: 'none',
+    color: '#0082C3',
     marginTop: 0,
     marginBottom: theme.spacing(8 / (18 * 0.375)),
     fontSize: '18px',
   },
   rings: {
-    columns: 3,
+    columns: 2,
   },
   ring: {
     breakInside: 'avoid-column',
@@ -66,6 +70,9 @@ const useStyles = makeStyles<Theme>(theme => ({
     listStylePosition: 'inside',
     marginTop: 0,
     paddingLeft: 0,
+    height: '100%',
+    width: '100%',
+    overflow: 'scroll',
     fontVariantNumeric: 'proportional-nums',
     '-moz-font-feature-settings': 'pnum',
     '-webkit-font-feature-settings': 'pnum',
@@ -221,6 +228,7 @@ const RadarLegend = (props: Props): JSX.Element => {
         y={quadrant.legendY}
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
+        className={classes.foreignObject}
         data-testid="radar-quadrant"
       >
         <div className={classes.quadrant}>

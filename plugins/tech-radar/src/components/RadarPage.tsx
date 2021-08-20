@@ -24,6 +24,7 @@ import {
   Page,
   Header,
   SupportButton,
+  InputTextFilter,
 } from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
@@ -45,11 +46,18 @@ export const RadarPage = ({
   ...props
 }: TechRadarPageProps): JSX.Element => {
   const classes = useStyles();
+  const [searchText, setSearchText] = React.useState('');
+
+  const searchInput = event => {
+    setSearchText(event.target.value);
+  };
+
   return (
     <Page themeId="tool">
-      <Header title={title} subtitle={subtitle} />
+      {/* <Header title={title} subtitle={subtitle} /> */}
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
+          <InputTextFilter searchCategory={searchInput} />
           <SupportButton>
             This is used for visualizing the official guidelines of different
             areas of software development such as languages, frameworks,
@@ -58,7 +66,7 @@ export const RadarPage = ({
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent {...props} />
+            <RadarComponent {...props} searchText={searchText} />
           </Grid>
         </Grid>
       </Content>
