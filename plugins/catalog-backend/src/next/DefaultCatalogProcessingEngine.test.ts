@@ -85,8 +85,8 @@ describe('DefaultCatalogProcessingEngine', () => {
             },
             resultHash: '',
             state: new Map(),
-            nextUpdateAt: DateTime.now().toSQL(),
-            lastDiscoveryAt: '',
+            nextUpdateAt: DateTime.now(),
+            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });
@@ -148,8 +148,8 @@ describe('DefaultCatalogProcessingEngine', () => {
             },
             resultHash: '',
             state: new Map(),
-            nextUpdateAt: DateTime.now().toSQL(),
-            lastDiscoveryAt: '',
+            nextUpdateAt: DateTime.now(),
+            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });
@@ -182,8 +182,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       unprocessedEntity: entity,
       resultHash: 'the matching hash',
       state: new Map(),
-      nextUpdateAt: DateTime.now().toSQL(),
-      lastDiscoveryAt: '',
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
     };
 
     hash.digest.mockReturnValue('the matching hash');
