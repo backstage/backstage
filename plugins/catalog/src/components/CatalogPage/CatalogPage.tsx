@@ -42,7 +42,7 @@ import {
   EntityListContainer,
   FilterContainer,
 } from '../FilteredEntityLayout';
-import { CatalogKindHeader } from './CatalogKindHeader';
+import { CatalogKindHeader } from '../CatalogKindHeader';
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;

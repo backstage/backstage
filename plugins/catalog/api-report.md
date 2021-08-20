@@ -114,6 +114,14 @@ export const CatalogIndexPage: ({
   initiallySelectedFilter,
 }: CatalogPageProps) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "CatalogKindHeaderProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CatalogKindHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CatalogKindHeader: ({
+  initialFilter,
+}: CatalogKindHeaderProps) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "catalogPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
