@@ -86,23 +86,17 @@ const EntityCountTile = ({
   counter,
   type,
   name,
-  queryParams,
+  url,
 }: {
   counter: number;
   type: string;
   name: string;
-  queryParams: string;
+  url: string;
 }) => {
   const classes = useStyles({ type });
-  const catalogLink = useRouteRef(catalogRouteRef);
 
   return (
-    <Link
-      href={generatePath(`${catalogLink()}/?${queryParams}`)}
-      target="_blank"
-      rel="noreferrer noopenner"
-      variant="body2"
-    >
+    <Link href={url} target="_blank" rel="noreferrer noopenner" variant="body2">
       <Box
         className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
@@ -147,6 +141,7 @@ export const OwnershipCard = ({
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
+  const catalogLink = useRouteRef(catalogRouteRef);
 
   const {
     loading,
@@ -225,7 +220,7 @@ export const OwnershipCard = ({
               counter={c.counter}
               type={c.type}
               name={c.name}
-              queryParams={c.queryParams}
+              url={generatePath(`${catalogLink()}/?${c.queryParams}`)}
             />
           </Grid>
         ))}
