@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.4
+
+### Patch Changes
+
+- 7ab55167d: Properly handle Date objects being returned for timestamps in the database driver
+
 ## 0.13.3
 
 ### Patch Changes
