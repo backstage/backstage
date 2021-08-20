@@ -19,6 +19,7 @@ import {
   catalogApiRef,
   isOwnerOf,
   useEntity,
+  catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme, genPageTheme } from '@backstage/theme';
 import {
@@ -39,7 +40,7 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 type EntityTypeProps = {
   name: string;
@@ -93,10 +94,11 @@ const EntityCountTile = ({
   queryParams: string;
 }) => {
   const classes = useStyles({ type });
+  const catalogLink = useRouteRef(catalogRouteRef);
 
   return (
     <Link
-      href={generatePath(`/catalog/?${queryParams}`)}
+      href={generatePath(`${catalogLink()}/?${queryParams}`)}
       target="_blank"
       rel="noreferrer noopenner"
       variant="body2"
