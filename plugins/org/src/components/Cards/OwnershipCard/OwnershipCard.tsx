@@ -43,7 +43,6 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 type EntityTypeProps = {
-  name: string;
   kind: string;
   type: string;
   count: number;
@@ -173,12 +172,10 @@ export const OwnershipCard = ({
         const match = acc.find(
           x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
         );
-        const name = ownedEntity.metadata.name;
         if (match) {
           match.count += 1;
         } else {
           acc.push({
-            name,
             kind: ownedEntity.kind,
             type: ownedEntity.spec?.type,
             count: 1,
