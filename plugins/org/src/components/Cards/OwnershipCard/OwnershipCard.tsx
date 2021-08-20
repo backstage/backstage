@@ -76,12 +76,12 @@ const EntityCountTile = ({
   counter,
   type,
   name,
-  url,
+  queryParams,
 }: {
   counter: number;
   type: string;
   name: string;
-  url: string;
+  queryParams: string;
 }) => {
   const classes = useStyles({ type });
 
