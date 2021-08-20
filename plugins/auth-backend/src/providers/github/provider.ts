@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { Logger } from 'winston';
+import { Profile as PassportProfile } from 'passport';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFetchUserProfileStrategy,
@@ -38,7 +39,6 @@ import {
   OAuthEnvironmentHandler,
   OAuthStartRequest,
   encodeState,
-  OAuthResult,
   OAuthRefreshRequest,
   OAuthResponse,
 } from '../../lib/oauth';
@@ -49,12 +49,23 @@ type PrivateInfo = {
   refreshToken?: string;
 };
 
+export type GithubOAuthResult = {
+  fullProfile: PassportProfile;
+  params: {
+    scope: string;
+    expires_in?: string;
+    refresh_token_expires_in?: string;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
 export type GithubAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
   userProfileUrl?: string;
   authorizationUrl?: string;
-  signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<OAuthResult>;
+  signInResolver?: SignInResolver<GithubOAuthResult>;
+  authHandler: AuthHandler<GithubOAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -62,8 +73,8 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
 
 export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
-  private readonly signInResolver?: SignInResolver<OAuthResult>;
-  private readonly authHandler: AuthHandler<OAuthResult>;
+  private readonly signInResolver?: SignInResolver<GithubOAuthResult>;
+  private readonly authHandler: AuthHandler<GithubOAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
@@ -88,7 +99,7 @@ export class GithubAuthProvider implements OAuthHandlers {
         refreshToken: any,
         params: any,
         fullProfile: any,
-        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
+        done: PassportDoneCallback<GithubOAuthResult, PrivateInfo>,
       ) => {
         done(undefined, { fullProfile, params, accessToken }, { refreshToken });
       },
@@ -104,7 +115,7 @@ export class GithubAuthProvider implements OAuthHandlers {
 
   async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResult,
+      GithubOAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
@@ -132,14 +143,16 @@ export class GithubAuthProvider implements OAuthHandlers {
     });
   }
 
-  private async handleResult(result: OAuthResult) {
+  private async handleResult(result: GithubOAuthResult) {
     const { profile } = await this.authHandler(result);
 
+    const expiresInStr = result.params.expires_in;
     const response: OAuthResponse = {
       providerInfo: {
         accessToken: result.accessToken,
         scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
+        expiresInSeconds:
+          expiresInStr === undefined ? undefined : Number(expiresInStr),
       },
       profile,
     };
@@ -162,27 +175,25 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const githubDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { fullProfile } = info.result;
+export const githubDefaultSignInResolver: SignInResolver<GithubOAuthResult> =
+  async (info, ctx) => {
+    const { fullProfile } = info.result;
 
-  const userId = fullProfile.username || fullProfile.id;
+    const userId = fullProfile.username || fullProfile.id;
 
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
-  });
+    const token = await ctx.tokenIssuer.issueToken({
+      claims: { sub: userId, ent: [`user:default/${userId}`] },
+    });
 
-  return { id: userId, token };
-};
+    return { id: userId, token };
+  };
 
 export type GithubProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
    * into the profile that will be presented to the user.
    */
-  authHandler?: AuthHandler<OAuthResult>;
+  authHandler?: AuthHandler<GithubOAuthResult>;
 
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
@@ -194,7 +205,7 @@ export type GithubProviderOptions = {
    * the catalog for a single user entity that has a matching `google.com/email` annotation.
    */
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver?: SignInResolver<GithubOAuthResult>;
   };
 };
 
@@ -231,7 +242,7 @@ export const createGithubProvider = (
         tokenIssuer,
       });
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+      const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
         ? options.authHandler
         : async ({ fullProfile }) => ({
             profile: makeProfileInfo(fullProfile),
@@ -240,7 +251,7 @@ export const createGithubProvider = (
       const signInResolverFn =
         options?.signIn?.resolver ?? githubDefaultSignInResolver;
 
-      const signInResolver: SignInResolver<OAuthResult> = info =>
+      const signInResolver: SignInResolver<GithubOAuthResult> = info =>
         signInResolverFn(info, {
           catalogIdentityClient,
           tokenIssuer,
