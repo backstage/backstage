@@ -133,9 +133,9 @@ The project can be edited or removed from the Bazaar card on the Entity Page. Si
   - Fill Bazaar-tab with more content, for example images and achievements
   - Show all the members that have joined the project
 
-- Dialogs
+- Dialogues
 
-  - Extend the dialog for adding a project with more fields, e.g. chat link and the possibility to add images
+  - Extend the dialogue for adding a project with more fields, e.g. chat link and the possibility to add images
 
 - Testing
   - Add tests to all the components
