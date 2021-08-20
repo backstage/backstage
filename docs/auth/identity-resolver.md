@@ -128,20 +128,20 @@ export default async function createPlugin({
       google: createGoogleProvider({
         signIn: {
           resolver: async ({ profile: { email } }, ctx) => {
-            const [sub] = email?.split('@') ?? '';
+            const [id] = email?.split('@') ?? '';
             // Fetch from an external system that returns entity claims like:
             // ['user:default/breanna.davison', ...]
             const ent = await externalSystemClient.getUsernames(email);
 
             // Resolve group membership from the Backstage catalog
             const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMembership({
-              entityRefs: [sub].concat(ent),
+              entityRefs: [id].concat(ent),
               logger: ctx.logger,
             });
             const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub, ent: fullEnt },
+              claims: { sub: id, ent: fullEnt },
             });
-            return { sub, token };
+            return { id, token };
           },
         },
       }),

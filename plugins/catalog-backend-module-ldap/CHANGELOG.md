@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.0
+
+### Minor Changes
+
+- 54b441abe: Introduce `LdapOrgEntityProvider` as an alternative to `LdapOrgReaderProcessor`. This also changes the `LdapClient` interface to require a logger.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.3
+  - @backstage/config@0.1.7
+
 ## 0.2.2
 
 ### Patch Changes

@@ -112,6 +112,11 @@ export const createOktaProvider: (
   _options?: OktaProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createOriginFilter(config: Config): (origin: string) => boolean;
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -324,6 +329,7 @@ export type OAuthStartRequest = express.Request<{}> & {
 export type OAuthState = {
   nonce: string;
   env: string;
+  origin?: string;
 };
 
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -416,9 +422,9 @@ export type WebMessageResponse =
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/gitlab/provider.d.ts:38:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/gitlab/provider.d.ts:49:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:105:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:111:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:128:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
+// src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { EntityRefLink } from '../EntityRefLink';
 import {
   Box,
   Button,
@@ -155,8 +155,8 @@ const Contents = ({
     return (
       <>
         <DialogContentText>
-          This entity does not seem to originate from a location. You therefore
-          only have the option to delete it outright from the catalog.
+          This entity does not seem to originate from a registered location. You
+          therefore only have the option to delete it outright from the catalog.
         </DialogContentText>
         <Button
           variant="contained"

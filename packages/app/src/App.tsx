@@ -20,6 +20,7 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
+import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -45,10 +46,6 @@ import {
   ScaffolderPage,
   scaffolderPlugin,
   ScaffolderFieldExtensions,
-  RepoUrlPickerFieldExtension,
-  OwnerPickerFieldExtension,
-  EntityPickerFieldExtension,
-  EntityNamePickerFieldExtension,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
@@ -67,6 +64,8 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import { HomePage } from './components/home/HomePage';
+
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -112,6 +111,10 @@ const AppRouter = app.getRouter();
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
+    {/* TODO(rubenl): Move this to / once its more mature and components exist */}
+    <Route path="/home" element={<HomepageCompositionRoot />}>
+      <HomePage />
+    </Route>
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
@@ -129,10 +132,6 @@ const routes = (
     />
     <Route path="/create" element={<ScaffolderPage />}>
       <ScaffolderFieldExtensions>
-        <EntityPickerFieldExtension />
-        <EntityNamePickerFieldExtension />
-        <RepoUrlPickerFieldExtension />
-        <OwnerPickerFieldExtension />
         <LowerCaseValuePickerFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>

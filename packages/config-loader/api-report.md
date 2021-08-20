@@ -37,6 +37,10 @@ export type LoadConfigOptions = {
   configPaths: string[];
   env?: string;
   experimentalEnvFunc?: EnvFunc;
+  watch?: {
+    onChange: (configs: AppConfig[]) => void;
+    stopSignal?: Promise<void>;
+  };
 };
 
 // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts

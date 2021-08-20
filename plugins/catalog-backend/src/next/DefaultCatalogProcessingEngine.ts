@@ -20,8 +20,12 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
+import { Hash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
+import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import { createCounterMetric, createSummaryMetric } from './metrics';
 import { CatalogProcessingOrchestrator } from './processing/types';
 import { Stitcher } from './stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
@@ -82,6 +86,20 @@ class Connection implements EntityProviderConnection {
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private stopFunc?: () => void;
+  private readonly metrics = {
+    processedEntities: createCounterMetric({
+      name: 'catalog_processed_entities_count',
+      help: 'Amount of entities processed',
+    }),
+    processingDuration: createSummaryMetric({
+      name: 'catalog_processing_duration_seconds',
+      help: 'Processing duration',
+    }),
+    processingQueueDelay: createSummaryMetric({
+      name: 'catalog_processing_queue_delay_seconds',
+      help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
+    }),
+  };
 
   constructor(
     private readonly logger: Logger,
@@ -89,9 +107,14 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly processingDatabase: ProcessingDatabase,
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
+    private readonly createHash: () => Hash,
   ) {}
 
   async start() {
+    if (this.stopFunc) {
+      throw new Error('Processing engine is already started');
+    }
+
     for (const provider of this.entityProviders) {
       await provider.connect(
         new Connection({
@@ -99,10 +122,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           id: provider.getProviderName(),
         }),
       );
-    }
-
-    if (this.stopFunc) {
-      throw new Error('Processing engine is already started');
     }
 
     this.stopFunc = startTaskPipeline<RefreshStateItem>({
@@ -124,8 +143,24 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         }
       },
       processTask: async item => {
+        let endTimer;
         try {
-          const { id, state, unprocessedEntity, entityRef, locationKey } = item;
+          this.metrics.processedEntities.inc(1);
+          this.metrics.processingQueueDelay.observe(
+            -DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
+              .diffNow()
+              .as('seconds'),
+          );
+          endTimer = this.metrics.processingDuration.startTimer();
+
+          const {
+            id,
+            state,
+            unprocessedEntity,
+            entityRef,
+            locationKey,
+            resultHash: previousResultHash,
+          } = item;
           const result = await this.orchestrator.process({
             entity: unprocessedEntity,
             state,
@@ -142,6 +177,23 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             result.errors.map(e => serializeError(e)),
           );
 
+          let hashBuilder = this.createHash().update(errorsString);
+          if (result.ok) {
+            hashBuilder = hashBuilder
+              .update(stableStringify({ ...result.completedEntity }))
+              .update(stableStringify([...result.deferredEntities]))
+              .update(stableStringify([...result.relations]))
+              .update(stableStringify(Object.fromEntries(result.state)));
+          }
+
+          const resultHash = hashBuilder.digest('hex');
+          if (resultHash === previousResultHash) {
+            // If nothing changed in our produced outputs, we cannot have any
+            // significant effect on our surroundings; therefore, we just abort
+            // without any updates / stitching.
+            return;
+          }
+
           // If the result was marked as not OK, it signals that some part of the
           // processing pipeline threw an exception. This can happen both as part of
           // non-catastrophic things such as due to validation errors, as well as if
@@ -154,6 +206,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,
                 errors: errorsString,
+                resultHash,
               });
             });
             await this.stitcher.stitch(
@@ -167,6 +220,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             await this.processingDatabase.updateProcessedEntity(tx, {
               id,
               processedEntity: result.completedEntity,
+              resultHash,
               state: result.state,
               errors: errorsString,
               relations: result.relations,
@@ -184,6 +238,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           await this.stitcher.stitch(setOfThingsToStitch);
         } catch (error) {
           this.logger.warn('Processing failed with:', error);
+        } finally {
+          endTimer?.();
         }
       },
     });
