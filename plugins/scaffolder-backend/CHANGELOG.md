@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.1
+
+### Patch Changes
+
+- d622cfad1: GitHub branch protection option 'Require review from Code Owners' can be enabled by adding `requireCodeOwnersReview: true` in context input.
+
 ## 0.15.0
 
 ### Minor Changes
