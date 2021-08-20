@@ -1011,9 +1011,8 @@ describe('Default Processing Database', () => {
           .where('entity_ref', 'location:default/new-root')
           .select();
         const nextUpdate = parseDate(result[0].next_update_at);
-        expect(nextUpdate.diff(now, 'seconds').seconds).toBeGreaterThanOrEqual(
-          100,
-        );
+        const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
+        expect(nextUpdateDiff.seconds).toBeGreaterThanOrEqual(90);
       },
       60_000,
     );
