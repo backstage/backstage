@@ -18,8 +18,9 @@ import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 
+// Retrieve a list of unique entity kinds present in the catalog
 export function useEntityKinds() {
-  const [kinds, setKinds] = useState(['component']);
+  const [kinds, setKinds] = useState(['Component']);
   const catalogApi = useApi(catalogApiRef);
 
   useEffect(() => {
