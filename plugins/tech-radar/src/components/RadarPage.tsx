@@ -22,7 +22,7 @@ import {
   Content,
   ContentHeader,
   Page,
-  Header,
+  // Header,
   SupportButton,
   InputTextFilter,
 } from '@backstage/core-components';
@@ -48,7 +48,7 @@ export const RadarPage = ({
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
 
-  const searchInput = event => {
+  const searchInput = (event: any) => {
     setSearchText(event.target.value);
   };
 
@@ -66,7 +66,7 @@ export const RadarPage = ({
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent {...props} searchText={searchText} />
+            <RadarComponent searchText={searchText} {...props} />
           </Grid>
         </Grid>
       </Content>

@@ -45,10 +45,7 @@ const useTechRadarLoader = (id: string | undefined) => {
   return { loading, value, error };
 };
 
-const RadarComponent = (
-  props: TechRadarComponentProps,
-  searchText: string,
-): JSX.Element => {
+const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
@@ -61,10 +58,10 @@ const RadarComponent = (
         element =>
           element.title
             .toLowerCase()
-            .includes(props.searchText.toLowerCase()) ||
+            .includes(props.searchText!.toLowerCase()) ||
           element.timeline[0].description
             ?.toLowerCase()
-            .includes(props.searchText.toLowerCase()),
+            .includes(props.searchText!.toLowerCase()),
       );
     }
     return filteredArray.map(entry => {
