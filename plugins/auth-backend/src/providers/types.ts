@@ -36,7 +36,7 @@ export type AuthProviderConfig = {
   appUrl: string;
 
   /**
-   * A function that is called to check whether an origin other than the apps default one is allowed.
+   * A function that is called to check whether an origin is allowed to receive the authentication result.
    */
   isOriginAllowed: (origin: string) => boolean;
 };

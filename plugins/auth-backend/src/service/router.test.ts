@@ -18,27 +18,35 @@ import { ConfigReader } from '@backstage/config';
 import { createOriginFilter } from './router';
 
 describe('Auth origin filtering', () => {
-  const defaultConfigOptions = {
+  const config = new ConfigReader({
+    app: {
+      baseUrl: 'http://example.com/extra-path',
+    },
     auth: {
       experimentalExtraAllowedOrigins: ['https://test-*.example.net'],
     },
-  };
-  const defaultConfig = () => new ConfigReader(defaultConfigOptions);
-  const getOptionalString = jest.fn();
-  const config = defaultConfig();
-  config.getOptionalString = getOptionalString;
+  });
+
   it('Will explode, invalid origin', () => {
     const origin = 'https://test.example.net';
     expect(createOriginFilter(config)(origin)).toBeFalsy();
   });
+
   it('Will explode, invalid origin domain', () => {
     const origin = 'https://test-1234.examplee.net';
     expect(createOriginFilter(config)(origin)).toBeFalsy();
   });
+
+  it("Won't explode, uses app origin", () => {
+    const origin = 'http://example.com';
+    expect(createOriginFilter(config)(origin)).toBeTruthy();
+  });
+
   it("Won't explode, valid origin with numbers", () => {
     const origin = 'https://test-1234.example.net';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
   });
+
   it("Won't explode, valid origin with chars and numbers", () => {
     const origin = 'https://test-test1234.example.net';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
