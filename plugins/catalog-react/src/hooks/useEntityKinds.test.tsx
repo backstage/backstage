@@ -74,7 +74,8 @@ describe('useEntityKinds', () => {
       },
     );
     await waitForValueToChange(() => result.current);
-    expect(result.current.length).toBe(3);
+    expect(result.current.kinds).toBeDefined();
+    expect(result.current.kinds!.length).toBe(3);
   });
 
   it('sorts entity kinds', async () => {
@@ -85,6 +86,6 @@ describe('useEntityKinds', () => {
       },
     );
     await waitForValueToChange(() => result.current);
-    expect(result.current).toEqual(['Component', 'System', 'Template']);
+    expect(result.current.kinds).toEqual(['Component', 'System', 'Template']);
   });
 });

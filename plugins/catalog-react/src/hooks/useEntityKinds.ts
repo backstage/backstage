@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 
 // Retrieve a list of unique entity kinds present in the catalog
 export function useEntityKinds() {
-  const [kinds, setKinds] = useState(['Component']);
   const catalogApi = useApi(catalogApiRef);
 
-  useEffect(() => {
-    async function loadKinds() {
-      const entities = await catalogApi
-        .getEntities({ fields: ['kind'] })
-        .then(response => response.items);
-      setKinds([...new Set(entities.map(e => e.kind))].sort());
-    }
-    loadKinds();
-  }, [catalogApi]);
+  const {
+    error,
+    loading,
+    value: kinds,
+  } = useAsync(async () => {
+    const entities = await catalogApi
+      .getEntities({ fields: ['kind'] })
+      .then(response => response.items);
 
-  return kinds;
+    return [...new Set(entities.map(e => e.kind))].sort();
+  });
+  return { error, loading, kinds };
 }
