@@ -30,8 +30,6 @@ export const makeProfileInfo = (
   profile: passport.Profile,
   idToken?: string,
 ): ProfileInfo => {
-  let { displayName } = profile;
-
   let email: string | undefined = undefined;
   if (profile.emails && profile.emails.length > 0) {
     const [firstEmail] = profile.emails;
@@ -43,6 +41,9 @@ export const makeProfileInfo = (
     const [firstPhoto] = profile.photos;
     picture = firstPhoto.value;
   }
+
+  let displayName: string | undefined =
+    profile.displayName ?? profile.username ?? profile.id;
 
   if ((!email || !picture || !displayName) && idToken) {
     try {
