@@ -58,9 +58,16 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = ApiRegistry.with(catalogApiRef, {
-  getEntities: jest.fn().mockResolvedValue({ items: entities }),
-} as Partial<CatalogApi>);
+const apis = ApiRegistry.from([
+  [
+    catalogApiRef,
+    {
+      getEntities: jest
+        .fn()
+        .mockImplementation(() => Promise.resolve({ items: entities })),
+    } as Partial<CatalogApi>,
+  ],
+]);
 
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {
@@ -82,20 +89,6 @@ describe('<CatalogKindHeader />', () => {
     });
   });
 
-  it('renders unknown kinds provided in query parameters', async () => {
-    const rendered = await renderWithEffects(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{ queryParameters: { kind: 'frob' } }}
-        >
-          <CatalogKindHeader />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-
-    expect(rendered.getByText('Frobs')).toBeInTheDocument();
-  });
-
   it('updates the kind filter', async () => {
     const updateFilters = jest.fn();
     const rendered = await renderWithEffects(
@@ -113,7 +106,7 @@ describe('<CatalogKindHeader />', () => {
     fireEvent.click(option);
 
     expect(updateFilters).toHaveBeenCalledWith({
-      kind: new EntityKindFilter('template'),
+      kind: new EntityKindFilter('Template'),
     });
   });
 });
