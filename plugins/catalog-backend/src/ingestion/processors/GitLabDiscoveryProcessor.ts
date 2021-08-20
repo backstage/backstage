@@ -80,7 +80,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       logger: this.logger,
     });
     const startTimestamp = Date.now();
-    this.logger.info(`Reading GitLab projects from ${location.target}`);
+    this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
     const projects = paginated(options => client.listProjects(options), {
       group,
