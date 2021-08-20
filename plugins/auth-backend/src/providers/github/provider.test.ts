@@ -18,9 +18,12 @@ import { Profile as PassportProfile } from 'passport';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { GithubAuthProvider, githubDefaultSignInResolver } from './provider';
+import {
+  GithubAuthProvider,
+  GithubOAuthResult,
+  githubDefaultSignInResolver,
+} from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { OAuthResult } from '../../lib/oauth';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 
 const mockFrameHandler = jest.spyOn(
@@ -28,15 +31,17 @@ const mockFrameHandler = jest.spyOn(
   'executeFrameHandlerStrategy',
 ) as unknown as jest.MockedFunction<
   () => Promise<{
-    result: Omit<OAuthResult, 'params'> & { params: { scope: string } };
+    result: GithubOAuthResult;
     privateInfo: { refreshToken?: string };
   }>
 >;
 
 describe('GithubAuthProvider', () => {
-  const tokenIssuer = {
-    issueToken: jest.fn(),
+  const tokenIssuer: TokenIssuer = {
     listPublicKeys: jest.fn(),
+    async issueToken(params) {
+      return `token-for-${params.claims.sub}`;
+    },
   };
   const catalogIdentityClient = {
     findUser: jest.fn(),
@@ -84,11 +89,10 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
-          expiresInSeconds: undefined,
-          idToken: undefined,
           scope: 'read:scope',
         },
         profile: {
@@ -130,11 +134,10 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
-          expiresInSeconds: undefined,
-          idToken: undefined,
           scope: 'read:scope',
         },
         profile: {
@@ -174,11 +177,10 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
-          expiresInSeconds: undefined,
-          idToken: undefined,
           scope: 'read:scope',
         },
         profile: {
@@ -202,11 +204,11 @@ describe('GithubAuthProvider', () => {
       const fullProfile = {
         id: 'ipd12039',
         username: 'daveboyle',
-        provider: 'gitlab',
+        provider: 'github',
         displayName: 'Dave Boyle',
         emails: [
           {
-            value: 'daveboyle@gitlab.org',
+            value: 'daveboyle@github.org',
           },
         ],
       };
@@ -218,17 +220,16 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'daveboyle',
+          token: 'token-for-daveboyle',
         },
         providerInfo: {
           accessToken:
             'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
           scope: 'read:user',
-          expiresInSeconds: undefined,
-          idToken: undefined,
         },
         profile: {
           displayName: 'Dave Boyle',
-          email: 'daveboyle@gitlab.org',
+          email: 'daveboyle@github.org',
         },
       };
 
@@ -238,6 +239,44 @@ describe('GithubAuthProvider', () => {
       });
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
+    });
+
+    it('should forward a refresh token', async () => {
+      mockFrameHandler.mockResolvedValueOnce({
+        result: {
+          fullProfile: {
+            id: 'ipd12039',
+            provider: 'github',
+            displayName: 'Dave Boyle',
+          },
+          accessToken: 'a.b.c',
+          params: {
+            scope: 'read:user',
+            expires_in: '123',
+          },
+        },
+        privateInfo: { refreshToken: 'refresh-me' },
+      });
+
+      const response = await provider.handler({} as any);
+
+      expect(response).toEqual({
+        response: {
+          backstageIdentity: {
+            id: 'ipd12039',
+            token: 'token-for-ipd12039',
+          },
+          providerInfo: {
+            accessToken: 'a.b.c',
+            scope: 'read:user',
+            expiresInSeconds: 123,
+          },
+          profile: {
+            displayName: 'Dave Boyle',
+          },
+        },
+        refreshToken: 'refresh-me',
+      });
     });
   });
 });
