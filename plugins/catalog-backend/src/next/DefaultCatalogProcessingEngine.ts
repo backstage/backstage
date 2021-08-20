@@ -44,7 +44,7 @@ class Connection implements EntityProviderConnection {
       processingDatabase: ProcessingDatabase;
       id: string;
     },
-  ) { }
+  ) {}
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.processingDatabase;
@@ -97,7 +97,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     }),
     processingQueueDelay: createSummaryMetric({
       name: 'catalog_processing_queue_delay_seconds',
-      help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
+      help:
+        'The amount of delay between being scheduled for processing, and the start of actually being processed',
     }),
   };
 
@@ -108,7 +109,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
-  ) { }
+  ) {}
 
   async start() {
     if (this.stopFunc) {
@@ -145,15 +146,20 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       processTask: async item => {
         let endTimer;
         try {
-          const nextUpdateAt = typeof item.nextUpdateAt === 'string'
-            ? DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
-            : DateTime.fromJSDate(item.nextUpdateAt);
+          const nextUpdateAt =
+            typeof item.nextUpdateAt === 'string'
+              ? DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
+              : DateTime.fromJSDate(item.nextUpdateAt);
+
+          if (!nextUpdateAt.isValid) {
+            throw new Error(
+              `Failed to parse date, reason: ${nextUpdateAt.invalidReason}, explanation: ${nextUpdateAt.invalidExplanation}`,
+            );
+          }
 
           this.metrics.processedEntities.inc(1);
           this.metrics.processingQueueDelay.observe(
-            -nextUpdateAt
-              .diffNow()
-              .as('seconds'),
+            -nextUpdateAt.diffNow().as('seconds'),
           );
           endTimer = this.metrics.processingDuration.startTimer();
 
