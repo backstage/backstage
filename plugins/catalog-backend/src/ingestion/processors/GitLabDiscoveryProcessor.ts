@@ -168,7 +168,3 @@ export function parseUrl(urlString: string): {
 
   throw new Error(`Failed to parse ${urlString}`);
 }
-
-export function escapeRegExp(str: string): RegExp {
-  return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
-}
