@@ -44,7 +44,7 @@ class Connection implements EntityProviderConnection {
       processingDatabase: ProcessingDatabase;
       id: string;
     },
-  ) {}
+  ) { }
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.processingDatabase;
@@ -108,7 +108,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
-  ) {}
+  ) { }
 
   async start() {
     if (this.stopFunc) {
@@ -145,9 +145,13 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       processTask: async item => {
         let endTimer;
         try {
+          const nextUpdateAt = typeof item.nextUpdateAt === 'string'
+            ? DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
+            : DateTime.fromJSDate(item.nextUpdateAt);
+
           this.metrics.processedEntities.inc(1);
           this.metrics.processingQueueDelay.observe(
-            -DateTime.fromSQL(item.nextUpdateAt, { zone: 'UTC' })
+            -nextUpdateAt
               .diffNow()
               .as('seconds'),
           );
