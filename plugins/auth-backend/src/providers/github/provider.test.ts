@@ -15,9 +15,13 @@
  */
 
 import { Profile as PassportProfile } from 'passport';
-import { GithubAuthProvider } from './provider';
+import { getVoidLogger } from '@backstage/backend-common';
+import { TokenIssuer } from '../../identity/types';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { GithubAuthProvider, githubDefaultSignInResolver } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
+import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -25,11 +29,28 @@ const mockFrameHandler = jest.spyOn(
 ) as unknown as jest.MockedFunction<
   () => Promise<{
     result: Omit<OAuthResult, 'params'> & { params: { scope: string } };
+    privateInfo: { refreshToken?: string };
   }>
 >;
 
 describe('GithubAuthProvider', () => {
+  const tokenIssuer = {
+    issueToken: jest.fn(),
+    listPublicKeys: jest.fn(),
+  };
+  const catalogIdentityClient = {
+    findUser: jest.fn(),
+  };
+
   const provider = new GithubAuthProvider({
+    logger: getVoidLogger(),
+    catalogIdentityClient:
+      catalogIdentityClient as unknown as CatalogIdentityClient,
+    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+    signInResolver: githubDefaultSignInResolver,
+    authHandler: async ({ fullProfile }) => ({
+      profile: makeProfileInfo(fullProfile),
+    }),
     callbackUrl: 'mock',
     clientId: 'mock',
     clientSecret: 'mock',
@@ -80,6 +101,7 @@ describe('GithubAuthProvider', () => {
 
       mockFrameHandler.mockResolvedValueOnce({
         result: { fullProfile, accessToken, params },
+        privateInfo: {},
       });
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
@@ -124,6 +146,7 @@ describe('GithubAuthProvider', () => {
 
       mockFrameHandler.mockResolvedValueOnce({
         result: { fullProfile, accessToken, params },
+        privateInfo: {},
       });
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
@@ -167,6 +190,7 @@ describe('GithubAuthProvider', () => {
 
       mockFrameHandler.mockResolvedValueOnce({
         result: { fullProfile, accessToken, params },
+        privateInfo: {},
       });
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
@@ -210,6 +234,7 @@ describe('GithubAuthProvider', () => {
 
       mockFrameHandler.mockResolvedValueOnce({
         result: { fullProfile, accessToken, params },
+        privateInfo: {},
       });
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
