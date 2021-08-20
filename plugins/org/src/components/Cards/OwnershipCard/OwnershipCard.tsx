@@ -125,8 +125,7 @@ const getQueryParams = (
   selectedEntity: EntityTypeProps,
 ): string => {
   const ownerName = owner.metadata.name;
-  const kind = selectedEntity.kind;
-  const type = selectedEntity.type;
+  const { kind, type } = selectedEntity;
   const queryParams = qs.stringify({
     filters: {
       kind,
