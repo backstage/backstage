@@ -77,15 +77,14 @@ const EntityCountTile = ({
   counter,
   type,
   name,
-  queryParams,
+  url,
 }: {
   counter: number;
   type: string;
   name: string;
-  queryParams: string;
+  url: string;
 }) => {
   const classes = useStyles({ type });
-  const catalogLink = useRouteRef(catalogRouteRef);
 
   return (
     <Link to={url} variant="body2">
