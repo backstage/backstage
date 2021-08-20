@@ -67,7 +67,9 @@ export const CatalogKindHeader = ({
       classes={classes}
     >
       {allKinds.map(kind => (
-        <MenuItem value={kind}>{capitalize(kind)}s</MenuItem>
+        <MenuItem value={kind} key={kind}>
+          {`${capitalize(kind)}s`}
+        </MenuItem>
       ))}
     </Select>
   );
