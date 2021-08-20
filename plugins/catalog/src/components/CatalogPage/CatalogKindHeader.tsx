@@ -46,7 +46,7 @@ export const CatalogKindHeader = ({
   initialFilter = 'Component',
 }: CatalogKindHeaderProps) => {
   const classes = useStyles();
-  const allKinds = useEntityKinds();
+  const { kinds: allKinds } = useEntityKinds();
   const { updateFilters, queryParameters } = useEntityListProvider();
 
   const [selectedKind, setSelectedKind] = useState(
@@ -66,7 +66,7 @@ export const CatalogKindHeader = ({
       onChange={e => setSelectedKind(e.target.value as string)}
       classes={classes}
     >
-      {allKinds.map(kind => (
+      {(allKinds ?? ['Component']).map(kind => (
         <MenuItem value={kind} key={kind}>
           {`${capitalize(kind)}s`}
         </MenuItem>
