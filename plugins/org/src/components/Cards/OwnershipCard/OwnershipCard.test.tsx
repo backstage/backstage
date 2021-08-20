@@ -19,6 +19,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
@@ -123,6 +124,11 @@ describe('OwnershipCard', () => {
           <OwnershipCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': catalogRouteRef,
+        },
+      },
     );
 
     expect(getByText('OPENAPI')).toBeInTheDocument();
