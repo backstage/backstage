@@ -192,11 +192,11 @@ export const OwnershipCard = ({
     // Return top N (six) entities to be displayed in ownership boxes
     const topN = counts.sort((a, b) => b.count - a.count).slice(0, 6);
 
-    return topN.map(topEntity => ({
-      counter: topEntity.count,
-      type: topEntity.type,
-      name: topEntity.type.toLocaleUpperCase('en-US'),
-      queryParams: getQueryParams(entity, topEntity),
+    return topN.map(topOwnedEntity => ({
+      counter: topOwnedEntity.count,
+      type: topOwnedEntity.type,
+      name: topOwnedEntity.type.toLocaleUpperCase('en-US'),
+      queryParams: getQueryParams(entity, topOwnedEntity),
     })) as Array<{
       counter: number;
       type: string;
