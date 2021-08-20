@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles, useMediaQuery } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, {
   createContext,
   PropsWithChildren,
