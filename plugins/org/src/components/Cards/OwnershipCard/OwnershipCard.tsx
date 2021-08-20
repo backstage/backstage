@@ -29,6 +29,7 @@ import {
   formatEntityRefTitle,
   isOwnerOf,
   useEntity,
+  catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -84,6 +85,7 @@ const EntityCountTile = ({
   queryParams: string;
 }) => {
   const classes = useStyles({ type });
+  const catalogLink = useRouteRef(catalogRouteRef);
 
   return (
     <Link to={url} variant="body2">
