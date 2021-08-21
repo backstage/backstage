@@ -154,7 +154,7 @@ export class JenkinsApiImpl {
 
     if (project.inQueue) {
       status = 'queued';
-    } else if (project.lastBuild === null) {
+    } else if (!project.lastBuild) {
       status = 'build not found';
     } else if (project.lastBuild.building) {
       status = 'running';
