@@ -151,8 +151,11 @@ export class JenkinsApiImpl {
 
   private augmentProject(project: JenkinsProject): BackstageProject {
     let status: string;
+
     if (project.inQueue) {
       status = 'queued';
+    } else if (project.lastBuild === null) {
+      status = 'build not found';
     } else if (project.lastBuild.building) {
       status = 'running';
     } else if (!project.lastBuild.result) {
@@ -165,7 +168,10 @@ export class JenkinsApiImpl {
 
     return {
       ...project,
-      lastBuild: this.augmentBuild(project.lastBuild, jobScmInfo),
+      lastBuild:
+        project.lastBuild === null
+          ? null
+          : this.augmentBuild(project.lastBuild, jobScmInfo),
       status,
       // actions: undefined,
     };
