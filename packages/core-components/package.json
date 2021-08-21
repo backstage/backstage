@@ -63,7 +63,7 @@
     "react-syntax-highlighter": "^15.4.3",
     "react-text-truncate": "^0.16.0",
     "react-use": "^17.2.4",
-    "remark-gfm": "^1.0.0",
+    "remark-gfm": "^2.0.0",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
