@@ -168,10 +168,9 @@ export class JenkinsApiImpl {
 
     return {
       ...project,
-      lastBuild:
-        project.lastBuild === null
-          ? null
-          : this.augmentBuild(project.lastBuild, jobScmInfo),
+      lastBuild: project.lastBuild
+        ? this.augmentBuild(project.lastBuild, jobScmInfo)
+        : null,
       status,
       // actions: undefined,
     };
