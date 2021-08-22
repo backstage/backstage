@@ -19,6 +19,7 @@ import os from 'os';
 import { runPlain } from '../lib/run';
 import { paths } from '../lib/paths';
 import { Lockfile } from '../lib/versioning';
+import path from 'path';
 
 export default async () => {
   await new Promise(async () => {
@@ -41,7 +42,18 @@ export default async () => {
     console.log(`yarn - ${yarnVersion}`);
     console.log(`npm - ${npmVersion}`);
 
-    // TODO - How to find whether the current repo is a clone or a fork or a create-app generated repo?
+    console.log('\n------------------\n');
+
+    console.log('Backstage CLI type :\n');
+    // eslint-disable-next-line no-restricted-syntax
+    const isLocal = require('fs').existsSync(
+      path.resolve(__dirname, '../../src'),
+    );
+    console.log(
+      isLocal
+        ? 'CLI is running in backstage repo'
+        : 'CLI is running as a dependency',
+    );
 
     console.log('\n------------------\n');
 
