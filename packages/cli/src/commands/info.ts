@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { promisify } from 'util';
-import { exec } from 'child_process';
 import { version as cliVersion } from '../../package.json';
 import os from 'os';
+import { runPlain } from '../lib/run';
+import { paths } from '../lib/paths';
+import { Lockfile } from '../lib/versioning';
 
 export default async () => {
-  const promisifiedExec = promisify(exec);
-
   await new Promise(async () => {
-    const yarnVersion = await promisifiedExec('yarn --version');
-    const npmVersion = await promisifiedExec('npm --version');
+    const yarnVersion = await runPlain('yarn --version');
+    const npmVersion = await runPlain('npm --version');
 
     console.log(
       `Operating System - ${os.type}(${os.release}) - ${os.platform}/${os.arch}`,
@@ -39,19 +38,22 @@ export default async () => {
     console.log('\n------------------\n');
 
     console.log('Global environment:\n');
-    console.log(
-      `yarn - ${
-        yarnVersion.stderr ? yarnVersion.stderr : yarnVersion.stdout.trim()
-      }`,
-    );
-    console.log(
-      `npm - ${
-        npmVersion.stderr ? npmVersion.stderr : npmVersion.stdout.trim()
-      }`,
-    );
+    console.log(`yarn - ${yarnVersion}`);
+    console.log(`npm - ${npmVersion}`);
 
     // TODO - How to find whether the current repo is a clone or a fork or a create-app generated repo?
 
-    // TODO - How to find actual resolved versions of backstage libraries that the app and backend packages build against?
+    console.log('\n------------------\n');
+
+    console.log('Backstage deps:\n');
+    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+    const lockfile = await Lockfile.load(lockfilePath);
+    const deps = lockfile.keys();
+
+    for (const dep of deps) {
+      if (dep.indexOf('@backstage/') !== -1) {
+        console.log(dep, lockfile.get(dep)![0].version);
+      }
+    }
   });
 };
