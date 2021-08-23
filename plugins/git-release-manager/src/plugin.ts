@@ -25,11 +25,11 @@ import {
 import { GitReleaseClient } from './api/GitReleaseClient';
 import { gitReleaseManagerApiRef } from './api/serviceApiRef';
 import { rootRouteRef } from './routes';
+import * as constants from './constants/constants';
+import * as helpers from './helpers';
+import * as components from './components';
 
-export * as constants from './constants/constants';
-export * as helpers from './helpers';
-export * as components from './components';
-export { gitReleaseManagerApiRef };
+export { gitReleaseManagerApiRef, constants, helpers, components };
 
 export const gitReleaseManagerPlugin = createPlugin({
   id: 'git-release-manager',
