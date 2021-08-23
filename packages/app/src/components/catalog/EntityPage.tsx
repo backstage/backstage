@@ -110,6 +110,7 @@ import {
 } from '@roadiehq/backstage-plugin-travis-ci';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import { EmptyState } from '@backstage/core-components';
+import { EntityAllureReportContent } from '@backstage/plugin-allure';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -355,6 +356,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/allure" title="Allure Report">
+      <EntityAllureReportContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
