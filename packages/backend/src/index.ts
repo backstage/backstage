@@ -22,41 +22,42 @@
  * Happy hacking!
  */
 
-import Router from 'express-promise-router';
 import {
   CacheManager,
   createServiceBuilder,
+  DatabaseManager,
   getRootLogger,
   loadBackendConfig,
   notFoundHandler,
-  DatabaseManager,
   SingleHostDiscovery,
+  TaskManager,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import healthcheck from './plugins/healthcheck';
-import { metricsInit, metricsHandler } from './metrics';
+import Router from 'express-promise-router';
+import { metricsHandler, metricsInit } from './metrics';
+import app from './plugins/app';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
+import badges from './plugins/badges';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
-import kubernetes from './plugins/kubernetes';
+import graphql from './plugins/graphql';
+import healthcheck from './plugins/healthcheck';
+import jenkins from './plugins/jenkins';
 import kafka from './plugins/kafka';
+import kubernetes from './plugins/kubernetes';
+import proxy from './plugins/proxy';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
-import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
-import todo from './plugins/todo';
-import graphql from './plugins/graphql';
-import app from './plugins/app';
-import badges from './plugins/badges';
-import jenkins from './plugins/jenkins';
 import techInsights from './plugins/techInsights';
+import todo from './plugins/todo';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(config: Config) {
+async function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
@@ -64,13 +65,15 @@ function makeCreateEnv(config: Config) {
   root.info(`Created UrlReader ${reader}`);
 
   const databaseManager = DatabaseManager.fromConfig(config);
+  const taskManager = TaskManager.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
+    const tasks = taskManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, config, reader, discovery };
+    return { logger, cache, database, tasks, config, reader, discovery };
   };
 }
 
@@ -87,7 +90,7 @@ async function main() {
     argv: process.argv,
     logger,
   });
-  const createEnv = makeCreateEnv(config);
+  const createEnv = await makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

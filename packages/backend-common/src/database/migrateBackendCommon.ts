@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Common functionality library for Backstage backends
- *
- * @packageDocumentation
- */
+import { Knex } from 'knex';
+import { resolvePackagePath } from '../paths';
 
-export * from './cache';
-export { loadBackendConfig } from './config';
-export * from './database';
-export * from './discovery';
-export * from './hot';
-export * from './logging';
-export * from './middleware';
-export * from './paths';
-export * from './reading';
-export * from './scm';
-export * from './service';
-export * from './tasks';
-export * from './util';
+const migrationsDir = resolvePackagePath(
+  '@backstage/backend-common',
+  'migrations',
+);
+
+export async function migrateBackendCommon(knex: Knex): Promise<void> {
+  await knex.migrate.latest({
+    directory: migrationsDir,
+    tableName: 'knex_migrations_backstage_backend_common',
+  });
+}

@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import {
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  PluginTaskManager,
   UrlReader,
 } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 
 export type PluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
+  tasks: PluginTaskManager;
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;

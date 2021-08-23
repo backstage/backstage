@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Common functionality library for Backstage backends
- *
- * @packageDocumentation
- */
+import { InputError } from '@backstage/errors';
 
-export * from './cache';
-export { loadBackendConfig } from './config';
-export * from './database';
-export * from './discovery';
-export * from './hot';
-export * from './logging';
-export * from './middleware';
-export * from './paths';
-export * from './reading';
-export * from './scm';
-export * from './service';
-export * from './tasks';
-export * from './util';
+// Keep the IDs compatible with e.g. Prometheus
+export function validateId(id: string) {
+  if (typeof id !== 'string' || !/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(id)) {
+    throw new InputError(
+      `${id} is not a valid ID, expected string of lowercase characters and digits separated by underscores`,
+    );
+  }
+}

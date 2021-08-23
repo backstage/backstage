@@ -59,14 +59,17 @@
     "knex": "^0.95.1",
     "lodash": "^4.17.21",
     "logform": "^2.1.1",
+    "luxon": "^2.0.2",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
+    "node-abort-controller": "^3.0.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
     "tar": "^6.1.2",
     "unzipper": "^0.10.11",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
@@ -79,6 +82,7 @@
     }
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.8",
     "@backstage/cli": "^0.8.2",
     "@backstage/test-utils": "^0.1.21",
     "@types/archiver": "^5.1.0",
@@ -107,6 +111,7 @@
   },
   "files": [
     "dist",
+    "migrations/**/*.{js,d.ts}",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
