@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export type ChangeEvent = {
+  id: string;
+  integration: [
+    {
+      service: Service;
+    },
+  ];
+  source: string;
+  html_url: string;
+  links: [
+    {
+      href: string;
+      text: string;
+    },
+  ];
+  summary: string;
+  timestamp: string;
+};
 
 export type Incident = {
   id: string;
@@ -36,6 +55,7 @@ export type Service = {
   escalation_policy: {
     id: string;
     user: User;
+    html_url: string;
   };
 };
 

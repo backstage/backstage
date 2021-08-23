@@ -20,7 +20,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
-import { Service } from '../types';
+import { Service, User } from '../types';
 
 import { alertApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
@@ -52,19 +52,22 @@ const entity: Entity = {
   },
 };
 
+const user: User = {
+  name: 'person1',
+  id: 'p1',
+  summary: 'person1',
+  email: 'person1@example.com',
+  html_url: 'http://a.com/id1',
+};
+
 const service: Service = {
   id: 'abc',
   name: 'pagerduty-name',
   html_url: 'www.example.com',
   escalation_policy: {
     id: 'def',
-    user: {
-      name: 'person1',
-      id: 'p1',
-      summary: 'person1',
-      email: 'person1@example.com',
-      html_url: 'http://a.com/id1',
-    },
+    user: user,
+    html_url: 'http://a.com/id1',
   },
   integrationKey: 'abcd',
 };
