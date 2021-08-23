@@ -128,11 +128,17 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'master',
+            },
           },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
@@ -171,16 +177,25 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-cli',
             url: 'https://github.com/backstage/techdocs-cli',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-container',
             url: 'https://github.com/backstage/techdocs-container',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
@@ -218,21 +233,33 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'abstest',
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test',
             url: 'https://github.com/backstage/test',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test-archived',
             url: 'https://github.com/backstage/test',
             isArchived: true,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'testxyz',
             url: 'https://github.com/backstage/testxyz',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
