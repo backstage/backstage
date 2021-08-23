@@ -15,13 +15,20 @@
  */
 
 import {
-  Sidebar, sidebarConfig,
-  SidebarContext, SidebarDivider, SidebarGroup, SidebarItem, SidebarPage, SidebarScrollWrapper, SidebarSpace
+  Sidebar,
+  sidebarConfig,
+  SidebarContext,
+  SidebarDivider,
+  SidebarGroup,
+  SidebarItem,
+  SidebarPage,
+  SidebarScrollWrapper,
+  SidebarSpace,
 } from '@backstage/core-components';
 import { SidebarSearch } from '@backstage/plugin-search';
 import {
   Settings as SidebarSettings,
-  UserSettingsSignInAvatar
+  UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
 import { Link, makeStyles } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
@@ -57,7 +64,6 @@ const SidebarLogo = () => {
 
   return (
     <div className={classes.root}>
-      
       <Link
         component={NavLink}
         to="/"
@@ -79,16 +85,16 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       </SidebarGroup>
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
-      {/* Global nav, not org-specific */}
-      <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-      <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-      {/* End global nav */}
-      <SidebarDivider />
-      <SidebarScrollWrapper>
-        <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-      </SidebarScrollWrapper>
+        {/* Global nav, not org-specific */}
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        {/* End global nav */}
+        <SidebarDivider />
+        <SidebarScrollWrapper>
+          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+        </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
