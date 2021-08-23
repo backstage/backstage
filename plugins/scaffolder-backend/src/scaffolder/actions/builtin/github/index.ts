@@ -15,3 +15,4 @@
  */
 
 export { createGithubActionsDispatchAction } from './githubActionsDispatch';
+export { createGithubCreateRepositoryWebhookAction } from './githubCreateRepositoryWebhook';
