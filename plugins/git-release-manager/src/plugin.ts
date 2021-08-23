@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { gitReleaseManagerApiRef } from './api/serviceApiRef';
-
-import { GitReleaseClient } from './api/GitReleaseClient';
-import { rootRouteRef } from './routes';
 import {
   configApiRef,
   createPlugin,
@@ -26,7 +22,19 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+import { GitReleaseClient } from './api/GitReleaseClient';
+import { gitReleaseManagerApiRef } from './api/serviceApiRef';
+import { rootRouteRef } from './routes';
+import * as constants from './constants/constants';
+import * as helpers from './helpers';
+import * as components from './components';
+
 export { gitReleaseManagerApiRef };
+export const internals = {
+  constants,
+  helpers,
+  components,
+};
 
 export const gitReleaseManagerPlugin = createPlugin({
   id: 'git-release-manager',
