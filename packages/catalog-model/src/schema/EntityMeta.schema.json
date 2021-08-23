@@ -55,7 +55,7 @@
     },
     "title": {
       "type": "string",
-      "description": "A nice display name of the entity, to be presented in user interfaces instead of the name property, when available.",
+      "description": "A display name of the entity, to be presented in user interfaces instead of the name property, when available.",
       "examples": ["React SSR Template"],
       "minLength": 1
     },
