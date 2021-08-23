@@ -205,8 +205,6 @@ const CapabilitiesListBase = () => {
     };
     fetchData();
   }, [authApi]);
-  // @ts-ignore
-  console.log(capData); // eslint-disable-line
   return (
     <Page themeId="tool">
       <Header title="Welcome to Capability Discoverability!">
@@ -266,10 +264,11 @@ const CapabilitiesListBase = () => {
               </PopOverProvider>
             </ContentHeader>
             {entities.length === 0 && <CircularProgress />}
-            {entities.map(capability => {
+            {entities.map((capability, index) => {
               return (
                 capability && (
                   <CapabilityCard
+                    key={index}
                     name={
                       capability?.spec?.name ||
                       capability?.spec?.rootId ||
