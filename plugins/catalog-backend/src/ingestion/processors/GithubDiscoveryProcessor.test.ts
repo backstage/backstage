@@ -45,12 +45,15 @@ describe('GithubDiscoveryProcessor', () => {
         repoSearchPath: /^proj.*$/,
         catalogPath: '/blob/master/catalog.yaml',
       });
+      expect(parseUrl('https://github.com/foo')).toEqual({
+        org: 'foo',
+        host: 'github.com',
+      });
     });
 
     it('throws on incorrectly formed URLs', () => {
       expect(() => parseUrl('https://github.com')).toThrow();
       expect(() => parseUrl('https://github.com//')).toThrow();
-      expect(() => parseUrl('https://github.com/foo')).toThrow();
       expect(() => parseUrl('https://github.com//foo')).toThrow();
       expect(() => parseUrl('https://github.com/org/teams')).toThrow();
       expect(() => parseUrl('https://github.com/org//teams')).toThrow();
