@@ -61,7 +61,7 @@ const AllureReport = (props: { entity: Entity }) => {
 
 export const AllureReportComponent = () => {
   const { entity } = useEntity();
-  const isReportAvailable = isAllureReportAvailable(entity);
+  const isReportAvailable = entity && isAllureReportAvailable(entity);
 
   if (isReportAvailable) return <AllureReport entity={entity} />;
   return (
