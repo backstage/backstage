@@ -119,8 +119,8 @@ export type EntityMeta = JsonObject & {
   namespace?: string;
 
   /**
-   * A nice display name of the entity, to be presented in user interfaces
-   * instead of the `name` property above, when available.
+   * A display name of the entity, to be presented in user interfaces instead
+   * of the `name` property above, when available.
    *
    * This field is sometimes useful when the `name` is cumbersome or ends up
    * being perceived as overly technical. The title generally does not have
