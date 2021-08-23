@@ -18,7 +18,6 @@ export {
   gitReleaseManagerPlugin,
   GitReleaseManagerPage,
   gitReleaseManagerApiRef,
-  internals,
 } from './plugin';
 
 import { components, constants, helpers, testHelpers } from './plugin';
