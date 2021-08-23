@@ -69,6 +69,22 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
+const sortSidebarGroupsForPriority = (
+  childA: React.ReactElement,
+  childB: React.ReactElement,
+) => {
+  const priorityADefined = childA.props.priority !== undefined;
+  const priorityBDefined = childB.props.priority !== undefined;
+  if (priorityADefined && !priorityBDefined) {
+    return -1;
+  } else if (priorityBDefined && !priorityADefined) {
+    return 1;
+  } else if (priorityADefined && priorityBDefined) {
+    return childA.props.priority - childB.props.priority;
+  }
+  return 0;
+};
+
 const OverlayMenu = ({
   children,
   label,
@@ -97,33 +113,42 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
   setSelectedMenuItemIndex: () => {},
 });
 
-/**
- * Filters for sidebar groups and reorders them to create a custom BottomNavigation
- */
 export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
   const classes = useStyles();
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
+  let shouldSortSidebarGroups = false;
 
   useEffect(() => {
-    // This is getting triggered to often - fix me!
     setSelectedMenuItemIndex(-1);
   }, [location.pathname]);
 
-  const sidebarGroups = React.Children.map(children, child =>
-    React.isValidElement(child) && child.type === SidebarGroup ? child : null,
-  );
+  // Filter children for SidebarGroups & set `shouldSortSidebarGroups` if priorities are set for one or more SidebarGroups
+  let sidebarGroups = React.Children.map(children, child => {
+    if (React.isValidElement(child) && child.type === SidebarGroup) {
+      if (child.props.priority !== undefined) {
+        shouldSortSidebarGroups = true;
+      }
+      return child;
+    }
+    return null;
+  });
 
   if (!sidebarGroups) {
-    return null; // think about the exception state
+    // If Sidebar has no children the MobileSidebar won't be rendered
+    return null;
   } else if (!sidebarGroups.length) {
-    // Render default SidebarGroup if no
+    // If Sidebar has no SidebarGroup as a children a default
+    // SidebarGroup with the complete Sidebar content will be created
     sidebarGroups.push(
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {children}
       </SidebarGroup>,
     );
+  } else if (shouldSortSidebarGroups) {
+    // If a SidebarGroup has a given priority the SidebarGroups are sorted for prioirty
+    sidebarGroups = sidebarGroups.sort(sortSidebarGroupsForPriority);
   }
 
   const shouldShowGroupChildren =

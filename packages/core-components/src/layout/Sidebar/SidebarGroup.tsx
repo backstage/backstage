@@ -30,6 +30,7 @@ import { MobileSidebarContext } from './MobileSidebar';
 
 interface SidebarGroupProps extends BottomNavigationActionProps {
   to?: string;
+  priority?: number;
 }
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -50,11 +51,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-/**
- * If the page is mobile it should be BottomNavigationAction - otherwise just a fragment
- * Links to page, which will be displayed
- * - If 'to' Prop is not defined it will render a Menu page out of the children (if children given)
- */
 export const SidebarGroup = ({
   to,
   label,
