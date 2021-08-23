@@ -57,6 +57,7 @@ const SidebarLogo = () => {
 
   return (
     <div className={classes.root}>
+      
       <Link
         component={NavLink}
         to="/"
