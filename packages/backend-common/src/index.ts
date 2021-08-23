@@ -23,7 +23,6 @@ export * from './logging';
 export * from './middleware';
 export * from './paths';
 export * from './reading';
-export * from './reading/tree';
 export * from './scm';
 export * from './service';
 export * from './util';

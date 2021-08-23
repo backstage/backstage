@@ -72,7 +72,10 @@ export class AwsS3UrlReader implements UrlReader {
         apiVersion: '2006-03-01',
         credentials: creds,
       });
-      const reader = new AwsS3UrlReader(integration, s3, treeResponseFactory);
+      const reader = new AwsS3UrlReader(integration, {
+        s3,
+        treeResponseFactory,
+      });
       const predicate = (url: URL) =>
         url.host.endsWith(integration.config.host);
       return { reader, predicate };
@@ -81,8 +84,10 @@ export class AwsS3UrlReader implements UrlReader {
 
   constructor(
     private readonly integration: AwsS3Integration,
-    private readonly s3: S3,
-    private readonly treeResponseFactory: ReadTreeResponseFactory,
+    private readonly deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
   ) {}
 
   /**
@@ -148,7 +153,7 @@ export class AwsS3UrlReader implements UrlReader {
         };
       }
 
-      const response = this.s3.getObject(params);
+      const response = this.deps.s3.getObject(params);
       const buffer = await getRawBody(response.createReadStream());
       const etag = (await response.promise()).ETag;
 
@@ -184,19 +189,11 @@ export class AwsS3UrlReader implements UrlReader {
             ContinuationToken: continuationToken,
           };
         }
-        const { Contents, IsTruncated, NextContinuationToken } = await this.s3
-          .listObjectsV2(params)
-          .promise();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> First go
-=======
->>>>>>> Preparing for PR
+        const { Contents, IsTruncated, NextContinuationToken } =
+          await this.deps.s3.listObjectsV2(params).promise();
         const responses = await Promise.all(
           (Contents || []).map(({ Key }) => {
-            const s3Response = this.s3
+            const s3Response = this.deps.s3
               .getObject({ Bucket: bucket, Key: String(Key) })
               .createReadStream();
             Object.defineProperty(s3Response, 'path', {
@@ -216,7 +213,7 @@ export class AwsS3UrlReader implements UrlReader {
         awsS3Readables = awsS3Readables.concat(responses);
       }
 
-      return await this.treeResponseFactory.fromReadableArray({
+      return await this.deps.treeResponseFactory.fromReadableArray({
         stream: awsS3Readables,
         etag: '',
       });
