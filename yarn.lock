@@ -5053,9 +5053,9 @@
     react-is "^16.9.0"
 
 "@rjsf/material-ui@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-3.0.0.tgz#69ece2cb549f0e860b5f89898db90edcc95b15ba"
-  integrity sha512-T2B8QnrDQphbFNxDz7baAa0zTd5TXJmO9soHBPTKKdniRbMEOQ19AJBbZkA3ED2XZa/xrUY/6XjERQLpNACddw==
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-3.1.0.tgz#ed15fc75de1594f87cd8336b7f2ebc492a432d8b"
+  integrity sha512-kWz37spT5SOXkb8Axq4g4BzQjXRylQr6B7eFAg1NPhSK7KrJYwSMSsFJ9Ze2vEBxwEiR0Z0n/4puaamGuGFRBw==
 
 "@roadiehq/backstage-plugin-buildkite@^1.0.8":
   version "1.0.8"
