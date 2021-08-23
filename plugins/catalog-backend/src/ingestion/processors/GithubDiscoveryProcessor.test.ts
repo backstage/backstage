@@ -54,6 +54,10 @@ describe('GithubDiscoveryProcessor', () => {
         branch: '-',
         catalogPath: '/catalog-info.yaml',
       });
+      expect(parseUrl('https://github.com/foo')).toEqual({
+        org: 'foo',
+        host: 'github.com',
+      });
     });
 
     it('throws on incorrectly formed URLs', () => {
