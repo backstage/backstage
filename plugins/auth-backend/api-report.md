@@ -84,6 +84,13 @@ export type BackstageIdentity = {
   entity?: Entity;
 };
 
+// Warning: (ae-missing-release-tag) "createGitlabProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGitlabProvider: (
+  options?: GitlabProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createGoogleProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -138,7 +145,16 @@ export const encodeState: (state: OAuthState) => string;
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
-// Warning: (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GitlabProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "googleEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -404,7 +420,8 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/google/provider.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
+// src/providers/gitlab/provider.d.ts:38:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
+// src/providers/gitlab/provider.d.ts:49:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative

@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import passport from 'passport';
 
-export * from './gitlab';
-export * from './google';
-export * from './microsoft';
-export * from './okta';
-export { factories as defaultAuthProviderFactories } from './factories';
-
-// Export the minimal interface required for implementing a
-// custom Authorization Handler
-export type {
-  AuthProviderRouteHandlers,
-  AuthProviderFactoryOptions,
-  AuthProviderFactory,
-} from './types';
-
-// These types are needed for a postMessage from the login pop-up
-// to the frontend
-export type { AuthResponse, BackstageIdentity, ProfileInfo } from './types';
+export type PassportProfile = passport.Profile & {
+  avatarUrl?: string;
+};
