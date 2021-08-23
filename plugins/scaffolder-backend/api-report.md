@@ -114,6 +114,13 @@ export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
 }): TemplateAction<any>;
 
+// Warning: (ae-missing-release-tag) "createGithubCreateRepositoryWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createGithubCreateRepositoryWebhookAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction<any>;
+
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
