@@ -13,26 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AwsS3UrlReader,
-  DefaultReadTreeResponseFactory,
-} from '@backstage/backend-common';
-
+import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import {
-  AwsS3Integration,
-  readAwsS3IntegrationConfig,
-} from '@backstage/integration';
 import { AwsS3ReadTreeProcessor } from './AwsS3ReadTreeProcessor';
 import { CatalogProcessorEntityResult, CatalogProcessorResult } from './types';
 import { defaultEntityDataParser } from './util/parse';
 import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
-
-const treeResponseFactory = DefaultReadTreeResponseFactory.create({
-  config: new ConfigReader({}),
-});
 
 AWSMock.setSDKInstance(aws);
 const object: aws.S3.Types.Object = {
@@ -61,25 +49,18 @@ AWSMock.mock(
   ),
 );
 
-const s3 = new aws.S3();
-const reader = new AwsS3UrlReader(
-  new AwsS3Integration(
-    readAwsS3IntegrationConfig(
-      new ConfigReader({
-        host: 'amazonaws.com',
-        accessKeyId: 'fake-access-key',
-        secretAccessKey: 'fake-secret-key',
-      }),
-    ),
-  ),
-  s3,
-  treeResponseFactory,
-);
+const logger = getVoidLogger();
+const reader = UrlReaders.default({
+  logger,
+  config: new ConfigReader({
+    backend: { reading: { allow: [{ host: 'localhost' }] } },
+  }),
+});
 
 describe('readLocation', () => {
   const processor = new AwsS3ReadTreeProcessor(reader);
   const spec = {
-    type: 'aws-read-tree',
+    type: 's3-bucket',
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
 
@@ -90,7 +71,7 @@ describe('readLocation', () => {
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({
       target: 'awsS3-mock-object.yaml',
-      type: 'aws-read-tree',
+      type: 's3-bucket',
     });
     expect(generated.entity).toEqual({ site_name: 'Test' });
   });

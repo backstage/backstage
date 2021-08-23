@@ -21,8 +21,8 @@ configuration:
 ```yaml
 catalog:
   locations:
-    - type: aws-read-tree
+    - type: s3-bucket
       target: https://sample-bucket.s3.us-east-2.amazonaws.com/
 ```
 
-Note the `aws-read-tree` type, as this is not a regular `url` processor.
+Note the `s3-bucket` type, as this is not a regular `url` processor.

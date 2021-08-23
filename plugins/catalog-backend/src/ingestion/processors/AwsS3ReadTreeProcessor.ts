@@ -32,7 +32,7 @@ export class AwsS3ReadTreeProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean> {
-    if (location.type !== 'aws-read-tree') {
+    if (location.type !== 's3-bucket') {
       return false;
     }
 
