@@ -90,9 +90,15 @@ export const DocsCardGrid: ({
 export const DocsResultListItem: ({
   result,
   lineClamp,
+  asListItem,
+  asLink,
+  title,
 }: {
   result: any;
   lineClamp?: number | undefined;
+  asListItem?: boolean | undefined;
+  asLink?: boolean | undefined;
+  title?: string | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DocsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -170,7 +176,7 @@ export type PanelType = 'DocsCardGrid' | 'DocsTable';
 // Warning: (ae-missing-release-tag) "Reader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Reader: ({ entityId, onReady }: Props_3) => JSX.Element;
+export const Reader: ({ entityId, onReady, context }: Props_3) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

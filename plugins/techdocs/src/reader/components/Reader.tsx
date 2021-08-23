@@ -22,6 +22,7 @@ import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   CircularProgress,
+  Grid,
   makeStyles,
   useTheme,
 } from '@material-ui/core';
@@ -43,23 +44,36 @@ import {
 } from '../transformers';
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
+import { TechDocsSearch } from './TechDocsSearch';
 import { useReaderState } from './useReaderState';
 
 type Props = {
   entityId: EntityName;
   onReady?: () => void;
+
+  /**
+   * Specifying the part of the application this reader instance is displayed.
+   * Used to determine which varying functionality to render in subcomponents
+   * If undefined, defaults to functionality on default tech docs page
+   */
+  context?: 'entitypage';
 };
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   message: {
     // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
     // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
     wordBreak: 'break-word',
     overflowWrap: 'anywhere',
   },
+  searchBar: {
+    marginLeft: '20rem',
+    maxWidth: 'calc(100% - 20rem * 2 - 3rem)',
+    marginTop: theme.spacing(1),
+  },
 }));
 
-export const Reader = ({ entityId, onReady }: Props) => {
+export const Reader = ({ entityId, onReady, context }: Props) => {
   const { kind, namespace, name } = entityId;
   const theme = useTheme<BackstageTheme>();
   const classes = useStyles();
@@ -432,6 +446,12 @@ export const Reader = ({ entityId, onReady }: Props) => {
           )}
           <TechDocsNotFound errorMessage={contentErrorMessage} />
         </>
+      )}
+
+      {shadowDomRef?.current?.shadowRoot?.innerHTML && (
+        <Grid container className={classes.searchBar}>
+          <TechDocsSearch entityId={entityId} context={context} />
+        </Grid>
       )}
       <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
     </>

@@ -10,6 +10,7 @@ import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
+import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -221,6 +222,24 @@ export type PublisherType =
 //
 // @public (undocumented)
 export type RemoteProtocol = 'url' | 'dir';
+
+// Warning: (ae-missing-release-tag) "TechDocsDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface TechDocsDocument extends IndexableDocument {
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  lifecycle: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  namespace: string;
+  // (undocumented)
+  owner: string;
+  // (undocumented)
+  path: string;
+}
 
 // Warning: (ae-missing-release-tag) "TechdocsGenerator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
