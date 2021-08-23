@@ -39,6 +39,6 @@ describe('ExampleComponent', () => {
         <AllureReportComponent />
       </ThemeProvider>,
     );
-    expect(rendered.getByText('Welcome to allure!')).toBeInTheDocument();
+    expect(rendered.getByText('Missing Annotation')).toBeInTheDocument();
   });
 });
