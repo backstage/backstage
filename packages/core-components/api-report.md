@@ -636,7 +636,7 @@ export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // Warning: (ae-missing-release-tag) "MobileSidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public (undocumented)
 export const MobileSidebar: ({
   children,
 }: React_2.PropsWithChildren<{}>) => JSX.Element | null;
@@ -1099,7 +1099,7 @@ export const SidebarDivider: React_2.ComponentType<
 // Warning: (ae-forgotten-export) The symbol "SidebarGroupProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarGroup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public (undocumented)
 export const SidebarGroup: ({
   to,
   label,
