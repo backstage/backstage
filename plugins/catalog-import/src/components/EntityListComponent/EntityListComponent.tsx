@@ -113,8 +113,9 @@ export const EntityListComponent = ({
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => {
                 const Icon =
-                  app.getSystemIcon(entity.kind.toLocaleLowerCase('en-US')) ??
-                  WorkIcon;
+                  app.getSystemIcon(
+                    `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
+                  ) ?? WorkIcon;
                 return (
                   <ListItem
                     key={formatEntityRefTitle(entity)}
