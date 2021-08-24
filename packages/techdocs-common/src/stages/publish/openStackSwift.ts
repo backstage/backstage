@@ -94,38 +94,35 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * Check if the defined container exists. Being able to connect means the configuration is good
    * and the storage client will work.
    */
-  getReadiness(): Promise<ReadinessResponse> {
-    return new Promise(async resolve => {
-      try {
-        const container = await this.storageClient.getContainerMetadata(
-          this.containerName,
-        );
+  async getReadiness(): Promise<ReadinessResponse> {
+    try {
+      const container = await this.storageClient.getContainerMetadata(
+        this.containerName,
+      );
 
-        if (!(container instanceof NotFound)) {
-          this.logger.info(
-            `Successfully connected to the OpenStack Swift container ${this.containerName}.`,
-          );
-          resolve({
-            isAvailable: true,
-          });
-        } else {
-          this.logger.error(
-            `Could not retrieve metadata about the OpenStack Swift container ${this.containerName}. ` +
-              'Make sure the container exists. Also make sure that authentication is setup either by ' +
-              'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
-              'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-          );
-          resolve({
-            isAvailable: false,
-          });
-        }
-      } catch (err) {
-        this.logger.error(`from OpenStack client library: ${err.message}`);
-        resolve({
-          isAvailable: false,
-        });
+      if (!(container instanceof NotFound)) {
+        this.logger.info(
+          `Successfully connected to the OpenStack Swift container ${this.containerName}.`,
+        );
+        return {
+          isAvailable: true,
+        };
       }
-    });
+      this.logger.error(
+        `Could not retrieve metadata about the OpenStack Swift container ${this.containerName}. ` +
+          'Make sure the container exists. Also make sure that authentication is setup either by ' +
+          'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
+          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      return {
+        isAvailable: false,
+      };
+    } catch (err) {
+      this.logger.error(`from OpenStack client library: ${err.message}`);
+      return {
+        isAvailable: false,
+      };
+    }
   }
 
   /**
@@ -262,28 +259,20 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
     try {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const fileResponse = await this.storageClient.getMetadata(
+        this.containerName,
+        `${entityRootDir}/index.html`,
+      );
 
-      return new Promise(async res => {
-        try {
-          const fileResponse = await this.storageClient.getMetadata(
-            this.containerName,
-            `${entityRootDir}/index.html`,
-          );
-
-          if (!(fileResponse instanceof NotFound)) {
-            res(true);
-          } else {
-            res(false);
-          }
-        } catch (err) {
-          res(false);
-          this.logger.warn(err.message);
-        }
-      });
-    } catch (e) {
-      return Promise.resolve(false);
+      if (!(fileResponse instanceof NotFound)) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      this.logger.warn(err.message);
+      return false;
     }
   }
 }
