@@ -29,13 +29,16 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 /**
  * Extracts repositories out of a GitHub org.
  *
- * It can be configured in two modes. The first will create locations for all
- * catalog-info.yaml files on the default branch. The second will create locations
- * for all projects which have a catalog-info.yaml on the master branch.
+ * The following will create locations for all projects which have a catalog-info.yaml
+ * on the default branch. The first is shorthand for the second.
  *
  *    target: "https://github.com/backstage"
  *    or
- *    target: https://github.com/backstage/*\/blob/master/catalog-info.yaml
+ *    target: https://github.com/backstage/*\/blob/-/catalog-info.yaml
+ *
+ * You may also explicitly specify the source branch:
+ *
+ *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
@@ -73,7 +76,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    const { org, repoSearchPath, catalogPath, host } = parseUrl(
+    const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
       location.target,
     );
 
@@ -95,9 +98,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(client, org);
-    const matching = repoSearchPath
-      ? repositories.filter(r => !r.isArchived && repoSearchPath.test(r.name))
-      : repositories;
+    const matching = repositories.filter(
+      r => !r.isArchived && repoSearchPath.test(r.name),
+    );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
@@ -105,9 +108,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     );
 
     for (const repository of matching) {
-      const path = catalogPath
-        ? catalogPath
-        : `/blob/${repository.defaultBranchRef.name}/catalog-info.yaml`;
+      const path = `/blob/${
+        branch === '-' ? repository.defaultBranchRef.name : branch
+      }${catalogPath}`;
       emit(
         results.location(
           {
@@ -132,8 +135,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
 export function parseUrl(urlString: string): {
   org: string;
-  repoSearchPath?: RegExp;
-  catalogPath?: string;
+  repoSearchPath: RegExp;
+  catalogPath: string;
+  branch: string;
   host: string;
 } {
   const url = new URL(urlString);
@@ -146,13 +150,17 @@ export function parseUrl(urlString: string): {
     return {
       org: decodeURIComponent(path[0]),
       repoSearchPath: escapeRegExp(decodeURIComponent(path[1])),
-      catalogPath: `/${decodeURIComponent(path.slice(2).join('/'))}`,
+      branch: decodeURIComponent(path[3]),
+      catalogPath: `/${decodeURIComponent(path.slice(4).join('/'))}`,
       host: url.host,
     };
   } else if (path.length === 1 && path[0].length) {
     return {
       org: decodeURIComponent(path[0]),
       host: url.host,
+      repoSearchPath: escapeRegExp('*'),
+      catalogPath: '/catalog-info.yaml',
+      branch: '-',
     };
   }
 
