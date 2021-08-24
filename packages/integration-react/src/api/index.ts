@@ -15,6 +15,7 @@
  */
 
 export { scmAuthApiRef } from './ScmAuthApi';
+export { ScmAuthMux } from './ScmAuthMux';
 export type {
   ScmAuthApi,
   ScmAuthTokenOptions,
