@@ -132,7 +132,7 @@ site
 *.local.yaml
 
 # Sensitive credentials
-*-credentials.yaml
+#*-credentials.yaml
 
 # Docker Data
 data/

@@ -18,8 +18,8 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "backstage-cli build --outputs types,esm",
     "lint": "backstage-cli lint",
