@@ -24,6 +24,7 @@ describe('git-release-manager', () => {
         "constants",
         "helpers",
         "components",
+        "testHelpers",
         "gitReleaseManagerPlugin",
         "GitReleaseManagerPage",
       ]
