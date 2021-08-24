@@ -22,6 +22,7 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -197,18 +198,29 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [],
   );
 
+  const value = useMemo(
+    () => ({
+      filters: outputState.appliedFilters,
+      entities: outputState.entities,
+      backendEntities: outputState.backendEntities,
+      updateFilters,
+      queryParameters: outputState.queryParameters,
+      loading,
+      error,
+    }),
+    [
+      outputState.appliedFilters,
+      outputState.entities,
+      outputState.backendEntities,
+      updateFilters,
+      outputState.queryParameters,
+      loading,
+      error,
+    ],
+  );
+
   return (
-    <EntityListContext.Provider
-      value={{
-        filters: outputState.appliedFilters,
-        entities: outputState.entities,
-        backendEntities: outputState.backendEntities,
-        updateFilters,
-        queryParameters: outputState.queryParameters,
-        loading,
-        error,
-      }}
-    >
+    <EntityListContext.Provider value={value}>
       {children}
     </EntityListContext.Provider>
   );
