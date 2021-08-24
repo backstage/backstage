@@ -54,7 +54,7 @@ export const SearchContextProvider = ({
     term: '',
     pageCursor: '',
     filters: {},
-    types: ['*'],
+    types: [],
   },
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {

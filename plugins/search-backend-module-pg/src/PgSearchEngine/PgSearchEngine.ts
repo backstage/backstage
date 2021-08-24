@@ -50,7 +50,7 @@ export class PgSearchEngine implements SearchEngine {
     return {
       pgTerm: query.term
         .split(/\s/)
-        .map(p => p.trim())
+        .map(p => p.replace(/[\0()|&:*!]/g, '').trim())
         .filter(p => p !== '')
         .map(p => `(${JSON.stringify(p)} | ${JSON.stringify(p)}:*)`)
         .join('&'),

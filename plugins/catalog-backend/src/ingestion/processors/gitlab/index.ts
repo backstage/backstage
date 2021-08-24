@@ -14,24 +14,5 @@
  * limitations under the License.
  */
 
-import { getCalverTagParts } from './getCalverTagParts';
-import { getSemverTagParts } from './getSemverTagParts';
-import { Project } from '../../contexts/ProjectContext';
-
-/**
- * Tag parts are the individual parts of a version, e.g. <major>.<minor>.<patch>
- * are the parts of a semantic version
- */
-export function getTagParts({
-  project,
-  tag,
-}: {
-  project: Project;
-  tag: string;
-}) {
-  if (project.versioningStrategy === 'calver') {
-    return getCalverTagParts(tag);
-  }
-
-  return getSemverTagParts(tag);
-}
+export { GitLabClient, paginated } from './client';
+export type { GitLabProject } from './types';

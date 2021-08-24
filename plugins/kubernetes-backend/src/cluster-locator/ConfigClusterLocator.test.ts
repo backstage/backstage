@@ -115,6 +115,14 @@ describe('ConfigClusterLocator', () => {
           authProvider: 'aws',
           skipTLSVerify: true,
         },
+        {
+          assumeRole: 'SomeRole',
+          name: 'cluster2',
+          externalId: 'SomeExternalId',
+          url: 'http://localhost:8081',
+          authProvider: 'aws',
+          skipTLSVerify: true,
+        },
       ],
     });
 
@@ -127,6 +135,7 @@ describe('ConfigClusterLocator', () => {
         assumeRole: undefined,
         name: 'cluster1',
         serviceAccountToken: 'token',
+        externalId: undefined,
         url: 'http://localhost:8080',
         authProvider: 'aws',
         skipTLSVerify: false,
@@ -134,8 +143,18 @@ describe('ConfigClusterLocator', () => {
       {
         assumeRole: 'SomeRole',
         name: 'cluster2',
+        externalId: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
+        authProvider: 'aws',
+        skipTLSVerify: true,
+      },
+      {
+        assumeRole: 'SomeRole',
+        name: 'cluster2',
+        externalId: 'SomeExternalId',
+        url: 'http://localhost:8081',
+        serviceAccountToken: undefined,
         authProvider: 'aws',
         skipTLSVerify: true,
       },
