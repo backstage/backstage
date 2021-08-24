@@ -71,7 +71,7 @@ const routes = (
       element={<TechRadarPage width={1500} height={800} />}
     />
     <Route path="/catalog-import" element={<CatalogImportPage />} />
-      <Route path="/search" element={<SearchPage />}>
+    <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>
     ;
