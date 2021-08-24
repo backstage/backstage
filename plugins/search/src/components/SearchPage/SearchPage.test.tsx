@@ -18,7 +18,7 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { useLocation, useOutlet } from 'react-router';
 
-import { useSearch, SearchContextProvider } from '../SearchContext';
+import { useSearch } from '../SearchContext';
 import { SearchPage } from './';
 
 jest.mock('react-router', () => ({
@@ -29,6 +29,11 @@ jest.mock('react-router', () => ({
   useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 
+const setTermMock = jest.fn();
+const setTypesMock = jest.fn();
+const setFiltersMock = jest.fn();
+const setPageCursorMock = jest.fn();
+
 jest.mock('../SearchContext', () => ({
   ...jest.requireActual('../SearchContext'),
   SearchContextProvider: jest
@@ -36,9 +41,13 @@ jest.mock('../SearchContext', () => ({
     .mockImplementation(({ children }) => children),
   useSearch: jest.fn().mockReturnValue({
     term: '',
+    setTerm: (term: any) => setTermMock(term),
     types: [],
+    setTypes: (types: any) => setTypesMock(types),
     filters: {},
+    setFilters: (filters: any) => setFiltersMock(filters),
     pageCursor: '',
+    setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
   }),
 }));
 
@@ -58,7 +67,7 @@ describe('SearchPage', () => {
     window.history.replaceState = origReplaceState;
   });
 
-  it('uses initial term state from location', async () => {
+  it('sets term state from location', async () => {
     // Given this initial location.search value...
     const expectedFilterField = 'anyKey';
     const expectedFilterValue = 'anyValue';
@@ -75,13 +84,11 @@ describe('SearchPage', () => {
     // When we render the page...
     await renderInTestApp(<SearchPage />);
 
-    // Then search context should be initialized with these values...
-    const calls = (SearchContextProvider as jest.Mock).mock.calls[0];
-    const actualInitialState = calls[0].initialState;
-    expect(actualInitialState.term).toEqual(expectedTerm);
-    expect(actualInitialState.types).toEqual(expectedTypes);
-    expect(actualInitialState.pageCursor).toEqual(expectedPageCursor);
-    expect(actualInitialState.filters).toStrictEqual(expectedFilters);
+    // Then search context should be set with these values...
+    expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
+    expect(setTypesMock).toHaveBeenCalledWith(expectedTypes);
+    expect(setPageCursorMock).toHaveBeenCalledWith(expectedPageCursor);
+    expect(setFiltersMock).toHaveBeenCalledWith(expectedFilters);
   });
 
   it('renders provided router element', async () => {
@@ -103,6 +110,10 @@ describe('SearchPage', () => {
       types: ['software-catalog'],
       pageCursor: 'page2-or-something',
       filters: { anyKey: 'anyValue' },
+      setTerm: setTermMock,
+      setTypes: setTypesMock,
+      setFilters: setFiltersMock,
+      setPageCursor: setPageCursorMock,
     });
     const expectedLocation = encodeURI(
       '?query=bieber&types[]=software-catalog&pageCursor=page2-or-something&filters[anyKey]=anyValue',
