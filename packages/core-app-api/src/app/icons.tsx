@@ -33,41 +33,45 @@ import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
 
 type AppIconsKey =
-  | 'api'
   | 'brokenImage'
   | 'catalog'
   | 'chat'
-  | 'component'
   | 'dashboard'
   | 'docs'
-  | 'domain'
   | 'email'
   | 'github'
   | 'group'
   | 'help'
-  | 'location'
+  | 'kind:api'
+  | 'kind:component'
+  | 'kind:domain'
+  | 'kind:group'
+  | 'kind:location'
+  | 'kind:system'
+  | 'kind:user'
   | 'user'
-  | 'system'
   | 'warning';
 
 export type AppIcons = { [key in AppIconsKey]: IconComponent };
 
 export const defaultAppIcons: AppIcons = {
-  api: MuiExtensionIcon,
   brokenImage: MuiBrokenImageIcon,
   // To be confirmed: see https://github.com/backstage/backstage/issues/4970
   catalog: MuiMenuBookIcon,
   chat: MuiChatIcon,
-  component: MuiMemoryIcon,
   dashboard: MuiDashboardIcon,
   docs: MuiDocsIcon,
-  domain: MuiApartmentIcon,
   email: MuiEmailIcon,
   github: MuiGitHubIcon,
   group: MuiPeopleIcon,
   help: MuiHelpIcon,
-  location: MuiLocationOnIcon,
+  'kind:api': MuiExtensionIcon,
+  'kind:component': MuiMemoryIcon,
+  'kind:domain': MuiApartmentIcon,
+  'kind:group': MuiPeopleIcon,
+  'kind:location': MuiLocationOnIcon,
+  'kind:system': MuiCategoryIcon,
+  'kind:user': MuiPersonIcon,
   user: MuiPersonIcon,
-  system: MuiCategoryIcon,
   warning: MuiWarningIcon,
 };
