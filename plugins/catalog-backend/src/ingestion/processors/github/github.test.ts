@@ -201,11 +201,17 @@ describe('github', () => {
                 name: 'backstage',
                 url: 'https://github.com/backstage/backstage',
                 isArchived: false,
+                defaultBranchRef: {
+                  name: 'main',
+                },
               },
               {
                 name: 'demo',
                 url: 'https://github.com/backstage/demo',
                 isArchived: true,
+                defaultBranchRef: {
+                  name: 'main',
+                },
               },
             ],
             pageInfo: {
@@ -221,11 +227,17 @@ describe('github', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: true,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       };
