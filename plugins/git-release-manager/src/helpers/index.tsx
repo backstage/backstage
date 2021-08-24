@@ -14,24 +14,11 @@
  * limitations under the License.
  */
 
-import { getCalverTagParts } from './getCalverTagParts';
-import { getSemverTagParts } from './getSemverTagParts';
-import { Project } from '../../contexts/ProjectContext';
-
-/**
- * Tag parts are the individual parts of a version, e.g. <major>.<minor>.<patch>
- * are the parts of a semantic version
- */
-export function getTagParts({
-  project,
-  tag,
-}: {
-  project: Project;
-  tag: string;
-}) {
-  if (project.versioningStrategy === 'calver') {
-    return getCalverTagParts(tag);
-  }
-
-  return getSemverTagParts(tag);
-}
+export { calverRegexp, getCalverTagParts } from './tagParts/getCalverTagParts';
+export { getBumpedSemverTagParts, getBumpedTag } from './getBumpedTag';
+export { getSemverTagParts, semverRegexp } from './tagParts/getSemverTagParts';
+export { getShortCommitHash } from './getShortCommitHash';
+export { getTagParts } from './tagParts/getTagParts';
+export { isCalverTagParts } from './isCalverTagParts';
+export { isProjectValid } from './isProjectValid';
+export { validateTagName } from './tagParts/validateTagName';
