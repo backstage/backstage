@@ -98,9 +98,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(client, org);
-    const matching = repoSearchPath
-      ? repositories.filter(r => !r.isArchived && repoSearchPath.test(r.name))
-      : repositories;
+    const matching = repositories.filter(
+      r => !r.isArchived && repoSearchPath.test(r.name),
+    );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
@@ -175,6 +175,9 @@ export function parseUrl(urlString: string): {
     return {
       org: decodeURIComponent(path[0]),
       host: url.host,
+      repoSearchPath: escapeRegExp('*'),
+      catalogPath: '/catalog-info.yaml',
+      branch: '-',
     };
   }
 
