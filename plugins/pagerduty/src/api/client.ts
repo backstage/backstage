@@ -92,11 +92,11 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   triggerAlarm({
-                 integrationKey,
-                 source,
-                 description,
-                 userName,
-               }: TriggerAlarmRequest): Promise<Response> {
+    integrationKey,
+    source,
+    description,
+    userName,
+  }: TriggerAlarmRequest): Promise<Response> {
     const body = JSON.stringify({
       event_action: 'trigger',
       routing_key: integrationKey,
