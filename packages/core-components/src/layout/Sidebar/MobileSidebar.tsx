@@ -43,6 +43,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     left: 0,
     right: 0,
     zIndex: 1000,
+    // SidebarDivider color
     borderTop: '1px solid #383838',
   },
 
@@ -165,7 +166,10 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
           onClose={() => setSelectedMenuItemIndex(-1)}
         />
       )}
-      <BottomNavigation className={classes.root}>
+      <BottomNavigation
+        className={classes.root}
+        data-testid="mobile-sidebar-root"
+      >
         {sidebarGroups}
       </BottomNavigation>
     </MobileSidebarContext.Provider>
