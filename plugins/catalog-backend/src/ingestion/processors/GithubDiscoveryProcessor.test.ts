@@ -35,7 +35,8 @@ describe('GithubDiscoveryProcessor', () => {
         org: 'foo',
         host: 'github.com',
         repoSearchPath: /^proj$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
       });
       expect(
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
@@ -43,11 +44,15 @@ describe('GithubDiscoveryProcessor', () => {
         org: 'foo',
         host: 'github.com',
         repoSearchPath: /^proj.*$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
       });
       expect(parseUrl('https://github.com/foo')).toEqual({
         org: 'foo',
         host: 'github.com',
+        repoSearchPath: /^.*$/,
+        branch: '-',
+        catalogPath: '/catalog-info.yaml',
       });
     });
 
