@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  gitReleaseManagerPlugin,
-  GitReleaseManagerPage,
-  gitReleaseManagerApiRef,
-} from './plugin';
-
-import { components, constants, helpers, testHelpers } from './plugin';
-
-export const internals = {
-  components,
-  constants,
-  helpers,
-  testHelpers,
-};
+export * as stats from './stats';
+export * as testHelpers from './test-helpers';
+export * as testIds from './test-ids';

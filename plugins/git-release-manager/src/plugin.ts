@@ -28,8 +28,9 @@ import { rootRouteRef } from './routes';
 import * as constants from './constants/constants';
 import * as helpers from './helpers';
 import * as components from './components';
+import * as testHelpers from './test-helpers';
 
-export { gitReleaseManagerApiRef, constants, helpers, components };
+export { gitReleaseManagerApiRef, constants, helpers, components, testHelpers };
 
 export const gitReleaseManagerPlugin = createPlugin({
   id: 'git-release-manager',
