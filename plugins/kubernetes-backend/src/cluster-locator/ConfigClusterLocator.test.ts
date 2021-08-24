@@ -97,4 +97,67 @@ describe('ConfigClusterLocator', () => {
       },
     ]);
   });
+
+  it('one aws cluster with assumeRole and one without', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          serviceAccountToken: 'token',
+          url: 'http://localhost:8080',
+          authProvider: 'aws',
+          skipTLSVerify: false,
+        },
+        {
+          assumeRole: 'SomeRole',
+          name: 'cluster2',
+          url: 'http://localhost:8081',
+          authProvider: 'aws',
+          skipTLSVerify: true,
+        },
+        {
+          assumeRole: 'SomeRole',
+          name: 'cluster2',
+          externalId: 'SomeExternalId',
+          url: 'http://localhost:8081',
+          authProvider: 'aws',
+          skipTLSVerify: true,
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config);
+
+    const result = await sut.getClusters();
+
+    expect(result).toStrictEqual([
+      {
+        assumeRole: undefined,
+        name: 'cluster1',
+        serviceAccountToken: 'token',
+        externalId: undefined,
+        url: 'http://localhost:8080',
+        authProvider: 'aws',
+        skipTLSVerify: false,
+      },
+      {
+        assumeRole: 'SomeRole',
+        name: 'cluster2',
+        externalId: undefined,
+        serviceAccountToken: undefined,
+        url: 'http://localhost:8081',
+        authProvider: 'aws',
+        skipTLSVerify: true,
+      },
+      {
+        assumeRole: 'SomeRole',
+        name: 'cluster2',
+        externalId: 'SomeExternalId',
+        url: 'http://localhost:8081',
+        serviceAccountToken: undefined,
+        authProvider: 'aws',
+        skipTLSVerify: true,
+      },
+    ]);
+  });
 });

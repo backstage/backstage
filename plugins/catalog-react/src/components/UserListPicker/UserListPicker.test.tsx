@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import {
   Entity,
   RELATION_OWNED_BY,
@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { UserListPicker } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityTagFilter, UserListFilter } from '../../types';
+import { EntityTagFilter, UserListFilter } from '../../filters';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi } from '@backstage/test-utils';
@@ -58,7 +58,8 @@ const mockCatalogApi = {
 } as Partial<CatalogApi>;
 
 const mockIdentityApi = {
-  getUserId: () => '',
+  getUserId: () => 'testUser',
+  getIdToken: async () => undefined,
 } as Partial<IdentityApi>;
 
 const apis = ApiRegistry.from([
@@ -68,6 +69,9 @@ const apis = ApiRegistry.from([
   [storageApiRef, MockStorageApi.create()],
 ]);
 
+const mockIsOwnedEntity = (entity: Entity) =>
+  entity.metadata.name === 'component-1';
+
 const mockIsStarredEntity = (entity: Entity) =>
   entity.metadata.name === 'component-3';
 
@@ -75,7 +79,9 @@ jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
   return {
     ...actual,
-    useOwnUser: () => ({ value: mockUser }),
+    useEntityOwnership: () => ({
+      isOwnedEntity: mockIsOwnedEntity,
+    }),
     useStarredEntities: () => ({
       isStarredEntity: mockIsStarredEntity,
     }),
@@ -161,7 +167,7 @@ describe('<UserListPicker />', () => {
     ).toEqual(['Owned', 'Starred', 'All']);
   });
 
-  it('includes counts alongside each filter', () => {
+  it('includes counts alongside each filter', async () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ backendEntities }}>
@@ -172,14 +178,16 @@ describe('<UserListPicker />', () => {
 
     // Material UI renders ListItemSecondaryActions outside the
     // menuitem itself, so we pick off the next sibling.
-    expect(
-      getAllByRole('menuitem').map(
-        ({ nextSibling }) => nextSibling?.textContent,
-      ),
-    ).toEqual(['2', '1', '4']);
+    await waitFor(() => {
+      expect(
+        getAllByRole('menuitem').map(
+          ({ nextSibling }) => nextSibling?.textContent,
+        ),
+      ).toEqual(['1', '1', '4']);
+    });
   });
 
-  it('respects other frontend filters in counts', () => {
+  it('respects other frontend filters in counts', async () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
@@ -193,11 +201,31 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
 
-    expect(
-      getAllByRole('menuitem').map(
-        ({ nextSibling }) => nextSibling?.textContent,
-      ),
-    ).toEqual(['1', '0', '2']);
+    await waitFor(() => {
+      expect(
+        getAllByRole('menuitem').map(
+          ({ nextSibling }) => nextSibling?.textContent,
+        ),
+      ).toEqual(['1', '0', '2']);
+    });
+  });
+
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { user: 'owned' };
+    render(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ backendEntities, updateFilters, queryParameters }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('owned', mockIsOwnedEntity, mockIsStarredEntity),
+    });
   });
 
   it('updates user filter when a menuitem is selected', () => {
@@ -215,7 +243,11 @@ describe('<UserListPicker />', () => {
     fireEvent.click(getByText('Starred'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      user: new UserListFilter('starred', mockUser, mockIsStarredEntity),
+      user: new UserListFilter(
+        'starred',
+        mockIsOwnedEntity,
+        mockIsStarredEntity,
+      ),
     });
   });
 });

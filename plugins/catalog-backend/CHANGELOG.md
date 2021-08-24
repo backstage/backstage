@@ -1,5 +1,274 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.4
+
+### Patch Changes
+
+- 7ab55167d: Properly handle Date objects being returned for timestamps in the database driver
+
+## 0.13.3
+
+### Patch Changes
+
+- 61aa6526f: Avoid duplicate work by comparing previous processing rounds with the next
+- fe960ad0f: Updates the `DefaultProcessingDatabase` to accept a refresh interval function instead of a fixed refresh interval in seconds which used to default to 100s. The catalog now ships with a default refresh interval function that schedules entities for refresh every 100-150 seconds, this should
+  help to smooth out bursts that occur when a lot of entities are scheduled for refresh at the same second.
+
+  Custom `RefreshIntervalFunction` can be implemented and passed to the CatalogBuilder using `.setInterval(fn)`
+
+- 54b441abe: Export the entity provider related types for external use.
+- 03bb05af6: Enabled live reload of locations configured in `catalog.locations`.
+- 2766b2aa5: Add experimental Prometheus metrics instrumentation to the catalog
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.13.1
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence. For example you can now query with `/entities?filter=metadata.annotations.blah` to fetch all entities that has the particular property defined.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.18
+
+## 0.13.0
+
+### Minor Changes
+
+- 8bfc0571c: Add a default catalog value for BitBucketDiscoveryProcessor. This allows to have a target like so: https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  which will be expanded to https://bitbucket.mycompany.com/projects/backstage/repos/service-a/catalog-info.yaml given that repository 'service-a' exists.
+
+  ## Migration
+
+  If you are using a custom [Bitbucket parser](https://backstage.io/docs/integrations/bitbucket/discovery#custom-repository-processing) and your `bitbucket-discovery` target (e.g. in your app-config.yaml) omits the catalog path in any of the following ways:
+
+  - https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*/
+
+  then you will be affected by this change.
+  The 'target' input to your parser before this commit would be '/', and after this commit it will be '/catalog-info.yaml', and as such needs to be handled to maintain the same functionality.
+
+### Patch Changes
+
+- 8b048934b: The codeowners processor extracts the username of the primary owner and uses this as the owner field.
+  Given the kind isn't specified this is assumed to be a group and so the link to the owner in the about card
+  doesn't work. This change specifies the kind where the entity is a user. e.g:
+
+  `@iain-b` -> `user:iain-b`
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/plugin-search-backend-node@0.4.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+### Patch Changes
+
+- f7134c368: bump sqlite3 to 5.0.1
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- 2d41b6993: Make use of the new `readUrl` method on `UrlReader` from `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+  - @backstage/plugin-search-backend-node@0.3.0
+  - @backstage/catalog-client@0.3.16
+
+## 0.11.0
+
+### Minor Changes
+
+- 45af985df: Handle entity name conflicts in a deterministic way and avoid crashes due to naming conflicts at startup.
+
+  This is a breaking change for the database and entity provider interfaces of the new catalog. The interfaces with breaking changes are `EntityProvider` and `ProcessingDatabase`, and while it's unlikely that these interfaces have much usage yet, a migration guide is provided below.
+
+  The breaking change to the `EntityProvider` interface lies within the items passed in the `EntityProviderMutation` type. Rather than passing along entities directly, they are now wrapped up in a `DeferredEntity` type, which is a tuple of an `entity` and a `locationKey`. The `entity` houses the entity as it was passed on before, while the `locationKey` is a new concept that is used for conflict resolution within the catalog.
+
+  The `locationKey` is an opaque string that should be unique for each location that an entity could be located at, and undefined if the entity does not have a fixed location. In practice it should be set to the serialized location reference if the entity is stored in Git, for example `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`. A conflict between two entity definitions happen when they have the same entity reference, i.e. kind, namespace, and name. In the event of a conflict the location key will be used according to the following rules to resolve the conflict:
+
+  - If the entity is already present in the database but does not have a location key set, the new entity wins and will override the existing one.
+  - If the entity is already present in the database the new entity will only win if the location keys of the existing and new entity are the same.
+  - If the entity is not already present, insert the entity into the database along with the provided location key.
+
+  The breaking change to the `ProcessingDatabase` is similar to the one for the entity provider, as it reflects the switch from `Entity` to `DeferredEntity` in the `ReplaceUnprocessedEntitiesOptions`. In addition, the `addUnprocessedEntities` method has been removed from the `ProcessingDatabase` interface, and the `RefreshStateItem` and `UpdateProcessedEntityOptions` types have received a new optional `locationKey` property.
+
+- 8e533f92c: Move `LdapOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
+  to `@backstage/plugin-catalog-backend-module-ldap`.
+
+  The `LdapOrgReaderProcessor` isn't registered by default anymore, if
+  you want to continue using it you have to register it manually at the catalog
+  builder:
+
+  1. Add dependency to `@backstage/plugin-catalog-backend-module-ldap` to the `package.json` of your backend.
+  2. Add the processor to the catalog builder:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    LdapOrgReaderProcessor.fromConfig(config, {
+      logger,
+    }),
+  );
+  ```
+
+  For more configuration details, see the [README of the `@backstage/plugin-catalog-backend-module-ldap` package](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-ldap/README.md).
+
+### Patch Changes
+
+- 22a60518c: Support ingesting multiple GitHub organizations via a new `GithubMultiOrgReaderProcessor`.
+
+  This new processor handles namespacing created groups according to the org of the associated GitHub team to prevent potential name clashes between organizations. Be aware that this processor is considered alpha and may not be compatible with future org structures in the catalog.
+
+  NOTE: This processor only fully supports auth via GitHub Apps
+
+  To install this processor, import and add it as follows:
+
+  ```typescript
+  // Typically in packages/backend/src/plugins/catalog.ts
+  import { GithubMultiOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
+  // ...
+  export default async function createPlugin(env: PluginEnvironment) {
+    const builder = new CatalogBuilder(env);
+    builder.addProcessor(
+      GithubMultiOrgReaderProcessor.fromConfig(env.config, {
+        logger: env.logger,
+      }),
+    );
+    // ...
+  }
+  ```
+
+  Configure in your `app-config.yaml` by pointing to your GitHub instance and optionally list which GitHub organizations you wish to import. You can also configure what namespace you want to set for teams from each org. If unspecified, the org name will be used as the namespace. If no organizations are listed, by default this processor will import from all organizations accessible by all configured GitHub Apps:
+
+  ```yaml
+  catalog:
+    locations:
+      - type: github-multi-org
+        target: https://github.myorg.com
+
+    processors:
+      githubMultiOrg:
+        orgs:
+          - name: fooOrg
+            groupNamespace: foo
+          - name: barOrg
+            groupNamespace: bar
+          - name: awesomeOrg
+          - name: anotherOrg
+  ```
+
+- d408af872: Only return the selected fields from the new catalog.
+- aa2b15d9d: Ensure that emitted relations are deduplicated
+- Updated dependencies
+  - @backstage/backend-common@0.8.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
+## 0.10.4
+
+### Patch Changes
+
+- 127048f92: Move `MicrosoftGraphOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
+  to `@backstage/plugin-catalog-backend-module-msgraph`.
+
+  The `MicrosoftGraphOrgReaderProcessor` isn't registered by default anymore, if
+  you want to continue using it you have to register it manually at the catalog
+  builder:
+
+  1. Add dependency to `@backstage/plugin-catalog-backend-module-msgraph` to the `package.json` of your backend.
+  2. Add the processor to the catalog builder:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
+      logger,
+    }),
+  );
+  ```
+
+  For more configuration details, see the [README of the `@backstage/plugin-catalog-backend-module-msgraph` package](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md).
+
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/plugin-search-backend-node@0.2.2
+  - @backstage/catalog-model@0.8.4
+
 ## 0.10.3
 
 ### Patch Changes
@@ -205,13 +474,11 @@
   and lets the other processors take care of further processing.
 
   ```typescript
-  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-    client,
-    repository,
-  }) {
-    // Custom logic for interpret the matching repository.
-    // See defaultRepositoryParser for an example
-  };
+  const customRepositoryParser: BitbucketRepositoryParser =
+    async function* customRepositoryParser({ client, repository }) {
+      // Custom logic for interpret the matching repository.
+      // See defaultRepositoryParser for an example
+    };
 
   const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
     parser: customRepositoryParser,
@@ -683,7 +950,6 @@
   spec:
     type: website
   ---
-
   ```
 
   This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.

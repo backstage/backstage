@@ -87,6 +87,8 @@ describe('collectConfigSchemas', () => {
             dependencies: {
               c1: '0.0.0',
               c2: '0.0.0',
+            },
+            devDependencies: {
               '@backstage/mock': '0.0.0',
             },
             configSchema: { ...mockSchema, title: 'b' },

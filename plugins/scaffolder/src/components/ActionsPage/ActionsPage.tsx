@@ -95,7 +95,7 @@ export const ActionsPage = () => {
 
     return Object.entries(properties).map(entry => {
       const [key] = entry;
-      const props = (entry[1] as unknown) as JSONSchema;
+      const props = entry[1] as unknown as JSONSchema;
       const codeClassname = classNames(classes.code, {
         [classes.codeRequired]: input.required?.includes(key),
       });
@@ -145,7 +145,7 @@ export const ActionsPage = () => {
       <>
         <Typography variant="h6">{name}</Typography>
         {input.map((i, index) => (
-          <div key={index}>{renderTable((i as unknown) as JSONSchema)}</div>
+          <div key={index}>{renderTable(i as unknown as JSONSchema)}</div>
         ))}
       </>
     );

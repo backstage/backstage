@@ -192,7 +192,7 @@ describe('bitbucket core', () => {
         config,
       );
       expect(result).toEqual(
-        'https://bitbucket.org/backstage/mock/get/master.tgz',
+        'https://bitbucket.org/backstage/mock/get/master.tar.gz',
       );
     });
   });

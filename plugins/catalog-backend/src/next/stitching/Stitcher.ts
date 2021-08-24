@@ -22,6 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
+import { uniqBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -168,7 +169,11 @@ export class Stitcher {
 
         // TODO: entityRef is lower case and should be uppercase in the final
         // result
-        entity.relations = result
+        const uniqueRelationRows = uniqBy(
+          result,
+          r => `${r.relationType}:${r.relationTarget}`,
+        );
+        entity.relations = uniqueRelationRows
           .filter(row => row.relationType /* exclude null row, if relevant */)
           .map(row => ({
             type: row.relationType!,

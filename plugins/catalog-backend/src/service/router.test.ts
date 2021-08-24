@@ -291,10 +291,10 @@ describe('createRouter readonly disabled', () => {
 
   describe('POST /locations', () => {
     it('rejects malformed locations', async () => {
-      const spec = ({
+      const spec = {
         typez: 'b',
         target: 'c',
-      } as unknown) as LocationSpec;
+      } as unknown as LocationSpec;
 
       const response = await request(app).post('/locations').send(spec);
 

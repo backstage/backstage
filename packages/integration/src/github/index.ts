@@ -20,6 +20,9 @@ export {
 } from './config';
 export type { GitHubIntegrationConfig } from './config';
 export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
-export { GithubCredentialsProvider } from './GithubCredentialsProvider';
+export {
+  GithubAppCredentialsMux,
+  GithubCredentialsProvider,
+} from './GithubCredentialsProvider';
 export type { GithubCredentialType } from './GithubCredentialsProvider';
 export { GitHubIntegration } from './GitHubIntegration';

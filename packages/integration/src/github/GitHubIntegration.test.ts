@@ -56,8 +56,7 @@ describe('GitHubIntegration', () => {
     expect(
       integration.resolveUrl({
         url: '../a.yaml',
-        base:
-          'https://github.com/backstage/backstage/blob/master/test/README.md',
+        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
         lineNumber: 17,
       }),
     ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml#L17');
@@ -65,8 +64,7 @@ describe('GitHubIntegration', () => {
     expect(
       integration.resolveUrl({
         url: './',
-        base:
-          'https://github.com/backstage/backstage/blob/master/test/README.md',
+        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
       }),
     ).toBe('https://github.com/backstage/backstage/tree/master/test/');
   });

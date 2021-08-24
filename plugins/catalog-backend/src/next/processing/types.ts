@@ -27,7 +27,7 @@ export type EntityProcessingResult =
       ok: true;
       state: Map<string, JsonObject>;
       completedEntity: Entity;
-      deferredEntities: Entity[];
+      deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];
       errors: Error[];
     }
@@ -39,3 +39,8 @@ export type EntityProcessingResult =
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
+
+export type DeferredEntity = {
+  entity: Entity;
+  locationKey?: string;
+};

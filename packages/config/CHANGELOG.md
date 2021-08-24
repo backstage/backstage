@@ -1,5 +1,17 @@
 # @backstage/config
 
+## 0.1.7
+
+### Patch Changes
+
+- 90f25476a: Extended the `Config` interface to have an optional `subscribe` method that can be used be notified of updates to the configuration.
+
+## 0.1.6
+
+### Patch Changes
+
+- e9d3983ee: Add warning when trying to access configuration values that have been filtered out by visibility.
+
 ## 0.1.5
 
 ### Patch Changes

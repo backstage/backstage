@@ -110,9 +110,7 @@ export class DatabaseManager {
    * @returns Object with client type returned as `client` and boolean representing whether
    * or not the client was overridden as `overridden`
    */
-  private getClientType(
-    pluginId: string,
-  ): {
+  private getClientType(pluginId: string): {
     client: string;
     overridden: boolean;
   } {
@@ -126,6 +124,14 @@ export class DatabaseManager {
       client,
       overridden: client !== baseClient,
     };
+  }
+
+  private getEnsureExistsConfig(pluginId: string): boolean {
+    const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
+    return (
+      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
+      baseConfig
+    );
   }
 
   /**
@@ -203,13 +209,15 @@ export class DatabaseManager {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    const databaseName = this.getDatabaseName(pluginId);
-    try {
-      await ensureDatabaseExists(pluginConfig, databaseName);
-    } catch (error) {
-      throw new Error(
-        `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
-      );
+    if (this.getEnsureExistsConfig(pluginId)) {
+      const databaseName = this.getDatabaseName(pluginId);
+      try {
+        await ensureDatabaseExists(pluginConfig, databaseName);
+      } catch (error) {
+        throw new Error(
+          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+        );
+      }
     }
 
     return createDatabaseClient(

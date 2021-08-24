@@ -41,9 +41,12 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const { loading, value: runs, retry, error } = useAsyncRetry<
-    WorkflowRun[]
-  >(async () => {
+  const {
+    loading,
+    value: runs,
+    retry,
+    error,
+  } = useAsyncRetry<WorkflowRun[]>(async () => {
     return api
       .listWorkflowRuns({
         projectId,

@@ -13,14 +13,29 @@ configuration options for TechDocs.
 # File: app-config.yaml
 
 techdocs:
-  # generators.techdocs can have two values: 'docker' or 'local'. This is to determine how to run the generator - whether to
-  # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
-  # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
-  # into Docker in Docker situation. Read more here
-  # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
+  # techdocs.generator is used to configure how documentation sites are generated using MkDocs.
 
-  generators:
-    techdocs: 'docker'
+  generator:
+    # techdocs.generator.runIn can be either 'docker' or 'local'. This is to determine how to run the generator - whether to
+    # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
+    # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
+    # into Docker in Docker situation. Read more here
+    # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
+
+    runIn: 'docker'
+
+    # (Optional) techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
+    # if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
+    # NOTE: This setting is only used when techdocs.generator.runIn is set to 'docker'.
+
+    dockerImage: 'spotify/techdocs'
+
+    # (Optional) techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
+    # using a custom techdocs.generator.dockerImage and you have a custom docker login requirement. For example, you need to login to
+    # AWS ECR to pull the docker image.
+    # NOTE: Disabling this requires the docker image was pulled by other means before running the techdocs generator.
+
+    pullImage: true
 
   # techdocs.builder can be either 'local' or 'external.
   # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage

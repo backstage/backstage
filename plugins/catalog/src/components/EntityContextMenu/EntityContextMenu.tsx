@@ -44,13 +44,20 @@ type ExtraContextMenuItem = {
   onClick: () => void;
 };
 
+// unstable context menu option, eg: disable the unregister entity menu
+type contextMenuOptions = {
+  disableUnregister: boolean;
+};
+
 type Props = {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: contextMenuOptions;
   onUnregisterEntity: () => void;
 };
 
 export const EntityContextMenu = ({
   UNSTABLE_extraContextMenuItems,
+  UNSTABLE_contextMenuOptions,
   onUnregisterEntity,
 }: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
@@ -82,6 +89,9 @@ export const EntityContextMenu = ({
     <Divider key="the divider is here!" />,
   ];
 
+  const disableUnregister =
+    UNSTABLE_contextMenuOptions?.disableUnregister ?? false;
+
   return (
     <>
       <IconButton
@@ -108,6 +118,7 @@ export const EntityContextMenu = ({
               onClose();
               onUnregisterEntity();
             }}
+            disabled={disableUnregister}
           >
             <ListItemIcon>
               <Cancel fontSize="small" />

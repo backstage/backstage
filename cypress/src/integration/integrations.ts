@@ -27,8 +27,10 @@ describe('Integrations', () => {
         type: 'url',
       });
 
+      cy.wait(5000);
+
       cy.visit('/catalog');
-      cy.contains('All').click();
+      cy.get('[data-testid="user-picker-all"]').click();
       cy.get('table').should('contain', 'github-repo');
       cy.get('table').should('contain', 'github-repo-nested');
     });
@@ -52,8 +54,10 @@ describe('Integrations', () => {
         type: 'url',
       });
 
+      cy.wait(5000);
+
       cy.visit('/catalog');
-      cy.contains('All').click();
+      cy.get('[data-testid="user-picker-all"]').click();
       cy.get('table').should('contain', 'gitlab-repo');
       cy.get('table').should('contain', 'gitlab-repo-nested');
     });
@@ -67,8 +71,10 @@ describe('Integrations', () => {
         type: 'url',
       });
 
+      cy.wait(5000);
+
       cy.visit('/catalog');
-      cy.contains('All').click();
+      cy.get('[data-testid="user-picker-all"]').click();
       cy.get('table').should('contain', 'bitbucket-repo');
       cy.get('table').should('contain', 'bitbucket-repo-nested');
     });

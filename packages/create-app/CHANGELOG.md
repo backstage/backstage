@@ -1,5 +1,240 @@
 # @backstage/create-app
 
+## 0.3.37
+
+## 0.3.36
+
+## 0.3.35
+
+### Patch Changes
+
+- 362ea5a72: Updated the index page redirect to work with apps served on a different base path than `/`.
+
+  To apply this change to an existing app, remove the `/` prefix from the target route in the `Navigate` element in `packages/app/src/App.tsx`:
+
+  ```diff
+  -<Navigate key="/" to="/catalog" />
+  +<Navigate key="/" to="catalog" />
+  ```
+
+- 80582cbec: Use new composable `TechDocsIndexPage` and `DefaultTechDocsHome`
+
+  Make the following changes to your `App.tsx` to migrate existing apps:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+- 56c773909: Add a complete prettier setup to the created project. Prettier used to only be added as a dependency to create apps, but there wasn't a complete setup included that makes it easy to run prettier. That has now changed, and the new `prettier:check` command can be used to check the formatting of the files in your created project.
+
+  To apply this change to an existing app, a couple of changes need to be made.
+
+  Create a `.prettierignore` file at the root of your repository with the following contents:
+
+  ```
+  dist
+  dist-types
+  coverage
+  .vscode
+  ```
+
+  Next update the root `package.json` by bumping the prettier version and adding the new `prettier:check` command:
+
+  ```diff
+     "scripts": {
+       ...
+  +    "prettier:check": "prettier --check .",
+       ...
+     },
+     ...
+     "dependencies": {
+       ...
+  -    "prettier": "^1.19.1"
+  +    "prettier": "^2.3.2"
+     }
+  ```
+
+  Finally run `yarn prettier --write .` on your project to update the existing formatting.
+
+- 9f8f8dd6b: Removed the `/` prefix in the catalog `SidebarItem` element, as it is no longer needed.
+
+  To apply this change to an existing app, remove the `/` prefix from the catalog and any other sidebar items in `packages/app/src/components/Root/Root.ts`:
+
+  ```diff
+  -<SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+  +<SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+  ```
+
+- 56c773909: Switched `@types/react-dom` dependency to of the app package to request `*` rather than a specific version.
+
+  To apply this change to an existing app, change the following in `packages/app/package.json`:
+
+  ```diff
+  -    "@types/react-dom": "^16.9.8",
+  +    "@types/react-dom": "*",
+  ```
+
+## 0.3.34
+
+### Patch Changes
+
+- c189c5da5: fix typo in the comments of EntityPage component
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- 98dda80b4: Update `techdocs.generators` with the latest `techdocs.generator` config in `app-config.yaml`. See
+  https://backstage.io/docs/features/techdocs/configuration for reference and relevant PR
+  https://github.com/backstage/backstage/pull/6071/files for the changes.
+
+## 0.3.33
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- d50c9e7c0: Update the `software-templates` to point to `main` branch instead of `master`
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+## 0.3.32
+
+### Patch Changes
+
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- eb740ee24: Moved sample software templates to the [backstage/software-templates](https://github.com/backstage/software-templates) repository. If you previously referenced the sample templates straight from `scaffolder-backend` plugin in the main [backstage/backstage](https://github.com/backstage/backstage) repository in your `app-config.yaml`, these references will need to be updated.
+
+  See https://github.com/backstage/software-templates
+
+## 0.3.31
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+
+## 0.3.30
+
+### Patch Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+- f7134c368: bump sqlite3 to 5.0.1
+- e4244f94b: Use SidebarScrollWrapper to improve responsiveness of the current sidebar. Change: Wrap a section of SidebarItems with this component to enable scroll for smaller screens. It can also be used in sidebar plugins (see shortcuts plugin for an example).
+
+## 0.3.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.2
+
+## 0.3.28
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+
 ## 0.3.27
 
 ### Patch Changes

@@ -52,12 +52,8 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   }
 
   async location(id: string): Promise<LocationResponse> {
-    const {
-      message,
-      status,
-      timestamp,
-      ...data
-    } = await this.database.location(id);
+    const { message, status, timestamp, ...data } =
+      await this.database.location(id);
     return {
       currentStatus: {
         message,

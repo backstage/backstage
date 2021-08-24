@@ -101,7 +101,12 @@ export class UrlReaderProcessor implements CatalogProcessor {
       return Promise.all(output);
     }
 
-    // Otherwise do a plain read
+    // Otherwise do a plain read, prioritizing readUrl if available
+    if (this.options.reader.readUrl) {
+      const data = await this.options.reader.readUrl(location);
+      return [{ url: location, data: await data.buffer() }];
+    }
+
     const data = await this.options.reader.read(location);
     return [{ url: location, data }];
   }

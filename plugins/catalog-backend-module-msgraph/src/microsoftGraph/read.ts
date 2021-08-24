@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import limiterFactory from 'p-limit';
+import { Logger } from 'winston';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -75,7 +76,11 @@ export async function defaultUserTransformer(
 
 export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
-  options?: { userFilter?: string; transformer?: UserTransformer },
+  options: {
+    userFilter?: string;
+    transformer?: UserTransformer;
+    logger: Logger;
+  },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
@@ -86,17 +91,22 @@ export async function readMicrosoftGraphUsers(
   const promises: Promise<void>[] = [];
 
   for await (const user of client.getUsers({
-    filter: options?.userFilter,
+    filter: options.userFilter,
   })) {
     // Process all users in parallel, otherwise it can take quite some time
     promises.push(
       limiter(async () => {
-        const userPhoto = await client.getUserPhotoWithSizeLimit(
-          user.id!,
-          // We are limiting the photo size, as users with full resolution photos
-          // can make the Backstage API slow
-          120,
-        );
+        let userPhoto;
+        try {
+          userPhoto = await client.getUserPhotoWithSizeLimit(
+            user.id!,
+            // We are limiting the photo size, as users with full resolution photos
+            // can make the Backstage API slow
+            120,
+          );
+        } catch (e) {
+          options.logger.warn(`Unable to load photo for ${user.id}`);
+        }
 
         const entity = await transformer(user, userPhoto);
 
@@ -202,7 +212,11 @@ export async function defaultGroupTransformer(
 export async function readMicrosoftGraphGroups(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { groupFilter?: string; transformer?: GroupTransformer },
+  options?: {
+    groupFilter?: string;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+  },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
   rootGroup: GroupEntity | undefined; // With all relations empty
@@ -214,13 +228,15 @@ export async function readMicrosoftGraphGroups(
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const limiter = limiterFactory(10);
 
-  const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId);
+  const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId, {
+    transformer: options?.organizationTransformer,
+  });
   if (rootGroup) {
     groupMember.set(rootGroup.metadata.name, new Set<string>());
     groups.push(rootGroup);
   }
 
-  const transformer = options?.transformer ?? defaultGroupTransformer;
+  const transformer = options?.groupTransformer ?? defaultGroupTransformer;
   const promises: Promise<void>[] = [];
 
   for await (const group of client.getGroups({
@@ -308,14 +324,12 @@ export function resolveRelations(
 
   // Make sure every group (except root) has at least one parent. If the parent is missing, add the root.
   if (rootGroup) {
-    const tenantId = rootGroup.metadata.annotations![
-      MICROSOFT_GRAPH_TENANT_ID_ANNOTATION
-    ];
+    const tenantId =
+      rootGroup.metadata.annotations![MICROSOFT_GRAPH_TENANT_ID_ANNOTATION];
 
     groups.forEach(group => {
-      const groupId = group.metadata.annotations![
-        MICROSOFT_GRAPH_GROUP_ID_ANNOTATION
-      ];
+      const groupId =
+        group.metadata.annotations![MICROSOFT_GRAPH_GROUP_ID_ANNOTATION];
 
       if (!groupId) {
         return;
@@ -371,24 +385,26 @@ export function resolveRelations(
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: {
+  options: {
     userFilter?: string;
     groupFilter?: string;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
-    userFilter: options?.userFilter,
+    userFilter: options.userFilter,
+    transformer: options.userTransformer,
+    logger: options.logger,
   });
-  const {
-    groups,
-    rootGroup,
-    groupMember,
-    groupMemberOf,
-  } = await readMicrosoftGraphGroups(client, tenantId, {
-    groupFilter: options?.groupFilter,
-    transformer: options?.groupTransformer,
-  });
+  const { groups, rootGroup, groupMember, groupMemberOf } =
+    await readMicrosoftGraphGroups(client, tenantId, {
+      groupFilter: options?.groupFilter,
+      groupTransformer: options?.groupTransformer,
+      organizationTransformer: options?.organizationTransformer,
+    });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));

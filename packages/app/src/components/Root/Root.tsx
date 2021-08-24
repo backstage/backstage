@@ -33,6 +33,7 @@ import {
   SidebarItem,
   SidebarDivider,
   SidebarSpace,
+  SidebarScrollWrapper,
 } from '@backstage/core-components';
 
 const useSidebarLogoStyles = makeStyles({
@@ -75,7 +76,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarSearch />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
-      <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+      <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />

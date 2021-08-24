@@ -33,7 +33,7 @@ type ComponentLoader<T> =
 // ComponentType inserts children as an optional prop whether the inner component accepts it or not,
 // making it impossible to make the usage of children type safe.
 export function createRoutableExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: {
   component: () => Promise<T>;
   mountPoint: RouteRef;
@@ -91,7 +91,7 @@ export function createRoutableExtension<
 // ComponentType inserts children as an optional prop whether the inner component accepts it or not,
 // making it impossible to make the usage of children type safe.
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: ComponentLoader<T> }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
@@ -101,7 +101,7 @@ export function createComponentExtension<
 // ComponentType inserts children as an optional prop whether the inner component accepts it or not,
 // making it impossible to make the usage of children type safe.
 export function createReactExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
@@ -111,9 +111,9 @@ export function createReactExtension<
   let Component: T;
   if ('lazy' in options.component) {
     const lazyLoader = options.component.lazy;
-    Component = (lazy(() =>
+    Component = lazy(() =>
       lazyLoader().then(component => ({ default: component })),
-    ) as unknown) as T;
+    ) as unknown as T;
   } else {
     Component = options.component.sync;
   }

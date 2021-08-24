@@ -100,7 +100,7 @@ describe('<GroupsExplorerContent />', () => {
     const catalogError = new Error('Network timeout');
     catalogApi.getEntities.mockRejectedValueOnce(catalogError);
 
-    const { getByText } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <GroupsExplorerContent />
       </Wrapper>,
@@ -108,7 +108,7 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() =>
-      expect(getByText(/Warning: Network timeout/)).toBeInTheDocument(),
+      expect(getAllByText(/Error: Network timeout/).length).not.toBe(0),
     );
   });
 });

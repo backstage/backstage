@@ -80,7 +80,8 @@
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
-          "features/search/architecture"
+          "features/search/architecture",
+          "features/search/search-engines"
         ]
       },
       {
@@ -103,6 +104,11 @@
     ],
     "Integrations": [
       "integrations/index",
+      {
+        "type": "subcategory",
+        "label": "AWS S3",
+        "ids": ["integrations/aws-s3/locations"]
+      },
       {
         "type": "subcategory",
         "label": "Azure",
@@ -157,7 +163,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
-      "plugins/integrating-plugin-into-service-catalog",
+      "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
       {
         "type": "subcategory",
@@ -166,7 +172,8 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/github-apps"
+          "plugins/github-apps",
+          "plugins/url-reader"
         ]
       },
       {
@@ -246,6 +253,7 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres"
     ],

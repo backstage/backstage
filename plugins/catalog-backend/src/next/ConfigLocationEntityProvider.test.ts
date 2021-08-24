@@ -31,9 +31,9 @@ describe('ConfigLocationEntityProvider', () => {
       },
     });
 
-    const mockConnection = ({
+    const mockConnection = {
       applyMutation: jest.fn(),
-    } as unknown) as EntityProviderConnection;
+    } as unknown as EntityProviderConnection;
     const locationProvider = new ConfigLocationEntityProvider(mockConfig);
 
     await locationProvider.connect(mockConnection);
@@ -41,27 +41,90 @@ describe('ConfigLocationEntityProvider', () => {
     expect(mockConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expect.arrayContaining([
-        expect.objectContaining({
-          spec: {
-            target: path.join(
-              resolvePackagePath('@backstage/plugin-catalog-backend'),
-              './lols.yaml',
-            ),
-            type: 'file',
-          },
-        }),
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: path.join(
+                resolvePackagePath('@backstage/plugin-catalog-backend'),
+                './lols.yaml',
+              ),
+              type: 'file',
+            },
+          }),
+          locationKey: expect.stringMatching(/lols\.yaml$/),
+        },
       ]),
     });
     expect(mockConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expect.arrayContaining([
-        expect.objectContaining({
-          spec: {
-            target: 'https://github.com/backstage/backstage',
-            type: 'url',
-          },
-        }),
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: 'https://github.com/backstage/backstage',
+              type: 'url',
+            },
+          }),
+          locationKey: 'url:https://github.com/backstage/backstage',
+        },
       ]),
+    });
+  });
+
+  it('should be able to observe the config', async () => {
+    // Grab the subscriber function and use mutable config data to mock a config file change
+    let subscriber: () => void;
+    const mutableConfigData = {
+      catalog: {
+        locations: [{ type: 'url', target: 'https://github.com/a/a' }],
+      },
+    };
+
+    const mockConfig = Object.assign(new ConfigReader(mutableConfigData), {
+      subscribe: (s: () => void) => {
+        subscriber = s;
+        return { unsubscribe: () => {} };
+      },
+    });
+
+    const mockConnection = {
+      applyMutation: jest.fn(),
+    } as unknown as EntityProviderConnection;
+    const locationProvider = new ConfigLocationEntityProvider(mockConfig);
+
+    await locationProvider.connect(mockConnection);
+
+    expect(mockConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: 'https://github.com/a/a',
+              type: 'url',
+            },
+          }),
+          locationKey: 'url:https://github.com/a/a',
+        },
+      ],
+    });
+
+    mutableConfigData.catalog.locations[0].target = 'https://github.com/b/b';
+    subscriber!();
+
+    expect(mockConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: expect.objectContaining({
+            spec: {
+              target: 'https://github.com/b/b',
+              type: 'url',
+            },
+          }),
+          locationKey: 'url:https://github.com/b/b',
+        },
+      ],
     });
   });
 });

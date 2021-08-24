@@ -98,7 +98,7 @@ export async function getBitbucketDownloadUrl(
   // /docs/index.md will download the docs folder and everything below it
   const path = filepath ? `&path=${encodeURIComponent(filepath)}` : '';
   const archiveUrl = isHosted
-    ? `${protocol}://${resource}/${project}/${repoName}/get/${branch}.tgz`
+    ? `${protocol}://${resource}/${project}/${repoName}/get/${branch}.tar.gz`
     : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${branch}&prefix=${project}-${repoName}${path}`;
 
   return archiveUrl;

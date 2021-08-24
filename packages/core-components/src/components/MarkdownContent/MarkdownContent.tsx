@@ -65,8 +65,8 @@ type Props = {
 };
 
 const renderers = {
-  code: ({ language, value }: { language: string; value: string }) => {
-    return <CodeSnippet language={language} text={value} />;
+  code: ({ language, value }: { language: string; value?: string }) => {
+    return <CodeSnippet language={language} text={value ?? ''} />;
   },
 };
 

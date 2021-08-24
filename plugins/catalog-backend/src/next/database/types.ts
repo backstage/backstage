@@ -16,27 +16,37 @@
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { Transaction } from '../../database/types';
+import { DeferredEntity } from '../processing/types';
 
-export type AddUnprocessedEntitiesOptions = {
-  entityRef: string;
-  entities: Entity[];
-};
+export type AddUnprocessedEntitiesOptions =
+  | {
+      sourceEntityRef: string;
+      entities: DeferredEntity[];
+    }
+  | {
+      sourceKey: string;
+      entities: DeferredEntity[];
+    };
 
 export type AddUnprocessedEntitiesResult = {};
 
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
+  resultHash: string;
   state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
-  deferredEntities: Entity[];
+  deferredEntities: DeferredEntity[];
+  locationKey?: string;
 };
 
 export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
+  resultHash: string;
 };
 
 export type RefreshStateItem = {
@@ -44,10 +54,12 @@ export type RefreshStateItem = {
   entityRef: string;
   unprocessedEntity: Entity;
   processedEntity?: Entity;
-  nextUpdateAt: string;
-  lastDiscoveryAt: string; // remove?
+  resultHash: string;
+  nextUpdateAt: DateTime;
+  lastDiscoveryAt: DateTime; // remove?
   state: Map<string, JsonObject>;
   errors?: string;
+  locationKey?: string;
 };
 
 export type GetProcessableEntitiesResult = {
@@ -57,23 +69,18 @@ export type GetProcessableEntitiesResult = {
 export type ReplaceUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
-      items: Entity[];
+      items: DeferredEntity[];
       type: 'full';
     }
   | {
       sourceKey: string;
-      added: Entity[];
-      removed: Entity[];
+      added: DeferredEntity[];
+      removed: DeferredEntity[];
       type: 'delta';
     };
 
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
-
-  addUnprocessedEntities(
-    tx: Transaction,
-    options: AddUnprocessedEntitiesOptions,
-  ): Promise<void>;
 
   replaceUnprocessedEntities(
     txOpaque: Transaction,

@@ -17,17 +17,20 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
+    defaultBranch?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     sourcePath?: string;
   }>({
@@ -47,6 +50,11 @@ export function createPublishGitlabAction(options: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -70,9 +78,19 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, repoVisibility = 'private' } = ctx.input;
+      const {
+        repoUrl,
+        repoVisibility = 'private',
+        defaultBranch = 'master',
+      } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const integrationConfig = integrations.gitlab.byHost(host);
 
@@ -111,14 +129,24 @@ export function createPublishGitlabAction(options: {
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/master`;
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
+        defaultBranch,
         auth: {
           username: 'oauth2',
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
+        gitAuthorInfo,
       });
 
       ctx.output('remoteUrl', remoteUrl);

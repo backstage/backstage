@@ -112,7 +112,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         <Grid
           container
           direction="column"
-          justify="flex-start"
+          justifyContent="flex-start"
           alignItems="flex-start"
         >
           <Grid item>

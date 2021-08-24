@@ -44,8 +44,12 @@ export function basicIntegrations<T extends ScmIntegration>(
       return integrations;
     },
     byUrl(url: string | URL): T | undefined {
-      const parsed = typeof url === 'string' ? new URL(url) : url;
-      return integrations.find(i => getHost(i) === parsed.hostname);
+      try {
+        const parsed = typeof url === 'string' ? new URL(url) : url;
+        return integrations.find(i => getHost(i) === parsed.host);
+      } catch {
+        return undefined;
+      }
     },
     byHost(host: string): T | undefined {
       return integrations.find(i => getHost(i) === host);

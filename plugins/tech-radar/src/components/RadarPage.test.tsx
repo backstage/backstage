@@ -85,6 +85,7 @@ describe('RadarPage', () => {
       height: 800,
       svgProps: { 'data-testid': 'tech-radar-svg' },
     };
+    jest.spyOn(mockClient, 'load');
 
     const { getByText, getByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
@@ -100,6 +101,30 @@ describe('RadarPage', () => {
       getByText('Pick the recommended technologies for your projects'),
     ).toBeInTheDocument();
     expect(getByTestId('tech-radar-svg')).toBeInTheDocument();
+    expect(mockClient.load).toBeCalledWith(undefined);
+  });
+
+  it('should call load with id', async () => {
+    const techRadarProps = {
+      width: 1200,
+      height: 800,
+      svgProps: { 'data-testid': 'tech-radar-svg' },
+      id: 'myId',
+    };
+    jest.spyOn(mockClient, 'load');
+
+    const { getByTestId } = await renderInTestApp(
+      <ThemeProvider theme={lightTheme}>
+        <ApiProvider apis={ApiRegistry.from([[techRadarApiRef, mockClient]])}>
+          <RadarPage {...techRadarProps} />
+        </ApiProvider>
+      </ThemeProvider>,
+    );
+
+    await waitForElement(() => getByTestId('tech-radar-svg'));
+
+    expect(getByTestId('tech-radar-svg')).toBeInTheDocument();
+    expect(mockClient.load).toBeCalledWith('myId');
   });
 
   it('should call the errorApi if load fails', async () => {

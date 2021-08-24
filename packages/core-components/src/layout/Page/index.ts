@@ -15,3 +15,4 @@
  */
 
 export { Page } from './Page';
+export { PageWithHeader } from './PageWithHeader';

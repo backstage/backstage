@@ -35,7 +35,7 @@ If you want more control over the theme, and for example customize font sizes
 and margins, you can use the lower-level `createThemeOverrides` function
 exported by [@backstage/theme](https://www.npmjs.com/package/@backstage/theme)
 in combination with
-[createMuiTheme](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
+[createTheme](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
 from [@material-ui/core](https://www.npmjs.com/package/@material-ui/core). See
 the
 [@backstage/theme source](https://github.com/backstage/backstage/tree/master/packages/theme/src)
@@ -56,7 +56,7 @@ For example, adding the theme that we created in the previous section can be
 done like this:
 
 ```ts
-import { createApp } from '@backstage/core';
+import { createApp } from '@backstage/core-app-api';
 
 const app = createApp({
   apis: ...,

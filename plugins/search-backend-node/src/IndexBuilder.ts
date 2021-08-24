@@ -18,13 +18,13 @@ import {
   DocumentCollator,
   DocumentDecorator,
   IndexableDocument,
+  SearchEngine,
 } from '@backstage/search-common';
 import { Logger } from 'winston';
 import { Scheduler } from './index';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-  SearchEngine,
 } from './types';
 
 interface CollatorEnvelope {
@@ -140,7 +140,7 @@ export class IndexBuilder {
         }
 
         // pushing documents to index to a configured search engine.
-        this.searchEngine.index(type, documents);
+        await this.searchEngine.index(type, documents);
       }, this.collators[type].refreshInterval * 1000);
     });
 

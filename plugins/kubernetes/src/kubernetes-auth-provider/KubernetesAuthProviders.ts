@@ -44,9 +44,8 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const kubernetesAuthProvider:
-      | KubernetesAuthProvider
-      | undefined = this.kubernetesAuthProviderMap.get(authProvider);
+    const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
+      this.kubernetesAuthProviderMap.get(authProvider);
     if (kubernetesAuthProvider) {
       return await kubernetesAuthProvider.decorateRequestBodyForAuth(
         requestBody,

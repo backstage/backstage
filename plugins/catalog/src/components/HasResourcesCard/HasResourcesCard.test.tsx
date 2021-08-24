@@ -66,7 +66,7 @@ describe('<HasResourcesCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Resources')).toBeInTheDocument();
+    expect(getByText('Has resources')).toBeInTheDocument();
     expect(
       getByText(/No resource is part of this system/i),
     ).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('<HasResourcesCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Resources')).toBeInTheDocument();
+      expect(getByText('Has resources')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

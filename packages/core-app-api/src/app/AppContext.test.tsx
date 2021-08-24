@@ -22,9 +22,10 @@ import { AppContext as AppContextV1 } from './types';
 import { AppContextProvider } from './AppContext';
 
 describe('v1 consumer', () => {
-  const AppContext = getGlobalSingleton<
-    Context<VersionedValue<{ 1: AppContextV1 }>>
-  >('app-context');
+  const AppContext =
+    getGlobalSingleton<Context<VersionedValue<{ 1: AppContextV1 }>>>(
+      'app-context',
+    );
 
   function useMockAppV1(): AppContextV1 {
     const impl = useContext(AppContext)?.atVersion(1);

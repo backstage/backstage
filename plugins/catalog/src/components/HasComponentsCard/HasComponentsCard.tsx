@@ -31,7 +31,7 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Components"
+      title="Has components"
       entityKind="Component"
       relationType={RELATION_HAS_PART}
       columns={componentEntityColumns}

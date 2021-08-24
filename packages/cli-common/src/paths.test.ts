@@ -65,7 +65,7 @@ describe('paths', () => {
   });
 
   it('findPaths should find mocked package paths', () => {
-    const mockCwd = resolvePath(__dirname, '../../core');
+    const mockCwd = resolvePath(__dirname, '../../config');
     const mockDir = resolvePath(__dirname, '../../cli');
     const root = resolvePath(__dirname, '../../..');
 

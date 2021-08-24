@@ -101,9 +101,7 @@ should have something similar to the below in
 
 ```ts
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,
@@ -118,9 +116,7 @@ will set the available actions that the scaffolder has access to.
 ```ts
 const actions = [createNewFileAction()];
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,
@@ -135,20 +131,22 @@ want to have those as well as your new one, you'll need to do the following:
 
 ```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
+import { ScmIntegrations } from '@backstage/integration';
+
+const integrations = ScmIntegrations.fromConfig(config);
 
 const builtInActions = createBuiltinActions({
+  containerRunner,
   integrations,
+  config,
   catalogClient,
-  templaters,
   reader,
 });
 
 const actions = [...builtInActions, createNewFileAction()];
 
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,

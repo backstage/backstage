@@ -27,9 +27,10 @@ export const useWebsiteForEntity = () => {
     entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION] ?? '';
   const lighthouseApi = useApi(lighthouseApiRef);
   const errorApi = useApi(errorApiRef);
-  const response = useAsync(() => lighthouseApi.getWebsiteByUrl(websiteUrl), [
-    websiteUrl,
-  ]);
+  const response = useAsync(
+    () => lighthouseApi.getWebsiteByUrl(websiteUrl),
+    [websiteUrl],
+  );
   if (response.error) {
     errorApi.post(response.error);
   }

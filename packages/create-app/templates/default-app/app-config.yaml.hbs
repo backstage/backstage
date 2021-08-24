@@ -32,9 +32,9 @@ backend:
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
-      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-        #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #  $file: <file-path>/ca/server.crt
+      # ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
+      #     $file: <file-path>/ca/server.crt
   {{/if}}
   cache:
     store: memory
@@ -60,8 +60,8 @@ proxy:
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
-  generators:
-    techdocs: 'docker' # Alternatives - 'local'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
@@ -100,11 +100,11 @@ catalog:
 
     # Backstage example templates
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
     - type: url
@@ -112,6 +112,6 @@ catalog:
       rules:
         - allow: [Template]
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

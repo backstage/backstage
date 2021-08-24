@@ -61,7 +61,7 @@ If you do not prefer (3a) and optionally like to use a service account, you can
 follow these steps.
 
 Create a new Service Account and a key associated with it. In roles of the
-service account, use "Storage Admin".
+service account, use "Storage Object Admin".
 
 If you want to create a custom role, make sure to include both `get` and
 `create` permissions for both "Objects" and "Buckets". See
@@ -143,12 +143,47 @@ permissions to:
 
 - `s3:ListBucket` to retrieve bucket metadata
 - `s3:PutObject` to upload files to the bucket
+- `s3:DeleteObject` and `s3:DeleteObjectVersion` to delete stale content during
+  re-publishing
 
 To _read_ TechDocs from the S3 bucket the IAM policy needs to have at a minimum
 permissions to:
 
 - `s3:ListBucket` - To retrieve bucket metadata
 - `s3:GetObject` - To retrieve files from the bucket
+
+> Note: If you need to migrate documentation objects from an older-style path
+> format including case-sensitive entity metadata, you will need to add some
+> additional permissions to be able to perform the migration, including:
+>
+> - `s3:PutBucketAcl` (for copying files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html))
+> - `s3:DeleteObject` and `s3:DeleteObjectVersion` (for deleting migrated files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html))
+>
+> ...And you will need to ensure the permissions apply to the bucket itself, as
+> well as all resources under the bucket. See the example policy below.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TechDocsWithMigration",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObjectVersion",
+        "s3:ListBucket",
+        "s3:DeleteObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": ["arn:aws:s3:::your-bucket", "arn:aws:s3:::your-bucket/*"]
+    }
+  ]
+}
+```
 
 **4a. (Recommended) Setup authentication the AWS way, using environment
 variables**
@@ -311,6 +346,10 @@ techdocs:
         accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
 ```
+
+In either case, the account or credentials used to access your container and all
+TechDocs objects underneath it should have the `Storage Blog Data Owner` role
+applied, in order to read, write, and delete objects as needed.
 
 **4. That's it!**
 

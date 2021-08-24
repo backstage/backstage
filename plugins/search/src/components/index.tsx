@@ -16,6 +16,7 @@
 
 export * from './Filters';
 export * from './SearchFilter';
+export * from './SearchType';
 export * from './SearchBar';
 export * from './SearchPage';
 export * from './SearchResult';

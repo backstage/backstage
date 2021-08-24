@@ -1,62 +1,102 @@
-# PagerDuty
+# PagerDuty + Backstage Integration Benefits
 
-## Overview
+- Display relevant PagerDuty information about an entity within Backstage, such as the escalation policy or if there are any active incidents
+- Trigger an incident to the currently on-call responder(s) for a service
 
-This plugin displays PagerDuty information about an entity such as if there are any active incidents and what the escalation policy is.
+# How it Works
 
-There is also an easy way to trigger an alarm directly to the person who is currently on-call.
+- The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
+- Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
 
-This plugin requires that entities are annotated with an [integration key](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service). See more further down in this document.
+# Requirements
 
-This plugin provides:
+- Setup of the PagerDuty plugin for Backstage requires a PagerDuty Admin role in order to generate the necessary authorizations, such as the API token. If you do not have this role, please reach out to an Admin or Account Owner within your organization to request configuration of this plugin.
 
-- A list of incidents
-- A way to trigger an alarm to the person on-call
-- Information details about the person on-call
+# Support
 
-## Setup instructions
+If you need help with this plugin, please reach out on the [Backstage Discord server](https://discord.gg/MUpMjP2).
 
-Install the plugin:
+# Integration Walk-through
+
+## In PagerDuty
+
+### Integrating With a PagerDuty Service
+
+1. From the **Configuration** menu, select **Services**.
+2. There are two ways to add an integration to a service:
+   - **If you are adding your integration to an existing service**: Click the **name** of the service you want to add the integration to. Then, select the **Integrations** tab and click the **New Integration** button.
+   - **If you are creating a new service for your integration**: Please read the documentation in section [Configuring Services and Integrations](https://support.pagerduty.com/docs/services-and-integrations#section-configuring-services-and-integrations) and follow the steps outlined in the [Create a New Service](https://support.pagerduty.com/docs/services-and-integrations#section-create-a-new-service) section, selecting **Backstage** as the **Integration Type** in step 4. Continue with the **In Backstage** section (below) once you have finished these steps.
+3. Enter an **Integration Name** in the format `monitoring-tool-service-name` (e.g. `Backstage-Shopping-Cart`) and select **Backstage** from the Integration Type menu.
+4. Click the **Add Integration** button to save your new integration. You will be redirected to the Integrations tab for your service.
+5. An **Integration Key** will be generated on this screen. Keep this key saved in a safe place, as it will be used when you configure the integration with **Backstage** in the next section.
+   ![](https://pdpartner.s3.amazonaws.com/ig-template-copy-integration-key.png)
+
+## In Backstage
+
+### Install the plugin
+
+The file paths mentioned in the following steps are relative to your app's root directory — for example, the directory created by following the [Getting Started](https://backstage.io/docs/getting-started/) guide and creating your app with `npx @backstage/create-app`.
+
+First, install the PagerDuty plugin via a CLI:
 
 ```bash
-# From your Backstage root directory
+# From your Backstage app root directory
 cd packages/app
 yarn add @backstage/plugin-pagerduty
 ```
 
-Add it to the `EntityPage.tsx`:
+Next, add the plugin to `EntityPage.tsx` in `packages/app/src/components/catalog` by adding the following code snippets.
+
+Add the following imports to the top of the file:
 
 ```ts
 import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
   EntityPagerDutyCard,
 } from '@backstage/plugin-pagerduty';
-// add to code
-{
-  isPagerDutyAvailable(entity) && (
+```
+
+Find `const overviewContent` in `EntityPage.tsx`, and add the following snippet inside the outermost `Grid` defined there, just before the closing `</Grid>` tag:
+
+```ts
+<EntitySwitch>
+  <EntitySwitch.Case if={isPagerDutyAvailable}>
     <Grid item md={6}>
       <EntityPagerDutyCard />
     </Grid>
-  );
-}
+  </EntitySwitch.Case>
+</EntitySwitch>
 ```
 
-## Client configuration
+When you're done, the `overviewContent` definition should look something like this:
 
-If you want to override the default URL for events, you can add it to `app-config.yaml`.
+```ts
+const overviewContent = (
+  <Grid ...>
+    ...
+    <EntitySwitch>
+      <EntitySwitch.Case if={isPagerDutyAvailable}>
+        <Grid item md={6}>
+          <EntityPagerDutyCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </Grid>
+);
+```
 
-In `app-config.yaml`:
+### Configure the plugin
+
+First, [annotate](https://backstage.io/docs/features/software-catalog/descriptor-format#annotations-optional) the appropriate entity with the PagerDuty integration key in its `.yaml` configuration file:
 
 ```yaml
-pagerduty:
-  eventsBaseUrl: 'https://events.pagerduty.com/v2'
+annotations:
+  pagerduty.com/integration-key: [INTEGRATION_KEY]
 ```
 
-## Providing the API Token
+Next, provide the [API token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key) that the client will use to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/).
 
-In order for the client to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/) it needs an [API Token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key).
-
-Add the proxy configuration in `app-config.yaml`
+Add the proxy configuration in `app-config.yaml`:
 
 ```yaml
 proxy:
@@ -67,23 +107,49 @@ proxy:
       Authorization: Token token=${PAGERDUTY_TOKEN}
 ```
 
-Then start the backend passing the token as an environment variable:
+Then, start the backend, passing the PagerDuty API token as an environment variable:
 
 ```bash
 $ PAGERDUTY_TOKEN='<TOKEN>' yarn start
 ```
 
-This will proxy the request by adding `Authorization` header with the provided token.
+This will proxy the request by adding an `Authorization` header with the provided token.
 
-## Integration Key
+### Optional configuration
 
-The information displayed for each entity is based on the [integration key](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service).
+If you want to override the default URL used for events, you can add it to `app-config.yaml`:
 
-### Adding the integration key to the entity annotation
-
-If you want to use this plugin for an entity, you need to label it with the below annotation:
-
-```yml
-annotations:
-  pagerduty.com/integration-key: [INTEGRATION_KEY]
+```yaml
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'
 ```
+
+# How to Uninstall
+
+1. Remove any configuration added in Backstage yaml files, such as the proxy configuration in `app-config.yaml` and the integration key in an entity's annotations.
+2. Remove the added code snippets from `EntityPage.tsx`
+3. Remove the plugin package:
+
+```bash
+# From your Backstage root directory
+cd packages/app
+yarn remove @backstage/plugin-pagerduty
+```
+
+4. [Delete the integration](https://support.pagerduty.com/docs/services-and-integrations#delete-an-integration-from-a-service) from the service in PagerDuty
+
+# Feature Overview
+
+## View any open incidents
+
+![PagerDuty plugin showing no incidents and the on-call rotation](doc/pd1.png)
+
+## Email link, and view contact information for staff on call
+
+![PagerDuty plugin showing on-call rotation contact information](doc/pd2.png)
+
+## Trigger an incident for a service
+
+![PagerDuty plugin popup modal for creating an incident](doc/pd3.png)
+
+![PagerDuty plugin showing an active incident](doc/pd4.png)

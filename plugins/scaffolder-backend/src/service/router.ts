@@ -18,12 +18,6 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import {
-  PreparerBuilder,
-  TemplaterBuilder,
-  TemplaterValues,
-  PublisherBuilder,
-} from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate } from 'jsonschema';
 import {
@@ -31,27 +25,21 @@ import {
   StorageTaskBroker,
   TaskWorker,
 } from '../scaffolder/tasks';
-import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
-import { createLegacyActions } from '../scaffolder/stages/legacy';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  ContainerRunner,
+  PluginDatabaseManager,
+  UrlReader,
+} from '@backstage/backend-common';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  TemplateEntityV1alpha1,
-  TemplateEntityV1beta2,
-  Entity,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 
 export interface RouterOptions {
-  preparers: PreparerBuilder;
-  templaters: TemplaterBuilder;
-  publishers: PublisherBuilder;
-
   logger: Logger;
   config: Config;
   reader: UrlReader;
@@ -59,19 +47,11 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
-}
-
-function isAlpha1Template(
-  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
-): entity is TemplateEntityV1alpha1 {
-  return (
-    entity.apiVersion === 'backstage.io/v1alpha1' ||
-    entity.apiVersion === 'backstage.io/v1beta1'
-  );
+  containerRunner: ContainerRunner;
 }
 
 function isBeta2Template(
-  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
+  entity: TemplateEntityV1beta2,
 ): entity is TemplateEntityV1beta2 {
   return entity.apiVersion === 'backstage.io/v1beta2';
 }
@@ -83,15 +63,13 @@ export async function createRouter(
   router.use(express.json());
 
   const {
-    preparers,
-    templaters,
-    publishers,
     logger: parentLogger,
     config,
     reader,
     database,
     catalogClient,
     actions,
+    containerRunner,
     taskWorkers,
   } = options;
 
@@ -112,25 +90,20 @@ export async function createRouter(
       taskBroker,
       actionRegistry,
       workingDirectory,
+      integrations,
     });
     workers.push(worker);
   }
 
   const actionsToRegister = Array.isArray(actions)
     ? actions
-    : [
-        ...createLegacyActions({
-          preparers,
-          publishers,
-          templaters,
-        }),
-        ...createBuiltinActions({
-          integrations,
-          catalogClient,
-          templaters,
-          reader,
-        }),
-      ];
+    : createBuiltinActions({
+        integrations,
+        catalogClient,
+        containerRunner,
+        reader,
+        config,
+      });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
@@ -164,42 +137,6 @@ export async function createRouter(
               schema,
             })),
           });
-        } else if (isAlpha1Template(template)) {
-          res.json({
-            title: template.metadata.title ?? template.metadata.name,
-            steps: [
-              {
-                title: 'Fill in template parameters',
-                schema: template.spec.schema,
-              },
-              {
-                title: 'Choose owner and repo',
-                schema: {
-                  type: 'object',
-                  required: ['storePath', 'owner'],
-                  properties: {
-                    owner: {
-                      type: 'string',
-                      title: 'Owner',
-                      description: 'Who is going to own this component',
-                    },
-                    storePath: {
-                      type: 'string',
-                      title: 'Store path',
-                      description:
-                        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
-                    },
-                    access: {
-                      type: 'string',
-                      title: 'Access',
-                      description:
-                        'Who should have access, in org/team or user format',
-                    },
-                  },
-                },
-              },
-            ],
-          });
         } else {
           throw new InputError(
             `Unsupported apiVersion field in schema entity, ${
@@ -221,26 +158,15 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: TemplaterValues = req.body.values;
+      const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await entityClient.findTemplate(templateName, {
         token,
       });
 
       let taskSpec;
-      if (isAlpha1Template(template)) {
-        logger.warn(
-          `[DEPRECATION] - Template: ${template.metadata.name} has version ${template.apiVersion} which is going to be deprecated. Please refer to https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2 for help on migrating`,
-        );
 
-        const result = validate(values, template.spec.schema);
-        if (!result.valid) {
-          res.status(400).json({ errors: result.errors });
-          return;
-        }
-
-        taskSpec = templateEntityToSpec(template, values);
-      } else if (isBeta2Template(template)) {
+      if (isBeta2Template(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
 
@@ -308,17 +234,19 @@ export async function createRouter(
             );
           }
 
+          let shouldUnsubscribe = false;
           for (const event of events) {
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
             if (event.type === 'completion') {
-              unsubscribe();
+              shouldUnsubscribe = true;
               // Closing the event stream here would cause the frontend
               // to automatically reconnect because it lost connection.
             }
           }
           res.flush();
+          if (shouldUnsubscribe) unsubscribe();
         },
       );
       // When client closes connection we update the clients list

@@ -1,5 +1,149 @@
 # @backstage/plugin-jenkins
 
+## 0.5.4
+
+### Patch Changes
+
+- d7d1f6fb9: Make `isJenkinsAvailable` recognise both the old and the new Jenkins annotation.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
+## 0.5.3
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.5.1
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.5.0
+
+### Minor Changes
+
+- 6c7f00eb0: ## Extract an entity-oriented Jenkins Backend
+
+  Change the Jenkins plugin from talking directly with a single Jenkins instance (via the proxy) to having a specific
+  backend plugin which talks to the Jenkins instances.
+
+  Existing users of the Jenkins plugin will need to configure a Jenkins backend instead of a proxy.
+  Typically, this means creating a `src/plugins/jenkins.ts` file, adding a reference to it to `src/index.ts` and changing app-config.yaml
+
+  ### jenkins.ts
+
+  ```typescript
+  import {
+    createRouter,
+    DefaultJenkinsInfoProvider,
+  } from '@backstage/plugin-jenkins-backend';
+  import { CatalogClient } from '@backstage/catalog-client';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    config,
+    discovery,
+  }: PluginEnvironment): Promise<Router> {
+    const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+    return await createRouter({
+      logger,
+      jenkinsInfoProvider: new DefaultJenkinsInfoProvider(
+        catalogClient,
+        config,
+      ),
+    });
+  }
+  ```
+
+  ### app-config.yaml
+
+  For example
+
+  ```yaml
+  proxy:
+    '/jenkins/api':
+      target: 'https://jenkins.example.com:8080' # your Jenkins URL
+      changeOrigin: true
+      headers:
+        Authorization: Basic ${JENKINS_BASIC_AUTH_HEADER}
+  ```
+
+  Would become:
+
+  ```yaml
+  jenkins:
+    baseUrl: https://jenkins.example.com:8080
+    username: backstage-bot
+    apiKey: ${JENKINS_PASSWORD}
+  ```
+
+  ## Change JavaScript API
+
+  As part of the above change, the JavaScript API exposed by the plugin as a possible place for customisation has changed.
+  The ApiRef now has an id of `plugin.jenkins.service2` and has entity-based functions to match the endpoints exposed by
+  the new backend plugin
+
+  ## Change BuildWithStepsPage route
+
+  The plugin originally provided a route to view a particular build of a particular branch so that if you wanted to view
+  the master branch of an entity annotated with `'jenkins.io/github-folder': teamA/artistLookup-build` you could typically
+  access `/catalog/default/component/artist-lookup/ci-cd/run/master/7` but would now have to access
+  `/catalog/default/component/artist-lookup/ci-cd/build/teamA%2FartistLookup-build%2Fmaster/7`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
+## 0.4.6
+
+### Patch Changes
+
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.3
+  - @backstage/catalog-model@0.8.4
+  - @backstage/plugin-catalog-react@0.2.4
+
 ## 0.4.5
 
 ### Patch Changes

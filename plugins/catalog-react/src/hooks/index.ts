@@ -25,3 +25,4 @@ export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
+export { useEntityOwnership } from './useEntityOwnership';

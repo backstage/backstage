@@ -21,9 +21,10 @@ import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
 
 jest.mock('./github');
-const mockGetOrganizationRepositories = getOrganizationRepositories as jest.MockedFunction<
-  typeof getOrganizationRepositories
->;
+const mockGetOrganizationRepositories =
+  getOrganizationRepositories as jest.MockedFunction<
+    typeof getOrganizationRepositories
+  >;
 
 describe('GithubDiscoveryProcessor', () => {
   describe('parseUrl', () => {
@@ -32,22 +33,32 @@ describe('GithubDiscoveryProcessor', () => {
         parseUrl('https://github.com/foo/proj/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
       });
       expect(
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
+        host: 'github.com',
         repoSearchPath: /^proj.*$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
+      });
+      expect(parseUrl('https://github.com/foo')).toEqual({
+        org: 'foo',
+        host: 'github.com',
+        repoSearchPath: /^.*$/,
+        branch: '-',
+        catalogPath: '/catalog-info.yaml',
       });
     });
 
     it('throws on incorrectly formed URLs', () => {
       expect(() => parseUrl('https://github.com')).toThrow();
       expect(() => parseUrl('https://github.com//')).toThrow();
-      expect(() => parseUrl('https://github.com/foo')).toThrow();
       expect(() => parseUrl('https://github.com//foo')).toThrow();
       expect(() => parseUrl('https://github.com/org/teams')).toThrow();
       expect(() => parseUrl('https://github.com/org//teams')).toThrow();
@@ -122,11 +133,17 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'master',
+            },
           },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
@@ -165,16 +182,25 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-cli',
             url: 'https://github.com/backstage/techdocs-cli',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-container',
             url: 'https://github.com/backstage/techdocs-container',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
@@ -212,21 +238,33 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'abstest',
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test',
             url: 'https://github.com/backstage/test',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test-archived',
             url: 'https://github.com/backstage/test',
             isArchived: true,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'testxyz',
             url: 'https://github.com/backstage/testxyz',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });

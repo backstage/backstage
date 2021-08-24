@@ -29,7 +29,7 @@ export type VersionedValue<Versions extends { [version: number]: any }> = {
  * Creates a container for a map of versioned values that implements VersionedValue.
  */
 export function createVersionedValueMap<
-  Versions extends { [version: number]: any }
+  Versions extends { [version: number]: any },
 >(versions: Versions): VersionedValue<Versions> {
   Object.freeze(versions);
   return {

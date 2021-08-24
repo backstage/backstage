@@ -143,6 +143,7 @@ export const useSignInProviders = (
         if (didCancel) {
           return;
         }
+        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         errorApi.post(error);
         setLoading(false);
       });

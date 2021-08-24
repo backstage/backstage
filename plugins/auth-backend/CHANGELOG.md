@@ -1,5 +1,112 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.22
+
+### Patch Changes
+
+- 79d24a966: Fix an issue where the default app origin was not allowed to authenticate users.
+
+## 0.3.21
+
+### Patch Changes
+
+- 72a31c29a: Add support for additional app origins
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+
+## 0.3.20
+
+### Patch Changes
+
+- 29f7cfffb: Added `resolveCatalogMembership` utility to query the catalog for additional authentication claims within sign-in resolvers.
+- 8bedb75ae: Update Luxon dependency to 2.x
+- bfe0ff93f: Add Sign In and Handler resolver for Okta provider
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+  - @backstage/test-utils@0.1.17
+
+## 0.3.19
+
+### Patch Changes
+
+- 4edca1bd0: Allow to configure SAML auth `acceptedClockSkewMs`
+- b68f2c83c: Added the `disableRefresh` option to the `OAuth2` config
+- Updated dependencies
+  - @backstage/test-utils@0.1.16
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.18
+
+### Patch Changes
+
+- 2567c066d: TokenIssuer is now exported so it may be used by auth providers that are not bundled with Backstage
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+  - @backstage/test-utils@0.1.15
+
+## 0.3.17
+
+### Patch Changes
+
+- 40b3c60e2: Configuration updates for the `OpenID Connect` auth provider to allow `prompt` configuration and some sensible defaults.
+- f55f9df10: Add Sign In and Handler resolver for Microsoft provider
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+  - @backstage/catalog-client@0.3.16
+
+## 0.3.15
+
+### Patch Changes
+
+- 6ca29b66c: Unbreak `.well-known` OIDC routes
+- 72574ac4d: Show better error message when configs defined under auth.providers.<provider> are undefined.
+- Updated dependencies
+  - @backstage/backend-common@0.8.4
+  - @backstage/catalog-client@0.3.15
+
+## 0.3.14
+
+### Patch Changes
+
+- 36e9a4084: Don't export the `defaultGoogleAuthProvider`
+- c467cc4b9: Adds support for custom sign-in resolvers and profile transformations for the
+  Google auth provider.
+
+  Adds an `ent` claim in Backstage tokens, with a list of
+  [entity references](https://backstage.io/docs/features/software-catalog/references)
+  related to your signed-in user's identities and groups across multiple systems.
+
+  Adds an optional `providerFactories` argument to the `createRouter` exported by
+  the `auth-backend` plugin.
+
+  Updates `BackstageIdentity` so that
+
+  - `idToken` is deprecated in favor of `token`
+  - An optional `entity` field is added which represents the entity that the user is represented by within Backstage.
+
+  More information:
+
+  - [The identity resolver documentation](https://backstage.io/docs/auth/identity-resolver)
+    explains the concepts and shows how to implement your own.
+  - The [From Identity to Ownership](https://github.com/backstage/backstage/issues/4089)
+    RFC contains details about how this affects ownership in the catalog
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.14
+  - @backstage/catalog-model@0.8.4
+  - @backstage/test-utils@0.1.14
+
 ## 0.3.13
 
 ### Patch Changes

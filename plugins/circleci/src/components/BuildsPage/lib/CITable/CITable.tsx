@@ -260,8 +260,8 @@ export const CITable = ({
         },
       ]}
       data={builds}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangePageSize}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
           <GitHubIcon />
