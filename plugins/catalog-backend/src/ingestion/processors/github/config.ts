@@ -95,27 +95,19 @@ export type GithubMultiOrgConfig = Array<{
    * The namespace of the group created for this org.
    */
   groupNamespace: string;
+  /**
+   * The namespace of the users created for this org.
+   */
+  userNamespace: string;
 }>;
 
 export function readGithubMultiOrgConfig(config: Config): GithubMultiOrgConfig {
   const orgConfigs = config.getOptionalConfigArray('orgs') ?? [];
-  if (orgConfigs.hasOwnProperty('userNamespace')){
-    return orgConfigs.map(c => ({
-      name: c.getString('name'),
-      groupNamespace: (
-        c.getOptionalString('groupNamespace') ?? c.getString('name')
-      ).toLowerCase(),
-      userNamespace: (
-        c.getOptionalString('userNamespace') ?? c.getString('name')
-      ).toLowerCase(),
-    }));
-  }
-  else{
-    return orgConfigs.map(c => ({
-      name: c.getString('name'),
-      groupNamespace: (
-        c.getOptionalString('groupNamespace') ?? c.getString('name')
-      ).toLowerCase(),
-    }));
-  }
+  return orgConfigs.map(c => ({
+    name: c.getString('name'),
+    groupNamespace: (
+      c.getOptionalString('groupNamespace') ?? c.getString('name')
+    ).toLowerCase(),
+    userNamespace: c.getOptionalString('userNamespace') ?? '',
+  }));
 }

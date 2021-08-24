@@ -79,7 +79,7 @@ export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
-  userNamespace?: string
+  userNamespace?: string,
 ): Promise<{ users: UserEntity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
@@ -114,6 +114,7 @@ export async function getOrganizationUsers(
         memberOf: [],
       },
     };
+
     if (userNamespace) entity.metadata.namespace = userNamespace;
     if (user.bio) entity.metadata.description = user.bio;
     if (user.name) entity.spec.profile!.displayName = user.name;
@@ -331,7 +332,7 @@ export async function queryWithPaging<
   GraphqlType,
   OutputType,
   Variables extends {},
-  Response = QueryResponse
+  Response = QueryResponse,
 >(
   client: typeof graphql,
   query: string,
