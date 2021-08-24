@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-e
+  description: Team E With A Very Very Very Very Big Name Size
+spec:
+  type: team
+  profile:
+    displayName: Team E With A Very Very Very Very Big Name Size
+    email: team-e@example.com
+    picture: https://avatars.dicebear.com/api/identicon/team-e@example.com.svg?background=%23fff&margin=25
+  parent: boxoffice
+  children: []
