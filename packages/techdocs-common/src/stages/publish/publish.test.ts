@@ -171,11 +171,11 @@ describe('Publisher', () => {
           type: 'openStackSwift',
           openStackSwift: {
             credentials: {
-              username: 'mockuser',
-              password: 'verystrongpass',
+              id: 'mockId',
+              secret: 'mockSecret',
             },
             authUrl: 'mockauthurl',
-            region: 'mockregion',
+            swiftUrl: 'mockSwiftUrl',
             containerName: 'mock',
           },
         },
