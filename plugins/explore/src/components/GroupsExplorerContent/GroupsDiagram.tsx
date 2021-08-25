@@ -50,7 +50,32 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     fill: 'yellowgreen',
     stroke: theme.palette.border,
   },
+  centeredContent: {
+    padding: '10px',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'black',
+  },
+  textWrapper: {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: '20px',
+  },
 }));
+
+const dimensions = {
+  nodeWidth: 180,
+  nodeHeight: 90,
+  nodeCornerRadius: 20,
+  nodeAligmentShift: 5,
+};
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const classes = useStyles();
@@ -60,20 +85,20 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     return (
       <g>
         <rect
-          width={180}
-          height={80}
-          rx={20}
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
+          rx={dimensions.nodeCornerRadius}
           className={classes.organizationNode}
         />
-        <text
-          x={90}
-          y={45}
-          textAnchor="middle"
-          alignmentBaseline="baseline"
-          style={{ fontWeight: 'bold' }}
+        <title>{props.node.name}</title>
+        <foreignObject
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
         >
-          {props.node.name}
-        </text>
+          <div className={classes.centeredContent}>
+            <div className={classes.textWrapper}>{props.node.name}</div>
+          </div>
+        </foreignObject>
       </g>
     );
   }
@@ -82,7 +107,14 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
 
   return (
     <g>
-      <rect width={180} height={80} rx={20} className={classes.groupNode} />
+      <rect
+        width={dimensions.nodeWidth}
+        height={dimensions.nodeHeight}
+        rx={dimensions.nodeCornerRadius}
+        className={classes.groupNode}
+      />
+      <title>{props.node.name}</title>
+
       <Link
         to={catalogEntityRoute({
           kind: ref.kind,
@@ -90,15 +122,14 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           name: ref.name,
         })}
       >
-        <text
-          x={90}
-          y={45}
-          textAnchor="middle"
-          alignmentBaseline="baseline"
-          style={{ fontWeight: 'bold' }}
+        <foreignObject
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
         >
-          {props.node.name}
-        </text>
+          <div className={classes.centeredContent}>
+            <div className={classes.textWrapper}>{props.node.name}</div>
+          </div>
+        </foreignObject>
       </Link>
     </g>
   );
