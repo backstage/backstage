@@ -169,7 +169,6 @@ export class AwsS3UrlReader implements UrlReader {
   async readTree(url: string): Promise<ReadTreeResponse> {
     try {
       const { path, bucket, region } = parseURL(url);
-      aws.config.update({ region: region });
 
       let moreKeys = true;
       let awsS3Readables: Readable[] = [];
@@ -189,6 +188,7 @@ export class AwsS3UrlReader implements UrlReader {
             ContinuationToken: continuationToken,
           };
         }
+        aws.config.update({ region: region });
         const { Contents, IsTruncated, NextContinuationToken } =
           await this.deps.s3.listObjectsV2(params).promise();
         const responses = await Promise.all(

@@ -38,11 +38,12 @@ import { Writable } from 'stream';
 //
 // @public (undocumented)
 export class AwsS3UrlReader implements UrlReader {
-  // Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
   constructor(
     integration: AwsS3Integration,
-    s3: S3,
-    treeResponseFactory: ReadTreeResponseFactory,
+    deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
   );
   // Warning: (ae-forgotten-export) The symbol "ReaderFactory" needs to be exported by the entry point index.d.ts
   //
@@ -193,27 +194,6 @@ export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   static fromConfig(config: Config): DatabaseManager;
-}
-
-// Warning: (ae-missing-release-tag) "DefaultReadTreeResponseFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
-  constructor(workDir: string);
-  // (undocumented)
-  static create(options: { config: Config }): DefaultReadTreeResponseFactory;
-  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  fromReadableArray(
-    options: FromReadableArrayOptions,
-  ): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "FromArchiveOptions" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
 }
 
 // Warning: (ae-missing-release-tag) "DockerContainerRunner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -699,6 +679,7 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 //
 // src/cache/types.d.ts:34:5 - (ae-forgotten-export) The symbol "ClientOptions" needs to be exported by the entry point index.d.ts
 // src/middleware/errorHandler.d.ts:17:26 - (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
+// src/reading/AwsS3UrlReader.d.ts:11:9 - (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
 // src/reading/types.d.ts:108:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
 // src/service/types.d.ts:12:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:22:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
