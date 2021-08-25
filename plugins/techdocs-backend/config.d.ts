@@ -137,15 +137,15 @@ export interface Config {
              */
             credentials: {
               /**
-               * (Required) Root user name
+               * (Required) Application Credential ID
                * @visibility secret
                */
-              username: string;
+              id: string;
               /**
-               * (Required) Root user password
+               * (Required) Application Credential Secret
                * @visibility secret
                */
-              password: string; // required
+              secret: string; // required
             };
             /**
              * (Required) Cloud Storage Container Name
@@ -158,26 +158,10 @@ export interface Config {
              */
             authUrl: string;
             /**
-             * (Optional) Auth version
-             * If not set, 'v2.0' will be used.
+             * (Required) Swift URL
              * @visibility backend
              */
-            keystoneAuthVersion: string;
-            /**
-             * (Required) Domain Id
-             * @visibility backend
-             */
-            domainId: string;
-            /**
-             * (Required) Domain Name
-             * @visibility backend
-             */
-            domainName: string;
-            /**
-             * (Required) Region
-             * @visibility backend
-             */
-            region: string;
+            swiftUrl: string;
           };
         }
       | {
