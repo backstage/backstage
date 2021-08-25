@@ -116,7 +116,6 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
       <title>{props.node.name}</title>
 
       <Link
-        className={classes.linkDecoration}
         to={catalogEntityRoute({
           kind: ref.kind,
           namespace: ref.namespace,
