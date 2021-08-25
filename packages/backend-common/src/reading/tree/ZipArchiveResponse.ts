@@ -37,6 +37,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     private readonly workDir: string,
     public readonly etag: string,
     private readonly filter?: (path: string, info: { size: number }) => boolean,
+    private readonly stripFirstDirectoryFromPath?: boolean,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
