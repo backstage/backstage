@@ -21,8 +21,10 @@ import {
   makeStyles,
   styled,
   TextField,
+  Theme,
   Typography,
 } from '@material-ui/core';
+import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
@@ -32,7 +34,12 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { NavLink, NavLinkProps } from 'react-router-dom';
+import {
+  Link,
+  NavLinkProps,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
 const useStyles = makeStyles<BackstageTheme>(theme => {
@@ -42,7 +49,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     drawerWidthOpen,
     iconContainerWidth,
   } = sidebarConfig;
-
   return {
     root: {
       color: theme.palette.navigation.color,
@@ -95,6 +101,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       fontWeight: 'bold',
       fontSize: theme.typography.fontSize,
     },
+    searchFieldHTMLInput: {
+      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+    },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
     },
@@ -143,6 +152,54 @@ function isButtonItem(
   return (props as SidebarItemLinkProps).to === undefined;
 }
 
+// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
+//               This is needed because react-router doesn't handle the path comparison
+//               properly yet, matching for example /foobar with /foo.
+export const WorkaroundNavLink = React.forwardRef<
+  HTMLAnchorElement,
+  NavLinkProps
+>(function WorkaroundNavLinkWithRef(
+  {
+    to,
+    end,
+    style,
+    className,
+    activeStyle,
+    caseSensitive,
+    activeClassName = 'active',
+    'aria-current': ariaCurrentProp = 'page',
+    ...rest
+  },
+  ref,
+) {
+  let { pathname: locationPathname } = useLocation();
+  let { pathname: toPathname } = useResolvedPath(to);
+
+  if (!caseSensitive) {
+    locationPathname = locationPathname.toLowerCase();
+    toPathname = toPathname.toLowerCase();
+  }
+
+  let isActive = locationPathname === toPathname;
+  if (!isActive && !end) {
+    // This is the behavior that is different from the original NavLink
+    isActive = locationPathname.startsWith(`${toPathname}/`);
+  }
+
+  const ariaCurrent = isActive ? ariaCurrentProp : undefined;
+
+  return (
+    <Link
+      {...rest}
+      to={to}
+      ref={ref}
+      aria-current={ariaCurrent}
+      style={{ ...style, ...(isActive ? activeStyle : undefined) }}
+      className={clsx([className, isActive ? activeClassName : undefined])}
+    />
+  );
+});
+
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   const {
     icon: Icon,
@@ -163,7 +220,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <Badge
       color="secondary"
       variant="dot"
-      overlap="circle"
+      overlap="circular"
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
@@ -200,22 +257,23 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button {...childProps} ref={ref}>
+      <button aria-label={text} {...childProps} ref={ref}>
         {content}
       </button>
     );
   }
 
   return (
-    <NavLink
+    <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
       to={props.to}
       ref={ref}
+      aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
-    </NavLink>
+    </WorkaroundNavLink>
   );
 });
 
@@ -269,6 +327,9 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
             disableUnderline: true,
             className: classes.searchField,
           }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
+          }}
         />
       </SidebarItem>
     </div>
@@ -289,4 +350,33 @@ export const SidebarDivider = styled('hr')({
   background: '#383838',
   border: 'none',
   margin: '12px 0px',
+});
+
+const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    backgroundColor: theme.palette.background.default,
+    width: '5px',
+    borderRadius: '5px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.text.hint,
+    borderRadius: '5px',
+  },
+});
+
+export const SidebarScrollWrapper = styled('div')(({ theme }) => {
+  const scrollbarStyles = styledScrollbar(theme);
+  return {
+    flex: '0 1 auto',
+    overflowX: 'hidden',
+    // 5px space to the right of the scrollbar
+    width: 'calc(100% - 5px)',
+    // Display at least one item in the container
+    // Question: Can this be a config/theme variable - if so, which? :/
+    minHeight: '48px',
+    overflowY: 'hidden',
+    '@media (hover: none)': scrollbarStyles,
+    '&:hover': scrollbarStyles,
+  };
 });

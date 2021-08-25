@@ -18,9 +18,8 @@ import { useVersionedContext } from '../lib/versionedValues';
 import { AppContext as AppContextV1 } from './types';
 
 export const useApp = (): AppContextV1 => {
-  const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
-    'app-context',
-  );
+  const versionedContext =
+    useVersionedContext<{ 1: AppContextV1 }>('app-context');
   const appContext = versionedContext.atVersion(1);
   if (!appContext) {
     throw new Error('AppContext v1 not available');

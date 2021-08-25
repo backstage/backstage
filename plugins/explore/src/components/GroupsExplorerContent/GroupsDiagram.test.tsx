@@ -46,6 +46,9 @@ describe('<GroupsDiagram />', () => {
                 namespace: 'my-namespace',
               },
               spec: {
+                profile: {
+                  displayName: 'Group A',
+                },
                 type: 'organization',
               },
             },
@@ -64,6 +67,6 @@ describe('<GroupsDiagram />', () => {
       },
     );
 
-    expect(getByText('my-namespace/group-a')).toBeInTheDocument();
+    expect(getByText('Group A')).toBeInTheDocument();
   });
 });

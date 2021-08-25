@@ -16,43 +16,40 @@
 
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Box, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
+const minHeaderHeight = 118;
+
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
-    minHeight: 118,
+    minHeight: minHeaderHeight,
     width: '100%',
     position: 'relative',
     zIndex: 100,
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#112e51',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
   },
   leftItemsBox: {
-    flex: '1 1 auto',
+    maxWidth: '100%',
+    flexGrow: 1,
+    marginBottom: theme.spacing(1),
   },
   rightItemsBox: {
-    flex: '0 1 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginRight: theme.spacing(1),
+    width: 'auto',
   },
   title: {
     color: theme.palette.bursts.fontColor,
-    lineHeight: '1.0em',
     wordBreak: 'break-all',
     fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
     marginBottom: theme.spacing(1),
@@ -198,7 +195,7 @@ export const Header = ({
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
       <header style={style} className={classes.header}>
-        <div className={classes.leftItemsBox}>
+        <Box className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}
             type={type}
@@ -211,8 +208,10 @@ export const Header = ({
             tooltip={tooltip}
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
-        </div>
-        <div className={classes.rightItemsBox}>{children}</div>
+        </Box>
+        <Grid container className={classes.rightItemsBox} spacing={4}>
+          {children}
+        </Grid>
       </header>
     </>
   );

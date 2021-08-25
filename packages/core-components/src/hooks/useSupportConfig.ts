@@ -42,8 +42,7 @@ const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
         {
           // TODO: Update to dedicated support page on backstage.io/docs
           title: 'Add `app.support` config key',
-          url:
-            'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
+          url: 'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
         },
       ],
     },

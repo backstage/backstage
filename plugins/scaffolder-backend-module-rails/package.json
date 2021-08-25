@@ -1,0 +1,44 @@
+{
+  "name": "@backstage/plugin-scaffolder-backend-module-rails",
+  "version": "0.1.4",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "scripts": {
+    "build": "backstage-cli plugin:build",
+    "start": "backstage-cli plugin:serve",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.8.9",
+    "@backstage/plugin-scaffolder-backend": "^0.15.0",
+    "@backstage/config": "^0.1.5",
+    "@backstage/errors": "^0.1.1",
+    "@backstage/integration": "^0.6.0",
+    "command-exists": "^1.2.9",
+    "fs-extra": "^9.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.7.8",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.14.32",
+    "@types/command-exists": "^1.2.0",
+    "@types/fs-extra": "^9.0.1",
+    "@types/mock-fs": "^4.13.0",
+    "jest-when": "^3.1.0",
+    "mock-fs": "^4.13.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

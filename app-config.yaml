@@ -109,8 +109,10 @@ organization:
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
-  generators:
-    techdocs: 'docker' # Alternatives - 'local'
+  generator:
+    runIn: 'docker'
+    # dockerImage: my-org/techdocs # use a custom docker image
+    # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
@@ -159,12 +161,21 @@ integrations:
     - host: bitbucket.org
       username: ${BITBUCKET_USERNAME}
       appPassword: ${BITBUCKET_APP_PASSWORD}
+    ### Example for how to add your bitbucket server instance using the API:
+    # - host: server.bitbucket.com
+    #   apiBaseUrl: server.bitbucket.com
+    #   username: ${BITBUCKET_SERVER_USERNAME}
+    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
-#  googleGcs:
-#    clientEmail: 'example@example.com'
-#    privateKey: ${GCS_PRIVATE_KEY}
+  #  googleGcs:
+  #    clientEmail: 'example@example.com'
+  #    privateKey: ${GCS_PRIVATE_KEY}
+  awsS3:
+    - host: amazonaws.com
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
   rules:
@@ -259,6 +270,12 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
+  # Use to customize default commit author info used when new components are created
+  # defaultAuthor:
+  #   name: Scaffolder
+  #   email: scaffolder@backstage.io
+  # Use to customize the default commit message when new components are created
+  # defaultCommitMessage: 'Initial commit'
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
@@ -376,3 +393,9 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+jenkins:
+  instances:
+    - name: default
+      baseUrl: https://jenkins.example.com
+      username: backstage-bot
+      apiKey: 123456789abcdef0123456789abcedf012

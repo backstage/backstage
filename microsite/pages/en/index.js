@@ -27,7 +27,7 @@ class Index extends React.Component {
                 An open platform for building developer portals
               </Block.Title>
               <Block.Paragraph>
-                Powered by a centralized service catalog, Backstage restores
+                Powered by a centralized software catalog, Backstage restores
                 order to your infrastructure and enables your product teams to
                 ship high-quality code quickly — without compromising autonomy.
               </Block.Paragraph>
@@ -102,10 +102,10 @@ class Index extends React.Component {
               {' '}
               <img
                 className="Block__GIF"
-                src={`${baseUrl}animations/backstage-service-catalog-icon-1.gif`}
+                src={`${baseUrl}animations/backstage-software-catalog-icon-1.gif`}
               />
               <Block.Subtitle>
-                Backstage Service Catalog{' '}
+                Backstage Software Catalog{' '}
                 <a
                   title="Submit feedback for this feature. Click to learn more about this release."
                   href="https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha"
@@ -192,7 +192,7 @@ class Index extends React.Component {
 
         <ActionBlock className="stripe bg-teal">
           <ActionBlock.Title>
-            Learn more about the service catalog
+            Learn more about the software catalog
           </ActionBlock.Title>
           <ActionBlock.Link
             href={`https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha`}
@@ -212,9 +212,9 @@ class Index extends React.Component {
                 Backstage Software Templates{' '}
                 <a
                   title="Submit feedback for this feature. Click to learn more about this release."
-                  href="https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates"
+                  href="https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta"
                 >
-                  (alpha)
+                  (beta)
                 </a>
               </Block.Subtitle>
               <Block.Title small>Standards can set you free</Block.Title>
@@ -292,7 +292,7 @@ class Index extends React.Component {
             Build your own software templates
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/index.md`}
+            href={`https://backstage.io/docs/features/software-templates`}
           >
             Contribute
           </ActionBlock.Link>

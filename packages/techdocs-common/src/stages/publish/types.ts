@@ -55,6 +55,19 @@ export type TechDocsMetadata = {
   etag: string;
 };
 
+export type MigrateRequest = {
+  /**
+   * Whether or not to remove the source file. Defaults to false (acting like a
+   * copy instead of a move).
+   */
+  removeOriginal?: boolean;
+
+  /**
+   * Maximum number of files/objects to migrate at once. Defaults to 25.
+   */
+  concurrency?: number;
+};
+
 /**
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
  * The publisher handles publishing of the generated static files after the prepare and generate steps of TechDocs.
@@ -92,4 +105,14 @@ export interface PublisherBase {
    * Check if the index.html is present for the Entity at the Storage location.
    */
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
+
+  /**
+   * Migrates documentation objects with case sensitive entity triplets to
+   * lowercase entity triplets. This was (will be) a change introduced in
+   * techdocs-cli v{0.x.y} and techdocs-backend v{0.x.y}.
+   *
+   * Implementation of this method is unnecessary in publishers introduced
+   * after v{0.x.y} of techdocs-common.
+   */
+  migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
 }

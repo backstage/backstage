@@ -15,17 +15,18 @@
  */
 
 import {
-  SearchQuery,
   IndexableDocument,
+  SearchQuery,
   SearchResultSet,
+  QueryTranslator,
+  SearchEngine,
 } from '@backstage/search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
-import { SearchEngine, QueryTranslator } from '../types';
 
-type ConcreteLunrQuery = {
-  lunrQueryString: string;
-  documentTypes: string[];
+export type ConcreteLunrQuery = {
+  lunrQueryBuilder: lunr.Index.QueryBuilder;
+  documentTypes?: string[];
 };
 
 type LunrResultEnvelope = {
@@ -50,40 +51,62 @@ export class LunrSearchEngine implements SearchEngine {
     filters,
     types,
   }: SearchQuery): ConcreteLunrQuery => {
-    let lunrQueryFilters;
-    const lunrTerm = term ? `+${term}` : '';
-    if (filters) {
-      lunrQueryFilters = Object.entries(filters)
-        .map(([field, value]) => {
-          // Require that the given field has the given value (with +).
-          if (['string', 'number', 'boolean'].includes(typeof value)) {
-            if (typeof value === 'string') {
-              return ` +${field}:${value.replace(':', '\\:')}`;
-            }
-            return ` +${field}:${value}`;
-          }
-
-          // Illustrate how multi-value filters could work.
-          if (Array.isArray(value)) {
-            // But warn that Lurn supports this poorly.
-            this.logger.warn(
-              `Non-scalar filter value used for field ${field}. Consider using a different Search Engine for better results.`,
-            );
-            return ` ${value.map(v => {
-              return `${field}:${v}`;
-            })}`;
-          }
-
-          // Log a warning or something about unknown filter value
-          this.logger.warn(`Unknown filter type used on field ${field}`);
-          return '';
-        })
-        .join('');
-    }
-
     return {
-      lunrQueryString: `${lunrTerm}${lunrQueryFilters || ''}`,
-      documentTypes: types || ['*'],
+      lunrQueryBuilder: q => {
+        const termToken = lunr.tokenizer(term);
+
+        // Support for typeahead seach is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
+        // look for an exact match and apply a large positive boost
+        q.term(termToken, {
+          usePipeline: true,
+          boost: 100,
+        });
+        // look for terms that match the beginning of this term and apply a
+        // medium boost
+        q.term(termToken, {
+          usePipeline: false,
+          boost: 10,
+          wildcard: lunr.Query.wildcard.TRAILING,
+        });
+        // look for terms that match with an edit distance of 2 and apply a
+        // small boost
+        q.term(termToken, {
+          usePipeline: false,
+          editDistance: 2,
+          boost: 1,
+        });
+
+        if (filters) {
+          Object.entries(filters).forEach(([field, value]) => {
+            if (!q.allFields.includes(field)) {
+              // Throw for unknown field, as this will be a non match
+              throw new Error(`unrecognised field ${field}`);
+            }
+
+            // Require that the given field has the given value
+            if (['string', 'number', 'boolean'].includes(typeof value)) {
+              q.term(lunr.tokenizer(value?.toString()), {
+                presence: lunr.Query.presence.REQUIRED,
+                fields: [field],
+              });
+            } else if (Array.isArray(value)) {
+              // Illustrate how multi-value filters could work.
+              // But warn that Lurn supports this poorly.
+              this.logger.warn(
+                `Non-scalar filter value used for field ${field}. Consider using a different Search Engine for better results.`,
+              );
+              q.term(lunr.tokenizer(value), {
+                presence: lunr.Query.presence.OPTIONAL,
+                fields: [field],
+              });
+            } else {
+              // Log a warning or something about unknown filter value
+              this.logger.warn(`Unknown filter type used on field ${field}`);
+            }
+          });
+        }
+      },
+      documentTypes: types,
     };
   };
 
@@ -91,7 +114,7 @@ export class LunrSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  index(type: string, documents: IndexableDocument[]): void {
+  async index(type: string, documents: IndexableDocument[]): Promise<void> {
     const lunrBuilder = new lunr.Builder();
 
     lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
@@ -117,19 +140,20 @@ export class LunrSearchEngine implements SearchEngine {
     this.lunrIndices[type] = lunrBuilder.build();
   }
 
-  query(query: SearchQuery): Promise<SearchResultSet> {
-    const { lunrQueryString, documentTypes } = this.translator(
+  async query(query: SearchQuery): Promise<SearchResultSet> {
+    const { lunrQueryBuilder, documentTypes } = this.translator(
       query,
     ) as ConcreteLunrQuery;
 
     const results: LunrResultEnvelope[] = [];
 
-    if (documentTypes.length === 1 && documentTypes[0] === '*') {
-      // Iterate over all this.lunrIndex values.
-      Object.keys(this.lunrIndices).forEach(type => {
+    // Iterate over the filtered list of this.lunrIndex keys.
+    Object.keys(this.lunrIndices)
+      .filter(type => !documentTypes || documentTypes.includes(type))
+      .forEach(type => {
         try {
           results.push(
-            ...this.lunrIndices[type].search(lunrQueryString).map(result => {
+            ...this.lunrIndices[type].query(lunrQueryBuilder).map(result => {
               return {
                 result: result,
                 type: type,
@@ -139,36 +163,14 @@ export class LunrSearchEngine implements SearchEngine {
         } catch (err) {
           // if a field does not exist on a index, we can see that as a no-match
           if (
-            err instanceof lunr.QueryParseError &&
+            err instanceof Error &&
             err.message.startsWith('unrecognised field')
-          )
+          ) {
             return;
+          }
+          throw err;
         }
       });
-    } else {
-      // Iterate over the filtered list of this.lunrIndex keys.
-      Object.keys(this.lunrIndices)
-        .filter(type => documentTypes.includes(type))
-        .forEach(type => {
-          try {
-            results.push(
-              ...this.lunrIndices[type].search(lunrQueryString).map(result => {
-                return {
-                  result: result,
-                  type: type,
-                };
-              }),
-            );
-          } catch (err) {
-            // if a field does not exist on a index, we can see that as a no-match
-            if (
-              err instanceof lunr.QueryParseError &&
-              err.message.startsWith('unrecognised field')
-            )
-              return;
-          }
-        });
-    }
 
     // Sort results.
     results.sort((doc1, doc2) => {
@@ -182,6 +184,6 @@ export class LunrSearchEngine implements SearchEngine {
       }),
     };
 
-    return Promise.resolve(realResultSet);
+    return realResultSet;
   }
 }

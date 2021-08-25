@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { FieldExtensionOptions } from './types';
+import { CustomFieldValidator, FieldExtensionOptions } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
@@ -46,6 +46,6 @@ attachComponentData(
   true,
 );
 
-export type { FieldExtensionOptions };
+export type { CustomFieldValidator, FieldExtensionOptions };
 
 export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';

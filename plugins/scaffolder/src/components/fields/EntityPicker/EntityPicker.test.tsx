@@ -69,14 +69,14 @@ describe('<EntityPicker />', () => {
   describe('without allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
-      props = ({
+      props = {
         onChange,
         schema,
         required,
         uiSchema,
         rawErrors,
         formData,
-      } as unknown) as FieldProps<any>;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -109,14 +109,14 @@ describe('<EntityPicker />', () => {
   describe('with allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': { allowedKinds: ['User'] } };
-      props = ({
+      props = {
         onChange,
         schema,
         required,
         uiSchema,
         rawErrors,
         formData,
-      } as unknown) as FieldProps<any>;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

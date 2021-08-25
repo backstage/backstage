@@ -1,5 +1,6 @@
 abc
 accessors
+Anddddd
 Apdex
 api
 Api
@@ -14,6 +15,7 @@ Avro
 backrub
 Bigtable
 Billett
+Bitbucket
 Bitrise
 Blackbox
 bool
@@ -52,10 +54,12 @@ cookiecutter
 css
 Datadog
 dataflow
+dayjs
 deadnaming
 debounce
 Debounce
 declaratively
+deduplicated
 deps
 destructured
 dev
@@ -72,6 +76,7 @@ dockerode
 Docusaurus
 env
 Env
+elasticsearch
 esbuild
 eslint
 etag
@@ -80,6 +85,8 @@ facto
 failover
 Fargate
 Figma
+firehydrant
+FireHydrant
 Firekube
 Fiverr
 gitbeaker
@@ -120,6 +127,7 @@ Knex
 kubectl
 kubernetes
 kubernetes
+ldap
 learnings
 Leasot
 lerna
@@ -134,6 +142,8 @@ maintainership
 makefile
 md
 memcache
+memoize
+memoized
 microservice
 microservices
 microsite
@@ -165,6 +175,7 @@ nohoist
 nonces
 noop
 npm
+nunjucks
 nvarchar
 nvm
 OAuth
@@ -205,6 +216,10 @@ repo
 Repo
 repos
 rerender
+rerenders
+Reusability
+reusability
+roadmaps
 rollbar
 Rollbar
 Rollup
@@ -213,6 +228,7 @@ Routable
 rst
 rsync
 ruleset
+runbook
 sam
 sanitization
 scaffolded
@@ -222,6 +238,7 @@ seb
 semlas
 semver
 Serverless
+siloed
 Sinon
 Snyk
 sourcemaps
@@ -267,13 +284,16 @@ touchpoints
 transpilation
 transpiled
 truthy
+typeahead
 ui
+unbreak
 unmanaged
 unregister
 unregistration
 untracked
 upvote
 url
+URLs
 utils
 validator
 validators

@@ -64,6 +64,7 @@ nav:
           - Getting Started: 'features/search/getting-started.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
+          - Search Engines: 'features/search/search-engines.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
@@ -78,6 +79,8 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
+      - AWS S3:
+          - Locations: 'integrations/aws-s3/locations.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
           - Org Data: 'integrations/azure/org.md'
@@ -105,13 +108,14 @@ nav:
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
-      - Integrate into the Service Catalog: 'plugins/integrating-plugin-into-service-catalog.md'
+      - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
       - Composability System Migration: 'plugins/composability.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
           - GitHub Apps for Backend Authentication: 'plugins/github-apps.md'
+          - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
@@ -161,6 +165,7 @@ nav:
           - Backend: 'api/backend.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
+      - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
   - Architecture Decision Records (ADRs):

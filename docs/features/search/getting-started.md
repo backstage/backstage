@@ -4,8 +4,6 @@ title: Getting Started with Search
 description: How to set up and install Backstage Search
 ---
 
-# Getting Started
-
 Search functions as a plugin to Backstage, so you will need to use Backstage to
 use Search.
 
@@ -29,7 +27,7 @@ Backstage app with the following contents:
 
 ```tsx
 import React from 'react';
-import { Content, Header, Page } from '@backstage/core';
+import { Content, Header, Page } from '@backstage/core-components';
 import { Grid, List, Card, CardContent } from '@material-ui/core';
 import {
   SearchBar,
@@ -142,7 +140,6 @@ export default async function createPlugin({
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   indexBuilder.addCollator({
-    type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
     collator: new DefaultCatalogCollator({ discovery }),
   });
@@ -253,30 +250,26 @@ an example:
 Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a
 [Search Engine](./concepts.md#search-engines) of your choice. Currently, we only
-support one, an in-memory search Engine called Lunr. It can be instantiated like
-this:
-
-```typescript
-const searchEngine = new LunrSearchEngine({ logger });
-const indexBuilder = new IndexBuilder({ logger, searchEngine });
-```
+support two engines, an in-memory search Engine called Lunr and ElasticSearch.
+See [Search Engines](./search-engines.md) documentation for more information how
+to configure these in your Backstage instance.
 
 Backstage Search can be used to power search of anything! Plugins like the
-Catalog offer default [collators](./concepts.md#collators) which are responsible
-for providing documents [to be indexed](./concepts.md#documents-and-indices).
-You can register any number of collators with the `IndexBuilder` like this:
+Catalog offer default [collators](./concepts.md#collators) (e.g.
+[DefaultCatalogCollator](https://github.com/backstage/backstage/blob/df12cc25aa4934a98bc42ed03c07f64a1a0a9d72/plugins/catalog-backend/src/search/DefaultCatalogCollator.ts))
+which are responsible for providing documents
+[to be indexed](./concepts.md#documents-and-indices). You can register any
+number of collators with the `IndexBuilder` like this:
 
 ```typescript
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });
 
 indexBuilder.addCollator({
-  type: 'my-custom-stuff',
   defaultRefreshIntervalSeconds: 3600,
   collator: new MyCustomCollator(),
 });
@@ -290,7 +283,6 @@ its `defaultRefreshIntervalSeconds` value, like this:
 
 ```typescript {3}
 indexBuilder.addCollator({
-  type: 'software-catalog',
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({ discovery }),
 });

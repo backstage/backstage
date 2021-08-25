@@ -74,6 +74,13 @@ describe('Stitcher', () => {
           type: 'looksAt',
           target_entity_ref: 'k:ns/other',
         },
+        // handles and ignores duplicates
+        {
+          originating_entity_id: 'my-id',
+          source_entity_ref: 'k:ns/n',
+          type: 'looksAt',
+          target_entity_ref: 'k:ns/other',
+        },
       ]);
 
       await stitcher.stitch(new Set(['k:ns/n']));

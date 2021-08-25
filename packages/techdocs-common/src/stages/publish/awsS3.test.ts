@@ -63,11 +63,10 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
+const loggerInfoSpy = jest.spyOn(logger, 'info');
+const loggerErrorSpy = jest.spyOn(logger, 'error');
 
-let publisher: PublisherBase;
-
-beforeEach(() => {
-  mockFs.restore();
+const createPublisherMock = (bucketName: string) => {
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -78,13 +77,22 @@ beforeEach(() => {
             accessKeyId: 'accessKeyId',
             secretAccessKey: 'secretAccessKey',
           },
-          bucketName: 'bucketName',
+          bucketName,
         },
       },
     },
   });
 
-  publisher = AwsS3Publish.fromConfig(mockConfig, logger);
+  return AwsS3Publish.fromConfig(mockConfig, logger);
+};
+
+let publisher: PublisherBase;
+
+beforeEach(() => {
+  loggerInfoSpy.mockClear();
+  loggerErrorSpy.mockClear();
+  mockFs.restore();
+  publisher = createPublisherMock('bucketName');
 });
 
 describe('AwsS3Publish', () => {
@@ -96,24 +104,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should reject incorrect config', async () => {
-      const mockConfig = new ConfigReader({
-        techdocs: {
-          requestUrl: 'http://localhost:7000',
-          publisher: {
-            type: 'awsS3',
-            awsS3: {
-              credentials: {
-                accessKeyId: 'accessKeyId',
-                secretAccessKey: 'secretAccessKey',
-              },
-              // this bucket name will throw an error
-              bucketName: 'errorBucket',
-            },
-          },
-        },
-      });
-
-      const errorPublisher = AwsS3Publish.fromConfig(mockConfig, logger);
+      const errorPublisher = createPublisherMock('errorBucket');
 
       expect(await errorPublisher.getReadiness()).toEqual({
         isAvailable: false,
@@ -188,8 +179,28 @@ describe('AwsS3Publish', () => {
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
+    });
 
-      mockFs.restore();
+    it('should delete stale files after upload', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const bucketName = 'delete_stale_files_success';
+      publisher = createPublisherMock(bucketName);
+      await publisher.publish({ entity, directory });
+      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
+      );
+    });
+
+    it('should log error when the stale files deletion fails', async () => {
+      const entity = createMockEntity();
+      const directory = getEntityRootDir(entity);
+      const bucketName = 'delete_stale_files_error';
+      publisher = createPublisherMock(bucketName);
+      await publisher.publish({ entity, directory });
+      expect(loggerErrorSpy).toHaveBeenLastCalledWith(
+        'Unable to delete file(s) from AWS S3. Error: Message',
+      );
     });
   });
 

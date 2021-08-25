@@ -23,8 +23,8 @@ import {
   rootDocsRouteRef,
   rootCatalogDocsRouteRef,
 } from './routes';
-import { TechDocsHome } from './home/components/TechDocsHome';
-import { TechDocsPage } from './reader/components/TechDocsPage';
+import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
+import { TechDocsPage as TechDocsReaderPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
@@ -33,8 +33,11 @@ const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<TechDocsHome />} />
-      <Route path={`/${rootDocsRouteRef.path}`} element={<TechDocsPage />} />
+      <Route path={`/${rootRouteRef.path}`} element={<TechDocsIndexPage />} />
+      <Route
+        path={`/${rootDocsRouteRef.path}`}
+        element={<TechDocsReaderPage />}
+      />
     </Routes>
   );
 };

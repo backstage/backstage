@@ -17,6 +17,7 @@
 import React from 'react';
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import { Link } from '../Link';
 import { EmptyState } from './EmptyState';
 import { CodeSnippet } from '../CodeSnippet';
 
@@ -73,9 +74,9 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
             />
           </div>
           <Button
-            variant="contained"
             color="primary"
-            href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            component={Link}
+            to="https://backstage.io/docs/features/software-catalog/well-known-annotations"
           >
             Read more
           </Button>

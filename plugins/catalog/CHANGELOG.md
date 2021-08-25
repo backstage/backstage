@@ -1,5 +1,160 @@
 # @backstage/plugin-catalog
 
+## 0.6.12
+
+### Patch Changes
+
+- fa1e003e0: Show a Not Found message when navigating to a nonexistent entity
+- 2105d608f: Migrate and export `UnregisterEntityDialog` component from `catalog-react` package
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
+## 0.6.11
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- a440d3b38: Move and rename `FavoriteEntity` component to `catalog-react`
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.6.10
+
+### Patch Changes
+
+- cf4635f93: Fix bug with re-rendering the EntityRoutes when the entity changes but the route does not
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.6.9
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+  - @backstage/catalog-client@0.3.18
+
+## 0.6.8
+
+### Patch Changes
+
+- 221d7d060: added retry callback to useEntity hook
+- 45b5fc3a8: Updated the layout of catalog and API index pages to handle smaller screen sizes. This adds responsive wrappers to the entity tables, and switches filters to a drawer when width-constrained. If you have created a custom catalog or API index page, you will need to update the page structure to match the updated [catalog customization](https://backstage.io/docs/features/software-catalog/catalog-customization) documentation.
+- 71c936eb6: Export `CatalogClientWrapper` class
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/plugin-catalog-react@0.3.1
+
+## 0.6.7
+
+### Patch Changes
+
+- 75a532fbe: Add unstable prop for disabling unregister entity menu
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.6.6
+
+### Patch Changes
+
+- ad5d05b69: Change catalog page layout to use Grid components to improve responsiveness
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/catalog-client@0.3.16
+  - @backstage/plugin-catalog-react@0.2.6
+
+## 0.6.5
+
+### Patch Changes
+
+- f423891ee: Fixed sizing of the System diagram when the rendered graph was wider than the container.
+- e19283b39: Get rid of flex console warning for IconLink
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.5
+  - @backstage/core-components@0.1.4
+  - @backstage/integration@0.5.7
+  - @backstage/catalog-client@0.3.15
+
+## 0.6.4
+
+### Patch Changes
+
+- bba9df7f9: improve the wrapping behavior of long entity links
+- 5f4339b8c: Adding `FeatureFlag` component and treating `FeatureFlags` as first class citizens to composability API
+- 7bd46b19d: Allow `defaultKind` from `CatalogTable.column.creatNameColumn` to be configurable
+- 71416fb64: Moved installation instructions from the main [backstage.io](https://backstage.io) documentation to the package README file. These instructions are not generally needed, since the plugin comes installed by default with `npx @backstage/create-app`.
+- e3cbfa8c2: Disambiguated titles of `EntityDependencyOfComponentsCard` and `EntityDependsOnComponentsCard`.
+- 3d7b1c9f0: Adds an optional `actions` prop to `CatalogTable` and `CatalogPage` to support supplying custom actions for each entity row in the table. This uses the default actions if not provided.
+- 48c9fcd33: Migrated to use the new `@backstage/core-*` packages rather than `@backstage/core`.
+- 80a82ffce: Clearer titles for the relationship cards
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.3
+  - @backstage/catalog-client@0.3.14
+  - @backstage/catalog-model@0.8.4
+  - @backstage/integration-react@0.1.4
+  - @backstage/plugin-catalog-react@0.2.4
+
 ## 0.6.3
 
 ### Patch Changes

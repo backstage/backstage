@@ -27,7 +27,11 @@ export interface CustomResource {
 
 export interface ObjectFetchParams {
   serviceId: string;
-  clusterDetails: ClusterDetails;
+  clusterDetails:
+    | AWSClusterDetails
+    | GKEClusterDetails
+    | ServiceAccountClusterDetails
+    | ClusterDetails;
   objectTypesToFetch: Set<KubernetesObjectTypes>;
   labelSelector: string;
   customResources: CustomResource[];
@@ -76,4 +80,11 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+}
+
+export interface GKEClusterDetails extends ClusterDetails {}
+export interface ServiceAccountClusterDetails extends ClusterDetails {}
+export interface AWSClusterDetails extends ClusterDetails {
+  assumeRole?: string;
+  externalId?: string;
 }

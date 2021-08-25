@@ -36,6 +36,8 @@ import {
   SearchOptions,
   SearchResponse,
   UrlReader,
+  ReadUrlOptions,
+  ReadUrlResponse,
 } from './types';
 
 export class AzureUrlReader implements UrlReader {
@@ -68,7 +70,7 @@ export class AzureUrlReader implements UrlReader {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return Buffer.from(await response.text());
+      return Buffer.from(await response.arrayBuffer());
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -76,6 +78,15 @@ export class AzureUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  async readUrl(
+    url: string,
+    _options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO etag is not implemented yet.
+    const buffer = await this.read(url);
+    return { buffer: async () => buffer };
   }
 
   async readTree(
@@ -118,7 +129,7 @@ export class AzureUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromZipArchive({
-      stream: (archiveAzureResponse.body as unknown) as Readable,
+      stream: archiveAzureResponse.body as unknown as Readable,
       etag: commitSha,
       filter: options?.filter,
     });

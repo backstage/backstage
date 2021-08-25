@@ -39,6 +39,16 @@ You can also, instead of using dummy values for a huge number of environment var
 
 The backend starts up on port 7000 per default.
 
+### Debugging
+
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/cli/commands#backenddev).
+
+To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
+
+- Enable Auto Attach (⌘ + Shift + P > Toggle Auto Attach > Only With Flag)
+- Open a VSCode terminal (Control + `)
+- Run the backend from the VSCode terminal: `yarn start-backend --inspect`
+
 ## Populating The Catalog
 
 If you want to use the catalog functionality, you need to add so called

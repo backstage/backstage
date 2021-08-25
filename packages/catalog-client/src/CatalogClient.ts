@@ -26,6 +26,7 @@ import {
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import {
+  CATALOG_FILTER_EXISTS,
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
@@ -69,9 +70,13 @@ export class CatalogClient implements CatalogApi {
       const filterParts: string[] = [];
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
-          filterParts.push(
-            `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-          );
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
         }
       }
 
@@ -92,6 +97,16 @@ export class CatalogClient implements CatalogApi {
     );
 
     const refCompare = (a: Entity, b: Entity) => {
+      // in case field filtering is used, these fields might not be part of the response
+      if (
+        a.metadata?.name === undefined ||
+        a.kind === undefined ||
+        b.metadata?.name === undefined ||
+        b.kind === undefined
+      ) {
+        return 0;
+      }
+
       const aRef = stringifyEntityRef(a);
       const bRef = stringifyEntityRef(b);
       if (aRef < bRef) {

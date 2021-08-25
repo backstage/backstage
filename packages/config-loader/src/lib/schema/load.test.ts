@@ -68,13 +68,19 @@ describe('loadConfigSchema', () => {
       schema.process(configs, {
         visibility: ['frontend'],
         valueTransform: () => 'X',
+        withFilteredKeys: true,
       }),
-    ).toEqual([{ data: { key1: 'X' }, context: 'test' }]);
+    ).toEqual([
+      { data: { key1: 'X' }, context: 'test', filteredKeys: ['key2'] },
+    ]);
     expect(
       schema.process(configs, {
         valueTransform: () => 'X',
+        withFilteredKeys: true,
       }),
-    ).toEqual([{ data: { key1: 'X', key2: 'X' }, context: 'test' }]);
+    ).toEqual([
+      { data: { key1: 'X', key2: 'X' }, context: 'test', filteredKeys: [] },
+    ]);
 
     const serialized = schema.serialize();
 

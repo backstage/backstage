@@ -36,7 +36,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { Job, Jobs, Step } from '../../api';
 import { useProjectName } from '../useProjectName';
@@ -74,8 +74,10 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 const getElapsedTime = (start: string, end: string) => {
-  const diff = moment(moment(end || moment()).diff(moment(start)));
-  const timeElapsed = diff.format('m [minutes] s [seconds]');
+  const startDate = DateTime.fromISO(start);
+  const endDate = end ? DateTime.fromISO(end) : DateTime.now();
+  const diff = endDate.diff(startDate);
+  const timeElapsed = diff.toFormat(`m 'minutes' s 'seconds'`);
   return timeElapsed;
 };
 

@@ -25,6 +25,7 @@ import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
+import { AwsS3UrlReader } from './AwsS3UrlReader';
 
 type CreateOptions = {
   /** Root config object */
@@ -43,7 +44,7 @@ export class UrlReaders {
    * Creates a UrlReader without any known types.
    */
   static create({ logger, config, factories }: CreateOptions): UrlReader {
-    const mux = new UrlReaderPredicateMux();
+    const mux = new UrlReaderPredicateMux(logger);
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
     });
@@ -74,6 +75,7 @@ export class UrlReaders {
         GithubUrlReader.factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
+        AwsS3UrlReader.factory,
         FetchUrlReader.factory,
       ]),
     });

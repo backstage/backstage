@@ -185,9 +185,10 @@ describe('ApiProvider', () => {
 });
 
 describe('v1 consumer', () => {
-  const ApiContext = getGlobalSingleton<
-    Context<VersionedValue<{ 1: ApiHolder }>>
-  >('api-context');
+  const ApiContext =
+    getGlobalSingleton<Context<VersionedValue<{ 1: ApiHolder }>>>(
+      'api-context',
+    );
 
   function useMockApiV1<T>(apiRef: ApiRef<T>): T {
     const impl = useContext(ApiContext)?.atVersion(1)?.get(apiRef);

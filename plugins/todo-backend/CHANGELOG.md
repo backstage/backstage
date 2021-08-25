@@ -1,5 +1,33 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.10
+
+### Patch Changes
+
+- 0b34dc7a3: Ignore images and files that are larger than 200KB.
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+  - @backstage/catalog-client@0.3.16
+
 ## 0.1.7
 
 ### Patch Changes

@@ -19,18 +19,20 @@ import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
-import StartServerPlugin from 'start-server-webpack-plugin';
-import webpack from 'webpack';
+import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import webpack, { ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
+import { isChildPath } from '@backstage/cli-common';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
-import { BundlingPaths, isChildPath } from './paths';
+import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
+import pickBy from 'lodash/pickBy';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -97,10 +99,9 @@ export async function createConfig(
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        typescript: {
-          configFile: paths.targetTsConfig,
-        },
-        eslint: {
+        typescript: paths.targetTsConfig,
+        eslint: true,
+        eslintOptions: {
           files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
           options: {
             parserOptions: {
@@ -112,6 +113,16 @@ export async function createConfig(
       }),
     );
   }
+
+  // TODO(blam): process is no longer auto polyfilled by webpack in v5.
+  // we use the provide plugin to provide this polyfill, but lets look
+  // to remove this eventually!
+  plugins.push(
+    new ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
+  );
 
   plugins.push(
     new webpack.EnvironmentPlugin({
@@ -155,27 +166,34 @@ export async function createConfig(
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
     optimization: optimization(options),
     bail: false,
     performance: {
       hints: false, // we check the gzip size instead
     },
-    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
+    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
+      fallback: {
+        ...pickBy(require('node-libs-browser')),
+        module: false,
+        dgram: false,
+        dns: false,
+        fs: false,
+        http2: false,
+        net: false,
+        tls: false,
+        child_process: false,
+
+        /* new ignores */
+        path: false,
+        https: false,
+        http: false,
+        util: require.resolve('util/'),
+      },
       plugins: [
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
@@ -193,13 +211,13 @@ export async function createConfig(
     output: {
       path: paths.targetDist,
       publicPath: validBaseUrl.pathname,
-      filename: isDev ? '[name].js' : 'static/[name].[hash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
         : 'static/[name].[chunkhash:8].chunk.js',
       ...(isDev
         ? {
-            devtoolModuleFilenameTemplate: info =>
+            devtoolModuleFilenameTemplate: (info: any) =>
               `file:///${resolvePath(info.absoluteResourcePath).replace(
                 /\\/g,
                 '/',
@@ -236,7 +254,7 @@ export async function createBackendConfig(
       ? {
           watch: true,
           watchOptions: {
-            ignored: [/node_modules\/(?!\@backstage)/],
+            ignored: /node_modules\/(?!\@backstage)/,
           },
         }
       : {}),
@@ -258,7 +276,7 @@ export async function createBackendConfig(
     performance: {
       hints: false, // we check the gzip size instead
     },
-    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
+    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [
       'webpack/hot/poll?100',
@@ -290,7 +308,7 @@ export async function createBackendConfig(
         : '[name].[chunkhash:8].chunk.js',
       ...(isDev
         ? {
-            devtoolModuleFilenameTemplate: info =>
+            devtoolModuleFilenameTemplate: (info: any) =>
               `file:///${resolvePath(info.absoluteResourcePath).replace(
                 /\\/g,
                 '/',
@@ -299,18 +317,18 @@ export async function createBackendConfig(
         : {}),
     },
     plugins: [
-      new StartServerPlugin({
+      new RunScriptWebpackPlugin({
         name: 'main.js',
         nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+        args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
-              typescript: {
-                configFile: paths.targetTsConfig,
-              },
-              eslint: {
+              typescript: paths.targetTsConfig,
+              eslint: true,
+              eslintOptions: {
                 files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
                 options: {
                   parserOptions: {
@@ -346,11 +364,10 @@ function nodeExternalsWithResolve(
   });
 
   return (
-    context: string,
-    request: string,
-    callback: webpack.ExternalsFunctionCallback,
+    { context, request }: { context?: string; request?: string },
+    callback: any,
   ) => {
-    currentContext = context;
+    currentContext = context!;
     return externals(context, request, callback);
   };
 }

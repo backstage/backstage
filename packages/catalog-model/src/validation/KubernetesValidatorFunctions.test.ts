@@ -76,9 +76,10 @@ describe('KubernetesValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
     ['a_b', true],
     ['a.b', true],
+    ['a..b', true],
   ])(`isValidObjectName %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidObjectName(value)).toBe(matches);
   });
@@ -114,9 +115,10 @@ describe('KubernetesValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
     ['a_b', true],
     ['a.b', true],
+    ['a..b', true],
     ['a/a', true],
     ['a-b.c/a', true],
     ['a--b.c/a', false],
@@ -150,9 +152,10 @@ describe('KubernetesValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
     ['a_b', true],
     ['a.b', true],
+    ['a..b', true],
   ])(`isValidLabelValue %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidLabelValue(value)).toBe(matches);
   });
@@ -169,9 +172,10 @@ describe('KubernetesValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
     ['a_b', true],
     ['a.b', true],
+    ['a..b', true],
     ['a/a', true],
     ['a-b.c/a', true],
     ['a--b.c/a', false],

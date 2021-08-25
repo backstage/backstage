@@ -39,7 +39,7 @@ describe('catalog:register', () => {
 
   const action = createCatalogRegisterAction({
     integrations,
-    catalogClient: (catalogClient as unknown) as CatalogApi,
+    catalogClient: catalogClient as unknown as CatalogApi,
   });
 
   const mockContext = {

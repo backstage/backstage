@@ -23,9 +23,10 @@ const useStyles = makeStyles(() => ({
     display: 'grid',
     gridTemplateAreas:
       "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
-    gridTemplateRows: 'auto auto 1fr',
+    gridTemplateRows: 'max-content auto 1fr',
     gridTemplateColumns: 'auto 1fr auto',
-    minHeight: '100vh',
+    height: '100vh',
+    overflowY: 'auto',
   },
 }));
 

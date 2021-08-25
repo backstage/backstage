@@ -17,7 +17,7 @@
 import request from 'supertest';
 import express from 'express';
 import { makeRouter, ClusterApi } from './router';
-import { getVoidLogger } from '@backstage/backend-common';
+import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { KafkaApi } from './KafkaApi';
 import { when } from 'jest-when';
 
@@ -109,6 +109,19 @@ describe('router', () => {
           },
         ]),
       );
+    });
+
+    it('handles unknown cluster errors correctly', async () => {
+      const response = await request(app.use(errorHandler())).get(
+        '/consumers/unknown/hey/offsets',
+      );
+      expect(response.status).toEqual(404);
+      expect(response.body).toMatchObject({
+        error: {
+          message:
+            'Found no configured cluster "unknown", candidates are "dev", "prod"',
+        },
+      });
     });
 
     it('handles internal error correctly', async () => {

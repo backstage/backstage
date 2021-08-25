@@ -150,7 +150,7 @@ export class TokenFactory implements TokenIssuer {
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
       this.logger.info(`Created new signing key ${key.kid}`);
-      await this.keyStore.addKey((key.toJWK(false) as unknown) as AnyJWK);
+      await this.keyStore.addKey(key.toJWK(false) as unknown as AnyJWK);
 
       // At this point we are allowed to start using the new key
       return key as JSONWebKey;

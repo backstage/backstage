@@ -21,7 +21,11 @@ import {
   GetRepositoryResult,
 } from '../../../api/GitReleaseClient';
 
-import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
+import {
+  CardHook,
+  ComponentConfig,
+  CreateRcOnSuccessArgs,
+} from '../../../types/types';
 import { getReleaseCandidateGitInfo } from '../../../helpers/getReleaseCandidateGitInfo';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
@@ -31,12 +35,12 @@ import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
 
-interface UseCreateReleaseCandidate {
+export interface UseCreateReleaseCandidate {
   defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
   latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseCandidateGitInfo: ReturnType<typeof getReleaseCandidateGitInfo>;
   project: Project;
-  onSuccess?: ComponentConfigCreateRc['onSuccess'];
+  onSuccess?: ComponentConfig<CreateRcOnSuccessArgs>['onSuccess'];
 }
 
 export function useCreateReleaseCandidate({
@@ -59,12 +63,8 @@ export function useCreateReleaseCandidate({
     );
   }
 
-  const {
-    responseSteps,
-    addStepToResponseSteps,
-    asyncCatcher,
-    abortIfError,
-  } = useResponseSteps();
+  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
+    useResponseSteps();
 
   /**
    * (1) Get the default branch's most recent commit
@@ -266,6 +266,12 @@ export function useCreateReleaseCandidate({
 
       try {
         await onSuccess({
+          input: {
+            defaultBranch,
+            latestRelease,
+            releaseCandidateGitInfo,
+            project,
+          },
           comparisonUrl: getComparisonRes.value.htmlUrl,
           createdTag: createReleaseRes.value.tagName,
           gitReleaseName: createReleaseRes.value.name,

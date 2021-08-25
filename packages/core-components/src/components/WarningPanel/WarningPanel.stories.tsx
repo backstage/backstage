@@ -43,7 +43,7 @@ export const Children = () => (
       used to hide/expose stack traces for warnings, like this example:
       <br />
       SyntaxError: Error transforming
-      /home/user/github/backstage/packages/core/src/components/WarningPanel/WarningPanel.stories.tsx:
+      /home/user/github/backstage/packages/core-components/src/components/WarningPanel/WarningPanel.stories.tsx:
       Unexpected token (42:16) at unexpected
       (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/util.js:83:15)
       at tsParseMaybeAssignWithJSX

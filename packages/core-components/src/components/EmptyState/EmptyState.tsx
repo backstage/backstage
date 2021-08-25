@@ -44,20 +44,22 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
     <Grid
       container
       direction="row"
-      justify="space-around"
+      justifyContent="space-around"
       alignItems="flex-start"
       className={classes.root}
       spacing={2}
     >
-      <Grid item container direction="column" xs={12} md={6}>
-        <Grid item>
-          <Typography variant="h5">{title}</Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1">{description}</Typography>
-        </Grid>
-        <Grid item className={classes.action}>
-          {action}
+      <Grid item xs={12} md={6}>
+        <Grid container direction="column">
+          <Grid item xs>
+            <Typography variant="h5">{title}</Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="body1">{description}</Typography>
+          </Grid>
+          <Grid item xs className={classes.action}>
+            {action}
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>

@@ -156,7 +156,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
         const uploadFile = limiter(
           () =>
             new Promise((res, rej) => {
-              const readStream = fs.createReadStream(filePath, 'utf8');
+              const readStream = fs.createReadStream(filePath);
 
               const writeStream = this.storageClient.upload(params);
 

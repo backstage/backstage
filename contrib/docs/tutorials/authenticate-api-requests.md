@@ -99,7 +99,7 @@ async function main() {
 ```typescript
 // packages/app/src/App.tsx from a create-app deployment
 
-import { discoveryApiRef, useApi } from '@backstage/core';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 
 // ...
 

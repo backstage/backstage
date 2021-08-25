@@ -26,15 +26,30 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityTagFilter } from '../../types';
+import { EntityTagFilter } from '../../filters';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityTagPicker = () => {
-  const { updateFilters, backendEntities, filters } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
+
+  const queryParamTags = [queryParameters.tags]
+    .flat()
+    .filter(Boolean) as string[];
+  const [selectedTags, setSelectedTags] = useState(
+    queryParamTags.length ? queryParamTags : filters.tags?.values ?? [],
+  );
+
+  useEffect(() => {
+    updateFilters({
+      tags: selectedTags.length ? new EntityTagFilter(selectedTags) : undefined,
+    });
+  }, [selectedTags, updateFilters]);
+
   const availableTags = useMemo(
     () =>
       [
@@ -49,20 +64,15 @@ export const EntityTagPicker = () => {
 
   if (!availableTags.length) return null;
 
-  const onChange = (tags: string[]) => {
-    updateFilters({
-      tags: tags.length ? new EntityTagFilter(tags) : undefined,
-    });
-  };
-
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Tags</Typography>
       <Autocomplete<string>
         multiple
+        aria-label="Tags"
         options={availableTags}
-        value={filters.tags?.values ?? []}
-        onChange={(_: object, value: string[]) => onChange(value)}
+        value={selectedTags}
+        onChange={(_: object, value: string[]) => setSelectedTags(value)}
         renderOption={(option, { selected }) => (
           <FormControlLabel
             control={

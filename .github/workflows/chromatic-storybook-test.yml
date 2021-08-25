@@ -4,8 +4,7 @@ on:
     paths:
       - '.github/workflows/chromatic-storybook-test.yml'
       - 'packages/storybook/**'
-      - 'packages/core/src/components/**'
-      - 'packages/core/src/layout/**'
+      - 'packages/core-components/src/**'
 
 jobs:
   chromatic:
@@ -51,4 +50,5 @@ jobs:
           # projetToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: 9tzak77m9nj
-          storybookBuildDir: 'packages/storybook/dist'
+          workingDir: 'packages/storybook'
+          storybookBuildDir: 'dist'

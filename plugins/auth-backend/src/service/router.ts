@@ -32,6 +32,7 @@ import { Config } from '@backstage/config';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
+import { Minimatch } from 'minimatch';
 
 type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -86,47 +87,63 @@ export async function createRouter({
     ...providerFactories,
   };
   const providersConfig = config.getConfig('auth.providers');
-  const providers = providersConfig.keys();
+  const configuredProviders = providersConfig.keys();
 
-  for (const providerId of providers) {
-    logger.info(`Configuring provider, ${providerId}`);
-    try {
-      const providerFactory = allProviderFactories[providerId];
-      if (!providerFactory) {
-        throw Error(`No auth provider available for '${providerId}'`);
+  const isOriginAllowed = createOriginFilter(config);
+
+  for (const [providerId, providerFactory] of Object.entries(
+    allProviderFactories,
+  )) {
+    if (configuredProviders.includes(providerId)) {
+      logger.info(`Configuring provider, ${providerId}`);
+      try {
+        const provider = providerFactory({
+          providerId,
+          globalConfig: { baseUrl: authUrl, appUrl, isOriginAllowed },
+          config: providersConfig.getConfig(providerId),
+          logger,
+          tokenIssuer,
+          discovery,
+          catalogApi,
+        });
+
+        const r = Router();
+
+        r.get('/start', provider.start.bind(provider));
+        r.get('/handler/frame', provider.frameHandler.bind(provider));
+        r.post('/handler/frame', provider.frameHandler.bind(provider));
+        if (provider.logout) {
+          r.post('/logout', provider.logout.bind(provider));
+        }
+        if (provider.refresh) {
+          r.get('/refresh', provider.refresh.bind(provider));
+        }
+
+        router.use(`/${providerId}`, r);
+      } catch (e) {
+        if (process.env.NODE_ENV !== 'development') {
+          throw new Error(
+            `Failed to initialize ${providerId} auth provider, ${e.message}`,
+          );
+        }
+
+        logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
+
+        router.use(`/${providerId}`, () => {
+          // If the user added the provider under auth.providers but the clientId and clientSecret etc. were not found.
+          throw new NotFoundError(
+            `Auth provider registered for '${providerId}' is misconfigured. This could mean the configs under ` +
+              `auth.providers.${providerId} are missing or the environment variables used are not defined. ` +
+              `Check the auth backend plugin logs when the backend starts to see more details.`,
+          );
+        });
       }
-
-      const provider = providerFactory({
-        providerId,
-        globalConfig: { baseUrl: authUrl, appUrl },
-        config: providersConfig.getConfig(providerId),
-        logger,
-        tokenIssuer,
-        discovery,
-        catalogApi,
-      });
-
-      const r = Router();
-
-      r.get('/start', provider.start.bind(provider));
-      r.get('/handler/frame', provider.frameHandler.bind(provider));
-      r.post('/handler/frame', provider.frameHandler.bind(provider));
-      if (provider.logout) {
-        r.post('/logout', provider.logout.bind(provider));
-      }
-      if (provider.refresh) {
-        r.get('/refresh', provider.refresh.bind(provider));
-      }
-
-      router.use(`/${providerId}`, r);
-    } catch (e) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          `Failed to initialize ${providerId} auth provider, ${e.message}`,
+    } else {
+      router.use(`/${providerId}`, () => {
+        throw new NotFoundError(
+          `No auth provider registered for '${providerId}'`,
         );
-      }
-
-      logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
+      });
     }
   }
 
@@ -139,8 +156,31 @@ export async function createRouter({
 
   router.use('/:provider/', req => {
     const { provider } = req.params;
-    throw new NotFoundError(`No auth provider registered for '${provider}'`);
+    throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
 
   return router;
+}
+
+export function createOriginFilter(
+  config: Config,
+): (origin: string) => boolean {
+  const appUrl = config.getString('app.baseUrl');
+  const { origin: appOrigin } = new URL(appUrl);
+
+  const allowedOrigins = config.getOptionalStringArray(
+    'auth.experimentalExtraAllowedOrigins',
+  );
+
+  const allowedOriginPatterns =
+    allowedOrigins?.map(
+      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+    ) ?? [];
+
+  return origin => {
+    if (origin === appOrigin) {
+      return true;
+    }
+    return allowedOriginPatterns.some(pattern => pattern.match(origin));
+  };
 }

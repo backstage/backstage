@@ -20,14 +20,26 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
-  useElementFilter,
+  Content,
+  Header,
+  HeaderLabel,
+  Link,
+  Page,
+  Progress,
+  RoutedTabs,
+  WarningPanel,
+} from '@backstage/core-components';
+import {
   attachComponentData,
   IconComponent,
+  useElementFilter,
 } from '@backstage/core-plugin-api';
 import {
   EntityContext,
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
+  UnregisterEntityDialog,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
@@ -35,16 +47,6 @@ import { Alert } from '@material-ui/lab';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import {
-  Content,
-  Header,
-  HeaderLabel,
-  Page,
-  Progress,
-  RoutedTabs,
-} from '@backstage/core-components';
 
 type SubRoute = {
   path: string;
@@ -68,12 +70,21 @@ const EntityLayoutTitle = ({
 }: {
   title: string;
   entity: Entity | undefined;
-}) => (
-  <Box display="inline-flex" alignItems="center" height="1em">
-    {title}
-    {entity && <FavouriteEntity entity={entity} />}
-  </Box>
-);
+}) => {
+  return (
+    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
+      <Box
+        component="span"
+        textOverflow="ellipsis"
+        whiteSpace="nowrap"
+        overflow="hidden"
+      >
+        {title}
+      </Box>
+      {entity && <FavoriteEntity entity={entity} />}
+    </Box>
+  );
+};
 
 const headerProps = (
   paramKind: string | undefined,
@@ -132,8 +143,14 @@ type ExtraContextMenuItem = {
   onClick: () => void;
 };
 
+// unstable context menu option, eg: disable the unregister entity menu
+type contextMenuOptions = {
+  disableUnregister: boolean;
+};
+
 type EntityLayoutProps = {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: contextMenuOptions;
   children?: React.ReactNode;
 };
 
@@ -154,32 +171,36 @@ type EntityLayoutProps = {
  */
 export const EntityLayout = ({
   UNSTABLE_extraContextMenuItems,
+  UNSTABLE_contextMenuOptions,
   children,
 }: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
+  const routes = useElementFilter(
+    children,
+    elements =>
+      elements
+        .selectByComponentData({
+          key: dataKey,
+          withStrictError:
+            'Child of EntityLayout must be an EntityLayout.Route',
+        })
+        .getElements<SubRoute>() // all nodes, element data, maintain structure or not?
+        .flatMap(({ props }) => {
+          if (props.if && entity && !props.if(entity)) {
+            return [];
+          }
 
-  const routes = useElementFilter(children, elements =>
-    elements
-      .selectByComponentData({
-        key: dataKey,
-        withStrictError: 'Child of EntityLayout must be an EntityLayout.Route',
-      })
-      .getElements<SubRoute>() // all nodes, element data, maintain structure or not?
-      .flatMap(({ props }) => {
-        if (props.if && entity && !props.if(entity)) {
-          return [];
-        }
-
-        return [
-          {
-            path: props.path,
-            title: props.title,
-            children: props.children,
-            tabProps: props.tabProps,
-          },
-        ];
-      }),
+          return [
+            {
+              path: props.path,
+              title: props.title,
+              children: props.children,
+              tabProps: props.tabProps,
+            },
+          ];
+        }),
+    [entity],
   );
 
   const { headerTitle, headerType } = headerProps(
@@ -210,6 +231,7 @@ export const EntityLayout = ({
             <EntityLabels entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
               onUnregisterEntity={showRemovalDialog}
             />
           </>
@@ -225,6 +247,19 @@ export const EntityLayout = ({
           <Alert severity="error">{error.toString()}</Alert>
         </Content>
       )}
+
+      {!loading && !error && !entity && (
+        <Content>
+          <WarningPanel title="Entity not found">
+            There is no {kind} with the requested{' '}
+            <Link to="https://backstage.io/docs/features/software-catalog/references">
+              kind, namespace, and name
+            </Link>
+            .
+          </WarningPanel>
+        </Content>
+      )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}

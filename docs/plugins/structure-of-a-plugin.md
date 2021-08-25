@@ -57,7 +57,10 @@ package.json to declare the plugin dependencies, metadata and scripts.
 In the `src` folder we get to the interesting bits. Check out the `plugin.ts`:
 
 ```jsx
-import { createPlugin, createRoutableExtension } from '@backstage/core';
+import {
+  createPlugin,
+  createRoutableExtension,
+} from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 
@@ -96,15 +99,14 @@ You may tweak these components, rename them and/or replace them completely.
 
 ## Connecting the plugin to the Backstage app
 
-There are three things needed for a Backstage app to start making use of a
-plugin.
+There are two things needed for a Backstage app to start making use of a plugin.
 
 1. Add plugin as dependency in `app/package.json`
 2. Import and use one or more plugin extensions, for example in
    `app/src/App.tsx`.
 
-Luckily these three steps happen automatically when you create a plugin with the
-Backstage CLI.
+Luckily both of these steps happen automatically when you create a plugin with
+the Backstage CLI.
 
 ## Talking to the outside world
 

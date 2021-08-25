@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import mime from 'mime-types';
+import path from 'path';
+import createLimiter from 'p-limit';
 import recursiveReadDir from 'recursive-readdir';
 
 /**
@@ -81,4 +84,72 @@ export const getFileTreeRecursively = async (
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
   return fileList;
+};
+
+/**
+ * Returns the version of an object's storage path where the first three parts
+ * of the path (the entity triplet of namespace, kind, and name) are
+ * lower-cased.
+ *
+ * Path must not include a starting slash.
+ *
+ * @example
+ * lowerCaseEntityTripletInStoragePath('default/Component/backstage')
+ * // return default/component/backstage
+ */
+export const lowerCaseEntityTripletInStoragePath = (
+  originalPath: string,
+): string => {
+  const trimmedPath =
+    originalPath[0] === '/' ? originalPath.substring(1) : originalPath;
+  const matches = trimmedPath.match(/\//g) || [];
+  if (matches.length <= 2) {
+    throw new Error(
+      `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
+    );
+  }
+  const [namespace, kind, name, ...parts] = originalPath.split('/');
+  const lowerNamespace = namespace.toLowerCase();
+  const lowerKind = kind.toLowerCase();
+  const lowerName = name.toLowerCase();
+  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+};
+
+// Only returns the files that existed previously and are not present anymore.
+export const getStaleFiles = (
+  newFiles: string[],
+  oldFiles: string[],
+): string[] => {
+  const staleFiles = new Set(oldFiles);
+  newFiles.forEach(newFile => {
+    staleFiles.delete(newFile);
+  });
+  return Array.from(staleFiles);
+};
+
+// Compose actual filename on remote bucket including entity information
+export const getCloudPathForLocalPath = (
+  entity: Entity,
+  localPath = '',
+): string => {
+  // Convert destination file path to a POSIX path for uploading.
+  // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
+  // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
+  const relativeFilePathPosix = localPath.split(path.sep).join(path.posix.sep);
+
+  // The / delimiter is intentional since it represents the cloud storage and not the local file system.
+  const entityRootDir = `${
+    entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+  }/${entity.kind}/${entity.metadata.name}`;
+  return `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
+};
+
+// Perform rate limited generic operations by passing a function and a list of arguments
+export const bulkStorageOperation = async <T>(
+  operation: (arg: T) => Promise<unknown>,
+  args: T[],
+  { concurrencyLimit } = { concurrencyLimit: 25 },
+) => {
+  const limiter = createLimiter(concurrencyLimit);
+  await Promise.all(args.map(arg => limiter(operation, arg)));
 };

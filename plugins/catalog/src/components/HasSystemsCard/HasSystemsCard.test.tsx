@@ -66,7 +66,7 @@ describe('<HasSystemsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText('Systems')).toBeInTheDocument();
+    expect(getByText('Has systems')).toBeInTheDocument();
     expect(getByText(/No system is part of this domain/i)).toBeInTheDocument();
   });
 
@@ -112,7 +112,7 @@ describe('<HasSystemsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Systems')).toBeInTheDocument();
+      expect(getByText('Has systems')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

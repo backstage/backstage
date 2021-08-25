@@ -61,7 +61,7 @@ describe('AzureUrlReader', () => {
             ctx.status(200),
             ctx.json({
               url: req.url.toString(),
-              headers: req.headers.getAllHeaders(),
+              headers: req.headers.all(),
             }),
           ),
         ),
@@ -78,21 +78,17 @@ describe('AzureUrlReader', () => {
 
     it.each([
       {
-        url:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         config: createConfig(),
         response: expect.objectContaining({
-          url:
-            'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
         }),
       },
       {
-        url:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url:
-            'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
         }),
       },
       {

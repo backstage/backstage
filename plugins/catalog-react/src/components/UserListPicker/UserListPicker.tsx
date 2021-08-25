@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { compact } from 'lodash';
-import { UserListFilter, UserListFilterKind } from '../../types';
 import {
-  useEntityListProvider,
-  useOwnUser,
-  useStarredEntities,
-} from '../../hooks';
+  configApiRef,
+  IconComponent,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   Card,
   List,
@@ -35,12 +32,16 @@ import {
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import { reduceEntityFilters } from '../../utils';
+import { compact } from 'lodash';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { UserListFilter } from '../../filters';
 import {
-  configApiRef,
-  IconComponent,
-  useApi,
-} from '@backstage/core-plugin-api';
+  useEntityListProvider,
+  useStarredEntities,
+  useEntityOwnership,
+} from '../../hooks';
+import { UserListFilterKind } from '../../types';
+import { reduceEntityFilters } from '../../utils';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -106,43 +107,63 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
 
 type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
+  availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({ initialFilter }: UserListPickerProps) => {
+export const UserListPicker = ({
+  initialFilter,
+  availableFilters,
+}: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const filterGroups = getFilterGroups(orgName);
 
-  const { value: user } = useOwnUser();
+  // Remove group items that aren't in availableFilters and exclude
+  // any now-empty groups.
+  const filterGroups = getFilterGroups(orgName)
+    .map(filterGroup => ({
+      ...filterGroup,
+      items: filterGroup.items.filter(
+        ({ id }) => !availableFilters || availableFilters.includes(id),
+      ),
+    }))
+    .filter(({ items }) => !!items.length);
+
+  const { filters, updateFilters, backendEntities, queryParameters } =
+    useEntityListProvider();
+
   const { isStarredEntity } = useStarredEntities();
-  const [selectedUserFilter, setSelectedUserFilter] = useState(initialFilter);
+  const { isOwnedEntity } = useEntityOwnership();
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    [queryParameters.user].flat()[0] ?? initialFilter,
+  );
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
-    () => new UserListFilter('owned', user, isStarredEntity),
-    [user, isStarredEntity],
+    () => new UserListFilter('owned', isOwnedEntity, isStarredEntity),
+    [isOwnedEntity, isStarredEntity],
   );
   const starredFilter = useMemo(
-    () => new UserListFilter('starred', user, isStarredEntity),
-    [user, isStarredEntity],
+    () => new UserListFilter('starred', isOwnedEntity, isStarredEntity),
+    [isOwnedEntity, isStarredEntity],
   );
-
-  const { filters, updateFilters, backendEntities } = useEntityListProvider();
 
   useEffect(() => {
     updateFilters({
       user: selectedUserFilter
-        ? new UserListFilter(selectedUserFilter, user, isStarredEntity)
+        ? new UserListFilter(
+            selectedUserFilter as UserListFilterKind,
+            isOwnedEntity,
+            isStarredEntity,
+          )
         : undefined,
     });
-  }, [selectedUserFilter, user, isStarredEntity, updateFilters]);
+  }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
 
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
-  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] = useState(
-    backendEntities,
-  );
+  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
+    useState(backendEntities);
   useEffect(() => {
     const filterFn = reduceEntityFilters(
       compact(Object.values({ ...filters, user: undefined })),

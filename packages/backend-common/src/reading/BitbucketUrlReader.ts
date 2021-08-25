@@ -36,6 +36,8 @@ import {
   SearchOptions,
   SearchResponse,
   UrlReader,
+  ReadUrlResponse,
+  ReadUrlOptions,
 } from './types';
 
 /**
@@ -58,13 +60,8 @@ export class BitbucketUrlReader implements UrlReader {
     private readonly integration: BitbucketIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const {
-      host,
-      apiBaseUrl,
-      token,
-      username,
-      appPassword,
-    } = integration.config;
+    const { host, apiBaseUrl, token, username, appPassword } =
+      integration.config;
 
     if (!apiBaseUrl) {
       throw new Error(
@@ -89,7 +86,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return Buffer.from(await response.text());
+      return Buffer.from(await response.arrayBuffer());
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -97,6 +94,15 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  async readUrl(
+    url: string,
+    _options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO etag is not implemented yet.
+    const buffer = await this.read(url);
+    return { buffer: async () => buffer };
   }
 
   async readTree(
@@ -127,7 +133,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: (archiveBitbucketResponse.body as unknown) as Readable,
+      stream: archiveBitbucketResponse.body as unknown as Readable,
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,

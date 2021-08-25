@@ -29,6 +29,5 @@ export interface ResourceEntityV1alpha1 extends Entity {
   };
 }
 
-export const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+export const resourceEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

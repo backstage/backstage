@@ -20,34 +20,9 @@ import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { JenkinsRunStatus } from '../Status';
 import { useBuilds } from '../../../useBuilds';
-import { useProjectSlugFromEntity } from '../../../useProjectSlugFromEntity';
 import { buildRouteRef } from '../../../../plugin';
 import { Table, TableColumn } from '@backstage/core-components';
-
-export type CITableBuildInfo = {
-  id: string;
-  buildName: string;
-  buildNumber: number;
-  buildUrl: string;
-  source: {
-    branchName: string;
-    url: string;
-    displayName: string;
-    author?: string;
-    commit: {
-      hash: string;
-    };
-  };
-  status: string;
-  tests?: {
-    total: number;
-    passed: number;
-    skipped: number;
-    failed: number;
-    testUrl: string;
-  };
-  onRestartClick: () => void;
-};
+import { Project } from '../../../../api/JenkinsApi';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -107,44 +82,51 @@ const FailSkippedWidget = ({
 const generatedColumns: TableColumn[] = [
   {
     title: 'Build',
-    field: 'buildName',
+    field: 'fullName',
     highlight: true,
-    render: (row: Partial<CITableBuildInfo>) => {
-      if (!row.source?.branchName || !row.buildNumber) {
-        return <>{row.buildName}</>;
+    render: (row: Partial<Project>) => {
+      if (!row.fullName || !row.lastBuild?.number) {
+        return (
+          <>
+            {row.fullName ||
+              row.fullDisplayName ||
+              row.displayName ||
+              'Unknown'}
+          </>
+        );
       }
 
       return (
         <Link
           component={RouterLink}
           to={generatePath(buildRouteRef.path, {
-            branch: encodeURIComponent(row.source.branchName),
-            buildNumber: row.buildNumber.toString(),
+            jobFullName: encodeURIComponent(row.fullName),
+            buildNumber: String(row.lastBuild?.number),
           })}
         >
-          {row.buildName}
+          {row.fullDisplayName}
         </Link>
       );
     },
   },
   {
     title: 'Source',
-    field: 'source.branchName',
-    render: (row: Partial<CITableBuildInfo>) => (
+    field: 'lastBuild.source.branchName',
+    render: (row: Partial<Project>) => (
       <>
         <p>
-          <Link href={row.source?.url || ''} target="_blank">
-            {row.source?.branchName}
+          <Link href={row.lastBuild?.source?.url || ''} target="_blank">
+            {row.lastBuild?.source?.branchName}
           </Link>
         </p>
-        <p>{row.source?.commit?.hash}</p>
+        <p>{row.lastBuild?.source?.commit?.hash}</p>
       </>
     ),
   },
   {
     title: 'Status',
     field: 'status',
-    render: (row: Partial<CITableBuildInfo>) => {
+    render: (row: Partial<Project>) => {
       return (
         <Box display="flex" alignItems="center">
           <JenkinsRunStatus status={row.status} />
@@ -155,21 +137,22 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Tests',
     sorting: false,
-    render: (row: Partial<CITableBuildInfo>) => {
+    render: (row: Partial<Project>) => {
       return (
         <>
           <p>
-            {row.tests && (
-              <Link href={row.tests.testUrl || ''} target="_blank">
-                {row.tests.passed} / {row.tests.total} passed
+            {row.lastBuild?.tests && (
+              <Link href={row.lastBuild?.tests.testUrl || ''} target="_blank">
+                {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
+                passed
                 <FailSkippedWidget
-                  skipped={row.tests.skipped}
-                  failed={row.tests.failed}
+                  skipped={row.lastBuild?.tests.skipped}
+                  failed={row.lastBuild?.tests.failed}
                 />
               </Link>
             )}
 
-            {!row.tests && 'n/a'}
+            {!row.lastBuild?.tests && 'n/a'}
           </p>
         </>
       );
@@ -178,7 +161,7 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Actions',
     sorting: false,
-    render: (row: Partial<CITableBuildInfo>) => (
+    render: (row: Partial<Project>) => (
       <Tooltip title="Rerun build">
         <IconButton onClick={row.onRestartClick}>
           <RetryIcon />
@@ -192,8 +175,7 @@ const generatedColumns: TableColumn[] = [
 type Props = {
   loading: boolean;
   retry: () => void;
-  builds: CITableBuildInfo[];
-  projectName: string;
+  projects?: Project[];
   page: number;
   onChangePage: (page: number) => void;
   total: number;
@@ -202,12 +184,11 @@ type Props = {
 };
 
 export const CITableView = ({
-  projectName,
   loading,
   pageSize,
   page,
   retry,
-  builds,
+  projects,
   onChangePage,
   onChangePageSize,
   total,
@@ -226,14 +207,14 @@ export const CITableView = ({
           onClick: () => retry(),
         },
       ]}
-      data={builds ?? []}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangePageSize}
+      data={projects ?? []}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
           <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
           <Box mr={2} />
-          <Typography variant="h6">Project: {projectName}</Typography>
+          <Typography variant="h6">Projects</Typography>
         </Box>
       }
       columns={generatedColumns}
@@ -242,9 +223,7 @@ export const CITableView = ({
 };
 
 export const CITable = () => {
-  const projectName = useProjectSlugFromEntity();
-
-  const [tableProps, { setPage, retry, setPageSize }] = useBuilds(projectName);
+  const [tableProps, { setPage, retry, setPageSize }] = useBuilds();
 
   return (
     <CITableView

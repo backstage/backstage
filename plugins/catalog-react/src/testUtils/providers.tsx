@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
 import {
+  DefaultEntityFilters,
   EntityListContext,
   EntityListContextProps,
 } from '../hooks/useEntityListProvider';
@@ -23,17 +24,48 @@ import {
 export const MockEntityListContextProvider = ({
   children,
   value,
-}: PropsWithChildren<{ value: Partial<EntityListContextProps> }>) => {
+}: PropsWithChildren<{
+  value: Partial<EntityListContextProps>;
+}>) => {
+  // Provides a default implementation that stores filter state, for testing components that
+  // reflect filter state.
+  const [filters, setFilters] = useState<DefaultEntityFilters>(
+    value.filters ?? {},
+  );
+  const updateFilters = useCallback(
+    (
+      update:
+        | Partial<DefaultEntityFilters>
+        | ((
+            prevFilters: DefaultEntityFilters,
+          ) => Partial<DefaultEntityFilters>),
+    ) => {
+      setFilters(prevFilters => {
+        const newFilters =
+          typeof update === 'function' ? update(prevFilters) : update;
+        return { ...prevFilters, ...newFilters };
+      });
+    },
+    [],
+  );
+
   const defaultContext: EntityListContextProps = {
     entities: [],
     backendEntities: [],
-    updateFilters: jest.fn(),
-    filters: {},
+    updateFilters,
+    filters,
     loading: false,
+    queryParameters: {},
   };
 
+  // Extract value.filters to avoid overwriting it; some tests exercise filter updates. The value
+  // provided is used as the initial seed in useState above.
+  const { filters: _, ...otherContextFields } = value;
+
   return (
-    <EntityListContext.Provider value={{ ...defaultContext, ...value }}>
+    <EntityListContext.Provider
+      value={{ ...defaultContext, ...otherContextFields }}
+    >
       {children}
     </EntityListContext.Provider>
   );

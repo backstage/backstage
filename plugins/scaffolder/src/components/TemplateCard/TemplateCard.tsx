@@ -16,7 +16,7 @@
 import {
   Entity,
   RELATION_OWNED_BY,
-  TemplateEntityV1alpha1,
+  TemplateEntityV1beta2,
 } from '@backstage/catalog-model';
 import {
   ScmIntegrationIcon,
@@ -93,7 +93,7 @@ const useDeprecationStyles = makeStyles(theme => ({
 }));
 
 export type TemplateCardProps = {
-  template: TemplateEntityV1alpha1;
+  template: TemplateEntityV1beta2;
   deprecated?: boolean;
 };
 
@@ -106,7 +106,7 @@ type TemplateProps = {
 };
 
 const getTemplateCardProps = (
-  template: TemplateEntityV1alpha1,
+  template: TemplateEntityV1beta2,
 ): TemplateProps & { key: string } => {
   return {
     key: template.metadata.uid!,

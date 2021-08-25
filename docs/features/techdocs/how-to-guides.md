@@ -35,38 +35,64 @@ In your Backstage instance's `app-config.yaml`, set `techdocs.builder` from
 `'local'` to `'external'`. By doing this, TechDocs will not try to generate
 docs. Look at [TechDocs configuration](configuration.md) for reference.
 
-## How to use URL Reader in TechDocs Prepare step?
+## How to understand techdocs-ref annotation values
 
-If TechDocs is configured to generate docs, it will first download the
-repository associated with the `backstage.io/techdocs-ref` annotation defined in
-the Entity's `catalog-info.yaml` file. This is also called the
+If TechDocs is configured to generate docs, it will first download source files
+based on the value of the `backstage.io/techdocs-ref` annotation defined in the
+Entity's `catalog-info.yaml` file. This is also called the
 [Prepare](./concepts.md#techdocs-preparer) step.
 
-There are two kinds of preparers or two ways of downloading these source files
+We strongly recommend that the `backstage.io/techdocs-ref` annotation in each
+documented catalog entity's `catalog-info.yaml` be set to `dir:.` in almost all
+situations. This is because TechDocs is aligned with the "docs like code"
+philosophy, whereby documentation should be authored and managed alongside the
+source code of the underlying software itself.
 
-- Preparer 1: Doing a `git clone` of the repository (also known as Common Git
-  Preparer)
-- Preparer 2: Downloading an archive.zip or equivalent of the repository (also
-  known as URL Reader)
+When you see `dir:.`, you can translate it to mean:
 
-If `backstage.io/techdocs-ref` is equal to any of these -
+- That the documentation source code lives in the same location as the
+  `catalog-info.yaml` file.
+- That, in particular, the `mkdocs.yml` file is a sibling of `catalog-info.yaml`
+  (meaning, it is in the same directory)
+- And that all of the source content of the documentation would be available if
+  one were to download the directory containing those two files (as well as all
+  sub-directories).
 
-1. `github:https://githubhost.com/org/repo`
-2. `gitlab:https://gitlabhost.com/org/repo`
-3. `bitbucket:https://bitbuckethost.com/project/repo`
-4. `azure/api:https://azurehost.com/org/project`
+The directory tree of the entity would look something like this:
 
-Then Common Git Preparer will be used i.e. a `git clone`. But the URL Reader is
-a much faster way to do this step. Convert the `backstage.io/techdocs-ref`
-values to the following -
+```
+├── catalog-info.yaml
+├── mkdocs.yml
+└── docs
+    └── index.md
+```
 
-1. `url:https://githubhost.com/org/repo/tree/<branch_name>`
-2. `url:https://gitlabhost.com/org/repo/tree/<branch_name>`
-3. `url:https://bitbuckethost.com/project/repo/src/<branch_name>`
-4. `url:https://azurehost.com/organization/project/_git/repository`
+If, for example, you wanted to keep a lean root directory, you could place your
+`mkdocs.yml` file in a subdirectory and update the `backstage.io/techdocs-ref`
+annotation value accordingly, e.g. to `dir:./sub-folder`:
 
-Note that you can also provide a path to a non-root directory inside the
-repository which contains the `docs/` directory.
+```
+├── catalog-info.yaml
+└── sub-folder
+    ├── mkdocs.yml
+    └── docs
+        └── index.md
+```
+
+In rare situations where your TechDocs source content is managed and stored in a
+location completely separate from your `catalog-info.yaml`, you can instead
+specify a URL location reference, the exact value of which will vary based on
+the source code hosting provider. Notice that instead of the `dir:` prefix, the
+`url:` prefix is used instead. For example:
+
+- **GitHub**: `url:https://githubhost.com/org/repo/tree/<branch_name>`
+- **GitLab**: `url:https://gitlabhost.com/org/repo/tree/<branch_name>`
+- **Bitbucket**: `url:https://bitbuckethost.com/project/repo/src/<branch_name>`
+- **Azure**: `url:https://azurehost.com/organization/project/_git/repository`
+
+Note, just as it's possible to specify a subdirectory with the `dir:` prefix,
+you can also provide a path to a non-root directory inside the repository which
+contains the `mkdocs.yml` file and `docs/` directory.
 
 e.g.
 `url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component`
@@ -77,11 +103,6 @@ URL Reader uses the source code hosting provider to download a zip or tarball of
 the repository. The archive does not have any git history attached to it. Also
 it is a compressed file. Hence the file size is significantly smaller than how
 much data git clone has to transfer.
-
-Caveat: Currently TechDocs sites built using URL Reader will be cached for 30
-minutes which means they will not be re-built if new changes are made within 30
-minutes. This cache invalidation will be replaced by commit timestamp based
-implementation very soon.
 
 ## How to use a custom TechDocs home page?
 

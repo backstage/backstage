@@ -17,7 +17,13 @@
 
 import React from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
-import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  renderInTestApp,
+  withLogCollector,
+} from '@backstage/test-utils';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 type BombProps = {
   shouldThrow?: boolean;
@@ -35,28 +41,29 @@ const Bomb = ({ shouldThrow }: BombProps) => {
 describe('<ErrorBoundary/>', () => {
   it('should render error boundary with and without error', async () => {
     const { error } = await withLogCollector(['error'], async () => {
-      const {
-        rerender,
-        queryByRole,
-        getByRole,
-        getByText,
-      } = await renderInTestApp(
-        <ErrorBoundary>
-          <Bomb />
-        </ErrorBoundary>,
-      );
+      const apis = ApiRegistry.with(errorApiRef, new MockErrorApi());
+      const { rerender, queryByRole, getByRole, getByText } =
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <ErrorBoundary>
+              <Bomb />
+            </ErrorBoundary>
+          </ApiProvider>,
+        );
 
       expect(queryByRole('alert')).not.toBeInTheDocument();
       expect(getByText(/working component/i)).toBeInTheDocument();
 
       rerender(
-        <ErrorBoundary>
-          <Bomb shouldThrow />
-        </ErrorBoundary>,
+        <ApiProvider apis={apis}>
+          <ErrorBoundary>
+            <Bomb shouldThrow />
+          </ErrorBoundary>
+        </ApiProvider>,
       );
 
       expect(getByRole('alert')).toBeInTheDocument();
-      expect(getByText(/something went wrong here/i)).toBeInTheDocument();
+      expect(getByText(/something went wrong/i)).toBeInTheDocument();
     });
 
     expect(error).toEqual([

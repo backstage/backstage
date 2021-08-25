@@ -56,13 +56,12 @@ describe('fetch:plain', () => {
       action.handler({
         ...mockContext,
         input: {
-          url:
-            'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+          url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
           targetPath: '/foobar',
         },
       }),
     ).rejects.toThrow(
-      /Fetch action targetPath may not specify a path outside the working directory/,
+      /Relative path is not allowed to refer to a directory outside its parent/,
     );
   });
 
@@ -70,8 +69,7 @@ describe('fetch:plain', () => {
     await action.handler({
       ...mockContext,
       input: {
-        url:
-          'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+        url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
         targetPath: 'lol',
       },
     });

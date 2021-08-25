@@ -22,17 +22,19 @@ import { Octokit } from '@octokit/rest';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
-} from '../../../stages/publish/helpers';
+} from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   const credentialsProviders = new Map(
     integrations.github.list().map(integration => {
@@ -45,7 +47,9 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
+    defaultBranch?: string;
     sourcePath?: string;
+    requireCodeOwnerReviews?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
     topics?: string[];
@@ -72,10 +76,20 @@ export function createPublishGithubAction(options: {
             description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
           },
+          requireCodeOwnerReviews: {
+            title:
+              'Require an approved review in PR including files with a designated Code Owner',
+            type: 'boolean',
+          },
           repoVisibility: {
             title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
             title:
@@ -130,12 +144,20 @@ export function createPublishGithubAction(options: {
         repoUrl,
         description,
         access,
+        requireCodeOwnerReviews = false,
         repoVisibility = 'private',
+        defaultBranch = 'master',
         collaborators,
         topics,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const credentialsProvider = credentialsProviders.get(host);
       const integrationConfig = integrations.github.byHost(host);
@@ -239,16 +261,26 @@ export function createPublishGithubAction(options: {
       }
 
       const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/master`;
+      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
+        defaultBranch,
         auth: {
           username: 'x-access-token',
           password: token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
+        gitAuthorInfo,
       });
 
       try {
@@ -257,10 +289,12 @@ export function createPublishGithubAction(options: {
           client,
           repoName: newRepo.name,
           logger: ctx.logger,
+          defaultBranch,
+          requireCodeOwnerReviews,
         });
       } catch (e) {
-        throw new Error(
-          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        ctx.logger.warn(
+          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );
       }
 

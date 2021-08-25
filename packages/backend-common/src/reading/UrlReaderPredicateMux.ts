@@ -15,14 +15,19 @@
  */
 
 import { NotAllowedError } from '@backstage/errors';
+import { Logger } from 'winston';
 import {
   ReadTreeOptions,
   ReadTreeResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchOptions,
   SearchResponse,
   UrlReader,
   UrlReaderPredicateTuple,
 } from './types';
+
+const MIN_WARNING_INTERVAL_MS = 1000 * 60 * 15;
 
 /**
  * A UrlReader implementation that selects from a set of UrlReaders
@@ -30,17 +35,55 @@ import {
  */
 export class UrlReaderPredicateMux implements UrlReader {
   private readonly readers: UrlReaderPredicateTuple[] = [];
+  private readonly readerWarnings: Map<UrlReader, number> = new Map();
+
+  constructor(private readonly logger: Logger) {}
 
   register(tuple: UrlReaderPredicateTuple): void {
     this.readers.push(tuple);
   }
 
-  read(url: string): Promise<Buffer> {
+  async read(url: string): Promise<Buffer> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
         return reader.read(url);
+      }
+    }
+
+    throw new NotAllowedError(
+      `Reading from '${url}' is not allowed. ` +
+        `You may need to configure an integration for the target host, or add it ` +
+        `to the configured list of allowed hosts at 'backend.reading.allow'`,
+    );
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    const parsed = new URL(url);
+
+    for (const { predicate, reader } of this.readers) {
+      if (predicate(parsed)) {
+        if (reader.readUrl) {
+          return reader.readUrl(url, options);
+        }
+        const now = Date.now();
+        const lastWarned = this.readerWarnings.get(reader) ?? 0;
+        if (now > lastWarned + MIN_WARNING_INTERVAL_MS) {
+          this.readerWarnings.set(reader, now);
+          this.logger.warn(
+            `No implementation of readUrl found for ${reader}, this method will be required in the ` +
+              `future and will replace the 'read' method. See the changelog for more details here: ` +
+              'https://github.com/backstage/backstage/blob/master/packages/backend-common/CHANGELOG.md#085',
+          );
+        }
+        const buffer = await reader.read(url);
+        return {
+          buffer: async () => buffer,
+        };
       }
     }
 

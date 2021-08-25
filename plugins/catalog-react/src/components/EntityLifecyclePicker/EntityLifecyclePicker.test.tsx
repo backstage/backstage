@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityLifecycleFilter } from '../../types';
+import { EntityLifecycleFilter } from '../../filters';
 import { EntityLifecyclePicker } from './EntityLifecyclePicker';
 
 const sampleEntities: Entity[] = [
@@ -91,6 +91,27 @@ describe('<EntityLifecyclePicker/>', () => {
     ]);
   });
 
+  it('respects the query parameter filter value', () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { lifecycles: ['experimental'] };
+    render(
+      <MockEntityListContextProvider
+        value={{
+          entities: sampleEntities,
+          backendEntities: sampleEntities,
+          updateFilters,
+          queryParameters,
+        }}
+      >
+        <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['experimental']),
+    });
+  });
+
   it('adds lifecycles to filters', () => {
     const updateFilters = jest.fn();
     const rendered = render(
@@ -104,7 +125,9 @@ describe('<EntityLifecyclePicker/>', () => {
         <EntityLifecyclePicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: undefined,
+    });
 
     fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
     fireEvent.click(rendered.getByText('production'));
@@ -127,7 +150,9 @@ describe('<EntityLifecyclePicker/>', () => {
         <EntityLifecyclePicker />
       </MockEntityListContextProvider>,
     );
-    expect(updateFilters).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['production']),
+    });
     fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
     expect(rendered.getByLabelText('production')).toBeChecked();
 

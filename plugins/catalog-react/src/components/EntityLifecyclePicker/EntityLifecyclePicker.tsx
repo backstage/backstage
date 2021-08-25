@@ -26,15 +26,34 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityLifecycleFilter } from '../../types';
+import { EntityLifecycleFilter } from '../../filters';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityLifecyclePicker = () => {
-  const { updateFilters, backendEntities, filters } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
+
+  const queryParamLifecycles = [queryParameters.lifecycles]
+    .flat()
+    .filter(Boolean) as string[];
+  const [selectedLifecycles, setSelectedLifecycles] = useState(
+    queryParamLifecycles.length
+      ? queryParamLifecycles
+      : filters.lifecycles?.values ?? [],
+  );
+
+  useEffect(() => {
+    updateFilters({
+      lifecycles: selectedLifecycles.length
+        ? new EntityLifecycleFilter(selectedLifecycles)
+        : undefined,
+    });
+  }, [selectedLifecycles, updateFilters]);
+
   const availableLifecycles = useMemo(
     () =>
       [
@@ -49,22 +68,15 @@ export const EntityLifecyclePicker = () => {
 
   if (!availableLifecycles.length) return null;
 
-  const onChange = (lifecycles: string[]) => {
-    updateFilters({
-      lifecycles: lifecycles.length
-        ? new EntityLifecycleFilter(lifecycles)
-        : undefined,
-    });
-  };
-
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Lifecycle</Typography>
       <Autocomplete<string>
+        aria-label="Lifecycle"
         multiple
         options={availableLifecycles}
-        value={filters.lifecycles?.values ?? []}
-        onChange={(_: object, value: string[]) => onChange(value)}
+        value={selectedLifecycles}
+        onChange={(_: object, value: string[]) => setSelectedLifecycles(value)}
         renderOption={(option, { selected }) => (
           <FormControlLabel
             control={

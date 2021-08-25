@@ -245,7 +245,10 @@ export class ScaffolderClient implements ScaffolderApi {
    */
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const response = await fetch(`${baseUrl}/v2/actions`);
+    const token = await this.identityApi.getIdToken();
+    const response = await fetch(`${baseUrl}/v2/actions`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
 
     if (!response.ok) {
       throw ResponseError.fromResponse(response);

@@ -29,7 +29,7 @@ import {
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -151,13 +151,18 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
  */
 export function SystemDiagramCard() {
   const { entity } = useEntity();
+  const theme = useTheme();
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = stringifyEntityRef(entity);
   const systemNodes = new Array<{ id: string; kind: string; name: string }>();
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: catalogResponse } = useAsync(() => {
+  const {
+    loading,
+    error,
+    value: catalogResponse,
+  } = useAsync(() => {
     return catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
@@ -262,6 +267,8 @@ export function SystemDiagramCard() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
         renderNode={RenderNode}
+        paddingX={theme.spacing(4)}
+        paddingY={theme.spacing(4)}
       />
       <Box m={1} />
       <Typography

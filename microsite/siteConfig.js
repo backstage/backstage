@@ -9,7 +9,7 @@
 // site configuration options.
 
 const siteConfig = {
-  title: 'Backstage Service Catalog and Developer Platform', // Title for your website.
+  title: 'Backstage Software Catalog and Developer Platform', // Title for your website.
   tagline: 'An open platform for building developer portals',
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
