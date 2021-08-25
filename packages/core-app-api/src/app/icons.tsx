@@ -15,17 +15,22 @@
  */
 
 import { IconComponent } from '@backstage/core-plugin-api';
-import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
+import MuiApartmentIcon from '@material-ui/icons/Apartment';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
+import MuiCategoryIcon from '@material-ui/icons/Category';
 import MuiChatIcon from '@material-ui/icons/Chat';
 import MuiDashboardIcon from '@material-ui/icons/Dashboard';
+import MuiDocsIcon from '@material-ui/icons/Description';
 import MuiEmailIcon from '@material-ui/icons/Email';
+import MuiExtensionIcon from '@material-ui/icons/Extension';
 import MuiGitHubIcon from '@material-ui/icons/GitHub';
 import MuiHelpIcon from '@material-ui/icons/Help';
+import MuiLocationOnIcon from '@material-ui/icons/LocationOn';
+import MuiMemoryIcon from '@material-ui/icons/Memory';
+import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
 import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
-import MuiDocsIcon from '@material-ui/icons/Description';
 
 type AppIconsKey =
   | 'brokenImage'
@@ -37,6 +42,13 @@ type AppIconsKey =
   | 'github'
   | 'group'
   | 'help'
+  | 'kind:api'
+  | 'kind:component'
+  | 'kind:domain'
+  | 'kind:group'
+  | 'kind:location'
+  | 'kind:system'
+  | 'kind:user'
   | 'user'
   | 'warning';
 
@@ -53,6 +65,13 @@ export const defaultAppIcons: AppIcons = {
   github: MuiGitHubIcon,
   group: MuiPeopleIcon,
   help: MuiHelpIcon,
+  'kind:api': MuiExtensionIcon,
+  'kind:component': MuiMemoryIcon,
+  'kind:domain': MuiApartmentIcon,
+  'kind:group': MuiPeopleIcon,
+  'kind:location': MuiLocationOnIcon,
+  'kind:system': MuiCategoryIcon,
+  'kind:user': MuiPersonIcon,
   user: MuiPersonIcon,
   warning: MuiWarningIcon,
 };
