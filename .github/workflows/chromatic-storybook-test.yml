@@ -5,6 +5,7 @@ on:
       - '.github/workflows/chromatic-storybook-test.yml'
       - 'packages/storybook/**'
       - 'packages/core-components/src/**'
+      - '**/*.stories.tsx'
 
 jobs:
   chromatic:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { createExternalRouteRef } from '@backstage/core-plugin-api';
-
-export const createComponentRouteRef = createExternalRouteRef({
-  id: 'create-component',
-  optional: true,
-});
-
-export const viewTechDocRouteRef = createExternalRouteRef({
-  id: 'view-techdoc',
-  optional: true,
-  params: ['namespace', 'kind', 'name'],
-});
+declare module NodeJS {
+  interface Global {
+    rootDir: string;
+    storageFilesMock: IStorageFilesMock;
+  }
+}

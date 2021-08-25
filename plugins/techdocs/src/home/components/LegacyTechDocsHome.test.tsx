@@ -26,6 +26,7 @@ import {
   ConfigReader,
 } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
+import { rootDocsRouteRef } from '../../routes';
 
 jest.mock('@backstage/plugin-catalog-react', () => {
   const actual = jest.requireActual('@backstage/plugin-catalog-react');
@@ -68,6 +69,11 @@ describe('Legacy TechDocs Home', () => {
       <ApiProvider apis={apiRegistry}>
         <LegacyTechDocsHome />
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
     );
 
     // Header

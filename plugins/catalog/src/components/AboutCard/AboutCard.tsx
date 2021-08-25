@@ -49,7 +49,8 @@ import {
   IconLinkVerticalProps,
   InfoCardVariants,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { viewTechDocRouteRef } from '../../routes';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -81,6 +82,8 @@ export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+
   const entitySourceLocation = getEntitySourceLocation(
     entity,
     scmIntegrationsApi,
@@ -105,11 +108,17 @@ export function AboutCard({ variant }: AboutCardProps) {
   };
   const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
-    disabled: !entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+    disabled:
+      !entity.metadata.annotations?.['backstage.io/techdocs-ref'] ||
+      !viewTechdocLink,
     icon: <DocsIcon />,
-    href: `/docs/${entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${
-      entity.kind
-    }/${entity.metadata.name}`,
+    href:
+      viewTechdocLink &&
+      viewTechdocLink({
+        namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+        kind: entity.kind,
+        name: entity.metadata.name,
+      }),
   };
   const viewApi: IconLinkVerticalProps = {
     title: hasApis ? '' : 'No APIs available',

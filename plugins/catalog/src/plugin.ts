@@ -21,7 +21,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
-import { createComponentRouteRef } from './routes';
+import { createComponentRouteRef, viewTechDocRouteRef } from './routes';
 import {
   createApiFactory,
   createComponentExtension,
@@ -50,6 +50,7 @@ export const catalogPlugin = createPlugin({
   },
   externalRoutes: {
     createComponent: createComponentRouteRef,
+    viewTechDoc: viewTechDocRouteRef,
   },
 });
 
