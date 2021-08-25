@@ -156,8 +156,7 @@ describe('AwsS3UrlReader', () => {
           }),
         ),
       ),
-      s3,
-      treeResponseFactory,
+      { s3, treeResponseFactory },
     );
 
     it('returns contents of an object in a bucket', async () => {
@@ -211,8 +210,7 @@ describe('AwsS3UrlReader', () => {
           }),
         ),
       ),
-      s3,
-      treeResponseFactory,
+      { s3, treeResponseFactory },
     );
 
     it('returns contents of an object in a bucket', async () => {
@@ -273,8 +271,7 @@ describe('AwsS3UrlReader', () => {
           }),
         ),
       ),
-      s3,
-      treeResponseFactory,
+      { s3, treeResponseFactory },
     );
     it('returns contents of an object in a bucket', async () => {
       const response = await awsS3UrlReader.readTree(

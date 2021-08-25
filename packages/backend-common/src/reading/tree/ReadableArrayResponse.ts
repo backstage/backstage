@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
+import concatStream from 'concat-stream';
+import platformPath, { basename } from 'path';
+
 import getRawBody from 'raw-body';
-import { Readable } from 'stream';
-import { ReadTreeResponse, ReadTreeResponseFile } from '../types';
+import fs from 'fs-extra';
+import { promisify } from 'util';
+import tar from 'tar';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import {
+  ReadTreeResponse,
+  ReadTreeResponseFile,
+  ReadTreeResponseDirOptions,
+} from '../types';
+
+const pipeline = promisify(pipelineCb);
 
 /**
  * Wraps a array of Readable objects into a tree response reader.
@@ -26,6 +38,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
 
   constructor(
     private readonly stream: Readable[],
+    private readonly workDir: string,
     public readonly etag: string,
   ) {
     this.etag = etag;
@@ -56,11 +69,40 @@ export class ReadableArrayResponse implements ReadTreeResponse {
     return files;
   }
 
-  archive(): Promise<NodeJS.ReadableStream> {
-    throw new Error('Method not implemented.');
+  async archive(): Promise<NodeJS.ReadableStream> {
+    const tmpDir = await this.dir();
+
+    try {
+      const data = await new Promise<Buffer>(async resolve => {
+        await pipeline(
+          tar.create({ cwd: tmpDir }, ['']),
+          concatStream(resolve),
+        );
+      });
+      return Readable.from(data);
+    } finally {
+      await fs.remove(tmpDir);
+    }
   }
 
-  dir(): Promise<string> {
-    throw new Error('Method not implemented.');
+  async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
+    this.onlyOnce();
+
+    const dir =
+      options?.targetDir ??
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
+
+    for (let i = 0; i < this.stream.length; i++) {
+      if (!(this.stream[i] as any).path.endsWith('/')) {
+        await pipeline(
+          this.stream[i],
+          fs.createWriteStream(
+            platformPath.join(dir, basename((this.stream[i] as any).path)),
+          ),
+        );
+      }
+    }
+
+    return dir;
   }
 }
