@@ -1,5 +1,4 @@
 ---
-'@backstage/catalog-model': patch
 '@backstage/plugin-explore': patch
 ---
 
