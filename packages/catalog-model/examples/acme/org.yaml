@@ -30,4 +30,3 @@ spec:
     - ./team-b-group.yaml
     - ./team-c-group.yaml
     - ./team-d-group.yaml
-    - ./team-e-big-name-group.yaml
