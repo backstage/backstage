@@ -581,9 +581,11 @@ export class DefaultCatalogCollator implements DocumentCollator {
   constructor({
     discovery,
     locationTemplate,
+    allow,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
+    allow?: string[];
   });
   // (undocumented)
   protected applyArgsToFormat(
@@ -594,6 +596,15 @@ export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
+  // (undocumented)
+  protected filterUrl: string;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+    },
+  ): DefaultCatalogCollator;
   // (undocumented)
   protected locationTemplate: string;
   // (undocumented)

@@ -68,7 +68,7 @@ export default async function createPlugin({
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator({ discovery }),
+    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
   });
 
   indexBuilder.addCollator({

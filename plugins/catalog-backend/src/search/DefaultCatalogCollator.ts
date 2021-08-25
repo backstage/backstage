@@ -18,6 +18,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import fetch from 'cross-fetch';
+import { Config } from '@backstage/config';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -30,18 +31,36 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
+  protected filterUrl: string;
   public readonly type: string = 'software-catalog';
+
+  static fromConfig(
+    config: Config,
+    options: { discovery: PluginEndpointDiscovery },
+  ) {
+    return new DefaultCatalogCollator({
+      ...options,
+      allow: config.getOptionalStringArray('catalog.search.allow'),
+    });
+  }
 
   constructor({
     discovery,
     locationTemplate,
+    allow,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
+    allow?: string[];
   }) {
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
+    if (allow && allow.length) {
+      this.filterUrl = `?filter=kind=${allow.join(',')}`;
+    } else {
+      this.filterUrl = '';
+    }
   }
 
   protected applyArgsToFormat(
@@ -57,7 +76,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
 
   async execute() {
     const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities`);
+    const res = await fetch(`${baseUrl}/entities${this.filterUrl}`);
     const entities: Entity[] = await res.json();
     return entities.map((entity: Entity): CatalogEntityDocument => {
       return {
