@@ -85,7 +85,7 @@ describe('addGitFeedbackLink', () => {
       <html>
         <article class="md-content__inner">
           <h1>HeaderText</h1>
-          <a title="Edit this page" href="https://github.com/groupname/reponame/blob/master/docs/docname.md"></>
+          <a title="Edit this page" href="https://github.com/groupname/reponame/edit/master/docs/docname.md"></>
         </article>
       </html>
     `,
@@ -99,7 +99,7 @@ describe('addGitFeedbackLink', () => {
     expect(
       (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
     ).toEqual(
-      'https://github.com/groupname/reponame/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fgithub.com%2Fgroupname%2Freponame%2Fblob%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
+      'https://github.com/groupname/reponame/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fgithub.com%2Fgroupname%2Freponame%2Fedit%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
     );
   });
 
