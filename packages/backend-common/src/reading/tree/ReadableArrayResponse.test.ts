@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { ReadableArrayResponse } from './ReadableArrayResponse';
-import path from 'path';
+import path, { resolve as resolvePath } from 'path';
+
 import { Readable } from 'stream';
-import fs from 'fs';
+import fs from 'fs-extra';
 
 const arr: Readable[] = [];
+const arr2: Readable[] = [];
 const file1 = path.resolve(
   'src',
   'reading',
@@ -33,14 +35,15 @@ const file2 = path.resolve(
   'awsS3',
   'awsS3-mock-object2.yaml',
 );
-const stream1 = fs.createReadStream(file1);
-const stream2 = fs.createReadStream(file2);
-arr.push(stream1);
-arr.push(stream2);
 
 describe('ReadableArrayResponse', () => {
   it('should read files', async () => {
-    const res = new ReadableArrayResponse(arr, 'etag');
+    const stream1 = fs.createReadStream(file1);
+    const stream2 = fs.createReadStream(file2);
+    arr.push(stream1);
+    arr.push(stream2);
+
+    const res = new ReadableArrayResponse(arr, '/tmp', 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
@@ -58,5 +61,22 @@ describe('ReadableArrayResponse', () => {
       'site_name: Test',
       'site_name: Test2',
     ]);
+  });
+
+  it('should extract entire archive into directory', async () => {
+    const stream1 = fs.createReadStream(file1);
+    const stream2 = fs.createReadStream(file2);
+
+    arr2.push(stream1);
+    arr2.push(stream2);
+
+    const res = new ReadableArrayResponse(arr2, '/tmp', 'etag');
+    const dir = await res.dir();
+    await expect(
+      fs.readFile(resolvePath(dir, 'awsS3-mock-object.yaml'), 'utf8'),
+    ).resolves.toBe('site_name: Test\n');
+    await expect(
+      fs.readFile(resolvePath(dir, 'awsS3-mock-object2.yaml'), 'utf8'),
+    ).resolves.toBe('site_name: Test2\n');
   });
 });

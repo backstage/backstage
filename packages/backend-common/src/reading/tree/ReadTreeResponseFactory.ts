@@ -59,6 +59,10 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   async fromReadableArray(
     options: FromReadableArrayOptions,
   ): Promise<ReadTreeResponse> {
-    return new ReadableArrayResponse(options.stream, options.etag);
+    return new ReadableArrayResponse(
+      options.stream,
+      this.workDir,
+      options.etag,
+    );
   }
 }
