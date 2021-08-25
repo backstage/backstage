@@ -26,6 +26,7 @@ import {
   MockStorageApi,
   renderWithEffects,
   wrapInTestApp,
+  mockBreakpoint,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
@@ -54,7 +55,7 @@ describe('CatalogPage', () => {
               name: 'Entity1',
             },
             spec: {
-              owner: 'tools@example.com',
+              owner: 'tools',
               type: 'service',
             },
             relations: [
@@ -71,7 +72,7 @@ describe('CatalogPage', () => {
               name: 'Entity2',
             },
             spec: {
-              owner: 'not-tools@example.com',
+              owner: 'not-tools',
               type: 'service',
             },
             relations: [
@@ -107,7 +108,8 @@ describe('CatalogPage', () => {
     displayName: 'Display Name',
   };
   const identityApi: Partial<IdentityApi> = {
-    getUserId: () => 'tools@example.com',
+    getUserId: () => 'tools',
+    getIdToken: async () => undefined,
     getProfile: () => testProfile,
   };
 
@@ -131,6 +133,10 @@ describe('CatalogPage', () => {
       ),
     );
 
+  // TODO(freben): The test timeouts are bumped in this file, because it seems
+  // page and table rerenders accumulate to occasionally go over the default
+  // limit. We should investigate why these timeouts happen.
+
   it('should render the default column of the grid', async () => {
     const { getAllByRole } = await renderWrapped(<CatalogPage />);
 
@@ -149,7 +155,7 @@ describe('CatalogPage', () => {
       'Tags',
       'Actions',
     ]);
-  });
+  }, 20_000);
 
   it('should render the custom column passed as prop', async () => {
     const columns: TableColumn<EntityRow>[] = [
@@ -167,7 +173,7 @@ describe('CatalogPage', () => {
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
-  });
+  }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
     const { findByTitle, findByText } = await renderWrapped(<CatalogPage />);
@@ -175,7 +181,7 @@ describe('CatalogPage', () => {
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/Edit/)).toBeInTheDocument();
     expect(await findByTitle(/Add to favorites/)).toBeInTheDocument();
-  });
+  }, 20_000);
 
   it('should render the custom actions of an item passed as prop', async () => {
     const actions: TableProps<EntityRow>['actions'] = [
@@ -204,7 +210,7 @@ describe('CatalogPage', () => {
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
     expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
-  });
+  }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
@@ -214,14 +220,14 @@ describe('CatalogPage', () => {
     await expect(findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
     fireEvent.click(getByTestId('user-picker-all'));
     await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
-  });
+  }, 20_000);
 
   it('should set initial filter correctly', async () => {
     const { findByText } = await renderWrapped(
       <CatalogPage initiallySelectedFilter="all" />,
     );
     await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
-  });
+  }, 20_000);
 
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
@@ -243,5 +249,14 @@ describe('CatalogPage', () => {
     await expect(
       screen.findByText(/Starred \(1\)/),
     ).resolves.toBeInTheDocument();
-  });
+  }, 20_000);
+
+  it('should wrap filter in drawer on smaller screens', async () => {
+    mockBreakpoint({ matches: true });
+    const { getByRole } = await renderWrapped(<CatalogPage />);
+    const button = getByRole('button', { name: 'Filters' });
+    expect(getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(getByRole('presentation')).toBeVisible();
+  }, 20_000);
 });

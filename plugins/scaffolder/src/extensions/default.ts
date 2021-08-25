@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 import { EntityPicker } from '../components/fields/EntityPicker';
+import {
+  EntityNamePicker,
+  entityNamePickerValidation,
+} from '../components/fields/EntityNamePicker';
 import { OwnerPicker } from '../components/fields/OwnerPicker';
 import {
   repoPickerValidation,
@@ -25,6 +29,11 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
     component: EntityPicker,
     name: 'EntityPicker',
+  },
+  {
+    component: EntityNamePicker,
+    name: 'EntityNamePicker',
+    validation: entityNamePickerValidation,
   },
   {
     component: RepoUrlPicker,

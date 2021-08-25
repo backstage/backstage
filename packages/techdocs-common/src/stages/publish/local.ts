@@ -196,7 +196,7 @@ export class LocalPublish implements PublisherBase {
           // Otherwise, copy or move the file.
           await new Promise<void>(resolve => {
             const migrate = removeOriginal ? fs.move : fs.copyFile;
-            this.logger.debug(`Migrating ${relativeFile}`);
+            this.logger.verbose(`Migrating ${relativeFile}`);
             migrate(file, newFile, err => {
               if (err) {
                 this.logger.warn(

@@ -24,7 +24,8 @@ import { promisify } from 'util';
 
 const execFile = promisify(execFileCb);
 
-const EXPECTED_LOAD_ERRORS = /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
+const EXPECTED_LOAD_ERRORS =
+  /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
 
 export function spawnPiped(cmd: string[], options?: SpawnOptions) {
   function pipeWithPrefix(stream: NodeJS.WriteStream, prefix = '') {

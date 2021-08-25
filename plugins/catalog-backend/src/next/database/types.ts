@@ -16,6 +16,7 @@
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { Transaction } from '../../database/types';
 import { DeferredEntity } from '../processing/types';
 
@@ -34,6 +35,7 @@ export type AddUnprocessedEntitiesResult = {};
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
+  resultHash: string;
   state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
@@ -44,6 +46,7 @@ export type UpdateProcessedEntityOptions = {
 export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
+  resultHash: string;
 };
 
 export type RefreshStateItem = {
@@ -51,8 +54,9 @@ export type RefreshStateItem = {
   entityRef: string;
   unprocessedEntity: Entity;
   processedEntity?: Entity;
-  nextUpdateAt: string;
-  lastDiscoveryAt: string; // remove?
+  resultHash: string;
+  nextUpdateAt: DateTime;
+  lastDiscoveryAt: DateTime; // remove?
   state: Map<string, JsonObject>;
   errors?: string;
   locationKey?: string;

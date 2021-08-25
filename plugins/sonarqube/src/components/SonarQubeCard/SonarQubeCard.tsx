@@ -183,12 +183,12 @@ export const SonarQubeCard = ({
             item
             container
             direction="column"
-            justify="space-between"
+            justifyContent="space-between"
             alignItems="center"
             style={{ height: '100%' }}
             spacing={0}
           >
-            <Grid item container justify="space-around">
+            <Grid item container justifyContent="space-around">
               <RatingCard
                 titleIcon={<BugReport />}
                 title="Bugs"

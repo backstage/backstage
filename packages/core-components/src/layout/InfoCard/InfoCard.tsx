@@ -91,8 +91,8 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
  *
- * You can custom style an InfoCard with the 'style' (outer container) and 'cardStyle' (inner container)
- * styles.
+ * You can custom style an InfoCard with the 'className' (outer container) and 'cardClassName' (inner container)
+ * props. This is typically used with the material-ui makeStyles mechanism.
  *
  * The InfoCard serves as an error boundary. As a result, if you provide an 'errorBoundaryProps' property this
  * specifies the extra information to display in the error component that is displayed if an error occurs
@@ -115,8 +115,6 @@ type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
-  style?: object;
-  cardStyle?: object;
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;

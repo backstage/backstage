@@ -22,10 +22,11 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
 import { catalogApiRef } from '../api';
 import {
   EntityKindFilter,
@@ -51,7 +52,7 @@ export type DefaultEntityFilters = {
 };
 
 export type EntityListContextProps<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
   /**
    * The currently registered filters, adhering to the shape of DefaultEntityFilters or an extension
@@ -102,6 +103,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => {
+  const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
   const [searchParams, setSearchParams] = useSearchParams();
   const allQueryParams = qs.parse(searchParams.toString());
@@ -164,12 +166,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         });
       }
 
-      setSearchParams(
-        qs.stringify({ ...allQueryParams, filters: queryParams }),
-        {
-          replace: true,
-        },
-      );
+      if (isMounted()) {
+        setSearchParams(
+          qs.stringify({ ...allQueryParams, filters: queryParams }),
+          {
+            replace: true,
+          },
+        );
+      }
     },
     [catalogApi, requestedFilters, outputState],
     { loading: true },
@@ -194,25 +198,36 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [],
   );
 
+  const value = useMemo(
+    () => ({
+      filters: outputState.appliedFilters,
+      entities: outputState.entities,
+      backendEntities: outputState.backendEntities,
+      updateFilters,
+      queryParameters: outputState.queryParameters,
+      loading,
+      error,
+    }),
+    [
+      outputState.appliedFilters,
+      outputState.entities,
+      outputState.backendEntities,
+      updateFilters,
+      outputState.queryParameters,
+      loading,
+      error,
+    ],
+  );
+
   return (
-    <EntityListContext.Provider
-      value={{
-        filters: outputState.appliedFilters,
-        entities: outputState.entities,
-        backendEntities: outputState.backendEntities,
-        updateFilters,
-        queryParameters: outputState.queryParameters,
-        loading,
-        error,
-      }}
-    >
+    <EntityListContext.Provider value={value}>
       {children}
     </EntityListContext.Provider>
   );
 };
 
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)

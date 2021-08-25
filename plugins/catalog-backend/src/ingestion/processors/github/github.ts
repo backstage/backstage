@@ -60,6 +60,9 @@ export type Repository = {
   name: string;
   url: string;
   isArchived: boolean;
+  defaultBranchRef: {
+    name: string;
+  };
 };
 
 export type Connection<T> = {
@@ -252,6 +255,9 @@ export async function getOrganizationRepositories(
             name
             url
             isArchived
+            defaultBranchRef {
+              name
+            }
           }
           pageInfo {
             hasNextPage
@@ -330,7 +336,7 @@ export async function queryWithPaging<
   GraphqlType,
   OutputType,
   Variables extends {},
-  Response = QueryResponse
+  Response = QueryResponse,
 >(
   client: typeof graphql,
   query: string,

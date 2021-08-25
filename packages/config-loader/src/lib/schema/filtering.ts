@@ -30,9 +30,17 @@ export function filterByVisibility(
   includeVisibilities: ConfigVisibility[],
   visibilityByPath: Map<string, ConfigVisibility>,
   transformFunc?: TransformFunc<number | string | boolean>,
-): JsonObject {
-  function transform(jsonVal: JsonValue, path: string): JsonValue | undefined {
-    const visibility = visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY;
+  withFilteredKeys?: boolean,
+): { data: JsonObject; filteredKeys?: string[] } {
+  const filteredKeys = new Array<string>();
+
+  function transform(
+    jsonVal: JsonValue,
+    visibilityPath: string, // Matches the format we get from ajv
+    filterPath: string, // Matches the format of the ConfigReader
+  ): JsonValue | undefined {
+    const visibility =
+      visibilityByPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
     const isVisible = includeVisibilities.includes(visibility);
 
     if (typeof jsonVal !== 'object') {
@@ -42,6 +50,9 @@ export function filterByVisibility(
         }
         return jsonVal;
       }
+      if (withFilteredKeys) {
+        filteredKeys.push(filterPath);
+      }
       return undefined;
     } else if (jsonVal === null) {
       return undefined;
@@ -49,7 +60,11 @@ export function filterByVisibility(
       const arr = new Array<JsonValue>();
 
       for (const [index, value] of jsonVal.entries()) {
-        const out = transform(value, `${path}/${index}`);
+        const out = transform(
+          value,
+          `${visibilityPath}/${index}`,
+          `${filterPath}[${index}]`,
+        );
         if (out !== undefined) {
           arr.push(out);
         }
@@ -68,7 +83,11 @@ export function filterByVisibility(
       if (value === undefined) {
         continue;
       }
-      const out = transform(value, `${path}/${key}`);
+      const out = transform(
+        value,
+        `${visibilityPath}/${key}`,
+        filterPath ? `${filterPath}.${key}` : key,
+      );
       if (out !== undefined) {
         outObj[key] = out;
         hasOutput = true;
@@ -81,5 +100,8 @@ export function filterByVisibility(
     return undefined;
   }
 
-  return (transform(data, '') as JsonObject) ?? {};
+  return {
+    filteredKeys: withFilteredKeys ? filteredKeys : undefined,
+    data: (transform(data, '', '') as JsonObject) ?? {},
+  };
 }

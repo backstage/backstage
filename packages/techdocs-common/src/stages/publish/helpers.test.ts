@@ -16,9 +16,13 @@
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
+  getStaleFiles,
   getFileTreeRecursively,
+  getCloudPathForLocalPath,
   getHeadersForFileExtension,
+  bulkStorageOperation,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 
@@ -97,5 +101,121 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
     expect(() =>
       lowerCaseEntityTripletInStoragePath(originalPath),
     ).toThrowError(error);
+  });
+});
+
+describe('getStaleFiles', () => {
+  const defaultFiles = [
+    'default/Component/backstage/index.html',
+    'default/Component/backstage/techdocs_metadata.json',
+    'default/Component/backstage/assests/javascripts/bundle.7f4f3c92.min.js',
+    'default/Component/backstage/assets/stylesheets/main.fe0cca5b.min.css',
+  ];
+
+  it('should return empty array if there is no stale file', () => {
+    const oldFiles = [...defaultFiles];
+    const newFiles = [...defaultFiles];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(0);
+  });
+
+  it('should return all stale files when they exists', () => {
+    const oldFiles = [...defaultFiles, 'stale_file.png'];
+    const newFiles = [...defaultFiles];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(1);
+    expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
+  });
+});
+
+describe('getCloudPathForLocalPath', () => {
+  const entity: Entity = {
+    apiVersion: 'version',
+    metadata: { namespace: 'custom', name: 'backstage' },
+    kind: 'Component',
+  };
+
+  it('should compose a remote bucket path including entity information', () => {
+    const remoteBucket = getCloudPathForLocalPath(entity);
+    expect(remoteBucket).toBe('custom/component/backstage/');
+  });
+
+  it('should compose a remote filename including entity information', () => {
+    const localPath = 'index.html';
+    const remoteBucket = getCloudPathForLocalPath(entity, localPath);
+    expect(remoteBucket).toBe(`custom/component/backstage/${localPath}`);
+  });
+
+  it('should use the default namespace when it is undefined', () => {
+    const localPath = 'index.html';
+    const {
+      kind,
+      metadata: { name },
+    } = entity;
+    const remoteBucket = getCloudPathForLocalPath(
+      { kind, metadata: { name } } as Entity,
+      localPath,
+    );
+    expect(remoteBucket).toBe(
+      `${ENTITY_DEFAULT_NAMESPACE}/component/backstage/${localPath}`,
+    );
+  });
+
+  it('should preserve case when legacy flag is passed', () => {
+    const remoteBucket = getCloudPathForLocalPath(entity, undefined, true);
+    expect(remoteBucket).toBe('custom/Component/backstage/');
+  });
+
+  it('should throw error when entity is invalid', () => {
+    expect(() => getCloudPathForLocalPath({} as Entity)).toThrow();
+  });
+});
+
+describe('bulkStorageOperation', () => {
+  const length = 26;
+  const args = Array.from({ length });
+  const createConcurrentRequestCounter = (
+    callback: (count: number) => void,
+  ) => {
+    let count = 0;
+    return () =>
+      new Promise(resolve => {
+        callback(++count);
+        setTimeout(() => {
+          count--;
+          resolve(null);
+        }, 100);
+      });
+  };
+
+  it('should take care of rate limit by default', async () => {
+    const operation = createConcurrentRequestCounter((count: number) => {
+      expect(count <= 25).toBeTruthy();
+    });
+    await bulkStorageOperation(operation, args);
+  });
+
+  it('should accept the number of concurrency limit', async () => {
+    const concurrencyLimit = 10;
+    const operation = createConcurrentRequestCounter((count: number) => {
+      expect(count <= concurrencyLimit).toBeTruthy();
+    });
+    await bulkStorageOperation(operation, args, { concurrencyLimit });
+  });
+
+  it('should wait for all promises be resolved', async () => {
+    const callback = jest.fn();
+    const operation = createConcurrentRequestCounter(callback);
+    await bulkStorageOperation(operation, args);
+    expect(callback).toHaveBeenCalledTimes(length);
+  });
+
+  it('should call operation with the correct argument', async () => {
+    const files = ['file1.txt', 'file2.txt'];
+    const fn = jest.fn();
+    await bulkStorageOperation(fn, files);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenNthCalledWith(1, files[0]);
+    expect(fn).toHaveBeenNthCalledWith(2, files[1]);
   });
 });

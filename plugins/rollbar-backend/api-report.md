@@ -15,9 +15,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // Warning: (ae-missing-release-tag) "getRequestHeaders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function getRequestHeaders(
-  token: string,
-): {
+export function getRequestHeaders(token: string): {
   headers: {
     'X-Rollbar-Access-Token': string;
   };

@@ -220,24 +220,22 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
+export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> =
+  async (info, ctx) => {
+    const { profile } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
 
-  const userId = profile.email.split('@')[0];
+    const userId = profile.email.split('@')[0];
 
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
-  });
+    const token = await ctx.tokenIssuer.issueToken({
+      claims: { sub: userId, ent: [`user:default/${userId}`] },
+    });
 
-  return { id: userId, token };
-};
+    return { id: userId, token };
+  };
 
 export type MicrosoftProviderOptions = {
   /**
@@ -249,13 +247,10 @@ export type MicrosoftProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
-   */
   signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
     resolver?: SignInResolver<OAuthResult>;
   };
 };

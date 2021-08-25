@@ -19,6 +19,7 @@ export * from './Avatar';
 export * from './Button';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
+export * from './CreateButton';
 export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './EmptyState';

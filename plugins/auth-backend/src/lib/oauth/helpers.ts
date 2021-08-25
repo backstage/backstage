@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { OAuthState } from './types';
+import pickBy from 'lodash/pickBy';
 
 export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
@@ -29,18 +30,16 @@ export const readState = (stateString: string): OAuthState => {
   ) {
     throw Error(`Invalid state passed via request`);
   }
-  return {
-    nonce: state.nonce,
-    env: state.env,
-  };
+
+  return state as OAuthState;
 };
 
 export const encodeState = (state: OAuthState): string => {
-  const searchParams = new URLSearchParams();
-  searchParams.append('nonce', state.nonce);
-  searchParams.append('env', state.env);
+  const stateString = new URLSearchParams(
+    pickBy(state, value => value !== undefined),
+  ).toString();
 
-  return Buffer.from(searchParams.toString(), 'utf-8').toString('hex');
+  return Buffer.from(stateString, 'utf-8').toString('hex');
 };
 
 export const verifyNonce = (req: express.Request, providerId: string) => {

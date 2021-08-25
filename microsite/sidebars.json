@@ -80,7 +80,8 @@
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
-          "features/search/architecture"
+          "features/search/architecture",
+          "features/search/search-engines"
         ]
       },
       {
@@ -103,6 +104,11 @@
     ],
     "Integrations": [
       "integrations/index",
+      {
+        "type": "subcategory",
+        "label": "AWS S3",
+        "ids": ["integrations/aws-s3/locations"]
+      },
       {
         "type": "subcategory",
         "label": "Azure",

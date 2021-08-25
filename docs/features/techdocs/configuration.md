@@ -24,13 +24,13 @@ techdocs:
 
     runIn: 'docker'
 
-    # techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
+    # (Optional) techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
     # if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
     # NOTE: This setting is only used when techdocs.generator.runIn is set to 'docker'.
 
     dockerImage: 'spotify/techdocs'
 
-    # techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
+    # (Optional) techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
     # using a custom techdocs.generator.dockerImage and you have a custom docker login requirement. For example, you need to login to
     # AWS ECR to pull the docker image.
     # NOTE: Disabling this requires the docker image was pulled by other means before running the techdocs generator.
@@ -112,6 +112,14 @@ techdocs:
         # If missing,AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET environment variable will be used.
         # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
+
+  # (Optional and not recommended) Prior to version [0.x.y] of TechDocs, docs
+  # sites could only be accessed over paths with case-sensitive entity triplets
+  # e.g. (namespace/Kind/name). If you are upgrading from an older version of
+  # TechDocs and are unable to perform the necessary migration of files in your
+  # external storage, you can set this value to `true` to temporarily revert to
+  # the old, case-sensitive entity triplet behavior.
+  legacyUseCaseSensitiveTripletPaths: false
 
   # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
   # You don't have to specify this anymore.

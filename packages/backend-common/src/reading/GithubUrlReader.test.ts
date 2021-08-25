@@ -41,9 +41,9 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-const mockCredentialsProvider = ({
+const mockCredentialsProvider = {
   getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
-} as unknown) as GithubCredentialsProvider;
+} as unknown as GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
   new GitHubIntegration(

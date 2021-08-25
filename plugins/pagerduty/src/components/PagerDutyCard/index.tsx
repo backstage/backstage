@@ -55,7 +55,11 @@ export const PagerDutyCard = () => {
     setRefreshIncidents(x => !x);
   }, []);
 
-  const { value: service, loading, error } = useAsync(async () => {
+  const {
+    value: service,
+    loading,
+    error,
+  } = useAsync(async () => {
     const services = await api.getServiceByIntegrationKey(
       integrationKey as string,
     );

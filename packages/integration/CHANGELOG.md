@@ -1,5 +1,35 @@
 # @backstage/integration
 
+## 0.6.1
+
+### Patch Changes
+
+- b8cb12009: Add AWS S3 URL Reader
+- Updated dependencies
+  - @backstage/config@0.1.7
+
+## 0.6.0
+
+### Minor Changes
+
+- ce1958021: `getGitHubFileFetchUrl` and `getGitHubRequestOptions` now require a `credentials` argument. This is needed to address an issue where the raw route was chosen by the `UrlReader` when using GitHub Apps based auth.
+
+  Deprecated the `getGitHubRequestOptions` function, which is no longer used internally.
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 68af4d556: Adds an allow list of GitHub installations
+- 5fd31c2f4: Remove repo restriction from GitHub credentials provider
+
+## 0.5.9
+
+### Patch Changes
+
+- 3c50ff562: Fixed bug for comparing Organization name in `GithubCredentialsProvider`
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.5.8
 
 ### Patch Changes

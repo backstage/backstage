@@ -31,13 +31,8 @@ export function getAzureFileFetchUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
 
-    const [
-      empty,
-      userOrOrg,
-      project,
-      srcKeyword,
-      repoName,
-    ] = parsedUrl.pathname.split('/');
+    const [empty, userOrOrg, project, srcKeyword, repoName] =
+      parsedUrl.pathname.split('/');
 
     const path = parsedUrl.searchParams.get('path') || '';
     const ref = parsedUrl.searchParams.get('version')?.substr(2);
@@ -117,13 +112,8 @@ export function getAzureCommitsUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
 
-    const [
-      empty,
-      userOrOrg,
-      project,
-      srcKeyword,
-      repoName,
-    ] = parsedUrl.pathname.split('/');
+    const [empty, userOrOrg, project, srcKeyword, repoName] =
+      parsedUrl.pathname.split('/');
 
     // Remove the "GB" from "GBmain" for example.
     const ref = parsedUrl.searchParams.get('version')?.substr(2);

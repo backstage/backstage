@@ -15,6 +15,8 @@
  */
 import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
 import {
+  favoriteEntityIcon,
+  favoriteEntityTooltip,
   formatEntityRefTitle,
   getEntityMetadataEditUrl,
   getEntityMetadataViewUrl,
@@ -26,10 +28,6 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import React from 'react';
-import {
-  favouriteEntityIcon,
-  favouriteEntityTooltip,
-} from '../FavouriteEntity/FavouriteEntity';
 import * as columnFactories from './columns';
 import { EntityRow } from './types';
 import {
@@ -80,7 +78,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     ({ entity }) => {
       const url = getEntityMetadataViewUrl(entity);
       return {
-        icon: () => <OpenInNew fontSize="small" />,
+        icon: () => <OpenInNew aria-label="View" fontSize="small" />,
         tooltip: 'View',
         disabled: !url,
         onClick: () => {
@@ -92,7 +90,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     ({ entity }) => {
       const url = getEntityMetadataEditUrl(entity);
       return {
-        icon: () => <Edit fontSize="small" />,
+        icon: () => <Edit aria-label="Edit" fontSize="small" />,
         tooltip: 'Edit',
         disabled: !url,
         onClick: () => {
@@ -105,8 +103,8 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
       const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => favouriteEntityIcon(isStarred),
-        tooltip: favouriteEntityTooltip(isStarred),
+        icon: () => favoriteEntityIcon(isStarred),
+        tooltip: favoriteEntityTooltip(isStarred),
         onClick: () => toggleStarredEntity(entity),
       };
     },

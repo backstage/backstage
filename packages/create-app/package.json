@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.31",
+  "version": "0.3.37",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -39,7 +39,6 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
     "@types/inquirer": "^7.3.1",
-    "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
     "ts-node": "^10.0.0"
   },

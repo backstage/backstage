@@ -61,7 +61,7 @@ If you do not prefer (3a) and optionally like to use a service account, you can
 follow these steps.
 
 Create a new Service Account and a key associated with it. In roles of the
-service account, use "Storage Admin".
+service account, use "Storage Object Admin".
 
 If you want to create a custom role, make sure to include both `get` and
 `create` permissions for both "Objects" and "Buckets". See
@@ -143,6 +143,8 @@ permissions to:
 
 - `s3:ListBucket` to retrieve bucket metadata
 - `s3:PutObject` to upload files to the bucket
+- `s3:DeleteObject` and `s3:DeleteObjectVersion` to delete stale content during
+  re-publishing
 
 To _read_ TechDocs from the S3 bucket the IAM policy needs to have at a minimum
 permissions to:
@@ -344,6 +346,10 @@ techdocs:
         accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
 ```
+
+In either case, the account or credentials used to access your container and all
+TechDocs objects underneath it should have the `Storage Blog Data Owner` role
+applied, in order to read, write, and delete objects as needed.
 
 **4. That's it!**
 

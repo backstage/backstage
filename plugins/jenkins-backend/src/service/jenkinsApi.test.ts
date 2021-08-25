@@ -92,8 +92,7 @@ describe('JenkinsApi', () => {
             result: 'success',
             displayName: '#7',
             fullDisplayName: 'Example jobName » Example Build #7',
-            url:
-              'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+            url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
             number: 7,
             status: 'success',
             source: {},
@@ -280,8 +279,7 @@ describe('JenkinsApi', () => {
           result: 'success',
           displayName: '#7',
           fullDisplayName: 'Example jobName » Example Build #7',
-          url:
-            'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
+          url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
           number: 7,
         },
       };

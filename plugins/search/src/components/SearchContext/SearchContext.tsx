@@ -45,14 +45,16 @@ type SettableSearchContext = Omit<
   'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPageCursor'
 >;
 
-const SearchContext = createContext<SearchContextValue | undefined>(undefined);
+export const SearchContext = createContext<SearchContextValue | undefined>(
+  undefined,
+);
 
 export const SearchContextProvider = ({
   initialState = {
     term: '',
     pageCursor: '',
     filters: {},
-    types: ['*'],
+    types: [],
   },
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {

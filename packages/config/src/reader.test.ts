@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { withLogCollector } from '../../test-utils-core/src';
 import { ConfigReader } from './reader';
 
 const DATA = {
@@ -63,9 +64,9 @@ function expectValidValues(config: ConfigReader) {
     strings: ['string1', 'string2'],
   });
   expect(config.getConfig('nested').getString('string')).toBe('string');
-  expect(
-    config.getOptionalConfig('nested')!.getStringArray('strings'),
-  ).toEqual(['string1', 'string2']);
+  expect(config.getOptionalConfig('nested')!.getStringArray('strings')).toEqual(
+    ['string1', 'string2'],
+  );
   expect(config.getOptional('missing')).toBe(undefined);
   expect(config.getOptionalConfig('missing')).toBe(undefined);
   expect(config.getOptionalConfigArray('missing')).toBe(undefined);
@@ -184,6 +185,61 @@ describe('ConfigReader', () => {
   it('should fail to read invalid values', () => {
     const config = new ConfigReader(DATA, CTX);
     expectInvalidValues(config);
+  });
+
+  it('should warn when accessing filtered keys in development mode', () => {
+    const oldEnv = process.env.NODE_ENV;
+    (process.env as any).NODE_ENV = 'development';
+
+    const config = ConfigReader.fromConfigs([
+      {
+        data: DATA,
+        context: CTX,
+        filteredKeys: ['a', 'b[0]'],
+      },
+    ]);
+
+    expect(withLogCollector(() => config.getOptional('a'))).toMatchObject({
+      warn: [
+        "Failed to read configuration value at 'a' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
+      ],
+    });
+    expect(withLogCollector(() => config.getOptionalString('a'))).toMatchObject(
+      {
+        warn: [
+          "Failed to read configuration value at 'a' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
+        ],
+      },
+    );
+    expect(
+      withLogCollector(() => config.getOptionalConfigArray('b')),
+    ).toMatchObject({
+      warn: [
+        "Failed to read configuration array at 'b' as it does not have any visible elements. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
+      ],
+    });
+
+    (process.env as any).NODE_ENV = oldEnv;
+  });
+
+  it('should not warn when accessing filtered keys outside of development mode', () => {
+    const config = ConfigReader.fromConfigs([
+      {
+        data: DATA,
+        context: CTX,
+        filteredKeys: ['a', 'b[0]'],
+      },
+    ]);
+
+    expect(withLogCollector(() => config.getOptional('a'))).toMatchObject({
+      warn: [],
+    });
+    expect(withLogCollector(() => config.getOptionalString('a'))).toMatchObject(
+      { warn: [] },
+    );
+    expect(
+      withLogCollector(() => config.getOptionalConfigArray('b')),
+    ).toMatchObject({ warn: [] });
   });
 });
 

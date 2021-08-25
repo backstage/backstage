@@ -59,23 +59,21 @@ export class DefaultCatalogCollator implements DocumentCollator {
     const baseUrl = await this.discovery.getBaseUrl('catalog');
     const res = await fetch(`${baseUrl}/entities`);
     const entities: Entity[] = await res.json();
-    return entities.map(
-      (entity: Entity): CatalogEntityDocument => {
-        return {
-          title: entity.metadata.name,
-          location: this.applyArgsToFormat(this.locationTemplate, {
-            namespace: entity.metadata.namespace || 'default',
-            kind: entity.kind,
-            name: entity.metadata.name,
-          }),
-          text: entity.metadata.description || '',
-          componentType: entity.spec?.type?.toString() || 'other',
+    return entities.map((entity: Entity): CatalogEntityDocument => {
+      return {
+        title: entity.metadata.name,
+        location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
           kind: entity.kind,
-          lifecycle: (entity.spec?.lifecycle as string) || '',
-          owner: (entity.spec?.owner as string) || '',
-        };
-      },
-    );
+          name: entity.metadata.name,
+        }),
+        text: entity.metadata.description || '',
+        componentType: entity.spec?.type?.toString() || 'other',
+        namespace: entity.metadata.namespace || 'default',
+        kind: entity.kind,
+        lifecycle: (entity.spec?.lifecycle as string) || '',
+        owner: (entity.spec?.owner as string) || '',
+      };
+    });
   }
 }

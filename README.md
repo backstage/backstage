@@ -2,8 +2,6 @@
 
 # [Backstage](https://backstage.io)
 
-_During the month of July the majority of the maintainers will be on summer vacation 🏖️ Development will continue as usual, but expect a slower pace for discussions and PR reviews. Why not take this opportunity to [build a plugin](https://backstage.io/docs/plugins/)?_
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-sandbox-blue.svg)](https://www.cncf.io/projects)
 [![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)
@@ -63,3 +61,9 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 Copyright 2020-2021 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
+
+## Security
+
+Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
+
+For further details please see our complete [security release process](SECURITY.md).

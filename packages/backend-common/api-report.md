@@ -439,6 +439,13 @@ export type ReadTreeResponseFile = {
 // @public
 export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
 
+// Warning: (ae-missing-release-tag) "RequestLoggingHandlerFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RequestLoggingHandlerFactory = (
+  logger?: Logger_2,
+) => RequestHandler;
+
 // Warning: (ae-missing-release-tag) "resolvePackagePath" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -492,6 +499,9 @@ export type ServiceBuilder = {
   enableCors(options: cors.CorsOptions): ServiceBuilder;
   setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
+  setRequestLoggingHandler(
+    requestLoggingHandler: RequestLoggingHandlerFactory,
+  ): ServiceBuilder;
   start(): Promise<Server>;
 };
 
@@ -583,7 +593,7 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 // src/cache/types.d.ts:34:5 - (ae-forgotten-export) The symbol "ClientOptions" needs to be exported by the entry point index.d.ts
 // src/middleware/errorHandler.d.ts:17:26 - (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
 // src/reading/AzureUrlReader.d.ts:9:9 - (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
-// src/reading/types.d.ts:106:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
+// src/reading/types.d.ts:108:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
 // src/service/types.d.ts:12:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:22:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:30:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -593,6 +603,7 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 // src/service/types.d.ts:57:5 - (ae-forgotten-export) The symbol "HttpsSettings" needs to be exported by the entry point index.d.ts
 // src/service/types.d.ts:61:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:62:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/service/types.d.ts:70:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 ```

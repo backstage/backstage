@@ -42,7 +42,7 @@ describe('StorageBucket', () => {
       removeItem: jest.fn(),
     };
     const bucket = StorageBucket.forStorage(
-      (mockStorage as unknown) as Storage,
+      mockStorage as unknown as Storage,
       'my-bucket',
     );
 

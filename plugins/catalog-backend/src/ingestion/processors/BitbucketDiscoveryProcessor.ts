@@ -136,9 +136,11 @@ export async function readBitbucketOrg(
   return result;
 }
 
-function parseUrl(
-  urlString: string,
-): { projectSearchPath: RegExp; repoSearchPath: RegExp; catalogPath: string } {
+function parseUrl(urlString: string): {
+  projectSearchPath: RegExp;
+  repoSearchPath: RegExp;
+  catalogPath: string;
+} {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
 

@@ -58,7 +58,7 @@ describe('publish:azure', () => {
     getGitApi: jest.fn().mockReturnValue(mockGitClient),
   };
 
-  ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+  (WebApi as unknown as jest.Mock).mockImplementation(() => mockGitApi);
 
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -68,21 +68,21 @@ describe('publish:azure', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob' },
+        input: { repoUrl: 'dev.azure.com?repo=bob' },
       }),
     ).rejects.toThrow(/missing owner/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner' },
+        input: { repoUrl: 'dev.azure.com?owner=owner' },
       }),
     ).rejects.toThrow(/missing repo/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner&repo=repo' },
+        input: { repoUrl: 'dev.azure.com?owner=owner&repo=repo' },
       }),
     ).rejects.toThrow(/missing organization/);
   });
@@ -209,9 +209,8 @@ describe('publish:azure', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishAzureAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -230,6 +229,43 @@ describe('publish:azure', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
+    });
+  });
+
+  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        azure: [
+          { host: 'dev.azure.com', token: 'tokenlols' },
+          { host: 'myazurehostnotoken.com' },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createPublishAzureAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+    }));
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 

@@ -33,14 +33,24 @@ In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
 ```tsx
-import { TechDocsPage } from '@backstage/plugin-techdocs';
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
 
 // ...
 
 const AppRoutes = () => {
   <FlatRoutes>
     // ... other plugin routes
-    <Route path="/docs" element={<TechdocsPage />} />
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    />
   </FlatRoutes>;
 };
 ```
@@ -204,7 +214,7 @@ techdocs:
   builder: 'local'
   publisher:
     type: 'local'
-  generators:
+  generator:
     techdocs: local
 ```
 

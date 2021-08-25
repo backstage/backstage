@@ -20,8 +20,38 @@ import { setupServer } from 'msw/node';
 import { FindingSummary, SonarQubeClient } from './index';
 import { ComponentWrapper, MeasuresWrapper } from './types';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 const server = setupServer();
+
+const identityApiAuthenticated: IdentityApi = {
+  getUserId() {
+    return 'jane-fonda';
+  },
+  getProfile() {
+    return { email: 'jane-fonda@spotify.com' };
+  },
+  async getIdToken() {
+    return Promise.resolve('fake-id-token');
+  },
+  async signOut() {
+    return Promise.resolve();
+  },
+};
+const identityApiGuest: IdentityApi = {
+  getUserId() {
+    return 'guest';
+  },
+  getProfile() {
+    return {};
+  },
+  async getIdToken() {
+    return Promise.resolve(undefined);
+  },
+  async signOut() {
+    return Promise.resolve();
+  },
+};
 
 describe('SonarQubeClient', () => {
   msw.setupDefaultHandlers(server);
@@ -161,7 +191,10 @@ describe('SonarQubeClient', () => {
   it('should report finding summary', async () => {
     setupHandlers();
 
-    const client = new SonarQubeClient({ discoveryApi });
+    const client = new SonarQubeClient({
+      discoveryApi,
+      identityApi: identityApiAuthenticated,
+    });
 
     const summary = await client.getFindingSummary('our:service');
     expect(summary).toEqual(
@@ -197,6 +230,7 @@ describe('SonarQubeClient', () => {
     const client = new SonarQubeClient({
       discoveryApi,
       baseUrl: 'http://a.instance.local',
+      identityApi: identityApiAuthenticated,
     });
 
     const summary = await client.getFindingSummary('our:service');
@@ -234,6 +268,7 @@ describe('SonarQubeClient', () => {
     const client = new SonarQubeClient({
       discoveryApi,
       baseUrl: 'http://a.instance.local',
+      identityApi: identityApiAuthenticated,
     });
 
     const summary = await client.getFindingSummary('our:service');
@@ -254,5 +289,57 @@ describe('SonarQubeClient', () => {
     expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
       'http://a.instance.local/component_measures?id=our%3Aservice&metric=coverage&resolved=false&view=list',
     );
+  });
+
+  it('should add identity token for logged in users', async () => {
+    setupHandlers();
+    server.use(
+      rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
+        expect(req.headers.get('Authorization')).toBe('Bearer fake-id-token');
+        return res(
+          ctx.json({
+            component: {
+              analysisDate: '2020-01-01T00:00:00Z',
+            },
+          } as ComponentWrapper),
+        );
+      }),
+    );
+
+    const client = new SonarQubeClient({
+      discoveryApi,
+      baseUrl: 'http://a.instance.local',
+      identityApi: identityApiAuthenticated,
+    });
+    const summary = await client.getFindingSummary('our:service');
+
+    expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
+  });
+
+  it('should omit identity token for guest users', async () => {
+    setupHandlers();
+    server.use(
+      rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
+        expect(req.headers.has('Authorization')).toBeFalsy();
+        return res(
+          ctx.json({
+            component: {
+              analysisDate: '2020-01-01T00:00:00Z',
+            },
+          } as ComponentWrapper),
+        );
+      }),
+    );
+
+    const client = new SonarQubeClient({
+      discoveryApi,
+      baseUrl: 'http://a.instance.local',
+      identityApi: identityApiGuest,
+    });
+    const summary = await client.getFindingSummary('our:service');
+
+    expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
   });
 });

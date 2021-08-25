@@ -73,7 +73,11 @@ describe('CatalogTable component', () => {
         value={{
           entities,
           filters: {
-            user: new UserListFilter('owned', undefined, () => false),
+            user: new UserListFilter(
+              'owned',
+              () => false,
+              () => false,
+            ),
           },
         }}
       >

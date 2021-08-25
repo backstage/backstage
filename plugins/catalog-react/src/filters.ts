@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  UserEntity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
-import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations, isOwnerOf } from './utils';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { formatEntityRefTitle } from './components/EntityRefLink';
+import { EntityFilter, UserListFilterKind } from './types';
+import { getEntityRelations } from './utils';
 
 export class EntityKindFilter implements EntityFilter {
   constructor(readonly value: string) {}
@@ -116,14 +112,14 @@ export class EntityLifecycleFilter implements EntityFilter {
 export class UserListFilter implements EntityFilter {
   constructor(
     readonly value: UserListFilterKind,
-    readonly user: UserEntity | undefined,
+    readonly isOwnedEntity: (entity: Entity) => boolean,
     readonly isStarredEntity: (entity: Entity) => boolean,
   ) {}
 
   filterEntity(entity: Entity): boolean {
     switch (this.value) {
       case 'owned':
-        return this.user !== undefined && isOwnerOf(this.user, entity);
+        return this.isOwnedEntity(entity);
       case 'starred':
         return this.isStarredEntity(entity);
       default:

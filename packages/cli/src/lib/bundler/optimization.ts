@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Options } from 'webpack';
+import { WebpackOptionsNormalized, WebpackPluginInstance } from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import { BundlingOptions } from './types';
 import { isParallelDefault } from '../parallel';
 
 export const optimization = (
   options: BundlingOptions,
-): Options.Optimization => {
+): WebpackOptionsNormalized['optimization'] => {
   const { isDev } = options;
 
   return {
@@ -32,7 +32,7 @@ export const optimization = (
           minimizer: [
             new TerserPlugin({
               parallel: options.parallel,
-            }),
+            }) as unknown as WebpackPluginInstance,
           ],
         }
       : {}),
