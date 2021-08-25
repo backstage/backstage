@@ -50,15 +50,32 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     fill: 'yellowgreen',
     stroke: theme.palette.border,
   },
+  centeredContent: {
+    padding: '10px',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'black',
+  },
+  textWrapper: {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: '20px',
+  },
 }));
 
-const TEXT_FONT_SIZE: number = 15;
-const NODE_WIDTH: number = 180;
-const NODE_HEIGHT: number = 90;
-const NODE_CORNER_RADIUS: number = 20;
-const NODE_MIDDLE_ALIGNMENT_SHIFT: number = 5;
-const NODE_MAX_WORDS_PER_ROW: number = 3;
-const NODE_MAX_LINES: number = 3;
+const dimensions = {
+  nodeWidth: 180,
+  nodeHeight: 90,
+  nodeCornerRadius: 20,
+  nodeAligmentShift: 5,
+};
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const classes = useStyles();
@@ -68,125 +85,55 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     return (
       <g>
         <rect
-          width={NODE_WIDTH}
-          height={NODE_HEIGHT}
-          rx={NODE_CORNER_RADIUS}
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
+          rx={dimensions.nodeCornerRadius}
           className={classes.organizationNode}
         />
         <title>{props.node.name}</title>
-        <text
-          x={NODE_WIDTH / 2}
-          y={NODE_HEIGHT / 2 + NODE_MIDDLE_ALIGNMENT_SHIFT}
-          textAnchor="middle"
-          alignmentBaseline="baseline"
-          style={{ fontWeight: 'bold' }}
+        <foreignObject
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
         >
-          {props.node.name}
-        </text>
+          <div className={classes.centeredContent}>
+            <div className={classes.textWrapper}>{props.node.name}</div>
+          </div>
+        </foreignObject>
       </g>
     );
   }
 
   const ref = parseEntityRef(props.node.id);
-  const nameChunks = splitNameInChunks(props.node.name);
-  const objs = prepareForDisplay(nameChunks);
 
   return (
     <g>
       <rect
-        width={NODE_WIDTH}
-        height={NODE_HEIGHT}
-        rx={NODE_CORNER_RADIUS}
+        width={dimensions.nodeWidth}
+        height={dimensions.nodeHeight}
+        rx={dimensions.nodeCornerRadius}
         className={classes.groupNode}
       />
       <title>{props.node.name}</title>
 
       <Link
+        className={classes.linkDecoration}
         to={catalogEntityRoute({
           kind: ref.kind,
           namespace: ref.namespace,
           name: ref.name,
         })}
       >
-        <text
-          x={NODE_WIDTH / 2}
-          y={NODE_HEIGHT / 2 + NODE_MIDDLE_ALIGNMENT_SHIFT}
-          textAnchor="middle"
-          alignmentBaseline="baseline"
-          style={{ fontWeight: 'bold', fontSize: TEXT_FONT_SIZE }}
+        <foreignObject
+          width={dimensions.nodeWidth}
+          height={dimensions.nodeHeight}
         >
-          {objs.map(function (object: any, i: number) {
-            return (
-              <tspan
-                key={i}
-                y={NODE_HEIGHT / 2 + NODE_MIDDLE_ALIGNMENT_SHIFT}
-                x="90"
-                textAnchor="middle"
-                dy={object.dy}
-              >
-                {object.text}
-              </tspan>
-            );
-          })}
-        </text>
+          <div className={classes.centeredContent}>
+            <div className={classes.textWrapper}>{props.node.name}</div>
+          </div>
+        </foreignObject>
       </Link>
     </g>
   );
-}
-
-/**
- * Join chunks based on max words per line and add dy position shifting
- * @param chunkedArray
- * @returns
- */
-function prepareForDisplay(chunkedArray: any): any {
-  return chunkedArray.map((val: Array<string>, pos: number) => {
-    const text = val.join(' ');
-    // If array length == 1, dy should be 0 since there is no need to divide the node into blocks, we just need to centralize it
-    const dy = chunkedArray.length === 1 ? 0 : getDy(pos) - 30;
-    return { dy: dy, text: text };
-  });
-}
-
-/**
- * text svg dy shifting based on array pos and in the blocks inside the node
- * @param i text position on the array
- */
-function getDy(i: number) {
-  const blocksSize = NODE_HEIGHT / NODE_MAX_LINES;
-  const position = blocksSize * i;
-  return position;
-}
-
-/**
- * Create Chunked name based on NODE_MAX_LINES and NODE_MAX_WORDS_PER_ROW
- * @param name from props.node.name
- * @returns
- */
-function splitNameInChunks(name: string) {
-  const array = name.split(' ');
-  const formated = array
-    .slice(0, NODE_MAX_LINES * NODE_MAX_WORDS_PER_ROW)
-    .map((it, pos) =>
-      pos + 1 === NODE_MAX_LINES * NODE_MAX_WORDS_PER_ROW ? `${it}...` : it,
-    );
-  const chunked = chunkArray(formated, NODE_MAX_WORDS_PER_ROW);
-  return chunked;
-}
-
-/**
- * Returns an array with arrays of the given size.
- *
- * @param arr {Array} Array to split
- * @param size {Integer} Size of each group
- */
-function chunkArray(arr: Array<any>, size: number) {
-  const results = [];
-
-  while (arr.length) {
-    results.push(arr.splice(0, size));
-  }
-  return results;
 }
 
 /**
