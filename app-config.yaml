@@ -101,7 +101,7 @@ proxy:
       Authorization: ${ILERT_AUTH_HEADER}
 
 organization:
-  name: My Company
+  name: BIH
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -142,7 +142,8 @@ kafka:
 integrations:
   github:
     - host: github.com
-      token: ${GITHUB_TOKEN}
+      apps:
+        - $include: ./github-app-backstage-bih-1-credentials.yaml
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3

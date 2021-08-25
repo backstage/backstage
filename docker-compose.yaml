@@ -18,5 +18,6 @@ services:
       - .env
     ports:
       - "7000:7000"
+    restart: on-failure
     depends_on:
       - db
