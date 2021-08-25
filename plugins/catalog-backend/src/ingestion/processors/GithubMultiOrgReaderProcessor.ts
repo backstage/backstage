@@ -111,6 +111,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           client,
           orgConfig.name,
           tokenType,
+          orgConfig.userNamespace,
         );
         const { groups, groupMemberUsers } = await getOrganizationTeams(
           client,
