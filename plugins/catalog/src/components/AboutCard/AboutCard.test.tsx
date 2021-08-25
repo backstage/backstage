@@ -29,6 +29,7 @@ import {
   ApiRegistry,
   ConfigReader,
 } from '@backstage/core-app-api';
+import { viewTechDocRouteRef } from '../../routes';
 
 describe('<AboutCard />', () => {
   it('renders info', async () => {
@@ -202,5 +203,139 @@ describe('<AboutCard />', () => {
       </ApiProvider>,
     );
     expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
+  });
+
+  it('renders techdocs link', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/techdocs-ref': './',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                token: '...',
+              },
+            ],
+          },
+        }),
+      ),
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('View TechDocs').closest('a')).toHaveAttribute(
+      'href',
+      '/docs/default/Component/software',
+    );
+  });
+
+  it('renders disabled techdocs link when no docs exist', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                token: '...',
+              },
+            ],
+          },
+        }),
+      ),
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
+  });
+
+  it('renders disbaled techdocs link when route is not bound', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/techdocs-ref': './',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                token: '...',
+              },
+            ],
+          },
+        }),
+      ),
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
   });
 });
