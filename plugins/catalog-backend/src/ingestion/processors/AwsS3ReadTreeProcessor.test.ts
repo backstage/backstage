@@ -24,7 +24,7 @@ import path from 'path';
 
 AWSMock.setSDKInstance(aws);
 const object: aws.S3.Types.Object = {
-  Key: 'awsS3-mock-object.yaml',
+  Key: 'awsS3-mock-object.txt',
 };
 const objectList: aws.S3.ObjectList = [object];
 const output: aws.S3.Types.ListObjectsV2Output = {
@@ -43,7 +43,7 @@ AWSMock.mock(
         '__fixtures__',
         'fileReaderProcessor',
         'awsS3',
-        'awsS3-mock-object.yaml',
+        'awsS3-mock-object.txt',
       ),
     ),
   ),
@@ -70,7 +70,7 @@ describe('readLocation', () => {
     )) as CatalogProcessorEntityResult;
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({
-      target: 'awsS3-mock-object.yaml',
+      target: 'awsS3-mock-object.txt',
       type: 's3-bucket',
     });
     expect(generated.entity).toEqual({ site_name: 'Test' });
