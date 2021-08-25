@@ -200,7 +200,7 @@ export const oAuth2EmailSignInResolver: SignInResolver<OAuthResult> = async (
 
   const entity = await ctx.catalogIdentityClient.findUser({
     annotations: {
-      'oauth2/email': profile.email,
+      'backstage.io/email': profile.email,
     },
   });
 
@@ -220,21 +220,7 @@ export const oAuth2DefaultSignInResolver: SignInResolver<OAuthResult> = async (
     throw new Error('Profile contained no email');
   }
 
-  let userId: string;
-
-  try {
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'oauth2/email': profile.email,
-      },
-    });
-    userId = entity.metadata.name;
-  } catch (error) {
-    ctx.logger.warn(
-      `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
-    );
-    userId = profile.email.split('@')[0];
-  }
+  const userId = profile.email.split('@')[0];
 
   const token = await ctx.tokenIssuer.issueToken({
     claims: { sub: userId, ent: [`user:default/${userId}`] },
