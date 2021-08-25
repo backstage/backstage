@@ -128,6 +128,19 @@ describe('GheAuth AuthSessionStore', () => {
     expect(manager.removeSession).toHaveBeenCalled();
   });
 
+  it('should set session', async () => {
+    const manager = new MockManager();
+    const store = new AuthSessionStore({ manager, ...defaultOptions });
+
+    await expect(store.getSession({ optional: true })).resolves.toBe(undefined);
+    expect(localStorage.getItem('my-key')).toBe(null);
+    expect(manager.setSession).not.toHaveBeenCalled();
+    store.setSession('123');
+    expect(manager.setSession).toHaveBeenCalled();
+    expect(localStorage.getItem('my-key')).toBe('"123"');
+    await expect(store.getSession({ optional: true })).resolves.toBe('123');
+  });
+
   it('should forward sessionState calls', () => {
     const manager = new MockManager();
     const store = new AuthSessionStore({ manager, ...defaultOptions });

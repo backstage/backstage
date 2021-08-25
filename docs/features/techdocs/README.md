@@ -54,22 +54,11 @@ providers are used.
 | Google Cloud Storage (GCS)        | Yes ✅         |
 | Amazon Web Services (AWS) S3      | Yes ✅         |
 | Azure Blob Storage                | Yes ✅         |
-| OpenStack Swift                   | Yes ✅         |
+| OpenStack Swift                   | Community ✅   |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 
 ## Project roadmap
-
-### **Ongoing work 🚧**
-
-**Beta release** -
-[Milestone](https://github.com/backstage/backstage/milestone/29)
-
-- It should be possible and easy to use TechDocs in most environments across
-  organizations.
-- Minimal bugs, better error handling and scalable backend and frontend.
-- Documentation Search
-- TechDocs Homepage with basic features
 
 ### **Future work 🔮**
 

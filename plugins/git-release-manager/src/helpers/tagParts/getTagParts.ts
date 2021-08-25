@@ -18,6 +18,10 @@ import { getCalverTagParts } from './getCalverTagParts';
 import { getSemverTagParts } from './getSemverTagParts';
 import { Project } from '../../contexts/ProjectContext';
 
+/**
+ * Tag parts are the individual parts of a version, e.g. <major>.<minor>.<patch>
+ * are the parts of a semantic version
+ */
 export function getTagParts({
   project,
   tag,

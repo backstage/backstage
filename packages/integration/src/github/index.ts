@@ -25,4 +25,7 @@ export {
   GithubCredentialsProvider,
 } from './GithubCredentialsProvider';
 export type { GithubCredentialType } from './GithubCredentialsProvider';
-export { GitHubIntegration } from './GitHubIntegration';
+export {
+  GitHubIntegration,
+  replaceUrlType as replaceGitHubUrlType,
+} from './GitHubIntegration';

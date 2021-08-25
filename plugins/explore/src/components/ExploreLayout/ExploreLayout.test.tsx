@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
+import {
+  ApiProvider,
+  ApiRegistry,
+  FeatureFlagged,
+} from '@backstage/core-app-api';
+import {
+  FeatureFlagsApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ExploreLayout } from './ExploreLayout';
 
+const featureFlagsApi: jest.Mocked<FeatureFlagsApi> = {
+  isActive: jest.fn(),
+  save: jest.fn(),
+  getRegisteredFlags: jest.fn(),
+  registerFlag: jest.fn(),
+};
+
+const mockApis = ApiRegistry.with(featureFlagsApiRef, featureFlagsApi);
+
 describe('<ExploreLayout />', () => {
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
+    <ApiProvider apis={mockApis}>{children}</ApiProvider>
   );
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
@@ -77,5 +95,51 @@ describe('<ExploreLayout />', () => {
     await waitFor(() =>
       expect(getByText('Browse the ACME Corp ecosystem')).toBeInTheDocument(),
     );
+  });
+
+  it('renders feature flagged route', async () => {
+    featureFlagsApi.isActive.mockReturnValue(true);
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ExploreLayout subtitle="Browse the ACME Corp ecosystem">
+          <FeatureFlagged with="test-flag">
+            <ExploreLayout.Route path="/tools" title="Tools">
+              <div>Tools Content</div>
+            </ExploreLayout.Route>
+          </FeatureFlagged>
+          <FeatureFlagged without="test-flag">
+            <ExploreLayout.Route path="/tools-v2" title="Tools V2">
+              <div>Tools V2 Content</div>
+            </ExploreLayout.Route>
+          </FeatureFlagged>
+        </ExploreLayout>
+      </Wrapper>,
+    );
+
+    await waitFor(() => expect(getByText('Tools')).toBeInTheDocument());
+  });
+
+  it('skips feature flagged route', async () => {
+    featureFlagsApi.isActive.mockReturnValue(false);
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ExploreLayout subtitle="Browse the ACME Corp ecosystem">
+          <FeatureFlagged with="test-flag">
+            <ExploreLayout.Route path="/tools" title="Tools">
+              <div>Tools Content</div>
+            </ExploreLayout.Route>
+          </FeatureFlagged>
+          <FeatureFlagged without="test-flag">
+            <ExploreLayout.Route path="/tools-v2" title="Tools V2">
+              <div>Tools V2 Content</div>
+            </ExploreLayout.Route>
+          </FeatureFlagged>
+        </ExploreLayout>
+      </Wrapper>,
+    );
+
+    await waitFor(() => expect(getByText('Tools V2')).toBeInTheDocument());
   });
 });

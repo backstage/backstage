@@ -246,5 +246,15 @@ export interface Config {
      * @deprecated
      */
     storageUrl?: string;
+
+    /**
+     * (Optional and not recommended) Prior to version [0.x.y] of TechDocs, docs
+     * sites could only be accessed over paths with case-sensitive entity triplets
+     * e.g. (namespace/Kind/name). If you are upgrading from an older version of
+     * TechDocs and are unable to perform the necessary migration of files in your
+     * external storage, you can set this value to `true` to temporarily revert to
+     * the old, case-sensitive entity triplet behavior.
+     */
+    legacyUseCaseSensitiveTripletPaths?: boolean;
   };
 }

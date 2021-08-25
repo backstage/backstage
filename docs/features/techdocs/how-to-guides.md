@@ -104,83 +104,110 @@ the repository. The archive does not have any git history attached to it. Also
 it is a compressed file. Hence the file size is significantly smaller than how
 much data git clone has to transfer.
 
-## How to use a custom TechDocs home page?
+## How to customize the TechDocs home page?
 
-### 1st way: TechDocsCustomHome with a custom configuration
+TechDocs uses a composability pattern similar to the Search and Catalog plugins
+in Backstage. While a default table experience, similar to the one provided by
+the Catalog plugin, is made available for ease-of-use, it's possible for you to
+provide a completely custom experience, tailored to the needs of your
+organization.
 
-As an example, in your main App.tsx:
+This is done in your `app` package. By default, you might see something like
+this in your `App.tsx`:
 
 ```tsx
-import {
-  TechDocsCustomHome,
-  PanelType,
-  TechDocsReaderPage,
-} from '@backstage/plugin-techdocs';
-import { Entity } from '@backstage/catalog-model';
-
-const tabsConfig = [
-  {
-    label: 'Custom Tab',
-    panels: [
-      {
-        title: 'Custom Documents Cards 1',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsCardGrid' as PanelType,
-        // optional, is applied to a container of the panel (excludes header of panel)
-        panelCSS: { maxHeight: '400px', overflow:'auto' },
-        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationOne'];
-    },
-      {
-        title: 'Custom Documents Cards 2',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsCardGrid' as PanelType,
-        panelCSS: { maxHeight: '400px', overflow:'auto' },
-        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationTwo'];
-      },
-    ],
-  },
-  {
-    label: 'Overview',
-    panels: [
-      {
-        title: 'Overview',
-        description:
-          'Explore your internal technical ecosystem through documentation.',
-        panelType: 'DocsTable' as PanelType,
-        filterPredicate: () => true,
-      },
-    ],
-  },
-];
-
-const routes = (
+const AppRoutes = () => {
   <FlatRoutes>
-    <Route
-      path="/docs"
-      element={<TechDocsCustomHome tabsConfig={tabsConfig} />}
-    />
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    />
-  </FlatRoutes>
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+  </FlatRoutes>;
+};
 ```
 
-An example of tabsConfig that corresponds to the default documentation home page
-can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
+But you can replace `<DefaultTechDocsHome />` with any React component, which
+will be rendered in its place. Most likely, you would want to create and
+maintain such a component in a new directory at
+`packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
 
-Currently `panelType` has DocsCardGrid and DocsTable available. We currently
-recommend that DocsCardGrid can be optionally vertically stacked by setting a
-maxHeight using `panelCSS`, and DocsTable to be in a tab by itself.
+```tsx
+import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
+// ...
+const AppRoutes = () => {
+  <FlatRoutes>
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <CustomTechDocsHome />
+    </Route>
+  </FlatRoutes>;
+};
+```
 
-### 2nd way: Custom home page plugin
+## How to migrate from TechDocs Alpha to Beta
 
-A custom home page plugin can be built that uses the components extensions
-DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
-array of documentation entities ( i.e.have a 'backstage.io/techdocs-ref'
-annotation ) as an 'entities' attribute.
+> This guide only applies to the "recommended" TechDocs deployment method (where
+> an external storage provider and external CI/CD is used). If you use the
+> "basic" or "out-of-the-box" setup, you can stop here! No action needed.
 
-For a reference to the React structure of the default home page, please refer to
-`plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
+The beta version of TechDocs (v0.x.y) made a breaking change to the way TechDocs
+content was accessed and stored, allowing pages to be accessed with
+case-insensitive entity triplet paths (e.g. `/docs/namespace/kind/name` whereas
+in prior versions, they could only be accessed at `/docs/namespace/Kind/name`).
+In order to enable this change, documentation has to be stored in an external
+storage provider using an object key whose entity triplet is lower-cased.
+
+New installations of TechDocs since the beta version will work fine with no
+action, but for those who were running TechDocs prior to this version, a
+migration will need to be performed so that all existing content in your storage
+bucket matches this lower-case entity triplet expectation.
+
+1. **Ensure you have the right permissions on your storage provider**: In order
+   to migrate files in your storage provider, the `techdocs-cli` needs to be
+   able to read/copy/rename/move/delete files. The exact instructions vary by
+   storage provider, but check the [using cloud storage][using-cloud-storage]
+   page for details.
+
+2. **Run a non-destructive migration of files**: Ensure you have the latest
+   version of `techdocs-cli` installed. Then run the following command, using
+   the details relevant for your provider / configuration. This will copy all
+   files from, e.g. `namespace/Kind/name/index.html` to
+   `namespace/kind/name/index.html`, without removing the original files.
+
+```sh
+techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --verbose
+```
+
+3. **Deploy the updated versions of the TechDocs plugins**: Once the migration
+   above has been run, you can deploy the beta versions of the TechDocs backend
+   and frontend plugins to your Backstage instance.
+
+4. **Verify that your TechDocs sites are still loading/accessible**: Try
+   accessing a TechDocs site using different entity-triplet case variants, e.g.
+   `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`. Your TechDocs
+   site should load regardless of the URL path casing you use.
+
+5. **Clean up the old objects from storage**: Once you've verified that your
+   TechDocs site is accessible, you can clean up your storage bucket by
+   re-running the `migrate` command on the TechDocs CLI, but with an additional
+   `removeOriginal` flag passed:
+
+```sh
+techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --removeOriginal --verbose
+```
+
+6. **Update your CI/CD pipelines to use the beta version of the TechDocs CLI**:
+   Finally, you can update all of your CI/CD pipelines to use at least v0.x.y of
+   the TechDocs CLI, ensuring that all sites are published to the new,
+   lower-cased entity triplet paths going forward.
+
+If you encounter problems running this migration, please [report the
+issue][beta-migrate-bug]. You can temporarily revert to pre-beta storage
+expectations with a configuration change:
+
+```yaml
+techdocs:
+  legacyUseCaseSensitiveTripletPaths: true
+```
+
+[beta-migrate-bug]:
+https://github.com/backstage/backstage/issues/new?assignees=&labels=bug&template=bug_template.md&title=[TechDocs]%20Unable%20to%20run%20beta%20migration
+[using-cloud-storage]: ./using-cloud-storage.md

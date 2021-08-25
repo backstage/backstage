@@ -111,7 +111,7 @@ paths:
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getAllByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={apiEntity}>
           <ApiDefinitionCard />
@@ -121,6 +121,10 @@ paths:
 
     expect(getByText(/my-name/i)).toBeInTheDocument();
     expect(getByText(/custom-type/i)).toBeInTheDocument();
-    expect(getByText(/Custom Definition/i)).toBeInTheDocument();
+    expect(
+      getAllByText(
+        (_text, element) => element?.textContent === 'Custom Definition',
+      ).length,
+    ).toBeGreaterThan(0);
   });
 });

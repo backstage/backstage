@@ -171,6 +171,56 @@ describe('CatalogImportClient', () => {
       });
     });
 
+    it('should add yaml location, if url includes query parameter named path=', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target:
+            'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity-1',
+              namespace: 'my-namespace-1',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity-1',
+                namespace: 'my-namespace-1',
+              },
+            ],
+            target:
+              'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target:
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        dryRun: true,
+      });
+    });
+
     it('should add yaml location, if url includes query parameters', async () => {
       catalogApi.addLocation.mockResolvedValueOnce({
         location: {

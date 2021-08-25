@@ -131,23 +131,19 @@ describe('getStaleFiles', () => {
 describe('getCloudPathForLocalPath', () => {
   const entity: Entity = {
     apiVersion: 'version',
-    metadata: { namespace: 'default', name: 'backstage' },
+    metadata: { namespace: 'custom', name: 'backstage' },
     kind: 'Component',
   };
 
   it('should compose a remote bucket path including entity information', () => {
     const remoteBucket = getCloudPathForLocalPath(entity);
-    expect(remoteBucket).toBe(
-      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/`,
-    );
+    expect(remoteBucket).toBe('custom/component/backstage/');
   });
 
   it('should compose a remote filename including entity information', () => {
     const localPath = 'index.html';
     const remoteBucket = getCloudPathForLocalPath(entity, localPath);
-    expect(remoteBucket).toBe(
-      `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/${localPath}`,
-    );
+    expect(remoteBucket).toBe(`custom/component/backstage/${localPath}`);
   });
 
   it('should use the default namespace when it is undefined', () => {
@@ -161,8 +157,13 @@ describe('getCloudPathForLocalPath', () => {
       localPath,
     );
     expect(remoteBucket).toBe(
-      `${ENTITY_DEFAULT_NAMESPACE}/${entity.kind}/${entity.metadata.name}/${localPath}`,
+      `${ENTITY_DEFAULT_NAMESPACE}/component/backstage/${localPath}`,
     );
+  });
+
+  it('should preserve case when legacy flag is passed', () => {
+    const remoteBucket = getCloudPathForLocalPath(entity, undefined, true);
+    expect(remoteBucket).toBe('custom/Component/backstage/');
   });
 
   it('should throw error when entity is invalid', () => {

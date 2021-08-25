@@ -18,11 +18,6 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import {
-  rootRouteRef,
-  rootDocsRouteRef,
-  rootCatalogDocsRouteRef,
-} from './routes';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsPage as TechDocsReaderPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
@@ -33,9 +28,9 @@ const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<TechDocsIndexPage />} />
+      <Route path="/" element={<TechDocsIndexPage />} />
       <Route
-        path={`/${rootDocsRouteRef.path}`}
+        path="/:namespace/:kind/:name/*"
         element={<TechDocsReaderPage />}
       />
     </Routes>
@@ -58,10 +53,7 @@ export const EmbeddedDocsRouter = (_props: Props) => {
 
   return (
     <Routes>
-      <Route
-        path={`/${rootCatalogDocsRouteRef.path}`}
-        element={<EntityPageDocs entity={entity} />}
-      />
+      <Route path="/*" element={<EntityPageDocs entity={entity} />} />
     </Routes>
   );
 };

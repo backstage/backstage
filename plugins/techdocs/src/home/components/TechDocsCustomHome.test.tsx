@@ -20,6 +20,7 @@ import { screen } from '@testing-library/react';
 import React from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { rootDocsRouteRef } from '../../routes';
 
 jest.mock('@backstage/plugin-catalog-react', () => {
   const actual = jest.requireActual('@backstage/plugin-catalog-react');
@@ -78,6 +79,11 @@ describe('TechDocsCustomHome', () => {
       <ApiProvider apis={apiRegistry}>
         <TechDocsCustomHome tabsConfig={tabsConfig} />
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
     );
 
     // Header

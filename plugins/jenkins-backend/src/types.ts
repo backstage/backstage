@@ -63,7 +63,7 @@ export interface BackstageBuild extends CommonBuild {
 
 export interface CommonProject {
   // standard Jenkins
-  lastBuild: CommonBuild;
+  lastBuild: CommonBuild | null;
   displayName: string;
   fullDisplayName: string;
   fullName: string;
@@ -72,7 +72,7 @@ export interface CommonProject {
 
 export interface JenkinsProject extends CommonProject {
   // standard Jenkins
-  lastBuild: JenkinsBuild;
+  lastBuild: JenkinsBuild | null;
 
   // read by us from jenkins but not passed to frontend
   actions: object[];
@@ -80,7 +80,7 @@ export interface JenkinsProject extends CommonProject {
 
 export interface BackstageProject extends CommonProject {
   // standard Jenkins
-  lastBuild: BackstageBuild;
+  lastBuild: BackstageBuild | null;
 
   // added by us
   status: string; // == inQueue ? 'queued' : lastBuild.building ? 'running' : lastBuild.result,

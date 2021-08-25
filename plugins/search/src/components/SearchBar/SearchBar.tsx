@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
@@ -30,6 +30,10 @@ type Props = {
 export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
+
+  useEffect(() => {
+    setValue(prevValue => (prevValue !== term ? term : prevValue));
+  }, [term]);
 
   useDebounce(() => setTerm(value), debounceTime, [value]);
 

@@ -271,6 +271,11 @@ export const TechDocsPicker: () => null;
 const techdocsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
+    docRoot: RouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
     entityContent: RouteRef<undefined>;
   },
   {}
@@ -374,7 +379,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 //
 // src/home/components/EntityListDocsTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/home/components/EntityListDocsTable.d.ts:12:5 - (ae-forgotten-export) The symbol "actionFactories" needs to be exported by the entry point index.d.ts
-// src/plugin.d.ts:24:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
+// src/plugin.d.ts:29:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

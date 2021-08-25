@@ -46,7 +46,7 @@ export function basicIntegrations<T extends ScmIntegration>(
     byUrl(url: string | URL): T | undefined {
       try {
         const parsed = typeof url === 'string' ? new URL(url) : url;
-        return integrations.find(i => getHost(i) === parsed.hostname);
+        return integrations.find(i => getHost(i) === parsed.host);
       } catch {
         return undefined;
       }

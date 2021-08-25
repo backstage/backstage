@@ -247,13 +247,10 @@ export type MicrosoftProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
-   */
   signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
     resolver?: SignInResolver<OAuthResult>;
   };
 };
