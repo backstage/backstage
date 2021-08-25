@@ -39,15 +39,10 @@ export default {
   ],
 };
 
-const handleSearch = (input: string) => {
-  // eslint-disable-next-line no-console
-  console.log(input);
-};
-
 export const SampleSidebar = () => (
   <Sidebar>
     <SidebarGroup label="Menu" icon={MenuIcon}>
-      <SidebarSearchField onSearch={handleSearch} to="/search" />
+      <SidebarSearchField onSearch={() => {}} to="/search" />
       <SidebarDivider />
       <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
       <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />

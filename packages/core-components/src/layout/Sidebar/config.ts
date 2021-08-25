@@ -46,5 +46,5 @@ export type SidebarContextType = {
 };
 
 export const SidebarContext = createContext<SidebarContextType>({
-  isOpen: true,
+  isOpen: false,
 });
