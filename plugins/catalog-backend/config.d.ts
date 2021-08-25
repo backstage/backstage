@@ -186,5 +186,17 @@ export interface Config {
         };
       };
     };
+
+    /**
+     * Configuration for search collation
+     */
+    search?: {
+      /**
+       * Request search to only index these particular kinds.
+       *
+       * E.g. ["Component", "API", "Template", "Location"]
+       */
+      allow: Array<string>;
+    };
   };
 }
