@@ -35,8 +35,8 @@ backend:
       password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
       #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-        #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #  $file: <file-path>/ca/server.crt
+      #ca: # if you have a CA file and want to verify it you can uncomment this section
+      #  $file: <file-path>/ca/server.crt
   cache:
     store: memory
   cors:
@@ -109,10 +109,8 @@ organization:
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
-  generator:
-    runIn: 'docker'
-    # dockerImage: my-org/techdocs # use a custom docker image
-    # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
+  generators:
+    techdocs: 'docker' # Alternatives - 'local'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
@@ -161,21 +159,12 @@ integrations:
     - host: bitbucket.org
       username: ${BITBUCKET_USERNAME}
       appPassword: ${BITBUCKET_APP_PASSWORD}
-    ### Example for how to add your bitbucket server instance using the API:
-    # - host: server.bitbucket.com
-    #   apiBaseUrl: server.bitbucket.com
-    #   username: ${BITBUCKET_SERVER_USERNAME}
-    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
-  #  googleGcs:
-  #    clientEmail: 'example@example.com'
-  #    privateKey: ${GCS_PRIVATE_KEY}
-  awsS3:
-    - host: amazonaws.com
-      accessKeyId: ${AWS_ACCESS_KEY_ID}
-      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+#  googleGcs:
+#    clientEmail: 'example@example.com'
+#    privateKey: ${GCS_PRIVATE_KEY}
 
 catalog:
   rules:
@@ -191,6 +180,13 @@ catalog:
         - Location
 
   processors:
+    githubMultiOrg:
+      orgs:
+        - name: paylanx
+          groupNamespace: paylanx
+        - name: sparkynow
+          groupNamespace: sparkynow
+
     githubOrg:
       providers:
         - target: https://github.com
@@ -228,6 +224,11 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
+    - type: github-org
+      target: https://github.com/Paylanx/JsTest/blob/main/catalog-info.yaml
+    - type: github-org
+      target: https://github.com/Sparkynow/Sparkynow/blob/master/catalog-info.yaml
+
     # Add a location here to ingest it, for example from a URL:
     #
     #     - type: url
@@ -270,12 +271,6 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
-  # Use to customize default commit author info used when new components are created
-  # defaultAuthor:
-  #   name: Scaffolder
-  #   email: scaffolder@backstage.io
-  # Use to customize the default commit message when new components are created
-  # defaultCommitMessage: 'Initial commit'
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
@@ -294,13 +289,14 @@ scaffolder:
       username: ${BITBUCKET_USERNAME}
       token: ${BITBUCKET_TOKEN}
     visibility: public # or or 'private'
-    
+
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret
-  providers: {}
+  providers:
+    {}
     # google:
     #   development:
     #     clientId: ${AUTH_GOOGLE_CLIENT_ID}
@@ -329,10 +325,10 @@ auth:
     #     clientSecret: ${AUTH_OAUTH2_CLIENT_SECRET}
     #     authorizationUrl: ${AUTH_OAUTH2_AUTH_URL}
     #     tokenUrl: ${AUTH_OAUTH2_TOKEN_URL}
-        ###
-        # provide a list of scopes as needed for your OAuth2 Server:
-        #
-        # scope: saml-login-selector openid profile email
+    ###
+    # provide a list of scopes as needed for your OAuth2 Server:
+    #
+    # scope: saml-login-selector openid profile email
     # oidc:
     #   development:
     #     metadataUrl: ${AUTH_OIDC_METADATA_URL}
@@ -356,7 +352,7 @@ auth:
     #     clientId: ${AUTH_ONELOGIN_CLIENT_ID}
     #     clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
     #     issuer: ${AUTH_ONELOGIN_ISSUER}
-    
+
 costInsights:
   engineerCost: 200000
   products:
@@ -393,9 +389,3 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
-jenkins:
-  instances:
-    - name: default
-      baseUrl: https://jenkins.example.com
-      username: backstage-bot
-      apiKey: 123456789abcdef0123456789abcedf012
