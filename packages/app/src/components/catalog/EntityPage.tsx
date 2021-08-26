@@ -242,7 +242,7 @@ const entityWarningContent = (
   </>
 );
 
-const errorsContent = (
+/* const errorsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isRollbarAvailable}>
       <EntityRollbarContent />
@@ -252,7 +252,7 @@ const errorsContent = (
       <EntitySentryContent />
     </EntitySwitch.Case>
   </EntitySwitch>
-); * /
+);*/
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">

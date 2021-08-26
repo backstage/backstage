@@ -21,7 +21,9 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
-import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import {
+  apiDocsPlugin /* , ApiExplorerPage */,
+} from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -33,17 +35,17 @@ import {
   catalogImportPlugin,
 } from '@backstage/plugin-catalog-import';
 import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
-import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
-import { LighthousePage } from '@backstage/plugin-lighthouse';
-import { NewRelicPage } from '@backstage/plugin-newrelic';
+// import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
+// import { GraphiQLPage } from '@backstage/plugin-graphiql';
+// import { LighthousePage } from '@backstage/plugin-lighthouse';
+// import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderPage,
   scaffolderPlugin,
   ScaffolderFieldExtensions,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
+// import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,

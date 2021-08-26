@@ -33,7 +33,7 @@ import {
   SidebarItem,
   SidebarDivider,
   SidebarSpace,
-  SidebarScrollWrapper,
+  // SidebarScrollWrapper,
 } from '@backstage/core-components';
 
 const useSidebarLogoStyles = makeStyles({
