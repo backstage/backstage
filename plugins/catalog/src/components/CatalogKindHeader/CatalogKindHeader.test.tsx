@@ -89,6 +89,20 @@ describe('<CatalogKindHeader />', () => {
     });
   });
 
+  it('renders unknown kinds provided in query parameters', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'frob' } }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Frobs')).toBeInTheDocument();
+  });
+
   it('updates the kind filter', async () => {
     const updateFilters = jest.fn();
     const rendered = await renderWithEffects(
