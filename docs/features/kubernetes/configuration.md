@@ -34,6 +34,9 @@ kubernetes:
       projectId: 'gke-clusters'
       region: 'europe-west1'
       skipTLSVerify: true
+    - type: 'auto'
+      labelSelector: 'backstage/remote-cluster-secret=true'
+      labelClusterName: 'backstage/remote-cluster-name'
 ```
 
 ### `serviceLocatorMethod`
@@ -59,6 +62,11 @@ This cluster locator method will read cluster information from your app-config
 ##### `clusters`
 
 Used by the `config` cluster locator method to construct Kubernetes clients.
+
+##### `auto`
+
+Used by the `AutoClusterLocator` to watch multi-cluster kubernetes secrets
+containing service account tokens and translate them into clusters to Backstage.
 
 ##### `clusters.\*.url`
 
@@ -134,6 +142,55 @@ regions.
 
 This determines whether or not the Kubernetes client verifies the TLS
 certificate presented by the API server. Defaults to `false`.
+
+#### `auto`
+
+This cluster locator is designed to work with any Kubernetes cluster and to
+cover the multi-cluster scenario in an automated way. A kubernetes client watch
+for local secrets with specific labels (to identify remote clusters) and
+maintain a pool of connected clusters.
+
+##### How it works:
+
+- To add a new cluster we just create a new secret using kubectl or other devops
+  tool in the cluster where Backstage is deployed.
+- Updating a cluster secret will be automatically "watched" and also updated in
+  Backstage
+- Deleting a cluster secret will remove the cluster from Backstage
+
+##### Remote cluster example
+
+```yaml
+apiVersion: v1
+data:
+  ca.crt: ...
+  config: ...
+  namespace: ...
+  server: ...
+  token: ...
+kind: Secret
+metadata:
+  labels:
+    backstage/remote-cluster-secret: 'true'
+    backstage/remote-cluster-name: cluster-name
+  name: cluster-name-mcsa-token-vrv4q
+  namespace: chosen-namespace
+type: Opaque
+```
+
+The label **backstage/remote-cluster-secret: "true"** identifies a secret as a
+remote cluster holder and **backstage/remote-cluster-name** label provides the
+cluster name. Both labels should be configurable when configuring the 'auto'
+'**clusterLocatorMethods** in **app-config.yaml**.
+
+##### How link a remote cluster
+
+A kubernetes service account needs to be created on the source cluster from
+where a token can be exported and them imported as a secret into the target
+cluster (cluster where backstage is running).
+
+This process can be automated using the following
+[script](../../../contrib/kubernetes/multi-cluster/README.md)
 
 ### `customResources` (optional)
 

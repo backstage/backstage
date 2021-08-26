@@ -15,9 +15,10 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { getCombinedClusterDetails } from './index';
+import { CombinedClusterLocator } from './CombinedClusterLocator';
+import { getVoidLogger } from '@backstage/backend-common';
 
-describe('getCombinedClusterDetails', () => {
+describe('CombinedClusterLocator', () => {
   it('should retrieve cluster details from config', async () => {
     const config: Config = new ConfigReader(
       {
@@ -45,7 +46,11 @@ describe('getCombinedClusterDetails', () => {
       'ctx',
     );
 
-    const result = await getCombinedClusterDetails(config);
+    const locator = new CombinedClusterLocator({
+      config,
+      logger: getVoidLogger(),
+    });
+    const result = await locator.getClusters();
 
     expect(result).toStrictEqual([
       {
@@ -95,7 +100,9 @@ describe('getCombinedClusterDetails', () => {
       'ctx',
     );
 
-    await expect(getCombinedClusterDetails(config)).rejects.toStrictEqual(
+    const initFunc = () =>
+      new CombinedClusterLocator({ config, logger: getVoidLogger() });
+    await expect(initFunc).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });
