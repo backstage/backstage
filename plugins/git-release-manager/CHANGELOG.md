@@ -1,5 +1,14 @@
 # @backstage/plugin-git-release-manager
 
+## 0.2.4
+
+### Patch Changes
+
+- c9e61d909: Expose internal constants, helpers and components to make it easier for users to build custom features for GRM.
+- Updated dependencies
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
 ## 0.2.3
 
 ### Patch Changes

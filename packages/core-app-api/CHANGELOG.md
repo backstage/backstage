@@ -1,5 +1,20 @@
 # @backstage/core-app-api
 
+## 0.1.10
+
+### Patch Changes
+
+- cfcb486aa: Add system icons for the built-in entity types and use them in the entity list of the `catalog-import` plugin.
+- 392b36fa1: Added support for using authenticating via GitHub Apps in addition to GitHub OAuth Apps. It used to be possible to use GitHub Apps, but they did not handle session refresh correctly.
+
+  Note that GitHub Apps handle OAuth scope at the app installation level, meaning that the `scope` parameter for `getAccessToken` has no effect. When calling `getAccessToken` in open source plugins, one should still include the appropriate scope, but also document in the plugin README what scopes are required in the case of GitHub Apps.
+
+  In addition, the `authHandler` and `signInResolver` options have been implemented for the GitHub provider in the auth backend.
+
+- Updated dependencies
+  - @backstage/core-components@0.3.3
+  - @backstage/config@0.1.8
+
 ## 0.1.9
 
 ### Patch Changes

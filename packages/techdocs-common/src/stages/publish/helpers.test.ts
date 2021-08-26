@@ -23,6 +23,7 @@ import {
   getCloudPathForLocalPath,
   getHeadersForFileExtension,
   bulkStorageOperation,
+  lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 
@@ -82,13 +83,15 @@ describe('getFileTreeRecursively', () => {
   });
 });
 
-describe('lowerCaseEntityTripletInStoragePath', () => {
+describe('lowerCaseEntityTriplet', () => {
   it('returns lower-cased entity triplet path', () => {
     const originalPath = 'default/Component/backstage/index.html';
-    const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);
+    const actualPath = lowerCaseEntityTriplet(originalPath);
     expect(actualPath).toBe('default/component/backstage/index.html');
   });
+});
 
+describe('lowerCaseEntityTripletInStoragePath', () => {
   it('does not lowercase beyond the triplet', () => {
     const originalPath = 'default/Component/backstage/assets/IMAGE.png';
     const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);

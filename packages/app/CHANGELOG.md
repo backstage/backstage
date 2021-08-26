@@ -1,5 +1,20 @@
 # example-app
 
+## 0.2.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-explore@0.3.14
+  - @backstage/core-app-api@0.1.10
+  - @backstage/plugin-catalog-import@0.5.19
+  - @backstage/plugin-catalog@0.6.13
+  - @backstage/plugin-org@0.3.20
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/plugin-techdocs@0.11.0
+  - @backstage/plugin-search@0.4.8
+
 ## 0.2.42
 
 ### Patch Changes

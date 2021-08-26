@@ -1,5 +1,21 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.23
+
+### Patch Changes
+
+- 392b36fa1: Added support for using authenticating via GitHub Apps in addition to GitHub OAuth Apps. It used to be possible to use GitHub Apps, but they did not handle session refresh correctly.
+
+  Note that GitHub Apps handle OAuth scope at the app installation level, meaning that the `scope` parameter for `getAccessToken` has no effect. When calling `getAccessToken` in open source plugins, one should still include the appropriate scope, but also document in the plugin README what scopes are required in the case of GitHub Apps.
+
+  In addition, the `authHandler` and `signInResolver` options have been implemented for the GitHub provider in the auth backend.
+
+- ea9fe9567: Fixed a bug where OAuth state parameters would be serialized as the string `'undefined'`.
+- 39fc3d7f8: Add Sign In and Handler resolver for GitLab provider
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
 ## 0.3.22
 
 ### Patch Changes

@@ -44,6 +44,14 @@ import {
 } from '@backstage/core-plugin-api';
 
 describe('CatalogPage', () => {
+  const origReplaceState = window.history.replaceState;
+  beforeEach(() => {
+    window.history.replaceState = jest.fn();
+  });
+  afterEach(() => {
+    window.history.replaceState = origReplaceState;
+  });
+
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
       Promise.resolve({

@@ -25,7 +25,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
 import { catalogApiRef } from '../api';
 import {
@@ -105,18 +104,25 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 }: PropsWithChildren<{}>) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const allQueryParams = qs.parse(searchParams.toString());
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
   );
-  const [outputState, setOutputState] = useState<OutputState<EntityFilters>>({
-    appliedFilters: {} as EntityFilters,
-    entities: [],
-    backendEntities: [],
-    queryParameters:
-      (allQueryParams.filters as Record<string, string | string[]>) ?? {},
-  });
+  const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
+    () => {
+      const query = qs.parse(window.location.search, {
+        ignoreQueryPrefix: true,
+      });
+      return {
+        appliedFilters: {} as EntityFilters,
+        entities: [],
+        backendEntities: [],
+        queryParameters: (query.filters ?? {}) as Record<
+          string,
+          string | string[]
+        >,
+      };
+    },
+  );
 
   // The main async filter worker. Note that while it has a lot of dependencies
   // in terms of its implementation, the triggering only happens (debounced)
@@ -167,12 +173,20 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
       }
 
       if (isMounted()) {
-        setSearchParams(
-          qs.stringify({ ...allQueryParams, filters: queryParams }),
-          {
-            replace: true,
-          },
+        const oldParams = qs.parse(window.location.search, {
+          ignoreQueryPrefix: true,
+        });
+        const newParams = qs.stringify(
+          { ...oldParams, filters: queryParams },
+          { addQueryPrefix: true },
         );
+        const newUrl = `${window.location.pathname}${newParams}`;
+        // We use direct history manipulation since useSearchParams and
+        // useNavigate in react-router-dom cause unnecessary extra rerenders.
+        // Also make sure to replace the state rather than pushing, since we
+        // don't want there to be back/forward slots for every single filter
+        // change.
+        window.history?.replaceState(null, document.title, newUrl);
       }
     },
     [catalogApi, requestedFilters, outputState],
@@ -208,15 +222,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
       loading,
       error,
     }),
-    [
-      outputState.appliedFilters,
-      outputState.entities,
-      outputState.backendEntities,
-      updateFilters,
-      outputState.queryParameters,
-      loading,
-      error,
-    ],
+    [outputState, updateFilters, loading, error],
   );
 
   return (
