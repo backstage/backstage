@@ -163,7 +163,13 @@ export const Sidebar = ({
   );
 
   return isMobileScreen ? (
-    <MobileSidebar {...props}>{children}</MobileSidebar>
+    <SidebarContext.Provider
+      value={{
+        isOpen: true,
+      }}
+    >
+      <MobileSidebar {...props}>{children}</MobileSidebar>
+    </SidebarContext.Provider>
   ) : (
     <DesktopSidebar>{children}</DesktopSidebar>
   );
