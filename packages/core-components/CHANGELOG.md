@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.3.3
+
+### Patch Changes
+
+- d041655a7: Fix accessibility issue in `<CopyTextButton />`. The component doesn't render anymore an hidden `textarea` containing the text to be copied.
+- 6d76bca85: Handle changes to nodes passed into `<DependencyGraph>` correctly.
+- Updated dependencies
+  - @backstage/config@0.1.8
+
 ## 0.3.2
 
 ### Patch Changes
