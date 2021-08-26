@@ -89,7 +89,9 @@ describe('lowerCaseEntityTriplet', () => {
     const actualPath = lowerCaseEntityTriplet(originalPath);
     expect(actualPath).toBe('default/component/backstage/index.html');
   });
+});
 
+describe('lowerCaseEntityTripletInStoragePath', () => {
   it('does not lowercase beyond the triplet', () => {
     const originalPath = 'default/Component/backstage/assets/IMAGE.png';
     const actualPath = lowerCaseEntityTripletInStoragePath(originalPath);
