@@ -1,5 +1,5 @@
 ---
-'@backstage/techdocs-common': minor
+'@backstage/techdocs-common': patch
 ---
 
-Force using posix path for cloud storages
+Force using `posix` path for cloud storage
