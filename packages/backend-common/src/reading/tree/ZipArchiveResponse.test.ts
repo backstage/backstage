@@ -22,11 +22,15 @@ import { ZipArchiveResponse } from './ZipArchiveResponse';
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.zip'),
 );
+const archiveDataWithExtraDir = fs.readFileSync(
+  resolvePath(__filename, '../../__fixtures__/mock-with-extra-root-dir.zip'),
+);
 
 describe('ZipArchiveResponse', () => {
   beforeEach(() => {
     mockFs({
       '/test-archive.zip': archiveData,
+      '/test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
       '/tmp': mockFs.directory(),
     });
   });
@@ -39,6 +43,36 @@ describe('ZipArchiveResponse', () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
     const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const files = await res.files();
+
+    expect(files).toEqual([
+      {
+        path: 'mkdocs.yml',
+        content: expect.any(Function),
+      },
+      {
+        path: 'docs/index.md',
+        content: expect.any(Function),
+      },
+    ]);
+    const contents = await Promise.all(files.map(f => f.content()));
+    expect(contents.map(c => c.toString('utf8').trim())).toEqual([
+      'site_name: Test',
+      '# Test',
+    ]);
+  });
+
+  it('should read files and strip root dir if requested', async () => {
+    const stream = fs.createReadStream('/test-archive-with-extra-root-dir.zip');
+
+    const res = new ZipArchiveResponse(
+      stream,
+      '',
+      '/tmp',
+      'etag',
+      undefined,
+      true,
+    );
     const files = await res.files();
 
     expect(files).toEqual([
