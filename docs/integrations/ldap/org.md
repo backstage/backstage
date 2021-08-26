@@ -51,7 +51,7 @@ catalog:
       providers:
         - target: ldaps://ds.example.net
           bind:
-            dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+            dn: cn=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
             secret: ${LDAP_SECRET}
           users:
             dn: ou=people,ou=example,dc=example,dc=net
