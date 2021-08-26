@@ -1,5 +1,4 @@
 ---
-'example-app': patch
 '@backstage/plugin-allure': patch
 ---
 
