@@ -62,6 +62,36 @@ describe('ZipArchiveResponse', () => {
     ]);
   });
 
+  it('should read files and strip root dir if requested', async () => {
+    const stream = fs.createReadStream('/test-archive-with-extra-root-dir.zip');
+
+    const res = new ZipArchiveResponse(
+      stream,
+      '',
+      '/tmp',
+      'etag',
+      undefined,
+      true,
+    );
+    const files = await res.files();
+
+    expect(files).toEqual([
+      {
+        path: 'mkdocs.yml',
+        content: expect.any(Function),
+      },
+      {
+        path: 'docs/index.md',
+        content: expect.any(Function),
+      },
+    ]);
+    const contents = await Promise.all(files.map(f => f.content()));
+    expect(contents.map(c => c.toString('utf8').trim())).toEqual([
+      'site_name: Test',
+      '# Test',
+    ]);
+  });
+
   it('should read files with filter', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
