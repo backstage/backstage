@@ -119,7 +119,6 @@ export const lowerCaseEntityTriplet = (posixPath: string): string => {
 export const lowerCaseEntityTripletInStoragePath = (
   originalPath: string,
 ): string => {
-  // normalize path using path.sep (as its support both windows and posix)
   let posixPath = originalPath;
   if (originalPath.includes(path.win32.sep)) {
     posixPath = originalPath.split(path.win32.sep).join(path.posix.sep);
