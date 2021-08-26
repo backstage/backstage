@@ -71,10 +71,12 @@ export class AutoClusterLocator implements KubernetesClustersSupplier {
     clusterLocatorConfig: Config;
   }): AutoClusterLocator {
     const locatorConfig = readFromConfig(clusterLocatorConfig);
-    return new AutoClusterLocator({ logger, locatorConfig });
+    const autoLocator = new AutoClusterLocator({ logger, locatorConfig });
+    autoLocator.start();
+    return autoLocator;
   }
 
-  async start() {
+  private start() {
     this.logger.info('Starting auto-supplier for Kubernetes clusters');
     this.logger.info('Start connecting to default cluster');
 
@@ -82,8 +84,8 @@ export class AutoClusterLocator implements KubernetesClustersSupplier {
     kubeConfig.loadFromDefault();
 
     const k8sApi = kubeConfig.makeApiClient(k8s.CoreV1Api);
-    await this.loadClusters(k8sApi);
-    await this.startWatch(kubeConfig);
+    (async () => await this.loadClusters(k8sApi))();
+    this.startWatch(kubeConfig);
   }
 
   startWatch(kubeConfig: KubeConfig) {

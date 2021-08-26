@@ -66,7 +66,7 @@ export class CombinedClusterLocator implements KubernetesClustersSupplier {
         }
       });
     this.logger.info(
-      `Combined cluster locator loaded with ${this.clusterSuppliers} suppliers`,
+      `Combined cluster locator loaded with ${this.clusterSuppliers.length} suppliers`,
     );
   }
 
