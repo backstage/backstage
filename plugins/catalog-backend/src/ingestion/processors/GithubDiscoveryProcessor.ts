@@ -108,15 +108,18 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     );
 
     for (const repository of matching) {
-      const branchName = branch === '-' ? repository.defaultBranchRef?.name : branch;
-      
+      const branchName =
+        branch === '-' ? repository.defaultBranchRef?.name : branch;
+
       if (!branchName) {
-        this.logger.info(`the repository ${repository.url} does not have a default branch, skipping`);
+        this.logger.info(
+          `the repository ${repository.url} does not have a default branch, skipping`,
+        );
         continue;
       }
-      
+
       const path = `/blob/${branchName}${catalogPath}`;
-      
+
       emit(
         results.location(
           {

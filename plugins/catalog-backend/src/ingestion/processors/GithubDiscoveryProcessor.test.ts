@@ -202,6 +202,12 @@ describe('GithubDiscoveryProcessor', () => {
               name: 'main',
             },
           },
+          {
+            name: 'techdocs-durp',
+            url: 'https://github.com/backstage/techdocs-durp',
+            isArchived: false,
+            defaultBranchRef: undefined,
+          },
         ],
       });
       const emitter = jest.fn();
