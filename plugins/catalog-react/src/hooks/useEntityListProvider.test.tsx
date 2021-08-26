@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren } from 'react';
 import qs from 'qs';
-import { MemoryRouter as Router } from 'react-router-dom';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -86,26 +85,30 @@ const apis = ApiRegistry.from([
 
 const wrapper = ({
   userFilter,
-  queryParams,
   children,
 }: PropsWithChildren<{
   userFilter?: UserListFilterKind;
-  queryParams?: string;
 }>) => {
   return (
-    <Router initialEntries={[`/?${queryParams ?? ''}`]}>
-      <ApiProvider apis={apis}>
-        <EntityListProvider>
-          <EntityKindPicker initialFilter="component" hidden />
-          <UserListPicker initialFilter={userFilter} />
-          {children}
-        </EntityListProvider>
-      </ApiProvider>
-    </Router>
+    <ApiProvider apis={apis}>
+      <EntityListProvider>
+        <EntityKindPicker initialFilter="component" hidden />
+        <UserListPicker initialFilter={userFilter} />
+        {children}
+      </EntityListProvider>
+    </ApiProvider>
   );
 };
 
 describe('<EntityListProvider />', () => {
+  const origReplaceState = window.history.replaceState;
+  beforeEach(() => {
+    window.history.replaceState = jest.fn();
+  });
+  afterEach(() => {
+    window.history.replaceState = origReplaceState;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -137,16 +140,13 @@ describe('<EntityListProvider />', () => {
   });
 
   it('resolves query param filter values', async () => {
+    const query = qs.stringify({
+      filters: { kind: 'component', type: 'service' },
+    });
+    delete (window as any).location;
+    (window as any).location = new URL(`http://localhost/catalog?${query}`);
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
-      initialProps: {
-        queryParams: qs.stringify({
-          filters: {
-            kind: 'component',
-            type: 'service',
-          },
-        }),
-      },
     });
     await waitFor(() => !!result.current.queryParameters);
     expect(result.current.queryParameters).toEqual({
