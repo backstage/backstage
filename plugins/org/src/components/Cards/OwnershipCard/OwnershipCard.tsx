@@ -31,15 +31,17 @@ import {
   useEntity,
   catalogRouteRef,
   formatEntityRefTitle,
+  isOwnerOf,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
   Grid,
+  Link,
   makeStyles,
   Typography,
-  Link,
 } from '@material-ui/core';
 import qs from 'qs';
 import React from 'react';
