@@ -1,0 +1,5 @@
+GET http://localhost:7000/jenkins/v1/entity/default/Component/devportal/projects
+Accept: application/json
+
+###
+
