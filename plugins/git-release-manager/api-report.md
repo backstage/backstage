@@ -12,10 +12,28 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "A_CALVER_VERSION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const A_CALVER_VERSION = '2020.01.01_1';
+
+// Warning: (ae-missing-release-tag) "A_SEMVER_VERSION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const A_SEMVER_VERSION = '1.2.3';
+
 // Warning: (ae-missing-release-tag) "calverRegexp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 const calverRegexp: RegExp;
+
+// Warning: (ae-forgotten-export) The symbol "GetBranchResult" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createMockBranch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+const createMockBranch: ({
+  ...rest
+}?: Partial<GetBranchResult>) => GetBranchResult['branch'];
 
 // Warning: (ae-forgotten-export) The symbol "GetCommitResult" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createMockCommit" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -24,6 +42,26 @@ const calverRegexp: RegExp;
 const createMockCommit: (
   overrides: Partial<GetCommitResult['commit']>,
 ) => GetCommitResult;
+
+// Warning: (ae-forgotten-export) The symbol "GetRecentCommitsResultSingle" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createMockRecentCommit" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+const createMockRecentCommit: ({
+  ...rest
+}: Partial<GetRecentCommitsResultSingle>) => GetRecentCommitsResultSingle;
+
+// Warning: (ae-forgotten-export) The symbol "GetLatestReleaseResult" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createMockRelease" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+const createMockRelease: ({
+  id,
+  prerelease,
+  ...rest
+}?: Partial<
+  NonNullable<GetLatestReleaseResult['latestRelease']>
+>) => NonNullable<GetLatestReleaseResult['latestRelease']>;
 
 // Warning: (ae-forgotten-export) The symbol "GetTagResult" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createMockTag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -208,10 +246,45 @@ function LinearProgressWithLabel(props: {
   responseSteps: ResponseStep[];
 }): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "mockApiClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_BRANCH_NAME_CALVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
-const mockApiClient: GitReleaseApi;
+// @public (undocumented)
+const MOCK_RELEASE_BRANCH_NAME_CALVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_BRANCH_NAME_SEMVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_BRANCH_NAME_SEMVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_NAME_CALVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_NAME_CALVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_NAME_SEMVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_NAME_SEMVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_VERSION_TAG_NAME_CALVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_VERSION_TAG_NAME_CALVER: string;
+
+// Warning: (ae-missing-release-tag) "MOCK_RELEASE_VERSION_TAG_NAME_SEMVER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER: string;
 
 // Warning: (ae-missing-release-tag) "mockBumpedTag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -228,6 +301,11 @@ const mockCalverProject: Project;
 // @public (undocumented)
 const mockDefaultBranch = 'mock_defaultBranch';
 
+// Warning: (ae-missing-release-tag) "mockEmail" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const mockEmail = 'mock_email';
+
 // Warning: (ae-forgotten-export) The symbol "getReleaseCandidateGitInfo" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "mockNextGitInfoCalver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -238,6 +316,11 @@ const mockNextGitInfoCalver: ReturnType<typeof getReleaseCandidateGitInfo>;
 //
 // @public (undocumented)
 const mockNextGitInfoSemver: ReturnType<typeof getReleaseCandidateGitInfo>;
+
+// Warning: (ae-missing-release-tag) "mockOwner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const mockOwner = 'mock_owner';
 
 // Warning: (ae-missing-release-tag) "mockReleaseBranch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -311,6 +394,11 @@ const mockReleaseVersionSemver: {
   body?: string | null | undefined;
 };
 
+// Warning: (ae-missing-release-tag) "mockRepo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const mockRepo = 'mock_repo';
+
 // Warning: (ae-missing-release-tag) "mockSearchCalver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -354,6 +442,11 @@ const mockUser: {
   username: string;
   email: string;
 };
+
+// Warning: (ae-missing-release-tag) "mockUsername" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const mockUsername = 'mock_username';
 
 // Warning: (ae-missing-release-tag) "NoLatestRelease" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -483,6 +576,20 @@ const TEST_IDS: {
 
 declare namespace testHelpers_2 {
   export {
+    mockUsername,
+    mockEmail,
+    mockOwner,
+    mockRepo,
+    A_CALVER_VERSION,
+    MOCK_RELEASE_NAME_CALVER,
+    MOCK_RELEASE_BRANCH_NAME_CALVER,
+    MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+    MOCK_RELEASE_VERSION_TAG_NAME_CALVER,
+    A_SEMVER_VERSION,
+    MOCK_RELEASE_NAME_SEMVER,
+    MOCK_RELEASE_BRANCH_NAME_SEMVER,
+    MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER,
+    MOCK_RELEASE_VERSION_TAG_NAME_SEMVER,
     createMockTag,
     createMockCommit,
     mockUser,
@@ -495,13 +602,15 @@ declare namespace testHelpers_2 {
     mockNextGitInfoCalver,
     mockTagParts,
     mockBumpedTag,
+    createMockRelease,
     mockReleaseCandidateCalver,
     mockReleaseVersionCalver,
     mockReleaseCandidateSemver,
     mockReleaseVersionSemver,
+    createMockBranch,
     mockReleaseBranch,
+    createMockRecentCommit,
     mockSelectedPatchCommit,
-    mockApiClient,
   };
 }
 
