@@ -106,7 +106,7 @@ describe('<CatalogKindHeader />', () => {
     fireEvent.click(option);
 
     expect(updateFilters).toHaveBeenCalledWith({
-      kind: new EntityKindFilter('Template'),
+      kind: new EntityKindFilter('template'),
     });
   });
 });

@@ -31,7 +31,9 @@ export function useEntityKinds() {
       .getEntities({ fields: ['kind'] })
       .then(response => response.items);
 
-    return [...new Set(entities.map(e => e.kind))].sort();
+    return [
+      ...new Set(entities.map(e => e.kind.toLocaleLowerCase('en-US'))),
+    ].sort();
   });
   return { error, loading, kinds };
 }
