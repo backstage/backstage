@@ -62,6 +62,20 @@ const getEntityRootDir = (entity: Entity) => {
   return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
+const getPosixEntityRootDir = (entity: Entity) => {
+  const {
+    kind,
+    metadata: { namespace, name },
+  } = entity;
+
+  return path.posix.join(
+    '/rootDir',
+    namespace || ENTITY_DEFAULT_NAMESPACE,
+    kind,
+    name,
+  );
+};
+
 const logger = getVoidLogger();
 
 let publisher: PublisherBase;
@@ -267,12 +281,12 @@ describe('OpenStackSwiftPublish', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getPosixEntityRootDir(entity);
 
       const fails = publisher.fetchTechDocsMetadata(entityNameMock);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed, The file ${path.join(
+        message: `TechDocs metadata fetch failed, The file ${path.posix.join(
           entityRootDir,
           'techdocs_metadata.json',
         )} does not exist !`,

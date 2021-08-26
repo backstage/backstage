@@ -87,7 +87,8 @@ export const getFileTreeRecursively = async (
 };
 
 /**
- * Returns a lower-cased version of entity's triplet in the form of a path.
+ * Takes a posix path and returns a lower-cased version of entity's triplet
+ * with the remaining path in posix.
  *
  * Path must not include a starting slash.
  *
@@ -95,39 +96,49 @@ export const getFileTreeRecursively = async (
  * lowerCaseEntityTriplet('default/Component/backstage')
  * // return default/component/backstage
  */
-export const lowerCaseEntityTriplet = (originalPath: string): string => {
-  const [namespace, kind, name, ...parts] = originalPath.split('/');
+export const lowerCaseEntityTriplet = (posixPath: string): string => {
+  const [namespace, kind, name, ...rest] = posixPath.split(path.posix.sep);
   const lowerNamespace = namespace.toLowerCase();
   const lowerKind = kind.toLowerCase();
   const lowerName = name.toLowerCase();
-  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+  return [lowerNamespace, lowerKind, lowerName, ...rest].join(path.posix.sep);
 };
 
 /**
- * Returns the version of an object's storage path where the first three parts
- * of the path (the entity triplet of namespace, kind, and name) are
- * lower-cased.
+ * Takes either a win32 or posix path and returns a lower-cased version of entity's triplet
+ * with the remaining path in posix.
  *
- * Path must not include a starting slash.
+ * Starting slashes will be trimmed.
  *
  * Throws an error if the path does not appear to be an entity triplet.
  *
  * @example
- * lowerCaseEntityTripletInStoragePath('default/Component/backstage/file.txt')
+ * lowerCaseEntityTripletInStoragePath('/default/Component/backstage/file.txt')
  * // return default/component/backstage/file.txt
  */
 export const lowerCaseEntityTripletInStoragePath = (
   originalPath: string,
 ): string => {
-  const trimmedPath =
-    originalPath[0] === '/' ? originalPath.substring(1) : originalPath;
-  const matches = trimmedPath.match(/\//g) || [];
-  if (matches.length <= 2) {
+  // normalize path using path.sep (as its support both windows and posix)
+  let posixPath = originalPath;
+  if (originalPath.includes(path.win32.sep)) {
+    posixPath = originalPath.split(path.win32.sep).join(path.posix.sep);
+  }
+
+  // remove leading slash
+  const parts = posixPath.split(path.posix.sep);
+  if (parts[0] === '') {
+    parts.shift();
+  }
+
+  // check if all parts of the entity exist (name, namespace, kind) plus filename
+  if (parts.length <= 3) {
     throw new Error(
       `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
     );
   }
-  return lowerCaseEntityTriplet(originalPath);
+
+  return lowerCaseEntityTriplet(parts.join(path.posix.sep));
 };
 
 // Only returns the files that existed previously and are not present anymore.
@@ -161,7 +172,7 @@ export const getCloudPathForLocalPath = (
   const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
   const destination = useLegacyPathCasing
     ? relativeFilePathTriplet
-    : lowerCaseEntityTripletInStoragePath(relativeFilePathTriplet);
+    : lowerCaseEntityTriplet(relativeFilePathTriplet);
 
   return destination; // Remote storage file relative path
 };
