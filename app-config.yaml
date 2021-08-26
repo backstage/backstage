@@ -224,14 +224,10 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
-    - type: github-multi-org
+    - type: github-org
       target: https://github.com/Paylanx
-    - type: github-multi-org
+    - type: github-org
       target: https://github.com/Sparkynow
-    - type: github-discovery
-      target: https://github.com/Paylanx/JsTest/blob/main/catalog-info.yaml
-    - type: github-discovery
-      target: https://github.com/Sparkynow/Sparkynow/blob/master/catalog-info.yaml
 
     # Add a location here to ingest it, for example from a URL:
     #

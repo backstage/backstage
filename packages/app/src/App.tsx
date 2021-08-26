@@ -21,9 +21,7 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
-import {
-  apiDocsPlugin /* , ApiExplorerPage */,
-} from '@backstage/plugin-api-docs';
+import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -145,6 +143,7 @@ const routes = (
     </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route path="/search" element={<SearchPage />}>
+      <Route path="/api-docs" element={<ApiExplorerPage />} />
       {searchPage}
     </Route>
     {/* <Route
@@ -153,7 +152,7 @@ const routes = (
     />
     <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse" element={<LighthousePage />} />
-    <Route path="/api-docs" element={<ApiExplorerPage />} />
+
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
 
