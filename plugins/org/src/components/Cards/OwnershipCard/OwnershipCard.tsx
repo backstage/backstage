@@ -30,6 +30,7 @@ import {
   isOwnerOf,
   useEntity,
   catalogRouteRef,
+  formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
