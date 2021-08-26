@@ -16,32 +16,32 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
-  catalogApiRef,
-  isOwnerOf,
-  useEntity,
-  catalogRouteRef,
-  formatEntityRefTitle,
-} from '@backstage/plugin-catalog-react';
-import { BackstageTheme, genPageTheme } from '@backstage/theme';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Typography,
-  Link,
-} from '@material-ui/core';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { generatePath } from 'react-router';
-import qs from 'qs';
-import {
   InfoCard,
   InfoCardVariants,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  catalogApiRef,
+  catalogRouteRef,
+  formatEntityRefTitle,
+  isOwnerOf,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { BackstageTheme, genPageTheme } from '@backstage/theme';
+import {
+  Box,
+  createStyles,
+  Grid,
+  Link,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import qs from 'qs';
+import React from 'react';
+import { generatePath } from 'react-router';
+import { useAsync } from 'react-use';
 
 type EntityTypeProps = {
   kind: string;
@@ -96,7 +96,7 @@ const EntityCountTile = ({
   const classes = useStyles({ type });
 
   return (
-    <Link href={url} target="_blank" rel="noreferrer noopenner" variant="body2">
+    <Link href={url} variant="body2">
       <Box
         className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
