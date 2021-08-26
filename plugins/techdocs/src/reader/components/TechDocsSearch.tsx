@@ -36,12 +36,6 @@ type TechDocsSearchProps = {
     kind: string;
   };
   debounceTime?: number;
-  /**
-   * Used to determine the correct linking when search element is selected
-   *
-   * defaults to `location` field in the returned object
-   */
-  context?: 'entitypage';
 };
 
 type TechDocsDoc = {
@@ -58,23 +52,9 @@ type TechDocsSearchResult = {
   document: TechDocsDoc;
 };
 
-export const selectionHandler = (navigationFn: Function, context?: string) => {
-  return (_: any, selection: TechDocsSearchResult | null) => {
-    if (selection?.document) {
-      const { namespace, kind, name, path, location } = selection.document;
-      navigationFn(
-        context === 'entitypage'
-          ? `/catalog/${namespace}/${kind}/${name}/docs/${path}`
-          : location,
-      );
-    }
-  };
-};
-
 const TechDocsSearchBar = ({
   entityId,
   debounceTime = 150,
-  context,
 }: TechDocsSearchProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -110,7 +90,12 @@ const TechDocsSearchBar = ({
     setValue(e.target.value);
   };
 
-  const handleSelection = selectionHandler(navigate, context);
+  const handleSelection = (_: any, selection: TechDocsSearchResult | null) => {
+    if (selection?.document) {
+      const { location } = selection.document;
+      navigate(location);
+    }
+  };
 
   return (
     <Grid item xs={12}>

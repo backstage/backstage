@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { selectionHandler, TechDocsSearch } from './TechDocsSearch';
+import { TechDocsSearch } from './TechDocsSearch';
 import {
   act,
   fireEvent,
@@ -116,34 +116,6 @@ describe('<TechDocsPage />', () => {
           term: 'asdf',
           types: ['techdocs'],
         }),
-      );
-    });
-  });
-
-  describe('search result selection navigation', () => {
-    const techDocsResult = {
-      type: 'testdoc',
-      document: {
-        namespace: 'testnamespace',
-        kind: 'testkind',
-        name: 'testname',
-        path: 'testpath',
-        location: 'testlocation',
-        title: 'testtitle',
-      },
-    };
-    it('should use location field for navigation in default context', async () => {
-      const navFn = jest.fn();
-      const selector = selectionHandler(navFn);
-      selector(undefined, techDocsResult);
-      expect(navFn).toBeCalledWith('testlocation');
-    });
-    it('should construct navigation target for entity page context', async () => {
-      const navFn = jest.fn();
-      const selector = selectionHandler(navFn, 'entitypage');
-      selector('entitypage', techDocsResult);
-      expect(navFn).toBeCalledWith(
-        '/catalog/testnamespace/testkind/testname/docs/testpath',
       );
     });
   });

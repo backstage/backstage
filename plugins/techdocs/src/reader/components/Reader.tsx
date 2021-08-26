@@ -50,13 +50,7 @@ import { useReaderState } from './useReaderState';
 type Props = {
   entityId: EntityName;
   onReady?: () => void;
-
-  /**
-   * Specifying the part of the application this reader instance is displayed.
-   * Used to determine which varying functionality to render in subcomponents
-   * If undefined, defaults to functionality on default tech docs page
-   */
-  context?: 'entitypage';
+  withSearch?: boolean;
 };
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -73,7 +67,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Reader = ({ entityId, onReady, context }: Props) => {
+export const Reader = ({ entityId, onReady, withSearch = true }: Props) => {
   const { kind, namespace, name } = entityId;
   const theme = useTheme<BackstageTheme>();
   const classes = useStyles();
@@ -448,9 +442,9 @@ export const Reader = ({ entityId, onReady, context }: Props) => {
         </>
       )}
 
-      {shadowDomRef?.current?.shadowRoot?.innerHTML && (
+      {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
         <Grid container className={classes.searchBar}>
-          <TechDocsSearch entityId={entityId} context={context} />
+          <TechDocsSearch entityId={entityId} />
         </Grid>
       )}
       <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
