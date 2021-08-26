@@ -20,6 +20,7 @@ import {
   isOwnerOf,
   useEntity,
   catalogRouteRef,
+  formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme, genPageTheme } from '@backstage/theme';
 import {
@@ -117,7 +118,7 @@ const getQueryParams = (
   owner: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
-  const ownerName = owner.metadata.name;
+  const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
   const queryParams = qs.stringify({
     filters: {
