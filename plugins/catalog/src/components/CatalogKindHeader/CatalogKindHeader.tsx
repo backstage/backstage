@@ -43,14 +43,16 @@ type CatalogKindHeaderProps = {
 };
 
 export const CatalogKindHeader = ({
-  initialFilter = 'Component',
+  initialFilter = 'component',
 }: CatalogKindHeaderProps) => {
   const classes = useStyles();
-  const { kinds: allKinds } = useEntityKinds();
+  const { kinds: allKinds = [] } = useEntityKinds();
   const { updateFilters, queryParameters } = useEntityListProvider();
 
   const [selectedKind, setSelectedKind] = useState(
-    [queryParameters.kind].flat()[0] ?? initialFilter,
+    ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(
+      'en-US',
+    ),
   );
 
   useEffect(() => {
@@ -59,6 +61,8 @@ export const CatalogKindHeader = ({
     });
   }, [selectedKind, updateFilters]);
 
+  const options = [...new Set([selectedKind, ...allKinds])].sort();
+
   return (
     <Select
       input={<InputBase value={selectedKind} />}
@@ -66,9 +70,9 @@ export const CatalogKindHeader = ({
       onChange={e => setSelectedKind(e.target.value as string)}
       classes={classes}
     >
-      {(allKinds ?? ['Component']).map(kind => (
+      {options.map(kind => (
         <MenuItem value={kind} key={kind}>
-          {`${capitalize(kind)}s`}
+          {`${kind === 'api' ? 'API' : capitalize(kind)}s`}
         </MenuItem>
       ))}
     </Select>
