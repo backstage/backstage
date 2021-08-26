@@ -15,4 +15,4 @@
  */
 export * from './stages';
 export * from './helpers';
-export * from './types';
+export * from './techdocsTypes';
