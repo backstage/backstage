@@ -170,6 +170,7 @@ describe('<AboutCard />', () => {
       'href',
       'https://github.com/backstage/backstage/edit/master/software.yaml',
     );
+    expect(editLink).toHaveAttribute('target', '_blank');
   });
 
   it('renders without "view source" link', async () => {
