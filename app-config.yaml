@@ -185,12 +185,16 @@ catalog:
         - Location
 
   processors:
-    githubMultiOrg:
-      orgs:
-        - name: paylanx
-          groupNamespace: paylanx
-        - name: sparkynow
-          groupNamespace: sparkynow
+    ### The Multi Org Processor
+    ### Both Paylanx and Sparkynow are private repos with user wisertown.
+    ### Uncomment this block to use.
+    #
+    # githubMultiOrg:
+    #  orgs:
+    #   - name: paylanx
+    #     groupNamespace: paylanx
+    #   - name: sparkynow
+    #     groupNamespace: sparkynow
 
     githubOrg:
       providers:
@@ -229,10 +233,12 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
-    - type: github-org
-      target: https://github.com/Paylanx
-    - type: github-org
-      target: https://github.com/Sparkynow
+    ### Part of the github multi-org-processor
+    ### uncomment to use
+    # - type: github-org
+    #   target: https://github.com/Paylanx
+    # - type: github-org
+    #   target: https://github.com/Sparkynow
 
     # Add a location here to ingest it, for example from a URL:
     #

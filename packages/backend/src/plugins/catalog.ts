@@ -17,7 +17,6 @@
 import {
   CatalogBuilder,
   createRouter,
-  GithubMultiOrgReaderProcessor,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -27,16 +26,20 @@ export default async function createPlugin(
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
 
+  /* 
+  To include the GithubMultiOrgReaderProcessor add the import from line 32 to line 20 and 
+  uncomment the processor function on line 33.
+  import { GithubMultiOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
   builder.addProcessor(
     GithubMultiOrgReaderProcessor.fromConfig(env.config, {
       logger: env.logger,
     }),
-  );
+  ); 
+  */
 
   const {
     entitiesCatalog,
     locationAnalyzer,
-    locationsCatalog,
     processingEngine,
     locationService,
   } = await builder.build();
@@ -47,7 +50,6 @@ export default async function createPlugin(
     entitiesCatalog,
     locationAnalyzer,
     locationService,
-    locationsCatalog,
     logger: env.logger,
     config: env.config,
   });
