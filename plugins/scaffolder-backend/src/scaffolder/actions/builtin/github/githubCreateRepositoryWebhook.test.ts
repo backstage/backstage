@@ -39,7 +39,7 @@ describe('github:repository:webhook:create', () => {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       webhookUrl: 'https://example.com/payload',
-      webhookSecretEnv: 'SUPER_SECRET',
+      webhookSecret: 'aafdfdivierernfdk23f',
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -90,20 +90,12 @@ describe('github:repository:webhook:create', () => {
     ).rejects.toThrow(/No token available for host/);
   });
 
-  it('should throw if environment variable in secret is invalid', async () => {
-    await expect(action.handler(mockContext)).rejects.toThrow(
-      /Environment variable: SUPER_SECRET does not exist./,
-    );
-  });
-
   it('should call the githubApi for creating repository Webhook', async () => {
     const repoUrl = 'github.com?repo=repo&owner=owner';
     const webhookUrl = 'https://example.com/payload';
-    const webhookSecretEnv = 'SUPER_SECRET';
-    const secret = 'aafdfdivierernfdk23f';
-    process.env[webhookSecretEnv] = secret;
+    const webhookSecret = 'aafdfdivierernfdk23f';
     const ctx = Object.assign({}, mockContext, {
-      input: { repoUrl, webhookUrl, webhookSecretEnv },
+      input: { repoUrl, webhookUrl, webhookSecret },
     });
     await action.handler(ctx);
 
@@ -115,7 +107,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -136,7 +128,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -157,7 +149,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'json',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -178,7 +170,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -199,7 +191,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -220,7 +212,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret,
+        secret: webhookSecret,
         insecure_ssl: '0',
       },
     });
