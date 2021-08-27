@@ -21,8 +21,8 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   ALLURE_PROJECT_ID_ANNOTATION,
   isAllureReportAvailable,
-  useAllureProjectId,
-} from '../useAllureProjectId';
+  getAllureProjectId,
+} from '../annotationHelpers';
 import {
   MissingAnnotationEmptyState,
   Progress,
@@ -31,9 +31,9 @@ import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
 const AllureReport = (props: { entity: Entity }) => {
-  const allureApi = useApi<AllureApi>(allureApiRef);
+  const allureApi = useApi(allureApiRef);
 
-  const allureProjectId = useAllureProjectId(props.entity);
+  const allureProjectId = getAllureProjectId(props.entity);
   const { value, loading } = useAsync(async () => {
     const url = await allureApi.getReportUrl(allureProjectId);
     return url;
@@ -43,19 +43,15 @@ const AllureReport = (props: { entity: Entity }) => {
     return <Progress />;
   }
   return (
-    <>
-      {!loading && (
-        <iframe
-          style={{
-            display: 'table',
-            width: '100%',
-            height: '100%',
-          }}
-          title="Allure Report"
-          src={value}
-        />
-      )}
-    </>
+    <iframe
+      style={{
+        display: 'table',
+        width: '100%',
+        height: '100%',
+      }}
+      title="Allure Report"
+      src={value}
+    />
   );
 };
 

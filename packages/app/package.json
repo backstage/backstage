@@ -10,7 +10,6 @@
     "@backstage/core-components": "^0.3.2",
     "@backstage/core-plugin-api": "^0.1.6",
     "@backstage/integration-react": "^0.1.7",
-    "@backstage/plugin-allure": "^0.1.0",
     "@backstage/plugin-api-docs": "^0.6.6",
     "@backstage/plugin-badges": "^0.2.7",
     "@backstage/plugin-catalog": "^0.6.12",
