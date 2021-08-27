@@ -112,7 +112,8 @@ describe('config', () => {
       ]);
     });
 
-    it('defaults userNamespace to undefined if unspecified', () => {      const output = readGithubMultiOrgConfig(
+    it('defaults userNamespace to undefined if unspecified', () => {
+      const output = readGithubMultiOrgConfig(
         config([{ name: 'foo' }, { name: 'bar' }]),
       );
 
