@@ -39,7 +39,7 @@ export function createGithubCreateRepositoryWebhookAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     webhookUrl: string;
-    webhookSecretEnv?: string;
+    webhookSecret?: string;
     events?: string[];
     active?: boolean;
     contentType?: ContentType;
@@ -62,9 +62,9 @@ export function createGithubCreateRepositoryWebhookAction(options: {
             description: 'The URL to which the payloads will be delivered',
             type: 'string',
           },
-          webhookSecretEnv: {
-            title: 'Environment variable containing Webhook Secret',
-            description: 'Name of the environment variable containing secret',
+          webhookSecret: {
+            title: 'Webhook Secret',
+            description: 'Webhook secret value',
             type: 'string',
           },
           events: {
@@ -99,7 +99,7 @@ export function createGithubCreateRepositoryWebhookAction(options: {
       const {
         repoUrl,
         webhookUrl,
-        webhookSecretEnv,
+        webhookSecret,
         events = ['push'],
         active = true,
         contentType = 'form',
@@ -110,16 +110,6 @@ export function createGithubCreateRepositoryWebhookAction(options: {
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
-      }
-
-      let secret;
-      if (webhookSecretEnv) {
-        secret = process.env[webhookSecretEnv];
-        if (!secret) {
-          throw new InputError(
-            `Environment variable: ${webhookSecretEnv} does not exist.`,
-          );
-        }
       }
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
@@ -159,7 +149,7 @@ export function createGithubCreateRepositoryWebhookAction(options: {
           config: {
             url: webhookUrl,
             content_type: contentType,
-            secret,
+            secret: webhookSecret,
             insecure_ssl,
           },
           events,
