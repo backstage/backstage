@@ -16,7 +16,6 @@
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { allureApiRef } from '../../api';
-import { AllureApi } from '../../api/AllureApi';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   ALLURE_PROJECT_ID_ANNOTATION,
