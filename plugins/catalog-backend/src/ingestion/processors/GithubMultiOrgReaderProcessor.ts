@@ -124,7 +124,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           `Read ${users.length} GitHub users and ${groups.length} GitHub teams from ${orgConfig.name} in ${duration} seconds`,
         );
 
-        var prefix:string = orgConfig.userNamespace ?? '';
+        let prefix: string = orgConfig.userNamespace ?? '';
         if (prefix.length > 0) prefix += '/';
 
         users.forEach(u => {
