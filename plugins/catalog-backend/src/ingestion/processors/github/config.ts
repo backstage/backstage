@@ -96,9 +96,9 @@ export type GithubMultiOrgConfig = Array<{
    */
   groupNamespace: string;
   /**
-   * The namespace of the users created for this org.
+   * The namespace of the users created for this org. If not specified defaults to undefined.
    */
-  userNamespace: string;
+  userNamespace: string | undefined;
 }>;
 
 export function readGithubMultiOrgConfig(config: Config): GithubMultiOrgConfig {
@@ -108,6 +108,6 @@ export function readGithubMultiOrgConfig(config: Config): GithubMultiOrgConfig {
     groupNamespace: (
       c.getOptionalString('groupNamespace') ?? c.getString('name')
     ).toLowerCase(),
-    userNamespace: c.getOptionalString('userNamespace') ?? '',
+    userNamespace: c.getOptionalString('userNamespace') ?? undefined,
   }));
 }
