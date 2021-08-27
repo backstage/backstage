@@ -9,6 +9,7 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
@@ -25,6 +26,7 @@ import { Observable } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -216,7 +218,11 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 export const ScaffolderPage: ({
   TemplateCardComponent,
 }: {
-  TemplateCardComponent?: ((props: any) => JSX.Element | null) | undefined;
+  TemplateCardComponent?:
+    | ComponentType<{
+        template: TemplateEntityV1beta2;
+      }>
+    | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
