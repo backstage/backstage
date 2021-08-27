@@ -165,7 +165,6 @@ export async function waitForPageWithText(
     } catch (error) {
       findTextAttempts++;
       if (findTextAttempts <= maxFindTextAttempts) {
-        await browser.visit(path);
         await new Promise(resolve => setTimeout(resolve, intervalMs));
         continue;
       } else {
