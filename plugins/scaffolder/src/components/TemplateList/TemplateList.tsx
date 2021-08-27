@@ -26,9 +26,7 @@ import {
 } from '@backstage/core-components';
 import { useEntityListProvider } from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
-import { TemplateCard, TemplateCardProps } from '../TemplateCard';
-
-export type Props = TemplateCardProps;
+import { TemplateCard } from '../TemplateCard';
 
 export type TemplateListProps = {
   TemplateCardComponent?:
