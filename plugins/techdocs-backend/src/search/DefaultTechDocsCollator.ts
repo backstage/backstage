@@ -16,25 +16,18 @@
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
+import { DocumentCollator } from '@backstage/search-common';
 import fetch from 'cross-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { TechDocsDocument } from '@backstage/techdocs-common';
 
 interface MkSearchIndexDoc {
   title: string;
   text: string;
   location: string;
-}
-
-export interface TechDocsDocument extends IndexableDocument {
-  kind: string;
-  namespace: string;
-  name: string;
-  lifecycle: string;
-  owner: string;
 }
 
 export class DefaultTechDocsCollator implements DocumentCollator {
@@ -108,6 +101,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
                 ...entityInfo,
                 path: doc.location,
               }),
+              path: doc.location,
               ...entityInfo,
               componentType: entity.spec?.type?.toString() || 'other',
               lifecycle: (entity.spec?.lifecycle as string) || '',

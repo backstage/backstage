@@ -36,6 +36,7 @@
     "@backstage/core-components": "^0.3.3",
     "@backstage/core-plugin-api": "^0.1.6",
     "@backstage/errors": "^0.1.1",
+    "@backstage/plugin-search": "^0.4.5",
     "@backstage/integration": "^0.6.2",
     "@backstage/integration-react": "^0.1.7",
     "@backstage/plugin-catalog": "^0.6.13",
