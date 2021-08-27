@@ -124,15 +124,18 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           `Read ${users.length} GitHub users and ${groups.length} GitHub teams from ${orgConfig.name} in ${duration} seconds`,
         );
 
+        var prefix:string = orgConfig.userNamespace ?? '';
+        if (prefix.length > 0) prefix += '/';
+
         users.forEach(u => {
-          if (!allUsersMap.has(u.metadata.name)) {
-            allUsersMap.set(u.metadata.name, u);
+          if (!allUsersMap.has(prefix + u.metadata.name)) {
+            allUsersMap.set(prefix + u.metadata.name, u);
           }
         });
 
         for (const [groupName, userNames] of groupMemberUsers.entries()) {
           for (const userName of userNames) {
-            const user = allUsersMap.get(userName);
+            const user = allUsersMap.get(prefix + userName);
             if (user && !user.spec.memberOf.includes(groupName)) {
               user.spec.memberOf.push(groupName);
             }

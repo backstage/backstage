@@ -112,14 +112,13 @@ describe('config', () => {
       ]);
     });
 
-    it('defaults userNamespace to empty string if undefined', () => {
-      const output = readGithubMultiOrgConfig(
+    it('defaults userNamespace to undefined if unspecified', () => {      const output = readGithubMultiOrgConfig(
         config([{ name: 'foo' }, { name: 'bar' }]),
       );
 
       expect(output).toEqual([
-        { name: 'foo', groupNamespace: 'foo', userNamespace: '' },
-        { name: 'bar', groupNamespace: 'bar', userNamespace: '' },
+        { name: 'foo', groupNamespace: 'foo', userNamespace: undefined },
+        { name: 'bar', groupNamespace: 'bar', userNamespace: undefined },
       ]);
     });
   });
