@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { PerfCapabilityCard } from './PerfCabapilityCard';
 
-const Test = React.memo(({ entities }) => {
+const CapabilityEntities = React.memo(({ entities }: { entities: any[] }) => {
   return (
     <div>
       {entities.map((capability, index) => {
@@ -38,7 +38,7 @@ const Test = React.memo(({ entities }) => {
             id={capability?.spec?.id}
             description={capability?.spec?.description}
             isMember={capability?.spec?.members.some(
-              member => member.email === 'kodic@dfds.com',
+              (member: { email: string }) => member.email === 'kodic@dfds.com',
             )}
             members={capability?.spec?.members}
           />
@@ -56,7 +56,9 @@ const CapabilitiesListBase = React.memo(() => {
       <Content>
         <Container maxWidth="lg" style={{ padding: 0 }}>
           {backendEntities.length === 0 && <CircularProgress />}
-          {backendEntities.length > 0 && <Test entities={backendEntities} />}
+          {backendEntities.length > 0 && (
+            <CapabilityEntities entities={backendEntities} />
+          )}
         </Container>
       </Content>
     </Page>

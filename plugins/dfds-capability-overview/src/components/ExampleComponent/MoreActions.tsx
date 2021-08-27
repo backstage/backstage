@@ -65,7 +65,7 @@ export const MoreActions = ({ size, children, icon }: any) => {
           {icon || <MoreVertIcon />}
         </IconButton>
       </Tooltip>
-      {/* <Menu
+      <Menu
         id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
@@ -73,7 +73,7 @@ export const MoreActions = ({ size, children, icon }: any) => {
         onClose={handleClose}
       >
         {children}
-      </Menu> */}
+      </Menu>
     </>
   );
 };
