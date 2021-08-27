@@ -23,6 +23,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -32,7 +33,7 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
@@ -47,7 +48,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export type ScaffolderPageProps = {
-  TemplateCardComponent?: (props: any) => JSX.Element | null;
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
 };
 
 export const ScaffolderPageContents = ({
