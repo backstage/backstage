@@ -1,4 +1,4 @@
-# Allure
+# [Allure](https://docs.qameta.io/allure/)
 
 Welcome to the Backstage Allure plugin. This plugin add an entity service page to display Allure test reports related to the service.
 
@@ -24,7 +24,7 @@ Add below configuration in the `app-config.yaml`.
 
 ```yaml
 allure:
-  baseUrl: <ALLURE_SERVICE_BASE_URL> # Example: http://localhost:5050/allure-docker-service
+  baseUrl: <ALLURE_SERVICE_BASE_URL> # Example: https://allure.my-company.net or when running allure locally, http://localhost:5050/allure-docker-service
 ```
 
 ### Setup entity service page

@@ -16,11 +16,39 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityAllureReportContent } from '../src/plugin';
+import { Content, Header, Page } from '@backstage/core-components';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
+
+import exampleEntity from './example-entity.yaml';
+import { allureApiRef } from '../src/api';
 
 createDevApp()
-  .registerPlugin()
+  .registerApi({
+    api: allureApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getReportUrl(projectId: string) {
+          return Promise.resolve(
+            // Follow the instructions from https://github.com/fescobar/allure-docker-service-ui
+            // to setup Allure service locally
+            `http://localhost:5050/allure-docker-service/projects/${projectId}/reports/latest/index.html`,
+          );
+        },
+      } as unknown as typeof allureApiRef.T),
+  })
   .addPage({
-    element: <EntityAllureReportContent />,
+    element: (
+      <Page themeId="home">
+        <Header title="Allure Report" />
+        <Content>
+          <EntityProvider entity={exampleEntity as any as Entity}>
+            <EntityAllureReportContent />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
     title: 'Allure Report',
     path: '/allure',
   })

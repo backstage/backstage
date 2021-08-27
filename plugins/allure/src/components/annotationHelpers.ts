@@ -15,11 +15,11 @@
  */
 import { Entity } from '@backstage/catalog-model';
 
-export const ALLURE_PROJECT_ID_ANNOTATION = 'allure/project-id';
+export const ALLURE_PROJECT_ID_ANNOTATION = 'qameta.io/allure-project';
 
 export const isAllureReportAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ALLURE_PROJECT_ID_ANNOTATION]);
 
-export const useAllureProjectId = (entity: Entity) => {
+export const getAllureProjectId = (entity: Entity) => {
   return entity?.metadata.annotations?.[ALLURE_PROJECT_ID_ANNOTATION] ?? '';
 };
