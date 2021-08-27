@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { WebSocketConnectionManager } from '@backstage/backend-common';
+
 export type Notifications = Notification[];
 
 export type Notification = {

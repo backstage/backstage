@@ -18,7 +18,7 @@ import qs from 'qs';
 import http from 'http';
 import { WebSocketConnectionManager } from './WebSocketConnectionManager';
 
-export const websockets = async () => (
+export const websockets = async (
   expressServer: http.Server,
   websocketConnectionManager: WebSocketConnectionManager,
 ) => {
@@ -41,7 +41,9 @@ export const websockets = async () => (
 
       // NOTE: connectParams are not used here but good to understand how to get
       // to them if you need to pass data with the connection to identify it (e.g., a userId).
+      console.log('$$$$$$$$$$$$$$$$');
       console.log(connectionParams);
+      console.log('$$$$$$$$$$$$$$$$');
 
       if (connectionParams.userId) {
         websocketConnectionManager.addUserWebSocketConnection(

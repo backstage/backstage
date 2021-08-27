@@ -17,14 +17,14 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
+import { NotificationsManager } from '../lib/NotificationsManager';
 import { RouterOptions } from '../types';
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-  logger.info('In notifications service');
+  // const { logger } = options;
+  // logger.log(logger.INFO, 'In notifications service');
   const router = Router();
   router.use(express.json());
 

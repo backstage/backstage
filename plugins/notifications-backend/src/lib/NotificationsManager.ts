@@ -44,6 +44,6 @@ export class NotificationsManager {
       message.timestamp = Date.now();
       this.websocketConnectionManager.sendMessage('raghu', message);
       times++;
-    }, 2000);
+    }, 4000);
   }
 }
