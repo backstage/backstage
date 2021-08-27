@@ -15,7 +15,10 @@
  */
 
 import React, { ComponentType } from 'react';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import {
+  stringifyEntityRef,
+  TemplateEntityV1beta2,
+} from '@backstage/catalog-model';
 import {
   ItemCardGrid,
   Progress,
@@ -35,6 +38,7 @@ export type TemplateListProps = {
 
 export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
+  const Card = TemplateCardComponent || TemplateCard;
   return (
     <>
       {loading && <Progress />}
@@ -58,19 +62,12 @@ export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {
       <ItemCardGrid>
         {entities &&
           entities?.length > 0 &&
-          entities.map((template, i) =>
-            TemplateCardComponent ? (
-              <TemplateCardComponent
-                key={i}
-                template={template as TemplateEntityV1beta2}
-              />
-            ) : (
-              <TemplateCard
-                key={i}
-                template={template as TemplateEntityV1beta2}
-              />
-            ),
-          )}
+          entities.map(template => (
+            <Card
+              key={stringifyEntityRef(template)}
+              template={template as TemplateEntityV1beta2}
+            />
+          ))}
       </ItemCardGrid>
     </>
   );
