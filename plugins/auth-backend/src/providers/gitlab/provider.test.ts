@@ -17,7 +17,7 @@
 import { GitlabAuthProvider, gitlabDefaultSignInResolver } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
-import { getVoidLogger } from '../../../../../packages/backend-common/src';
+import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 
