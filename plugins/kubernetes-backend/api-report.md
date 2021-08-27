@@ -119,7 +119,7 @@ export interface KubernetesServiceLocator {
 export const makeRouter: (
   logger: Logger_2,
   kubernetesFanOutHandler: KubernetesFanOutHandler,
-  clusterDetails: ClusterDetails[],
+  clusterSupplier: KubernetesClustersSupplier,
 ) => express.Router;
 
 // Warning: (ae-missing-release-tag) "ObjectFetchParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
