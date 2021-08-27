@@ -29,7 +29,7 @@ about TechDocs and the philosophy in its
 - Explore and take advantage of the large ecosystem of
   [MkDocs plugins](https://www.mkdocs.org/user-guide/plugins/) to create a rich
   reading experience.
-- Search for and find docs (coming soon).
+- Search for and find docs.
 - Highlight text and raise an Issue to create feedback loop to drive quality
   documentation (future).
 - Contribute to and deploy from a marketplace of TechDocs widgets (future).
