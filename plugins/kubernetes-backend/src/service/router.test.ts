@@ -19,6 +19,7 @@ import express from 'express';
 import request from 'supertest';
 import { makeRouter } from './router';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { ConfigClusterLocator } from '../cluster-locator/ConfigClusterLocator';
 
 describe('router', () => {
   let app: express.Express;
@@ -29,7 +30,8 @@ describe('router', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    const router = makeRouter(getVoidLogger(), kubernetesFanOutHandler, [
+    // Dummy cluster locator
+    const clusterLocator = new ConfigClusterLocator([
       {
         name: 'some-cluster',
         authProvider: 'serviceAccount',
@@ -42,6 +44,11 @@ describe('router', () => {
         authProvider: 'google',
       },
     ]);
+    const router = makeRouter(
+      getVoidLogger(),
+      kubernetesFanOutHandler,
+      clusterLocator,
+    );
     app = express().use(router);
   });
 

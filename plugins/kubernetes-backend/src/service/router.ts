@@ -18,20 +18,19 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { getCombinedClusterDetails } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
-  ClusterDetails,
+  CustomResource,
   KubernetesClustersSupplier,
   KubernetesObjectTypes,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  CustomResource,
 } from '../types/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { CombinedClusterLocator } from '../cluster-locator/CombinedClusterLocator';
 
 export interface RouterOptions {
   logger: Logger;
@@ -41,7 +40,7 @@ export interface RouterOptions {
 
 const getServiceLocator = (
   config: Config,
-  clusterDetails: ClusterDetails[],
+  clusterSupplier: KubernetesClustersSupplier,
 ): KubernetesServiceLocator => {
   const serviceLocatorMethod = config.getString(
     'kubernetes.serviceLocatorMethod.type',
@@ -49,7 +48,7 @@ const getServiceLocator = (
 
   switch (serviceLocatorMethod) {
     case 'multiTenant':
-      return new MultiTenantServiceLocator(clusterDetails);
+      return new MultiTenantServiceLocator(clusterSupplier);
     case 'http':
       throw new Error('not implemented');
     default:
@@ -59,10 +58,16 @@ const getServiceLocator = (
   }
 };
 
+function createClustersSupplier(options: RouterOptions) {
+  return options.clusterSupplier
+    ? options.clusterSupplier
+    : new CombinedClusterLocator(options);
+}
+
 export const makeRouter = (
   logger: Logger,
   kubernetesFanOutHandler: KubernetesFanOutHandler,
-  clusterDetails: ClusterDetails[],
+  clusterSupplier: KubernetesClustersSupplier,
 ): express.Router => {
   const router = Router();
   router.use(express.json());
@@ -84,7 +89,7 @@ export const makeRouter = (
 
   router.get('/clusters', async (_, res) => {
     res.json({
-      items: clusterDetails.map(cd => ({
+      items: (await clusterSupplier.getClusters()).map(cd => ({
         name: cd.name,
         authProvider: cd.authProvider,
       })),
@@ -120,19 +125,14 @@ export async function createRouter(
     logger,
   });
 
-  let clusterDetails: ClusterDetails[];
+  const clusterSupplier = createClustersSupplier(options);
 
-  if (options.clusterSupplier) {
-    clusterDetails = await options.clusterSupplier.getClusters();
-  } else {
-    clusterDetails = await getCombinedClusterDetails(options.config);
-  }
-
+  const clusters = await clusterSupplier.getClusters();
   logger.info(
-    `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
+    `action=loadClusterDetails numOfClustersLoaded=${clusters.length}`,
   );
 
-  const serviceLocator = getServiceLocator(options.config, clusterDetails);
+  const serviceLocator = getServiceLocator(options.config, clusterSupplier);
   const objectTypesToFetch = options.config.getOptionalStringArray(
     'kubernetes.objectTypes',
   ) as KubernetesObjectTypes[];
@@ -145,5 +145,5 @@ export async function createRouter(
     objectTypesToFetch,
   });
 
-  return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
+  return makeRouter(logger, kubernetesFanOutHandler, clusterSupplier);
 }
