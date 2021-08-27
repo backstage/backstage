@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.9.0",
-    "@backstage/core-components": "^0.3.2",
+    "@backstage/core-components": "^0.3.3",
     "@backstage/core-plugin-api": "^0.1.6",
     "@backstage/plugin-catalog-react": "^0.4.3",
     "@backstage/theme": "^0.2.10",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.9",
-    "@backstage/core-app-api": "^0.1.9",
+    "@backstage/core-app-api": "^0.1.10",
     "@backstage/dev-utils": "^0.2.7",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
