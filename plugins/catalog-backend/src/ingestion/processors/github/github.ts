@@ -60,9 +60,9 @@ export type Repository = {
   name: string;
   url: string;
   isArchived: boolean;
-  defaultBranchRef?: {
+  defaultBranchRef: {
     name: string;
-  };
+  } | null;
 };
 
 export type Connection<T> = {
