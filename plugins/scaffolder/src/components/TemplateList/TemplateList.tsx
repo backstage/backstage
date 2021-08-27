@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import {
   ItemCardGrid,
@@ -28,7 +28,9 @@ import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 export type Props = TemplateCardProps;
 
 export type TemplateListProps = {
-  TemplateCardComponent?: (props: Props) => JSX.Element | null;
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
 };
 
 export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {

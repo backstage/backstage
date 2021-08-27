@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
@@ -30,7 +31,9 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 
 type RouterProps = {
-  TemplateCardComponent?: (props: any) => JSX.Element | null;
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
 };
 
 export const Router = ({ TemplateCardComponent }: RouterProps) => {
