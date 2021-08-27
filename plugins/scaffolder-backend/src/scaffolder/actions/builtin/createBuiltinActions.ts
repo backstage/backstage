@@ -39,7 +39,7 @@ import {
 } from './publish';
 import {
   createGithubActionsDispatchAction,
-  createGithubCreateRepositoryWebhookAction,
+  createGithubWebhookAction,
 } from './github';
 
 export const createBuiltinActions = (options: {
@@ -93,7 +93,7 @@ export const createBuiltinActions = (options: {
     createGithubActionsDispatchAction({
       integrations,
     }),
-    createGithubCreateRepositoryWebhookAction({
+    createGithubWebhookAction({
       integrations,
     }),
   ];

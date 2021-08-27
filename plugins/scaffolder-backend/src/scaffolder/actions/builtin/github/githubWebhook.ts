@@ -24,7 +24,7 @@ import { createTemplateAction } from '../../createTemplateAction';
 
 type ContentType = 'form' | 'json';
 
-export function createGithubCreateRepositoryWebhookAction(options: {
+export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
@@ -45,7 +45,7 @@ export function createGithubCreateRepositoryWebhookAction(options: {
     contentType?: ContentType;
     insecureSsl?: boolean;
   }>({
-    id: 'github:repository:webhook:create',
+    id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
     schema: {
       input: {
