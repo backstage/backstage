@@ -62,7 +62,7 @@ export type Repository = {
   isArchived: boolean;
   defaultBranchRef: {
     name: string;
-  };
+  } | null;
 };
 
 export type Connection<T> = {
