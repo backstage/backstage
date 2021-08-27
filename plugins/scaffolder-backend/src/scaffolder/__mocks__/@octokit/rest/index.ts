@@ -23,6 +23,7 @@ export const mockGithubClient = {
   repos: {
     createInOrg: jest.fn(),
     createForAuthenticatedUser: jest.fn(),
+    createWebhook: jest.fn(),
     addCollaborator: jest.fn(),
     replaceAllTopics: jest.fn(),
   },
