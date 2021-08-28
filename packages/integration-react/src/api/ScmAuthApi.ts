@@ -29,18 +29,14 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
   url: string;
 
   /**
-   * The type of access to be granted.
+   * Whether to request additional access scope.
+   *
+   * Read access to user, organization, and repositories is always included.
    */
-  scope: {
+  additionalScope?: {
     /**
-     * Whether to request access to be able to read repository content, including
-     * read access to management features like issues and pull requests.
-     */
-    repoRead?: boolean;
-
-    /**
-     * Whether to request access to be able to write repository content, including
-     * the ability to create management features like issues and pull requests.
+     * Requests access to be able to write repository content, including
+     * the ability to create things like issues and pull requests.
      */
     repoWrite?: boolean;
   };
