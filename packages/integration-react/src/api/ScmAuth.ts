@@ -132,7 +132,7 @@ export class ScmAuth implements ScmAuthApi {
     });
   }
 
-  static mux(providers: ScmAuth[]): ScmAuthApi {
+  static mux(...providers: ScmAuth[]): ScmAuthApi {
     return new ScmAuthMux(providers);
   }
 
