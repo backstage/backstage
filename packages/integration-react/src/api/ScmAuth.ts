@@ -132,7 +132,11 @@ export class ScmAuth implements ScmAuthApi {
     });
   }
 
-  static mux(...providers: ScmAuth[]): ScmAuthApi {
+  /**
+   * Merges together multiple ScmAuth instances into one that
+   * routes requests to the correct instance based on the URL.
+   */
+  static merge(...providers: ScmAuth[]): ScmAuthApi {
     return new ScmAuthMux(providers);
   }
 

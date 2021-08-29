@@ -30,7 +30,7 @@ describe('ScmAuth', () => {
     const mockGithubAuth = new MockOAuthApi('github-access-token');
     const mockGheAuth = new MockOAuthApi('ghe-access-token');
 
-    const api = ScmAuth.mux(
+    const api = ScmAuth.merge(
       ScmAuth.forGithub(mockGithubAuth),
       ScmAuth.forGithub(mockGheAuth, {
         host: 'ghe.example.com',
@@ -180,14 +180,14 @@ describe('ScmAuth', () => {
   });
 
   it('should throw an error for unknown URLs', async () => {
-    const emptyMux = ScmAuth.mux();
+    const emptyMux = ScmAuth.merge();
     await expect(
       emptyMux.getCredentials({ url: 'http://example.com' }),
     ).rejects.toThrow(
       "No authentication provider available for access to 'http://example.com'",
     );
 
-    const scmAuth = ScmAuth.mux(
+    const scmAuth = ScmAuth.merge(
       ScmAuth.forAuthApi(new MockOAuthApi('token'), {
         host: 'example.com',
         scopeMapping: {
