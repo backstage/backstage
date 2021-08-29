@@ -139,6 +139,46 @@ describe('ScmAuth', () => {
     });
   });
 
+  it('should handle host option', () => {
+    const mockAuthApi = {
+      getAccessToken: jest.fn(),
+    };
+
+    const expectUrlSupport = (scm: ScmAuth, url: string) => {
+      expect(scm.isUrlSupported(new URL(url))).toBe(true);
+      expect(scm.isUrlSupported(new URL('https://not.supported.com'))).toBe(
+        false,
+      );
+    };
+
+    expectUrlSupport(ScmAuth.forGithub(mockAuthApi), 'https://github.com');
+    expectUrlSupport(ScmAuth.forGitlab(mockAuthApi), 'https://gitlab.com');
+    expectUrlSupport(
+      ScmAuth.forAzure(mockAuthApi, {}),
+      'https://dev.azure.com',
+    );
+    expectUrlSupport(
+      ScmAuth.forBitbucket(mockAuthApi, {}),
+      'https://bitbucket.org',
+    );
+    expectUrlSupport(
+      ScmAuth.forGithub(mockAuthApi, { host: 'example.com' }),
+      'https://example.com/abc',
+    );
+    expectUrlSupport(
+      ScmAuth.forGitlab(mockAuthApi, { host: 'example.com' }),
+      'http://example.com',
+    );
+    expectUrlSupport(
+      ScmAuth.forAzure(mockAuthApi, { host: 'example.com' }),
+      'https://example.com',
+    );
+    expectUrlSupport(
+      ScmAuth.forBitbucket(mockAuthApi, { host: 'example.com:8080' }),
+      'https://example.com:8080',
+    );
+  });
+
   it('should throw an error for unknown URLs', async () => {
     const emptyMux = ScmAuth.mux();
     await expect(
