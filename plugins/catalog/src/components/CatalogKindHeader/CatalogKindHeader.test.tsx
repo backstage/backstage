@@ -58,16 +58,9 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = ApiRegistry.from([
-  [
-    catalogApiRef,
-    {
-      getEntities: jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as Partial<CatalogApi>,
-  ],
-]);
+const apis = ApiRegistry.with(catalogApiRef, {
+  getEntities: jest.fn().mockResolvedValue({ items: entities }),
+} as Partial<CatalogApi>);
 
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {

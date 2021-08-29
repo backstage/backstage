@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
@@ -77,7 +77,7 @@ const ContentHeaderTitle = ({
 
 type ContentHeaderProps = {
   title?: ContentHeaderTitleProps['title'];
-  titleComponent?: JSX.Element;
+  titleComponent?: ReactNode;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
 };
