@@ -98,7 +98,7 @@ export interface ClusterDetails {
    * @remarks
    * The existing apps are: standard, rancher, openshift, gke, aks, eks
    * Note that it will default to the regular dashboard provided by the Kubernetes project (standard).
-   * Note that you can add your own formatter by registering it to the formatters dictionary.
+   * Note that you can add your own formatter by registering it to the clusterLinksFormatters dictionary.
    * @defaultValue standard
    * @see dashboardUrl
    * @example

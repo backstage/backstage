@@ -115,13 +115,14 @@ Specifies the app that provides the Kubernetes dashboard.
 This will be used for formatting links to kubernetes objects inside the
 dashboard.
 
-The supported dashboards are: standard, rancher, openshift, gke, aks, eks
+The supported dashboards are: `standard`, `rancher`, `openshift`, `gke`, `aks`,
+`eks`
 
 Note that it will default to the regular dashboard provided by the Kubernetes
-project (standard), that can run in any kubernetes cluster.
+project (`standard`), that can run in any Kubernetes cluster.
 
-Note that you can add your own formatter by registering it to the formatters
-dictionary, in the app project.
+Note that you can add your own formatter by registering it to the
+`clusterLinksFormatters` dictionary, in the app project.
 
 Example:
 
