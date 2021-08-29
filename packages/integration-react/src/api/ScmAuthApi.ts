@@ -64,9 +64,7 @@ export interface ScmAuthApi {
   /**
    * Requests credentials for accessing an SCM resource.
    */
-  getCredentials(
-    options: ScmAuthTokenOptions,
-  ): Promise<ScmAuthTokenResponse | undefined>;
+  getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
 }
 
 export const scmAuthApiRef: ApiRef<ScmAuthApi> = createApiRef({

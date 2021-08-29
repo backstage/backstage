@@ -33,14 +33,14 @@ class ScmAuthMux implements ScmAuthApi {
     this.#providers = providers;
   }
 
-  getCredentials(
+  async getCredentials(
     options: ScmAuthTokenOptions,
-  ): Promise<ScmAuthTokenResponse | undefined> {
+  ): Promise<ScmAuthTokenResponse> {
     const url = new URL(options.url);
     const provider = this.#providers.find(p => p.isUrlSupported(url));
     if (!provider) {
       throw new Error(
-        `No authentication provider available for SCM access to '${options.url}'`,
+        `No authentication provider available for access to '${options.url}'`,
       );
     }
 
@@ -52,24 +52,24 @@ export class ScmAuth implements ScmAuthApi {
   static forAuthApi(
     authApi: OAuthApi,
     options: {
-      hostname: string;
+      host: string;
       scopeMapping: {
         default: string[];
         repoWrite: string[];
       };
     },
-  ): ScmAuthApi {
-    return new ScmAuth(authApi, options.hostname, options.scopeMapping);
+  ): ScmAuth {
+    return new ScmAuth(authApi, options.host, options.scopeMapping);
   }
 
   static forGithub(
     githubAuthApi: OAuthApi,
     options?: {
-      hostname?: string;
+      host?: string;
     },
   ): ScmAuth {
-    const hostname = options?.hostname ?? 'github.com';
-    return new ScmAuth(githubAuthApi, hostname, {
+    const host = options?.host ?? 'github.com';
+    return new ScmAuth(githubAuthApi, host, {
       default: ['repo', 'read:org', 'read:user'],
       repoWrite: ['repo', 'read:org', 'read:user', 'gist'],
     });
@@ -78,11 +78,11 @@ export class ScmAuth implements ScmAuthApi {
   static forGitlab(
     gitlabAuthApi: OAuthApi,
     options?: {
-      hostname?: string;
+      host?: string;
     },
   ): ScmAuth {
-    const hostname = options?.hostname ?? 'gitlab.com';
-    return new ScmAuth(gitlabAuthApi, hostname, {
+    const host = options?.host ?? 'gitlab.com';
+    return new ScmAuth(gitlabAuthApi, host, {
       default: ['read_user', 'read_api', 'read_repository'],
       repoWrite: ['read_user', 'read_api', 'write_repository', 'api'],
     });
@@ -91,11 +91,11 @@ export class ScmAuth implements ScmAuthApi {
   static forAzure(
     microsoftAuthApiRef: OAuthApi,
     options?: {
-      hostname?: string;
+      host?: string;
     },
   ): ScmAuth {
-    const hostname = options?.hostname ?? 'dev.azure.com';
-    return new ScmAuth(microsoftAuthApiRef, hostname, {
+    const host = options?.host ?? 'dev.azure.com';
+    return new ScmAuth(microsoftAuthApiRef, host, {
       default: [
         'vso.build',
         'vso.code',
@@ -116,11 +116,11 @@ export class ScmAuth implements ScmAuthApi {
   static forBitbucket(
     bitbucketAuthApi: OAuthApi,
     options?: {
-      hostname?: string;
+      host?: string;
     },
   ): ScmAuth {
-    const hostname = options?.hostname ?? 'bitbucket.org';
-    return new ScmAuth(bitbucketAuthApi, hostname, {
+    const host = options?.host ?? 'bitbucket.org';
+    return new ScmAuth(bitbucketAuthApi, host, {
       default: ['account', 'team', 'pullrequest', 'snippet', 'issue'],
       repoWrite: [
         'account',
@@ -137,16 +137,12 @@ export class ScmAuth implements ScmAuthApi {
   }
 
   #api: OAuthApi;
-  #hostname: string;
+  #host: string;
   #scopeMapping: ScopeMapping;
 
-  private constructor(
-    api: OAuthApi,
-    hostname: string,
-    scopeMapping: ScopeMapping,
-  ) {
+  private constructor(api: OAuthApi, host: string, scopeMapping: ScopeMapping) {
     this.#api = api;
-    this.#hostname = hostname;
+    this.#host = host;
     this.#scopeMapping = scopeMapping;
   }
 
@@ -154,20 +150,18 @@ export class ScmAuth implements ScmAuthApi {
    * Checks whether the implementation is able to provide authentication for the given URL.
    */
   isUrlSupported(url: URL): boolean {
-    return url.hostname === this.#hostname;
+    return url.host === this.#host;
   }
 
   async getCredentials(
     options: ScmAuthTokenOptions,
   ): Promise<ScmAuthTokenResponse> {
-    const scopes = options.additionalScope?.repoWrite
+    const { url, additionalScope, ...restOptions } = options;
+    const scopes = additionalScope?.repoWrite
       ? this.#scopeMapping.repoWrite
       : this.#scopeMapping.default;
 
-    const token = await this.#api.getAccessToken(scopes, {
-      instantPopup: options.instantPopup,
-      optional: options.optional,
-    });
+    const token = await this.#api.getAccessToken(scopes, restOptions);
     return {
       token,
       headers: {
