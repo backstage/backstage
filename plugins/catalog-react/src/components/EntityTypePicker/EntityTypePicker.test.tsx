@@ -61,22 +61,11 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = ApiRegistry.from([
-  [
-    catalogApiRef,
-    {
-      getEntities: jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as unknown as CatalogApi,
-  ],
-  [
-    alertApiRef,
-    {
-      post: jest.fn(),
-    } as unknown as AlertApi,
-  ],
-]);
+const apis = ApiRegistry.with(catalogApiRef, {
+  getEntities: jest.fn().mockResolvedValue({ items: entities }),
+} as unknown as CatalogApi).with(alertApiRef, {
+  post: jest.fn(),
+} as unknown as AlertApi);
 
 describe('<EntityTypePicker/>', () => {
   it('renders available entity types', async () => {

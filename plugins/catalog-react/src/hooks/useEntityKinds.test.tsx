@@ -54,12 +54,12 @@ const entities: Entity[] = [
 ];
 
 const mockCatalogApi: Partial<CatalogApi> = {
-  getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
+  getEntities: jest.fn().mockResolvedValue({ items: entities }),
 };
 
 const wrapper = ({ children }: PropsWithChildren<{}>) => {
   return (
-    <ApiProvider apis={ApiRegistry.from([[catalogApiRef, mockCatalogApi]])}>
+    <ApiProvider apis={ApiRegistry.with(catalogApiRef, mockCatalogApi)}>
       {children}
     </ApiProvider>
   );
