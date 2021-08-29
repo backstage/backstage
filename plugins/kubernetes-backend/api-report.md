@@ -27,9 +27,8 @@ export interface AWSClusterDetails extends ClusterDetails {
 export interface ClusterDetails {
   // (undocumented)
   authProvider: string;
-  // (undocumented)
+  dashboardApp?: string;
   dashboardUrl?: string;
-  // (undocumented)
   name: string;
   // (undocumented)
   serviceAccountToken?: string | undefined;

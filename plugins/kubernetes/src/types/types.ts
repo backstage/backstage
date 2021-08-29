@@ -37,3 +37,13 @@ export interface GroupedResponses extends DeploymentResources {
   ingresses: ExtensionsV1beta1Ingress[];
   customResources: any[];
 }
+
+export interface ClusterLinksFormatterOptions {
+  dashboardUrl: URL;
+  object: any;
+  kind: string;
+}
+
+export type ClusterLinksFormatter = (
+  options: ClusterLinksFormatterOptions,
+) => URL;

@@ -27,6 +27,8 @@ kubernetes:
           authProvider: 'serviceAccount'
           skipTLSVerify: false
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
+          dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
+          dashboardApp: standard
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -97,6 +99,40 @@ kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOU
 | jq -r '.data["token"]' \
 | base64 --decode
 ```
+
+##### `clusters.\*.dashboardUrl` (optional)
+
+Specifies the link to the Kubernetes dashboard managing this cluster.
+
+Note that you need to specify the app used for the dashboard using the
+**dashboardApp property**, in order to properly format links to kubernetes
+resources.
+
+##### `clusters.\*.dashboardApp` (optional)
+
+Specifies the app that provides the Kubernetes dashboard.
+
+This will be used for formatting links to kubernetes objects inside the
+dashboard.
+
+The supported dashboards are: standard, rancher, openshift, gke, aks, eks
+
+Note that it will default to the regular dashboard provided by the Kubernetes
+project (standard), that can run in any kubernetes cluster.
+
+Note that you can add your own formatter by registering it to the formatters
+dictionary, in the app project.
+
+Example:
+
+```ts
+import { clusterLinksFormatters } from '@backstage/plugin-kubernetes';
+clusterLinksFormatters.myDashboard = (options) => ...;
+```
+
+See also
+https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters
+for real examples.
 
 #### `gke`
 

@@ -112,6 +112,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
   const cluster = useContext(ClusterContext);
   const clusterLink = formatClusterLink({
     dashboardUrl: cluster.dashboardUrl,
+    dashboardApp: cluster.dashboardApp,
     object,
     kind,
   });

@@ -124,6 +124,9 @@ export class KubernetesFanOutHandler {
             if (clusterDetailsItem.dashboardUrl) {
               objects.cluster.dashboardUrl = clusterDetailsItem.dashboardUrl;
             }
+            if (clusterDetailsItem.dashboardApp) {
+              objects.cluster.dashboardApp = clusterDetailsItem.dashboardApp;
+            }
             return objects;
           });
       }),

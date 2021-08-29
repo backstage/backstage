@@ -41,6 +41,10 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
         if (dashboardUrl) {
           clusterDetails.dashboardUrl = dashboardUrl;
         }
+        const dashboardApp = c.getOptionalString('dashboardApp');
+        if (dashboardApp) {
+          clusterDetails.dashboardApp = dashboardApp;
+        }
 
         switch (authProvider) {
           case 'google': {

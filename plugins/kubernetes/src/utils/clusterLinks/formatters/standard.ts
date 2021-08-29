@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 const KindMappings: Record<string, string> = {
   deployment: 'deployment',
@@ -21,30 +22,18 @@ const KindMappings: Record<string, string> = {
   horizontalpodautoscaler: 'deployment',
 };
 
-export function formatClusterLink(options: {
-  dashboardUrl?: string;
-  object: any;
-  kind: string;
-}) {
-  if (!options.dashboardUrl) {
-    return undefined;
-  }
-  if (!options.object) {
-    return options.dashboardUrl;
-  }
-  const host = options.dashboardUrl.endsWith('/')
-    ? options.dashboardUrl
-    : `${options.dashboardUrl}/`;
+export function standardFormatter(options: ClusterLinksFormatterOptions) {
+  const result = new URL(options.dashboardUrl.href);
   const name = options.object.metadata?.name;
   const namespace = options.object.metadata?.namespace;
   const validKind = KindMappings[options.kind.toLocaleLowerCase()];
-  if (validKind && name && namespace) {
-    return `${host}#/${encodeURIComponent(validKind)}/${encodeURIComponent(
-      namespace,
-    )}/${encodeURIComponent(name)}?namespace=${encodeURIComponent(namespace)}`;
-  }
   if (namespace) {
-    return `${host}#/workloads?namespace=${encodeURIComponent(namespace)}`;
+    result.searchParams.set('namespace', namespace);
   }
-  return options.dashboardUrl;
+  if (validKind && name && namespace) {
+    result.hash = `/${validKind}/${namespace}/${name}`;
+  } else if (namespace) {
+    result.hash = '/workloads';
+  }
+  return result;
 }

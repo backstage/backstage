@@ -21,9 +21,8 @@ export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 //
 // @public (undocumented)
 export interface ClusterAttributes {
-  // (undocumented)
+  dashboardApp?: string;
   dashboardUrl?: string;
-  // (undocumented)
   name: string;
 }
 

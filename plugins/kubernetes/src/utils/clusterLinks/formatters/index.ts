@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+import { ClusterLinksFormatter } from '../../../types/types';
+import { standardFormatter } from './standard';
+import { rancherFormatter } from './rancher';
+import { openshiftFormatter } from './openshift';
+
+export const clusterLinksFormatters: Record<string, ClusterLinksFormatter> = {
+  standard: standardFormatter,
+  rancher: rancherFormatter,
+  openshift: openshiftFormatter,
+};
+export const defaultFormatterName = 'standard';

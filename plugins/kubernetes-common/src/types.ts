@@ -33,8 +33,35 @@ export interface KubernetesRequestBody {
 }
 
 export interface ClusterAttributes {
+  /**
+   * Specifies the name of the Kubernetes cluster.
+   */
   name: string;
+  /**
+   * Specifies the link to the Kubernetes dashboard managing this cluster.
+   * @remarks
+   * Note that you need to specify the app used for the dashboard
+   * using the dashboardApp property, in order to properly format
+   * links to kubernetes resources.
+   * @see dashboardApp
+   */
   dashboardUrl?: string;
+  /**
+   * Specifies the app that provides the Kubernetes dashboard.
+   * This will be used for formatting links to kubernetes objects inside the dashboard.
+   * @remarks
+   * The supported dashboards are: standard, rancher, openshift, gke, aks, eks
+   * Note that it will default to the regular dashboard provided by the Kubernetes project (standard).
+   * Note that you can add your own formatter by registering it to the formatters dictionary.
+   * @defaultValue standard
+   * @see dashboardUrl
+   * @example
+   * ```ts
+   * import { clusterLinksFormatters } from '@backstage/plugin-kubernetes';
+   * clusterLinksFormatters.myDashboard = (options) => ...;
+   * ```
+   */
+  dashboardApp?: string;
 }
 
 export interface ClusterObjects {
