@@ -19,20 +19,20 @@ import {
   SubmitHandler,
   UnpackNestedValue,
   useForm,
-  UseFormMethods,
-  UseFormOptions,
+  UseFormProps,
+  UseFormReturn,
 } from 'react-hook-form';
 
 type Props<TFieldValues extends Record<string, any>> = Pick<
-  UseFormOptions<TFieldValues>,
+  UseFormProps<TFieldValues>,
   'defaultValues'
 > & {
   onSubmit: SubmitHandler<TFieldValues>;
 
   render: (
     props: Pick<
-      UseFormMethods<TFieldValues>,
-      'errors' | 'register' | 'control'
+      UseFormReturn<TFieldValues>,
+      'formState' | 'register' | 'control' | 'setValue'
     > & {
       values: UnpackNestedValue<TFieldValues>;
     },
@@ -55,17 +55,12 @@ export const PreparePullRequestForm = <
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
-  const {
-    handleSubmit,
-    watch,
-    control,
-    register,
-    formState: { errors },
-  } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+  const { handleSubmit, watch, control, register, formState, setValue } =
+    useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {render({ values: watch(), errors, register, control })}
+      {render({ values: watch(), formState, register, control, setValue })}
     </form>
   );
 };
