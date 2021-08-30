@@ -394,7 +394,7 @@ export type GithubSession = {
   providerInfo: {
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
