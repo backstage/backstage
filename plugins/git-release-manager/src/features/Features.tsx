@@ -29,6 +29,7 @@ import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
 import { validateTagName } from '../helpers/tagParts/validateTagName';
 
+import { Box } from '@material-ui/core';
 import { ErrorBoundary, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
