@@ -153,7 +153,6 @@ export function AboutCard({ variant }: AboutCardProps) {
             disabled={!entityMetadataEditUrl}
             title="Edit Metadata"
             to={entityMetadataEditUrl ?? '#'}
-            target="_blank"
           >
             <EditIcon />
           </IconButton>
