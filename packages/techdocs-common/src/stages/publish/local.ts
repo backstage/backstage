@@ -142,16 +142,55 @@ export class LocalPublish implements PublisherBase {
   }
 
   docsRouter(): express.Handler {
-    return express.static(staticDocsDir, {
-      // Handle content-type header the same as all other publishers.
-      setHeaders: (res, filePath) => {
-        const fileExtension = path.extname(filePath);
-        const headers = getHeadersForFileExtension(fileExtension);
-        for (const [header, value] of Object.entries(headers)) {
-          res.setHeader(header, value);
-        }
-      },
+    const router = express.Router();
+
+    // Redirect middleware ensuring that requests to case-sensitive entity
+    // triplet paths are always sent to lower-case versions.
+    router.use((req, res, next) => {
+      // If legacy path casing is on, let the request immediately continue.
+      if (this.legacyPathCasing) {
+        return next();
+      }
+
+      // Generate a lower-case entity triplet path.
+      const [_, namespace, kind, name, ...rest] = req.path.split('/');
+
+      // Ignore non-triplet objects.
+      if (!namespace || !kind || !name) {
+        return next();
+      }
+
+      const newPath = [
+        _,
+        namespace.toLowerCase(),
+        kind.toLowerCase(),
+        name.toLowerCase(),
+        ...rest,
+      ].join('/');
+
+      // If there was no change, then let express.static() handle the request.
+      if (newPath === req.path) {
+        return next();
+      }
+
+      // Otherwise, redirect to the new path.
+      return res.redirect(req.baseUrl + newPath, 301);
     });
+
+    router.use(
+      express.static(staticDocsDir, {
+        // Handle content-type header the same as all other publishers.
+        setHeaders: (res, filePath) => {
+          const fileExtension = path.extname(filePath);
+          const headers = getHeadersForFileExtension(fileExtension);
+          for (const [header, value] of Object.entries(headers)) {
+            res.setHeader(header, value);
+          }
+        },
+      }),
+    );
+
+    return router;
   }
 
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {

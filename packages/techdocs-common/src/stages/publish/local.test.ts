@@ -117,6 +117,13 @@ describe('local publisher', () => {
         [resolvedDir]: {
           'unsafe.html': '<html></html>',
           'unsafe.svg': '<svg></svg>',
+          default: {
+            testkind: {
+              testname: {
+                'index.html': 'found it',
+              },
+            },
+          },
         },
       });
     });
@@ -137,6 +144,38 @@ describe('local publisher', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should redirect case-sensitive triplet path to lower-case', async () => {
+      await request(app)
+        .get('/default/TestKind/TestName/index.html')
+        .expect(301)
+        .expect('Location', '/default/testkind/testname/index.html');
+    });
+
+    it('should resolve lower-case triplet path content eventually', async () => {
+      const response = await request(app)
+        .get('/default/TestKind/TestName/index.html')
+        .redirects(1);
+      expect(response.text).toEqual('found it');
+    });
+
+    it('should not redirect when legacy case setting is used', async () => {
+      const legacyConfig = new ConfigReader({
+        techdocs: {
+          legacyUseCaseSensitiveTripletPaths: true,
+        },
+      });
+      const legacyPublisher = new LocalPublish(
+        legacyConfig,
+        logger,
+        testDiscovery,
+      );
+      app = express().use(legacyPublisher.docsRouter());
+
+      await request(app)
+        .get('/default/TestKind/TestName/index.html')
+        .expect(404);
     });
   });
 });
