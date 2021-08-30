@@ -35,6 +35,8 @@ import * as winston from 'winston';
 import { Writable } from 'stream';
 
 // Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+<<<<<<< HEAD
+=======
 //
 // @public (undocumented)
 export class AwsS3UrlReader implements UrlReader {
@@ -56,6 +58,39 @@ export class AwsS3UrlReader implements UrlReader {
   // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
   // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
   //
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// Warning: (ae-missing-release-tag) "AzureUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+>>>>>>> bd119f21cc075b9d09eb0470566eee996364fbb0
+//
+// @public (undocumented)
+export class AwsS3UrlReader implements UrlReader {
+  constructor(
+    integration: AwsS3Integration,
+    deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+<<<<<<< HEAD
+  readTree(url: string): Promise<ReadTreeResponse>;
+  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
+  //
+=======
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+>>>>>>> bd119f21cc075b9d09eb0470566eee996364fbb0
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
