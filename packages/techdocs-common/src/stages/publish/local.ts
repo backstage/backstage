@@ -58,6 +58,8 @@ try {
  * called "static" at the root of techdocs-backend plugin.
  */
 export class LocalPublish implements PublisherBase {
+  private legacyPathCasing: boolean;
+
   // TODO: Use a static fromConfig method to create a LocalPublish instance, similar to aws/gcs publishers.
   // Move the logic of setting staticDocsDir based on config over to fromConfig,
   // and set the value as a class parameter.
@@ -70,6 +72,10 @@ export class LocalPublish implements PublisherBase {
     this.config = config;
     this.logger = logger;
     this.discovery = discovery;
+    this.legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
   }
 
   async getReadiness(): Promise<ReadinessResponse> {
@@ -81,8 +87,7 @@ export class LocalPublish implements PublisherBase {
   publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
-    const publishDir = path.join(
-      staticDocsDir,
+    const publishDir = this.staticEntityPathJoin(
       entityNamespace,
       entity.kind,
       entity.metadata.name,
@@ -119,8 +124,7 @@ export class LocalPublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
-    const metadataPath = path.join(
-      staticDocsDir,
+    const metadataPath = this.staticEntityPathJoin(
       entityName.namespace,
       entityName.kind,
       entityName.name,
@@ -153,8 +157,7 @@ export class LocalPublish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
 
-    const indexHtmlPath = path.join(
-      staticDocsDir,
+    const indexHtmlPath = this.staticEntityPathJoin(
       namespace,
       entity.kind,
       entity.metadata.name,
@@ -208,6 +211,24 @@ export class LocalPublish implements PublisherBase {
           });
         }, f),
       ),
+    );
+  }
+
+  /**
+   * Utility wrapper around path.join(), used to control legacy case logic.
+   */
+  protected staticEntityPathJoin(...allParts: string[]): string {
+    if (this.legacyPathCasing) {
+      const [namespace, kind, name, ...parts] = allParts;
+      return path.join(staticDocsDir, namespace, kind, name, ...parts);
+    }
+    const [namespace, kind, name, ...parts] = allParts;
+    return path.join(
+      staticDocsDir,
+      namespace.toLowerCase(),
+      kind.toLowerCase(),
+      name.toLowerCase(),
+      ...parts,
     );
   }
 }
