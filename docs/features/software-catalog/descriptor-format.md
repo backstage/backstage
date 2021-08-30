@@ -231,14 +231,6 @@ follows.
 
 Example: `visits-tracking-service`, `CircleciBuildsDumpV2_avro_gcs`
 
-### `title` [optional]
-
-The title of the entity. This is a friendly title to be used in the Backstage
-interface. This is an optional property, if it doesn't exist the `name` property
-will be used.
-
-Only available for Templates and Docs.
-
 ### `namespace` [optional]
 
 The ID of a namespace that the entity belongs to. This is a string that follows
