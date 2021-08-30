@@ -48,7 +48,14 @@ class ScmAuthMux implements ScmAuthApi {
   }
 }
 
+/**
+ * An implementation of the ScmAuthApi that merges together OAuthApi instances
+ * to form a single instance that can handles authentication for multiple providers.
+ */
 export class ScmAuth implements ScmAuthApi {
+  /**
+   * Creates a general purpose ScmAuth instance with a custom scope mapping.
+   */
   static forAuthApi(
     authApi: OAuthApi,
     options: {
@@ -62,6 +69,19 @@ export class ScmAuth implements ScmAuthApi {
     return new ScmAuth(authApi, options.host, options.scopeMapping);
   }
 
+  /**
+   * Creates a new ScmAuth instance that handles authentication towards GitHub.
+   *
+   * The host option determines which URLs that are handled by this instance and defaults to `github.com`.
+   *
+   * The default scopes are:
+   *
+   * `repo read:org read:user`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `gist`
+   */
   static forGithub(
     githubAuthApi: OAuthApi,
     options?: {
@@ -75,6 +95,19 @@ export class ScmAuth implements ScmAuthApi {
     });
   }
 
+  /**
+   * Creates a new ScmAuth instance that handles authentication towards GitLab.
+   *
+   * The host option determines which URLs that are handled by this instance and defaults to `gitlab.com`.
+   *
+   * The default scopes are:
+   *
+   * `read_user read_api read_repository`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `write_repository api`
+   */
   static forGitlab(
     gitlabAuthApi: OAuthApi,
     options?: {
@@ -88,6 +121,19 @@ export class ScmAuth implements ScmAuthApi {
     });
   }
 
+  /**
+   * Creates a new ScmAuth instance that handles authentication towards Azure.
+   *
+   * The host option determines which URLs that are handled by this instance and defaults to `dev.azure.com`.
+   *
+   * The default scopes are:
+   *
+   * `vso.build vso.code vso.graph vso.project vso.profile`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `vso.code_manage`
+   */
   static forAzure(
     microsoftAuthApiRef: OAuthApi,
     options?: {
@@ -113,6 +159,19 @@ export class ScmAuth implements ScmAuthApi {
     });
   }
 
+  /**
+   * Creates a new ScmAuth instance that handles authentication towards Bitbucket.
+   *
+   * The host option determines which URLs that are handled by this instance and defaults to `bitbucket.org`.
+   *
+   * The default scopes are:
+   *
+   * `account team pullrequest snippet issue`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `pullrequest:write snippet:write issue:write`
+   */
   static forBitbucket(
     bitbucketAuthApi: OAuthApi,
     options?: {
