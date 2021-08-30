@@ -72,7 +72,6 @@ const routes = (
     <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>
-    ;
     <Route path="/settings" element={<UserSettingsPage />} />
   </FlatRoutes>
 );
