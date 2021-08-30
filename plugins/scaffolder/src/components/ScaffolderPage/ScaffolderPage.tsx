@@ -23,6 +23,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -32,7 +33,7 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
@@ -46,7 +47,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ScaffolderPageContents = () => {
+export type ScaffolderPageProps = {
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
+};
+
+export const ScaffolderPageContents = ({
+  TemplateCardComponent,
+}: ScaffolderPageProps) => {
   const styles = useStyles();
 
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
@@ -87,7 +96,7 @@ export const ScaffolderPageContents = () => {
             <EntityTagPicker />
           </div>
           <div>
-            <TemplateList />
+            <TemplateList TemplateCardComponent={TemplateCardComponent} />
           </div>
         </div>
       </Content>
@@ -95,8 +104,10 @@ export const ScaffolderPageContents = () => {
   );
 };
 
-export const ScaffolderPage = () => (
+export const ScaffolderPage = ({
+  TemplateCardComponent,
+}: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents />
+    <ScaffolderPageContents TemplateCardComponent={TemplateCardComponent} />
   </EntityListProvider>
 );

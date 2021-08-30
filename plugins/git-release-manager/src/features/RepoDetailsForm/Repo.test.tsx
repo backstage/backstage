@@ -18,13 +18,13 @@ import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 
 import {
-  mockApiClient,
   mockCalverProject,
   mockSearchCalver,
 } from '../../test-helpers/test-helpers';
+import { mockApiClient } from '../../test-helpers/mock-api-client';
+import { Repo } from './Repo';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { Repo } from './Repo';
 
 jest.mock('react-router', () => ({
   useNavigate: jest.fn(),

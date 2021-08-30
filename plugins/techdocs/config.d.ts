@@ -27,6 +27,13 @@ export interface Config {
     builder: 'local' | 'external';
 
     /**
+     * Allows fallback to case-sensitive triplets in case of migration issues.
+     * @visibility frontend
+     * @see https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta
+     */
+    legacyUseCaseSensitiveTripletPaths?: boolean;
+
+    /**
      * @example http://localhost:7000/api/techdocs
      * @visibility frontend
      * @deprecated

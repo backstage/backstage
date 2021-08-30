@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -29,10 +29,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.6",
+    "@backstage/config": "^0.1.8",
     "@backstage/core-plugin-api": "^0.1.6",
     "@backstage/errors": "^0.1.1",
-    "@backstage/theme": "^0.2.9",
+    "@backstage/theme": "^0.2.10",
     "@material-table/core": "^3.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -58,7 +58,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-helmet": "6.1.0",
-    "react-hook-form": "^6.15.4",
+    "react-hook-form": "^7.12.2",
     "react-markdown": "^5.0.2",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
@@ -70,8 +70,8 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/core-app-api": "^0.1.8",
-    "@backstage/cli": "^0.7.8",
+    "@backstage/core-app-api": "^0.1.10",
+    "@backstage/cli": "^0.7.9",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

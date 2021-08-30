@@ -16,7 +16,16 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  InfoCard,
+  InfoCardVariants,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
   catalogApiRef,
+  catalogRouteRef,
+  formatEntityRefTitle,
   isOwnerOf,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -25,29 +34,20 @@ import {
   Box,
   createStyles,
   Grid,
+  Link,
   makeStyles,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
+import qs from 'qs';
 import React from 'react';
+import { generatePath } from 'react-router';
 import { useAsync } from 'react-use';
 
-import {
-  InfoCard,
-  InfoCardVariants,
-  Progress,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
-
-type EntitiesKinds = 'Component' | 'API';
-type EntitiesTypes =
-  | 'service'
-  | 'website'
-  | 'library'
-  | 'documentation'
-  | 'api'
-  | 'tool';
+type EntityTypeProps = {
+  kind: string;
+  type: string;
+  count: number;
+};
 
 const createPageTheme = (
   theme: BackstageTheme,
@@ -75,69 +75,30 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     bold: {
       fontWeight: theme.typography.fontWeightBold,
     },
-    service: {
-      background: createPageTheme(theme, 'home', 'service'),
-    },
-    website: {
-      background: createPageTheme(theme, 'home', 'website'),
-    },
-    library: {
-      background: createPageTheme(theme, 'home', 'library'),
-    },
-    documentation: {
-      background: createPageTheme(theme, 'home', 'documentation'),
-    },
-    api: {
-      background: createPageTheme(theme, 'home', 'home'),
-    },
-    tool: {
-      background: createPageTheme(theme, 'home', 'tool'),
+    entityTypeBox: {
+      background: (props: { type: string }) =>
+        createPageTheme(theme, props.type, props.type),
     },
   }),
 );
 
-const listEntitiesBy = (
-  entities: Array<Entity>,
-  kind: EntitiesKinds,
-  type?: EntitiesTypes,
-) =>
-  entities.filter(
-    e => e.kind === kind && (type ? e?.spec?.type === type : true),
-  );
-
-const countEntitiesBy = (
-  entities: Array<Entity>,
-  kind: EntitiesKinds,
-  type?: EntitiesTypes,
-) => listEntitiesBy(entities, kind, type).length;
-
 const EntityCountTile = ({
   counter,
-  className,
-  entities,
+  type,
   name,
+  url,
 }: {
   counter: number;
-  className: EntitiesTypes;
-  entities: Entity[];
+  type: string;
   name: string;
+  url: string;
 }) => {
-  let entityNames;
-  const classes = useStyles();
-
-  if (entities.length < 20) {
-    entityNames = entities.map(e => e.metadata.name).join(', ');
-  } else {
-    entityNames = `${entities
-      .map(e => e.metadata.name)
-      .slice(0, 20)
-      .join(', ')}, ...`;
-  }
+  const classes = useStyles({ type });
 
   return (
-    <Tooltip title={entityNames} arrow>
+    <Link href={url} variant="body2">
       <Box
-        className={`${classes.card} ${classes[className]}`}
+        className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
         flexDirection="column"
         alignItems="center"
@@ -149,8 +110,26 @@ const EntityCountTile = ({
           {name}
         </Typography>
       </Box>
-    </Tooltip>
+    </Link>
   );
+};
+
+const getQueryParams = (
+  owner: Entity,
+  selectedEntity: EntityTypeProps,
+): string => {
+  const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
+  const { kind, type } = selectedEntity;
+  const queryParams = qs.stringify({
+    filters: {
+      kind,
+      type,
+      owners: ownerName,
+      user: 'all',
+    },
+  });
+
+  return queryParams;
 };
 
 export const OwnershipCard = ({
@@ -162,6 +141,8 @@ export const OwnershipCard = ({
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
+  const catalogLink = useRouteRef(catalogRouteRef);
+
   const {
     loading,
     error,
@@ -185,56 +166,40 @@ export const OwnershipCard = ({
       isOwnerOf(entity, component),
     );
 
-    return [
-      {
-        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'service'),
-        className: 'service',
-        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'service'),
-        name: 'Services',
+    const counts = ownedEntitiesList.reduce(
+      (acc: EntityTypeProps[], ownedEntity) => {
+        if (typeof ownedEntity.spec?.type !== 'string') return acc;
+
+        const match = acc.find(
+          x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
+        );
+        if (match) {
+          match.count += 1;
+        } else {
+          acc.push({
+            kind: ownedEntity.kind,
+            type: ownedEntity.spec?.type,
+            count: 1,
+          });
+        }
+        return acc;
       },
-      {
-        counter: countEntitiesBy(
-          ownedEntitiesList,
-          'Component',
-          'documentation',
-        ),
-        className: 'documentation',
-        entities: listEntitiesBy(
-          ownedEntitiesList,
-          'Component',
-          'documentation',
-        ),
-        name: 'Documentation',
-      },
-      {
-        counter: countEntitiesBy(ownedEntitiesList, 'API'),
-        className: 'api',
-        entities: listEntitiesBy(ownedEntitiesList, 'API'),
-        name: 'APIs',
-      },
-      {
-        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'library'),
-        className: 'library',
-        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'library'),
-        name: 'Libraries',
-      },
-      {
-        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'website'),
-        className: 'website',
-        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'website'),
-        name: 'Websites',
-      },
-      {
-        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'tool'),
-        className: 'tool',
-        entities: listEntitiesBy(ownedEntitiesList, 'Component', 'tool'),
-        name: 'Tools',
-      },
-    ] as Array<{
+      [],
+    );
+
+    // Return top N (six) entities to be displayed in ownership boxes
+    const topN = counts.sort((a, b) => b.count - a.count).slice(0, 6);
+
+    return topN.map(topOwnedEntity => ({
+      counter: topOwnedEntity.count,
+      type: topOwnedEntity.type,
+      name: topOwnedEntity.type.toLocaleUpperCase('en-US'),
+      queryParams: getQueryParams(entity, topOwnedEntity),
+    })) as Array<{
       counter: number;
-      className: EntitiesTypes;
-      entities: Entity[];
+      type: string;
       name: string;
+      queryParams: string;
     }>;
   }, [catalogApi, entity]);
 
@@ -251,9 +216,9 @@ export const OwnershipCard = ({
           <Grid item xs={6} md={6} lg={4} key={c.name}>
             <EntityCountTile
               counter={c.counter}
-              className={c.className}
-              entities={c.entities}
+              type={c.type}
               name={c.name}
+              url={generatePath(`${catalogLink()}/?${c.queryParams}`)}
             />
           </Grid>
         ))}

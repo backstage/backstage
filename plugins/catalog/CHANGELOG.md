@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog
 
+## 0.6.13
+
+### Patch Changes
+
+- 787bc0826: **NOTE**: The entity `<AboutCard />` now uses an external route ref to link to
+  TechDocs sites. This external route must now be bound in order for the "View
+  TechDocs" link to continue working. See the [create-app changelog][cacl] for
+  details.
+
+  [cacl]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
+## 0.6.12
+
+### Patch Changes
+
+- fa1e003e0: Show a Not Found message when navigating to a nonexistent entity
+- 2105d608f: Migrate and export `UnregisterEntityDialog` component from `catalog-react` package
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
 ## 0.6.11
 
 ### Patch Changes

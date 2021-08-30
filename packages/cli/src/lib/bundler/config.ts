@@ -32,6 +32,7 @@ import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
+import pickBy from 'lodash/pickBy';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -119,6 +120,7 @@ export async function createConfig(
   plugins.push(
     new ProvidePlugin({
       process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
   );
 
@@ -176,6 +178,7 @@ export async function createConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
       fallback: {
+        ...pickBy(require('node-libs-browser')),
         module: false,
         dgram: false,
         dns: false,
@@ -208,7 +211,7 @@ export async function createConfig(
     output: {
       path: paths.targetDist,
       publicPath: validBaseUrl.pathname,
-      filename: isDev ? '[name].js' : 'static/[name].[hash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
         : 'static/[name].[chunkhash:8].chunk.js',
@@ -317,6 +320,7 @@ export async function createBackendConfig(
       new RunScriptWebpackPlugin({
         name: 'main.js',
         nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+        args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled

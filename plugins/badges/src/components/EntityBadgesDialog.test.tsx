@@ -55,7 +55,7 @@ describe('EntityBadgesDialog', () => {
     );
 
     await expect(
-      rendered.findByText('![test: badge](http://127.0.0.1/catalog/...)'),
+      rendered.findByText('test: badge'),
     ).resolves.toBeInTheDocument();
   });
 });

@@ -19,8 +19,9 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import * as uuid from 'uuid';
+import { Logger } from 'winston';
+import { DateTime } from 'luxon';
 import { DatabaseManager } from './DatabaseManager';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
@@ -28,6 +29,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
+import { createRandomRefreshInterval } from '../refresh';
 
 describe('Default Processing Database', () => {
   const defaultLogger = getVoidLogger();
@@ -46,7 +48,10 @@ describe('Default Processing Database', () => {
       db: new DefaultProcessingDatabase({
         database: knex,
         logger,
-        refreshIntervalSeconds: 100,
+        refreshInterval: createRandomRefreshInterval({
+          minSeconds: 100,
+          maxSeconds: 150,
+        }),
       }),
     };
   }
@@ -59,6 +64,21 @@ describe('Default Processing Database', () => {
 
   const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
+  };
+
+  const parseDate = (date: string | Date): DateTime => {
+    const parsedDate =
+      typeof date === 'string'
+        ? DateTime.fromSQL(date, { zone: 'UTC' })
+        : DateTime.fromJSDate(date);
+
+    if (!parsedDate.isValid) {
+      throw new Error(
+        `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
+      );
+    }
+
+    return parsedDate;
   };
 
   describe('addUprocessedEntities', () => {
@@ -206,6 +226,7 @@ describe('Default Processing Database', () => {
             db.updateProcessedEntity(tx, {
               id,
               processedEntity,
+              resultHash: '',
               state: new Map<string, JsonObject>(),
               relations: [],
               deferredEntities: [],
@@ -224,6 +245,7 @@ describe('Default Processing Database', () => {
         const options = {
           id,
           processedEntity,
+          resultHash: '',
           state: new Map<string, JsonObject>(),
           relations: [],
           deferredEntities: [],
@@ -250,7 +272,11 @@ describe('Default Processing Database', () => {
 
         await db.transaction(tx =>
           expect(
-            db.updateProcessedEntity(tx, { ...options, locationKey: 'fail' }),
+            db.updateProcessedEntity(tx, {
+              ...options,
+              resultHash: '',
+              locationKey: 'fail',
+            }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'fail'`,
           ),
@@ -280,6 +306,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state,
             relations: [],
             deferredEntities: [],
@@ -295,7 +322,9 @@ describe('Default Processing Database', () => {
         expect(entities[0].processed_entity).toEqual(
           JSON.stringify(processedEntity),
         );
-        expect(entities[0].cache).toEqual(JSON.stringify(state));
+        expect(entities[0].cache).toEqual(
+          JSON.stringify(Object.fromEntries(state)),
+        );
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
       },
@@ -336,6 +365,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state: new Map<string, JsonObject>(),
             relations: relations,
             deferredEntities: [],
@@ -387,6 +417,7 @@ describe('Default Processing Database', () => {
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
+            resultHash: '',
             state: new Map<string, JsonObject>(),
             relations: [],
             deferredEntities,
@@ -946,6 +977,42 @@ describe('Default Processing Database', () => {
             }),
           ).resolves.toEqual({ items: [] });
         });
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should update the next_refresh interval with a timestamp that includes refresh spread, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+        const entity = JSON.stringify({
+          kind: 'Location',
+          apiVersion: '1.0.0',
+          metadata: {
+            name: 'xyz',
+          },
+        } as Entity);
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: '2',
+          entity_ref: 'location:default/new-root',
+          unprocessed_entity: entity,
+          errors: '[]',
+          next_update_at: '2019-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await db.transaction(async tx => {
+          // Result does not include the updated timestamp
+          await db.getProcessableEntities(tx, {
+            processBatchSize: 1,
+          });
+        });
+        const now = DateTime.local();
+        const result = await knex<DbRefreshStateRow>('refresh_state')
+          .where('entity_ref', 'location:default/new-root')
+          .select();
+        const nextUpdate = parseDate(result[0].next_update_at);
+        const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
+        expect(nextUpdateDiff.seconds).toBeGreaterThanOrEqual(90);
       },
       60_000,
     );

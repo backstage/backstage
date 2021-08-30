@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.2
+
+### Patch Changes
+
+- b438caf63: Add partial templating to `fetch:template` action.
+
+  If an `templateFileExtension` input is given, only files with that extension get their content processed. If `templateFileExtension` is `true`, the `.njk` extension is used. The `templateFileExtension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+  All other files get copied.
+
+  All output paths are subject to applying templating logic.
+
+- 1ce9b9571: Use more efficient approach to staging files in git during scaffolder actions
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.2
+
+## 0.15.1
+
+### Patch Changes
+
+- d622cfad1: GitHub branch protection option 'Require review from Code Owners' can be enabled by adding `requireCodeOwnersReview: true` in context input.
+
 ## 0.15.0
 
 ### Minor Changes

@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.4
+
+### Patch Changes
+
+- 5a1eb6bfc: Memoize the context value in `EntityListProvider`.
+
+  This removes quite a few unnecessary rerenders of the inner components.
+
+  When running the full `CatalogPage` test:
+
+  - Before: 98 table render calls total, 16 seconds runtime
+  - After: 57 table render calls total, 14 seconds runtime
+
+  This doesn't account for all of the slowness, but does give a minor difference in perceived speed in the browser too.
+
+- d39e7d141: Use the history API directly in `useEntityListProvider`.
+
+  This replaces `useSearchParams`/`useNavigate`, since they cause at least one additional re-render compared to using this method.
+
+  Table re-render count is down additionally:
+
+  - Initial render of catalog page: 12 -> 9
+  - Full `CatalogPage` test: 57 -> 48
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.10
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
+## 0.4.3
+
+### Patch Changes
+
+- 3bc009287: Clarified messaging around configured locations in the `UnregisterEntityDialog`.
+- 2105d608f: Migrate and export `UnregisterEntityDialog` component from `catalog-react` package
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+
 ## 0.4.2
 
 ### Patch Changes

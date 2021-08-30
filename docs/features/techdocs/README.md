@@ -29,7 +29,7 @@ about TechDocs and the philosophy in its
 - Explore and take advantage of the large ecosystem of
   [MkDocs plugins](https://www.mkdocs.org/user-guide/plugins/) to create a rich
   reading experience.
-- Search for and find docs (coming soon).
+- Search for and find docs.
 - Highlight text and raise an Issue to create feedback loop to drive quality
   documentation (future).
 - Contribute to and deploy from a marketplace of TechDocs widgets (future).
@@ -54,22 +54,11 @@ providers are used.
 | Google Cloud Storage (GCS)        | Yes ✅         |
 | Amazon Web Services (AWS) S3      | Yes ✅         |
 | Azure Blob Storage                | Yes ✅         |
-| OpenStack Swift                   | Yes ✅         |
+| OpenStack Swift                   | Community ✅   |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 
 ## Project roadmap
-
-### **Ongoing work 🚧**
-
-**Beta release** -
-[Milestone](https://github.com/backstage/backstage/milestone/29)
-
-- It should be possible and easy to use TechDocs in most environments across
-  organizations.
-- Minimal bugs, better error handling and scalable backend and frontend.
-- Documentation Search
-- TechDocs Homepage with basic features
 
 ### **Future work 🔮**
 

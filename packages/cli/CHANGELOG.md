@@ -1,5 +1,20 @@
 # @backstage/cli
 
+## 0.7.9
+
+### Patch Changes
+
+- f3bba3d2b: Remove debug logging
+- 8ea1e96b3: Fix file path handling in diff commands on Windows.
+- 2518aab58: Compensate for error formatting mismatch between Webpack 5 and react-dev-utils
+- 1ac2961c3: Reintroduce Node.js shims that were removed in the Webpack 5 migration.
+- 8d07a8b03: Add Buffer to `ProvidePlugin` since this is no longer provided in `webpack@5`
+- fe506a0cf: Remove Webpack deprecation message when running build.
+- 485438a56: Fix `backstage-cli backend:dev` argument passing
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+
 ## 0.7.8
 
 ### Patch Changes

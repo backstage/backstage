@@ -1,5 +1,37 @@
 # example-app
 
+## 0.2.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-explore@0.3.14
+  - @backstage/core-app-api@0.1.10
+  - @backstage/plugin-catalog-import@0.5.19
+  - @backstage/plugin-catalog@0.6.13
+  - @backstage/plugin-org@0.3.20
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/plugin-techdocs@0.11.0
+  - @backstage/plugin-search@0.4.8
+
+## 0.2.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@0.11.1
+  - @backstage/plugin-home@0.2.0
+  - @backstage/cli@0.7.9
+  - @backstage/core-app-api@0.1.9
+  - @backstage/plugin-catalog-import@0.5.18
+  - @backstage/plugin-catalog@0.6.12
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/plugin-sentry@0.3.19
+  - @backstage/plugin-jenkins@0.5.4
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
 ## 0.2.41
 
 ### Patch Changes

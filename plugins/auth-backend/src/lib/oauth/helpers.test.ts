@@ -15,9 +15,39 @@
  */
 
 import express from 'express';
-import { verifyNonce, encodeState } from './helpers';
+import { verifyNonce, encodeState, readState } from './helpers';
 
 describe('OAuthProvider Utils', () => {
+  describe('encodeState', () => {
+    it('should serialized values', () => {
+      const state = {
+        nonce: '123',
+        env: 'development',
+        origin: 'https://example.com',
+      };
+
+      const encoded = encodeState(state);
+      expect(encoded).toBe(
+        Buffer.from(
+          'nonce=123&env=development&origin=https%3A%2F%2Fexample.com',
+        ).toString('hex'),
+      );
+
+      expect(readState(encoded)).toEqual(state);
+    });
+
+    it('should not include undefined values', () => {
+      const state = { nonce: '123', env: 'development', origin: undefined };
+
+      const encoded = encodeState(state);
+      expect(encoded).toBe(
+        Buffer.from('nonce=123&env=development').toString('hex'),
+      );
+
+      expect(readState(encoded)).toEqual(state);
+    });
+  });
+
   describe('verifyNonce', () => {
     it('should throw error if cookie nonce missing', () => {
       const state = { nonce: 'NONCE', env: 'development' };

@@ -27,7 +27,7 @@ import {
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as columnFactories from './columns';
 import { EntityRow } from './types';
 import {
@@ -38,16 +38,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
-const defaultColumns: TableColumn<EntityRow>[] = [
-  columnFactories.createNameColumn(),
-  columnFactories.createSystemColumn(),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createSpecTypeColumn(),
-  columnFactories.createSpecLifecycleColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-  columnFactories.createTagsColumn(),
-];
-
 type CatalogTableProps = {
   columns?: TableColumn<EntityRow>[];
   actions?: TableProps<EntityRow>['actions'];
@@ -56,6 +46,19 @@ type CatalogTableProps = {
 export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityListProvider();
+
+  const defaultColumns: TableColumn<EntityRow>[] = useMemo(
+    () => [
+      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
+      columnFactories.createSystemColumn(),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+      columnFactories.createTagsColumn(),
+    ],
+    [filters.kind?.value],
+  );
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar

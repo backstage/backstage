@@ -23,12 +23,12 @@ import userEvent from '@testing-library/user-event';
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
-jest.mock('../OverviewComponent', () => ({
-  OverviewComponent: () => 'OverviewComponent',
+jest.mock('../Overview', () => ({
+  Overview: () => 'OverviewComponent',
 }));
 
-jest.mock('../BuildListComponent', () => ({
-  BuildListComponent: () => 'BuildListComponent',
+jest.mock('../BuildList', () => ({
+  BuildList: () => 'BuildList',
 }));
 
 describe('XcmetricsLayout', () => {
@@ -45,7 +45,18 @@ describe('XcmetricsLayout', () => {
     expect(rendered.getByText('Builds')).toBeInTheDocument();
 
     expect(rendered.getByText('OverviewComponent')).toBeInTheDocument();
+  });
+
+  it('should show a list of builds when the Builds tab is selected', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider
+        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
+      >
+        <XcmetricsLayout />
+      </ApiProvider>,
+    );
+
     userEvent.click(rendered.getByText('Builds'));
-    expect(await rendered.findByText('BuildListComponent')).toBeInTheDocument();
+    expect(await rendered.findByText('BuildList')).toBeInTheDocument();
   });
 });

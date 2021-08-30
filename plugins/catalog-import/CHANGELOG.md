@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-import
 
+## 0.5.19
+
+### Patch Changes
+
+- cfcb486aa: Add system icons for the built-in entity types and use them in the entity list of the `catalog-import` plugin.
+- b5a2896ed: handle azure devops url query parameter for importing .yaml
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
+## 0.5.18
+
+### Patch Changes
+
+- ced85b598: Fix importing yaml files from URLs with trailing query parameters.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
 ## 0.5.17
 
 ### Patch Changes

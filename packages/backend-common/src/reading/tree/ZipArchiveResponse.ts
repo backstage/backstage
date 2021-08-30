@@ -37,7 +37,8 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     private readonly subPath: string,
     private readonly workDir: string,
     public readonly etag: string,
-    private readonly filter?: (path: string) => boolean,
+    private readonly filter?: (path: string, info: { size: number }) => boolean,
+    private readonly stripFirstDirectory?: boolean,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
@@ -67,7 +68,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
   }
 
   private shouldBeIncluded(entry: Entry): boolean {
-    const strippedPath = stripFirstDirectoryFromPath(entry.path);
+    const strippedPath = this.stripFirstDirectory
+      ? stripFirstDirectoryFromPath(entry.path)
+      : entry.path;
 
     if (this.subPath) {
       if (!strippedPath.startsWith(this.subPath)) {
@@ -75,7 +78,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       }
     }
     if (this.filter) {
-      return this.filter(this.getInnerPath(entry.path));
+      return this.filter(this.getInnerPath(entry.path), {
+        size:
+          (entry.vars as { uncompressedSize?: number }).uncompressedSize ??
+          entry.vars.compressedSize,
+      });
     }
     return true;
   }
@@ -95,7 +102,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
         if (this.shouldBeIncluded(entry)) {
           files.push({
-            path: this.getInnerPath(stripFirstDirectoryFromPath(entry.path)),
+            path: this.getInnerPath(
+              this.stripFirstDirectory
+                ? stripFirstDirectoryFromPath(entry.path)
+                : entry.path,
+            ),
             content: () => entry.buffer(),
           });
         } else {
@@ -144,7 +155,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         // as a zip can have files with directories without directory entries
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
           const entryPath = this.getInnerPath(
-            stripFirstDirectoryFromPath(entry.path),
+            this.stripFirstDirectory
+              ? stripFirstDirectoryFromPath(entry.path)
+              : entry.path,
           );
           const dirname = platformPath.dirname(entryPath);
           if (dirname) {
