@@ -54,42 +54,6 @@ describe('github:repository:webhook:create', () => {
     jest.resetAllMocks();
   });
 
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-  });
-
-  it('should throw if there is no integration config provided', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
-      }),
-    ).rejects.toThrow(/No matching integration configuration/);
-  });
-
-  it('should throw if there is no token in the integration config that is returned', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          repoUrl: 'ghe.github.com?repo=bob&owner=owner',
-        },
-      }),
-    ).rejects.toThrow(/No token available for host/);
-  });
-
   it('should call the githubApi for creating repository Webhook', async () => {
     const repoUrl = 'github.com?repo=repo&owner=owner';
     const webhookUrl = 'https://example.com/payload';

@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import { getRepoSourceDirectory } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
+import { getOctokit } from '../github/helpers';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
@@ -35,13 +31,6 @@ export function createPublishGithubAction(options: {
   config: Config;
 }) {
   const { integrations, config } = options;
-
-  const credentialsProviders = new Map(
-    integrations.github.list().map(integration => {
-      const provider = GithubCredentialsProvider.create(integration.config);
-      return [integration.config.host, provider];
-    }),
-  );
 
   return createTemplateAction<{
     repoUrl: string;
@@ -151,41 +140,9 @@ export function createPublishGithubAction(options: {
         topics,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
-
-      if (!owner) {
-        throw new InputError(
-          `No owner provided for host: ${host}, and repo ${repo}`,
-        );
-      }
-
-      const credentialsProvider = credentialsProviders.get(host);
-      const integrationConfig = integrations.github.byHost(host);
-
-      if (!credentialsProvider || !integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
-
-      // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
-      // needless to create URL and then parse again the other side.
-      const { token } = await credentialsProvider.getCredentials({
-        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repo,
-        )}`,
-      });
-
-      if (!token) {
-        throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-        );
-      }
-
-      const client = new Octokit({
-        auth: token,
-        baseUrl: integrationConfig.config.apiBaseUrl,
-        previews: ['nebula-preview'],
+      const { client, token, owner, repo } = await getOctokit({
+        integrations,
+        repoUrl,
       });
 
       const user = await client.users.getByUsername({
