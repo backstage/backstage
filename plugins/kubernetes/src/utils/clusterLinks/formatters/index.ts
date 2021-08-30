@@ -17,10 +17,16 @@ import { ClusterLinksFormatter } from '../../../types/types';
 import { standardFormatter } from './standard';
 import { rancherFormatter } from './rancher';
 import { openshiftFormatter } from './openshift';
+import { aksFormatter } from './aks';
+import { eksFormatter } from './eks';
+import { gkeFormatter } from './gke';
 
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter> = {
   standard: standardFormatter,
   rancher: rancherFormatter,
   openshift: openshiftFormatter,
+  aks: aksFormatter,
+  eks: eksFormatter,
+  gke: gkeFormatter,
 };
 export const defaultFormatterName = 'standard';

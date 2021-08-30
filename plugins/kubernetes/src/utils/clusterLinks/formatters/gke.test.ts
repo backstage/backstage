@@ -15,7 +15,7 @@
  */
 import { gkeFormatter } from './gke';
 
-describe('clusterLinks - aks formatter', () => {
+describe('clusterLinks - GKE formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
     expect(() =>
       gkeFormatter({

@@ -15,7 +15,7 @@
  */
 import { rancherFormatter } from './rancher';
 
-describe('clusterLinks - aks formatter', () => {
+describe('clusterLinks - Rancher formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
     expect(() =>
       rancherFormatter({

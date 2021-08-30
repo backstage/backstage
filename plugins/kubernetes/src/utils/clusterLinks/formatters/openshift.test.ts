@@ -15,7 +15,7 @@
  */
 import { openshiftFormatter } from './openshift';
 
-describe('clusterLinks - aks formatter', () => {
+describe('clusterLinks - OpenShift formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
     expect(() =>
       openshiftFormatter({

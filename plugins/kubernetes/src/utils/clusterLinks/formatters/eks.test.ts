@@ -15,7 +15,7 @@
  */
 import { eksFormatter } from './eks';
 
-describe('clusterLinks - aks formatter', () => {
+describe('clusterLinks - EKS formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
     expect(() =>
       eksFormatter({
