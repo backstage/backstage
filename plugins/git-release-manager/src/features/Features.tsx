@@ -29,7 +29,6 @@ import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
 import { validateTagName } from '../helpers/tagParts/validateTagName';
 
-import { Box } from '@material-ui/core';
 import { ErrorBoundary, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -99,7 +98,9 @@ export function Features({
     }) ?? null;
   if (Array.isArray(CustomFeatures)) {
     CustomFeatures = CustomFeatures.map((CustomFeature, index) => (
-      <Box key={`grm--custom-feature--${index}`}>{CustomFeature}</Box>
+      <React.Fragment key={`grm--custom-feature--${index}`}>
+        {CustomFeature}
+      </React.Fragment>
     ));
   }
 
