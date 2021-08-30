@@ -690,7 +690,7 @@
   -<Route path="/search" element={<SearchPage />} />
   +<Route path="/search" element={<SearchPage />}>
   +  {searchPage}
-  +</Route>;
+  +</Route>
   ```
 
 - Updated dependencies [9cd3c533c]
