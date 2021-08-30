@@ -82,14 +82,14 @@ describe('<PreparePullRequestForm />', () => {
     const { queryByText, getByRole } = render(
       <PreparePullRequestForm<{ main: string }>
         defaultValues={{}}
-        render={({ errors, register }) => (
+        render={({ formState, register }) => (
           <>
             <TextField
               {...asInputRef(register('main', { required: true }))}
               name="main"
               required
             />
-            {errors.main && (
+            {formState.errors.main && (
               <FormHelperText error>
                 Error in required main field
               </FormHelperText>

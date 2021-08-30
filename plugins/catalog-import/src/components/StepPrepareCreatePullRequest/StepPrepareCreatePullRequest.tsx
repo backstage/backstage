@@ -23,7 +23,7 @@ import {
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { FieldErrors, UnpackNestedValue, UseFormReturn } from 'react-hook-form';
+import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -63,8 +63,10 @@ type Props = {
   defaultBody: string;
 
   renderFormFields: (
-    props: Pick<UseFormReturn<FormData>, 'register' | 'setValue'> & {
-      errors: FieldErrors<FormData>;
+    props: Pick<
+      UseFormReturn<FormData>,
+      'register' | 'setValue' | 'formState'
+    > & {
       values: UnpackNestedValue<FormData>;
       groups: string[];
       groupsLoading: boolean;
@@ -193,11 +195,11 @@ export const StepPrepareCreatePullRequest = ({
             analyzeResult.generatedEntities[0]?.metadata?.name || '',
           useCodeowners: false,
         }}
-        render={({ values, errors, register, setValue }) => (
+        render={({ values, formState, register, setValue }) => (
           <>
             {renderFormFields({
               values,
-              errors,
+              formState,
               register,
               setValue,
               groups: groups ?? [],
@@ -242,7 +244,11 @@ export const StepPrepareCreatePullRequest = ({
               )}
               <NextButton
                 type="submit"
-                disabled={Boolean(errors.title || errors.body || errors.owner)}
+                disabled={Boolean(
+                  formState.errors.title ||
+                    formState.errors.body ||
+                    formState.errors.owner,
+                )}
                 loading={submitted}
               >
                 Create PR

@@ -188,7 +188,7 @@ export function defaultGenerateStepper(
                 renderFormFields={({
                   values,
                   setValue,
-                  errors,
+                  formState,
                   groupsLoading,
                   groups,
                   register,
@@ -209,7 +209,7 @@ export function defaultGenerateStepper(
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      error={Boolean(errors.title)}
+                      error={Boolean(formState.errors.title)}
                       required
                     />
 
@@ -224,7 +224,7 @@ export function defaultGenerateStepper(
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      error={Boolean(errors.body)}
+                      error={Boolean(formState.errors.body)}
                       multiline
                       required
                     />
@@ -242,14 +242,14 @@ export function defaultGenerateStepper(
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      error={Boolean(errors.componentName)}
+                      error={Boolean(formState.errors.componentName)}
                       required
                     />
 
                     {!values.useCodeowners && (
                       <AutocompleteTextField
                         name="owner"
-                        errors={errors}
+                        errors={formState.errors}
                         options={groups || []}
                         loading={groupsLoading}
                         loadingText="Loading groups…"
