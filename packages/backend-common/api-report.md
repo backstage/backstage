@@ -42,23 +42,14 @@ export class AzureUrlReader implements UrlReader {
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
-  // Warning: (ae-forgotten-export) The symbol "ReaderFactory" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
-  // Warning: (ae-forgotten-export) The symbol "ReadTreeOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // Warning: (ae-forgotten-export) The symbol "SearchOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
   // (undocumented)
@@ -415,6 +406,28 @@ export type PluginEndpointDiscovery = {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 };
 
+// Warning: (ae-missing-release-tag) "ReaderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger_2;
+  treeResponseFactory: ReadTreeResponseFactory;
+}) => UrlReaderPredicateTuple[];
+
+// Warning: (ae-missing-release-tag) "ReadTreeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+};
+
 // Warning: (ae-missing-release-tag) "ReadTreeResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -425,12 +438,39 @@ export type ReadTreeResponse = {
   etag: string;
 };
 
+// Warning: (ae-missing-release-tag) "ReadTreeResponseFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ReadTreeResponseFactory {
+  // Warning: (ae-forgotten-export) The symbol "FromArchiveOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
+}
+
 // Warning: (ae-missing-release-tag) "ReadTreeResponseFile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
+};
+
+// Warning: (ae-missing-release-tag) "ReadUrlOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ReadUrlOptions = {
+  etag?: string;
+};
+
+// Warning: (ae-missing-release-tag) "ReadUrlResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  etag?: string;
 };
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -470,6 +510,13 @@ export type RunContainerOptions = {
   workingDir?: string;
   envVars?: Record<string, string>;
   pullImage?: boolean;
+};
+
+// Warning: (ae-missing-release-tag) "SearchOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type SearchOptions = {
+  etag?: string;
 };
 
 // Warning: (ae-missing-release-tag) "SearchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -561,6 +608,14 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
+// Warning: (ae-missing-release-tag) "UrlReaderPredicateTuple" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
 // Warning: (ae-missing-release-tag) "UrlReaders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -592,7 +647,6 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 //
 // src/cache/types.d.ts:34:5 - (ae-forgotten-export) The symbol "ClientOptions" needs to be exported by the entry point index.d.ts
 // src/middleware/errorHandler.d.ts:17:26 - (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
-// src/reading/AzureUrlReader.d.ts:9:9 - (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
 // src/reading/types.d.ts:108:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
 // src/service/types.d.ts:12:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:22:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
