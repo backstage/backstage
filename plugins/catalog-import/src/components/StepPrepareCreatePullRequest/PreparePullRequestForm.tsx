@@ -16,6 +16,7 @@
 
 import React from 'react';
 import {
+  FormProvider,
   SubmitHandler,
   UnpackNestedValue,
   useForm,
@@ -55,12 +56,15 @@ export const PreparePullRequestForm = <
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
+  const methods = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
   const { handleSubmit, watch, control, register, formState, setValue } =
-    useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+    methods;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {render({ values: watch(), formState, register, control, setValue })}
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {render({ values: watch(), formState, register, control, setValue })}
+      </form>
+    </FormProvider>
   );
 };
