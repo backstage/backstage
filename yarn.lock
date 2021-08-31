@@ -7786,7 +7786,7 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/experimental-utils@4.30.0":
+"@typescript-eslint/experimental-utils@4.30.0", "@typescript-eslint/experimental-utils@^4.0.1":
   version "4.30.0"
   resolved "https://registry.npmjs.org/@typescript-eslint/experimental-utils/-/experimental-utils-4.30.0.tgz#9e49704fef568432ae16fc0d6685c13d67db0fd5"
   integrity sha512-K8RNIX9GnBsv5v4TjtwkKtqMSzYpjqAQg/oSphtxf3xxdt6T0owqnpojztjjTcatSteH3hLj3t/kklKx87NPqw==
@@ -7795,18 +7795,6 @@
     "@typescript-eslint/scope-manager" "4.30.0"
     "@typescript-eslint/types" "4.30.0"
     "@typescript-eslint/typescript-estree" "4.30.0"
-    eslint-scope "^5.1.1"
-    eslint-utils "^3.0.0"
-
-"@typescript-eslint/experimental-utils@^4.0.1":
-  version "4.28.3"
-  resolved "https://registry.npmjs.org/@typescript-eslint/experimental-utils/-/experimental-utils-4.28.3.tgz#976f8c1191b37105fd06658ed57ddfee4be361ca"
-  integrity sha512-zZYl9TnrxwEPi3FbyeX0ZnE8Hp7j3OCR+ELoUfbwGHGxWnHg9+OqSmkw2MoCVpZksPCZYpQzC559Ee9pJNHTQw==
-  dependencies:
-    "@types/json-schema" "^7.0.7"
-    "@typescript-eslint/scope-manager" "4.28.3"
-    "@typescript-eslint/types" "4.28.3"
-    "@typescript-eslint/typescript-estree" "4.28.3"
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
