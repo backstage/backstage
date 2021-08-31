@@ -7,6 +7,7 @@
 
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
+import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -202,22 +203,6 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
-}
-
-// Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface CatalogEntityDocument extends IndexableDocument {
-  // (undocumented)
-  componentType: string;
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  lifecycle: string;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  owner: string;
 }
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -581,11 +566,11 @@ export class DefaultCatalogCollator implements DocumentCollator {
   constructor({
     discovery,
     locationTemplate,
-    allow,
+    filter,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
-    allow?: string[];
+    filter?: CatalogEntitiesRequest['filter'];
   });
   // (undocumented)
   protected applyArgsToFormat(
@@ -594,15 +579,18 @@ export class DefaultCatalogCollator implements DocumentCollator {
   ): string;
   // (undocumented)
   protected discovery: PluginEndpointDiscovery;
+  // Warning: (ae-forgotten-export) The symbol "CatalogEntityDocument" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
-  protected filterUrl: string;
+  protected filterUrl?: string;
   // (undocumented)
   static fromConfig(
-    config: Config,
+    _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      filter?: CatalogEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
