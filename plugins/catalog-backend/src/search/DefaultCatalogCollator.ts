@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
+import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -31,36 +32,34 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
-  protected filterUrl: string;
+  protected filterUrl?: string;
   public readonly type: string = 'software-catalog';
 
   static fromConfig(
-    config: Config,
-    options: { discovery: PluginEndpointDiscovery },
+    _config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      filter?: CatalogEntitiesRequest['filter'];
+    },
   ) {
     return new DefaultCatalogCollator({
       ...options,
-      allow: config.getOptionalStringArray('catalog.search.allow'),
     });
   }
 
   constructor({
     discovery,
     locationTemplate,
-    allow,
+    filter,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
-    allow?: string[];
+    filter?: CatalogEntitiesRequest['filter'];
   }) {
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
-    if (allow && allow.length) {
-      this.filterUrl = `?filter=kind=${allow.join(',')}`;
-    } else {
-      this.filterUrl = '';
-    }
+    this.filterUrl = mapFilterToQueryString(filter);
   }
 
   protected applyArgsToFormat(
@@ -76,7 +75,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
 
   async execute() {
     const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities${this.filterUrl}`);
+    const res = await fetch(`${baseUrl}/entities${this.filterUrl || ''}`);
     const entities: Entity[] = await res.json();
     return entities.map((entity: Entity): CatalogEntityDocument => {
       return {
@@ -95,4 +94,19 @@ export class DefaultCatalogCollator implements DocumentCollator {
       };
     });
   }
+}
+
+export function mapFilterToQueryString(
+  filter: CatalogEntitiesRequest['filter'],
+): string | undefined {
+  if (!filter) {
+    return undefined;
+  }
+
+  const mappedFilters = Object.entries(filter).map(kvp => {
+    const type = kvp[0];
+    const values = [].concat(kvp[1]);
+    return `${type}=${values.join(',')}`;
+  });
+  return `?filter=${mappedFilters.join(',')}`;
 }
