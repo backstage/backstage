@@ -6,8 +6,86 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
+import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+
+// Warning: (ae-missing-release-tag) "ScmAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class ScmAuth implements ScmAuthApi {
+  static forAuthApi(
+    authApi: OAuthApi,
+    options: {
+      host: string;
+      scopeMapping: {
+        default: string[];
+        repoWrite: string[];
+      };
+    },
+  ): ScmAuth;
+  static forAzure(
+    microsoftAuthApiRef: OAuthApi,
+    options?: {
+      host?: string;
+    },
+  ): ScmAuth;
+  static forBitbucket(
+    bitbucketAuthApi: OAuthApi,
+    options?: {
+      host?: string;
+    },
+  ): ScmAuth;
+  static forGithub(
+    githubAuthApi: OAuthApi,
+    options?: {
+      host?: string;
+    },
+  ): ScmAuth;
+  static forGitlab(
+    gitlabAuthApi: OAuthApi,
+    options?: {
+      host?: string;
+    },
+  ): ScmAuth;
+  // (undocumented)
+  getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
+  isUrlSupported(url: URL): boolean;
+  static merge(...providers: ScmAuth[]): ScmAuthApi;
+}
+
+// Warning: (ae-missing-release-tag) "ScmAuthApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface ScmAuthApi {
+  getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
+}
+
+// Warning: (ae-missing-release-tag) "scmAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const scmAuthApiRef: ApiRef<ScmAuthApi>;
+
+// Warning: (ae-missing-release-tag) "ScmAuthTokenOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScmAuthTokenOptions extends AuthRequestOptions {
+  additionalScope?: {
+    repoWrite?: boolean;
+  };
+  url: string;
+}
+
+// Warning: (ae-missing-release-tag) "ScmAuthTokenResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScmAuthTokenResponse {
+  headers: {
+    [name: string]: string;
+  };
+  token: string;
+}
 
 // Warning: (ae-missing-release-tag) "ScmIntegrationIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
