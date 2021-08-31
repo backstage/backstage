@@ -16,7 +16,10 @@
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import {
+  DefaultCatalogCollator,
+  mapFilterToQueryString,
+} from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -116,5 +119,24 @@ describe('DefaultCatalogCollator', () => {
     const documents = await collator.execute();
     // The simulated 'Foo,Bar' filter should return in an empty list
     expect(documents).toHaveLength(0);
+  });
+
+  it('can map filters to query strings', () => {
+    expect(
+      mapFilterToQueryString({
+        a: 'Foo',
+      }),
+    ).toEqual('?filter=a=Foo');
+    expect(
+      mapFilterToQueryString({
+        a: ['Foo', 'Bar'],
+      }),
+    ).toEqual('?filter=a=Foo,Bar');
+    expect(
+      mapFilterToQueryString({
+        a: ['Foo', 'Bar'],
+        b: ['Quu', 'Qux'],
+      }),
+    ).toEqual('?filter=a=Foo,Bar,b=Quu,Qux');
   });
 });

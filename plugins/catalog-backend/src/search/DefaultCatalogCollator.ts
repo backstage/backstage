@@ -103,3 +103,18 @@ export class DefaultCatalogCollator implements DocumentCollator {
     });
   }
 }
+
+export function mapFilterToQueryString(
+  filter: CatalogEntitiesRequest['filter'],
+): string | undefined {
+  if (!filter) {
+    return undefined;
+  }
+
+  const mappedFilters = Object.entries(filter).map(kvp => {
+    const type = kvp[0];
+    const values = [].concat(kvp[1]);
+    return `${type}=${values.join(',')}`;
+  });
+  return `?filter=${mappedFilters.join(',')}`;
+}
