@@ -227,7 +227,7 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('info')
-    .description('Debug info of dependencies.')
+    .description('Debug info of all dependencies.')
     .action(lazy(() => import('./info').then(m => m.default)));
 }
 
