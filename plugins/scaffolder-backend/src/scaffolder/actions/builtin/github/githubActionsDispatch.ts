@@ -15,12 +15,13 @@
  */
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
-import { getOctokit } from './helpers';
+import { OctokitProvider } from './helpers';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
+  const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
     repoUrl: string;
@@ -61,10 +62,7 @@ export function createGithubActionsDispatchAction(options: {
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const { client, owner, repo } = await getOctokit({
-        integrations,
-        repoUrl,
-      });
+      const { client, owner, repo } = await octokitProvider.getOctokit(repoUrl);
 
       await client.rest.actions.createWorkflowDispatch({
         owner,

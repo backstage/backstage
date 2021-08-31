@@ -21,7 +21,7 @@ import {
 import { getRepoSourceDirectory } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
-import { getOctokit } from '../github/helpers';
+import { OctokitProvider } from '../github/helpers';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
@@ -31,6 +31,7 @@ export function createPublishGithubAction(options: {
   config: Config;
 }) {
   const { integrations, config } = options;
+  const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
     repoUrl: string;
@@ -140,10 +141,9 @@ export function createPublishGithubAction(options: {
         topics,
       } = ctx.input;
 
-      const { client, token, owner, repo } = await getOctokit({
-        integrations,
+      const { client, token, owner, repo } = await octokitProvider.getOctokit(
         repoUrl,
-      });
+      );
 
       const user = await client.users.getByUsername({
         username: owner,
