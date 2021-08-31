@@ -46,9 +46,7 @@ export default async () => {
 
     console.log('Backstage CLI type :\n');
     // eslint-disable-next-line no-restricted-syntax
-    const isLocal = require('fs').existsSync(
-      path.resolve(__dirname, '../../src'),
-    );
+    const isLocal = require('fs').existsSync(paths.resolveOwn('./src'));
     console.log(
       isLocal
         ? 'CLI is running in backstage repo'
