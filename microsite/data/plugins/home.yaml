@@ -6,6 +6,4 @@ category: Discovery
 description: This plugin provides a composable home page, and ability to create home page components
 documentation: https://github.com/backstage/backstage/blob/master/plugins/home/README.md
 iconUrl: img/home.png
-# You can provide an external url or add your logo under static/img and provide a path
-# relative to static/ e.g. img/my-logo.png
 npmPackageName: '@backstage/plugin-home'
