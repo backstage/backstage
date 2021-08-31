@@ -33,6 +33,7 @@ nav:
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
+          - The Life of an Entity: 'features/software-catalog/life-of-an-entity.md'
           - Catalog Configuration: 'features/software-catalog/configuration.md'
           - System Model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
