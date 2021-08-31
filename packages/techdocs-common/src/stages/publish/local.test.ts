@@ -147,10 +147,10 @@ describe('local publisher', () => {
     });
 
     it('should redirect case-sensitive triplet path to lower-case', async () => {
-      await request(app)
+      const response = await request(app)
         .get('/default/TestKind/TestName/index.html')
-        .expect(301)
         .expect('Location', '/default/testkind/testname/index.html');
+      expect(response.status).toBe(301);
     });
 
     it('should resolve lower-case triplet path content eventually', async () => {
@@ -173,9 +173,10 @@ describe('local publisher', () => {
       );
       app = express().use(legacyPublisher.docsRouter());
 
-      await request(app)
-        .get('/default/TestKind/TestName/index.html')
-        .expect(404);
+      const response = await request(app).get(
+        '/default/TestKind/TestName/index.html',
+      );
+      expect(response.status).toBe(404);
     });
   });
 });
