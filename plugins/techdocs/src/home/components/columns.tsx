@@ -20,7 +20,7 @@ import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTableRow } from './types';
 
-function customTitle(entity: Entity): String {
+function customTitle(entity: Entity): string {
   return entity.metadata.title || entity.metadata.name;
 }
 
