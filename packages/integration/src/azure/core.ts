@@ -100,7 +100,7 @@ export function getAzureDownloadUrl(url: string): string {
     ? `&scopePath=${encodeURIComponent(filepath)}`
     : '';
 
-  if (url.includes('dev.azure.com')) {
+  if (resource === 'dev.azure.com') {
     return `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
   }
 
