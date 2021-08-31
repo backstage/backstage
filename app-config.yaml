@@ -309,6 +309,7 @@ auth:
     saml:
       entryPoint: 'http://localhost:7001/'
       issuer: 'passport-saml'
+      cert: 'fake-cert-base64'
     okta:
       development:
         clientId: ${AUTH_OKTA_CLIENT_ID}
