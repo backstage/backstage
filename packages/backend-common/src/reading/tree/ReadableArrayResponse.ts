@@ -26,6 +26,7 @@ import {
   ReadTreeResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  FromReadableArrayOptions,
 } from '../types';
 
 const pipeline = promisify(pipelineCb);
@@ -37,7 +38,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
   private read = false;
 
   constructor(
-    private readonly stream: Readable[],
+    private readonly stream: FromReadableArrayOptions,
     private readonly workDir: string,
     public readonly etag: string,
   ) {
@@ -58,10 +59,10 @@ export class ReadableArrayResponse implements ReadTreeResponse {
     const files = Array<ReadTreeResponseFile>();
 
     for (let i = 0; i < this.stream.length; i++) {
-      if (!(this.stream[i] as any).path.endsWith('/')) {
+      if (!this.stream[i].path.endsWith('/')) {
         files.push({
-          path: (this.stream[i] as any).path,
-          content: () => getRawBody(this.stream[i]),
+          path: this.stream[i].path,
+          content: () => getRawBody(this.stream[i].data),
         });
       }
     }
@@ -93,11 +94,11 @@ export class ReadableArrayResponse implements ReadTreeResponse {
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     for (let i = 0; i < this.stream.length; i++) {
-      if (!(this.stream[i] as any).path.endsWith('/')) {
+      if (!this.stream[i].path.endsWith('/')) {
         await pipeline(
-          this.stream[i],
+          this.stream[i].data,
           fs.createWriteStream(
-            platformPath.join(dir, basename((this.stream[i] as any).path)),
+            platformPath.join(dir, basename(this.stream[i].path)),
           ),
         );
       }

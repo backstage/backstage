@@ -15,7 +15,7 @@
  */
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { AwsS3ReadTreeProcessor } from './AwsS3ReadTreeProcessor';
+import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 import { CatalogProcessorEntityResult, CatalogProcessorResult } from './types';
 import { defaultEntityDataParser } from './util/parse';
 import AWSMock from 'aws-sdk-mock';
@@ -58,9 +58,9 @@ const reader = UrlReaders.default({
 });
 
 describe('readLocation', () => {
-  const processor = new AwsS3ReadTreeProcessor(reader);
+  const processor = new AwsS3DiscoveryProcessor(reader);
   const spec = {
-    type: 's3-bucket',
+    type: 'awsS3-discovery',
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
 
@@ -71,7 +71,7 @@ describe('readLocation', () => {
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({
       target: 'awsS3-mock-object.txt',
-      type: 's3-bucket',
+      type: 'awsS3-discovery',
     });
     expect(generated.entity).toEqual({ site_name: 'Test' });
   });

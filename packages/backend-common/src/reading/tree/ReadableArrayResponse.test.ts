@@ -15,20 +15,19 @@
  */
 import { ReadableArrayResponse } from './ReadableArrayResponse';
 import path, { resolve as resolvePath } from 'path';
-
-import { Readable } from 'stream';
 import fs from 'fs-extra';
+import { FromReadableArrayOptions } from '../types';
 
-const arr: Readable[] = [];
-const arr2: Readable[] = [];
-const file1 = path.resolve(
+const arr: FromReadableArrayOptions = [];
+const arr2: FromReadableArrayOptions = [];
+const path1 = path.resolve(
   'src',
   'reading',
   '__fixtures__',
   'awsS3',
   'awsS3-mock-object.yaml',
 );
-const file2 = path.resolve(
+const path2 = path.resolve(
   'src',
   'reading',
   '__fixtures__',
@@ -38,21 +37,21 @@ const file2 = path.resolve(
 
 describe('ReadableArrayResponse', () => {
   it('should read files', async () => {
-    const stream1 = fs.createReadStream(file1);
-    const stream2 = fs.createReadStream(file2);
-    arr.push(stream1);
-    arr.push(stream2);
+    const stream1 = fs.createReadStream(path1);
+    const stream2 = fs.createReadStream(path2);
+    arr.push({ data: stream1, path: path1 });
+    arr.push({ data: stream2, path: path2 });
 
     const res = new ReadableArrayResponse(arr, '/tmp', 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
       {
-        path: file1,
+        path: path1,
         content: expect.any(Function),
       },
       {
-        path: file2,
+        path: path2,
         content: expect.any(Function),
       },
     ]);
@@ -64,11 +63,11 @@ describe('ReadableArrayResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
-    const stream1 = fs.createReadStream(file1);
-    const stream2 = fs.createReadStream(file2);
+    const stream1 = fs.createReadStream(path1);
+    const stream2 = fs.createReadStream(path2);
 
-    arr2.push(stream1);
-    arr2.push(stream2);
+    arr2.push({ data: stream1, path: path1 });
+    arr2.push({ data: stream2, path: path2 });
 
     const res = new ReadableArrayResponse(arr2, '/tmp', 'etag');
     const dir = await res.dir();

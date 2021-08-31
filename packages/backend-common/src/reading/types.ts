@@ -167,12 +167,12 @@ export type FromArchiveOptions = {
   filter?: (path: string, info?: { size: number }) => boolean;
 };
 
-export type FromReadableArrayOptions = {
-  // An array of readable streams
-  stream: Readable[];
-  // etag of the file tree
-  etag: string;
-};
+export type FromReadableArrayOptions = Array<{
+  // Data in the form of a readable
+  data: Readable;
+  // A string containing the filepath of the data
+  path: string;
+}>;
 export interface ReadTreeResponseFactory {
   fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
   fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;

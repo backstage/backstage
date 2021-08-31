@@ -81,7 +81,7 @@ nav:
       - Overview: 'integrations/index.md'
       - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
-          - Read Tree: 'integrations/aws-s3/readtree.md'
+          - Discovery: 'integrations/aws-s3/discovery.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
           - Org Data: 'integrations/azure/org.md'

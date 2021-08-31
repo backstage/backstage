@@ -16,6 +16,7 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
+import limiterFactory from 'p-limit';
 import * as result from './results';
 import {
   CatalogProcessor,
@@ -23,7 +24,7 @@ import {
   CatalogProcessorParser,
 } from './types';
 
-export class AwsS3ReadTreeProcessor implements CatalogProcessor {
+export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 
   async readLocation(
@@ -32,7 +33,7 @@ export class AwsS3ReadTreeProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean> {
-    if (location.type !== 's3-bucket') {
+    if (location.type !== 'awsS3-discovery') {
       return false;
     }
 
@@ -63,11 +64,12 @@ export class AwsS3ReadTreeProcessor implements CatalogProcessor {
   private async doRead(
     location: string,
   ): Promise<{ data: Buffer; url: string }[]> {
+    const limiter = limiterFactory(5);
     const response = await this.reader.readTree(location);
     const responseFiles = await response.files();
     const output = responseFiles.map(async file => ({
       url: file.path,
-      data: await file.content(),
+      data: await limiter(file.content),
     }));
     return Promise.all(output);
   }

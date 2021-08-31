@@ -27,7 +27,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
-import { Readable } from 'stream';
+import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
   url: string,
@@ -169,54 +169,39 @@ export class AwsS3UrlReader implements UrlReader {
   async readTree(url: string): Promise<ReadTreeResponse> {
     try {
       const { path, bucket, region } = parseURL(url);
-
-      let moreKeys = true;
-      let awsS3Readables: Readable[] = [];
-      let continuationToken = '';
-
-      while (moreKeys) {
-        let params;
-        if (continuationToken === '') {
-          params = {
-            Bucket: bucket,
-            Prefix: path,
-          };
-        } else {
-          params = {
-            Bucket: bucket,
-            Prefix: path,
-            ContinuationToken: continuationToken,
-          };
-        }
+      const allObjects: ObjectList = [];
+      const responses = [];
+      let continuationToken: string | undefined;
+      let output: ListObjectsV2Output;
+      do {
         aws.config.update({ region: region });
-        const { Contents, IsTruncated, NextContinuationToken } =
-          await this.deps.s3.listObjectsV2(params).promise();
-        const responses = await Promise.all(
-          (Contents || []).map(({ Key }) => {
-            const s3Response = this.deps.s3
-              .getObject({ Bucket: bucket, Key: String(Key) })
-              .createReadStream();
-            Object.defineProperty(s3Response, 'path', {
-              value: String(Key),
-              writable: false,
-            });
-            return s3Response;
-          }),
-        );
-
-        if (IsTruncated) {
-          continuationToken = String(NextContinuationToken);
-        } else {
-          continuationToken = '';
-          moreKeys = false;
+        output = await this.deps.s3
+          .listObjectsV2({
+            Bucket: bucket,
+            ContinuationToken: continuationToken,
+            Prefix: path,
+          })
+          .promise();
+        if (output.Contents) {
+          output.Contents.forEach(function (contents) {
+            allObjects.push(contents);
+          });
         }
-        awsS3Readables = awsS3Readables.concat(responses);
+        continuationToken = output.NextContinuationToken;
+      } while (continuationToken);
+
+      for (let i = 0; i < allObjects.length; i++) {
+        const object = this.deps.s3.getObject({
+          Bucket: bucket,
+          Key: String(allObjects[i].Key),
+        });
+        responses.push({
+          data: object.createReadStream(),
+          path: String(allObjects[i].Key),
+        });
       }
 
-      return await this.deps.treeResponseFactory.fromReadableArray({
-        stream: awsS3Readables,
-        etag: '',
-      });
+      return await this.deps.treeResponseFactory.fromReadableArray(responses);
     } catch (e) {
       throw new Error(`Could not retrieve file tree from S3: ${e.message}`);
     }
