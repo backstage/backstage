@@ -21,10 +21,10 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
 
-const mockFrameHandler = (jest.spyOn(
+const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
-) as unknown) as jest.MockedFunction<
+) as unknown as jest.MockedFunction<
   () => Promise<{ result: OAuthResult; privateInfo: any }>
 >;
 
@@ -40,8 +40,9 @@ describe('createOAuth2Provider', () => {
 
     const provider = new OAuth2AuthProvider({
       logger: getVoidLogger(),
-      catalogIdentityClient: (catalogIdentityClient as unknown) as CatalogIdentityClient,
-      tokenIssuer: (tokenIssuer as unknown) as TokenIssuer,
+      catalogIdentityClient:
+        catalogIdentityClient as unknown as CatalogIdentityClient,
+      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
       authHandler: async ({ fullProfile }) => ({
         profile: {
           email: fullProfile.emails![0]!.value,

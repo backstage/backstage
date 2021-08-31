@@ -105,6 +105,13 @@ export const createMicrosoftProvider: (
   options?: MicrosoftProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// Warning: (ae-missing-release-tag) "createOAuth2Provider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOAuth2Provider: (
+  options?: OAuth2ProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -193,6 +200,16 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 //
 // @public (undocumented)
 export type MicrosoftProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "OAuth2ProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;

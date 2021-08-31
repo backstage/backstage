@@ -42,7 +42,7 @@ import {
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
+import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity';
 import { Logger } from 'winston';
 
@@ -187,28 +187,6 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     return response;
   }
 }
-
-export const oAuth2EmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('OAuth2 profile contained no email');
-  }
-
-  const entity = await ctx.catalogIdentityClient.findUser({
-    annotations: {
-      'backstage.io/email': profile.email,
-    },
-  });
-
-  const claims = getEntityClaims(entity);
-  const token = await ctx.tokenIssuer.issueToken({ claims });
-
-  return { id: entity.metadata.name, entity, token };
-};
 
 export const oAuth2DefaultSignInResolver: SignInResolver<OAuthResult> = async (
   info,
