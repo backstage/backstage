@@ -83,13 +83,15 @@ const SearchResultList = ({ results }: SearchResultSet) => {
             }
           })}
       </List>
-      <Pagination
-        count={pageAmount}
-        page={page}
-        onChange={changePage}
-        showFirstButton
-        showLastButton
-      />
+      {pageAmount > 1 && (
+        <Pagination
+          count={pageAmount}
+          page={page}
+          onChange={changePage}
+          showFirstButton
+          showLastButton
+        />
+      )}
     </>
   );
 };
