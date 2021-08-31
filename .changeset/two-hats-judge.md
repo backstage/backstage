@@ -1,6 +1,5 @@
 ---
 '@backstage/plugin-techdocs': patch
-'@backstage/plugin-techdocs-backend': patch
 ---
 
-added support for title in Techdocs
+Display [metadata.title](https://backstage.io/docs/features/software-catalog/descriptor-format#title-optional) for components on the TechDocs homepage, if defined; otherwise fall back to `metadata.name` as displayed before.
