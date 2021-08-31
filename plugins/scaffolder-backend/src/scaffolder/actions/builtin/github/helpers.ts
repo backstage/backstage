@@ -22,62 +22,68 @@ import {
 import { Octokit } from '@octokit/rest';
 import { parseRepoUrl } from '../publish/util';
 
-type OctokitOptions = {
-  integrations: ScmIntegrationRegistry;
-  repoUrl: string;
-};
-
-type OctokitIntegration = {
+export type OctokitIntegration = {
   client: Octokit;
   token: string;
   owner: string;
   repo: string;
 };
 
-export const getOctokit = async ({
-  integrations,
-  repoUrl,
-}: OctokitOptions): Promise<OctokitIntegration> => {
-  const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+export class OctokitProvider {
+  private readonly integrations: ScmIntegrationRegistry;
+  private readonly credentialsProviders: Map<string, GithubCredentialsProvider>;
 
-  if (!owner) {
-    throw new InputError(`No owner provided for repo ${repoUrl}`);
-  }
-
-  const integrationConfig = integrations.github.byHost(host)?.config;
-
-  if (!integrationConfig) {
-    throw new InputError(`No integration for host ${host}`);
-  }
-
-  const credentialsProvider =
-    GithubCredentialsProvider.create(integrationConfig);
-
-  if (!credentialsProvider) {
-    throw new InputError(
-      `No matching credentials for host ${host}, please check your integrations config`,
+  constructor(integrations: ScmIntegrationRegistry) {
+    this.integrations = integrations;
+    this.credentialsProviders = new Map(
+      integrations.github.list().map(integration => {
+        const provider = GithubCredentialsProvider.create(integration.config);
+        return [integration.config.host, provider];
+      }),
     );
   }
 
-  // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
-  // needless to create URL and then parse again the other side.
-  const { token } = await credentialsProvider.getCredentials({
-    url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-      repo,
-    )}`,
-  });
+  async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
+    const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);
 
-  if (!token) {
-    throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-    );
+    if (!owner) {
+      throw new InputError(`No owner provided for repo ${repoUrl}`);
+    }
+
+    const integrationConfig = this.integrations.github.byHost(host)?.config;
+
+    if (!integrationConfig) {
+      throw new InputError(`No integration for host ${host}`);
+    }
+
+    const credentialsProvider = this.credentialsProviders.get(host);
+
+    if (!credentialsProvider) {
+      throw new InputError(
+        `No matching credentials for host ${host}, please check your integrations config`,
+      );
+    }
+
+    // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
+    // needless to create URL and then parse again the other side.
+    const { token } = await credentialsProvider.getCredentials({
+      url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+        repo,
+      )}`,
+    });
+
+    if (!token) {
+      throw new InputError(
+        `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
+      );
+    }
+
+    const client = new Octokit({
+      auth: token,
+      baseUrl: integrationConfig.apiBaseUrl,
+      previews: ['nebula-preview'],
+    });
+
+    return { client, token, owner, repo };
   }
-
-  const client = new Octokit({
-    auth: token,
-    baseUrl: integrationConfig.apiBaseUrl,
-    previews: ['nebula-preview'],
-  });
-
-  return { client, token, owner, repo };
-};
+}

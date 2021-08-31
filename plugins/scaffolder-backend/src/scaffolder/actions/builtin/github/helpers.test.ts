@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getOctokit } from './helpers';
+import { OctokitProvider } from './helpers';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
@@ -29,6 +29,7 @@ describe('getOctokit', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
+  const octokitProvider = new OctokitProvider(integrations);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -36,43 +37,30 @@ describe('getOctokit', () => {
 
   it('should throw an error when the repoUrl is not well formed', async () => {
     await expect(
-      getOctokit({
-        integrations,
-        repoUrl: 'github.com?repo=bob',
-      }),
+      octokitProvider.getOctokit('github.com?repo=bob'),
     ).rejects.toThrow(/missing owner/);
 
     await expect(
-      getOctokit({
-        integrations,
-        repoUrl: 'github.com?owner=owner',
-      }),
+      octokitProvider.getOctokit('github.com?owner=owner'),
     ).rejects.toThrow(/missing repo/);
   });
 
   it('should throw if there is no integration config provided', async () => {
     await expect(
-      getOctokit({
-        integrations,
-        repoUrl: 'missing.com?repo=bob&owner=owner',
-      }),
+      octokitProvider.getOctokit('missing.com?repo=bob&owner=owner'),
     ).rejects.toThrow(/No matching integration configuration/);
   });
 
   it('should throw if there is no token in the integration config that is returned', async () => {
     await expect(
-      getOctokit({
-        integrations,
-        repoUrl: 'ghe.github.com?repo=bob&owner=owner',
-      }),
+      octokitProvider.getOctokit('ghe.github.com?repo=bob&owner=owner'),
     ).rejects.toThrow(/No token available for host/);
   });
 
   it('should return proper Octokit', async () => {
-    const { client, token, owner, repo } = await getOctokit({
-      integrations,
-      repoUrl: 'github.com?repo=bob&owner=owner',
-    });
+    const { client, token, owner, repo } = await octokitProvider.getOctokit(
+      'github.com?repo=bob&owner=owner',
+    );
     expect(client).toBeDefined();
     expect(token).toBe('tokenlols');
     expect(owner).toBe('owner');

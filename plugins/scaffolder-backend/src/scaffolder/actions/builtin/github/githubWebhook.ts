@@ -15,7 +15,7 @@
  */
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
-import { getOctokit } from './helpers';
+import { OctokitProvider } from './helpers';
 
 type ContentType = 'form' | 'json';
 
@@ -23,6 +23,7 @@ export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
+  const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
     repoUrl: string;
@@ -96,10 +97,7 @@ export function createGithubWebhookAction(options: {
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
 
-      const { client, owner, repo } = await getOctokit({
-        integrations,
-        repoUrl,
-      });
+      const { client, owner, repo } = await octokitProvider.getOctokit(repoUrl);
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
