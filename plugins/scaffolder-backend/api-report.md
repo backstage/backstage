@@ -120,6 +120,7 @@ export function createGithubActionsDispatchAction(options: {
 // @public (undocumented)
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
+  webhookSecretDefault?: string;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
