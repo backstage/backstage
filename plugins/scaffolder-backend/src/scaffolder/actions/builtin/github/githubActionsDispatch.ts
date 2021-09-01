@@ -15,7 +15,7 @@
  */
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
-import { OctokitProvider } from './helpers';
+import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
