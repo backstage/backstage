@@ -21,7 +21,7 @@ import {
 import { getRepoSourceDirectory } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
-import { OctokitProvider } from '../github/helpers';
+import { OctokitProvider } from '../github/OctokitProvider';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };

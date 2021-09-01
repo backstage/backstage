@@ -28,7 +28,10 @@ export type OctokitIntegration = {
   owner: string;
   repo: string;
 };
-
+/**
+ * OctokitProvider provides Octokit client based on ScmIntegrationsRegistry configuration.
+ * OctokitProvider supports GitHub credentials caching out of the box.
+ */
 export class OctokitProvider {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly credentialsProviders: Map<string, GithubCredentialsProvider>;
@@ -43,6 +46,11 @@ export class OctokitProvider {
     );
   }
 
+  /**
+   * gets standard Octokit client based on repository URL.
+   *
+   * @param repoUrl Repository URL
+   */
   async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
     const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OctokitProvider } from './helpers';
+import { OctokitProvider } from './OctokitProvider';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
