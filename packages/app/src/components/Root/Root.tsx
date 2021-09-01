@@ -20,6 +20,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
@@ -33,7 +34,6 @@ import {
   SidebarItem,
   SidebarDivider,
   SidebarSpace,
-  // SidebarScrollWrapper,
 } from '@backstage/core-components';
 
 const useSidebarLogoStyles = makeStyles({
@@ -80,14 +80,14 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-      {/* <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." /> */}
-      {/* End global nav */}
-      {/* <SidebarDivider />
-      <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-      <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-      <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
-      <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-      <SidebarDivider /> */}
+      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+      {/* End global nav 
+      <SidebarDivider />
+      <SidebarScrollWrapper>
+        <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+      </SidebarScrollWrapper>
+      <SidebarSpace />
+      <SidebarDivider />*/}
       <SidebarSpace />
       <SidebarDivider />
       <SidebarSettings />

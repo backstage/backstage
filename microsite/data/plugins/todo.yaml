@@ -1,9 +1,0 @@
----
-title: TODO
-author: Spotify
-authorUrl: https://github.com/spotify
-category: Discovery
-description: Browse TODO comments in your project's source code.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/todo
-iconUrl: https://backstage.io/img/todo-logo.png
-npmPackageName: '@backstage/plugin-todo'

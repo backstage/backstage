@@ -1,23 +1,13 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage
-  description: |
-    Backstage is an open-source developer portal that puts the developer experience first.
-  links:
-    - title: Website
-      url: http://backstage.io
-    - title: Documentation
-      url: https://backstage.io/docs
-    - title: Storybook
-      url: https://backstage.io/storybook
-    - title: Discord Chat
-      url: https://discord.com/invite/EBHEGzX
-  annotations:
-    github.com/project-slug: backstage/backstage
-    backstage.io/techdocs-ref: dir:.
-    lighthouse.com/website-url: https://backstage.io
+  name: bih
+  description: An example of a Backstage application.
+  # Example for optional annotations
+  # annotations:
+  #   github.com/project-slug: backstage/backstage
+  #   backstage.io/techdocs-ref: dir:.
 spec:
-  type: library
-  owner: CNCF
+  type: website
+  owner: john@example.com
   lifecycle: experimental

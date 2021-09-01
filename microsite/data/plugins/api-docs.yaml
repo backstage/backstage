@@ -1,9 +1,0 @@
----
-title: API Docs
-author: SDA SE
-authorUrl: https://sda.se/
-category: Discovery
-description: Components to discover and display API entities as an extension to the catalog plugin.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/api-docs/README.md
-iconUrl: https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/file_type_swagger.svg
-npmPackageName: '@backstage/plugin-api-docs'
