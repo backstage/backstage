@@ -1,5 +1,4 @@
 ---
-'example-app': patch
 '@backstage/plugin-catalog': patch
 '@backstage/plugin-org': patch
 ---
