@@ -274,7 +274,6 @@ export function createFetchTemplateAction(options: {
                 : inputFileContents,
               { mode: statsObj.mode },
             );
-            await fs.chmod(outputPath, statsObj.mode);
           }
         }
       }
