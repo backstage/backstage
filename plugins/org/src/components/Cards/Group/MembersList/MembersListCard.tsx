@@ -174,7 +174,7 @@ export const MembersListCard = (_props: {
       <InfoCard
         title={`Members (${members?.length || 0}${paginationLabel})`}
         subheader={`of ${displayName}`}
-        actions={pagination}
+        {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
