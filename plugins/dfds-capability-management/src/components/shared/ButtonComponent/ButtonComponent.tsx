@@ -30,9 +30,15 @@ const StyledButton = withStyles({
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
   onClick,
   children,
+  ...props
 }) => {
   return (
-    <StyledButton variant="contained" color="primary" onClick={onClick}>
+    <StyledButton
+      variant="contained"
+      color="primary"
+      onClick={onClick}
+      {...props}
+    >
       {children}
     </StyledButton>
   );

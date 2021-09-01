@@ -25,21 +25,11 @@ type MembersFetchComponentProps = {
 };
 
 export const DenseTable: FC<DenseTableProps> = props => {
-  const columns: TableColumn[] = [
-    { title: 'Name', field: 'name' },
-    { title: 'Squad', field: 'squad' },
-    { title: 'Tribe', field: 'tribe' },
-    { title: 'Location', field: 'location' },
-    { title: 'Joined', field: 'joined' },
-  ];
+  const columns: TableColumn[] = [{ title: 'Email', field: 'email' }];
 
   const memberData = props.dataSource.map(entry => {
     return {
-      joined: `${entry.joined}`,
-      location: `${entry.location}`,
-      name: `${entry.name}`,
-      squad: `${entry.squad}`,
-      tribe: `${entry.tribe}`,
+      email: entry.email,
     };
   });
 

@@ -27,9 +27,13 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "classnames": "^2.3.1",
+    "ramda": "^0.27.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3"
+    "react-router-dom": "^5.2.1",
+    "react-use": "^15.3.3",
+    "react-use-pagination": "^2.0.1",
+    "swr": "^1.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.3",

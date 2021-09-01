@@ -42,9 +42,6 @@ export const lightTheme = createTheme({
     primary: {
       main: '#002b45',
     },
-    secondary: {
-      main: '#49a2df',
-    },
     banner: {
       info: '#2E77D0',
       error: '#E22134',

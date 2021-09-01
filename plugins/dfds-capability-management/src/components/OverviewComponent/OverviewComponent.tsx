@@ -26,17 +26,14 @@ type OverviewComponentProps = {
 const OverviewComponent: FC<OverviewComponentProps> = ({
   capabilityId,
   description,
-  createdAt,
+  // createdAt,
 }) => (
-  <InfoCard title="Information">
+  <InfoCard title="Summary">
     <Typography variant="body1">
-      <b>C</b>apability <b>ID</b> - {capabilityId}
+      <b>Capability ID</b> - {capabilityId}
     </Typography>
     <Typography variant="body1">
       <b>Description</b> - {description}
-    </Typography>
-    <Typography variant="body1">
-      <b>C</b>reated <b>at</b> - {createdAt}
     </Typography>
   </InfoCard>
 );

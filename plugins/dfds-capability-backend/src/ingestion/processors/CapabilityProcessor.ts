@@ -53,7 +53,6 @@ export class CapabilityProcessor implements CatalogProcessor {
       const data = await this.reader.read(location.target);
       const json = JSON.parse(data.toString());
       json.items.forEach((item: CapabilityInterface) => {
-        console.log(item.description);
         emit(
           results.entity(location, {
             apiVersion: 'build.dfds.cloud/v1alpha1',

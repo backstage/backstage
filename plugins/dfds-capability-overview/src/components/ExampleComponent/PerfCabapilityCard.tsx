@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
 import { blue, green } from '@material-ui/core/colors';
 
 import classNames from 'classnames';
 import React from 'react';
+import { Link } from '../../../../../packages/core/src';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -57,11 +58,12 @@ const useStyles = makeStyles(theme => {
 
 export const PerfCapabilityCard: React.FC<any> = React.memo(
   ({
-    name = 'unknown name eror',
+    name,
     description,
     isMember = false,
-    updated,
     id,
+    onLeaveButtonClick,
+    onJoinButtonClick,
   }) => {
     const classes = useStyles({ isMember });
     return (
@@ -73,18 +75,39 @@ export const PerfCapabilityCard: React.FC<any> = React.memo(
               isMember && classes.cardBoxMember,
             )}
           >
-            <div>
-              <h5 className={classes.cardTitle}>
-                <a href={`/dfds-capability-management?id=${id}`}>{name}</a>
-              </h5>
-              <span className={classes.updatedAt}>{description}</span>
+            <div style={{ overflow: 'hidden' }}>
+              <Typography variant="h5" noWrap>
+                <Link to={`/dfds-capability-management?id=${id}`}>{name}</Link>
+              </Typography>
+
+              <span className={classes.updatedAt}>
+                {description || 'No description provided'}
+              </span>
             </div>
             <div className={classes.divider} />
             <div className={classes.displayFlexAlignCenter}>
-              {!isMember ? <button>Join</button> : <button>Leave</button>}
+              {!isMember ? (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  onClick={() => onJoinButtonClick(id)}
+                >
+                  Join
+                </Button>
+              ) : (
+                <Button
+                  color="secondary"
+                  variant="outlined"
+                  size="small"
+                  onClick={() => onLeaveButtonClick(id)}
+                >
+                  Leave
+                </Button>
+              )}
             </div>
           </div>
-          <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.12)', height: 1 }} />
+          {/* <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.12)', height: 1 }} />
           <div className={classes.statusBox}>
             <span className={classes.updatedAt}>Status:</span>
             <div className={classes.statusBoxActions}>
@@ -95,7 +118,7 @@ export const PerfCapabilityCard: React.FC<any> = React.memo(
                 {updated || 'updated 2 hours ago'}
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );
