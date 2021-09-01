@@ -272,8 +272,8 @@ export function createFetchTemplateAction(options: {
               renderContents
                 ? templater.renderString(inputFileContents, context)
                 : inputFileContents,
+              { mode: statsObj.mode },
             );
-            await fs.chmod(outputPath, statsObj.mode);
           }
         }
       }
