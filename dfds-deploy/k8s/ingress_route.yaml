@@ -1,0 +1,50 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  creationTimestamp: null
+  name: backstage
+spec:
+  entryPoints: []
+  routes:
+  - kind: Rule
+    match: Host(`backstage.dfds.cloud`) && PathPrefix(`/`)
+    middlewares:
+    - name: backstage.dfds.cloud
+      namespace: ""
+    priority: 0
+    services:
+    - kind: Service
+      name: backstage
+      namespace: ""
+      port: 80
+  - kind: Rule
+    match: Host(`backstage.dfds.cloud`) && PathPrefix(`/backend`)
+    middlewares:
+    - name: backstage.dfds.cloud-backend
+      namespace: ""
+    priority: 0
+    services:
+    - kind: Service
+      name: backstage-backend
+      namespace: ""
+      port: 7000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  creationTimestamp: null
+  name: backstage.dfds.cloud
+spec:
+  stripPrefix:
+    prefixes:
+    - /
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  creationTimestamp: null
+  name: backstage.dfds.cloud-backend
+spec:
+  stripPrefix:
+    prefixes:
+    - /backend
