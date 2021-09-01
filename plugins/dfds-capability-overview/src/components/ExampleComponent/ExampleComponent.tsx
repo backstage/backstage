@@ -53,6 +53,9 @@ const CapabilityEntities = React.memo(
     profile,
   }: {
     entities: any[];
+    onLeaveButtonClick: any;
+    onJoinButtonClick: any;
+    profile: any;
   }) => {
     return (
       <>
@@ -100,7 +103,7 @@ export const useAccessToken = () => {
   return { token, profile };
 };
 
-const fetcher = (url, token) =>
+const fetcher = (url: string, token: string) =>
   fetch(url, {
     method: 'GET',
     headers: {
@@ -112,7 +115,7 @@ const useCapabilitiesQuery = () => {
   const { token, profile } = useAccessToken();
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getOptionalString('backend.baseUrl');
-  const { data, error, mutate, ...rest } = useSWR(
+  const { data, error, mutate } = useSWR(
     token && [`${baseUrl}/api/proxy/dfds-api/capsvc/capabilities`, token],
     fetcher,
   );
@@ -123,6 +126,7 @@ const useCapabilitiesQuery = () => {
     profile,
     token,
     mutate,
+    baseUrl,
   };
 };
 
@@ -143,12 +147,19 @@ const CapabilitiesListBase = React.memo(() => {
     setPage(0);
   };
 
-  const { items, loading, profile, token, mutate } = useCapabilitiesQuery();
+  const {
+    items,
+    loading,
+    profile,
+    token,
+    mutate,
+    baseUrl,
+  } = useCapabilitiesQuery();
 
   const [shouldFilterByMember, setShouldFilterByMember] = React.useState(false);
 
   const filteredEntities = shouldFilterByMember
-    ? items.filter(entity =>
+    ? items.filter((entity: { members: Array<{ email: string }> }) =>
         entity.members.some(member => member.email === profile?.email),
       )
     : items;
@@ -258,7 +269,7 @@ const CapabilitiesListBase = React.memo(() => {
               <CapabilityEntities
                 entities={entities}
                 profile={profile}
-                onLeaveButtonClick={async id => {
+                onLeaveButtonClick={async (id: string) => {
                   await fetch(
                     `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${id}/members/${profile?.email}`,
                     {
@@ -273,7 +284,7 @@ const CapabilitiesListBase = React.memo(() => {
                     `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities`,
                   );
                 }}
-                onJoinButtonClick={async id => {
+                onJoinButtonClick={async (id: string) => {
                   await fetch(
                     `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${id}/members`,
                     {
@@ -282,7 +293,7 @@ const CapabilitiesListBase = React.memo(() => {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                       },
-                      body: JSON.stringify({ email: profile.email }),
+                      body: JSON.stringify({ email: profile?.email }),
                     },
                   );
                   await mutate(

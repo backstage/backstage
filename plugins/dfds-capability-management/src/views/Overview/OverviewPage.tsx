@@ -41,9 +41,7 @@ const LeftContainer = styled.div`
   grid-gap: 2rem;
 `;
 
-const OverviewPage: React.FC<{}> = props => {
-  const [joinLeaveButton, setJoinLeaveButton] = React.useState<string>('Join');
-
+const OverviewPage: React.FC<{}> = () => {
   const authApi = useApi(microsoftAuthApiRef);
   const location = useLocation();
 

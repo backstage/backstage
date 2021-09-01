@@ -19,6 +19,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 export type ButtonComponentProps = {
   onClick?: (event?: React.MouseEvent) => void;
+  color?: string;
 };
 
 const StyledButton = withStyles({
@@ -35,6 +36,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   return (
     <StyledButton
       variant="contained"
+      // @ts-ignore
       color="primary"
       onClick={onClick}
       {...props}
