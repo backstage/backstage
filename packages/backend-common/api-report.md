@@ -35,39 +35,6 @@ import * as winston from 'winston';
 import { Writable } from 'stream';
 
 // Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-<<<<<<< HEAD
-=======
-//
-// @public (undocumented)
-export class AwsS3UrlReader implements UrlReader {
-  constructor(
-    integration: AwsS3Integration,
-    deps: {
-      s3: S3;
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // Warning: (ae-forgotten-export) The symbol "ReaderFactory" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-// Warning: (ae-missing-release-tag) "AzureUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
->>>>>>> bd119f21cc075b9d09eb0470566eee996364fbb0
 //
 // @public (undocumented)
 export class AwsS3UrlReader implements UrlReader {
@@ -83,14 +50,7 @@ export class AwsS3UrlReader implements UrlReader {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-<<<<<<< HEAD
   readTree(url: string): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
-  //
-=======
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
->>>>>>> bd119f21cc075b9d09eb0470566eee996364fbb0
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
@@ -509,6 +469,12 @@ export type ReadTreeResponse = {
 //
 // @public (undocumented)
 export interface ReadTreeResponseFactory {
+  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse>;
   // Warning: (ae-forgotten-export) The symbol "FromArchiveOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -714,7 +680,6 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 //
 // src/cache/types.d.ts:34:5 - (ae-forgotten-export) The symbol "ClientOptions" needs to be exported by the entry point index.d.ts
 // src/middleware/errorHandler.d.ts:17:26 - (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
-// src/reading/AwsS3UrlReader.d.ts:11:9 - (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
 // src/reading/types.d.ts:108:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
 // src/service/types.d.ts:12:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/service/types.d.ts:22:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

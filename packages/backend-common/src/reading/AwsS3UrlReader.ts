@@ -183,7 +183,7 @@ export class AwsS3UrlReader implements UrlReader {
           })
           .promise();
         if (output.Contents) {
-          output.Contents.forEach(function (contents) {
+          output.Contents.forEach(contents => {
             allObjects.push(contents);
           });
         }
