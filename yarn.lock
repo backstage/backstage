@@ -5166,9 +5166,9 @@
     react-lifecycles-compat "^3.0.4"
 
 "@rjsf/core@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.0.0.tgz#7f79b0635c969e3fbfe0aaa4773d844fbee68a63"
-  integrity sha512-QSvyVMDiwd7neVnIMOte4tZUvtDWgLDYKOsq1tgCsIFh+RXskd3AEBf6IsK8w6Wg36Om7YalDqqrtXbk9z+rLw==
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.1.0.tgz#7667364a4532e25c164abbc2adabe39157ffec4c"
+  integrity sha512-EwM2juiQxEdXzFy9rIIsDr6/e+FYeR1cKx0/no8ASEuXZ1p+/nf/CxKGobzD6UhpRip7JK9PhhuHFEFBIjHFJA==
   dependencies:
     "@types/json-schema" "^7.0.7"
     ajv "^6.7.0"
