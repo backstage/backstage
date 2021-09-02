@@ -145,13 +145,14 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
+  const showPagination = rows.length > 20;
 
   return (
     <Table<EntityRow>
       isLoading={loading}
       columns={columns || defaultColumns}
       options={{
-        paging: true,
+        paging: showPagination,
         pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',

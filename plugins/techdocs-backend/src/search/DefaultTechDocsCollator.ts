@@ -110,7 +110,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
                   ?.target?.name || '',
             }));
           } catch (e) {
-            this.logger.warn(
+            this.logger.debug(
               `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
               e,
             );
