@@ -27,6 +27,7 @@ import {
   getGeneratorKey,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
+  patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
   storeEtagMetadata,
   validateMkdocsYaml,
@@ -283,6 +284,58 @@ describe('helpers', () => {
       );
       expect(updatedMkdocsYml.toString()).not.toContain('edit_uri');
       expect(updatedMkdocsYml.toString()).not.toContain('repo_url');
+    });
+  });
+
+  describe('patchIndexPreBuild', () => {
+    it('should have no effect if docs/index.md exists', async () => {
+      mockFs({
+        '/docs/index.md': 'index.md content',
+        '/docs/README.md': 'docs/README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'index.md content',
+      );
+      mockFs.restore();
+    });
+
+    it("should use docs/README.md if docs/index.md doesn't exists", async () => {
+      mockFs({
+        '/docs/README.md': 'docs/README.md content',
+        '/README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'docs/README.md content',
+      );
+      mockFs.restore();
+    });
+
+    it('should use README.md if neither docs/index.md or docs/README.md exist', async () => {
+      mockFs({
+        '/README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'main README.md content',
+      );
+      mockFs.restore();
+    });
+
+    it('should not use any file as index.md if no one matches the requirements', async () => {
+      mockFs({});
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
+      mockFs.restore();
     });
   });
 

@@ -287,6 +287,46 @@ export const patchMkdocsYmlPreBuild = async (
 };
 
 /**
+ * Update docs/index.md file before TechDocs generator uses it to generate docs site,
+ * falling back to docs/README.md or README.md in case a default docs/index.md
+ * is not provided.
+ */
+export const patchIndexPreBuild = async ({
+  inputDir,
+  logger,
+}: {
+  inputDir: string;
+  logger: Logger;
+}) => {
+  const docsPath = path.join(inputDir, 'docs');
+  const indexMdPath = path.join(docsPath, 'index.md');
+
+  try {
+    await fs.promises.access(indexMdPath);
+    return;
+  } catch {
+    logger.warn('docs/index.md not found.');
+  }
+  const fallbacks = [
+    path.join(docsPath, 'README.md'),
+    path.join(inputDir, 'README.md'),
+  ];
+
+  await fs.promises.mkdir(docsPath, { recursive: true });
+  for (const filePath of fallbacks) {
+    try {
+      await fs.copyFile(filePath, indexMdPath);
+      return;
+    } catch (error) {
+      logger.warn(`${path.relative(inputDir, filePath)} not found.`);
+    }
+  }
+  logger.warn(
+    `Could not find any techdocs' index file. Please make sure at least one of docs/index.md docs/README.md README.md exists.`,
+  );
+};
+
+/**
  * Update the techdocs_metadata.json to add a new build timestamp metadata. Create the .json file if it doesn't exist.
  *
  * @param {string} techdocsMetadataPath File path to techdocs_metadata.json

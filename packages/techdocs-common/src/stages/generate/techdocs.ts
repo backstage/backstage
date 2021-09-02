@@ -25,6 +25,7 @@ import {
 import {
   addBuildTimestampMetadata,
   getMkdocsYml,
+  patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -102,6 +103,7 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
+      await patchIndexPreBuild({ inputDir, logger: childLogger });
     }
 
     // Directories to bind on container
