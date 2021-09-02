@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Knex } from 'knex';
-import { omit } from 'lodash';
+import { omit, merge } from 'lodash';
 import { Config, ConfigReader, JsonObject } from '@backstage/config';
 import {
   createDatabaseClient,
@@ -126,6 +126,24 @@ export class DatabaseManager {
     };
   }
 
+  /**
+   * Provides the additionalKnexConfig which should be used for a given plugin.
+   *
+   * @param pluginId Plugin to get the additionalKnexConfig for
+   * @returns the merged additionalKnexConfig value or undefined if it isn't specified
+   */
+  private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
+    const pluginConfig = this.config.getOptional<JsonObject>(
+      `${pluginPath(pluginId)}.additionalKnexConfig`,
+    );
+
+    const baseConfig = this.config.getOptional<JsonObject>(
+      'additionalKnexConfig',
+    );
+
+    return merge(baseConfig, pluginConfig);
+  }
+
   private getEnsureExistsConfig(pluginId: string): boolean {
     const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
     return (
@@ -180,6 +198,7 @@ export class DatabaseManager {
     const { client } = this.getClientType(pluginId);
 
     return {
+      ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
     };

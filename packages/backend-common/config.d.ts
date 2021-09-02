@@ -69,6 +69,11 @@ export interface Config {
        * Defaults to true if unspecified.
        */
       ensureExists?: boolean;
+      /**
+       * Arbitrary config object to pass to knex when initialising (https://knexjs.org/#Installation-client).
+       * Most notable is the debug and asyncStackTraces booleans
+       */
+      additionalKnexConfig: object;
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {
@@ -84,6 +89,13 @@ export interface Config {
            * Defaults to base config if unspecified.
            */
           ensureExists?: boolean;
+          /**
+           * Arbitrary config object to pass to knex when initialising (https://knexjs.org/#Installation-client).
+           * Most notable is the debug and asyncStackTraces booleans.
+           *
+           * This is merged recursively into the base additionalKnexConfig
+           */
+          additionalKnexConfig: object;
         };
       };
     };
