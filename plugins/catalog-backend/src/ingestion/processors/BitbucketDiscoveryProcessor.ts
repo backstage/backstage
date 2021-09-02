@@ -224,9 +224,11 @@ export async function readBitbucketCloud(
   return result;
 }
 
-function parseUrl(
-  urlString: string,
-): { projectSearchPath: RegExp; repoSearchPath: RegExp; catalogPath: string } {
+function parseUrl(urlString: string): {
+  projectSearchPath: RegExp;
+  repoSearchPath: RegExp;
+  catalogPath: string;
+} {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
 
@@ -251,9 +253,7 @@ function readPathParameters(pathParts: string[]): Map<string, string> {
   return new Map<string, string>(Object.entries(vals));
 }
 
-function parseBitbucketCloudUrl(
-  urlString: string,
-): {
+function parseBitbucketCloudUrl(urlString: string): {
   workspacePath: string;
   catalogPath: string;
   projectSearchPath?: RegExp;
