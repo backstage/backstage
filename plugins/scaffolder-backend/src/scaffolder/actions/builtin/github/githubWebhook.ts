@@ -21,8 +21,9 @@ type ContentType = 'form' | 'json';
 
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
+  defaultWebhookSecret?: string;
 }) {
-  const { integrations } = options;
+  const { integrations, defaultWebhookSecret } = options;
   const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
@@ -53,7 +54,8 @@ export function createGithubWebhookAction(options: {
           },
           webhookSecret: {
             title: 'Webhook Secret',
-            description: 'Webhook secret value',
+            description:
+              'Webhook secret value. The default can be provided internally in action creation',
             type: 'string',
           },
           events: {
@@ -88,7 +90,7 @@ export function createGithubWebhookAction(options: {
       const {
         repoUrl,
         webhookUrl,
-        webhookSecret,
+        webhookSecret = defaultWebhookSecret,
         events = ['push'],
         active = true,
         contentType = 'form',
