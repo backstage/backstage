@@ -22,7 +22,6 @@ import {
 import { SearchResult } from '@backstage/search-common';
 import React from 'react';
 import { useSearch } from '../SearchContext';
-import { SearchResultPager } from '../SearchResultPager';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
@@ -49,12 +48,7 @@ export const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return (
-    <>
-      {children({ results: value.results })}
-      <SearchResultPager />
-    </>
-  );
+  return <>{children({ results: value.results })}</>;
 };
 
 export { SearchResultComponent as SearchResult };
