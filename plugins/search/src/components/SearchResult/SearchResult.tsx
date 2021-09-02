@@ -22,7 +22,6 @@ import {
 import { SearchResult } from '@backstage/search-common';
 import React from 'react';
 import { useSearch } from '../SearchContext';
-import { SearchResultPager } from '../SearchResultPager';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
