@@ -7,6 +7,7 @@
 
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
@@ -567,10 +568,12 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery,
     locationTemplate,
     filter,
+    catalogClient,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
   });
   // (undocumented)
   protected applyArgsToFormat(
@@ -578,13 +581,15 @@ export class DefaultCatalogCollator implements DocumentCollator {
     args: Record<string, string>,
   ): string;
   // (undocumented)
+  protected readonly catalogClient: CatalogApi;
+  // (undocumented)
   protected discovery: PluginEndpointDiscovery;
   // Warning: (ae-forgotten-export) The symbol "CatalogEntityDocument" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
-  protected filterUrl?: string;
+  protected filter?: CatalogEntitiesRequest['filter'];
   // (undocumented)
   static fromConfig(
     _config: Config,
