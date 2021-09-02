@@ -30,6 +30,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { createCardExtension } from '@backstage/plugin-home';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',
@@ -164,5 +165,12 @@ export const EntitySystemDiagramCard = catalogPlugin.provide(
       lazy: () =>
         import('./components/SystemDiagramCard').then(m => m.SystemDiagramCard),
     },
+  }),
+);
+
+export const HomePageStarredEntities = catalogPlugin.provide(
+  createCardExtension({
+    title: 'Starred Entities',
+    components: () => import('./components/HomePageComponent'),
   }),
 );

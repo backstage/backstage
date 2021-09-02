@@ -23,6 +23,7 @@ import {
   ComponentTab,
 } from '@backstage/plugin-home';
 import { HomePageSearchBar } from '@backstage/plugin-search';
+import { HomePageStarredEntities } from '@backstage/plugin-catalog';
 
 export const HomePage = () => (
   <Grid container spacing={3}>
@@ -31,6 +32,9 @@ export const HomePage = () => (
     </Grid>
     <Grid item xs={12} md={4}>
       <HomePageRandomJoke />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <HomePageStarredEntities />
     </Grid>
     <Grid item xs={12} md={4}>
       <HomePageRandomJoke defaultCategory="any" Renderer={ComponentAccordion} />

@@ -43,4 +43,5 @@ export {
   EntityHasSystemsCard,
   EntityLinksCard,
   EntitySystemDiagramCard,
+  HomePageStarredEntities,
 } from './plugin';
