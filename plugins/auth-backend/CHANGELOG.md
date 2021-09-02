@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.24
+
+### Patch Changes
+
+- 2a105f451: Add a warning log message that `passport-saml` will require a `cert` config parameter imminently.
+
+  We intend to upgrade this package soon, past the point where we will start to strictly require the `auth.saml.cert` configuration parameter to be present. To avoid issues starting your auth backend, please
+
+- 31892ee25: typo fix `tenentId` in Azure auth provider docs
+- e9b1e2a9f: Added signIn and authHandler resolver for oAuth2 provider
+- ca45b169d: Export GitHub to allow use with Identity resolver
+- Updated dependencies
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.3.23
 
 ### Patch Changes
