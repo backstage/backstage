@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
@@ -23,9 +23,8 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import { UnpackNestedValue } from 'react-hook-form';
-import { UseControllerOptions } from 'react-hook-form';
-import { UseFormMethods } from 'react-hook-form';
-import { UseFormOptions } from 'react-hook-form';
+import { UseFormProps } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 
 // Warning: (ae-missing-release-tag) "AnalyzeResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -53,7 +52,6 @@ export const AutocompleteTextField: <TFieldValue extends string>({
   name,
   options,
   required,
-  control,
   errors,
   rules,
   loading,
@@ -178,7 +176,7 @@ export const ImportStepper: ({
 //
 // @public
 export const PreparePullRequestForm: <
-  TFieldValues extends Record<string, any>
+  TFieldValues extends Record<string, any>,
 >({
   defaultValues,
   onSubmit,

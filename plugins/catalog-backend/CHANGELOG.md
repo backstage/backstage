@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.5
+
+### Patch Changes
+
+- 8b39242c4: GitHub discovery processor adds support for discovering the default GitHub branch
+- 96785dce3: Added GitLabDiscoveryProcessor, which allows catalog discovery from a GitLab instance
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.13.4
+
+### Patch Changes
+
+- 7ab55167d: Properly handle Date objects being returned for timestamps in the database driver
+
+## 0.13.3
+
+### Patch Changes
+
+- 61aa6526f: Avoid duplicate work by comparing previous processing rounds with the next
+- fe960ad0f: Updates the `DefaultProcessingDatabase` to accept a refresh interval function instead of a fixed refresh interval in seconds which used to default to 100s. The catalog now ships with a default refresh interval function that schedules entities for refresh every 100-150 seconds, this should
+  help to smooth out bursts that occur when a lot of entities are scheduled for refresh at the same second.
+
+  Custom `RefreshIntervalFunction` can be implemented and passed to the CatalogBuilder using `.setInterval(fn)`
+
+- 54b441abe: Export the entity provider related types for external use.
+- 03bb05af6: Enabled live reload of locations configured in `catalog.locations`.
+- 2766b2aa5: Add experimental Prometheus metrics instrumentation to the catalog
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.13.1
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence. For example you can now query with `/entities?filter=metadata.annotations.blah` to fetch all entities that has the particular property defined.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.18
+
 ## 0.13.0
 
 ### Minor Changes
@@ -434,13 +485,11 @@
   and lets the other processors take care of further processing.
 
   ```typescript
-  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-    client,
-    repository,
-  }) {
-    // Custom logic for interpret the matching repository.
-    // See defaultRepositoryParser for an example
-  };
+  const customRepositoryParser: BitbucketRepositoryParser =
+    async function* customRepositoryParser({ client, repository }) {
+      // Custom logic for interpret the matching repository.
+      // See defaultRepositoryParser for an example
+    };
 
   const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
     parser: customRepositoryParser,
@@ -912,7 +961,6 @@
   spec:
     type: website
   ---
-
   ```
 
   This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.

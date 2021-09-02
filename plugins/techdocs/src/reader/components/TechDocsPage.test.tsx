@@ -29,6 +29,7 @@ import {
   TechDocsStorageApi,
 } from '../../api';
 import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
@@ -45,9 +46,9 @@ jest.mock('./TechDocsPageHeader', () => {
   };
 });
 
-const { useParams }: { useParams: jest.Mock } = jest.requireMock(
-  'react-router-dom',
-);
+const { useParams }: { useParams: jest.Mock } =
+  jest.requireMock('react-router-dom');
+global.scroll = jest.fn();
 
 describe('<TechDocsPage />', () => {
   it('should render techdocs page', async () => {
@@ -55,11 +56,12 @@ describe('<TechDocsPage />', () => {
       entityId: 'Component::backstage',
     });
 
-    const scmIntegrationsApi: ScmIntegrationsApi = ScmIntegrationsApi.fromConfig(
-      new ConfigReader({
-        integrations: {},
-      }),
-    );
+    const scmIntegrationsApi: ScmIntegrationsApi =
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      );
     const techdocsApi: Partial<TechDocsApi> = {
       getEntityMetadata: () =>
         Promise.resolve({
@@ -75,16 +77,23 @@ describe('<TechDocsPage />', () => {
           site_description: 'string',
         }),
     };
+
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {
       getEntityDocs: (): Promise<string> => Promise.resolve('String'),
       getBaseUrl: (): Promise<string> => Promise.resolve('String'),
       getApiOrigin: (): Promise<string> => Promise.resolve('String'),
     };
-
+    const searchApi = {
+      query: () =>
+        Promise.resolve({
+          results: [],
+        }),
+    };
     const apiRegistry = ApiRegistry.from([
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
+      [searchApiRef, searchApi],
     ]);
 
     await act(async () => {

@@ -190,7 +190,7 @@ export type EntityEnvelope = {
 //
 // @public
 export function entityEnvelopeSchemaValidator<
-  T extends EntityEnvelope = EntityEnvelope
+  T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -230,6 +230,7 @@ export type EntityMeta = JsonObject & {
   generation?: number;
   name: string;
   namespace?: string;
+  title?: string;
   description?: string;
   labels?: Record<string, string>;
   annotations?: Record<string, string>;
@@ -333,9 +334,7 @@ export function getEntityName(entity: Entity): EntityName;
 // Warning: (ae-missing-release-tag) "getEntitySourceLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function getEntitySourceLocation(
-  entity: Entity,
-): {
+export function getEntitySourceLocation(entity: Entity): {
   type: string;
   target: string;
 };
@@ -542,9 +541,7 @@ export function parseEntityRef(
 // Warning: (ae-missing-release-tag) "parseLocationReference" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function parseLocationReference(
-  ref: string,
-): {
+export function parseLocationReference(ref: string): {
   type: string;
   target: string;
 };
@@ -725,10 +722,6 @@ export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: 'backstage.io/v1beta2';
   // (undocumented)
   kind: 'Template';
-  // (undocumented)
-  metadata: EntityMeta & {
-    title?: string;
-  };
   // (undocumented)
   spec: {
     type: string;

@@ -108,13 +108,11 @@ matching repository is processed.
 repository.
 
 ```typescript
-const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-  client,
-  repository,
-}) {
-  // Custom logic for interpret the matching repository.
-  // See defaultRepositoryParser for an example
-};
+const customRepositoryParser: BitbucketRepositoryParser =
+  async function* customRepositoryParser({ client, repository }) {
+    // Custom logic for interpret the matching repository.
+    // See defaultRepositoryParser for an example
+  };
 
 const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
   parser: customRepositoryParser,

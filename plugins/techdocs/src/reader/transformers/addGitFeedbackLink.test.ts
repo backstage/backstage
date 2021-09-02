@@ -35,7 +35,7 @@ describe('addGitFeedbackLink', () => {
       <html>
         <article class="md-content__inner">
           <h1>HeaderText</h1>
-          <a title="Edit this page" href="https://gitlab.com/reponame/username/docs/TestDoc.md"></>
+          <a title="Edit this page" href="https://gitlab.com/groupname/reponame/-/blob/master/docs/docname.md"></>
         </article>
       </html>
     `,
@@ -49,7 +49,32 @@ describe('addGitFeedbackLink', () => {
     expect(
       (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
     ).toEqual(
-      'https://gitlab.com/reponame/username/issues/new?issue[title]=Documentation%20Feedback%3A%20HeaderText&issue[description]=Page%20source%3A%0Ahttps%3A%2F%2Fgitlab.com%2Freponame%2Fusername%2Fdocs%2FTestDoc.md%0A%0AFeedback%3A',
+      'https://gitlab.com/groupname/reponame/issues/new?issue[title]=Documentation%20Feedback%3A%20HeaderText&issue[description]=Page%20source%3A%0Ahttps%3A%2F%2Fgitlab.com%2Fgroupname%2Freponame%2F-%2Fblob%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
+    );
+  });
+
+  it('adds a feedback link correctly when a Gitlab source edit link is available and contains a subgroup', async () => {
+    const shadowDom = await createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <article class="md-content__inner">
+          <h1>HeaderText</h1>
+          <a title="Edit this page" href="https://gitlab.com/groupname/subgroupname/reponame/-/blob/master/docs/docname.md"></>
+        </article>
+      </html>
+    `,
+      {
+        preTransformers: [addGitFeedbackLink(integrations)],
+        postTransformers: [],
+      },
+    );
+
+    expect(shadowDom.querySelector('#git-feedback-link')).toBeTruthy();
+    expect(
+      (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
+    ).toEqual(
+      'https://gitlab.com/groupname/subgroupname/reponame/issues/new?issue[title]=Documentation%20Feedback%3A%20HeaderText&issue[description]=Page%20source%3A%0Ahttps%3A%2F%2Fgitlab.com%2Fgroupname%2Fsubgroupname%2Freponame%2F-%2Fblob%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
     );
   });
 
@@ -60,7 +85,7 @@ describe('addGitFeedbackLink', () => {
       <html>
         <article class="md-content__inner">
           <h1>HeaderText</h1>
-          <a title="Edit this page" href="https://github.com/reponame/username/docs/TestDoc.md"></>
+          <a title="Edit this page" href="https://github.com/groupname/reponame/edit/master/docs/docname.md"></>
         </article>
       </html>
     `,
@@ -74,7 +99,7 @@ describe('addGitFeedbackLink', () => {
     expect(
       (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
     ).toEqual(
-      'https://github.com/reponame/username/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fgithub.com%2Freponame%2Fusername%2Fdocs%2FTestDoc.md%0A%0AFeedback%3A',
+      'https://github.com/groupname/reponame/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fgithub.com%2Fgroupname%2Freponame%2Fedit%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
     );
   });
 
@@ -124,7 +149,7 @@ describe('addGitFeedbackLink', () => {
       <html>
         <article class="md-content__inner">
           <h1>HeaderText<a class="headerlink" href="http://headerlink.com">¶</a></h1>
-          <a title="Edit this page" href="https://self-hosted-git-hub-provider.com/reponame/username/docs/TestDoc.md"/>
+          <a title="Edit this page" href="https://self-hosted-git-hub-provider.com/groupname/reponame/blob/master/docs/docname.md"/>
         </article>
       </html>
     `,
@@ -138,7 +163,7 @@ describe('addGitFeedbackLink', () => {
     expect(
       (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
     ).toEqual(
-      'https://self-hosted-git-hub-provider.com/reponame/username/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fself-hosted-git-hub-provider.com%2Freponame%2Fusername%2Fdocs%2FTestDoc.md%0A%0AFeedback%3A',
+      'https://self-hosted-git-hub-provider.com/groupname/reponame/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fself-hosted-git-hub-provider.com%2Fgroupname%2Freponame%2Fblob%2Fmaster%2Fdocs%2Fdocname.md%0A%0AFeedback%3A',
     );
   });
 });

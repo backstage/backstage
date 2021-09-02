@@ -92,9 +92,7 @@ export default class TypeLocator {
     return result as { [key in T]: ExportedInstance[] };
   }
 
-  private getExportedConstructorDeclaration(
-    node: ts.Node,
-  ):
+  private getExportedConstructorDeclaration(node: ts.Node):
     | {
         constructorType: ts.Type;
         args: ts.Expression[];

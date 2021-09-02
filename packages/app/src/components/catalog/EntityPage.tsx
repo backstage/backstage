@@ -40,6 +40,8 @@ import {
   isKind,
   EntityHasResourcesCard,
   EntityOrphanWarning,
+  EntityProcessingErrorsPanel,
+  hasCatalogProcessingErrors,
   isOrphan,
 } from '@backstage/plugin-catalog';
 import {
@@ -209,6 +211,26 @@ const cicdCard = (
   </EntitySwitch>
 );
 
+const entityWarningContent = (
+  <>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </>
+);
+
 const errorsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isRollbarAvailable}>
@@ -223,14 +245,7 @@ const errorsContent = (
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
-    <EntitySwitch>
-      <EntitySwitch.Case if={isOrphan}>
-        <Grid item xs={12}>
-          <EntityOrphanWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
+    {entityWarningContent}
     <Grid item md={8} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
@@ -438,6 +453,7 @@ const apiPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12}>
           <EntityAboutCard />
         </Grid>
@@ -468,6 +484,7 @@ const userPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
@@ -483,6 +500,7 @@ const groupPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityGroupProfileCard variant="gridItem" />
         </Grid>
@@ -501,6 +519,7 @@ const systemPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
         </Grid>
@@ -525,6 +544,7 @@ const domainPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
         </Grid>

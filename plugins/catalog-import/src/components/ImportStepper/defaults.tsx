@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConfigApi } from '@backstage/core-plugin-api';
 import {
   Box,
   Checkbox,
@@ -25,6 +26,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { BackButton } from '../Buttons';
+import { asInputRef } from '../helpers';
 import { StepFinishImportLocation } from '../StepFinishImportLocation';
 import { StepInitAnalyzeUrl } from '../StepInitAnalyzeUrl';
 import {
@@ -34,14 +36,14 @@ import {
 import { StepPrepareSelectLocations } from '../StepPrepareSelectLocations';
 import { StepReviewLocation } from '../StepReviewLocation';
 import { ImportFlows, ImportState } from '../useImportState';
-import { ConfigApi } from '@backstage/core-plugin-api';
 
 export type StepperProviderOpts = {
   pullRequest?: {
     disable?: boolean;
-    preparePullRequest?: (
-      apis: StepperApis,
-    ) => { title?: string; body?: string };
+    preparePullRequest?: (apis: StepperApis) => {
+      title?: string;
+      body?: string;
+    };
   };
 };
 
@@ -185,8 +187,8 @@ export function defaultGenerateStepper(
                 defaultBody={body}
                 renderFormFields={({
                   values,
-                  control,
-                  errors,
+                  setValue,
+                  formState,
                   groupsLoading,
                   groups,
                   register,
@@ -197,26 +199,32 @@ export function defaultGenerateStepper(
                     </Box>
 
                     <TextField
-                      name="title"
+                      {...asInputRef(
+                        register('title', {
+                          required: true,
+                        }),
+                      )}
                       label="Pull Request Title"
                       placeholder="Add Backstage catalog entity descriptor files"
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      inputRef={register({ required: true })}
-                      error={Boolean(errors.title)}
+                      error={Boolean(formState.errors.title)}
                       required
                     />
 
                     <TextField
-                      name="body"
+                      {...asInputRef(
+                        register('body', {
+                          required: true,
+                        }),
+                      )}
                       label="Pull Request Body"
                       placeholder="A describing text with Markdown support"
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      inputRef={register({ required: true })}
-                      error={Boolean(errors.body)}
+                      error={Boolean(formState.errors.body)}
                       multiline
                       required
                     />
@@ -226,22 +234,22 @@ export function defaultGenerateStepper(
                     </Box>
 
                     <TextField
-                      name="componentName"
+                      {...asInputRef(
+                        register('componentName', { required: true }),
+                      )}
                       label="Name of the created component"
                       placeholder="my-component"
                       margin="normal"
                       variant="outlined"
                       fullWidth
-                      inputRef={register({ required: true })}
-                      error={Boolean(errors.componentName)}
+                      error={Boolean(formState.errors.componentName)}
                       required
                     />
 
                     {!values.useCodeowners && (
                       <AutocompleteTextField
                         name="owner"
-                        control={control}
-                        errors={errors}
+                        errors={formState.errors}
                         options={groups || []}
                         loading={groupsLoading}
                         loadingText="Loading groups…"
@@ -259,11 +267,10 @@ export function defaultGenerateStepper(
                     <FormControlLabel
                       control={
                         <Checkbox
-                          name="useCodeowners"
-                          inputRef={register}
+                          {...asInputRef(register('useCodeowners'))}
                           onChange={(_, value) => {
                             if (value) {
-                              control.setValue('owner', '');
+                              setValue('owner', '');
                             }
                           }}
                         />

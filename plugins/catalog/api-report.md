@@ -114,6 +114,14 @@ export const CatalogIndexPage: ({
   initiallySelectedFilter,
 }: CatalogPageProps) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "CatalogKindHeaderProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CatalogKindHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CatalogKindHeader: ({
+  initialFilter,
+}: CatalogKindHeaderProps) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "catalogPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -128,6 +136,14 @@ const catalogPlugin: BackstagePlugin<
   },
   {
     createComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   }
 >;
 export { catalogPlugin };
@@ -159,11 +175,6 @@ export type CatalogTableRow = {
     ownedByRelations: EntityName[];
   };
 };
-
-// Warning: (ae-missing-release-tag) "CreateComponentButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CreateComponentButton: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "createMetadataDescriptionColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -327,6 +338,11 @@ export const EntityPageLayout: {
   }) => null;
 };
 
+// Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const EntityProcessingErrorsPanel: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntitySwitch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -357,6 +373,11 @@ export const FilterContainer: ({
 export const FilteredEntityLayout: ({
   children,
 }: PropsWithChildren<{}>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "hasCatalogProcessingErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const hasCatalogProcessingErrors: (entity: Entity) => boolean;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -394,7 +415,7 @@ export const Router: ({
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/EntityPageLayout/EntityPageLayout.d.ts:17:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
-// src/plugin.d.ts:17:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
+// src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

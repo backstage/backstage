@@ -37,7 +37,10 @@ import {
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
 } from './publish';
-import { createGithubActionsDispatchAction } from './github';
+import {
+  createGithubActionsDispatchAction,
+  createGithubWebhookAction,
+} from './github';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -46,13 +49,8 @@ export const createBuiltinActions = (options: {
   containerRunner: ContainerRunner;
   config: Config;
 }) => {
-  const {
-    reader,
-    integrations,
-    containerRunner,
-    catalogClient,
-    config,
-  } = options;
+  const { reader, integrations, containerRunner, catalogClient, config } =
+    options;
 
   return [
     createFetchPlainAction({
@@ -93,6 +91,9 @@ export const createBuiltinActions = (options: {
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
+      integrations,
+    }),
+    createGithubWebhookAction({
       integrations,
     }),
   ];

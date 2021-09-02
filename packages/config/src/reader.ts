@@ -55,6 +55,16 @@ const errors = {
 };
 
 export class ConfigReader implements Config {
+  /**
+   * A set of key paths that where removed from the config due to not being visible.
+   *
+   * This was added as a mutable private member to avoid changes to the public API.
+   * Its only purpose of this is to warn users of missing visibility when running
+   * the frontend in development mode.
+   */
+  private filteredKeys?: string[];
+  private notifiedFilteredKeys = new Set<string>();
+
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
       return new ConfigReader(undefined);
@@ -62,9 +72,14 @@ export class ConfigReader implements Config {
 
     // Merge together all configs into a single config with recursive fallback
     // readers, giving the first config object in the array the lowest priority.
-    return configs.reduce<ConfigReader>((previousReader, { data, context }) => {
-      return new ConfigReader(data, context, previousReader);
-    }, undefined!);
+    return configs.reduce<ConfigReader>(
+      (previousReader, { data, context, filteredKeys }) => {
+        const reader = new ConfigReader(data, context, previousReader);
+        reader.filteredKeys = filteredKeys;
+        return reader;
+      },
+      undefined!,
+    );
   }
 
   constructor(
@@ -101,6 +116,22 @@ export class ConfigReader implements Config {
     const fallbackValue = this.fallback?.getOptional<T>(key);
 
     if (value === undefined) {
+      if (process.env.NODE_ENV === 'development') {
+        if (fallbackValue === undefined && key) {
+          const fullKey = this.fullKey(key);
+          if (
+            this.filteredKeys?.includes(fullKey) &&
+            !this.notifiedFilteredKeys.has(fullKey)
+          ) {
+            this.notifiedFilteredKeys.add(fullKey);
+            // eslint-disable-next-line no-console
+            console.warn(
+              `Failed to read configuration value at '${fullKey}' as it is not visible. ` +
+                'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+            );
+          }
+        }
+      }
       return fallbackValue;
     } else if (fallbackValue === undefined) {
       return value as T;
@@ -127,10 +158,9 @@ export class ConfigReader implements Config {
   getOptionalConfig(key: string): ConfigReader | undefined {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getOptionalConfig(key);
-    const prefix = this.fullKey(key);
 
     if (isObject(value)) {
-      return new ConfigReader(value, this.context, fallbackConfig, prefix);
+      return this.copy(value, key, fallbackConfig);
     }
     if (value !== undefined) {
       throw new TypeError(
@@ -163,18 +193,24 @@ export class ConfigReader implements Config {
     });
 
     if (!configs) {
+      if (process.env.NODE_ENV === 'development') {
+        const fullKey = this.fullKey(key);
+        if (
+          this.filteredKeys?.some(k => k.startsWith(fullKey)) &&
+          !this.notifiedFilteredKeys.has(key)
+        ) {
+          this.notifiedFilteredKeys.add(key);
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Failed to read configuration array at '${key}' as it does not have any visible elements. ` +
+              'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+          );
+        }
+      }
       return undefined;
     }
 
-    return configs.map(
-      (obj, index) =>
-        new ConfigReader(
-          obj,
-          this.context,
-          undefined,
-          this.fullKey(`${key}[${index}]`),
-        ),
-    );
+    return configs.map((obj, index) => this.copy(obj, `${key}[${index}]`));
   }
 
   getNumber(key: string): number {
@@ -261,6 +297,17 @@ export class ConfigReader implements Config {
     return `${this.prefix}${this.prefix ? '.' : ''}${key}`;
   }
 
+  private copy(data: JsonObject, key: string, fallback?: ConfigReader) {
+    const reader = new ConfigReader(
+      data,
+      this.context,
+      fallback,
+      this.fullKey(key),
+    );
+    reader.filteredKeys = this.filteredKeys;
+    return reader;
+  }
+
   private readConfigValue<T extends JsonValue>(
     key: string,
     validate: (
@@ -270,6 +317,21 @@ export class ConfigReader implements Config {
     const value = this.readValue(key);
 
     if (value === undefined) {
+      if (process.env.NODE_ENV === 'development') {
+        const fullKey = this.fullKey(key);
+        if (
+          this.filteredKeys?.includes(fullKey) &&
+          !this.notifiedFilteredKeys.has(fullKey)
+        ) {
+          this.notifiedFilteredKeys.add(fullKey);
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Failed to read configuration value at '${fullKey}' as it is not visible. ` +
+              'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+          );
+        }
+      }
+
       return this.fallback?.readConfigValue(key, validate);
     }
     const result = validate(value);

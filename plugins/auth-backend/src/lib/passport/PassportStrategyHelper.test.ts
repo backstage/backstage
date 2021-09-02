@@ -23,7 +23,7 @@ import {
   executeRefreshTokenStrategy,
 } from './PassportStrategyHelper';
 
-const mockRequest = ({} as unknown) as express.Request;
+const mockRequest = {} as unknown as express.Request;
 
 describe('PassportStrategyHelper', () => {
   class MyCustomRedirectStrategy extends passport.Strategy {

@@ -382,7 +382,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
-      Promise.resolve(({ type: 'unknown' } as any) as AnalyzeResult),
+      Promise.resolve({ type: 'unknown' } as any as AnalyzeResult),
     );
 
     await act(async () => {

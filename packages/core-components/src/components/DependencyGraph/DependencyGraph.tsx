@@ -132,10 +132,8 @@ export function DependencyGraph({
 
         container.call(zoom);
 
-        const {
-          width: newContainerWidth,
-          height: newContainerHeight,
-        } = node.getBoundingClientRect();
+        const { width: newContainerWidth, height: newContainerHeight } =
+          node.getBoundingClientRect();
         if (containerWidth !== newContainerWidth) {
           setContainerWidth(newContainerWidth);
         }
@@ -173,7 +171,7 @@ export function DependencyGraph({
         .nodes()
         .find(nodeId => node.id === nodeId);
 
-      if (existingNode) {
+      if (existingNode && graph.current.node(existingNode)) {
         const { width, height, x, y } = graph.current.node(existingNode);
         graph.current.setNode(existingNode, { ...node, width, height, x, y });
       } else {

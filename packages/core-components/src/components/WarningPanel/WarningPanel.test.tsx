@@ -19,11 +19,19 @@ import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Typography } from '@material-ui/core';
 
-import { WarningPanel } from './WarningPanel';
+import { WarningPanel, WarningProps } from './WarningPanel';
 
-const propsTitle = { title: 'Mock title' };
-const propsTitleMessage = { title: 'Mock title', message: 'Some more info' };
-const propsMessage = { message: 'Some more info' };
+const propsTitle: WarningProps = { title: 'Mock title' };
+const propsTitleMessage: WarningProps = {
+  title: 'Mock title',
+  message: 'Some more info',
+};
+const propsMessage: WarningProps = { message: 'Some more info' };
+const propsErrorMessage: WarningProps = {
+  severity: 'error',
+  title: 'Mock title',
+  message: 'Some more info',
+};
 
 describe('<WarningPanel />', () => {
   it('renders without exploding', async () => {
@@ -63,5 +71,9 @@ describe('<WarningPanel />', () => {
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
     expect(screen.getByText('Some more info')).toBeInTheDocument();
     expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
+  });
+  it('renders message using severity', async () => {
+    await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
+    expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
   });
 });

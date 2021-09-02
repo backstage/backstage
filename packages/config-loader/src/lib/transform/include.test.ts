@@ -24,9 +24,11 @@ const substituteMe = '${MY_SUBSTITUTION}';
 const mySubstitution = 'fooSubstitution';
 
 const env = jest.fn(async (name: string) => {
-  return ({
-    SECRET: 'my-secret',
-  } as { [name: string]: string })[name];
+  return (
+    {
+      SECRET: 'my-secret',
+    } as { [name: string]: string }
+  )[name];
 });
 
 const substitute: TransformFunc = async value => {
@@ -44,14 +46,16 @@ const substitute: TransformFunc = async value => {
 };
 
 const readFile = jest.fn(async (path: string) => {
-  const content = ({
-    [resolvePath(root, 'my-secret')]: 'secret',
-    [resolvePath(root, 'my-data.json')]: '{"a":{"b":{"c":42}}}',
-    [resolvePath(root, 'my-data.yaml')]: 'some:\n yaml:\n  key: 7',
-    [resolvePath(root, 'my-data.yml')]: 'different: { key: hello }',
-    [resolvePath(root, 'invalid.yaml')]: 'foo: [}',
-    [resolvePath(root, `${mySubstitution}/my-data.json`)]: '{"foo":"bar"}',
-  } as { [key: string]: string })[path];
+  const content = (
+    {
+      [resolvePath(root, 'my-secret')]: 'secret',
+      [resolvePath(root, 'my-data.json')]: '{"a":{"b":{"c":42}}}',
+      [resolvePath(root, 'my-data.yaml')]: 'some:\n yaml:\n  key: 7',
+      [resolvePath(root, 'my-data.yml')]: 'different: { key: hello }',
+      [resolvePath(root, 'invalid.yaml')]: 'foo: [}',
+      [resolvePath(root, `${mySubstitution}/my-data.json`)]: '{"foo":"bar"}',
+    } as { [key: string]: string }
+  )[path];
 
   if (!content) {
     throw new Error('File not found!');

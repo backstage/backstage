@@ -28,7 +28,7 @@ import {
 import { stripFirstDirectoryFromPath } from './util';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
-const TarParseStream = (Parse as unknown) as { new (): ParseStream };
+const TarParseStream = Parse as unknown as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
 
@@ -43,7 +43,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
     private readonly subPath: string,
     private readonly workDir: string,
     public readonly etag: string,
-    private readonly filter?: (path: string) => boolean,
+    private readonly filter?: (path: string, info: { size: number }) => boolean,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
@@ -92,7 +92,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
       const path = relativePath.slice(this.subPath.length);
       if (this.filter) {
-        if (!this.filter(path)) {
+        if (!this.filter(path, { size: entry.remain })) {
           entry.resume();
           return;
         }
@@ -155,7 +155,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
       tar.extract({
         strip,
         cwd: dir,
-        filter: path => {
+        filter: (path, stat) => {
           // File path relative to the root extracted directory. Will remove the
           // top level dir name from the path since its name is hard to predetermine.
           const relativePath = stripFirstDirectoryFromPath(path);
@@ -164,7 +164,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
           }
           if (this.filter) {
             const innerPath = path.split('/').slice(strip).join('/');
-            return this.filter(innerPath);
+            return this.filter(innerPath, { size: stat.size });
           }
           return true;
         },

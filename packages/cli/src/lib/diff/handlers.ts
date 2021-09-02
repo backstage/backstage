@@ -16,6 +16,7 @@
 
 import chalk from 'chalk';
 import { diffLines } from 'diff';
+import { sep, posix } from 'path';
 import { FileDiff, PromptFunc, FileHandler, WriteFileFunc } from './types';
 
 function sortObjectKeys(obj: Record<string, unknown>) {
@@ -281,7 +282,7 @@ export async function handleAllFiles(
   promptFunc: PromptFunc,
 ) {
   for (const file of files) {
-    const { path } = file;
+    const path = file.path.split(sep).join(posix.sep);
     const fileHandler = fileHandlers.find(handler =>
       handler.patterns.some(pattern =>
         typeof pattern === 'string' ? pattern === path : pattern.test(path),

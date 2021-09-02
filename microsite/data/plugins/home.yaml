@@ -1,0 +1,9 @@
+---
+title: Home
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Discovery
+description: This plugin provides a composable home page, and ability to create home page components
+documentation: https://github.com/backstage/backstage/blob/master/plugins/home/README.md
+iconUrl: img/home.png
+npmPackageName: '@backstage/plugin-home'

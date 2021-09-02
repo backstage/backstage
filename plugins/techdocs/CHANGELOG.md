@@ -1,5 +1,103 @@
 # @backstage/plugin-techdocs
 
+## 0.11.0
+
+### Minor Changes
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+- 787bc0826: The TechDocs plugin has completed the migration to the Composability API. In
+  order to update to this version, please ensure you've made all necessary
+  changes to your `App.tsx` file as outlined in the [create-app changelog][cacl].
+
+  [cacl]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md
+
+### Patch Changes
+
+- 90c68a2ca: Fix Techdocs feedback icon link for GitHub URLs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.13
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.10.4
+
+### Patch Changes
+
+- a440d3b38: Expose a new composable `TechDocsIndexPage` and a `DefaultTechDocsHome` with support for starring docs and filtering on owned, starred, owner, and tags.
+
+  You can migrate to the new UI view by making the following changes in your `App.tsx`:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 8a3e46591: Switch `EventSource` implementation with header support from a Node.js API-based one to an XHR-based one.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.10.3
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- db58cf06c: Avoid sanitize safe links in the header of document pages.
+- 1d65bd490: Fix Techdocs feedback icon link for GitLab URLs with subgroup(s) in path
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 11c370af2: Optimize load times by only fetching entities with the `backstage.io/techdocs-ref` annotation
+- 2b1ac002d: TechDocs now uses a "safe by default" sanitization library, rather than relying on its own, hard-coded list of allowable tags and attributes.
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+
 ## 0.10.1
 
 ### Patch Changes

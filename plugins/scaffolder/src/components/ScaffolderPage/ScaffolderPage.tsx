@@ -17,11 +17,13 @@
 import {
   Content,
   ContentHeader,
+  CreateButton,
   Header,
   Lifecycle,
   Page,
   SupportButton,
 } from '@backstage/core-components';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -30,9 +32,8 @@ import {
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { Button, makeStyles } from '@material-ui/core';
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core';
+import React, { ComponentType } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
@@ -46,7 +47,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ScaffolderPageContents = () => {
+export type ScaffolderPageProps = {
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
+};
+
+export const ScaffolderPageContents = ({
+  TemplateCardComponent,
+}: ScaffolderPageProps) => {
   const styles = useStyles();
 
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
@@ -64,16 +73,10 @@ export const ScaffolderPageContents = () => {
       />
       <Content>
         <ContentHeader title="Available Templates">
-          {registerComponentLink && (
-            <Button
-              component={RouterLink}
-              variant="contained"
-              color="primary"
-              to={registerComponentLink()}
-            >
-              Register Existing Component
-            </Button>
-          )}
+          <CreateButton
+            title="Register Existing Component"
+            to={registerComponentLink && registerComponentLink()}
+          />
           <SupportButton>
             Create new software components using standard templates. Different
             templates create different kinds of components (services, websites,
@@ -93,7 +96,7 @@ export const ScaffolderPageContents = () => {
             <EntityTagPicker />
           </div>
           <div>
-            <TemplateList />
+            <TemplateList TemplateCardComponent={TemplateCardComponent} />
           </div>
         </div>
       </Content>
@@ -101,8 +104,10 @@ export const ScaffolderPageContents = () => {
   );
 };
 
-export const ScaffolderPage = () => (
+export const ScaffolderPage = ({
+  TemplateCardComponent,
+}: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents />
+    <ScaffolderPageContents TemplateCardComponent={TemplateCardComponent} />
   </EntityListProvider>
 );

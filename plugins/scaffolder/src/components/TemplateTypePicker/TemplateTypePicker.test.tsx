@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { renderWithEffects } from '../../../../../packages/test-utils-core/src';
+import { renderWithEffects } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {
@@ -65,17 +65,17 @@ const entities: Entity[] = [
 const apis = ApiRegistry.from([
   [
     catalogApiRef,
-    ({
+    {
       getEntities: jest
         .fn()
         .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as unknown) as CatalogApi,
+    } as unknown as CatalogApi,
   ],
   [
     alertApiRef,
-    ({
+    {
       post: jest.fn(),
-    } as unknown) as AlertApi,
+    } as unknown as AlertApi,
   ],
 ]);
 

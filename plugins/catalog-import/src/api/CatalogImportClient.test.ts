@@ -17,7 +17,7 @@
 const octokit = {
   repos: {
     get: () => Promise.resolve({ data: { default_branch: 'main' } }),
-    createOrUpdateFileContents: jest.fn().mockImplementation(async () => {}),
+    createOrUpdateFileContents: jest.fn(async () => {}),
   },
   search: {
     code: jest.fn(),
@@ -26,10 +26,10 @@ const octokit = {
     getRef: async () => ({
       data: { object: { sha: 'any' } },
     }),
-    createRef: jest.fn().mockImplementation(async () => {}),
+    createRef: jest.fn(async () => {}),
   },
   pulls: {
-    create: jest.fn().mockImplementation(async () => ({
+    create: jest.fn(async () => ({
       data: {
         html_url: 'http://pull/request/0',
       },
@@ -46,6 +46,8 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
+import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
+import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
@@ -53,9 +55,6 @@ import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
-
-import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
@@ -119,6 +118,11 @@ describe('CatalogImportClient', () => {
     });
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
   describe('analyzeUrl', () => {
     it('should add yaml location', async () => {
       catalogApi.addLocation.mockResolvedValueOnce({
@@ -167,6 +171,103 @@ describe('CatalogImportClient', () => {
       });
     });
 
+    it('should add yaml location, if url includes query parameter named path=', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target:
+            'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity-1',
+              namespace: 'my-namespace-1',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity-1',
+                namespace: 'my-namespace-1',
+              },
+            ],
+            target:
+              'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target:
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        dryRun: true,
+      });
+    });
+
+    it('should add yaml location, if url includes query parameters', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'http://example.com/folder/catalog-info.yaml?branch=test',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity',
+                namespace: 'my-namespace',
+              },
+            ],
+            target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        dryRun: true,
+      });
+    });
+
     it('should reject for integrations that are not github ones', async () => {
       await expect(
         catalogImportClient.analyzeUrl(
@@ -192,7 +293,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find locations from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: {
           total_count: 2,
           items: [
@@ -248,7 +349,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find repository from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: { total_count: 0, items: [] },
       });
 
@@ -312,7 +413,7 @@ describe('CatalogImportClient', () => {
       });
 
       expect(
-        ((new Octokit().git.createRef as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -320,7 +421,7 @@ describe('CatalogImportClient', () => {
         sha: 'any',
       });
       expect(
-        ((new Octokit().repos.createOrUpdateFileContents as any) as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
           .mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
@@ -331,7 +432,7 @@ describe('CatalogImportClient', () => {
         branch: 'backstage-integration',
       });
       expect(
-        ((new Octokit().pulls.create as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',

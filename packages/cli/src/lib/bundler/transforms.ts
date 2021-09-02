@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import webpack, { Module, Plugin } from 'webpack';
+import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
-  loaders: Module['rules'];
-  plugins: Plugin[];
+  loaders: ModuleOptions['rules'];
+  plugins: WebpackPluginInstance[];
 };
 
 type TransformOptions = {
@@ -49,6 +49,12 @@ export const transforms = (options: TransformOptions): Transforms => {
       options: {
         transforms: ['jsx', ...extraTransforms],
         production: !isDev,
+      },
+    },
+    {
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
       },
     },
     {
@@ -84,6 +90,17 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
+      test: /\.(eot|woff|woff2|ttf)$/,
+      use: [
+        {
+          loader: require.resolve('file-loader'),
+          options: {
+            name: 'static/[name].[hash:8].[ext]',
+          },
+        },
+      ],
+    },
+    {
       test: /\.ya?ml$/,
       use: require.resolve('yml-loader'),
     },
@@ -105,7 +122,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<Plugin>();
+  const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());

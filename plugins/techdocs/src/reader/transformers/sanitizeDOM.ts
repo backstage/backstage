@@ -14,11 +14,32 @@
  * limitations under the License.
  */
 
+const TECHDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css$/;
+const GOOGLE_FONTS = /^https:\/\/fonts\.googleapis\.com/;
+const GSTATIC_FONTS = /^https:\/\/fonts\.gstatic\.com/;
+
+export const safeLinksHook = (node: Element) => {
+  if (node.nodeName && node.nodeName === 'LINK') {
+    const href = node.getAttribute('href') || '';
+    if (href.match(TECHDOCS_CSS)) {
+      node.setAttribute('rel', 'stylesheet');
+    }
+    if (href.match(GOOGLE_FONTS)) {
+      node.setAttribute('rel', 'stylesheet');
+    }
+    if (href.match(GSTATIC_FONTS)) {
+      node.setAttribute('rel', 'preconnect');
+    }
+  }
+  return node;
+};
+
 import DOMPurify from 'dompurify';
 import type { Transformer } from './transformer';
 
 export const sanitizeDOM = (): Transformer => {
   return dom => {
+    DOMPurify.addHook('afterSanitizeAttributes', safeLinksHook);
     return DOMPurify.sanitize(dom.innerHTML, {
       ADD_TAGS: ['link'],
       FORBID_TAGS: ['style'],

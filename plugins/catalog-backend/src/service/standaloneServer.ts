@@ -49,11 +49,8 @@ export async function startStandaloneServer(
     config,
     reader,
   });
-  const {
-    entitiesCatalog,
-    locationsCatalog,
-    higherOrderOperation,
-  } = await builder.build();
+  const { entitiesCatalog, locationsCatalog, higherOrderOperation } =
+    await builder.build();
 
   logger.debug('Starting application server...');
   const router = await createRouter({

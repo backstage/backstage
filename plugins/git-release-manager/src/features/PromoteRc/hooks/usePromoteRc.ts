@@ -45,12 +45,8 @@ export function usePromoteRc({
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
   const { project } = useProjectContext();
-  const {
-    responseSteps,
-    addStepToResponseSteps,
-    asyncCatcher,
-    abortIfError,
-  } = useResponseSteps();
+  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
+    useResponseSteps();
 
   /**
    * (1) Fetch most recent release branch commit

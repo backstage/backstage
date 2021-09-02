@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { isChildPath } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
+import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import { resolve as resolvePath } from 'path';
+import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { RemoteProtocol } from '../prepare/types';
 import { SupportedGeneratorKey } from './types';
 
 // TODO: Implement proper support for more generators.
@@ -81,63 +82,42 @@ export const runCommand = async ({
 };
 
 /**
- * Return true if mkdocs can compile docs with provided repo_url
- *
- * Valid repo_url examples in mkdocs.yml
- * - https://github.com/backstage/backstage
- * - https://gitlab.com/org/repo/
- * - http://github.com/backstage/backstage
- * - A http(s) protocol URL to the root of the repository
- *
- * Invalid repo_url examples in mkdocs.yml
- * - https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component
- * - (anything that is not valid as described above)
- *
- * @param {string} repoUrl URL supposed to be used as repo_url in mkdocs.yml
- * @param {RemoteProtocol} locationType Type of source code host - github, gitlab, dir, url, etc.
- * @returns {boolean}
- */
-export const isValidRepoUrlForMkdocs = (
-  repoUrl: string,
-  locationType: RemoteProtocol,
-): boolean => {
-  // Trim trailing slash
-  const cleanRepoUrl = repoUrl.replace(/\/$/, '');
-
-  if (locationType === 'github' || locationType === 'gitlab') {
-    // A valid repoUrl to the root of the repository will be split into 5 strings if split using the / delimiter.
-    // We do not want URLs which have more than that number of forward slashes since they will signify a non-root location
-    // Note: This is not the best possible implementation but will work most of the times.. Feel free to improve or
-    // highlight edge cases.
-    return cleanRepoUrl.split('/').length === 5;
-  }
-
-  return false;
-};
-
-/**
- * Return a valid URL of the repository used in backstage.io/techdocs-ref annotation.
- * Return undefined if the `target` is not valid in context of repo_url in mkdocs.yml
- * Alter URL so that it is a valid repo_url config in mkdocs.yml
+ * Return the source url for MkDocs based on the backstage.io/techdocs-ref annotation.
+ * Depending on the type of target, it can either return a repo_url, an edit_uri, both, or none.
  *
  * @param {ParsedLocationAnnotation} parsedLocationAnnotation Object with location url and type
- * @returns {string | undefined}
+ * @param {ScmIntegrationRegistry} scmIntegrations the scmIntegration to do url transformations
+ * @param {string} docsFolder the configured docs folder in the mkdocs.yml (defaults to 'docs')
+ * @returns the settings for the mkdocs.yml
  */
 export const getRepoUrlFromLocationAnnotation = (
   parsedLocationAnnotation: ParsedLocationAnnotation,
-): string | undefined => {
+  scmIntegrations: ScmIntegrationRegistry,
+  docsFolder: string = 'docs',
+): { repo_url?: string; edit_uri?: string } => {
   const { type: locationType, target } = parsedLocationAnnotation;
 
-  // Add more options from the RemoteProtocol type of parsedLocationAnnotation.type here
-  // when TechDocs supports more hosts and if mkdocs can generated an Edit URL for them.
-  const supportedHosts = ['github', 'gitlab'];
+  if (locationType === 'url') {
+    const integration = scmIntegrations.byUrl(target);
 
-  if (supportedHosts.includes(locationType)) {
-    // Trim .git or .git/ from the end of repository url
-    return target.replace(/.git\/*$/, '');
+    // We only support it for github and gitlab for now as the edit_uri
+    // is not properly supported for others yet.
+    if (integration && ['github', 'gitlab'].includes(integration.type)) {
+      // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
+      const { filepathtype } = gitUrlParse(target);
+      if (filepathtype === '') {
+        return { repo_url: target };
+      }
+
+      const sourceFolder = integration.resolveUrl({
+        url: `./${docsFolder}`,
+        base: target,
+      });
+      return { edit_uri: integration.resolveEditUrl(sourceFolder) };
+    }
   }
 
-  return undefined;
+  return {};
 };
 
 class UnknownTag {
@@ -156,25 +136,49 @@ const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
+ * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
+ * depending on which is present (MkDocs supports both as of v1.2.2).
+ *
+ * @param {string} inputDir base dir to be searched for either an mkdocs.yml or
+ *   mkdocs.yaml file.
+ */
+export const getMkdocsYml = async (
+  inputDir: string,
+): Promise<{ path: string; content: string }> => {
+  let mkdocsYmlPath: string;
+  let mkdocsYmlFileString: string;
+  try {
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch {
+    try {
+      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    } catch (error) {
+      throw new Error(
+        `Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation: ${error.message}`,
+      );
+    }
+  }
+
+  return {
+    path: mkdocsYmlPath,
+    content: mkdocsYmlFileString,
+  };
+};
+
+/**
  * Validating mkdocs config file for incorrect/insecure values
  * Throws on invalid configs
  *
  * @param {string} inputDir base dir to be used as a docs_dir path validity check
- * @param {string} mkdocsYmlPath Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param {string} mkdocsYmlFileString The string contents of the loaded
+ *   mkdocs.yml or equivalent of a docs site
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
-  mkdocsYmlPath: string,
+  mkdocsYmlFileString: string,
 ) => {
-  let mkdocsYmlFileString;
-  try {
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch (error) {
-    throw new Error(
-      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before for validation: ${error.message}`,
-    );
-  }
-
   const mkdocsYml: any = yaml.load(mkdocsYmlFileString, {
     schema: MKDOCS_SCHEMA,
   });
@@ -194,7 +198,7 @@ export const validateMkdocsYaml = async (
  * Update the mkdocs.yml file before TechDocs generator uses it to generate docs site.
  *
  * List of tasks:
- * - Add repo_url if it does not exists
+ * - Add repo_url or edit_uri if it does not exists
  * If mkdocs.yml has a repo_url, the generated docs site gets an Edit button on the pages by default.
  * If repo_url is missing in mkdocs.yml, we will use techdocs annotation of the entity to possibly get
  * the repository URL.
@@ -205,12 +209,18 @@ export const validateMkdocsYaml = async (
  * @param {string} mkdocsYmlPath Absolute path to mkdocs.yml or equivalent of a docs site
  * @param {Logger} logger
  * @param {ParsedLocationAnnotation} parsedLocationAnnotation Object with location url and type
+ * @param {ScmIntegrationRegistry} scmIntegrations the scmIntegration to do url transformations
  */
 export const patchMkdocsYmlPreBuild = async (
   mkdocsYmlPath: string,
   logger: Logger,
   parsedLocationAnnotation: ParsedLocationAnnotation,
+  scmIntegrations: ScmIntegrationRegistry,
 ) => {
+  // We only want to override the mkdocs.yml if it has actually changed. This is relevant if
+  // used with a 'dir' location on the file system as this would permanently update the file.
+  let didEdit = false;
+
   let mkdocsYmlFileString;
   try {
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
@@ -237,23 +247,37 @@ export const patchMkdocsYmlPreBuild = async (
     return;
   }
 
-  // Add repo_url to mkdocs.yml if it is missing. This will enable the Page edit button generated by MkDocs.
-  if (!('repo_url' in mkdocsYml)) {
-    const repoUrl = getRepoUrlFromLocationAnnotation(parsedLocationAnnotation);
-    if (repoUrl !== undefined) {
-      // mkdocs.yml will not build with invalid repo_url. So, make sure it is valid.
-      if (isValidRepoUrlForMkdocs(repoUrl, parsedLocationAnnotation.type)) {
-        mkdocsYml.repo_url = repoUrl;
-      }
+  // Add edit_uri and/or repo_url to mkdocs.yml if it is missing.
+  // This will enable the Page edit button generated by MkDocs.
+  // If the either has been set, keep the original value
+  if (!('repo_url' in mkdocsYml) && !('edit_uri' in mkdocsYml)) {
+    const result = getRepoUrlFromLocationAnnotation(
+      parsedLocationAnnotation,
+      scmIntegrations,
+      mkdocsYml.docs_dir,
+    );
+
+    if (result.repo_url || result.edit_uri) {
+      mkdocsYml.repo_url = result.repo_url;
+      mkdocsYml.edit_uri = result.edit_uri;
+      didEdit = true;
+
+      logger.info(
+        `Set ${JSON.stringify(
+          result,
+        )}. You can disable this feature by manually setting 'repo_url' or 'edit_uri' according to the MkDocs documentation at https://www.mkdocs.org/user-guide/configuration/#repo_url`,
+      );
     }
   }
 
   try {
-    await fs.writeFile(
-      mkdocsYmlPath,
-      yaml.dump(mkdocsYml, { schema: MKDOCS_SCHEMA }),
-      'utf8',
-    );
+    if (didEdit) {
+      await fs.writeFile(
+        mkdocsYmlPath,
+        yaml.dump(mkdocsYml, { schema: MKDOCS_SCHEMA }),
+        'utf8',
+      );
+    }
   } catch (error) {
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,

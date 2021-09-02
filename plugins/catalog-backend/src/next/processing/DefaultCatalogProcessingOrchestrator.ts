@@ -54,7 +54,8 @@ type Context = {
 };
 
 export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator {
+  implements CatalogProcessingOrchestrator
+{
   constructor(
     private readonly options: {
       processors: CatalogProcessor[];

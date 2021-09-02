@@ -23,9 +23,18 @@ export {
 export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
 export {
   EntityPickerFieldExtension,
+  EntityNamePickerFieldExtension,
   OwnerPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';
+export {
+  EntityNamePicker,
+  EntityPicker,
+  OwnerPicker,
+  RepoUrlPicker,
+  TextValuePicker,
+} from './components/fields';
+export { FavouriteTemplate } from './components/FavouriteTemplate';

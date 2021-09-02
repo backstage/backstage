@@ -31,13 +31,8 @@ export function getAzureFileFetchUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
 
-    const [
-      empty,
-      userOrOrg,
-      project,
-      srcKeyword,
-      repoName,
-    ] = parsedUrl.pathname.split('/');
+    const [empty, userOrOrg, project, srcKeyword, repoName] =
+      parsedUrl.pathname.split('/');
 
     const path = parsedUrl.searchParams.get('path') || '';
     const ref = parsedUrl.searchParams.get('version')?.substr(2);
@@ -105,7 +100,17 @@ export function getAzureDownloadUrl(url: string): string {
     ? `&scopePath=${encodeURIComponent(filepath)}`
     : '';
 
-  return `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
+  if (resource === 'dev.azure.com') {
+    return `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
+  }
+
+  // For Azure DevOps Server `parseGitUrl` returns the same values
+  // for `organization` and `project` like this: `organization/project/_git`
+  // so we drop `project` and then strip `/_git` from `organization`
+  return `${protocol}://${resource}/${organization.replace(
+    '/_git',
+    '',
+  )}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
 }
 
 /**
@@ -117,13 +122,8 @@ export function getAzureCommitsUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
 
-    const [
-      empty,
-      userOrOrg,
-      project,
-      srcKeyword,
-      repoName,
-    ] = parsedUrl.pathname.split('/');
+    const [empty, userOrOrg, project, srcKeyword, repoName] =
+      parsedUrl.pathname.split('/');
 
     // Remove the "GB" from "GBmain" for example.
     const ref = parsedUrl.searchParams.get('version')?.substr(2);

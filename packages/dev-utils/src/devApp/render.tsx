@@ -96,7 +96,7 @@ class DevAppBuilder {
   registerApi<
     Api,
     Impl extends Api,
-    Deps extends { [name in string]: unknown }
+    Deps extends { [name in string]: unknown },
   >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder {
     this.apis.push(factory);
     return this;
@@ -227,7 +227,11 @@ class DevAppBuilder {
 
     const DevApp = hot(hotModule)(this.build());
 
-    if (window.location.pathname === '/' && this.defaultPage) {
+    if (
+      window.location.pathname === '/' &&
+      this.defaultPage &&
+      this.defaultPage !== '/'
+    ) {
       window.location.pathname = this.defaultPage;
     }
 

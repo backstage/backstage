@@ -65,6 +65,7 @@ export interface Config {
           authorizationUrl: string;
           tokenUrl: string;
           scope?: string;
+          disableRefresh?: boolean;
         };
       };
       oidc?: {

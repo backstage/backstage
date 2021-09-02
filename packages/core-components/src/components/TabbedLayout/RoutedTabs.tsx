@@ -20,9 +20,11 @@ import { Content } from '../../layout/Content';
 import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
 
-export function useSelectedSubRoute(
-  subRoutes: SubRoute[],
-): { index: number; route: SubRoute; element: JSX.Element } {
+export function useSelectedSubRoute(subRoutes: SubRoute[]): {
+  index: number;
+  route: SubRoute;
+  element: JSX.Element;
+} {
   const params = useParams();
 
   const routes = subRoutes.map(({ path, children }) => ({

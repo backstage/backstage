@@ -93,16 +93,33 @@ describe('SearchResult', () => {
 
   it('Calls children with results set to result.value', async () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
-      result: { loading: false, error: '', value: { results: [] } },
+      result: {
+        loading: false,
+        error: '',
+        value: {
+          totalCount: 1,
+          results: [
+            {
+              type: 'some-type',
+              document: {
+                title: 'some-title',
+                text: 'some-text',
+                location: 'some-location',
+              },
+            },
+          ],
+        },
+      },
     });
 
-    await renderInTestApp(
+    const { getByText } = await renderInTestApp(
       <SearchResult>
         {({ results }) => {
-          expect(results).toEqual([]);
-          return <></>;
+          return <>Results {results.length}</>;
         }}
       </SearchResult>,
     );
+
+    expect(getByText('Results 1')).toBeInTheDocument();
   });
 });

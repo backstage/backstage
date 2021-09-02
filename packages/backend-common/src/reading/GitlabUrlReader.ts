@@ -84,7 +84,7 @@ export class GitlabUrlReader implements UrlReader {
 
     if (response.ok) {
       return {
-        buffer: async () => Buffer.from(await response.text()),
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
         etag: response.headers.get('ETag') ?? undefined,
       };
     }
@@ -170,7 +170,7 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: (archiveGitLabResponse.body as unknown) as Readable,
+      stream: archiveGitLabResponse.body as unknown as Readable,
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,

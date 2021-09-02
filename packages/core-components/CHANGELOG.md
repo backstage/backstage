@@ -1,5 +1,91 @@
 # @backstage/core-components
 
+## 0.3.3
+
+### Patch Changes
+
+- d041655a7: Fix accessibility issue in `<CopyTextButton />`. The component doesn't render anymore an hidden `textarea` containing the text to be copied.
+- 6d76bca85: Handle changes to nodes passed into `<DependencyGraph>` correctly.
+- Updated dependencies
+  - @backstage/config@0.1.8
+
+## 0.3.2
+
+### Patch Changes
+
+- a3f3cff3b: Change the default hover experience for the sidebar to be not jumpy & add visual separation between sidebar & Entity Page tabs for dark mode.
+- 6b1afe8c0: Add a configurable `palette.bursts.gradient` property to the Backstage theme, to support customizing the gradients in the `ItemCard` header.
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/theme@0.2.10
+
+## 0.3.1
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 55a5dbd54: Fix for `SidebarItem` matching the active route too broadly.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.3.0
+
+### Minor Changes
+
+- 7bf006210: Remove unused props from InfoCard prop type
+
+### Patch Changes
+
+- c4d8ff963: Switched frontend identity code to use `token` instead of the deprecated `idToken` field
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.2.0
+
+### Minor Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.1.6
 
 ### Patch Changes

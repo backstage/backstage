@@ -16,13 +16,14 @@
 
 export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
+export * from './components/CatalogKindHeader';
 export * from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
 export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
 export * from './components/CatalogTable/columns';
-export * from './components/CreateComponentButton';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
+export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
