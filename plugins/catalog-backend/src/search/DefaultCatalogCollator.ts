@@ -17,9 +17,12 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
-import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import {
+  CatalogApi,
+  CatalogClient,
+  CatalogEntitiesRequest,
+} from '@backstage/catalog-client';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -32,7 +35,8 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
-  protected filterUrl?: string;
+  protected filter?: CatalogEntitiesRequest['filter'];
+  protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
 
   static fromConfig(
@@ -51,15 +55,19 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery,
     locationTemplate,
     filter,
+    catalogClient,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
   }) {
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
-    this.filterUrl = mapFilterToQueryString(filter);
+    this.filter = filter;
+    this.catalogClient =
+      catalogClient || new CatalogClient({ discoveryApi: discovery });
   }
 
   protected applyArgsToFormat(
@@ -74,10 +82,10 @@ export class DefaultCatalogCollator implements DocumentCollator {
   }
 
   async execute() {
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities${this.filterUrl || ''}`);
-    const entities: Entity[] = await res.json();
-    return entities.map((entity: Entity): CatalogEntityDocument => {
+    const response = await this.catalogClient.getEntities({
+      filter: this.filter,
+    });
+    return response.items.map((entity: Entity): CatalogEntityDocument => {
       return {
         title: entity.metadata.name,
         location: this.applyArgsToFormat(this.locationTemplate, {
@@ -94,19 +102,4 @@ export class DefaultCatalogCollator implements DocumentCollator {
       };
     });
   }
-}
-
-export function mapFilterToQueryString(
-  filter: CatalogEntitiesRequest['filter'],
-): string | undefined {
-  if (!filter) {
-    return undefined;
-  }
-
-  const mappedFilters = Object.entries(filter).map(kvp => {
-    const type = kvp[0];
-    const values = [].concat(kvp[1]);
-    return `${type}=${values.join(',')}`;
-  });
-  return `?filter=${mappedFilters.join(',')}`;
 }
