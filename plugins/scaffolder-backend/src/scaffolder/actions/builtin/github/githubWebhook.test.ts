@@ -33,10 +33,10 @@ describe('github:repository:webhook:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const webhookSecretDefault = 'aafdfdivierernfdk23f';
+  const defaultWebhookSecret = 'aafdfdivierernfdk23f';
   const action = createGithubWebhookAction({
     integrations,
-    webhookSecretDefault,
+    defaultWebhookSecret,
   });
 
   const mockContext = {
@@ -73,7 +73,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -116,7 +116,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -137,7 +137,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'json',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -158,7 +158,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -179,7 +179,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -200,7 +200,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecretDefault,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
