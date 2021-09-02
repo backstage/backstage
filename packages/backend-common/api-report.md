@@ -598,6 +598,11 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
+// Warning: (ae-missing-release-tag) "stripFirstDirectoryFromPath" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function stripFirstDirectoryFromPath(path: string): string;
+
 // Warning: (ae-missing-release-tag) "UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
