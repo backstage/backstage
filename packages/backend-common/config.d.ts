@@ -73,7 +73,7 @@ export interface Config {
        * Arbitrary config object to pass to knex when initialising (https://knexjs.org/#Installation-client).
        * Most notable is the debug and asyncStackTraces booleans
        */
-      additionalKnexConfig: object;
+      additionalKnexConfig?: object;
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {
@@ -95,7 +95,7 @@ export interface Config {
            *
            * This is merged recursively into the base additionalKnexConfig
            */
-          additionalKnexConfig: object;
+          additionalKnexConfig?: object;
         };
       };
     };
