@@ -93,11 +93,9 @@ export const SearchContextProvider = ({
     !result.loading && !result.error && result.value?.previousPageCursor;
   const fetchNextPage = useCallback(() => {
     setPageCursor(result.value?.nextPageCursor);
-    resetScrollPosition();
   }, [result.value?.nextPageCursor]);
   const fetchPreviousPage = useCallback(() => {
     setPageCursor(result.value?.previousPageCursor);
-    resetScrollPosition();
   }, [result.value?.previousPageCursor]);
 
   useEffect(() => {
@@ -131,7 +129,3 @@ export const useSearch = () => {
   }
   return context;
 };
-
-function resetScrollPosition() {
-  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-}

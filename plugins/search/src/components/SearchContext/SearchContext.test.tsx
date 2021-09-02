@@ -43,7 +43,6 @@ describe('SearchContext', () => {
   beforeEach(() => {
     query.mockResolvedValue({});
     (useApi as jest.Mock).mockReturnValue({ query: query });
-    window.scrollTo = jest.fn();
   });
 
   afterAll(() => {
