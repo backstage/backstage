@@ -23,10 +23,9 @@ import { useSearch } from '../SearchContext';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     gap: theme.spacing(2),
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    margin: theme.spacing(4),
   },
 }));
 

@@ -8,3 +8,6 @@
 ---
 
 Implement optional `pageCursor` based paging in search.
+
+To use paging in your app, add a `<SearchResultPager />` to your
+`SearchPage.tsx`.

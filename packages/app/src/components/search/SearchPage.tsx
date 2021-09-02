@@ -21,6 +21,7 @@ import {
   SearchBar,
   SearchFilter,
   SearchResult,
+  SearchResultPager,
   SearchType,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
@@ -104,6 +105,7 @@ const SearchPage = () => {
                 </List>
               )}
             </SearchResult>
+            <SearchResultPager />
           </Grid>
         </Grid>
       </Content>
