@@ -26,3 +26,4 @@ export * from './reading';
 export * from './scm';
 export * from './service';
 export * from './util';
+export * from './reading/tree/util';

@@ -218,6 +218,7 @@ describe('fetch:template', () => {
 
       beforeEach(async () => {
         context = mockContext({
+          stripFirstDirectoryFromPath: false,
           values: {
             name: 'test-project',
             count: 1234,
@@ -258,6 +259,61 @@ describe('fetch:template', () => {
         await expect(
           fs.readFile(
             `${workspacePath}/target/processed/templated-content-test-project.txt`,
+            'utf-8',
+          ),
+        ).resolves.toEqual('1234');
+      });
+    });
+    describe('stripFirstDirectoryFromPath', () => {
+      let context: ActionContext<FetchTemplateInput>;
+
+      beforeEach(async () => {
+        context = mockContext({
+          stripFirstDirectoryFromPath: true,
+          values: {
+            name: 'test-project',
+            count: 1234,
+          },
+          copyWithoutRender: ['.unprocessed'],
+        });
+
+        mockFetchContents.mockImplementation(({ outputPath }) => {
+          mockFs({
+            [outputPath]: {
+              processed: {
+                subfolder1: {
+                  subfolder2: {
+                    'templated-content-${{ values.name }}.txt':
+                      '${{ values.count }}',
+                  },
+                },
+              },
+              '.unprocessed': {
+                'templated-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
+              },
+            },
+          });
+
+          return Promise.resolve();
+        });
+
+        await action.handler(context);
+      });
+
+      it('removed first folder from template output file located in the first folder', async () => {
+        await expect(
+          fs.readFile(
+            `${workspacePath}/target/templated-content-\${{ values.name }}.txt`,
+            'utf-8',
+          ),
+        ).resolves.toEqual('${{ values.count }}');
+      });
+
+      it('removed only the first folder from template output file located in sub folders', async () => {
+        await expect(
+          fs.readFile(
+            `${workspacePath}/target/subfolder1/subfolder2/templated-content-test-project.txt`,
             'utf-8',
           ),
         ).resolves.toEqual('1234');

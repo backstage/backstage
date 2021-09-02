@@ -15,7 +15,11 @@
  */
 
 import { resolve as resolvePath, extname } from 'path';
-import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
+import {
+  resolveSafeChildPath,
+  UrlReader,
+  stripFirstDirectoryFromPath,
+} from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
@@ -50,6 +54,7 @@ type ExtensionInput = {
 export type FetchTemplateInput = {
   url: string;
   targetPath?: string;
+  stripFirstDirectoryFromPath?: boolean;
   values: any;
 } & CookieCompatInput &
   ExtensionInput;
@@ -74,6 +79,12 @@ export function createFetchTemplateAction(options: {
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
             type: 'string',
+          },
+          stripFirstDirectoryFromPath: {
+            title: 'Strip First Directory From File Path',
+            description:
+              'When writing files to the new directory, strip the first path.',
+            type: 'boolean',
           },
           targetPath: {
             title: 'Target Path',
@@ -227,7 +238,9 @@ export function createFetchTemplateAction(options: {
         let renderFilename: boolean;
         let renderContents: boolean;
 
-        let localOutputPath = location;
+        let localOutputPath = ctx.input.stripFirstDirectoryFromPath
+          ? stripFirstDirectoryFromPath(location)
+          : location;
         if (extension) {
           renderFilename = true;
           renderContents = extname(localOutputPath) === extension;
