@@ -129,7 +129,3 @@ export const useSearch = () => {
   }
   return context;
 };
-
-function resetScrollPosition() {
-  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-}
