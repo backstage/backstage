@@ -143,6 +143,11 @@ export const SearchResult: ({
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchResultPager: () => JSX.Element;
+
 // Warning: (ae-forgotten-export) The symbol "SearchTypeProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SearchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -167,7 +172,7 @@ export const useSearch: () => SearchContextValue;
 
 // Warnings were encountered during analysis:
 //
-// src/components/SearchContext/SearchContext.d.ts:19:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
+// src/components/SearchContext/SearchContext.d.ts:21:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 

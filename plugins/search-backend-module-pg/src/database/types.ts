@@ -20,6 +20,8 @@ export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;
   types?: string[];
   pgTerm?: string;
+  offset: number;
+  limit: number;
 }
 
 export interface DatabaseStore {

@@ -1,5 +1,42 @@
 # @backstage/techdocs-common
 
+## 0.10.0
+
+### Minor Changes
+
+- 8b0f6f860: Set the correct `edit_uri` or `repo_url` for documentation pages that are hosted on GitHub and GitLab.
+
+  The constructor of the `TechDocsGenerator` changed.
+  Prefer the use of `TechdocsGenerator.fromConfig(…)` instead:
+
+  ```diff
+  - const techdocsGenerator = new TechdocsGenerator({
+  + const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
+      logger,
+      containerRunner,
+  -   config,
+    });
+  ```
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- 3624616e7: "Local" (out-of-the-box) publisher explicitly follows lower-case entity triplet
+  logic.
+- 67ba7e088: Only write the updated `mkdocs.yml` file if the content was updated.
+
+  This keeps local files unchanged if the `dir` annotation is used in combination with the `file` location.
+
+- 8eab6be6a: Force using `posix` path for cloud storage
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.9.0
 
 ### Minor Changes

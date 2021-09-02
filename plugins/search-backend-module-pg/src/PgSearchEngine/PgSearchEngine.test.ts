@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 import { range } from 'lodash';
-import { DatabaseStore, PgSearchQuery } from '../database';
-import { PgSearchEngine } from './PgSearchEngine';
+import { DatabaseStore } from '../database';
+import {
+  ConcretePgSearchQuery,
+  decodePageCursor,
+  encodePageCursor,
+  PgSearchEngine,
+} from './PgSearchEngine';
 
 describe('PgSearchEngine', () => {
   const tx: any = {} as any;
@@ -44,24 +49,42 @@ describe('PgSearchEngine', () => {
       await searchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
+      });
+    });
+
+    it('should pass page cursor', async () => {
+      const actualTranslatedQuery = searchEngine.translator({
+        term: 'Hello',
+        pageCursor: 'MQ==',
+      });
+
+      expect(actualTranslatedQuery).toMatchObject({
+        pgQuery: {
+          pgTerm: '("Hello" | "Hello":*)',
+          offset: 25,
+          limit: 26,
+        },
+        pageSize: 25,
       });
     });
 
     it('should return translated query term', async () => {
       const actualTranslatedQuery = searchEngine.translator({
         term: 'Hello World',
-        pageCursor: '',
-      }) as PgSearchQuery;
+      });
 
       expect(actualTranslatedQuery).toMatchObject({
-        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        pgQuery: {
+          pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+          offset: 0,
+          limit: 26,
+        },
+        pageSize: 25,
       });
     });
 
@@ -69,10 +92,13 @@ describe('PgSearchEngine', () => {
       const actualTranslatedQuery = searchEngine.translator({
         term: 'H&e|l!l*o W\0o(r)l:d',
         pageCursor: '',
-      }) as PgSearchQuery;
+      }) as ConcretePgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
-        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        pgQuery: {
+          pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        },
+        pageSize: 25,
       });
     });
 
@@ -81,13 +107,17 @@ describe('PgSearchEngine', () => {
         term: 'testTerm',
         filters: { kind: 'testKind' },
         types: ['my-filter'],
-        pageCursor: '',
-      }) as PgSearchQuery;
+      });
 
       expect(actualTranslatedQuery).toMatchObject({
-        pgTerm: '("testTerm" | "testTerm":*)',
-        fields: { kind: 'testKind' },
-        types: ['my-filter'],
+        pgQuery: {
+          pgTerm: '("testTerm" | "testTerm":*)',
+          fields: { kind: 'testKind' },
+          types: ['my-filter'],
+          offset: 0,
+          limit: 26,
+        },
+        pageSize: 25,
       });
     });
   });
@@ -151,7 +181,6 @@ describe('PgSearchEngine', () => {
 
       const results = await searchEngine.query({
         term: 'Hello World',
-        pageCursor: '',
       });
 
       expect(results).toEqual({
@@ -165,11 +194,113 @@ describe('PgSearchEngine', () => {
             type: 'my-type',
           },
         ],
+        nextPageCursor: undefined,
       });
       expect(database.transaction).toHaveBeenCalledTimes(1);
       expect(database.query).toHaveBeenCalledWith(tx, {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 0,
+        limit: 26,
       });
     });
+
+    it('should include next page cursor if results exceed page size', async () => {
+      database.transaction.mockImplementation(fn => fn(tx));
+      database.query.mockResolvedValue(
+        Array(30)
+          .fill(0)
+          .map((_, i) => ({
+            document: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: `location-${i}`,
+            },
+            type: 'my-type',
+          })),
+      );
+
+      const results = await searchEngine.query({
+        term: 'Hello World',
+      });
+
+      expect(results).toEqual({
+        results: Array(25)
+          .fill(0)
+          .map((_, i) => ({
+            document: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: `location-${i}`,
+            },
+            type: 'my-type',
+          })),
+        nextPageCursor: 'MQ==',
+      });
+      expect(database.transaction).toHaveBeenCalledTimes(1);
+      expect(database.query).toHaveBeenCalledWith(tx, {
+        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 0,
+        limit: 26,
+      });
+    });
+
+    it('should include previous page cursor if on another page', async () => {
+      database.transaction.mockImplementation(fn => fn(tx));
+      database.query.mockResolvedValue(
+        Array(30)
+          .fill(0)
+          .map((_, i) => ({
+            document: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: `location-${i}`,
+            },
+            type: 'my-type',
+          }))
+          .slice(25),
+      );
+
+      const results = await searchEngine.query({
+        term: 'Hello World',
+        pageCursor: 'MQ==',
+      });
+
+      expect(results).toEqual({
+        results: Array(30)
+          .fill(0)
+          .map((_, i) => ({
+            document: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: `location-${i}`,
+            },
+            type: 'my-type',
+          }))
+          .slice(25),
+        previousPageCursor: 'MA==',
+      });
+      expect(database.transaction).toHaveBeenCalledTimes(1);
+      expect(database.query).toHaveBeenCalledWith(tx, {
+        pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
+        offset: 25,
+        limit: 26,
+      });
+    });
+  });
+});
+
+describe('decodePageCursor', () => {
+  test('should decode page', () => {
+    expect(decodePageCursor('MQ==')).toEqual({ page: 1 });
+  });
+
+  test('should fallback to first page if empty', () => {
+    expect(decodePageCursor()).toEqual({ page: 0 });
+  });
+});
+
+describe('encodePageCursor', () => {
+  test('should encode page', () => {
+    expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
   });
 });

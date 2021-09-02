@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
 import { useLocation, useOutlet } from 'react-router';
-
 import { useSearch } from '../SearchContext';
 import { SearchPage } from './';
 
@@ -74,9 +73,9 @@ describe('SearchPage', () => {
     const expectedTerm = 'justin bieber';
     const expectedTypes = ['software-catalog'];
     const expectedFilters = { [expectedFilterField]: expectedFilterValue };
-    const expectedPageCursor = 'page2-or-something';
+    const expectedPageCursor = 'SOMEPAGE';
 
-    // e.g. ?query=petstore&pageCursor=1&filters[lifecycle][]=experimental&filters[kind]=Component
+    // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
     (useLocation as jest.Mock).mockReturnValueOnce({
       search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
     });
@@ -108,7 +107,7 @@ describe('SearchPage', () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
       term: 'bieber',
       types: ['software-catalog'],
-      pageCursor: 'page2-or-something',
+      pageCursor: 'SOMEPAGE',
       filters: { anyKey: 'anyValue' },
       setTerm: setTermMock,
       setTypes: setTypesMock,
@@ -116,7 +115,7 @@ describe('SearchPage', () => {
       setPageCursor: setPageCursorMock,
     });
     const expectedLocation = encodeURI(
-      '?query=bieber&types[]=software-catalog&pageCursor=page2-or-something&filters[anyKey]=anyValue',
+      '?query=bieber&types[]=software-catalog&pageCursor=SOMEPAGE&filters[anyKey]=anyValue',
     );
 
     await renderInTestApp(<SearchPage />);

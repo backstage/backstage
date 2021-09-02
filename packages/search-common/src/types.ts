@@ -19,7 +19,7 @@ export interface SearchQuery {
   term: string;
   filters?: JsonObject;
   types?: string[];
-  pageCursor: string;
+  pageCursor?: string;
 }
 
 export interface SearchResult {
@@ -29,6 +29,8 @@ export interface SearchResult {
 
 export interface SearchResultSet {
   results: SearchResult[];
+  nextPageCursor?: string;
+  previousPageCursor?: string;
 }
 
 /**
