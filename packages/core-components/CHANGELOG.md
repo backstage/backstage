@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.4.0
+
+### Minor Changes
+
+- 3ed78fca3: Changed the `titleComponent` prop on `ContentHeader` to accept `ReactNode` instead of a React `ComponentType`. Usages of this prop should be converted from passing a component to passing in the rendered element:
+
+  ```diff
+  -<ContentHeader titleComponent={MyComponent}>
+  +<ContentHeader titleComponent={<MyComponent />}>
+  ```
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+
 ## 0.3.3
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog
 
+## 0.6.14
+
+### Patch Changes
+
+- 10db3ce09: Update the `AboutCard` to properly support non-standard entity types and rework the defaults for the build-in kinds.
+
+  This change also uses `useElementFilter(...)` instead of `React.children.count(...)` in `AboutField` to properly recognize whether children are available.
+
+- 7e5f14dda: This change hides pagination counter of search tables and group members list when results fit in one page
+- 3ed78fca3: Added the ability to switch entity kind on the catalog index page. This is a non-breaking change, but if you created a custom `CatalogPage` and wish to use this feature, make the modifications shown on [#6895](https://github.com/backstage/backstage/pull/6895).
+- aaa1dd17b: Use a `Link` for the edit button on the `AboutCard` instead of doing `window.open(...)`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
 ## 0.6.13
 
 ### Patch Changes
