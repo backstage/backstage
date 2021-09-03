@@ -33,10 +33,11 @@ describe('SearchBar', () => {
     term: '',
     filters: {},
     types: ['*'],
+    pageCursor: '',
   };
 
   const query = jest.fn().mockResolvedValue({});
-  const getString = jest.fn().mockResolvedValue('Mock title');
+  const getString = jest.fn().mockReturnValue('Mock title');
 
   const apiRegistry = ApiRegistry.from([
     [configApiRef, { getString }],
