@@ -119,11 +119,12 @@ the final assembly of those (see Stitching below).
 
 ![Processing overview](../../assets/features/catalog/life-of-an-entity_processing.svg)
 
-Entities are always processed one by one. Note how each processor can contribute
-to one or more of the fixed steps in the processing pipeline. First all of the
-processors' contributions to one step are run in the order that the processors
-were registered, then all of their contributions to the next step in the same
-order, and so on.
+Entities are always processed one by one, but all of your catalog service hosts
+collaborate in doing so to distribute the load. Note how each processor can
+contribute to one or more of the fixed steps in the processing pipeline. First
+all of the processors' contributions to one step are run in the order that the
+processors were registered, then all of their contributions to the next step in
+the same order, and so on.
 
 Each step has the opportunity to optionally modify the entity, and to optionally
 emit other information. For example, the processor might look at information in
