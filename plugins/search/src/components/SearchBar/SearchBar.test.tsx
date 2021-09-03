@@ -20,11 +20,12 @@ import userEvent from '@testing-library/user-event';
 import { SearchContextProvider } from '../SearchContext';
 
 import { SearchBar } from './SearchBar';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { searchApiRef } from '../../apis';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn().mockReturnValue({}),
 }));
 
 describe('SearchBar', () => {
@@ -32,13 +33,19 @@ describe('SearchBar', () => {
     term: '',
     filters: {},
     types: ['*'],
+    pageCursor: '',
   };
 
-  const name = 'Search term';
-  const term = 'term';
-
   const query = jest.fn().mockResolvedValue({});
-  (useApi as jest.Mock).mockReturnValue({ query });
+  const getString = jest.fn().mockReturnValue('Mock title');
+
+  const apiRegistry = ApiRegistry.from([
+    [configApiRef, { getString }],
+    [searchApiRef, { query }],
+  ]);
+
+  const name = 'Search';
+  const term = 'term';
 
   afterAll(() => {
     jest.resetAllMocks();
@@ -46,9 +53,11 @@ describe('SearchBar', () => {
 
   it('Renders without exploding', async () => {
     render(
-      <SearchContextProvider initialState={initialState}>
-        <SearchBar />
-      </SearchContextProvider>,
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchBar />
+        </SearchContextProvider>
+      </ApiProvider>,
     );
 
     await waitFor(() => {
@@ -58,9 +67,12 @@ describe('SearchBar', () => {
 
   it('Renders based on initial search', async () => {
     render(
-      <SearchContextProvider initialState={{ ...initialState, term }}>
-        <SearchBar />
-      </SearchContextProvider>,
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={{ ...initialState, term }}>
+          <SearchBar />
+        </SearchContextProvider>
+        ,
+      </ApiProvider>,
     );
 
     await waitFor(() => {
@@ -70,9 +82,12 @@ describe('SearchBar', () => {
 
   it('Updates term state when text is entered', async () => {
     render(
-      <SearchContextProvider initialState={initialState}>
-        <SearchBar />
-      </SearchContextProvider>,
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchBar />
+        </SearchContextProvider>
+        ,
+      </ApiProvider>,
     );
 
     const textbox = screen.getByRole('textbox', { name });
@@ -92,16 +107,18 @@ describe('SearchBar', () => {
 
   it('Clear button clears term state', async () => {
     render(
-      <SearchContextProvider initialState={{ ...initialState, term }}>
-        <SearchBar />
-      </SearchContextProvider>,
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={{ ...initialState, term }}>
+          <SearchBar />
+        </SearchContextProvider>
+      </ApiProvider>,
     );
 
     await waitFor(() => {
       expect(screen.getByRole('textbox', { name })).toHaveValue(term);
     });
 
-    userEvent.click(screen.getByRole('button', { name: 'Clear term' }));
+    userEvent.click(screen.getByRole('button', { name: 'Clear' }));
 
     await waitFor(() => {
       expect(screen.getByRole('textbox', { name })).toHaveValue('');
@@ -118,9 +135,12 @@ describe('SearchBar', () => {
     const debounceTime = 600;
 
     render(
-      <SearchContextProvider initialState={initialState}>
-        <SearchBar debounceTime={debounceTime} />
-      </SearchContextProvider>,
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchBar debounceTime={debounceTime} />
+        </SearchContextProvider>
+        ,
+      </ApiProvider>,
     );
 
     await waitFor(() => {

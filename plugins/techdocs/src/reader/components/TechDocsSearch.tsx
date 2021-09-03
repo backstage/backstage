@@ -141,7 +141,7 @@ const TechDocsSearchBar = ({
               ...params.InputProps,
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton aria-label="Query term" disabled>
+                  <IconButton aria-label="Query" disabled>
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>

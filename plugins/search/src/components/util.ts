@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import qs from 'qs';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { rootRouteRef } from '../plugin';
 
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-} from './plugin';
-export { SettingsModal } from './components';
-export { createCardExtension } from './extensions';
+import { useRouteRef } from '@backstage/core-plugin-api';
+
+export const useNavigateToQuery = () => {
+  const searchRoute = useRouteRef(rootRouteRef);
+  const navigate = useNavigate();
+  return useCallback(
+    ({ query }: { query: string }): void => {
+      const queryString = qs.stringify({ query }, { addQueryPrefix: true });
+
+      navigate(`${searchRoute()}${queryString}`);
+    },
+    [navigate, searchRoute],
+  );
+};
