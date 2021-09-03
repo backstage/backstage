@@ -73,7 +73,14 @@ export default async function createPlugin({
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultTechDocsCollator({ discovery, logger }),
+    collator: new DefaultTechDocsCollator({
+      discovery,
+      logger,
+      legacyPathCasing:
+        config.getOptionalBoolean(
+          'techdocs.legacyUseCaseSensitiveTripletPaths',
+        ) || false,
+    }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent

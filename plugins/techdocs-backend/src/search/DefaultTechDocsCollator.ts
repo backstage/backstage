@@ -36,6 +36,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   private readonly logger: Logger;
   private readonly catalogClient: CatalogApi;
   private readonly parallelismLimit: number;
+  private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
 
   constructor({
@@ -44,12 +45,14 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     logger,
     catalogClient,
     parallelismLimit = 10,
+    legacyPathCasing = false,
   }: {
     discovery: PluginEndpointDiscovery;
     logger: Logger;
     locationTemplate?: string;
     catalogClient?: CatalogApi;
     parallelismLimit?: number;
+    legacyPathCasing?: boolean;
   }) {
     this.discovery = discovery;
     this.locationTemplate =
@@ -58,6 +61,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.parallelismLimit = parallelismLimit;
+    this.legacyPathCasing = legacyPathCasing;
   }
 
   async execute() {
@@ -80,7 +84,9 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       .map((entity: Entity) =>
         limit(async (): Promise<TechDocsDocument[]> => {
           const entityInfo = {
-            kind: entity.kind,
+            kind: this.legacyPathCasing
+              ? entity.kind
+              : entity.kind.toLowerCase(),
             namespace: entity.metadata.namespace || 'default',
             name: entity.metadata.name,
           };

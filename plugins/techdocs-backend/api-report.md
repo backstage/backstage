@@ -31,12 +31,14 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     logger,
     catalogClient,
     parallelismLimit,
+    legacyPathCasing,
   }: {
     discovery: PluginEndpointDiscovery;
     logger: Logger_2;
     locationTemplate?: string;
     catalogClient?: CatalogApi;
     parallelismLimit?: number;
+    legacyPathCasing?: boolean;
   });
   // (undocumented)
   protected applyArgsToFormat(
