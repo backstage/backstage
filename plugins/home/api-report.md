@@ -84,6 +84,19 @@ export const HomepageCompositionRoot: (props: {
   children?: ReactNode;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "HomePageRandomJoke" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HomePageRandomJoke: ({
+  Renderer,
+  title: overrideTitle,
+  ...childProps
+}: ComponentRenderer & {
+  title?: string | undefined;
+} & {
+  defaultCategory?: 'any' | 'programming' | undefined;
+}) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -93,19 +106,6 @@ export const homePlugin: BackstagePlugin<
   },
   {}
 >;
-
-// Warning: (ae-missing-release-tag) "RandomJokeHomePageComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const RandomJokeHomePageComponent: ({
-  Renderer,
-  title: overrideTitle,
-  ...childProps
-}: ComponentRenderer & {
-  title?: string | undefined;
-} & {
-  defaultCategory?: 'any' | 'programming' | undefined;
-}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SettingsModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

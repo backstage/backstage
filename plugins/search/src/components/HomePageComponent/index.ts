@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-} from './plugin';
-export { SettingsModal } from './components';
-export { createCardExtension } from './extensions';
+export { HomePageSearchBar } from './HomePageSearchBar';
