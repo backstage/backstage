@@ -17,16 +17,19 @@
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
 import { CatalogProcessor } from './types';
 
 export type ResolverRead = (url: string) => Promise<Buffer>;
+export type ResolverResolveUrl = (url: string, base: string) => string;
 
 export type ResolverParams = {
   key: string;
   value: JsonValue;
   baseUrl: string;
   read: ResolverRead;
+  resolveUrl: ResolverResolveUrl;
 };
 
 export type PlaceholderResolver = (
@@ -36,6 +39,7 @@ export type PlaceholderResolver = (
 type Options = {
   resolvers: Record<string, PlaceholderResolver>;
   reader: UrlReader;
+  integrations: ScmIntegrationRegistry;
 };
 
 /**
@@ -103,12 +107,19 @@ export class PlaceholderProcessor implements CatalogProcessor {
         return this.options.reader.read(url);
       };
 
+      const resolveUrl = (url: string, base: string): string =>
+        this.options.integrations.resolveUrl({
+          url,
+          base,
+        });
+
       return [
         await resolver({
           key: resolverKey,
           value: resolverValue,
           baseUrl: location.target,
           read,
+          resolveUrl,
         }),
         true,
       ];
@@ -191,31 +202,27 @@ async function readTextLocation(params: ResolverParams): Promise<string> {
   }
 }
 
-function relativeUrl({ key, value, baseUrl }: ResolverParams): string {
+function relativeUrl({
+  key,
+  value,
+  baseUrl,
+  resolveUrl,
+}: ResolverParams): string {
   if (typeof value !== 'string') {
     throw new Error(
       `Placeholder \$${key} expected a string value parameter, in the form of an absolute URL or a relative path`,
     );
   }
 
-  let url: URL;
   try {
-    // The two-value form of the URL constructor handles relative paths for us
-    url = new URL(value, baseUrl);
-  } catch {
-    try {
-      // Check whether value is a valid absolute URL on it's own, if not fail.
-      url = new URL(value);
-    } catch {
-      // The only remaining case that isn't support is a relative file path that should be
-      // resolved using a relative file location. Accessing local file paths can lead to
-      // path traversal attacks and access to any file on the host system. Implementing this
-      // would require additional security measures.
-      throw new Error(
-        `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}`,
-      );
-    }
+    return resolveUrl(value, baseUrl);
+  } catch (_) {
+    // The only remaining case that isn't support is a relative file path that should be
+    // resolved using a relative file location. Accessing local file paths can lead to
+    // path traversal attacks and access to any file on the host system. Implementing this
+    // would require additional security measures.
+    throw new Error(
+      `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}`,
+    );
   }
-
-  return url.toString();
 }
