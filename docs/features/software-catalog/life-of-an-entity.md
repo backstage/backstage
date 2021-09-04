@@ -157,12 +157,32 @@ later.
 
 ## Stitching
 
-Stitching finalizes the entity by combining all data gathered such as relations,
-errors and the processed entity itself into a final object which is essentially
-the result that will be returned from the catalog API.
+Stitching finalizes the entity, by gathering all of the output from the previous
+steps and merging them into the final object which is what is visible from the
+catalog API. As the final entity itself gets updated, the stitcher makes sure
+that the search table gets refreshed accordingly as well.
+
+> Note: The search table mentioned here is not related to the core Search
+> feature of Backstage. It's rather the table that backs the ability to filter
+> catalog API query results.
+
+![Stitching overview](../../assets/features/catalog/life-of-an-entity_stitching.svg)
+
+The diagram shows how the stitcher reads from several sources:
+
+- The processed entity, as returned from the processing step
+- The errors, if any, that were emitted by the processing step
+- All relations that were emitted by the processing step, as well as any
+  relations emitted by _other_ entity processing steps that happen to point at
+  the current entity
+
+The last part is noteworthy: This is how the stitcher is able to collect all of
+the relation edges, both incoming and outgoing, no matter who produced them.
 
 The stitching is currently a fixed process, that cannot be modified or extended.
 This means that any modifications you want to make on the final result, has to
 happen during ingestion or processing.
 
-> TODO: More info here
+## Deletion
+
+> TODO
