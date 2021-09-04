@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { serializeEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import { TodoApi, TodoListOptions, TodoListResult } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
@@ -55,7 +55,7 @@ export class TodoClient implements TodoApi {
 
     const query = new URLSearchParams();
     if (entity) {
-      query.set('entity', serializeEntityRef(entity) as string);
+      query.set('entity', stringifyEntityRef(entity));
     }
     if (typeof offset === 'number') {
       query.set('offset', String(offset));
