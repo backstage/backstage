@@ -105,7 +105,7 @@ describe('ScmAuth', () => {
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
-      token: 'read_user read_api write_repository api',
+      token: 'read_user read_api read_repository write_repository api',
     });
 
     const azureAuth = ScmAuth.forAzure(mockAuthApi);
@@ -120,7 +120,8 @@ describe('ScmAuth', () => {
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
-      token: 'vso.build vso.code_manage vso.graph vso.project vso.profile',
+      token:
+        'vso.build vso.code vso.graph vso.project vso.profile vso.code_manage',
     });
 
     const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
@@ -135,7 +136,8 @@ describe('ScmAuth', () => {
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
-      token: 'account team pullrequest:write snippet:write issue:write',
+      token:
+        'account team pullrequest snippet issue pullrequest:write snippet:write issue:write',
     });
   });
 

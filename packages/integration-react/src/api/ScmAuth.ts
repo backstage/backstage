@@ -22,7 +22,9 @@ import {
 } from './ScmAuthApi';
 
 type ScopeMapping = {
+  /** The base scopes used for all requests */
   default: string[];
+  /** Additional scopes added if `repoWrite` is requested */
   repoWrite: string[];
 };
 
@@ -91,7 +93,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'github.com';
     return new ScmAuth(githubAuthApi, host, {
       default: ['repo', 'read:org', 'read:user'],
-      repoWrite: ['repo', 'read:org', 'read:user', 'gist'],
+      repoWrite: ['gist'],
     });
   }
 
@@ -117,7 +119,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'gitlab.com';
     return new ScmAuth(gitlabAuthApi, host, {
       default: ['read_user', 'read_api', 'read_repository'],
-      repoWrite: ['read_user', 'read_api', 'write_repository', 'api'],
+      repoWrite: ['write_repository', 'api'],
     });
   }
 
@@ -149,13 +151,7 @@ export class ScmAuth implements ScmAuthApi {
         'vso.project',
         'vso.profile',
       ],
-      repoWrite: [
-        'vso.build',
-        'vso.code_manage',
-        'vso.graph',
-        'vso.project',
-        'vso.profile',
-      ],
+      repoWrite: ['vso.code_manage'],
     });
   }
 
@@ -181,13 +177,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'bitbucket.org';
     return new ScmAuth(bitbucketAuthApi, host, {
       default: ['account', 'team', 'pullrequest', 'snippet', 'issue'],
-      repoWrite: [
-        'account',
-        'team',
-        'pullrequest:write',
-        'snippet:write',
-        'issue:write',
-      ],
+      repoWrite: ['pullrequest:write', 'snippet:write', 'issue:write'],
     });
   }
 
@@ -220,9 +210,11 @@ export class ScmAuth implements ScmAuthApi {
     options: ScmAuthTokenOptions,
   ): Promise<ScmAuthTokenResponse> {
     const { url, additionalScope, ...restOptions } = options;
-    const scopes = additionalScope?.repoWrite
-      ? this.#scopeMapping.repoWrite
-      : this.#scopeMapping.default;
+
+    const scopes = this.#scopeMapping.default.slice();
+    if (additionalScope?.repoWrite) {
+      scopes.push(...this.#scopeMapping.repoWrite);
+    }
 
     const token = await this.#api.getAccessToken(scopes, restOptions);
     return {
