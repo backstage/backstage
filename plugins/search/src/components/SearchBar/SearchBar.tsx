@@ -55,7 +55,8 @@ export const SearchBarBase = ({
   }, [onChange]);
 
   const placeholder =
-    overridePlaceholder ?? `Search in ${configApi.getString('app.title')}`;
+    overridePlaceholder ??
+    `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
 
   return (
     <InputBase
