@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { analyticsProviderGA } from '../src/plugin';
-import { Playground } from './Playground';
+import { analyticsModuleGA } from './plugin';
 
-createDevApp()
-  .registerPlugin(analyticsProviderGA)
-  .addPage({
-    path: '/ga',
-    title: 'GA Playground',
-    element: <Playground />,
-  })
-  .render();
+describe('google-analytics', () => {
+  it('should export plugin', () => {
+    expect(analyticsModuleGA).toBeDefined();
+  });
+});

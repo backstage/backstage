@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { analyticsProviderGA } from './plugin';
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import { analyticsModuleGA } from '../src/plugin';
+import { Playground } from './Playground';
+
+createDevApp()
+  .registerPlugin(analyticsModuleGA)
+  .addPage({
+    path: '/ga',
+    title: 'GA Playground',
+    element: <Playground />,
+  })
+  .render();

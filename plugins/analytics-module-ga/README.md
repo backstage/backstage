@@ -1,4 +1,4 @@
-# Analytics Provider: Google Analytics
+# Analytics Module: Google Analytics
 
 This plugin provides an opinionated implementation of the Backstage Analytics
 API for Google Analytics. Once installed and configured, analytics events will
@@ -8,9 +8,10 @@ This plugin contains no (and will never contain any) other functionality.
 
 ## Installation
 
-1. Install this plugin in your Backstage instance: `yarn add @backstage/plugin-analytics-provider-ga`
+1. Install this plugin in your Backstage app:
+   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga`
 2. Register the plugin with your App. In most instances of Backstage, this is
-   as simple as adding `export { analyticsProviderGA } from '@backstage/plugin-analytics-provider-ga';`
+   as simple as adding `export { analyticsModuleGA } from '@backstage/plugin-analytics-module-ga';`
    to your `packages/app/src/plugins.ts` file.
 3. Configure the plugin (see below).
 

@@ -21,7 +21,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { GoogleAnalytics } from './apis/implementations/AnalyticsApi';
 
-export const analyticsProviderGA = createPlugin({
+export const analyticsModuleGA = createPlugin({
   id: 'analytics-provider-ga',
   apis: [
     createApiFactory({

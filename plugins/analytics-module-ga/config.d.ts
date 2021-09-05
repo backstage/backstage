@@ -16,7 +16,10 @@
 
 export interface Config {
   app: {
-    analytics: {
+    // TODO: Only marked as optional because backstage-cli config:check in the
+    // context of the monorepo is too strict. Ideally, this would be marked as
+    // required.
+    analytics?: {
       provider: 'ga';
       ga: {
         /**

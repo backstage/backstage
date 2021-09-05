@@ -75,8 +75,8 @@ describe('SearchPage', () => {
     const expectedFilters = { [expectedFilterField]: expectedFilterValue };
     const expectedPageCursor = 'SOMEPAGE';
 
-    // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
-    (useLocation as jest.Mock).mockReturnValueOnce({
+    // e.g. ?query=petstore&pageCursor=1&filters[lifecycle][]=experimental&filters[kind]=Component
+    (useLocation as jest.Mock).mockReturnValue({
       search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
     });
 

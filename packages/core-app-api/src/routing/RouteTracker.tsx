@@ -41,39 +41,46 @@ const getExtensionDomain = (
   pathname: string,
   routes: RouteObjects,
 ): RoutableAnalyticsDomain | {} => {
-  const cleanPath = pathname.replace(/\/+$/, '');
-  const matches = matchRoutes(routes, { pathname });
-  const RouteElement = matches
-    ?.filter(match => {
-      const pathsMatch = match.pathname.replace(/\/+$/, '') === cleanPath;
-      const hasRoutableElement = !!(match.route.element as React.ReactElement)
-        ?.props?.element;
-      return pathsMatch && hasRoutableElement;
-    })
-    .pop()?.route?.element;
-  const RoutableElement = (RouteElement as React.ReactElement)?.props?.element;
+  try {
+    const cleanPath = pathname.replace(/\/+$/, '');
+    const matches = matchRoutes(routes, { pathname });
+    const RouteElement = matches
+      ?.filter(match => {
+        const pathsMatch = match.pathname.replace(/\/+$/, '') === cleanPath;
+        const hasRoutableElement = !!(match.route.element as React.ReactElement)
+          ?.props?.element;
+        return pathsMatch && hasRoutableElement;
+      })
+      .pop()?.route?.element;
+    const RoutableElement = (RouteElement as React.ReactElement)?.props
+      ?.element;
 
-  if (RoutableElement) {
-    const plugin: BackstagePlugin | undefined = getComponentData(
-      RoutableElement,
-      'core.plugin',
-    );
-    const mountPoint: { id?: string } | undefined = getComponentData(
-      RoutableElement,
-      'core.mountPoint',
-    );
-    if (plugin && mountPoint) {
-      return {
-        pluginId: plugin.getId(),
-        componentName: 'App',
-        routeRef: mountPoint?.id || '',
-      };
+    if (RoutableElement) {
+      const plugin: BackstagePlugin | undefined = getComponentData(
+        RoutableElement,
+        'core.plugin',
+      );
+      const mountPoint: { id?: string } | undefined = getComponentData(
+        RoutableElement,
+        'core.mountPoint',
+      );
+      if (plugin && mountPoint) {
+        return {
+          pluginId: plugin.getId(),
+          componentName: 'App',
+          routeRef: mountPoint?.id || '',
+        };
+      }
     }
-  }
 
-  // Try again, one path-level shallower.
-  const nextLevelPath = cleanPath.split('/').slice(0, -1).join('/');
-  return nextLevelPath !== '' ? getExtensionDomain(nextLevelPath, routes) : {};
+    // Try again, one path-level shallower.
+    const nextLevelPath = cleanPath.split('/').slice(0, -1).join('/');
+    return nextLevelPath !== ''
+      ? getExtensionDomain(nextLevelPath, routes)
+      : {};
+  } catch {
+    return {};
+  }
 };
 
 /**
