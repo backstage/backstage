@@ -19,16 +19,18 @@ import lodash from 'lodash';
 /**
  * Contains various helper validation and normalization functions that can be
  * composed to form a Validator.
+ *
+ * @public
  */
 export class CommonValidatorFunctions {
   /**
    * Checks that the value is on the form <suffix> or <prefix><separator><suffix>, and validates
    * those parts separately.
    *
-   * @param value The value to check
-   * @param separator The separator between parts
-   * @param isValidPrefix Checks that the part before the separator is valid, if present
-   * @param isValidSuffix Checks that the part after the separator (or the entire value if there is no separator) is valid
+   * @param value - The value to check
+   * @param separator - The separator between parts
+   * @param isValidPrefix - Checks that the part before the separator is valid, if present
+   * @param isValidSuffix - Checks that the part after the separator (or the entire value if there is no separator) is valid
    */
   static isValidPrefixAndOrSuffix(
     value: unknown,
@@ -53,7 +55,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value can be safely transferred as JSON.
    *
-   * @param value The value to check
+   * @param value - The value to check
    */
   static isJsonSafe(value: unknown): boolean {
     try {
@@ -66,7 +68,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a valid DNS subdomain name.
    *
-   * @param value The value to check
+   * @param value - The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
   static isValidDnsSubdomain(value: unknown): boolean {
@@ -81,7 +83,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a valid DNS label.
    *
-   * @param value The value to check
+   * @param value - The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
   static isValidDnsLabel(value: unknown): boolean {
@@ -96,7 +98,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a valid URL.
    *
-   * @param value The value to check
+   * @param value - The value to check
    */
   static isValidUrl(value: unknown): boolean {
     if (typeof value !== 'string') {
@@ -115,7 +117,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a non empty string value.
    *
-   * @param value The value to check
+   * @param value - The value to check
    */
   static isValidString(value: unknown): boolean {
     return typeof value === 'string' && value?.trim()?.length >= 1;
