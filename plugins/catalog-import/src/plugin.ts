@@ -21,10 +21,12 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
-  githubAuthApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  scmAuthApiRef,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogImportApiRef, CatalogImportClient } from './api';
 
@@ -40,7 +42,7 @@ export const catalogImportPlugin = createPlugin({
       api: catalogImportApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        githubAuthApi: githubAuthApiRef,
+        scmAuthApi: scmAuthApiRef,
         identityApi: identityApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
         catalogApi: catalogApiRef,
@@ -48,7 +50,7 @@ export const catalogImportPlugin = createPlugin({
       },
       factory: ({
         discoveryApi,
-        githubAuthApi,
+        scmAuthApi,
         identityApi,
         scmIntegrationsApi,
         catalogApi,
@@ -56,7 +58,7 @@ export const catalogImportPlugin = createPlugin({
       }) =>
         new CatalogImportClient({
           discoveryApi,
-          githubAuthApi,
+          scmAuthApi,
           scmIntegrationsApi,
           identityApi,
           catalogApi,

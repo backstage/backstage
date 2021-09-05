@@ -47,8 +47,8 @@ jest.doMock('@octokit/rest', () => {
 });
 
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
@@ -63,8 +63,8 @@ describe('CatalogImportClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const githubAuthApi: jest.Mocked<OAuthApi> = {
-    getAccessToken: jest.fn(),
+  const scmAuthApi: jest.Mocked<ScmAuthApi> = {
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
   const identityApi = {
     getUserId: () => {
@@ -112,7 +112,7 @@ describe('CatalogImportClient', () => {
   beforeEach(() => {
     catalogImportClient = new CatalogImportClient({
       discoveryApi,
-      githubAuthApi,
+      scmAuthApi,
       scmIntegrationsApi,
       identityApi,
       catalogApi,
