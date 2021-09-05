@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { OAuthApi } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  githubAuthApiRef,
+  gitlabAuthApiRef,
+  microsoftAuthApiRef,
+  OAuthApi,
+} from '@backstage/core-plugin-api';
 import {
   ScmAuthApi,
+  scmAuthApiRef,
   ScmAuthTokenOptions,
   ScmAuthTokenResponse,
 } from './ScmAuthApi';
@@ -55,6 +62,23 @@ class ScmAuthMux implements ScmAuthApi {
  * to form a single instance that can handles authentication for multiple providers.
  */
 export class ScmAuth implements ScmAuthApi {
+  static createDefaultApiFactory() {
+    return createApiFactory({
+      api: scmAuthApiRef,
+      deps: {
+        github: githubAuthApiRef,
+        gitlab: gitlabAuthApiRef,
+        azure: microsoftAuthApiRef,
+      },
+      factory: ({ github, gitlab, azure }) =>
+        ScmAuth.merge(
+          ScmAuth.forGithub(github),
+          ScmAuth.forGitlab(gitlab),
+          ScmAuth.forAzure(azure),
+        ),
+    });
+  }
+
   /**
    * Creates a general purpose ScmAuth instance with a custom scope mapping.
    */
@@ -137,13 +161,13 @@ export class ScmAuth implements ScmAuthApi {
    * `vso.code_manage`
    */
   static forAzure(
-    microsoftAuthApiRef: OAuthApi,
+    microsoftAuthApi: OAuthApi,
     options?: {
       host?: string;
     },
   ): ScmAuth {
     const host = options?.host ?? 'dev.azure.com';
-    return new ScmAuth(microsoftAuthApiRef, host, {
+    return new ScmAuth(microsoftAuthApi, host, {
       default: [
         'vso.build',
         'vso.code',
