@@ -18,10 +18,10 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { MockAnalyticsApi, wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link } from './Link';
 import { Route, Routes } from 'react-router';
 import { act } from 'react-dom/test-utils';
-import { analyticsApiRef } from '../../../../core-plugin-api/src';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {

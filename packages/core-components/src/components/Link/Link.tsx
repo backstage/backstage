@@ -37,8 +37,6 @@ export type LinkProps = MaterialLinkProps &
 declare function LinkType(props: LinkProps): JSX.Element;
 
 /**
- * Thin wrapper on top of material-ui's Link component
- * Makes the Link to utilise react-router
  * Thin wrapper on top of material-ui's Link component, which...
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
