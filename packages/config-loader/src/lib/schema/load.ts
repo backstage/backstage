@@ -24,7 +24,8 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 
-type Options =
+/** @public */
+export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
     }
@@ -34,9 +35,11 @@ type Options =
 
 /**
  * Loads config schema for a Backstage instance.
+ *
+ * @public
  */
 export async function loadConfigSchema(
-  options: Options,
+  options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema> {
   let schemas: ConfigSchemaPackageEntry[];
 
