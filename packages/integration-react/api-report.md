@@ -5,16 +5,32 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
+import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { OAuthApi } from '@backstage/core-plugin-api';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SessionApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "ScmAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ScmAuth implements ScmAuthApi {
+  static createDefaultApiFactory(): ApiFactory<
+    ScmAuthApi,
+    ScmAuthApi,
+    {
+      github: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+      gitlab: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+      azure: OAuthApi &
+        OpenIdConnectApi &
+        ProfileInfoApi &
+        BackstageIdentityApi &
+        SessionApi;
+    }
+  >;
   static forAuthApi(
     authApi: OAuthApi,
     options: {
@@ -26,7 +42,7 @@ export class ScmAuth implements ScmAuthApi {
     },
   ): ScmAuth;
   static forAzure(
-    microsoftAuthApiRef: OAuthApi,
+    microsoftAuthApi: OAuthApi,
     options?: {
       host?: string;
     },
@@ -55,20 +71,14 @@ export class ScmAuth implements ScmAuthApi {
   static merge(...providers: ScmAuth[]): ScmAuthApi;
 }
 
-// Warning: (ae-missing-release-tag) "ScmAuthApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface ScmAuthApi {
   getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "scmAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const scmAuthApiRef: ApiRef<ScmAuthApi>;
 
-// Warning: (ae-missing-release-tag) "ScmAuthTokenOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   additionalScope?: {
@@ -77,8 +87,6 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
   url: string;
 }
 
-// Warning: (ae-missing-release-tag) "ScmAuthTokenResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ScmAuthTokenResponse {
   headers: {

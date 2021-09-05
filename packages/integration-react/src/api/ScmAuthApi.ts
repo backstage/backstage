@@ -20,6 +20,7 @@ import {
   AuthRequestOptions,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   /**
    * The URL of the SCM resource to be accessed.
@@ -42,6 +43,7 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
   };
 }
 
+/** @public */
 export interface ScmAuthTokenResponse {
   /**
    * An authorization token that can be used to authenticate requests.
@@ -59,6 +61,8 @@ export interface ScmAuthTokenResponse {
  *
  * As opposed to using the using the GitHub, GitLab and other auth APIs
  * directly, this API allows for more generic access to SCM services.
+ *
+ * @public
  */
 export interface ScmAuthApi {
   /**
@@ -67,6 +71,11 @@ export interface ScmAuthApi {
   getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
 }
 
+/**
+ * The ApiRef for the ScmAuthApi.
+ *
+ * @public
+ */
 export const scmAuthApiRef: ApiRef<ScmAuthApi> = createApiRef({
   id: 'core.scmauth',
 });

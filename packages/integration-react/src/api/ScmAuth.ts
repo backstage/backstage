@@ -60,8 +60,32 @@ class ScmAuthMux implements ScmAuthApi {
 /**
  * An implementation of the ScmAuthApi that merges together OAuthApi instances
  * to form a single instance that can handles authentication for multiple providers.
+ *
+ * @public
+ *
+ * @example
+ * ```
+ * // Supports authentication towards both public GitHub and GHE:
+ * createApiFactory({
+ *   api: scmAuthApiRef,
+ *   deps: {
+ *     gheAuthApi: gheAuthApiRef,
+ *     githubAuthApi: githubAuthApiRef,
+ *   },
+ *   factory: ({ githubAuthApi, gheAuthApi }) =>
+ *     ScmAuth.merge(
+ *       ScmAuth.forGithub(githubAuthApi),
+ *       ScmAuth.forGithub(gheAuthApi, {
+ *         host: 'ghe.example.com',
+ *       }),
+ *     )
+ * })
+ * ```
  */
 export class ScmAuth implements ScmAuthApi {
+  /**
+   * Creates an API factory that enables auth for each of the default SCM providers.
+   */
   static createDefaultApiFactory() {
     return createApiFactory({
       api: scmAuthApiRef,
