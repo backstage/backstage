@@ -24,6 +24,8 @@ export type {
   ReadTreeResponse,
   ReadTreeResponseFactory,
   ReadTreeResponseFile,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFactoryOptions,
   ReadUrlOptions,
   ReadUrlResponse,
   SearchOptions,
@@ -33,3 +35,4 @@ export type {
   UrlReaderPredicateTuple,
 } from './types';
 export { UrlReaders } from './UrlReaders';
+export type { UrlReadersOptions } from './UrlReaders';
