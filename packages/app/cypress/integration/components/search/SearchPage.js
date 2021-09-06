@@ -34,7 +34,7 @@ describe('SearchPage', () => {
       cy.visit('/search-next', {
         onBeforeLoad(win) {
           cy.stub(win, 'fetch')
-            .withArgs(`${API_ENDPOINT}?term=&pageCursor=`)
+            .withArgs(`${API_ENDPOINT}?term=`)
             .resolves({
               ok: true,
               json: () => ({ results }),
@@ -56,7 +56,7 @@ describe('SearchPage', () => {
           onBeforeLoad(win) {
             cy.stub(win, 'fetch')
               .withArgs(
-                `${API_ENDPOINT}?term=&filters%5Bkind%5D=Component&filters%5Blifecycle%5D%5B0%5D=experimental&pageCursor=`,
+                `${API_ENDPOINT}?term=&filters%5Bkind%5D=Component&filters%5Blifecycle%5D%5B0%5D=experimental`,
               )
               .resolves({
                 ok: true,
@@ -102,7 +102,7 @@ describe('SearchPage', () => {
       cy.visit('/search-next?query=backstage', {
         onBeforeLoad(win) {
           cy.stub(win, 'fetch')
-            .withArgs(`${API_ENDPOINT}?term=backstage&pageCursor=`)
+            .withArgs(`${API_ENDPOINT}?term=backstage`)
             .resolves({
               ok: true,
               json: () => ({ results: [] }),

@@ -142,6 +142,7 @@ maintainership
 makefile
 md
 memcache
+memoize
 memoized
 microservice
 microservices
@@ -215,6 +216,7 @@ repo
 Repo
 repos
 rerender
+rerenders
 Reusability
 reusability
 roadmaps

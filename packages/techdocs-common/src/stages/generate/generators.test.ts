@@ -44,10 +44,9 @@ describe('generators', () => {
 
   it('should return correct registered generator', async () => {
     const generators = new Generators();
-    const techdocs = new TechdocsGenerator({
+    const techdocs = TechdocsGenerator.fromConfig(new ConfigReader({}), {
       logger,
       containerRunner,
-      config: new ConfigReader({}),
     });
 
     generators.register('techdocs', techdocs);

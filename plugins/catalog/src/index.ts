@@ -16,6 +16,7 @@
 
 export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
+export * from './components/CatalogKindHeader';
 export * from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
 export type { EntityRow as CatalogTableRow } from './components/CatalogTable';

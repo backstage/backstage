@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { OAuthState } from './types';
+import pickBy from 'lodash/pickBy';
 
 export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
@@ -34,7 +35,9 @@ export const readState = (stateString: string): OAuthState => {
 };
 
 export const encodeState = (state: OAuthState): string => {
-  const stateString = new URLSearchParams(state).toString();
+  const stateString = new URLSearchParams(
+    pickBy(state, value => value !== undefined),
+  ).toString();
 
   return Buffer.from(stateString, 'utf-8').toString('hex');
 };

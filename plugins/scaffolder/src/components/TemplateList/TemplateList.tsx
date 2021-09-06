@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import React, { ComponentType } from 'react';
+import {
+  stringifyEntityRef,
+  TemplateEntityV1beta2,
+} from '@backstage/catalog-model';
 import {
   ItemCardGrid,
   Progress,
@@ -25,8 +28,15 @@ import { useEntityListProvider } from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
-export const TemplateList = () => {
+export type TemplateListProps = {
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
+};
+
+export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
+  const Card = TemplateCardComponent || TemplateCard;
   return (
     <>
       {loading && <Progress />}
@@ -50,9 +60,9 @@ export const TemplateList = () => {
       <ItemCardGrid>
         {entities &&
           entities?.length > 0 &&
-          entities.map((template, i) => (
-            <TemplateCard
-              key={i}
+          entities.map(template => (
+            <Card
+              key={stringifyEntityRef(template)}
               template={template as TemplateEntityV1beta2}
             />
           ))}

@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.7.10
+
+### Patch Changes
+
+- 5e803edb8: Added support for importing font files. Imports in CSS via `url()` are supported for the final frontend bundle, but not for packages that are built for publishing. Module imports of fonts files from TypeScript are supported everywhere.
+- b5118ff76: Updated dependencies
+
 ## 0.7.9
 
 ### Patch Changes

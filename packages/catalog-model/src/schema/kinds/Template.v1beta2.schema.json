@@ -69,17 +69,6 @@
         "kind": {
           "enum": ["Template"]
         },
-        "metadata": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "type": "string",
-              "description": "The nice display name for the template.",
-              "examples": ["React SSR Template"],
-              "minLength": 1
-            }
-          }
-        },
         "spec": {
           "type": "object",
           "required": ["type", "steps"],

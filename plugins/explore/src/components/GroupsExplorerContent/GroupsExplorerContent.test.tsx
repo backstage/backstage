@@ -79,7 +79,9 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-namespace/group-a')).toBeInTheDocument();
+      expect(
+        getByText('my-namespace/group-a', { selector: 'div' }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -93,7 +95,9 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    await waitFor(() => expect(getByText('Our Teams')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByText('Our Teams', { selector: 'h2' })).toBeInTheDocument(),
+    );
   });
 
   it('renders a friendly error if it cannot collect domains', async () => {

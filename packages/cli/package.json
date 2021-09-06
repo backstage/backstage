@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -31,7 +31,7 @@
     "@babel/core": "^7.4.4",
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@backstage/cli-common": "^0.1.2",
-    "@backstage/config": "^0.1.7",
+    "@backstage/config": "^0.1.8",
     "@backstage/config-loader": "^0.6.7",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
@@ -51,7 +51,7 @@
     "@svgr/rollup": "5.5.x",
     "@svgr/webpack": "5.5.x",
     "@types/webpack-env": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "^v4.28.3",
+    "@typescript-eslint/eslint-plugin": "^v4.30.0",
     "@typescript-eslint/parser": "^v4.28.3",
     "@yarnpkg/lockfile": "^1.1.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
@@ -120,12 +120,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.8.10",
-    "@backstage/config": "^0.1.7",
-    "@backstage/core-components": "^0.3.2",
+    "@backstage/backend-common": "^0.9.1",
+    "@backstage/config": "^0.1.8",
+    "@backstage/core-components": "^0.4.0",
     "@backstage/core-plugin-api": "^0.1.6",
-    "@backstage/core-app-api": "^0.1.9",
-    "@backstage/dev-utils": "^0.2.7",
+    "@backstage/core-app-api": "^0.1.11",
+    "@backstage/dev-utils": "^0.2.8",
     "@backstage/test-utils": "^0.1.17",
     "@backstage/theme": "^0.2.10",
     "@types/diff": "^5.0.0",

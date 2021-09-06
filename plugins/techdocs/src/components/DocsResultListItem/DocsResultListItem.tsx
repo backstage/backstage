@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import TextTruncate from 'react-text-truncate';
@@ -32,29 +32,53 @@ const useStyles = makeStyles({
 export const DocsResultListItem = ({
   result,
   lineClamp = 5,
+  asListItem = true,
+  asLink = true,
+  title,
 }: {
   result: any;
   lineClamp?: number;
+  asListItem?: boolean;
+  asLink?: boolean;
+  title?: string;
 }) => {
   const classes = useStyles();
-  return (
-    <Link to={result.location}>
-      <ListItem alignItems="flex-start" className={classes.flexContainer}>
-        <ListItemText
-          className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={`${result.title} | ${result.name} docs `}
-          secondary={
-            <TextTruncate
-              line={lineClamp}
-              truncateText="…"
-              text={result.text}
-              element="span"
-            />
-          }
+  const TextItem = () => (
+    <ListItemText
+      className={classes.itemText}
+      primaryTypographyProps={{ variant: 'h6' }}
+      primary={title ? title : `${result.title} | ${result.name} docs`}
+      secondary={
+        <TextTruncate
+          line={lineClamp}
+          truncateText="…"
+          text={result.text}
+          element="span"
         />
-      </ListItem>
-      <Divider component="li" />
-    </Link>
+      }
+    />
+  );
+
+  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
+    asLink ? <Link to={result.location}>{children}</Link> : <>{children}</>;
+
+  const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
+    asListItem ? (
+      <>
+        <ListItem alignItems="flex-start" className={classes.flexContainer}>
+          {children}
+        </ListItem>
+        <Divider component="li" />
+      </>
+    ) : (
+      <>{children}</>
+    );
+
+  return (
+    <LinkWrapper>
+      <ListItemWrapper>
+        <TextItem />
+      </ListItemWrapper>
+    </LinkWrapper>
   );
 };

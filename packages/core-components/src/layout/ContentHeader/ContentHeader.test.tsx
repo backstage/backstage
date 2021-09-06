@@ -32,7 +32,7 @@ describe('<ContentHeader/>', () => {
 
   it('should render with titleComponent', async () => {
     const title = 'Custom title';
-    const titleComponent = () => <h1>{title}</h1>;
+    const titleComponent = <h1>{title}</h1>;
     const rendered = await renderInTestApp(
       <ContentHeader titleComponent={titleComponent} />,
     );

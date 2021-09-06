@@ -27,7 +27,10 @@ import {
   PgSearchQuery,
 } from '../database';
 
-// TODO: Support paging using page cursor (return cursor and parse cursor)
+export type ConcretePgSearchQuery = {
+  pgQuery: PgSearchQuery;
+  pageSize: number;
+};
 
 export class PgSearchEngine implements SearchEngine {
   constructor(private readonly databaseStore: DatabaseStore) {}
@@ -46,20 +49,33 @@ export class PgSearchEngine implements SearchEngine {
     return await DatabaseDocumentStore.supported(await database.getClient());
   }
 
-  translator(query: SearchQuery): PgSearchQuery {
+  translator(query: SearchQuery): ConcretePgSearchQuery {
+    const pageSize = 25;
+    const { page } = decodePageCursor(query.pageCursor);
+    const offset = page * pageSize;
+    // We request more result to know whether there is another page
+    const limit = pageSize + 1;
+
     return {
-      pgTerm: query.term
-        .split(/\s/)
-        .map(p => p.trim())
-        .filter(p => p !== '')
-        .map(p => `(${JSON.stringify(p)} | ${JSON.stringify(p)}:*)`)
-        .join('&'),
-      fields: query.filters as Record<string, string | string[]>,
-      types: query.types,
+      pgQuery: {
+        pgTerm: query.term
+          .split(/\s/)
+          .map(p => p.replace(/[\0()|&:*!]/g, '').trim())
+          .filter(p => p !== '')
+          .map(p => `(${JSON.stringify(p)} | ${JSON.stringify(p)}:*)`)
+          .join('&'),
+        fields: query.filters as Record<string, string | string[]>,
+        types: query.types,
+        offset,
+        limit,
+      },
+      pageSize,
     };
   }
 
-  setTranslator(translator: (query: SearchQuery) => PgSearchQuery): void {
+  setTranslator(
+    translator: (query: SearchQuery) => ConcretePgSearchQuery,
+  ): void {
     this.translator = translator;
   }
 
@@ -77,16 +93,44 @@ export class PgSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const pgQuery = this.translator(query);
+    const { pgQuery, pageSize } = this.translator(query);
 
     const rows = await this.databaseStore.transaction(async tx =>
       this.databaseStore.query(tx, pgQuery),
     );
-    const results = rows.map(({ type, document }) => ({
+
+    // We requested one result more than the page size to know whether there is
+    // another page.
+    const { page } = decodePageCursor(query.pageCursor);
+    const hasNextPage = rows.length > pageSize;
+    const hasPreviousPage = page > 0;
+    const pageRows = rows.slice(0, pageSize);
+    const nextPageCursor = hasNextPage
+      ? encodePageCursor({ page: page + 1 })
+      : undefined;
+    const previousPageCursor = hasPreviousPage
+      ? encodePageCursor({ page: page - 1 })
+      : undefined;
+
+    const results = pageRows.map(({ type, document }) => ({
       type,
       document,
     }));
 
-    return { results };
+    return { results, nextPageCursor, previousPageCursor };
   }
+}
+
+export function decodePageCursor(pageCursor?: string): { page: number } {
+  if (!pageCursor) {
+    return { page: 0 };
+  }
+
+  return {
+    page: Number(Buffer.from(pageCursor, 'base64').toString('utf-8')),
+  };
+}
+
+export function encodePageCursor({ page }: { page: number }): string {
+  return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }

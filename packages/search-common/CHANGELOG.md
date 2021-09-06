@@ -1,5 +1,14 @@
 # @backstage/search-common
 
+## 0.2.0
+
+### Minor Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
 ## 0.1.3
 
 ### Patch Changes

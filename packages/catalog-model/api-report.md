@@ -230,6 +230,7 @@ export type EntityMeta = JsonObject & {
   generation?: number;
   name: string;
   namespace?: string;
+  title?: string;
   description?: string;
   labels?: Record<string, string>;
   annotations?: Record<string, string>;
@@ -721,10 +722,6 @@ export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: 'backstage.io/v1beta2';
   // (undocumented)
   kind: 'Template';
-  // (undocumented)
-  metadata: EntityMeta & {
-    title?: string;
-  };
   // (undocumented)
   spec: {
     type: string;

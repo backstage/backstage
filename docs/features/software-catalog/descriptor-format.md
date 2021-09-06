@@ -245,6 +245,22 @@ the entity belongs to the `"default"` namespace.
 Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
 i.e. not Backstage specific but the same as in Kubernetes.
 
+### `title` [optional]
+
+A display name of the entity, to be presented in user interfaces instead of the
+`name` property above, when available.
+
+This field is sometimes useful when the `name` is cumbersome or ends up being
+perceived as overly technical. The title generally does not have as stringent
+format requirements on it, so it may contain special characters and be more
+explanatory. Do keep it very short though, and avoid situations where a title
+can be confused with the name of another entity, or where two entities share a
+title.
+
+Note that this is only for display purposes, and may be ignored by some parts of
+the code. [Entity references](references.md) still always make use of the `name`
+property for example, not the title.
+
 ### `description` [optional]
 
 A human readable description of the entity, to be shown in Backstage. Should be
@@ -531,8 +547,8 @@ The current set of well-known and common values for this field is:
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the component, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+component, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a component is the singular entity (commonly a team)
 that bears ultimate responsibility for the component, and has the authority and
@@ -550,8 +566,8 @@ component, but there will always be one ultimate owner.
 
 ### `spec.system` [optional]
 
-An [entity reference](#string-references) to the system that the component
-belongs to, e.g. `artist-engagement-portal`. This field is optional.
+An [entity reference](references.md#string-references) to the system that the
+component belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
@@ -559,8 +575,8 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 ### `spec.subcomponentOf` [optional]
 
-An [entity reference](#string-references) to another component of which the
-component is a part, e.g. `spotify-ios-app`. This field is optional.
+An [entity reference](references.md#string-references) to another component of
+which the component is a part, e.g. `spotify-ios-app`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required)  | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
@@ -568,8 +584,8 @@ component is a part, e.g. `spotify-ios-app`. This field is optional.
 
 ### `spec.providesApis` [optional]
 
-An array of [entity references](#string-references) to the APIs that are
-provided by the component, e.g. `artist-api`. This field is optional.
+An array of [entity references](references.md#string-references) to the APIs
+that are provided by the component, e.g. `artist-api`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -577,8 +593,8 @@ provided by the component, e.g. `artist-api`. This field is optional.
 
 ### `spec.consumesApis` [optional]
 
-An array of [entity references](#string-references) to the APIs that are
-consumed by the component, e.g. `artist-api`. This field is optional.
+An array of [entity references](references.md#string-references) to the APIs
+that are consumed by the component, e.g. `artist-api`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -586,9 +602,9 @@ consumed by the component, e.g. `artist-api`. This field is optional.
 
 ### `spec.dependsOn` [optional]
 
-An array of [entity references](#string-references) to the components and
-resources that the component depends on, e.g. `artists-db`. This field is
-optional.
+An array of [entity references](references.md#string-references) to the
+components and resources that the component depends on, e.g. `artists-db`. This
+field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
@@ -690,12 +706,6 @@ shape, this kind has the following structure.
 
 Exactly equal to `backstage.io/v1beta2` and `Template`, respectively.
 
-### `metadata.title` [required]
-
-The nice display name for the template as a string, e.g. `React SSR Template`.
-This field is required as is used to reference the template to the user instead
-of the `metadata.name` field.
-
 ### `metadata.tags` [optional]
 
 A list of strings that can be associated with the template, e.g.
@@ -722,8 +732,8 @@ You can find out more about the `steps` key
 
 ### `spec.owner` [optional]
 
-An [entity reference](#string-references) to the owner of the template, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+template, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a Template is the singular entity (commonly a team)
 that bears ultimate responsibility for the Template, and has the authority and
@@ -832,8 +842,8 @@ The current set of well-known and common values for this field is:
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the component, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+component, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of an API is the singular entity (commonly a team) that
 bears ultimate responsibility for the API, and has the authority and capability
@@ -851,8 +861,8 @@ one ultimate owner.
 
 ### `spec.system` [optional]
 
-An [entity reference](#string-references) to the system that the API belongs to,
-e.g. `artist-engagement-portal`. This field is optional.
+An [entity reference](references.md#string-references) to the system that the
+API belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
@@ -1059,8 +1069,8 @@ Exactly equal to `backstage.io/v1alpha1` and `Resource`, respectively.
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the resource, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+resource, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a resource is the singular entity (commonly a team)
 that bears ultimate responsibility for the resource, and has the authority and
@@ -1091,8 +1101,8 @@ Some common values for this field could be:
 
 ### `spec.system` [optional]
 
-An [entity reference](#string-references) to the system that the resource
-belongs to, e.g. `artist-engagement-portal`. This field is optional.
+An [entity reference](references.md#string-references) to the system that the
+resource belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
@@ -1100,9 +1110,9 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 ### `spec.dependsOn` [optional]
 
-An array of [entity references](#string-references) to the components and
-resources that the resource depends on, e.g. `artist-lookup`. This field is
-optional.
+An array of [entity references](references.md#string-references) to the
+components and resources that the resource depends on, e.g. `artist-lookup`.
+This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
@@ -1146,8 +1156,8 @@ Exactly equal to `backstage.io/v1alpha1` and `System`, respectively.
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the system, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+system, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a system is the singular entity (commonly a team)
 that bears ultimate responsibility for the system, and has the authority and
@@ -1165,8 +1175,8 @@ but there will always be one ultimate owner.
 
 ### `spec.domain` [optional]
 
-An [entity reference](#string-references) to the domain that the system belongs
-to, e.g. `artists`. This field is optional.
+An [entity reference](references.md#string-references) to the domain that the
+system belongs to, e.g. `artists`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
@@ -1205,8 +1215,8 @@ Exactly equal to `backstage.io/v1alpha1` and `Domain`, respectively.
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the domain, e.g.
-`artist-relations-team`. This field is required.
+An [entity reference](references.md#string-references) to the owner of the
+domain, e.g. `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a domain is the singular entity (commonly a team)
 that bears ultimate responsibility for the domain, and has the authority and

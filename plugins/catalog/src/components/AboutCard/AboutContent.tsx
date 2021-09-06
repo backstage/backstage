@@ -40,9 +40,13 @@ type Props = {
 export const AboutContent = ({ entity }: Props) => {
   const classes = useStyles();
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
-  const isDomain = entity.kind.toLocaleLowerCase('en-US') === 'domain';
   const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
   const isComponent = entity.kind.toLocaleLowerCase('en-US') === 'component';
+  const isAPI = entity.kind.toLocaleLowerCase('en-US') === 'api';
+  const isTemplate = entity.kind.toLocaleLowerCase('en-US') === 'template';
+  const isLocation = entity.kind.toLocaleLowerCase('en-US') === 'location';
+  const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
+
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
@@ -65,31 +69,44 @@ export const AboutContent = ({ entity }: Props) => {
           {entity?.metadata?.description || 'No description'}
         </Typography>
       </AboutField>
-      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+      <AboutField
+        label="Owner"
+        value="No Owner"
+        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+      >
+        {ownedByRelations.length > 0 && (
+          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+        )}
       </AboutField>
-      {isSystem && (
+      {(isSystem || partOfDomainRelations.length > 0) && (
         <AboutField
           label="Domain"
           value="No Domain"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          <EntityRefLinks
-            entityRefs={partOfDomainRelations}
-            defaultKind="domain"
-          />
+          {partOfDomainRelations.length > 0 && (
+            <EntityRefLinks
+              entityRefs={partOfDomainRelations}
+              defaultKind="domain"
+            />
+          )}
         </AboutField>
       )}
-      {!isSystem && !isDomain && (
+      {(isAPI ||
+        isComponent ||
+        isResource ||
+        partOfSystemRelations.length > 0) && (
         <AboutField
           label="System"
           value="No System"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          <EntityRefLinks
-            entityRefs={partOfSystemRelations}
-            defaultKind="system"
-          />
+          {partOfSystemRelations.length > 0 && (
+            <EntityRefLinks
+              entityRefs={partOfSystemRelations}
+              defaultKind="system"
+            />
+          )}
         </AboutField>
       )}
       {isComponent && partOfComponentRelations.length > 0 && (
@@ -104,14 +121,22 @@ export const AboutContent = ({ entity }: Props) => {
           />
         </AboutField>
       )}
-      {!isSystem && !isDomain && (
+      {(isAPI ||
+        isComponent ||
+        isResource ||
+        isTemplate ||
+        isGroup ||
+        isLocation ||
+        typeof entity?.spec?.type === 'string') && (
         <AboutField
           label="Type"
           value={entity?.spec?.type as string}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
-      {!isSystem && !isDomain && !isResource && (
+      {(isAPI ||
+        isComponent ||
+        typeof entity?.spec?.lifecycle === 'string') && (
         <AboutField
           label="Lifecycle"
           value={entity?.spec?.lifecycle as string}

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { TabProps } from '@material-ui/core';
-import { Children, default as React, Fragment, isValidElement } from 'react';
-
-import { attachComponentData } from '@backstage/core-plugin-api';
 import { Header, Page, RoutedTabs } from '@backstage/core-components';
+import {
+  attachComponentData,
+  useElementFilter,
+} from '@backstage/core-plugin-api';
+import { TabProps } from '@material-ui/core';
+import { default as React } from 'react';
 
 // TODO: This layout could be a shared based component if it was possible to create custom TabbedLayouts
 //    A generalized version of createSubRoutesFromChildren, etc. would be required
@@ -30,40 +32,13 @@ type SubRoute = {
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
+const dataKey = 'plugin.explore.exploreLayoutRoute';
+
 const Route: (props: SubRoute) => null = () => null;
+attachComponentData(Route, dataKey, true);
 
 // This causes all mount points that are discovered within this route to use the path of the route itself
 attachComponentData(Route, 'core.gatherMountPoints', true);
-
-function createSubRoutesFromChildren(
-  childrenProps: React.ReactNode,
-): SubRoute[] {
-  // Directly comparing child.type with Route will not work with in
-  // combination with react-hot-loader in storybook
-  // https://github.com/gaearon/react-hot-loader/issues/304
-  const routeType = (
-    <Route path="" title="">
-      <div />
-    </Route>
-  ).type;
-
-  return Children.toArray(childrenProps).flatMap(child => {
-    if (!isValidElement(child)) {
-      return [];
-    }
-
-    if (child.type === Fragment) {
-      return createSubRoutesFromChildren(child.props.children);
-    }
-
-    if (child.type !== routeType) {
-      throw new Error('Child of ExploreLayout must be an ExploreLayout.Route');
-    }
-
-    const { path, title, children, tabProps } = child.props;
-    return [{ path, title, children, tabProps }];
-  });
-}
 
 type ExploreLayoutProps = {
   title?: string;
@@ -88,7 +63,16 @@ export const ExploreLayout = ({
   subtitle,
   children,
 }: ExploreLayoutProps) => {
-  const routes = createSubRoutesFromChildren(children);
+  const routes = useElementFilter(children, elements =>
+    elements
+      .selectByComponentData({
+        key: dataKey,
+        withStrictError:
+          'Child of ExploreLayout must be an ExploreLayout.Route',
+      })
+      .getElements<SubRoute>()
+      .map(child => child.props),
+  );
 
   return (
     <Page themeId="home">

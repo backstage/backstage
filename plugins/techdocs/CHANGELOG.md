@@ -1,5 +1,58 @@
 # @backstage/plugin-techdocs
 
+## 0.11.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- 434dfc5d4: Display [metadata.title](https://backstage.io/docs/features/software-catalog/descriptor-format#title-optional) for components on the TechDocs homepage, if defined; otherwise fall back to `metadata.name` as displayed before.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/plugin-catalog@0.6.14
+  - @backstage/plugin-search@0.4.9
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
+## 0.11.0
+
+### Minor Changes
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+- 787bc0826: The TechDocs plugin has completed the migration to the Composability API. In
+  order to update to this version, please ensure you've made all necessary
+  changes to your `App.tsx` file as outlined in the [create-app changelog][cacl].
+
+  [cacl]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md
+
+### Patch Changes
+
+- 90c68a2ca: Fix Techdocs feedback icon link for GitHub URLs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.13
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
 ## 0.10.4
 
 ### Patch Changes

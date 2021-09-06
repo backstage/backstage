@@ -17,7 +17,8 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
-import { mockApiClient, mockSemverProject } from '../test-helpers/test-helpers';
+import { mockApiClient } from '../test-helpers/mock-api-client';
+import { mockSemverProject } from '../test-helpers/test-helpers';
 import { useGetGitBatchInfo } from './useGetGitBatchInfo';
 
 describe('useGetHubBatchInfo', () => {

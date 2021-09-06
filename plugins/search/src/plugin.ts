@@ -126,3 +126,12 @@ export const DefaultResultListItem = searchPlugin.provide(
     },
   }),
 );
+
+export const HomePageSearchBar = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HomePageComponent').then(m => m.HomePageSearchBar),
+    },
+  }),
+);

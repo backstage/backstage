@@ -45,6 +45,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     term,
     filters,
     types,
+    pageCursor,
   }: SearchQuery): ConcreteElasticSearchQuery;
 }
 
