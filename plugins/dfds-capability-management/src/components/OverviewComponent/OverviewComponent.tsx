@@ -21,15 +21,18 @@ type OverviewComponentProps = {
   capabilityId?: string;
   description?: string;
   createdAt?: string;
+  baseUrl?: string;
+  id?: string;
+  token?: string;
 };
 
 const OverviewComponent: FC<OverviewComponentProps> = ({
   capabilityId,
   description,
   // createdAt,
-  baseUrl,
-  id,
-  token,
+  //baseUrl,
+  //id,
+  //token,
 }) => {
   const [descriptionText, setDescription] = React.useState(description);
   const [editingMode, setEditingMode] = React.useState(false);
