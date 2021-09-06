@@ -26,6 +26,8 @@ import { DEFAULT_PORT } from '../service/lib/ServiceBuilderImpl';
  * The deployment may be scaled horizontally, as long as the external URL
  * is the same for all instances. However, internal URLs will always be
  * resolved to the same host, so there won't be any balancing of internal traffic.
+ *
+ * @public
  */
 export class SingleHostDiscovery implements PluginEndpointDiscovery {
   /**

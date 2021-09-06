@@ -17,7 +17,8 @@
 import { Logger } from 'winston';
 import { CacheClient } from './CacheClient';
 
-type ClientOptions = {
+/** @public */
+export type CacheClientOptions = {
   /**
    * An optional default TTL (in milliseconds) to be set when getting a client
    * instance. If not provided, data will persist indefinitely by default (or
@@ -26,8 +27,7 @@ type ClientOptions = {
   defaultTtl?: number;
 };
 
-export type OptionalOnError = ((err: Error) => void) | undefined;
-
+/** @public */
 export type CacheManagerOptions = {
   /**
    * An optional logger for use by the PluginCacheManager.
@@ -38,11 +38,13 @@ export type CacheManagerOptions = {
    * An optional handler for connection errors emitted from the underlying data
    * store.
    */
-  onError?: OptionalOnError;
+  onError?: (err: Error) => void;
 };
 
 /**
  * The PluginCacheManager manages access to cache stores that Plugins get.
+ *
+ * @public
  */
 export type PluginCacheManager = {
   /**
@@ -52,5 +54,5 @@ export type PluginCacheManager = {
    * stores so that plugins are discouraged from cache-level integration
    * and/or cache key collisions.
    */
-  getClient: (options?: ClientOptions) => CacheClient;
+  getClient: (options?: CacheClientOptions) => CacheClient;
 };

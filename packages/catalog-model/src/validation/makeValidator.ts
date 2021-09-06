@@ -30,6 +30,7 @@ const defaultValidators: Validators = {
   isValidTag: CommonValidatorFunctions.isValidDnsLabel,
 };
 
+/** @public */
 export function makeValidator(overrides: Partial<Validators> = {}): Validators {
   return {
     ...defaultValidators,
