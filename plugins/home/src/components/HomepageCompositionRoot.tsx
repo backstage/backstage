@@ -16,12 +16,6 @@
 
 import React, { ReactNode } from 'react';
 import { useOutlet } from 'react-router';
-import {
-  Content,
-  Header,
-  Page,
-  HomepageTimer,
-} from '@backstage/core-components';
 
 export const HomepageCompositionRoot = (props: {
   title?: string;
@@ -29,12 +23,5 @@ export const HomepageCompositionRoot = (props: {
 }) => {
   const outlet = useOutlet();
   const children = props.children ?? outlet;
-  return (
-    <Page themeId="home">
-      <Header title={props.title ?? 'Home'}>
-        <HomepageTimer />
-      </Header>
-      <Content>{children}</Content>
-    </Page>
-  );
+  return <div>{children}</div>;
 };
