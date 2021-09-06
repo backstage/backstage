@@ -17,6 +17,11 @@
 import { Entity } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/**
+ * TodoItem represents a single TODO comment in source code.
+ *
+ * @public
+ */
 export type TodoItem = {
   /** The contents of the TODO comment */
   text: string;
@@ -37,23 +42,43 @@ export type TodoItem = {
   repoFilePath?: string;
 };
 
-type Fields = 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
+/**
+ * Fields that can be used to filter or order todo items.
+ *
+ * @public
+ */
+export type TodoListFields =
+  | 'text'
+  | 'tag'
+  | 'author'
+  | 'viewUrl'
+  | 'repoFilePath';
 
+/**
+ * Options used to list todo items.
+ *
+ * @public
+ */
 export type TodoListOptions = {
   entity?: Entity;
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: Fields;
+    field: TodoListFields;
     direction: 'asc' | 'desc';
   };
   filters?: {
-    field: Fields;
+    field: TodoListFields;
     /** Value to filter by, with '*' used as wildcard */
     value: string;
   }[];
 };
 
+/**
+ * The result of listing todos.
+ *
+ * @public
+ */
 export type TodoListResult = {
   items: TodoItem[];
   totalCount: number;
@@ -61,10 +86,25 @@ export type TodoListResult = {
   limit: number;
 };
 
+/**
+ * The API used by the todo-plugin to list todos.
+ *
+ * @public
+ */
 export interface TodoApi {
+  /**
+   * Lists todo items.
+   *
+   * @public
+   */
   listTodos(options: TodoListOptions): Promise<TodoListResult>;
 }
 
+/**
+ * ApiRef for the TodoApi.
+ *
+ * @public
+ */
 export const todoApiRef = createApiRef<TodoApi>({
   id: 'plugin.todo.api',
   description: 'Lists TODOs',

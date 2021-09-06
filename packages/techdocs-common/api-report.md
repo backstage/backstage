@@ -249,10 +249,12 @@ export class TechdocsGenerator implements GeneratorBase {
     logger,
     containerRunner,
     config,
+    scmIntegrations,
   }: {
     logger: Logger_2;
     containerRunner: ContainerRunner;
     config: Config;
+    scmIntegrations: ScmIntegrationRegistry;
   });
   // (undocumented)
   static fromConfig(
@@ -264,7 +266,7 @@ export class TechdocsGenerator implements GeneratorBase {
       containerRunner: ContainerRunner;
       logger: Logger_2;
     },
-  ): Promise<TechdocsGenerator>;
+  ): TechdocsGenerator;
   // (undocumented)
   run({
     inputDir,

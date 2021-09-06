@@ -38,10 +38,9 @@ export class Generators implements GeneratorBuilder {
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
 
-    const techdocsGenerator = new TechdocsGenerator({
+    const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
       logger,
       containerRunner,
-      config,
     });
     generators.register('techdocs', techdocsGenerator);
 

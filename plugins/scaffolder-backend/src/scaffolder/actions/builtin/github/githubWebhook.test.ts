@@ -33,13 +33,16 @@ describe('github:repository:webhook:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const action = createGithubWebhookAction({ integrations });
+  const defaultWebhookSecret = 'aafdfdivierernfdk23f';
+  const action = createGithubWebhookAction({
+    integrations,
+    defaultWebhookSecret,
+  });
 
   const mockContext = {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       webhookUrl: 'https://example.com/payload',
-      webhookSecret: 'aafdfdivierernfdk23f',
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -57,11 +60,32 @@ describe('github:repository:webhook:create', () => {
   it('should call the githubApi for creating repository Webhook', async () => {
     const repoUrl = 'github.com?repo=repo&owner=owner';
     const webhookUrl = 'https://example.com/payload';
-    const webhookSecret = 'aafdfdivierernfdk23f';
     const ctx = Object.assign({}, mockContext, {
-      input: { repoUrl, webhookUrl, webhookSecret },
+      input: { repoUrl, webhookUrl },
     });
     await action.handler(ctx);
+
+    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      events: ['push'],
+      active: true,
+      config: {
+        url: webhookUrl,
+        content_type: 'form',
+        secret: defaultWebhookSecret,
+        insecure_ssl: '0',
+      },
+    });
+
+    const webhookSecret = 'yet_another_secret';
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        webhookSecret,
+      },
+    });
 
     expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
@@ -92,7 +116,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecret,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -113,7 +137,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'json',
-        secret: webhookSecret,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
@@ -134,7 +158,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecret,
+        secret: defaultWebhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -155,7 +179,7 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecret,
+        secret: defaultWebhookSecret,
         insecure_ssl: '1',
       },
     });
@@ -176,9 +200,67 @@ describe('github:repository:webhook:create', () => {
       config: {
         url: webhookUrl,
         content_type: 'form',
-        secret: webhookSecret,
+        secret: defaultWebhookSecret,
         insecure_ssl: '0',
       },
     });
+  });
+
+  it('should validate input', async () => {
+    const Validator = require('jsonschema').Validator;
+    const v = new Validator();
+
+    // validate default input without events specified
+    expect(v.validate(mockContext.input, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithValidEvent = {
+      ...mockContext.input,
+      events: ['push'],
+    };
+    expect(v.validate(inputWithValidEvent, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithMultipleValidEvents = {
+      ...mockContext.input,
+      events: ['push', 'pull_request'],
+    };
+    expect(
+      v.validate(inputWithMultipleValidEvents, action.schema?.input).valid,
+    ).toBe(true);
+
+    const inputWithInvalidEvent = {
+      ...mockContext.input,
+      events: ['unexpected_event'],
+    };
+    expect(v.validate(inputWithInvalidEvent, action.schema?.input).valid).toBe(
+      false,
+    );
+
+    const inputWithOneInvalidEvent = {
+      ...mockContext.input,
+      events: ['push', 'unexpected_event'],
+    };
+    expect(
+      v.validate(inputWithOneInvalidEvent, action.schema?.input).valid,
+    ).toBe(false);
+
+    const inputWithAllEvents = {
+      ...mockContext.input,
+      events: ['*'],
+    };
+    expect(v.validate(inputWithAllEvents, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithAllEventsAndMore = {
+      ...mockContext.input,
+      events: ['*', 'push'],
+    };
+    expect(
+      v.validate(inputWithAllEventsAndMore, action.schema?.input).valid,
+    ).toBe(false);
   });
 });

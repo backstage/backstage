@@ -17,7 +17,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
-  RandomJokeHomePageComponent,
+  HomePageRandomJoke,
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,
@@ -28,6 +28,7 @@ import {
   Page,
   HomepageTimer,
 } from '@backstage/core-components';
+import { HomePageSearchBar } from '@backstage/plugin-search';
 
 export const HomePage = () => (
   <Page themeId="home">
@@ -36,19 +37,22 @@ export const HomePage = () => (
     </Header>
     <Content>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <RandomJokeHomePageComponent />
+        <Grid item xs={12}>
+          <HomePageSearchBar />
         </Grid>
         <Grid item xs={12} md={4}>
-          <RandomJokeHomePageComponent
+          <HomePageRandomJoke />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageRandomJoke
             defaultCategory="any"
             Renderer={ComponentAccordion}
           />
-          <RandomJokeHomePageComponent
+          <HomePageRandomJoke
             title="Another Random Joke"
             Renderer={ComponentAccordion}
           />
-          <RandomJokeHomePageComponent
+          <HomePageRandomJoke
             title="One More Random Joke"
             defaultCategory="programming"
             Renderer={ComponentAccordion}
@@ -61,7 +65,7 @@ export const HomePage = () => (
               {
                 label: 'Programming',
                 Component: () => (
-                  <RandomJokeHomePageComponent
+                  <HomePageRandomJoke
                     defaultCategory="programming"
                     Renderer={ComponentTab}
                   />
@@ -70,7 +74,7 @@ export const HomePage = () => (
               {
                 label: 'Any',
                 Component: () => (
-                  <RandomJokeHomePageComponent
+                  <HomePageRandomJoke
                     defaultCategory="any"
                     Renderer={ComponentTab}
                   />
