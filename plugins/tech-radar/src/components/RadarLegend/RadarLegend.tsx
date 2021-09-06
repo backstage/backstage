@@ -52,13 +52,12 @@ const useStyles = makeStyles<Theme>(theme => ({
   quadrantHeading: {
     pointerEvents: 'none',
     userSelect: 'none',
-    color: '#0082C3',
     marginTop: 0,
     marginBottom: theme.spacing(8 / (18 * 0.375)),
     fontSize: '18px',
   },
   rings: {
-    columns: 2,
+    columns: 3,
   },
   ring: {
     breakInside: 'avoid-column',
