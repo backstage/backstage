@@ -21,7 +21,11 @@ import { SearchContextProvider } from '../SearchContext';
 
 import { SearchBar } from './SearchBar';
 import { configApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
 import { searchApiRef } from '../../apis';
 
 jest.mock('@backstage/core-plugin-api', () => ({
@@ -37,10 +41,9 @@ describe('SearchBar', () => {
   };
 
   const query = jest.fn().mockResolvedValue({});
-  const getOptionalString = jest.fn().mockReturnValue('Mock title');
 
   const apiRegistry = ApiRegistry.from([
-    [configApiRef, { getOptionalString }],
+    [configApiRef, new ConfigReader({ app: { title: 'Mock title' } })],
     [searchApiRef, { query }],
   ]);
 
