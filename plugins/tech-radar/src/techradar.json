@@ -1,0 +1,3779 @@
+{
+  "rings": [
+    {
+      "id": "watch",
+      "name": "WATCH",
+      "color": "#fbdb84"
+    },
+    {
+      "id": "trial",
+      "name": "TRIAL",
+      "color": "#93d2c2"
+    },
+    {
+      "id": "use",
+      "name": "USE",
+      "color": "#93c47d"
+    },
+    {
+      "id": "hold",
+      "name": "HOLD",
+      "color": "#efafa9"
+    }
+  ],
+  "quadrants": [
+    {
+      "id": "infrastructure",
+      "name": "Infrastructure"
+    },
+    {
+      "id": "tools",
+      "name": "Tools"
+    },
+    {
+      "id": "languagesframeworks",
+      "name": "Languages & frameworks"
+    },
+    {
+      "id": "methodsprocess",
+      "name": "Methods & Process"
+    }
+  ],
+  "entries": [
+    {
+      "key": "accessibility",
+      "id": "accessibility",
+      "title": "Accessibility",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><b>Accessibility</b> is the practice of making your websites usable by as many people as possible. We traditionally think of this as being about people with disabilities, but the practice of making sites accessible also benefits other groups such as those using mobile devices, or those with slow network connections. <a href=\"https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility\">More informations here</a></p>"
+        }
+      ]
+    },
+    {
+      "key": "apacheactivemq",
+      "id": "apacheactivemq",
+      "title": "ActiveMQ",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-04-02",
+          "description": "OpenSource Messaging plateforme. Only usage for internal exchange in an application infrastructure"
+        }
+      ]
+    },
+    {
+      "key": "acunetix",
+      "id": "acunetix",
+      "title": "Acunetix",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Vulnerability Scanner – Audit Your Web Security with Acunetix"
+        }
+      ]
+    },
+    {
+      "key": "aivendatabases",
+      "id": "aivendatabases",
+      "title": "Aiven Databases",
+      "quadrant": "infrastructure",
+      "url": "https://aiven.io/",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "alamofire",
+      "id": "alamofire",
+      "title": "Alamofire",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Networking"
+        }
+      ]
+    },
+    {
+      "key": "amazonservicecontrolpolicy",
+      "id": "amazonservicecontrolpolicy",
+      "title": "AWS SCP",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "AWS only - Service Control Policy"
+        }
+      ]
+    },
+    {
+      "key": "androidnative",
+      "id": "androidnative",
+      "title": "Android native",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "angular",
+      "id": "angular",
+      "title": "Angular",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://angular.io\">Angular</a></strong> is a platform and framework for building single-page client applications using HTML and TypeScript.</p>"
+        }
+      ]
+    },
+    {
+      "key": "ansible",
+      "id": "ansible",
+      "title": "Ansible",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "ansibletower",
+      "id": "ansibletower",
+      "title": "Ansible Tower",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "@William DESMARESCAUX POC - Ansible Tower / AWX (open-source version)"
+        }
+      ]
+    },
+    {
+      "key": "apacheartemis",
+      "id": "apacheartemis",
+      "title": "Apache Artemis",
+      "quadrant": "infrastructure",
+      "url": "https://activemq.apache.org/components/artemis/",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-04-02",
+          "description": "OpenSource Messaging plateforme. Only usage for internal exchange in an application infrastructure"
+        }
+      ]
+    },
+    {
+      "key": "apachecamel",
+      "id": "apachecamel",
+      "title": "Apache Camel",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-04-02",
+          "description": "Open Source Frameworks to manage application interoperablity"
+        }
+      ]
+    },
+    {
+      "key": "apachedruid",
+      "id": "apachedruid",
+      "title": "Apache Druid",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Timeseries search database\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "apachehttpd",
+      "id": "apachehttpd",
+      "title": "Apache httpd",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "apacheignite",
+      "id": "apacheignite",
+      "title": "Apache Ignite",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Cache for NoSQL database\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "apachekafka",
+      "id": "apachekafka",
+      "title": "Apache Kafka",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-04-02",
+          "description": "<p>All the components of Kafka infrastructure can be used. Please, used a Paas Provider : Aiven / MKS / ... </br> Kafka Clusters/topics , Kafka Connect (JDBC, DEBEZIUM, S3, ELK, ... ), Kafka Registry, Kafka Stream and Kafka Rest </br> Do not use KSQL for production. </br> Please use AKHQ as Management console. </br> Look on the Kafka Guidelines</p>"
+        }
+      ]
+    },
+    {
+      "key": "apachekylin",
+      "id": "apachekylin",
+      "title": "Apache Kylin",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Cube Database based on Hbase\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "apachepulsar",
+      "id": "apachepulsar",
+      "title": "Apache Pulsar",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Setup is complex, so I guess we will not check this until a solution like aiven get it"
+        }
+      ]
+    },
+    {
+      "key": "appengine",
+      "id": "appengine",
+      "title": "AppEngine",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "why ? not compliant with least privilege principle. not pushed anymore by Google. See App Engine Securisation Guide"
+        }
+      ]
+    },
+    {
+      "key": "appstore",
+      "id": "appstore",
+      "title": "App Store",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Delivery"
+        }
+      ]
+    },
+    {
+      "key": "ara",
+      "id": "ara",
+      "title": "ARA",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "ARA is a tool that makes sense for projects that have a high test maturity, with automated tests that run continuously, in Continuous Integration / Continuous Delivery, within a Devops toolchain. More and more frequently, we are seeing projects where hundreds or even thousands of tests are automated and executed very regularly. With this type of device, the difficulty is to be able to quickly identify what is new in the failures, or which failures have not yet been analyzed. It can also be interesting to know how an automated test behaves over time: is it really robust? Does it need to be reworked to be more robust? ARA will address all of these needs by centralizing the complete run-time results of the hundreds of tests you have taken the time to automate. The tool separates failed runs that have already been analyzed from those that have not. What about your future runs? The tool will recognize and analyze each failure, to determine if the root cause is already known or not ... ARA is a product developed by Decathlon and made available in open source.\nDecathlon open source project : https://github.com/Decathlon/ara"
+        }
+      ]
+    },
+    {
+      "key": "argocd",
+      "id": "argocd",
+      "title": "ArgoCD",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "hold for the moment as we will focus on Flux V2 + Flagger"
+        }
+      ]
+    },
+    {
+      "key": "aspera",
+      "id": "aspera",
+      "title": "Aspera",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "atomicdesign",
+      "id": "atomicdesign",
+      "title": "Atomic Design",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><b>Atomic Design</b> was proposed as a system that involves breaking down a website or web application into its basic components so that they can be reused throughout the site. Due to new devices with new screen sizes, that are getting released each year, creating pixel-perfect design gets harder if no systems are put in place. It introduces a methodology for creating scalable systems, reusable components as well as design systems. <i>Atoms -> Molecules -> Organisms -> templates -> Pages.</i></p>"
+        }
+      ]
+    },
+    {
+      "key": "aws",
+      "id": "aws",
+      "title": "AWS",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "AWS if blocking point with GCP"
+        }
+      ]
+    },
+    {
+      "key": "awsdynamodb",
+      "id": "awsdynamodb",
+      "title": "AWS Dynamodb",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "awsfirewallmanager",
+      "id": "awsfirewallmanager",
+      "title": "AWS Firewall Manager",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "POC @SEBASTIEN ROUX"
+        }
+      ]
+    },
+    {
+      "key": "awsrds",
+      "id": "awsrds",
+      "title": "AWS RDS",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "awsredshift",
+      "id": "awsredshift",
+      "title": "AWS RedShift",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Column oriented database\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "awss3",
+      "id": "awss3",
+      "title": "AWS S3",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "azure",
+      "id": "azure",
+      "title": "AZURE",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Azure only in China."
+        }
+      ]
+    },
+    {
+      "key": "alibabacloud",
+      "id": "alibabacloud",
+      "title": "Alibaba Cloud",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Only in China."
+        }
+      ]
+    },
+    {
+      "key": "azurecontainerinstance",
+      "id": "azurecontainerinstance",
+      "title": "Azure Container Instance (Azure)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "bigquery",
+      "id": "bigquery",
+      "title": "BigQuery",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Column oriented database"
+        }
+      ]
+    },
+    {
+      "key": "bitrise",
+      "id": "bitrise",
+      "title": "Bitrise",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "CI SaaS solution for mobile development, include CI/CD, Deploy and Trace services."
+        }
+      ]
+    },
+    {
+      "key": "blazemeter",
+      "id": "blazemeter",
+      "title": "Blazemeter",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/ECommerce/Blazemeter+-+How+to+access",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "use",
+          "date": "2021-06-25",
+          "description": "BlazeMeter’s open-source based, enterprise ready platform unifies all the functionality you need to shift testing left - and right. https://www.blazemeter.com/. See 'How to access session : https://wiki.decathlon.net/display/ECommerce/Blazemeter+-+How+to+access"
+        }
+      ]
+    },
+    {
+      "key": "bonitasoft",
+      "id": "bonitasoft",
+      "title": "BONITA",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "BONITA Soft (DRP) - @MATTHIEU VANOOST ==> Decision to confirm for the usage of Bonita! We need a tool!"
+        }
+      ]
+    },
+    {
+      "key": "browserstack",
+      "id": "browserstack",
+      "title": "Browserstack",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "use",
+          "date": "2021-06-25",
+          "description": "App & Browser Testing. Give your users a seamless experience by testing on 2000+ real devices and browsers. Trial status as there is no official decathlon contract."
+        }
+      ]
+    },
+    {
+      "key": "zerocode",
+      "id": "zerocode",
+      "title": "zerocode",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "watch",
+          "date": "2021-06-25",
+          "description": "Zerocode Open Source makes it easy to create, change, orchestrate and maintain automated tests with the absolute minimum overhead for REST, SOAP, Kafka Real Time Data Streams and much more."
+        }
+      ]
+    },
+    {
+      "key": "pact.io",
+      "id": "pact.io",
+      "title": "pact.io",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/ADVICE+-+TRYIT+-+Pact.io",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "trial",
+          "date": "2021-06-25",
+          "description": "Pact is a code-first tool for testing HTTP and message integrations using contract tests. Contract tests assert that inter-application messages conform to a shared understanding that is documented in a contract"
+        }
+      ]
+    },
+    {
+      "key": "carthage",
+      "id": "carthage",
+      "title": "Carthage",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Dependency Management"
+        }
+      ]
+    },
+    {
+      "key": "centos7",
+      "id": "centos7",
+      "title": "CentOS 7",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "No emergency, the EOL is in 2024. You can deploy infrastructure in production with CentOS 7.9"
+        }
+      ]
+    },
+    {
+      "key": "centos8",
+      "id": "centos8",
+      "title": "CentOS 8",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Before CentOS was based on RedHat and benefits from evolutions. CentOS will soon be used for redhat development.\nWe won’t be making Centos8 available in 2021 ( and replace by CentOS Stream).\nWe study possible candidates to replace Centos !\nThe requirements : security, community, stability, cost, cycle of life, compatibility with CSP. \nWe have many candidates but we are waitting November/December 2021 to choose"
+        }
+      ]
+    },
+    {
+      "key": "cerberus",
+      "id": "cerberus",
+      "title": "Cerberus",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Cerberus is a low-code, open-source and scalable test automation solution. Selenium, appium and others are already integrated. Implement cross-browser, mobile apps, APIs, desktop tests and more. Stop coding, start testing.\nWidely used in BU Commerce - complete tool that ease access to functional users"
+        }
+      ]
+    },
+    {
+      "key": "certificatemanager",
+      "id": "certificatemanager",
+      "title": "Certificate Manager (AWS)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "only AWS"
+        }
+      ]
+    },
+    {
+      "key": "changeadvisoryboard",
+      "id": "changeadvisoryboard",
+      "title": "Change Advisory Board",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Anticipate and master impacts, organize teams and communicate to users for all global interventions with business impact in production through a simple process!\n<p><a href=\"https://wiki.decathlon.net/display/ENGINEERING/Change+Advisory+Board\"><b>C A B</b></a> <i>(Change Advisory Board)</i>"
+        }
+      ]
+    },
+    {
+      "key": "cloudvolumeontap",
+      "id": "cloudvolumeontap",
+      "title": "Cloud Volume ONTAP (AWS)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "POC @Tony DEVERT"
+        }
+      ]
+    },
+    {
+      "key": "cloudrun",
+      "id": "cloudrun",
+      "title": "CloudRun (GCP)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "POC managed by Loic GUEGUEN and Benjamin AREZKI"
+        }
+      ]
+    },
+    {
+      "key": "cloudsql",
+      "id": "cloudsql",
+      "title": "CloudSQL",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "For SQL Server only.\n@Nicolas MACKE"
+        }
+      ]
+    },
+    {
+      "key": "cocoapods",
+      "id": "cocoapods",
+      "title": "Cocoapods",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Dependency Management"
+        }
+      ]
+    },
+    {
+      "key": "combine",
+      "id": "combine",
+      "title": "Combine",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "iOS - Async/Reactive"
+        }
+      ]
+    },
+    {
+      "key": "contentsquare",
+      "id": "contentsquare",
+      "title": "Content Square",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Sweeten revenue, conversion and engagement with the world's most complete experience analytics platform."
+        }
+      ]
+    },
+    {
+      "key": "coredata",
+      "id": "coredata",
+      "title": "Core Data",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Database"
+        }
+      ]
+    },
+    {
+      "key": "couchbase",
+      "id": "couchbase",
+      "title": "Couchbase",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "cssbemnamingconvention",
+      "id": "cssbemnamingconvention",
+      "title": "CSS BEM naming convention",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"http://getbem.com/introduction/\">CSS BEM naming convention (Block Element Modifier)</a></strong>. The Block, Element, Modifier methodology (commonly referred to as BEM) is a popular naming convention for classes in HTML and CSS. Developed by the team at Yandex, its goal is to help developers better understand the relationship between the HTML and CSS in a given project.</p> "
+        }
+      ]
+    },
+    {
+      "key": "gherkin",
+      "id": "gherkin",
+      "title": "Gherkin",
+      "quadrant": "languagesframeworks",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/How+to+write+test+in+Gherkin",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-06-25",
+          "description": "Gherkin is a language used to implement BDD (Behavior Driven Development) for your test suite. It's a set of grammar rules that makes plain text structured test cases and unlock Cucumber features."
+        }
+      ]
+    },
+    {
+      "key": "cypress",
+      "id": "cypress",
+      "title": "Cypress",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Cypress is a new open source web application testing tool, which aims to make the implementation of end-to-end testing less laborious. Plugin Cucumber available + huge community"
+        }
+      ]
+    },
+    {
+      "key": "dagger",
+      "id": "dagger",
+      "title": "Dagger",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Dagger is a fully static, compile-time dependency injection framework for both Java and Android"
+        }
+      ]
+    },
+    {
+      "key": "dareboost",
+      "id": "dareboost",
+      "title": "Dareboost",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Dareboost is a website testing and analysis service: speed, SEO, security and quality.Gauntlt\nhttps://www.dareboost.com/ Speedindex monitoring"
+        }
+      ]
+    },
+    {
+      "key": "datadog",
+      "id": "datadog",
+      "title": "Datadog",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/%5BDEPRECATED%5D+Datadog",
+      "timeline": [
+        {
+          "moved": -1,
+          "ringId": "hold",
+          "date": "2021-03-25",
+          "description": "Following our trial datadog should be put on hold and you should rather use Dynatrace."
+        }
+      ]
+    },
+    {
+      "key": "diagramsmingrammer",
+      "id": "diagramsmingrammer",
+      "title": "Diagrams Mingrammer",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/x/xQDzE",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "ADVICE - USE IT - Diagrams Mingrammer (Diagram As Code)"
+        }
+      ]
+    },
+    {
+      "key": "distroless",
+      "id": "distroless",
+      "title": "Distroless",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "use secured image . POC Benjamin AREZKI and Geoffrey THERY"
+        }
+      ]
+    },
+    {
+      "key": "dremio",
+      "id": "dremio",
+      "title": "Dremio",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "dynatrace",
+      "id": "dynatrace",
+      "title": "Dynatrace",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><a href=\"https://wiki.decathlon.net/display/TECH/Dynatrace\">Dynatrace</a> is an <b>observability</b> tool specialized in <i>Application Performances Management</i> (APM) and <i>Real user Monitoring</i> (RUM). It is easy to install as a single agent automatically discovers compatible technologies and software-dependencies. It is oriented to automatic Root Cause Analysis. It also provides a <b>SLO</b> feature.</p>"
+        }
+      ]
+    },
+    {
+      "key": "eggplant",
+      "id": "eggplant",
+      "title": "EggPlant",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "AI assisted testing to ensure rapid release of your applications business continuity through testing and monitoring testing your business applications as you modernize and move to the Cloud for remote work scalability of your online presence through effective load testing"
+        }
+      ]
+    },
+    {
+      "key": "elasticsearch",
+      "id": "elasticsearch",
+      "title": "Elasticsearch",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Search Database"
+        }
+      ]
+    },
+    {
+      "key": "elastifile",
+      "id": "elastifile",
+      "title": "Elastifile",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Elastifile (GCP) - Choose Object storage first. You can use Elastifile only in the context of SAP. You should use AWS EFS or GCP Filestore if you need NFS and cannot use Object Storage."
+        }
+      ]
+    },
+    {
+      "key": "elm",
+      "id": "elm",
+      "title": "Elm",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://elm-lang.org/\">Elm</a></strong>is a domain-specific programming language for declaratively creating web browser-based graphical user interfaces. Elm is purely functional, and is developed with emphasis on usability, performance, and robustness.</p>"
+        }
+      ]
+    },
+    {
+      "key": "f5",
+      "id": "f5",
+      "title": "F5",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "fargate",
+      "id": "fargate",
+      "title": "Fargate",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Fargate (AWS)"
+        }
+      ]
+    },
+    {
+      "key": "firebase",
+      "id": "firebase",
+      "title": "Firebase",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Firebase helps you build and run successful apps, include Firebase Analytics, Crashlytics and App Distribution services."
+        }
+      ]
+    },
+    {
+      "key": "flagger",
+      "id": "flagger",
+      "title": "Flagger",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "fluxv1",
+      "id": "fluxv1",
+      "title": "FluxCD v1",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": -1,
+          "ringId": "hold",
+          "date": "2021-06-15",
+          "description": "<p>Superseeded by <strong>FluxCD v2</strong>, <a href=\"https://wiki.decathlon.net/x/PL81Eg\">advice - hold</a></p>"
+        }
+      ]
+    },
+    {
+      "key": "fluxv2",
+      "id": "fluxv2",
+      "title": "FluxCD v2",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "use",
+          "date": "2021-06-15",
+          "description": "<p>Superseeds <strong>FluxCD v1</strong>, Flux is a tool for keeping Kubernetes clusters in sync with sources of configuration (like Git repositories), and automating updates to configuration when there is new code to deploy. <a href=\"https://wiki.decathlon.net/x/Hr81Eg\">advice - use</a></p>"
+        }
+      ]
+    },
+    {
+      "key": "fluxpattern",
+      "id": "fluxpattern",
+      "title": "Flux Pattern",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://facebook.github.io/flux/\">Flux pattern</a></strong></p> is an architectural pattern proposed by Facebook for building SPAs. It suggests to split the application into the following parts: stores, dispatcher, views & action / action creators."
+        }
+      ]
+    },
+    {
+      "key": "flyway",
+      "id": "flyway",
+      "title": "Flyway",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "ADVICE - USE IT - Flyway - Database Version Control"
+        }
+      ]
+    },
+    {
+      "key": "functionaldesignpatterns",
+      "id": "functionaldesignpatterns",
+      "title": "Functional Design Patterns",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p>Functional design patterns</p> are patterns composed of functions that take arguments, perform some operations that has no observable effects on any state outside the functions, and return a value."
+        }
+      ]
+    },
+    {
+      "key": "fuse.js",
+      "id": "fuse.js",
+      "title": "Fuse.js",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://fusejs.io/\">Fuse.js</a></strong> is a powerful, lightweight fuzzy-search library, with zero dependencies. Generally speaking, fuzzy searching (more formally known as approximate string matching) is the technique of finding strings that are approximately equal to a given pattern (rather than exactly).</p>"
+        }
+      ]
+    },
+    {
+      "key": "gatling",
+      "id": "gatling",
+      "title": "Gatling",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Gatling is an open-source load and performance testing tool for web applications.\nStarter kit available on https://github.com/dktunited/loadtest-gatling-basics\nAdapted for TestDevOps"
+        }
+      ]
+    },
+    {
+      "key": "gaugetaiko",
+      "id": "gaugetaiko",
+      "title": "Gauge Taiko",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Gauge is a free and open source test automation tool that takes the pain out of maintaining acceptance tests.\nTaiko is free and open source node library with a clear and concise API built ground up to test modern web applications.\nTogether, Gauge and Taiko help you create reliable and easy to maintain end to end tests."
+        }
+      ]
+    },
+    {
+      "key": "gauntlt",
+      "id": "gauntlt",
+      "title": "Gauntlt",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Gauntlt provides hooks to a variety of security tools and puts them within reach of security, dev and ops teams to collaborate to build rugged software. It is built to facilitate testing and communication between groups and create actionable tests that can be hooked into your deploy and testing processes.\nTests are written in Gherkin langage and so increase strongly collaboration between actors of the team"
+        }
+      ]
+    },
+    {
+      "key": "gcp",
+      "id": "gcp",
+      "title": "GCP",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "GCP 1st"
+        }
+      ]
+    },
+    {
+      "key": "gcppubsub",
+      "id": "gcppubsub",
+      "title": "GCP PubSub",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "High performance Messaging topics provided by GCP. Only for internal usage in an application archihtecture and for BigQuery entrypoint."
+        }
+      ]
+    },
+    {
+      "key": "gitcrypt",
+      "id": "gitcrypt",
+      "title": "Git crypt",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "git-crypt enables transparent encryption and decryption of files in a git repository. Files which you choose to protect are encrypted when committed, and decrypted "
+        }
+      ]
+    },
+    {
+      "key": "github",
+      "id": "github",
+      "title": "Github",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-25",
+          "description": "Every applicative code, infrastructure code must be stored in Github. Confluence should be favored over Github wikis for documentation.\nuse teams / projects to manage authorizations.\nIf you think about using Github Actions please register here Github Action deployment Roadmap. Github must be use with Dependabot for security updates."
+        }
+      ]
+    },
+    {
+      "key": "githubactions",
+      "id": "githubactions",
+      "title": "Github Actions",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/How+to+use+internal+Github+runners",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-25",
+          "description": "If you are starting from scratch and not already using Jenkins then you can start using Github Actions with Decathlon internal runners"
+        }
+      ]
+    },
+    {
+      "key": "glide",
+      "id": "glide",
+      "title": "Glide",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Glide is a fast and efficient open source media management and image loading framework for Android that wraps media decoding, memory and disk caching"
+        }
+      ]
+    },
+    {
+      "key": "golang",
+      "id": "golang",
+      "title": "GOlang",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "artifactregistry",
+      "id": "artifactregistry",
+      "title": "Artifact Registry (Docker)",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Google Artifact Registry: 1 registry per google project at a business unit level for example\nEvery GAR registry can have it's own and personal service Account.\nAt least Jenkins Service account and account within \"oxylane.com\" domain must be reader on your GAR.\n You can use ECR as your docker registry if your project in hosted only on AWS or if you are using services that requires the usage of ECR.\n If you are multicloud, you have to use the GAR as your primary registry and setup a sync between the GAR and the ECR.\n You can use Yandex registry as your docker registry if your project in hosted only on Yandex.\n If you are multicloud, you have to use the GAR as your primary registry and setup a sync between the GAR and the Yandex registry.\n Registry Azure (ACR) - only for China that use Azure"
+        }
+      ]
+    },
+    {
+      "key": "googlecloudbuild",
+      "id": "googlecloudbuild",
+      "title": "Google Cloud Build",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "advice process in progress"
+        }
+      ]
+    },
+    {
+      "key": "googlecloudstorage",
+      "id": "googlecloudstorage",
+      "title": "Google Cloud Storage",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "googleorganizationpolicy",
+      "id": "googleorganizationpolicy",
+      "title": "Google Organization Policy",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "GCP Only"
+        }
+      ]
+    },
+    {
+      "key": "googleram",
+      "id": "googleram",
+      "title": "Google RAM (RealTime Asset Monitor)",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "@Romain EGO @Benjamin KAMINSKI @ADELINE VILLETTE"
+        }
+      ]
+    },
+    {
+      "key": "grafana",
+      "id": "grafana",
+      "title": "Grafana (TICK)",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "<p><a href=\"https://decatec-grafana.dktapp.cloud/\"><b>Grafana</b></a>is a tool used to monitore technical/functional components through dashboards (infra, batchs, flows, ...).</p> "
+        }
+      ]
+    },
+    {
+      "key": "graphql",
+      "id": "graphql",
+      "title": "GraphQL",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "groovy",
+      "id": "groovy",
+      "title": "Groovy",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "haproxy",
+      "id": "haproxy",
+      "title": "HaProxy",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "haskell",
+      "id": "haskell",
+      "title": "Haskell",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "<p><a href=\"https://wiki.decathlon.net/display/ENGINEERING/WIP+-+ADVICE+-+Haskell\" target=\"_blank\">WIP - ADVICE - Haskell</a><br/>We actually have a single project using it, but the language is not yet validated at this time as there are not a large consensus over it.\nWe don't rewrite the whole project in an adopted language trying to keep it active and supported in Haskell.</p>"
+        }
+      ]
+    },
+    {
+      "key": "hbase",
+      "id": "hbase",
+      "title": "Hbase",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Key Value Database based on Hadoop"
+        }
+      ]
+    },
+    {
+      "key": "helm3",
+      "id": "helm3",
+      "title": "Helm 3",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "hero",
+      "id": "hero",
+      "title": "Hero",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "hilt",
+      "id": "hilt",
+      "title": "Hilt",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "Android - To simplify Dagger-related infrastructure for Android apps. · To create a standard set of components and scopes to ease setup, readability/understanding"
+        }
+      ]
+    },
+    {
+      "key": "hive/hivemetastore",
+      "id": "hive/hivemetastore",
+      "title": "Hive / Hive Metastore",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "SQL Engine on Hadoop\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "hpqc/microfocusqualitycenter/alm",
+      "id": "hpqc/microfocusqualitycenter/alm",
+      "title": "HP QC",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "HP QC is used to define releases, specifying requirements, planning tests, executing tests, tracking defects, alerting on changes, and analyzing results\nused in SAP World. This tool is also called / Microfocus Quality Center"
+        }
+      ]
+    },
+    {
+      "key": "huaweiappgallery",
+      "id": "huaweiappgallery",
+      "title": "Huawei App Gallery",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "husky",
+      "id": "husky",
+      "title": "Husky",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://github.com/typicode/husky\">Husky</a></strong>Husky is a tool allowing the customization of git hooks. You can use it to lint your commit messages, run tests, lint code, etc... when you commit or push. Husky supports all Git hooks.</p>"
+        }
+      ]
+    },
+    {
+      "key": "impervaincapsula",
+      "id": "impervaincapsula",
+      "title": "Imperva Incapsula (WAF)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "instabug",
+      "id": "instabug",
+      "title": "Instabug",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "Bug Reporting + Crash Reporting + In-App Surveys and In-App Feedback. All in One SDK"
+        }
+      ]
+    },
+    {
+      "key": "interfacebuilder",
+      "id": "interfacebuilder",
+      "title": "Interface Builder (XIB/Storyboard)",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "interventionmanagement",
+      "id": "interventionmanagement",
+      "title": "Intervention Management",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Global process for an intervention from \"Need\" to \"Hypercare\" to be sure that all tasks are well managed by our IT teams, including users relationship\nLink coming soon (visual in progress)"
+        }
+      ]
+    },
+    {
+      "key": "iosnative",
+      "id": "iosnative",
+      "title": "iOS native",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "istio",
+      "id": "istio",
+      "title": "Istio",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "CPE contributors stated that we need more feedback before using it as the default ingress controller or as our service mesh solution"
+        }
+      ]
+    },
+    {
+      "key": "java11",
+      "id": "java11",
+      "title": "JAVA (11+)",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p>JDK11 is actually the available LTS and it should be preferred for new projects. Team are autonomous in upgrading it on new versions once available.\n\nOne of the main reason to go ahead upgrading is related to memory optimization and garbage collector. Version under 11 should not be used anymore. (8, ..)</p>"
+        }
+      ]
+    },
+    {
+      "key": "javascriptes6",
+      "id": "javascriptes6",
+      "title": "JavaScript ES6",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://www.w3schools.com/js/js_es6.asp\">JavaScript ES6</a></strong> refers to version 6 of the ECMA Script (Javascript) programming language.</p>"
+        }
+      ]
+    },
+    {
+      "key": "jenkins",
+      "id": "jenkins",
+      "title": "Jenkins",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-25",
+          "description": "Use Jenkins if you are already using it, if you are starting from scratch then you should rather use Github Actions"
+        }
+      ]
+    },
+    {
+      "key": "jetpack",
+      "id": "jetpack",
+      "title": "Jetpack",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Jetpack is a suite of libraries to help developers follow best practices, reduce boilerplate code, and write code that works consistently across Android versions ..."
+        }
+      ]
+    },
+    {
+      "key": "jira",
+      "id": "jira",
+      "title": "Jira",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "As JIRA is part our of Global Billing, there is no extra cost if you use it thus its usage is encouraged."
+        }
+      ]
+    },
+    {
+      "key": "confluence",
+      "id": "confluence",
+      "title": "Confluence Wiki",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Confluence is the official wiki solutions where all the documentations must be placed. Wiki will act as a single entry point for all Engineering teams."
+        }
+      ]
+    },
+    {
+      "key": "jmeter",
+      "id": "jmeter",
+      "title": "JMeter",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Apache JMeter is an open-source software project for testing the performance of applications and servers according to different protocols as well as functional tests"
+        }
+      ]
+    },
+    {
+      "key": "karaté",
+      "id": "karaté",
+      "title": "Karaté",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Karate is the only open-source tool to combine API test-automation, mocks, performance-testing and even UI automation into a single, unified framework. The BDD syntax popularized by Cucumber is language-neutral, and easy for even non-programmers. Powerful JSON & XML assertions are built-in, and you can run tests in parallel for speed."
+        }
+      ]
+    },
+    {
+      "key": "kingfisher",
+      "id": "kingfisher",
+      "title": "Kingfisher",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "koin",
+      "id": "koin",
+      "title": "Koin",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-04-20",
+          "description": "Android - Koin - a pragmatic lightweight dependency injection framework for Kotlin"
+        }
+      ]
+    },
+    {
+      "key": "kotlin",
+      "id": "kotlin",
+      "title": "Kotlin",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Kotlin is today largely used on the mobile part and was used in the past on several projects. We keep in asses: the projet using it are going ahead using and a new POC is ongoing. An advice process should be validated before largely use it."
+        }
+      ]
+    },
+    {
+      "key": "kubedb",
+      "id": "kubedb",
+      "title": "KubeDB",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "@PIERRE MARIE PETIT"
+        }
+      ]
+    },
+    {
+      "key": "kubernetesmanaged",
+      "id": "kubernetesmanaged",
+      "title": "Kubernetes Managed",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "AKS mandatory on Azure - EKS mandatory on AWS (1 exception identified : SMA-X : K8S cluster bundled and supported by the editor) - GKE mandatory on GCP"
+        }
+      ]
+    },
+    {
+      "key": "kubernetessecret",
+      "id": "kubernetessecret",
+      "title": "Kubernetes Secret",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "will be on HOLD as soon as we get Vault in CPE catalog"
+        }
+      ]
+    },
+    {
+      "key": "kustomize",
+      "id": "kustomize",
+      "title": "Kustomize",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "feedback here : Which model: Kustomize vs Helm?"
+        }
+      ]
+    },
+    {
+      "key": "layeredpattern-android",
+      "id": "layeredpattern-android",
+      "title": "Layered pattern - Android",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Layered architecture patterns are n-tiered patterns where the components are organized in horizontal layers"
+        }
+      ]
+    },
+    {
+      "key": "lighthouseci",
+      "id": "lighthouseci",
+      "title": "Lighthouse CI",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://github.com/GoogleChrome/lighthouse-ci\">Lighthouse CI</a></strong> is a suite of tools that make continuously running, saving, retrieving, and asserting against Lighthouse results as easy as possible.</p>"
+        }
+      ]
+    },
+    {
+      "key": "litelement",
+      "id": "litelement",
+      "title": "LitElement",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://lit-element.polymer-project.org/\">LitElement</a></strong>, part of the <a href=\"https://www.polymer-project.org/\">Polymer Project</a>, is a simple library that you can use to create lightweight web components. It's really just a base class that removes the need for a lot of the common boilerplate making writing web components a lot easier.</p>"
+        }
+      ]
+    },
+    {
+      "key": "loadrunner",
+      "id": "loadrunner",
+      "title": "Loadrunner",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "LoadRunner is used to test applications, measure system behavior and load performance.\nSupport SAP"
+        }
+      ]
+    },
+    {
+      "key": "localstorage",
+      "id": "localstorage",
+      "title": "Local Storage",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong>Local Storage</strong> (but not for tokens and private data) is a type of web storage that allows JavaScript sites and apps to store and access data right in the browser with no expiration date. It means that the data stored in the browser will persist even after the browser window has been closed. <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage\">More informations here</a></p>"
+        }
+      ]
+    },
+    {
+      "key": "lodash",
+      "id": "lodash",
+      "title": "Lodash",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://lodash.com/\">Lodash</a></strong> is a modern JavaScript utility library delivering modularity, performance & extras.</p>"
+        }
+      ]
+    },
+    {
+      "key": "lottie",
+      "id": "lottie",
+      "title": "Lottie",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "mariadb",
+      "id": "mariadb",
+      "title": "MariaDB",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "@NICOLAS GUILLOIS"
+        }
+      ]
+    },
+    {
+      "key": "microfrontends",
+      "id": "microfrontends",
+      "title": "Micro frontends",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p>We've seen significant benefits from introducing <a href=\"https://martinfowler.com/articles/microservices.html\">microservices</a>, which have allowed teams to scale the delivery of independently deployed and maintained services. Unfortunately, we've also seen many teams create a front-end monolith — a large, entangled browser application that sits on top of the back-end services — largely neutralizing the benefits of microservices. <strong>Micro frontends</strong> have continued to gain in popularity since they were first introduced. We've seen many teams adopt some form of this architecture as a way to manage the complexity of multiple developers and teams contributing to the same user experience. In June of last year, one of the originators of this technique published an <a href=\"https://martinfowler.com/articles/micro-frontends.html\">introductory article</a> that serves as a reference for micro frontends. It shows how this style can be implemented using various web programming mechanisms and builds out an example application using <a href=\"/radar/languages-and-frameworks/react-js\">React.js</a>. We're confident this style will grow in popularity as larger organizations try to decompose UI development across multiple teams.</p>"
+        }
+      ]
+    },
+    {
+      "key": "micronaut",
+      "id": "micronaut",
+      "title": "Micronaut",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "moment.js",
+      "id": "moment.js",
+      "title": "Moment.js",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://momentjs.com/\">Moment.js</a></strong>. Parse, validate, manipulate, and display dates and times in JavaScript. Moment.js is a legacy project, now in maintenance mode. In most cases, you should choose a different library.</p>"
+        }
+      ]
+    },
+    {
+      "key": "mongodb",
+      "id": "mongodb",
+      "title": "MongoDB",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "WIP - ADVICE - MongoDB"
+        }
+      ]
+    },
+    {
+      "key": "monitoringhub",
+      "id": "monitoringhub",
+      "title": "MonitoringHub",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/TECH/MonitoringHub",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "MonitoringHub, AKA HUB, is a solution we developped in the Monitoring team in order to link easily corporate monitoring tools to SMAX & PagerDuty. 100% serverless on GCP, this solution is robust, scalable & resilient.</i><br>\nThanks to the HUB, <i>Splunk, Dynatrace, Datadog & Solarwinds</i> can create <b>SMAX incidents & trigger PagerDuty calls !"
+        }
+      ]
+    },
+    {
+      "key": "moshi",
+      "id": "moshi",
+      "title": "Moshi",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Moshi is a modern JSON library for Android and Kotlin. It makes it easy to parse JSON into Kotlin objects"
+        }
+      ]
+    },
+    {
+      "key": "mosquitto",
+      "id": "mosquitto",
+      "title": "Mosquitto",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Only for IOT"
+        }
+      ]
+    },
+    {
+      "key": "mqjazz",
+      "id": "mqjazz",
+      "title": "MQJazz",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "<p>File Transfert Management design by Decathlon</br>All flows using Niagara, Ibm MQ, Mercator, AIX, Chef de gare....<b>ADVICE - Deprecated - MQJazz</b></p>"
+        }
+      ]
+    },
+    {
+      "key": "mqtt",
+      "id": "mqtt",
+      "title": "MQTT",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "For IOT usage"
+        }
+      ]
+    },
+    {
+      "key": "mvc",
+      "id": "mvc",
+      "title": "MVC",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Model View Controller software architecture"
+        }
+      ]
+    },
+    {
+      "key": "mvp",
+      "id": "mvp",
+      "title": "MVP",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Model–view–presenter (MVP) is a derivation of the model–view–controller (MVC) architectural pattern, and is used mostly for building user interfaces"
+        }
+      ]
+    },
+    {
+      "key": "mvvm",
+      "id": "mvvm",
+      "title": "MVVM",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Model View ViewModel software architecture"
+        }
+      ]
+    },
+    {
+      "key": "mysql",
+      "id": "mysql",
+      "title": "MySQL",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "@Nicolas MACKE is currently responsible of this product"
+        }
+      ]
+    },
+    {
+      "key": "nexus",
+      "id": "nexus",
+      "title": "Nexus",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Should not be used anymore for docker images use your Cloud Provider Registry instead. Google Artifact Registry should be primarily used."
+        }
+      ]
+    },
+    {
+      "key": "nginx",
+      "id": "nginx",
+      "title": "Nginx",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "nightwatch.js",
+      "id": "nightwatch.js",
+      "title": "Nightwatch.js",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Nightwatch.js is an integrated, easy to use End-to-End testing solution for web applications and websites, written in Node.js. It uses the W3C WebDriver API to drive browsers in order to perform commands and assertions on DOM elements"
+        }
+      ]
+    },
+    {
+      "key": "okhttp",
+      "id": "okhttp",
+      "title": "OkHttp",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - OkHttp is a third-party library developed by Square for sending and receive HTTP-based network requests. It is built on top of the Okio library"
+        }
+      ]
+    },
+    {
+      "key": "oocss",
+      "id": "oocss",
+      "title": "OOCSS",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><b>Object oriented CSS</b> pattern is used to make dynamic CSS. More manageable, by applying the principles of object oriented design popularized by programming languages such as Java and Ruby. Using the OOCSS framework results in CSS that is reusable, scalable and easier to manage. OOCSS is not its own language. Anyone who understands CSS can easily grasp the OOCSS approach.</p>"
+        }
+      ]
+    },
+    {
+      "key": "openresty",
+      "id": "openresty",
+      "title": "OpenResty",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "POC @William DESMARESCAUX @Gregoire WAYMEL"
+        }
+      ]
+    },
+    {
+      "key": "oracledatabase",
+      "id": "oracledatabase",
+      "title": "Oracle Database",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "ADVICE - DEPRECATED - Oracle Database"
+        }
+      ]
+    },
+    {
+      "key": "os/400",
+      "id": "os/400",
+      "title": "OS/400",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Exceptions for these use cases :\nAS400 for LOG"
+        }
+      ]
+    },
+    {
+      "key": "pagerduty",
+      "id": "pagerduty",
+      "title": "PagerDuty",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "As PagerDuty is part our of Global Billing, there is no extra cost if you use it thus its usage is encouraged."
+        }
+      ]
+    },
+    {
+      "key": "pentaho",
+      "id": "pentaho",
+      "title": "Pentaho",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "ETL ( BI Log )"
+        }
+      ]
+    },
+    {
+      "key": "php",
+      "id": "php",
+      "title": "PHP",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "No new project must be started using PHP language, existing project can still continue. As soon a rebuild is done it should be done using a language in a USE status."
+        }
+      ]
+    },
+    {
+      "key": "nodejs",
+      "id": "nodejs",
+      "title": "NodeJS",
+      "quadrant": "languagesframeworks",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/WIP+-+ADVICE+-+NodeJS",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-26",
+          "description": "Teams with skills in Javascript / Typescript who need to aggregate data in a simple apis to avoid multiples calls."
+        }
+      ]
+    },
+    {
+      "key": "picasso",
+      "id": "picasso",
+      "title": "Picasso",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Android - A powerful image downloading and caching library for Android. Introduction. Images add much-needed context and visual flair to Android applications"
+        }
+      ]
+    },
+    {
+      "key": "playstore",
+      "id": "playstore",
+      "title": "Play Store",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Delivery"
+        }
+      ]
+    },
+    {
+      "key": "postmortem",
+      "id": "postmortem",
+      "title": "Post Mortem",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "For each incident, the original cause must be analyzed to solve it definitively. In general a report is sent to concerned teams linked to the encountered incident with detailed events, actions, actions plan...etc\nThis report is a post mortem or a root cause analysis.\n<p><a href=\"https://wiki.decathlon.net/display/ENGINEERING/Post+Mortem+-+Template\"><b>Post Mortem</b></a> <i>(Post Mortem)</i>\n"
+        }
+      ]
+    },
+    {
+      "key": "postcss",
+      "id": "postcss",
+      "title": "PostCSS",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://postcss.org/\">PostCSS</a></strong> is a tool for transforming CSS with JavaScript. It uses JavaScript-based plugins to automate routine CSS operations.</p>"
+        }
+      ]
+    },
+    {
+      "key": "postgresql",
+      "id": "postgresql",
+      "title": "PostgreSQL",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "@PIERRE MARIE PETIT @Stéphane DEFENIN @PIERRE HILBERT"
+        }
+      ]
+    },
+    {
+      "key": "postman",
+      "id": "postman",
+      "title": "Postman",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and streamline collaboration so you can create better APIs — faster."
+        }
+      ]
+    },
+    {
+      "key": "presto",
+      "id": "presto",
+      "title": "Presto",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "SQL Engine on Hadoop\n@William DESMARESCAUX"
+        }
+      ]
+    },
+    {
+      "key": "prismacloud",
+      "id": "prismacloud",
+      "title": "Prisma Cloud",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/x/1YDHEQ",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<strong>Mandatory</strong> : if you are using docker images then a prisma scan in your CI is mandatory."
+        }
+      ]
+    },
+    {
+      "key": "prometheus",
+      "id": "prometheus",
+      "title": "Prometheus",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Timeseries database use here, not for monitoring"
+        }
+      ]
+    },
+    {
+      "key": "puppet",
+      "id": "puppet",
+      "title": "Puppet",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "@VINCENT LOGEON @ALESSANDRO GALANTUCCI"
+        }
+      ]
+    },
+    {
+      "key": "puppeteer",
+      "id": "puppeteer",
+      "title": "Puppeteer",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://developers.google.com/web/tools/puppeteer/get-started\">Puppeteer</a></strong> is a Node library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol. Puppeteer runs headless by default, but can be configured to run full (non-headless) Chrome or Chromium.</p>"
+        }
+      ]
+    },
+    {
+      "key": "python",
+      "id": "python",
+      "title": "Python",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "quarkus",
+      "id": "quarkus",
+      "title": "Quarkus",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "<p><a href=\"https://wiki.decathlon.net/display/ENGINEERING/ADVICE+-+TRY+IT+-+Quarkus\" target=\"_blank\">ADVICE - TRY IT - Quarkus</a><br/>\nSome project are using it with a validated and monitored risk. It is actually helping on Java container startup time, which is thousands time faster than what we have with SpringBoot for example, but the technology remains younger to think to move critical projects over it."
+        }
+      ]
+    },
+    {
+      "key": "rabbitmq",
+      "id": "rabbitmq",
+      "title": "RabbitMQ",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "OpenSource Messaging plateforme for AMQP Protocol. Only usage for internal exchange in an application infrastructure"
+        }
+      ]
+    },
+    {
+      "key": "ramda",
+      "id": "ramda",
+      "title": "Ramda",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://ramdajs.com/\">Ramda</a></strong>is a practical functional library for JavaScript programmers.</p>"
+        }
+      ]
+    },
+    {
+      "key": "rancherclusterdashboarding",
+      "id": "rancherclusterdashboarding",
+      "title": "Rancher Cluster Dashboarding",
+      "quadrant": "infrastructure",
+      "url": "https://wiki.decathlon.net/x/a7-HEQ",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Rancher 2 used as a single point of view on several kubernetes clusters"
+        }
+      ]
+    },
+    {
+      "key": "rancherapplicationdeployment",
+      "id": "rancherapplicationdeployment",
+      "title": "Rancher Application Deployment",
+      "quadrant": "infrastructure",
+      "url": "https://wiki.decathlon.net/x/bb-HEQ",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Rancher 2 used to ease components deployments"
+        }
+      ]
+    },
+    {
+      "key": "rancherclusterauthentication",
+      "id": "rancherclusterauthentication",
+      "title": "Rancher Cluster Authentication",
+      "quadrant": "infrastructure",
+      "url": "https://wiki.decathlon.net/x/cL-HEQ",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Rancher 2 used provide a single way to authenticate users accross cloud providers solutions"
+        }
+      ]
+    },
+    {
+      "key": "rbackubernetes",
+      "id": "rbackubernetes",
+      "title": "RBAC Kubernetes",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "serverlessframework",
+      "id": "serverlessframework",
+      "title": "Serverless Framework",
+      "quadrant": "infrastructure",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/IN+PROGRESS+-+ADVICE+-+Serverless+Framework",
+      "timeline": [
+        {
+          "moved": 1,
+          "ringId": "use",
+          "date": "2021-06-25",
+          "description": "library to build, test, package and deploy serverless projects. This advice process is a proposition to deploy this kind of project"
+        }
+      ]
+    },
+    {
+      "key": "react/next",
+      "id": "react/next",
+      "title": "React / Next",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://reactjs.org/\">React</a></strong> is a JavaScript library for building user interfaces, <a href=\"https://reactjs.org/docs/getting-started.html\">get started</a>.<strong><a href=\"https://reactjs.org/docs/hooks-intro.html\">React Hooks</a></strong> have introduced a new approach to managing stateful logic; given React components have always been closer to functions than classes, Hooks have embraced this and brought state to the functions, instead of taking function as methods to the state with classes. Based on our experience, Hooks improve reuse of functionality among components and code readability. Given Hooks’ testability improvements, using <a href=\"https://reactjs.org/docs/test-renderer.html\">React Test Renderer</a> and <a href=\"/radar/languages-and-frameworks/react-testing-library\">React Testing Library</a>, and their growing community support, we consider them our approach of choice. You can also use Jest / Enzyme (testing-library for DOM testing)<br/>For forms: <p><strong><a href=\"https://react-hook-form.com/\">react-hook-form</a></strong>enables performant, flexible and extensible forms with easy-to-use validation.</p> <br/><i>Exemples : <a href=\"https://github.com/dktunited/mygame/tree/develop/mygame-frontend\">MyGame</a>, <a href=\"https://github.com/dktunited/mybusiness\">MyBusiness</a>, <a href=\"https://github.com/dktunited/cocreation-front\">Cocreation</a> </i></p>"
+        }
+      ]
+    },
+    {
+      "key": "reactnative",
+      "id": "reactnative",
+      "title": "React native",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "react-inl",
+      "id": "react-inl",
+      "title": "react-inl",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://formatjs.io/docs/react-intl/\">react-intl</a></strong> internationalizes React apps. This library provides React components and an API to format dates, numbers, and strings, including pluralization.</p>"
+        }
+      ]
+    },
+    {
+      "key": "reactiveprogramming",
+      "id": "reactiveprogramming",
+      "title": "Reactive Programming",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p><b>Reactive programming</b> is a declarative programming paradigm concerned with data streams and the propagation of change. Basically,<b><i>Reactive programming is programming with asynchronous data streams.</i></b></p>"
+        }
+      ]
+    },
+    {
+      "key": "redis",
+      "id": "redis",
+      "title": "Redis",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "@Marco MORNATI @AMADY DIOP @PIERRE MARIE PETIT\nADVICE - USE IT - Redis"
+        }
+      ]
+    },
+    {
+      "key": "redux",
+      "id": "redux",
+      "title": "Redux",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://redux.js.org/\">Redux</a></strong> is a predictable state container for JS apps.</p>"
+        }
+      ]
+    },
+    {
+      "key": "reduxtoolkit",
+      "id": "reduxtoolkit",
+      "title": "Redux Toolkit",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://redux-toolkit.js.org/\">Redux</a></strong> is the official, opinionated, batteries-included toolset for efficient Redux development</p>"
+        }
+      ]
+    },
+    {
+      "key": "retrofit",
+      "id": "retrofit",
+      "title": "Retrofit",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - A type-safe HTTP client for Android and Java. Introduction. Retrofit turns your HTTP API into an interface"
+        }
+      ]
+    },
+    {
+      "key": "robotframework",
+      "id": "robotframework",
+      "title": "Robot Framework",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Robot Framework is a generic open source automation framework. It can be used for test automation and robotic process automation (RPA)."
+        }
+      ]
+    },
+    {
+      "key": "room",
+      "id": "room",
+      "title": "Room",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - Room Persistence Library Part of Android Jetpack. The Room persistence library provides an abstraction layer over SQLite to allow for more robust database ..."
+        }
+      ]
+    },
+    {
+      "key": "rundeck",
+      "id": "rundeck",
+      "title": "Rundeck",
+      "quadrant": "tools",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/ADVICE+-+USE+-+Github+Action+as+a+CD+Tool",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "No more action should be added on rundeck, you should consider moving on Github Actions"
+        }
+      ]
+    },
+    {
+      "key": "rxjava",
+      "id": "rxjava",
+      "title": "RxJava",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - RxAndroid is an extension to RxJava. It providers a scheduler to run code in the main thread of Android"
+        }
+      ]
+    },
+    {
+      "key": "rxswift",
+      "id": "rxswift",
+      "title": "RxSwift",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Async/Reactive"
+        }
+      ]
+    },
+    {
+      "key": "sacm",
+      "id": "sacm",
+      "title": "SACM",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><b>SACM</b><i>(Service Asset and Configuration Management)</i> is the process that is responsible for IT Asset Management. SACM helps to organize and track the individual assets that support your business services.</p>"
+        }
+      ]
+    },
+    {
+      "key": "sass/scss",
+      "id": "sass/scss",
+      "title": "SASS / SCSS",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://sass-lang.com/guide\">Sass Lang</a></strong> is a stable CSS extension language.</p>"
+        }
+      ]
+    },
+    {
+      "key": "scala",
+      "id": "scala",
+      "title": "Scala",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "seleniumwebdriver",
+      "id": "seleniumwebdriver",
+      "title": "Selenium webdriver",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "For IHM testing"
+        }
+      ]
+    },
+    {
+      "key": "sitereliabilityengineering",
+      "id": "sitereliabilityengineering",
+      "title": "Site Reliability Engineering",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><a href=\"https://wiki.decathlon.net/pages/viewpage.action?pageId=284360940\"><b>SRE</b></a> <i>(Service Reliability Engineering)</i> is the methodology containing all the good practices to focus on (user oriented) <b>reliability</b> of sites/services to boost innovation on solutions.</p>\n<p>The objective for Decathlon is to make any application as reliable as needed, with a user oriented approach</p>"
+        }
+      ]
+    },
+    {
+      "key": "sitespeed.io",
+      "id": "sitespeed.io",
+      "title": "Sitespeed.io",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Sitespeed.io is a set of Open Source tools that makes it easy to monitor and measure the performance of your web site. Measuring performance shouldn’t be hard: you should be able to have full control of your metrics, own your own data and you should be able to do it without paying top dollars.\nhttps://www.sitespeed.io/ . Speedindex management. Adapted for TestDevOps"
+        }
+      ]
+    },
+    {
+      "key": "skillsmatrix",
+      "id": "skillsmatrix",
+      "title": "Skills Matrix",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "The Goal is to have a template to manage easily Skills in teams and have a global overview of skills levels.\n<p><a href=\"https://wiki.decathlon.net/display/ENGINEERING/Skill+Matrix+-+Template\"><b>Skills Matrix</b></a> <i>(Skills Matrix)</i>"
+        }
+      ]
+    },
+    {
+      "key": "slt",
+      "id": "slt",
+      "title": "SLT",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Real time ELT for SAP. Only for inter SAP module usage"
+        }
+      ]
+    },
+    {
+      "key": "smax",
+      "id": "smax",
+      "title": "SMAX",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "IT service management (ITSM) tools enable IT operations organizations, to better support the production environment. ITSM tools facilitate the tasks and workflows associated with the management and delivery of quality IT services. These are most heavily used by IT service desks and IT service delivery functions. Mainly called ITSM tools by the name IT service support management tools."
+        }
+      ]
+    },
+    {
+      "key": "snapkit",
+      "id": "snapkit",
+      "title": "Snapkit",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "solarwinds",
+      "id": "solarwinds",
+      "title": "Solarwinds",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Infrastructure, network, applicative state monitoring (deployment phase in progress)"
+        }
+      ]
+    },
+    {
+      "key": "sonarcloud.io",
+      "id": "sonarcloud.io",
+      "title": "Sonarcloud.io (Static code analysis)",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "As Sonar is part our of Global Billing, there is no extra cost if you use it thus its usage is encouraged."
+        }
+      ]
+    },
+    {
+      "key": "spark",
+      "id": "spark",
+      "title": "Spark",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Only for Data Scientist"
+        }
+      ]
+    },
+    {
+      "key": "splunk",
+      "id": "splunk",
+      "title": "Splunk",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "spm",
+      "id": "spm",
+      "title": "Swift Package Manager (SPM)",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Dependency Management"
+        }
+      ]
+    },
+    {
+      "key": "spring",
+      "id": "spring",
+      "title": "Spring",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Spring, springboot, springbootdataflow and all their dependencies"
+        }
+      ]
+    },
+    {
+      "key": "sqlserver",
+      "id": "sqlserver",
+      "title": "SQL Server",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "@Nicolas MACKE"
+        }
+      ]
+    },
+    {
+      "key": "squashtm",
+      "id": "squashtm",
+      "title": "Squash TM",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Squash, the complete and scalable solution to support the industrialization of your testing practices"
+        }
+      ]
+    },
+    {
+      "key": "squid",
+      "id": "squid",
+      "title": "Squid",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "statuspal",
+      "id": "statuspal",
+      "title": "StatusPal",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Quentin DENGREVILLE as a point of contact"
+        }
+      ]
+    },
+    {
+      "key": "storybook",
+      "id": "storybook",
+      "title": "Storybook",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://storybook.js.org/\">Storybook</a></strong> is an open source tool for developing UI components in isolation for React, Vue, Angular, and more. It makes building stunning UIs organized and efficient.</p>"
+        }
+      ]
+    },
+    {
+      "key": "suse",
+      "id": "suse",
+      "title": "Suse",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Exceptions for these use cases :\nSAP Technical Components"
+        }
+      ]
+    },
+    {
+      "key": "svelte",
+      "id": "svelte",
+      "title": "Svelte",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://svelte.dev/\">Svelte</a></strong> is a radical new approach to building user interfaces. Whereas traditional frameworks like React and Vue do the bulk of their work in the browser, Svelte shifts that work into a compile step that happens when you build your app. Instead of using techniques like virtual DOM diffing, Svelte writes code that surgically updates the DOM when the state of your app changes.</p>"
+        }
+      ]
+    },
+    {
+      "key": "swift",
+      "id": "swift",
+      "title": "Swift",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Recommended native language"
+        }
+      ]
+    },
+    {
+      "key": "swiftui",
+      "id": "swiftui",
+      "title": "Swift UI",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "iOS - UI"
+        }
+      ]
+    },
+    {
+      "key": "compose",
+      "id": "compose",
+      "title": "Compose",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "New framework UI to develop multiplatform interfaces (including Android, Compose and Web)."
+        }
+      ]
+    },
+    {
+      "key": "symfony",
+      "id": "symfony",
+      "title": "Symfony",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "systemdesigndocument",
+      "id": "systemdesigndocument",
+      "title": "systemdesigndocument",
+      "quadrant": "methodsprocess",
+      "url": "https://wiki.decathlon.net/display/ENGINEERING/System+design+document+-+template+V1",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-25",
+          "description": "We aim to describe your product in different aspects : business, technical... "
+        }
+      ]
+    },
+    {
+      "key": "tailwindcss",
+      "id": "tailwindcss",
+      "title": "Tailwind CSS",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "<p>CSS tools and frameworks offer predesigned components for fast results; after a while, however, they can complicate customization. <strong><a href=\"https://tailwindcss.com/\">Tailwind CSS</a></strong> proposes an interesting approach by providing lower-level utility CSS classes to create building blocks without opinionated styles and aiming for easy customization. The breadth of the low-level utilities allows you to avoid writing any classes or CSS on your own which leads to a more maintainable codebase in the long term. It seems that Tailwind CSS offers the right balance between reusability and customization to create visual components.</p>"
+        }
+      ]
+    },
+    {
+      "key": "talend",
+      "id": "talend",
+      "title": "Talend",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "ETL / Contact Discovery team"
+        }
+      ]
+    },
+    {
+      "key": "terraform",
+      "id": "terraform",
+      "title": "Terraform (Infra as Code)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Terraform and terraform enterprise can both be used"
+        }
+      ]
+    },
+    {
+      "key": "testdrivendevelopment",
+      "id": "testdrivendevelopment",
+      "title": "Test Driven Development",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><b>Test Driven Development</b> is an evolutionary approach to development which combines test-first development where you write a test before you write just enough production code to fulfill that test and refactoring. It’s one way to think through your requirements or design before your write your functional code.</p>"
+        }
+      ]
+    },
+    {
+      "key": "testflight",
+      "id": "testflight",
+      "title": "TestFlight",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Delivery"
+        }
+      ]
+    },
+    {
+      "key": "traefik",
+      "id": "traefik",
+      "title": "Traefik",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Exception for these use cases :\npreproduction env (multi pipelines)"
+        }
+      ]
+    },
+    {
+      "key": "typedrivendevelopment",
+      "id": "typedrivendevelopment",
+      "title": "Type Driven Development",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><b>Type-driven development</b> is an approach to develop robust and verified software, using a type system. TDD Is a style of programming in which we write types first and use those types to guide the definition of functions. It permits to improve the performance and accuracy of your code by taking advantage of a state-of-the-art type system. </p>"
+        }
+      ]
+    },
+    {
+      "key": "typescript",
+      "id": "typescript",
+      "title": "TypeScript",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://www.typescriptlang.org/\">TypeScript</a></strong> extends JavaScript by adding types. By understanding JavaScript, TypeScript saves you time catching errors and providing fixes before you run code. Any browser, any OS, anywhere JavaScript runs. Entirely Open Source.</p>"
+        }
+      ]
+    },
+    {
+      "key": "uft",
+      "id": "uft",
+      "title": "UFT (QTP)",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "QTP is an automated functional Testing tool that helps testers to execute automated tests in order to identify any errors, defects or gaps in contrary to the expected results of the application under test"
+        }
+      ]
+    },
+    {
+      "key": "urlsession",
+      "id": "urlsession",
+      "title": "URLSession",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Networking"
+        }
+      ]
+    },
+    {
+      "key": "usersincidentmanagement",
+      "id": "usersincidentmanagement",
+      "title": "users Incident Management",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Global process for an incident from \"Abnormal event detection\" to \"resolution\" to be sure that all tasks are well managed by our IT teams, including users relationship\nLink coming soon (visual in progress)"
+        }
+      ]
+    },
+    {
+      "key": "vault",
+      "id": "vault",
+      "title": "Vault",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "will be added in CPE stack in beg 2021 AURELIEN CATTEZ."
+        }
+      ]
+    },
+    {
+      "key": "vegeta",
+      "id": "vegeta",
+      "title": "Vegeta",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "trial",
+          "date": "2021-03-01",
+          "description": "Vegeta is a load testing tool written in GB for HTTP services. Its use is extremely simple. In only one command line you can load test any HTTP services."
+        }
+      ]
+    },
+    {
+      "key": "vertx",
+      "id": "vertx",
+      "title": "Vertx",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "viewbinding",
+      "id": "viewbinding",
+      "title": "ViewBinding",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Android - View Binding Part of Android Jetpack. View binding is a feature that allows you to more easily write code that interacts with views"
+        }
+      ]
+    },
+    {
+      "key": "viper",
+      "id": "viper",
+      "title": "VIPER",
+      "quadrant": "methodsprocess",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "iOS - Architecture"
+        }
+      ]
+    },
+    {
+      "key": "vitamin",
+      "id": "vitamin",
+      "title": "Vitamin",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://www.decathlon.design/\">Vitamin</a></strong> our wonderful Design System.Of course we strongly recommand to use it and make some feedbacks on it. (vitamin@decathlon.com) </p>"
+        }
+      ]
+    },
+    {
+      "key": "vue.js/nuxt",
+      "id": "vue.js/nuxt",
+      "title": "Vue.js / Nuxt",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://vuejs.org/\">Vue.js</a></strong> has become one of the successfully applied, loved and trusted frontend JavaScript frameworks among our community. Although there are other, well-adopted alternatives, such as <a href=\"/radar/languages-and-frameworks/react-js\">React.js</a>, the simplicity of Vue.js in API design, its clear segregation of directives and components (one file per component idiom) and its simpler state management have made it a compelling option among others.</p>"
+        }
+      ]
+    },
+    {
+      "key": "vuex",
+      "id": "vuex",
+      "title": "Vuex",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://vuex.vuejs.org/\">Vuex</a></strong>is a state management pattern + library for Vue.js applications. It serves as a centralized store for all the components in an application, with rules ensuring that the state can only be mutated in a predictable fashion.</p>"
+        }
+      ]
+    },
+    {
+      "key": "wallix",
+      "id": "wallix",
+      "title": "Wallix (Access Traceability)",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "webcomponents",
+      "id": "webcomponents",
+      "title": "WebComponents",
+      "quadrant": "languagesframeworks",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "watch",
+          "date": "2021-03-01",
+          "description": "<p>The <strong><a href=\"https://developer.mozilla.org/en-US/docs/Web/Web_Components/\">Web Components standard</a></strong> that originated at Google is something quite different. It provides an easier way to create recyclable widgets by helping with encapsulation of HTML, CSS and JavaScript, so they do not interfere with the rest of the page and the page does not interfere with them. Developers can use as much or as little of the framework as needed.</p>"
+        }
+      ]
+    },
+    {
+      "key": "webmethodsSAG",
+      "id": "webmethodsSAG",
+      "title": "Webmethods proprietary ESB from SAG",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-04-02",
+          "description": "<p>This proprietary ESB is used for A2A, B2B and B2C dataexchanges. <b>The A2A part MUST migrated to modern data exposition pattern (API/Kafka)</b></p>"
+        }
+      ]
+    },
+    {
+      "key": "webpack",
+      "id": "webpack",
+      "title": "Webpack",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "<p><strong><a href=\"https://webpack.js.org/\">Webpack</a></strong> is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser, yet it is also capable of transforming, bundling, or packaging.</p>"
+        }
+      ]
+    },
+    {
+      "key": "windowsserver",
+      "id": "windowsserver",
+      "title": "Windows Server",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Advice process : ADVICE - HOLD - Windows Server\nExceptions for these use cases :\nTSE\nAD\nContact CPE team if you got another use case : cloudplatformengineering@decathlon.net"
+        }
+      ]
+    },
+    {
+      "key": "xray",
+      "id": "xray",
+      "title": "XRay",
+      "quadrant": "tools",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "Manual & Automated Test Management App for QA in Jira. Test Case Management, Software Testing and Quality Assurance in Jira"
+        }
+      ]
+    },
+    {
+      "key": "zscaler",
+      "id": "zscaler",
+      "title": "Zscaler",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "all users / servers should go to Internet through Zscaler (except China)"
+        }
+      ]
+    },
+    {
+      "key": "anchore",
+      "id": "anchore",
+      "title": "Anchore",
+      "quadrant": "infrastructure",
+      "url": "https://wiki.decathlon.net/x/xIDHEQ",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "hold",
+          "date": "2021-03-01",
+          "description": "Anchore has been replaced by Prisma."
+        }
+      ]
+    },
+    {
+      "key": "foreman",
+      "id": "foreman",
+      "title": "Foreman",
+      "quadrant": "infrastructure",
+      "url": "#",
+      "timeline": [
+        {
+          "moved": 0,
+          "ringId": "use",
+          "date": "2021-03-01",
+          "description": "You can use Foreman, but only as an External Node Classifier."
+        }
+      ]
+    }
+  ]
+}

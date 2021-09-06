@@ -53,7 +53,6 @@ const useStyles = (props: ContentHeaderProps) =>
     title: {
       display: 'inline-flex',
       marginBottom: 0,
-      color: '#0082C3',
     },
   }));
 

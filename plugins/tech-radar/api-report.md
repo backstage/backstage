@@ -107,6 +107,8 @@ export interface TechRadarComponentProps {
   // (undocumented)
   id?: string;
   // (undocumented)
+  searchText?: string;
+  // (undocumented)
   svgProps?: object;
   // (undocumented)
   width: number;
