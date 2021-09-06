@@ -97,6 +97,9 @@ const OverviewPage: React.FC<{}> = () => {
             capabilityId={value.rootId}
             description={value.description}
             createdAt={value.created}
+            baseUrl={baseUrl}
+            id={value.id}
+            token={value.token}
           />
           <MembersFetchComponent data={value.members} />
           {isMember ? (
