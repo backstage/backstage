@@ -25,8 +25,16 @@ import {
   SearchType,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import {
+  Grid,
+  List,
+  makeStyles,
+  Paper,
+  Theme,
+  useMediaQuery,
+} from '@material-ui/core';
 import React from 'react';
+import { BackstageTheme } from '../../../../theme/src';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
