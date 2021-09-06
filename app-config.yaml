@@ -133,6 +133,9 @@ kafka:
       brokers:
         - localhost:9092
 
+allure:
+  baseUrl: http://localhost:5050/allure-docker-service
+
 integrations:
   github:
     - host: github.com

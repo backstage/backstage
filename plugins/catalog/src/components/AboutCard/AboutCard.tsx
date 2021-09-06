@@ -21,6 +21,13 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import {
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+  InfoCardVariants,
+  Link,
+} from '@backstage/core-components';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
@@ -42,15 +49,8 @@ import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import React from 'react';
-import { AboutContent } from './AboutContent';
-
-import {
-  HeaderIconLinkRow,
-  IconLinkVerticalProps,
-  InfoCardVariants,
-} from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { viewTechDocRouteRef } from '../../routes';
+import { AboutContent } from './AboutContent';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -148,12 +148,11 @@ export function AboutCard({ variant }: AboutCardProps) {
         title="About"
         action={
           <IconButton
+            component={Link}
             aria-label="Edit"
             disabled={!entityMetadataEditUrl}
             title="Edit Metadata"
-            onClick={() => {
-              window.open(entityMetadataEditUrl ?? '#', '_blank');
-            }}
+            to={entityMetadataEditUrl ?? '#'}
           >
             <EditIcon />
           </IconButton>

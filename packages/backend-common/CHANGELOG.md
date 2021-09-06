@@ -1,5 +1,13 @@
 # @backstage/backend-common
 
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
 ## 0.9.0
 
 ### Minor Changes

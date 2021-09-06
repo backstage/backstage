@@ -1,5 +1,20 @@
 # @backstage/plugin-search
 
+## 0.4.9
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+
 ## 0.4.8
 
 ### Patch Changes

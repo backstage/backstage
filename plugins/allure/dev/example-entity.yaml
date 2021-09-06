@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: allure-example-service
+  description: Allure Example Service
+  annotations:
+    qameta.io/allure-project: sample
+spec:
+  type: service
+  lifecycle: experimental
+  owner: team-a

@@ -54,6 +54,12 @@ const errors = {
   },
 };
 
+/**
+ * An implementation of the `Config` interface that uses a plain JavaScript object
+ * for the backing data, with the ability of linking multiple readers together.
+ *
+ * @public
+ */
 export class ConfigReader implements Config {
   /**
    * A set of key paths that where removed from the config due to not being visible.

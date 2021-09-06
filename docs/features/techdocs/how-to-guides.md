@@ -148,12 +148,18 @@ const AppRoutes = () => {
 > an external storage provider and external CI/CD is used). If you use the
 > "basic" or "out-of-the-box" setup, you can stop here! No action needed.
 
-The beta version of TechDocs (v0.x.y) made a breaking change to the way TechDocs
-content was accessed and stored, allowing pages to be accessed with
-case-insensitive entity triplet paths (e.g. `/docs/namespace/kind/name` whereas
-in prior versions, they could only be accessed at `/docs/namespace/Kind/name`).
-In order to enable this change, documentation has to be stored in an external
-storage provider using an object key whose entity triplet is lower-cased.
+For the purposes of this guide, TechDocs Beta version is defined as:
+
+- **TechDocs Plugin**: At least `v0.11.0`
+- **TechDocs Backend Plugin**: At least `v0.10.0`
+- **TechDocs CLI**: At least `v0.7.0`
+
+The beta version of TechDocs made a breaking change to the way TechDocs content
+was accessed and stored, allowing pages to be accessed with case-insensitive
+entity triplet paths (e.g. `/docs/namespace/kind/name` whereas in prior
+versions, they could only be accessed at `/docs/namespace/Kind/name`). In order
+to enable this change, documentation has to be stored in an external storage
+provider using an object key whose entity triplet is lower-cased.
 
 New installations of TechDocs since the beta version will work fine with no
 action, but for those who were running TechDocs prior to this version, a

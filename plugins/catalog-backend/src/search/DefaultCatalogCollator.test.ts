@@ -17,6 +17,11 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+
+const server = setupServer();
 
 const expectedEntities: Entity[] = [
   {
@@ -34,27 +39,37 @@ const expectedEntities: Entity[] = [
   },
 ];
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      json: async () => {
-        return expectedEntities;
-      },
-    };
-  },
-}));
-
 describe('DefaultCatalogCollator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let collator: DefaultCatalogCollator;
 
-  beforeEach(() => {
+  beforeAll(() => {
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7000'),
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
       getExternalBaseUrl: jest.fn(),
     };
     collator = new DefaultCatalogCollator({ discovery: mockDiscoveryApi });
+    server.listen();
+  });
+  beforeEach(() => {
+    server.use(
+      rest.get('http://localhost:7000/entities', (req, res, ctx) => {
+        if (req.url.searchParams.has('filter')) {
+          const filter = req.url.searchParams.get('filter');
+          if (filter === 'kind=Foo,kind=Bar') {
+            // When filtering on the 'Foo,Bar' kinds we simply return no items, to simulate a filter
+            return res(ctx.json([]));
+          }
+          throw new Error('Unexpected filter parameter');
+        }
+        return res(ctx.json(expectedEntities));
+      }),
+    );
+  });
+  afterEach(() => server.resetHandlers());
+  afterAll(() => {
+    server.close();
+    jest.useRealTimers();
   });
 
   it('fetches from the configured catalog service', async () => {
@@ -87,5 +102,19 @@ describe('DefaultCatalogCollator', () => {
     expect(documents[0]).toMatchObject({
       location: '/software/test-entity',
     });
+  });
+
+  it('allows filtering of the retrieved catalog entities', async () => {
+    // Provide an alternate location template.
+    collator = DefaultCatalogCollator.fromConfig(new ConfigReader({}), {
+      discovery: mockDiscoveryApi,
+      filter: {
+        kind: ['Foo', 'Bar'],
+      },
+    });
+
+    const documents = await collator.execute();
+    // The simulated 'Foo,Bar' filter should return in an empty list
+    expect(documents).toHaveLength(0);
   });
 });

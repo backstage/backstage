@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { renderWithEffects } from '../../../../../packages/test-utils-core/src';
+import { renderWithEffects } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {

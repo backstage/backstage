@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.6
+
+### Patch Changes
+
+- 4d62dc15b: GitHub discovery processor passes over repositories that do not have a default branch
+- 977b1dfbe: Adds optional namespacing for users in the GitHub Multi Org Plugin
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.13.5
 
 ### Patch Changes

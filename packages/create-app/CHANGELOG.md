@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
 ## 0.3.38
 
 ### Patch Changes
@@ -31,7 +37,7 @@
 
 - d02768171: Updated the default create-app `EntityPage` to include orphan and processing error alerts for all entity types. Previously these were only shown for entities with the `Component` kind. This also adds the `EntityLinkCard` for API entities.
 
-  As an example, you might add this to your `packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx`:
+  As an example, you might add this to your `packages/app/src/components/catalog/EntityPage.tsx`:
 
   ```tsx
   const entityWarningContent = (
@@ -690,7 +696,7 @@
   -<Route path="/search" element={<SearchPage />} />
   +<Route path="/search" element={<SearchPage />}>
   +  {searchPage}
-  +</Route>;
+  +</Route>
   ```
 
 - Updated dependencies [9cd3c533c]

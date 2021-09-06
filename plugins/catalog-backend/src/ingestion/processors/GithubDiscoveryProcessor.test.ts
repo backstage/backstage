@@ -170,6 +170,92 @@ describe('GithubDiscoveryProcessor', () => {
       });
     });
 
+    it('output repositories with wildcards default branch option', async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage/*/blob/-/catalog.yaml',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/tech-docs',
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://github.com/backstage/tech-docs/blob/main/catalog.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it("doesn't output repositories as default branch returned is empty", async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage/blob/-/catalog.yaml',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/tech-docs',
+            isArchived: false,
+            defaultBranchRef: null,
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).not.toHaveBeenCalled();
+    });
+
+    it('output repositories with wildcards default branch option without catalog-info patch or branch match', async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/backstage',
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'master',
+            },
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
+
     it('output repositories with wildcards', async () => {
       const location: LocationSpec = {
         type: 'github-discovery',
@@ -202,6 +288,12 @@ describe('GithubDiscoveryProcessor', () => {
               name: 'main',
             },
           },
+          {
+            name: 'techdocs-durp',
+            url: 'https://github.com/backstage/techdocs-durp',
+            isArchived: false,
+            defaultBranchRef: null,
+          },
         ],
       });
       const emitter = jest.fn();
@@ -227,6 +319,7 @@ describe('GithubDiscoveryProcessor', () => {
         optional: true,
       });
     });
+
     it('filter unrelated and archived repositories', async () => {
       const location: LocationSpec = {
         type: 'github-discovery',

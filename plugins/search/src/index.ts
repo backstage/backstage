@@ -16,24 +16,26 @@
 
 export { searchApiRef } from './apis';
 export {
-  searchPlugin,
-  searchPlugin as plugin,
-  SearchPage,
-  SearchPageNext,
-  SearchBarNext,
-  SearchResult,
-  DefaultResultListItem,
-} from './plugin';
-export {
   Filters,
   FiltersButton,
   SearchBar,
   SearchContextProvider,
-  useSearch,
-  SearchPage as Router,
   SearchFilter,
-  SearchType,
   SearchFilterNext,
+  SearchPage as Router,
+  SearchResultPager,
+  SearchType,
   SidebarSearch,
+  useSearch,
 } from './components';
 export type { FiltersState } from './components';
+export {
+  DefaultResultListItem,
+  SearchBarNext,
+  SearchPage,
+  SearchPageNext,
+  searchPlugin as plugin,
+  searchPlugin,
+  SearchResult,
+  HomePageSearchBar,
+} from './plugin';

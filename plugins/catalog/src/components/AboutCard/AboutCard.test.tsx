@@ -16,20 +16,19 @@
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
+import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { AboutCard } from './AboutCard';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
 import { viewTechDocRouteRef } from '../../routes';
+import { AboutCard } from './AboutCard';
 
 describe('<AboutCard />', () => {
   it('renders info', async () => {
@@ -166,14 +165,10 @@ describe('<AboutCard />', () => {
       </ApiProvider>,
     );
 
-    const editButton = getByTitle('Edit Metadata');
-    window.open = jest.fn();
-    await act(async () => {
-      fireEvent.click(editButton);
-    });
-    expect(window.open).toHaveBeenCalledWith(
-      `https://github.com/backstage/backstage/edit/master/software.yaml`,
-      '_blank',
+    const editLink = getByTitle('Edit Metadata').closest('a');
+    expect(editLink).toHaveAttribute(
+      'href',
+      'https://github.com/backstage/backstage/edit/master/software.yaml',
     );
   });
 

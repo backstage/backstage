@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins
 
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
 ## 0.5.4
 
 ### Patch Changes

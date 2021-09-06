@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.5
+
+### Patch Changes
+
+- 3ed78fca3: Added a `useEntityKinds` hook to load a unique list of entity kinds from the catalog.
+  Fixed a bug in `EntityTypePicker` where the component did not hide when no types were available in returned entities.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+
 ## 0.4.4
 
 ### Patch Changes

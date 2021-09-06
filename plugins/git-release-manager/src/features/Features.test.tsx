@@ -41,6 +41,10 @@ describe('Features', () => {
           createRc: { omit: true },
           promoteRc: { omit: true },
           patch: { omit: true },
+          custom: {
+            // shouldn't trigger "missing key" warning in console
+            factory: () => [<div>Custom 1</div>, <div>Custom 2</div>],
+          },
         }}
       />,
     );

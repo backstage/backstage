@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.6.3
+
+### Patch Changes
+
+- 5dca42b17: Update to properly handle Azure DevOps Server download URL
+
 ## 0.6.2
 
 ### Patch Changes
