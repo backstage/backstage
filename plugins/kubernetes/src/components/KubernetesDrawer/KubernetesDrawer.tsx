@@ -28,6 +28,7 @@ import {
   Grid,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import jsYaml from 'js-yaml';
@@ -35,7 +36,6 @@ import {
   Button as BackstageButton,
   CodeSnippet,
   StructuredMetadataTable,
-  Link,
   WarningPanel,
 } from '@backstage/core-components';
 import { ClusterContext } from '../../hooks';
@@ -197,13 +197,13 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         <div>
           {clusterLink && (
             <BackstageButton
-              variant="contained"
+              variant="outlined"
               color="primary"
               size="small"
-              component={Link}
               to={clusterLink}
+              endIcon={<OpenInNewIcon />}
             >
-              Open Kubernetes Dashboard...
+              Open Kubernetes Dashboard
             </BackstageButton>
           )}
         </div>
