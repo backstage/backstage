@@ -32,7 +32,6 @@ import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-<<<<<<< HEAD
 // Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -58,10 +57,6 @@ export class AwsS3UrlReader implements UrlReader {
   toString(): string;
 }
 
-// Warning: (ae-missing-release-tag) "AzureUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-=======
->>>>>>> 3d0fb9a68527d4d93cbc114fca1dfaba7136f46c
 // @public (undocumented)
 export class AzureUrlReader implements UrlReader {
   constructor(
@@ -431,17 +426,12 @@ export type ReadTreeResponseDirOptions = {
 
 // @public (undocumented)
 export interface ReadTreeResponseFactory {
-<<<<<<< HEAD
   // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   fromReadableArray(
     options: FromReadableArrayOptions,
   ): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "FromArchiveOptions" needs to be exported by the entry point index.d.ts
-  //
-=======
->>>>>>> 3d0fb9a68527d4d93cbc114fca1dfaba7136f46c
   // (undocumented)
   fromTarArchive(
     options: ReadTreeResponseFactoryOptions,
