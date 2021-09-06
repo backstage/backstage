@@ -31,6 +31,7 @@ function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
 
+/** @public */
 export class DatabaseManager {
   /**
    * Creates a DatabaseManager from `backend.database` config.
@@ -40,7 +41,7 @@ export class DatabaseManager {
    * defaults. Optionally, a user may set `prefix` which is used to prefix generated database
    * names if config is not provided.
    *
-   * @param config The loaded application configuration.
+   * @param config - The loaded application configuration.
    */
   static fromConfig(config: Config): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
@@ -59,7 +60,7 @@ export class DatabaseManager {
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
    *
-   * @param pluginId The plugin that the database manager should be created for. Plugin names
+   * @param pluginId - The plugin that the database manager should be created for. Plugin names
    * should be unique as they are used to look up database config overrides under
    * `backend.database.plugin`.
    */
