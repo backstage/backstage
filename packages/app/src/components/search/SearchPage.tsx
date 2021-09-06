@@ -25,8 +25,6 @@ import {
   SearchType,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
-import { SearchResultSet } from '@backstage/search-common';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Grid,
   List,
@@ -35,8 +33,8 @@ import {
   Theme,
   useMediaQuery,
 } from '@material-ui/core';
-import Pagination from '@material-ui/lab/Pagination';
-import React, { useState } from 'react';
+import React from 'react';
+import { BackstageTheme } from '../../../../theme/src';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
