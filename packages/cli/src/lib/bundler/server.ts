@@ -57,6 +57,9 @@ export async function serveBundle(options: ServeOptions) {
     https: url.protocol === 'https:',
     host,
     port,
+    public:
+      options.frontendConfig.getOptionalString('app.listen.public') ||
+      url.hostname,
     proxy: pkg.proxy,
     // When the dev server is behind a proxy, the host and public hostname differ
     allowedHosts: [url.hostname],

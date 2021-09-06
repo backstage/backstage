@@ -1,6 +1,9 @@
 app:
   title: DFDS Backstage
   baseUrl: http://localhost:3000
+  listen:
+    host: 0.0.0.0
+    public: localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
@@ -113,7 +116,6 @@ proxy:
     target: ${DFDS_API_AZURE_DEVOPS_JANITOR_ENDPOINT}
     allowedMethods: ['GET', 'POST', 'PUT']
     allowedHeaders: ['Authorization']
-
 
 organization:
   name: DFDS
