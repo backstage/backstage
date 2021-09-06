@@ -114,7 +114,9 @@ const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
-    <Route path="/home" element={<HomePage />} />
+    <Route path="/home" element={<HomepageCompositionRoot />}>
+      <HomePage />
+    </Route>
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
