@@ -15,7 +15,6 @@ import { Column } from '@material-table/core';
 import { CommonProps } from '@material-ui/core/OverridableComponent';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
-import { ComponentType } from 'react';
 import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';

@@ -1,5 +1,12 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
 ## 0.11.4
 
 ### Patch Changes

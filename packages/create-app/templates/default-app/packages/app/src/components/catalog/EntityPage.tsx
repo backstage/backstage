@@ -82,8 +82,8 @@ const cicdContent = (
   </EntitySwitch>
 );
 
-const overviewContent = (
-  <Grid container spacing={3} alignItems="stretch">
+const entityWarningContent = (
+  <>
     <EntitySwitch>
       <EntitySwitch.Case if={isOrphan}>
         <Grid item xs={12}>
@@ -99,7 +99,12 @@ const overviewContent = (
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
+  </>
+);
 
+const overviewContent = (
+  <Grid container spacing={3} alignItems="stretch">
+    {entityWarningContent}
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
@@ -214,8 +219,12 @@ const apiPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard />
+        </Grid>
+        <Grid item md={4} xs={12}>
+          <EntityLinksCard />
         </Grid>
         <Grid container item md={12}>
           <Grid item md={6}>
@@ -242,6 +251,7 @@ const userPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
@@ -257,6 +267,7 @@ const groupPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityGroupProfileCard variant="gridItem" />
         </Grid>
@@ -275,6 +286,7 @@ const systemPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
         </Grid>
@@ -299,6 +311,7 @@ const domainPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
         </Grid>

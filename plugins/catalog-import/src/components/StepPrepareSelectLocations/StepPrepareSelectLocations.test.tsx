@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { act, render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult } from '../../api';
@@ -57,7 +58,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('renders without exploding', async () => {
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -69,7 +70,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should select and deselect all', async () => {
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -97,7 +98,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should preselect prepared locations', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         prepareResult={{
@@ -117,7 +118,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should select items', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -146,7 +147,7 @@ describe('<StepPrepareSelectLocations />', () => {
   it('should go back', async () => {
     const onGoBack = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -164,7 +165,7 @@ describe('<StepPrepareSelectLocations />', () => {
   it('should submit', async () => {
     const onPrepare = jest.fn();
 
-    const { getAllByRole, getByRole } = render(
+    const { getAllByRole, getByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={onPrepare}

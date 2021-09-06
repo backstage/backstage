@@ -128,7 +128,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit }: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank,  type, document
@@ -174,6 +174,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
       query.select(tx.raw('1 as rank'));
     }
 
-    return await query.limit(100);
+    return await query.offset(offset).limit(limit);
   }
 }

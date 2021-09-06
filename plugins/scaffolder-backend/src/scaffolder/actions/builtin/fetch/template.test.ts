@@ -146,6 +146,10 @@ describe('fetch:template', () => {
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
             [outputPath]: {
+              'an-executable.sh': mockFs.file({
+                content: '#!/usr/bin/env bash',
+                mode: parseInt('100755', 8),
+              }),
               'empty-dir-${{ values.count }}': {},
               'static.txt': 'static content',
               '${{ values.name }}.txt': 'static content',
@@ -210,6 +214,13 @@ describe('fetch:template', () => {
         await expect(
           fs.readFile(`${workspacePath}/target/a-binary-file.png`),
         ).resolves.toEqual(aBinaryFile);
+      });
+      it('copies files and maintains the original file permissions', async () => {
+        await expect(
+          fs
+            .stat(`${workspacePath}/target/an-executable.sh`)
+            .then(fObj => fObj.mode),
+        ).resolves.toEqual(parseInt('100755', 8));
       });
     });
 

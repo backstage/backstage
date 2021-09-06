@@ -1,5 +1,24 @@
 # @backstage/plugin-explore
 
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.3.14
+
+### Patch Changes
+
+- c8e7a7d6e: Collect the routes of a `ExploreLayout` with `useElementFilter`
+- f2f89445f: Handle Group Big Names in explore plugin
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+
 ## 0.3.13
 
 ### Patch Changes

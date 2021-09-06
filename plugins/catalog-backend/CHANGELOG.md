@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.6
+
+### Patch Changes
+
+- 4d62dc15b: GitHub discovery processor passes over repositories that do not have a default branch
+- 977b1dfbe: Adds optional namespacing for users in the GitHub Multi Org Plugin
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.13.5
+
+### Patch Changes
+
+- 8b39242c4: GitHub discovery processor adds support for discovering the default GitHub branch
+- 96785dce3: Added GitLabDiscoveryProcessor, which allows catalog discovery from a GitLab instance
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
 ## 0.13.4
 
 ### Patch Changes

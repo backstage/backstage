@@ -89,6 +89,21 @@ export function Features({
     );
   }
 
+  let CustomFeatures =
+    features?.custom?.factory({
+      latestRelease: gitBatchInfo.value.latestRelease,
+      project,
+      releaseBranch: gitBatchInfo.value.releaseBranch,
+      repository: gitBatchInfo.value.repository,
+    }) ?? null;
+  if (Array.isArray(CustomFeatures)) {
+    CustomFeatures = CustomFeatures.map((CustomFeature, index) => (
+      <React.Fragment key={`grm--custom-feature--${index}`}>
+        {CustomFeature}
+      </React.Fragment>
+    ));
+  }
+
   return (
     <RefetchContext.Provider value={{ fetchGitBatchInfo }}>
       <ErrorBoundary>
@@ -143,13 +158,7 @@ export function Features({
           />
         )}
 
-        {features?.custom?.factory &&
-          features.custom.factory({
-            latestRelease: gitBatchInfo.value.latestRelease,
-            project,
-            releaseBranch: gitBatchInfo.value.releaseBranch,
-            repository: gitBatchInfo.value.repository,
-          })}
+        {CustomFeatures}
       </ErrorBoundary>
     </RefetchContext.Provider>
   );

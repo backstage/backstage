@@ -1,5 +1,25 @@
 # @backstage/backend-common
 
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
+## 0.9.0
+
+### Minor Changes
+
+- a365f1faf: The `ZipArchiveResponse` class now accepts an optional `stripFirstDirectory` parameter. Note that its default value is `false`, which leads to a breaking change in behaviour to previous versions of the class. If you use this class explicitly and want to retain the old behaviour, add a `true` parameter value to its constructor.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
 ## 0.8.10
 
 ### Patch Changes

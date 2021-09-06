@@ -10,6 +10,7 @@ import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 export default async function createPlugin({
   logger,
   discovery,
+  config,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
   const searchEngine = new LunrSearchEngine({ logger });
@@ -19,7 +20,7 @@ export default async function createPlugin({
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator({ discovery }),
+    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent

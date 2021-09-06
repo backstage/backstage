@@ -1,5 +1,20 @@
 # @backstage/integration
 
+## 0.6.3
+
+### Patch Changes
+
+- 5dca42b17: Update to properly handle Azure DevOps Server download URL
+
+## 0.6.2
+
+### Patch Changes
+
+- f0ba514f0: Take custom ports into account when matching integrations to URLs. It used to be the case that an integration with e.g. `host: 'scm.mycompany.net:8080'` would not be matched by the `byUrl` method, while hosts without a custom port did match.
+- 90c68a2ca: Export `replaceGitHubUrlType`
+- Updated dependencies
+  - @backstage/config@0.1.8
+
 ## 0.6.1
 
 ### Patch Changes

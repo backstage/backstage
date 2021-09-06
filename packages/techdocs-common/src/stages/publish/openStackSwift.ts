@@ -20,8 +20,9 @@ import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
 import path from 'path';
-import { storage } from 'pkgcloud';
-import { Readable } from 'stream';
+import { SwiftClient } from '@trendyol-js/openstack-swift-sdk';
+import { NotFound } from '@trendyol-js/openstack-swift-sdk/lib/types';
+import { Stream, Readable } from 'stream';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 import {
@@ -31,7 +32,7 @@ import {
   TechDocsMetadata,
 } from './types';
 
-const streamToBuffer = (stream: Readable): Promise<Buffer> => {
+const streamToBuffer = (stream: Stream | Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     try {
       const chunks: any[] = [];
@@ -42,6 +43,13 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
       throw new Error(`Unable to parse the response data ${e.message}`);
     }
   });
+};
+
+const bufferToStream = (buffer: Buffer): Readable => {
+  const stream = new Readable();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
 };
 
 export class OpenStackSwiftPublish implements PublisherBase {
@@ -62,24 +70,18 @@ export class OpenStackSwiftPublish implements PublisherBase {
       'techdocs.publisher.openStackSwift',
     );
 
-    const storageClient = storage.createClient({
-      provider: 'openstack',
-      username: openStackSwiftConfig.getString('credentials.username'),
-      password: openStackSwiftConfig.getString('credentials.password'),
-      authUrl: openStackSwiftConfig.getString('authUrl'),
-      keystoneAuthVersion:
-        openStackSwiftConfig.getOptionalString('keystoneAuthVersion') || 'v3',
-      domainId: openStackSwiftConfig.getOptionalString('domainId') || 'default',
-      domainName:
-        openStackSwiftConfig.getOptionalString('domainName') || 'Default',
-      region: openStackSwiftConfig.getString('region'),
+    const storageClient = new SwiftClient({
+      authEndpoint: openStackSwiftConfig.getString('authUrl'),
+      swiftEndpoint: openStackSwiftConfig.getString('swiftUrl'),
+      credentialId: openStackSwiftConfig.getString('credentials.id'),
+      secret: openStackSwiftConfig.getString('credentials.secret'),
     });
 
     return new OpenStackSwiftPublish(storageClient, containerName, logger);
   }
 
   constructor(
-    private readonly storageClient: storage.Client,
+    private readonly storageClient: SwiftClient,
     private readonly containerName: string,
     private readonly logger: Logger,
   ) {
@@ -92,31 +94,35 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * Check if the defined container exists. Being able to connect means the configuration is good
    * and the storage client will work.
    */
-  getReadiness(): Promise<ReadinessResponse> {
-    return new Promise(resolve => {
-      this.storageClient.getContainer(this.containerName, (err, container) => {
-        if (container) {
-          this.logger.info(
-            `Successfully connected to the OpenStack Swift container ${this.containerName}.`,
-          );
-          resolve({
-            isAvailable: true,
-          });
-        } else {
-          this.logger.error(
-            `Could not retrieve metadata about the OpenStack Swift container ${this.containerName}. ` +
-              'Make sure the container exists. Also make sure that authentication is setup either by ' +
-              'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
-              'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-          );
+  async getReadiness(): Promise<ReadinessResponse> {
+    try {
+      const container = await this.storageClient.getContainerMetadata(
+        this.containerName,
+      );
 
-          this.logger.error(`from OpenStack client library: ${err.message}`);
-          resolve({
-            isAvailable: false,
-          });
-        }
-      });
-    });
+      if (!(container instanceof NotFound)) {
+        this.logger.info(
+          `Successfully connected to the OpenStack Swift container ${this.containerName}.`,
+        );
+        return {
+          isAvailable: true,
+        };
+      }
+      this.logger.error(
+        `Could not retrieve metadata about the OpenStack Swift container ${this.containerName}. ` +
+          'Make sure the container exists. Also make sure that authentication is setup either by ' +
+          'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
+          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      return {
+        isAvailable: false,
+      };
+    } catch (err) {
+      this.logger.error(`from OpenStack client library: ${err.message}`);
+      return {
+        isAvailable: false,
+      };
+    }
   }
 
   /**
@@ -135,7 +141,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
         const relativeFilePath = path.relative(directory, filePath);
-
         // Convert destination file path to a POSIX path for uploading.
         // Swift expects / as path separator and relativeFilePath will contain \\ on Windows.
         // https://docs.openstack.org/python-openstackclient/pike/cli/man/openstack.html
@@ -147,26 +152,16 @@ export class OpenStackSwiftPublish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
 
-        const params = {
-          container: this.containerName,
-          remote: destination,
-        };
-
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(
-          () =>
-            new Promise((res, rej) => {
-              const readStream = fs.createReadStream(filePath);
-
-              const writeStream = this.storageClient.upload(params);
-
-              writeStream.on('error', rej);
-
-              writeStream.on('success', res);
-
-              readStream.pipe(writeStream);
-            }),
-        );
+        const uploadFile = limiter(async () => {
+          const fileBuffer = await fs.readFile(filePath);
+          const stream = bufferToStream(fileBuffer);
+          return this.storageClient.upload(
+            this.containerName,
+            destination,
+            stream,
+          );
+        });
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
@@ -184,15 +179,16 @@ export class OpenStackSwiftPublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
-    try {
-      return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
-        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+    return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
+      const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-        const stream = this.storageClient.download({
-          container: this.containerName,
-          remote: `${entityRootDir}/techdocs_metadata.json`,
-        });
+      const downloadResponse = await this.storageClient.download(
+        this.containerName,
+        `${entityRootDir}/techdocs_metadata.json`,
+      );
 
+      if (!(downloadResponse instanceof NotFound)) {
+        const stream = downloadResponse.data;
         try {
           const techdocsMetadataJson = await streamToBuffer(stream);
           if (!techdocsMetadataJson) {
@@ -210,10 +206,12 @@ export class OpenStackSwiftPublish implements PublisherBase {
           this.logger.error(err.message);
           reject(new Error(err.message));
         }
-      });
-    } catch (e) {
-      throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
-    }
+      } else {
+        reject({
+          message: `TechDocs metadata fetch failed, The file /rootDir/${entityRootDir}/techdocs_metadata.json does not exist !`,
+        });
+      }
+    });
   }
 
   /**
@@ -229,23 +227,29 @@ export class OpenStackSwiftPublish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const stream = this.storageClient.download({
-        container: this.containerName,
-        remote: filePath,
-      });
+      const downloadResponse = await this.storageClient.download(
+        this.containerName,
+        filePath,
+      );
 
-      try {
-        // Inject response headers
-        for (const [headerKey, headerValue] of Object.entries(
-          responseHeaders,
-        )) {
-          res.setHeader(headerKey, headerValue);
+      if (!(downloadResponse instanceof NotFound)) {
+        const stream = downloadResponse.data;
+
+        try {
+          // Inject response headers
+          for (const [headerKey, headerValue] of Object.entries(
+            responseHeaders,
+          )) {
+            res.setHeader(headerKey, headerValue);
+          }
+
+          res.send(await streamToBuffer(stream));
+        } catch (err) {
+          this.logger.warn(err.message);
+          res.status(404).send(err.message);
         }
-
-        res.send(await streamToBuffer(stream));
-      } catch (err) {
-        this.logger.warn(err.message);
-        res.status(404).send(err.message);
+      } else {
+        res.status(404).send('File Not Found');
       }
     };
   }
@@ -255,25 +259,20 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
     try {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const fileResponse = await this.storageClient.getMetadata(
+        this.containerName,
+        `${entityRootDir}/index.html`,
+      );
 
-      return new Promise(res => {
-        this.storageClient.getFile(
-          this.containerName,
-          `${entityRootDir}/index.html`,
-          (err, file) => {
-            if (!err && file) {
-              res(true);
-            } else {
-              res(false);
-              this.logger.warn(err.message);
-            }
-          },
-        );
-      });
-    } catch (e) {
-      return Promise.resolve(false);
+      if (!(fileResponse instanceof NotFound)) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      this.logger.warn(err.message);
+      return false;
     }
   }
 }

@@ -53,7 +53,10 @@ export class CatalogImportClient implements CatalogImportApi {
   }
 
   async analyzeUrl(url: string): Promise<AnalyzeResult> {
-    if (new URL(url).pathname.match(/\.ya?ml$/)) {
+    if (
+      new URL(url).pathname.match(/\.ya?ml$/) ||
+      new URL(url).searchParams.get('path')?.match(/.ya?ml$/)
+    ) {
       const location = await this.catalogApi.addLocation({
         type: 'url',
         target: url,

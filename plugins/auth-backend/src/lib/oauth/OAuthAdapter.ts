@@ -140,11 +140,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response.providerInfo.scope = grantedScopes;
       }
 
-      if (!this.options.disableRefresh) {
-        if (!refreshToken) {
-          throw new InputError('Missing refresh token');
-        }
-
+      if (refreshToken && !this.options.disableRefresh) {
         // set new refresh token
         this.setRefreshTokenCookie(res, refreshToken);
       }
@@ -174,10 +170,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       return;
     }
 
-    if (!this.options.disableRefresh) {
-      // remove refresh token cookie before logout
-      this.removeRefreshTokenCookie(res);
-    }
+    // remove refresh token cookie if it is set
+    this.removeRefreshTokenCookie(res);
+
     res.status(200).send('logout!');
   }
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { usePrevious } from 'react-use';
 import qs from 'qs';
 import { useLocation, useOutlet } from 'react-router';
 import { SearchContextProvider, useSearch } from '../SearchContext';
@@ -22,46 +23,72 @@ import { JsonObject } from '@backstage/config';
 import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {
-  const { term, types, pageCursor, filters } = useSearch();
+  const location = useLocation();
+  const {
+    term,
+    setTerm,
+    types,
+    setTypes,
+    pageCursor,
+    setPageCursor,
+    filters,
+    setFilters,
+  } = useSearch();
 
-  const newParams = qs.stringify(
-    {
-      query: term,
-      types,
-      pageCursor,
-      filters,
-    },
-    { arrayFormat: 'brackets' },
-  );
-  const newUrl = `${window.location.pathname}?${newParams}`;
+  const prevQueryParams = usePrevious(location.search);
+  useEffect(() => {
+    // Only respond to changes to url query params
+    if (location.search === prevQueryParams) {
+      return;
+    }
 
-  // We directly manipulate window history here in order to not re-render
-  // infinitely (state => location => state => etc). The intention of this
-  // code is just to ensure the right query/filters are loaded when a user
-  // clicks the "back" button after clicking a result.
-  window.history.replaceState(null, document.title, newUrl);
+    const query =
+      qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+
+    if (query.filters) {
+      setFilters(query.filters as JsonObject);
+    }
+
+    if (query.query) {
+      setTerm(query.query as string);
+    }
+
+    if (query.pageCursor) {
+      setPageCursor(query.pageCursor as string);
+    }
+
+    if (query.types) {
+      setTypes(query.types as string[]);
+    }
+  }, [prevQueryParams, location, setTerm, setTypes, setPageCursor, setFilters]);
+
+  useEffect(() => {
+    const newParams = qs.stringify(
+      {
+        query: term,
+        types,
+        pageCursor,
+        filters,
+      },
+      { arrayFormat: 'brackets' },
+    );
+    const newUrl = `${window.location.pathname}?${newParams}`;
+
+    // We directly manipulate window history here in order to not re-render
+    // infinitely (state => location => state => etc). The intention of this
+    // code is just to ensure the right query/filters are loaded when a user
+    // clicks the "back" button after clicking a result.
+    window.history.replaceState(null, document.title, newUrl);
+  }, [term, types, pageCursor, filters]);
 
   return null;
 };
 
 export const SearchPage = () => {
-  const location = useLocation();
   const outlet = useOutlet();
-  const query = qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
-  const filters = (query.filters as JsonObject) || {};
-  const queryString = (query.query as string) || '';
-  const pageCursor = (query.pageCursor as string) || '';
-  const types = (query.types as string[]) || [];
-
-  const initialState = {
-    term: queryString || '',
-    types,
-    pageCursor,
-    filters,
-  };
 
   return (
-    <SearchContextProvider initialState={initialState}>
+    <SearchContextProvider>
       <UrlUpdater />
       {outlet || <LegacySearchPage />}
     </SearchContextProvider>

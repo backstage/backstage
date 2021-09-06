@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { todoApiRef } from './api';
+export { todoApiRef, TodoClient } from './api';
+export type {
+  TodoApi,
+  TodoListOptions,
+  TodoListResult,
+  TodoItem,
+  TodoListFields,
+  TodoClientOptions,
+} from './api';
 export { todoPlugin, EntityTodoContent } from './plugin';

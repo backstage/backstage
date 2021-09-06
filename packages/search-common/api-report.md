@@ -53,7 +53,7 @@ export interface SearchQuery {
   // (undocumented)
   filters?: JsonObject;
   // (undocumented)
-  pageCursor: string;
+  pageCursor?: string;
   // (undocumented)
   term: string;
   // (undocumented)
@@ -74,6 +74,10 @@ export interface SearchResult {
 //
 // @public (undocumented)
 export interface SearchResultSet {
+  // (undocumented)
+  nextPageCursor?: string;
+  // (undocumented)
+  previousPageCursor?: string;
   // (undocumented)
   results: SearchResult[];
 }

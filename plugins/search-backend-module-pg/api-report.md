@@ -10,6 +10,14 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
 
+// Warning: (ae-missing-release-tag) "ConcretePgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ConcretePgSearchQuery = {
+  pgQuery: PgSearchQuery;
+  pageSize: number;
+};
+
 // Warning: (ae-missing-release-tag) "DatabaseDocumentStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -32,7 +40,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit }: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
   // (undocumented)
   static supported(knex: Knex): Promise<boolean>;
@@ -79,11 +87,13 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
   // (undocumented)
-  setTranslator(translator: (query: SearchQuery) => PgSearchQuery): void;
+  setTranslator(
+    translator: (query: SearchQuery) => ConcretePgSearchQuery,
+  ): void;
   // (undocumented)
   static supported(database: PluginDatabaseManager): Promise<boolean>;
   // (undocumented)
-  translator(query: SearchQuery): PgSearchQuery;
+  translator(query: SearchQuery): ConcretePgSearchQuery;
 }
 
 // Warning: (ae-missing-release-tag) "PgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -92,6 +102,10 @@ export class PgSearchEngine implements SearchEngine {
 export interface PgSearchQuery {
   // (undocumented)
   fields?: Record<string, string | string[]>;
+  // (undocumented)
+  limit: number;
+  // (undocumented)
+  offset: number;
   // (undocumented)
   pgTerm?: string;
   // (undocumented)

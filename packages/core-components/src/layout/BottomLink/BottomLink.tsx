@@ -49,11 +49,11 @@ export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
         <Box display="flex" alignItems="center" className={classes.root}>
-          <Typography>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-              {title}
-            </Box>
-          </Typography>
+          <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+            <Typography>
+              <strong>{title}</strong>
+            </Typography>
+          </Box>
           <ArrowIcon className={classes.arrow} />
         </Box>
       </Link>

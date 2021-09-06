@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { PgSearchEngine } from './PgSearchEngine';
+export type { ConcretePgSearchQuery } from './PgSearchEngine';

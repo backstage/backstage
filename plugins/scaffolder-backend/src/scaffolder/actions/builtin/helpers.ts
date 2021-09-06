@@ -16,7 +16,6 @@
 
 import { spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
-import globby from 'globby';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
 import { Octokit } from '@octokit/rest';
@@ -84,15 +83,7 @@ export async function initRepoAndPush({
     defaultBranch,
   });
 
-  const paths = await globby(['./**', './**/.*', '!.git'], {
-    cwd: dir,
-    gitignore: true,
-    dot: true,
-  });
-
-  for (const filepath of paths) {
-    await git.add({ dir, filepath });
-  }
+  await git.add({ dir, filepath: '.' });
 
   // use provided info if possible, otherwise use fallbacks
   const authorInfo = {

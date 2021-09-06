@@ -1,5 +1,46 @@
 # @backstage/plugin-catalog-react
 
+## 0.4.5
+
+### Patch Changes
+
+- 3ed78fca3: Added a `useEntityKinds` hook to load a unique list of entity kinds from the catalog.
+  Fixed a bug in `EntityTypePicker` where the component did not hide when no types were available in returned entities.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+
+## 0.4.4
+
+### Patch Changes
+
+- 5a1eb6bfc: Memoize the context value in `EntityListProvider`.
+
+  This removes quite a few unnecessary rerenders of the inner components.
+
+  When running the full `CatalogPage` test:
+
+  - Before: 98 table render calls total, 16 seconds runtime
+  - After: 57 table render calls total, 14 seconds runtime
+
+  This doesn't account for all of the slowness, but does give a minor difference in perceived speed in the browser too.
+
+- d39e7d141: Use the history API directly in `useEntityListProvider`.
+
+  This replaces `useSearchParams`/`useNavigate`, since they cause at least one additional re-render compared to using this method.
+
+  Table re-render count is down additionally:
+
+  - Initial render of catalog page: 12 -> 9
+  - Full `CatalogPage` test: 57 -> 48
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.10
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
 ## 0.4.3
 
 ### Patch Changes

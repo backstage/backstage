@@ -46,4 +46,17 @@ describe('DocsResultListItem test', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('should use title if defined', async () => {
+    const { findByText } = render(
+      <DocsResultListItem result={validResult} title="Count Dookumentation" />,
+    );
+
+    expect(await findByText('Count Dookumentation')).toBeInTheDocument();
+    expect(
+      await findByText(
+        'Backstage is an open-source developer portal that puts the developer experience first.',
+      ),
+    ).toBeInTheDocument();
+  });
 });
