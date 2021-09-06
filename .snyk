@@ -1,0 +1,10 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-ANSIHTML-1296849:
+    - '@backstage/cli > webpack-dev-server > ansi-html':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+patch: {}
