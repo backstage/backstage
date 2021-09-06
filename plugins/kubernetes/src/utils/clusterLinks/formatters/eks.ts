@@ -16,5 +16,5 @@
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 export function eksFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('EKS formatter is not yet implemented');
+  throw new Error('EKS formatter is not yet implemented. Please, contribute!');
 }

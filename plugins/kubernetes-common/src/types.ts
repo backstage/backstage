@@ -40,9 +40,9 @@ export interface ClusterAttributes {
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks
-   * Note that you need to specify the app used for the dashboard
+   * Note that you should specify the app used for the dashboard
    * using the dashboardApp property, in order to properly format
-   * links to kubernetes resources.
+   * links to kubernetes resources,  otherwise it will assume that you're running the standard one.
    * @see dashboardApp
    */
   dashboardUrl?: string;

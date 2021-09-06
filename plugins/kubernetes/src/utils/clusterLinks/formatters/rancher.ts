@@ -16,5 +16,7 @@
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 export function rancherFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('Rancher formatter is not yet implemented');
+  throw new Error(
+    'Rancher formatter is not yet implemented. Please, contribute!',
+  );
 }

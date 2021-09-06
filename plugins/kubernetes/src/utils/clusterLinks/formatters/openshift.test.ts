@@ -28,6 +28,8 @@ describe('clusterLinks - OpenShift formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('OpenShift formatter is not yet implemented');
+    ).toThrowError(
+      'OpenShift formatter is not yet implemented. Please, contribute!',
+    );
   });
 });

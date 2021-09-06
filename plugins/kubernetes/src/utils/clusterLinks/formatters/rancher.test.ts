@@ -28,6 +28,8 @@ describe('clusterLinks - Rancher formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('Rancher formatter is not yet implemented');
+    ).toThrowError(
+      'Rancher formatter is not yet implemented. Please, contribute!',
+    );
   });
 });

@@ -28,6 +28,6 @@ describe('clusterLinks - EKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('EKS formatter is not yet implemented');
+    ).toThrowError('EKS formatter is not yet implemented. Please, contribute!');
   });
 });

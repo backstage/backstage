@@ -16,12 +16,14 @@
 
 import { defaultFormatterName, clusterLinksFormatters } from './formatters';
 
-export function formatClusterLink(options: {
+export type FormatClusterLinkOptions = {
   dashboardUrl?: string;
   dashboardApp?: string;
   object: any;
   kind: string;
-}) {
+};
+
+export function formatClusterLink(options: FormatClusterLinkOptions) {
   if (!options.dashboardUrl) {
     return undefined;
   }

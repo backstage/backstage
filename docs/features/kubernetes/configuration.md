@@ -104,9 +104,9 @@ kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOU
 
 Specifies the link to the Kubernetes dashboard managing this cluster.
 
-Note that you need to specify the app used for the dashboard using the
+Note that you should specify the app used for the dashboard using the
 **dashboardApp property**, in order to properly format links to kubernetes
-resources.
+resources, otherwise it will assume that you're running the standard one.
 
 ##### `clusters.\*.dashboardApp` (optional)
 
@@ -116,7 +116,7 @@ This will be used for formatting links to kubernetes objects inside the
 dashboard.
 
 The supported dashboards are: `standard`, `rancher`, `openshift`, `gke`, `aks`,
-`eks`
+`eks` However, not all of them are implemented yet, so please contribute!
 
 Note that it will default to the regular dashboard provided by the Kubernetes
 project (`standard`), that can run in any Kubernetes cluster.

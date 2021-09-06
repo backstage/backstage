@@ -36,9 +36,12 @@ import {
   CodeSnippet,
   StructuredMetadataTable,
   Link,
+  WarningPanel,
 } from '@backstage/core-components';
 import { ClusterContext } from '../../hooks';
 import { formatClusterLink } from '../../utils/clusterLinks';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
+import { FormatClusterLinkOptions } from '../../utils/clusterLinks/formatClusterLink';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,6 +59,10 @@ const useDrawerContentStyles = makeStyles((_: Theme) =>
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
+    },
+    errorMessage: {
+      marginTop: '1em',
+      marginBottom: '1em',
     },
     options: {
       display: 'flex',
@@ -80,6 +87,27 @@ const PodDrawerButton = withStyles({
   },
 })(Button);
 
+type ErrorPanelProps = {
+  cluster: ClusterAttributes;
+  errorMessage?: string;
+  children?: React.ReactNode;
+};
+
+export const ErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
+  <WarningPanel
+    title="There was a problem formatting the link to the Kubernetes dashboard"
+    message={`Could not format the link to the dashboard of your cluster named '${
+      cluster.name
+    }'. Its dashboardApp property has been set to '${
+      cluster.dashboardApp || 'standard'
+    }.'`}
+  >
+    {errorMessage && (
+      <Typography variant="body2">Errors: {errorMessage}</Typography>
+    )}
+  </WarningPanel>
+);
+
 interface KubernetesDrawerable {
   metadata?: V1ObjectMeta;
 }
@@ -100,6 +128,20 @@ function replaceNullsWithUndefined(someObj: any) {
   return JSON.parse(JSON.stringify(someObj, replacer));
 }
 
+function tryFormatClusterLink(options: FormatClusterLinkOptions) {
+  try {
+    return {
+      clusterLink: formatClusterLink(options),
+      errorMessage: '',
+    };
+  } catch (err) {
+    return {
+      clusterLink: '',
+      errorMessage: err.message || err.toString(),
+    };
+  }
+}
+
 const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
   toggleDrawer,
   object,
@@ -110,7 +152,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
 
   const classes = useDrawerContentStyles();
   const cluster = useContext(ClusterContext);
-  const clusterLink = formatClusterLink({
+  const { clusterLink, errorMessage } = tryFormatClusterLink({
     dashboardUrl: cluster.dashboardUrl,
     dashboardApp: cluster.dashboardApp,
     object,
@@ -146,6 +188,11 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
           <Close className={classes.icon} />
         </IconButton>
       </div>
+      {errorMessage && (
+        <div className={classes.errorMessage}>
+          <ErrorPanel cluster={cluster} errorMessage={errorMessage} />
+        </div>
+      )}
       <div className={classes.options}>
         <div>
           {clusterLink && (

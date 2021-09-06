@@ -15,7 +15,7 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-const KindMappings: Record<string, string> = {
+const kindMappings: Record<string, string> = {
   deployment: 'deployment',
   ingress: 'ingress',
   service: 'service',
@@ -26,7 +26,7 @@ export function standardFormatter(options: ClusterLinksFormatterOptions) {
   const result = new URL(options.dashboardUrl.href);
   const name = options.object.metadata?.name;
   const namespace = options.object.metadata?.namespace;
-  const validKind = KindMappings[options.kind.toLocaleLowerCase()];
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
   if (namespace) {
     result.searchParams.set('namespace', namespace);
   }

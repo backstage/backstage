@@ -18,5 +18,7 @@ import { ClusterLinksFormatterOptions } from '../../../types/types';
 export function openshiftFormatter(
   _options: ClusterLinksFormatterOptions,
 ): URL {
-  throw new Error('OpenShift formatter is not yet implemented');
+  throw new Error(
+    'OpenShift formatter is not yet implemented. Please, contribute!',
+  );
 }

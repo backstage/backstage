@@ -28,6 +28,6 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('AKS formatter is not yet implemented');
+    ).toThrowError('AKS formatter is not yet implemented. Please, contribute!');
   });
 });

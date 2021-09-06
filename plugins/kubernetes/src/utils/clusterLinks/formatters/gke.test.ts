@@ -28,6 +28,6 @@ describe('clusterLinks - GKE formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('GKE formatter is not yet implemented');
+    ).toThrowError('GKE formatter is not yet implemented. Please, contribute!');
   });
 });

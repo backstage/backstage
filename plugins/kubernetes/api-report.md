@@ -25,15 +25,13 @@ export const EntityKubernetesContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function formatClusterLink(options: {
-  dashboardUrl?: string;
-  dashboardApp?: string;
-  object: any;
-  kind: string;
-}): string | undefined;
+export function formatClusterLink(
+  options: FormatClusterLinkOptions,
+): string | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvidersApi" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

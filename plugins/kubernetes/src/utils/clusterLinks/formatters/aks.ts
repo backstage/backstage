@@ -16,5 +16,5 @@
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 export function aksFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('AKS formatter is not yet implemented');
+  throw new Error('AKS formatter is not yet implemented. Please, contribute!');
 }

@@ -16,5 +16,5 @@
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 export function gkeFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('GKE formatter is not yet implemented');
+  throw new Error('GKE formatter is not yet implemented. Please, contribute!');
 }
