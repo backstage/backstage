@@ -86,7 +86,7 @@ const getExtensionDomain = (
 /**
  * Performs the actual event capture on render.
  */
-const CaptureOnRender = ({
+const TrackNavigation = ({
   pathname,
   search,
   hash,
@@ -115,7 +115,7 @@ export const RouteTracker = ({ objects }: { objects: RouteObjects }) => {
 
   return (
     <AnalyticsDomain attributes={attributes}>
-      <CaptureOnRender pathname={pathname} search={search} hash={hash} />
+      <TrackNavigation pathname={pathname} search={search} hash={hash} />
     </AnalyticsDomain>
   );
 };
