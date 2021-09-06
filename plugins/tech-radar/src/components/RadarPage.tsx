@@ -15,16 +15,15 @@
  */
 
 import React from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, TextField } from '@material-ui/core';
 import RadarComponent from '../components/RadarComponent';
 import { TechRadarComponentProps } from '../api';
 import {
   Content,
   ContentHeader,
   Page,
-  // Header,
+  Header,
   SupportButton,
-  InputTextFilter,
 } from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
@@ -48,16 +47,25 @@ export const RadarPage = ({
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
 
-  const searchInput = (event: any) => {
+  const searchInput = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setSearchText(event.target.value);
   };
 
   return (
     <Page themeId="tool">
-      {/* <Header title={title} subtitle={subtitle} /> */}
+      <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
-          <InputTextFilter searchCategory={searchInput} />
+          <TextField
+            id="standard-search"
+            label="Search field"
+            type="search"
+            onChange={e => {
+              searchInput(e);
+            }}
+          />
           <SupportButton>
             This is used for visualizing the official guidelines of different
             areas of software development such as languages, frameworks,

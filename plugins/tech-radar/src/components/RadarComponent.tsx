@@ -52,7 +52,7 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
     loaderResponse: TechRadarLoaderResponse | undefined,
   ): Array<Entry> => {
     let filteredArray = loaderResponse!.entries;
-    if (!(props.searchText === '')) {
+    if (props.searchText) {
       // Compare the name or the description with the search input text
       filteredArray = loaderResponse!.entries.filter(
         element =>

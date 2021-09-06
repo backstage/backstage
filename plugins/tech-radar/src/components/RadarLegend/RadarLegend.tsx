@@ -33,13 +33,21 @@ export type Props = {
 
 const useStyles = makeStyles<Theme>(theme => ({
   foreignObject: {
-    overflowY: 'visible',
+    overflow: 'scroll',
+    scrollbarWidth: 0 as any, // hide in FF
+    '&::-webkit-scrollbar': {
+      display: 'none', // hide in Chrome
+    },
   },
   quadrant: {
     height: '100%',
     width: '100%',
-    overflowY: 'visible',
-    pointerEvents: 'none',
+    overflow: 'scroll',
+    scrollbarWidth: 0 as any, // hide in FF
+    '&::-webkit-scrollbar': {
+      display: 'none', // hide in Chrome
+    },
+    // pointerEvents: 'none',
   },
   quadrantHeading: {
     pointerEvents: 'none',
@@ -70,9 +78,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     listStylePosition: 'inside',
     marginTop: 0,
     paddingLeft: 0,
-    height: '100%',
-    width: '100%',
-    overflow: 'scroll',
     fontVariantNumeric: 'proportional-nums',
     '-moz-font-feature-settings': 'pnum',
     '-webkit-font-feature-settings': 'pnum',

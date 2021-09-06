@@ -28,7 +28,6 @@ export * from './ResponseErrorPanel';
 export * from './FeatureDiscovery';
 export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
-export * from './InputTextFilter';
 export * from './Lifecycle';
 export * from './Link';
 export * from './MarkdownContent';
