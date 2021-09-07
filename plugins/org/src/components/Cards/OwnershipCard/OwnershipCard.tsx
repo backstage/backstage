@@ -39,7 +39,6 @@ import {
   Box,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Typography,
 } from '@material-ui/core';
