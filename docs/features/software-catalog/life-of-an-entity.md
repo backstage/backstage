@@ -183,6 +183,10 @@ The stitching is currently a fixed process, that cannot be modified or extended.
 This means that any modifications you want to make on the final result, has to
 happen during ingestion or processing.
 
+## Errors
+
+> TODO: Describe how errors are exposed through entities
+
 ## Orphaning
 
 As mentioned earlier, entities internally form a graph. The edges go from
@@ -199,19 +203,20 @@ either, it becomes _orphaned_. The end result is as follows:
 - The child entity is _not_ removed from the catalog, but stays around until
   explicitly deleted via the catalog API, or "reclaimed" by the original parent
   or another parent starting to reference it.
-- The child entity stops being subjected to regular processing, frozen in time.
 - The catalog page in Backstage for the child entity detects the new annotation
   and informs users about the orphan status.
 
 Orphaning can occur in several different scenarios. One common cause is that the
 end user edited a corresponding catalog catalog-info YAML file removing the
-entity's entry, or in the case of a `Location` entity, removed the target row
-pointing to the file containing the file. Another common cause is large batch
-processors such as the ones that crawl through remote systems looking for
-entities, no longer finding something that it used to find before. Maybe the
-data was moved, or deleted, in the remote system. So for example when a person
-leaves the company an LDAP org discovery processor might leave an orphaned
-`User` entity behind.
+entity's entry. In the case of a `Location` parent entity, orphaning can happen
+if removing the target line pointing to the file containing the child entity.
+Another common cause is large batch processors such as the ones that crawl
+through remote systems looking for entities, no longer finding something that it
+used to find before. Maybe the data was moved, or deleted, in the remote system.
+So for example when a person leaves the company an LDAP org discovery processor
+might leave an orphaned `User` entity behind. Note that this only applies to
+processors - ingestion that happens using entity providers work differently,
+described below.
 
 > Note that removing a file, or accidentally corrupting a file so that it cannot
 > be read successfully, does _not_ lead to orphaning. Hard errors, including the
@@ -223,13 +228,13 @@ The reason that the orphaning mechanism exists instead of having an eager
 deletion triggered, is safety. Scenarios like these can happen purely by
 accident, due to the asynchronous nature of the system and the fallible nature
 of humans. In particular when external systems start consuming and relying on
-the catalog, the consequences of suddenly dropping entities without your
-explicit owner consent could be substantial. The catalog therefore takes the
-stance that entities that often were added by direct user action should also be
-deleted only by direct user action.
+the catalog, there could be substantial consequences to suddenly dropping
+entities without explicit owner consent. The catalog therefore takes the stance
+that entities that often were added by direct user action should also be deleted
+only by direct user action.
 
-It is possible to build automated "reaper" systems that finally delete entities
-that are orphaned by using the catalog API. This is however not something that's
+It is possible to use the catalog API to build automated "reaper" systems that
+finally delete entities that are orphaned. This is however not something that's
 provided out of the box.
 
 ## Implicit Deletion
