@@ -29,7 +29,7 @@ import {
   isOwnerOf,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, genPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
@@ -47,16 +47,6 @@ type EntityTypeProps = {
   kind: string;
   type: string;
   count: number;
-};
-
-const createPageTheme = (
-  theme: BackstageTheme,
-  shapeKey: string,
-  colorsKey: string,
-) => {
-  const { colors } = theme.getPageTheme({ themeId: colorsKey });
-  const { shape } = theme.getPageTheme({ themeId: shapeKey });
-  return genPageTheme(colors, shape).backgroundImage;
 };
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
@@ -77,7 +67,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     },
     entityTypeBox: {
       background: (props: { type: string }) =>
-        createPageTheme(theme, props.type, props.type),
+        theme.getPageTheme({ themeId: props.type }).backgroundImage,
     },
   }),
 );
