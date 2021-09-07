@@ -143,7 +143,7 @@
             },
             "saml": {
               "type": "object",
-              "required": ["entryPoint", "issuer"],
+              "required": ["entryPoint", "issuer", "cert"],
               "properties": {
                 "entryPoint": {
                   "type": "string"
