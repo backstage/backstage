@@ -26,9 +26,31 @@ You can create your own Field Extension by using the
 
 ```tsx
 //packages/app/scaffolder/MyCustomExtension/MyCustomExtension.tsx
-export const MyCustomExtension = () => {};
+import { FieldProps } from '@rjsf/core';
+export const MyCustomExtension = ({ onChange, required }: FieldProps<string>) => {
+  return (
+     <FormControl
+      margin="normal"
+      required={required}
+      error={rawErrors?.length > 0 && !formData}
+    >
+  )
+};
 ```
 
 ```tsx
 // packages/app/scaffolder/MyCustomExtension/validation.ts
+import { FieldValidation } from '@rjsf/core';
+import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
+
+export const myCustomValidation = (
+  value: string,
+  validation: FieldValidation,
+) => {
+  if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
+    validation.addError(
+      'must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+    );
+  }
+};
 ```
