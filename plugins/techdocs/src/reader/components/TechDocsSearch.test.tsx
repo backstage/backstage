@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TechDocsSearch } from './TechDocsSearch';
+import { buildInitialFilters, TechDocsSearch } from './TechDocsSearch';
 import {
   act,
   fireEvent,
@@ -89,7 +89,7 @@ describe('<TechDocsPage />', () => {
       await singleResult;
       expect(querySpy).toBeCalledWith({
         filters: {
-          kind: 'Testable',
+          kind: 'testable',
           name: 'test',
           namespace: 'testspace',
         },
@@ -108,7 +108,7 @@ describe('<TechDocsPage />', () => {
       await waitFor(() =>
         expect(querySpy).toBeCalledWith({
           filters: {
-            kind: 'Testable',
+            kind: 'testable',
             name: 'test',
             namespace: 'testspace',
           },
@@ -117,6 +117,26 @@ describe('<TechDocsPage />', () => {
           types: ['techdocs'],
         }),
       );
+    });
+  });
+});
+
+describe('buildInitialFilters', () => {
+  const filterEnt = {
+    name: 'Test',
+    kind: 'TestKind',
+    namespace: 'TeStNaMeSpAcE',
+  };
+  it('should use filters as is when legacy path', () => {
+    const filters = buildInitialFilters(true, filterEnt);
+    expect(filters).toStrictEqual(filterEnt);
+  });
+  it('should lowercase all filters for new approach', () => {
+    const filters = buildInitialFilters(false, filterEnt);
+    expect(filters).toStrictEqual({
+      name: 'test',
+      kind: 'testkind',
+      namespace: 'testnamespace',
     });
   });
 });
