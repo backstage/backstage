@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
+  Link,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
@@ -34,13 +35,11 @@ import {
   Box,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Typography,
 } from '@material-ui/core';
 import qs from 'qs';
 import React from 'react';
-import { generatePath } from 'react-router';
 import { useAsync } from 'react-use';
 
 type EntityTypeProps = {
@@ -86,7 +85,7 @@ const EntityCountTile = ({
   const classes = useStyles({ type });
 
   return (
-    <Link href={url} variant="body2">
+    <Link to={url} variant="body2">
       <Box
         className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
@@ -208,7 +207,7 @@ export const OwnershipCard = ({
               counter={c.counter}
               type={c.type}
               name={c.name}
-              url={generatePath(`${catalogLink()}/?${c.queryParams}`)}
+              url={`${catalogLink()}/?${c.queryParams}`}
             />
           </Grid>
         ))}
