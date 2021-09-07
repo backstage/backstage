@@ -182,6 +182,9 @@ export type ReadTreeResponseFactoryOptions = {
   etag: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string, info?: { size: number }) => boolean;
+
+  // Strip the first directory in the readTree response
+  stripFirstDirectory?: boolean;
 };
 
 /** @public */

@@ -133,6 +133,7 @@ export class AzureUrlReader implements UrlReader {
       stream: archiveAzureResponse.body as unknown as Readable,
       etag: commitSha,
       filter: options?.filter,
+      stripFirstDirectory: true,
     });
   }
 

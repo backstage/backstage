@@ -55,6 +55,7 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
       this.workDir,
       options.etag,
       options.filter,
+      options.stripFirstDirectory,
     );
   }
 }
