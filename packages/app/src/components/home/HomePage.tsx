@@ -28,6 +28,7 @@ import {
   Page,
   HomepageTimer,
 } from '@backstage/core-components';
+import { HomePageSearchBar } from '@backstage/plugin-search';
 
 export const HomePage = () => (
   <Page themeId="home">
@@ -36,6 +37,9 @@ export const HomePage = () => (
     </Header>
     <Content>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <HomePageSearchBar />
+        </Grid>
         <Grid item xs={12} md={4}>
           <HomePageRandomJoke />
         </Grid>
