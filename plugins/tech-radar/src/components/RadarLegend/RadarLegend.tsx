@@ -32,21 +32,15 @@ export type Props = {
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
-  foreignObject: {
-    overflow: 'scroll',
-    scrollbarWidth: 0 as any, // hide in FF
-    '&::-webkit-scrollbar': {
-      display: 'none', // hide in Chrome
-    },
+  quadrantLegend: {
+    overflowY: 'scroll',
+    scrollbarWidth: 'thin',
   },
   quadrant: {
     height: '100%',
     width: '100%',
     overflow: 'scroll',
-    scrollbarWidth: 0 as any, // hide in FF
-    '&::-webkit-scrollbar': {
-      display: 'none', // hide in Chrome
-    },
+    scrollbarWidth: 'thin',
     // pointerEvents: 'none',
   },
   quadrantHeading: {
@@ -232,7 +226,7 @@ const RadarLegend = (props: Props): JSX.Element => {
         y={quadrant.legendY}
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
-        className={classes.foreignObject}
+        className={classes.quadrantLegend}
         data-testid="radar-quadrant"
       >
         <div className={classes.quadrant}>
