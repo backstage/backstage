@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
-} from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
 import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
@@ -35,6 +31,7 @@ import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
+  lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -104,7 +101,17 @@ export class AwsS3Publish implements PublisherBase {
       ...(s3ForcePathStyle && { s3ForcePathStyle }),
     });
 
-    return new AwsS3Publish(storageClient, bucketName, logger);
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+
+    return new AwsS3Publish(
+      storageClient,
+      bucketName,
+      legacyPathCasing,
+      logger,
+    );
   }
 
   private static buildCredentials(
@@ -141,10 +148,12 @@ export class AwsS3Publish implements PublisherBase {
   constructor(
     private readonly storageClient: aws.S3,
     private readonly bucketName: string,
+    private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
+    this.legacyPathCasing = legacyPathCasing;
     this.logger = logger;
   }
 
@@ -182,10 +191,15 @@ export class AwsS3Publish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    const useLegacyPathCasing = this.legacyPathCasing;
     // First, try to retrieve a list of all individual files currently existing
     let existingFiles: string[] = [];
     try {
-      const remoteFolder = getCloudPathForLocalPath(entity);
+      const remoteFolder = getCloudPathForLocalPath(
+        entity,
+        undefined,
+        useLegacyPathCasing,
+      );
       existingFiles = await this.getAllObjectsFromBucket({
         prefix: remoteFolder,
       });
@@ -210,7 +224,11 @@ export class AwsS3Publish implements PublisherBase {
 
           const params = {
             Bucket: this.bucketName,
-            Key: getCloudPathForLocalPath(entity, relativeFilePath),
+            Key: getCloudPathForLocalPath(
+              entity,
+              relativeFilePath,
+              useLegacyPathCasing,
+            ),
             Body: fileStream,
           };
 
@@ -236,6 +254,7 @@ export class AwsS3Publish implements PublisherBase {
           getCloudPathForLocalPath(
             entity,
             path.relative(directory, absoluteFilePath),
+            useLegacyPathCasing,
           ),
       );
       const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
@@ -267,7 +286,10 @@ export class AwsS3Publish implements PublisherBase {
   ): Promise<TechDocsMetadata> {
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
-        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+        const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+        const entityRootDir = this.legacyPathCasing
+          ? entityTriplet
+          : lowerCaseEntityTriplet(entityTriplet);
 
         const stream = this.storageClient
           .getObject({
@@ -308,7 +330,9 @@ export class AwsS3Publish implements PublisherBase {
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
       // filePath example - /default/component/documented-component/index.html
-      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
+      const filePath = this.legacyPathCasing
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -339,7 +363,11 @@ export class AwsS3Publish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityRootDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
+
       await this.storageClient
         .headObject({
           Bucket: this.bucketName,

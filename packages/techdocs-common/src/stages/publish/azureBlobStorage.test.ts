@@ -65,7 +65,6 @@ const createPublisherFromConfig = ({
       legacyUseCaseSensitiveTripletPaths,
     },
   });
-
   return AzureBlobStoragePublish.fromConfig(config, logger);
 };
 
@@ -117,13 +116,13 @@ describe('AzureBlobStoragePublish', () => {
     },
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockFs({
       [directory]: files,
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 
@@ -136,7 +135,7 @@ describe('AzureBlobStoragePublish', () => {
     });
 
     it('should reject incorrect config', async () => {
-      const publisher = createPublisherFromConfig({
+      const errorPublisher = createPublisherFromConfig({
         containerName: 'bad_container',
       });
 
@@ -212,7 +211,7 @@ describe('AzureBlobStoragePublish', () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
+          `Unable to upload file(s) to Azure. Error: Upload failed for ${path.join(
             directory,
             '404.html',
           )} with status code 500`,
@@ -322,6 +321,10 @@ describe('AzureBlobStoragePublish', () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
+    });
+
+    afterEach(() => {
+      mockFs.restore();
     });
 
     it('should pass expected object path to bucket', async () => {

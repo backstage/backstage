@@ -133,6 +133,14 @@ describe('GitlabAuthProvider', () => {
       catalogIdentityClient:
         catalogIdentityClient as unknown as CatalogIdentityClient,
       tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      authHandler: async ({ fullProfile }) => ({
+        profile: {
+          email: fullProfile.emails![0]!.value,
+          displayName: fullProfile.displayName,
+          picture: 'http://gitlab.com/lols',
+        },
+      }),
+      signInResolver: gitlabDefaultSignInResolver,
       logger: getVoidLogger(),
     });
     for (const test of tests) {
