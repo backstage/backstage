@@ -1,5 +1,23 @@
 # example-backend
 
+## 0.2.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.6
+  - @backstage/plugin-scaffolder-backend@0.15.3
+  - @backstage/plugin-techdocs-backend@0.10.1
+  - @backstage/plugin-auth-backend@0.3.24
+  - @backstage/integration@0.6.3
+  - @backstage/plugin-search-backend@0.2.6
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.3
+  - @backstage/plugin-search-backend-module-pg@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+  - example-app@0.2.44
+
 ## 0.2.43
 
 ### Patch Changes

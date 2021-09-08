@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
 ## 0.3.38
 
 ### Patch Changes
