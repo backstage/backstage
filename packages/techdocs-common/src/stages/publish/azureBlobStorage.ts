@@ -19,7 +19,11 @@ import {
   ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import JSON5 from 'json5';
