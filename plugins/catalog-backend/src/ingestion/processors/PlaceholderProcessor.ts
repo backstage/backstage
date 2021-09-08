@@ -216,13 +216,13 @@ function relativeUrl({
 
   try {
     return resolveUrl(value, baseUrl);
-  } catch (_) {
+  } catch (e) {
     // The only remaining case that isn't support is a relative file path that should be
     // resolved using a relative file location. Accessing local file paths can lead to
     // path traversal attacks and access to any file on the host system. Implementing this
     // would require additional security measures.
     throw new Error(
-      `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}`,
+      `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}, ${e}`,
     );
   }
 }
