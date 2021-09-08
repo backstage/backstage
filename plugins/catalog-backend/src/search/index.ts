@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './DefaultCatalogCollator';
+export { DefaultCatalogCollator } from './DefaultCatalogCollator';

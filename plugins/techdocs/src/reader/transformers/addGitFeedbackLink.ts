@@ -15,7 +15,10 @@
  */
 
 import type { Transformer } from './index';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  replaceGitHubUrlType,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -51,7 +54,13 @@ export const addGitFeedbackLink = (
     const issueDesc = encodeURIComponent(
       `Page source:\n${sourceAnchor.href}\n\nFeedback:`,
     );
-    const gitInfo = parseGitUrl(sourceURL.pathname);
+
+    // Convert GitHub edit url to blob type so it can be parsed by git-url-parse correctly
+    const gitUrl =
+      integration?.type === 'github'
+        ? replaceGitHubUrlType(sourceURL.href, 'blob')
+        : sourceURL.href;
+    const gitInfo = parseGitUrl(gitUrl);
     const repoPath = `/${gitInfo.organization}/${gitInfo.name}`;
 
     const feedbackLink = sourceAnchor.cloneNode() as HTMLAnchorElement;

@@ -97,5 +97,20 @@ describe('azure core', () => {
       );
       expect(new URL(result).searchParams.get('scopePath')).toEqual('docs');
     });
+
+    it.each([
+      {
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name',
+        result:
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
+      },
+      {
+        url: 'https://api.com/org-name/project-name/_git/repo-name',
+        result:
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
+      },
+    ])('should handle happy path %#', async ({ url, result }) => {
+      expect(getAzureDownloadUrl(url)).toBe(result);
+    });
   });
 });

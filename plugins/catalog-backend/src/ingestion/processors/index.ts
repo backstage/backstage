@@ -26,6 +26,7 @@ export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
+export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';

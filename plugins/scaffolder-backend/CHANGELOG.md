@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.3
+
+### Patch Changes
+
+- 3f9dd1759: GitHub create repository webhook action: `github:webhook` for Backstage plugin Scaffolder has been added.
+- 774b08a5c: GitHubWebhook Action can be created with a default webhook secret. This allows getting secret from environment variable as an alternative to get it from context.
+- 536f4d844: Updated dependencies
+- 0b92a1e74: refactor: extract common Octokit related code and use it in actions: `publish:github`, `github:actions:dispatch`, `github:webhook`.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.15.2
+
+### Patch Changes
+
+- b438caf63: Add partial templating to `fetch:template` action.
+
+  If an `templateFileExtension` input is given, only files with that extension get their content processed. If `templateFileExtension` is `true`, the `.njk` extension is used. The `templateFileExtension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+  All other files get copied.
+
+  All output paths are subject to applying templating logic.
+
+- 1ce9b9571: Use more efficient approach to staging files in git during scaffolder actions
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.2
+
 ## 0.15.1
 
 ### Patch Changes

@@ -35,7 +35,8 @@ describe('GithubDiscoveryProcessor', () => {
         org: 'foo',
         host: 'github.com',
         repoSearchPath: /^proj$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
       });
       expect(
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
@@ -43,14 +44,21 @@ describe('GithubDiscoveryProcessor', () => {
         org: 'foo',
         host: 'github.com',
         repoSearchPath: /^proj.*$/,
-        catalogPath: '/blob/master/catalog.yaml',
+        branch: 'master',
+        catalogPath: '/catalog.yaml',
+      });
+      expect(parseUrl('https://github.com/foo')).toEqual({
+        org: 'foo',
+        host: 'github.com',
+        repoSearchPath: /^.*$/,
+        branch: '-',
+        catalogPath: '/catalog-info.yaml',
       });
     });
 
     it('throws on incorrectly formed URLs', () => {
       expect(() => parseUrl('https://github.com')).toThrow();
       expect(() => parseUrl('https://github.com//')).toThrow();
-      expect(() => parseUrl('https://github.com/foo')).toThrow();
       expect(() => parseUrl('https://github.com//foo')).toThrow();
       expect(() => parseUrl('https://github.com/org/teams')).toThrow();
       expect(() => parseUrl('https://github.com/org//teams')).toThrow();
@@ -125,11 +133,17 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'master',
+            },
           },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });
@@ -156,6 +170,92 @@ describe('GithubDiscoveryProcessor', () => {
       });
     });
 
+    it('output repositories with wildcards default branch option', async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage/*/blob/-/catalog.yaml',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/tech-docs',
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://github.com/backstage/tech-docs/blob/main/catalog.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it("doesn't output repositories as default branch returned is empty", async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage/blob/-/catalog.yaml',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/tech-docs',
+            isArchived: false,
+            defaultBranchRef: null,
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).not.toHaveBeenCalled();
+    });
+
+    it('output repositories with wildcards default branch option without catalog-info patch or branch match', async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/backstage',
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'master',
+            },
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
+
     it('output repositories with wildcards', async () => {
       const location: LocationSpec = {
         type: 'github-discovery',
@@ -168,16 +268,31 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-cli',
             url: 'https://github.com/backstage/techdocs-cli',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'techdocs-container',
             url: 'https://github.com/backstage/techdocs-container',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+          {
+            name: 'techdocs-durp',
+            url: 'https://github.com/backstage/techdocs-durp',
+            isArchived: false,
+            defaultBranchRef: null,
           },
         ],
       });
@@ -204,6 +319,7 @@ describe('GithubDiscoveryProcessor', () => {
         optional: true,
       });
     });
+
     it('filter unrelated and archived repositories', async () => {
       const location: LocationSpec = {
         type: 'github-discovery',
@@ -215,21 +331,33 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'abstest',
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test',
             url: 'https://github.com/backstage/test',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'test-archived',
             url: 'https://github.com/backstage/test',
             isArchived: true,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
           {
             name: 'testxyz',
             url: 'https://github.com/backstage/testxyz',
             isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
           },
         ],
       });

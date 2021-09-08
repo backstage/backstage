@@ -13,26 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
-import { parseRepoUrl } from '../publish/util';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
+import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
-
-  const credentialsProviders = new Map(
-    integrations.github.list().map(integration => {
-      const provider = GithubCredentialsProvider.create(integration.config);
-      return [integration.config.host, provider];
-    }),
-  );
+  const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
     repoUrl: string;
@@ -69,44 +58,11 @@ export function createGithubActionsDispatchAction(options: {
     async handler(ctx) {
       const { repoUrl, workflowId, branchOrTagName } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
-
-      if (!owner) {
-        throw new InputError(
-          `No owner provided for host: ${host}, and repo ${repo}`,
-        );
-      }
-
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const credentialsProvider = credentialsProviders.get(host);
-      const integrationConfig = integrations.github.byHost(host);
-
-      if (!credentialsProvider || !integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
-
-      const { token } = await credentialsProvider.getCredentials({
-        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repo,
-        )}`,
-      });
-
-      if (!token) {
-        throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-        );
-      }
-
-      const client = new Octokit({
-        auth: token,
-        baseUrl: integrationConfig.config.apiBaseUrl,
-        previews: ['nebula-preview'],
-      });
+      const { client, owner, repo } = await octokitProvider.getOctokit(repoUrl);
 
       await client.rest.actions.createWorkflowDispatch({
         owner,

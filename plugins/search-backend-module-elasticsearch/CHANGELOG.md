@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.3
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/search-common@0.2.0
+
 ## 0.0.2
 
 ### Patch Changes

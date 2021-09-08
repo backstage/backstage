@@ -8,12 +8,16 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
+import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/config';
 import { JSONSchema } from '@backstage/catalog-model';
@@ -22,6 +26,7 @@ import { Observable } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -73,6 +78,13 @@ export const EntityPicker: ({
 //
 // @public (undocumented)
 export const EntityPickerFieldExtension: () => null;
+
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const FavouriteTemplate: (props: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "FieldExtensionOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -204,7 +216,15 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 // Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ScaffolderPage: () => JSX.Element;
+export const ScaffolderPage: ({
+  TemplateCardComponent,
+}: {
+  TemplateCardComponent?:
+    | ComponentType<{
+        template: TemplateEntityV1beta2;
+      }>
+    | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

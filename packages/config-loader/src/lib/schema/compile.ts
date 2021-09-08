@@ -108,6 +108,8 @@ export function compileConfigSchemas(
 /**
  * Given a list of configuration schemas from packages, merge them
  * into a single json schema.
+ *
+ * @public
  */
 export function mergeConfigSchemas(schemas: JSONSchema[]): JSONSchema {
   const merged = mergeAllOf(

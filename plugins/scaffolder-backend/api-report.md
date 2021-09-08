@@ -14,6 +14,7 @@ import express from 'express';
 import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
 import { Logger as Logger_2 } from 'winston';
+import { Octokit } from '@octokit/rest';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -114,6 +115,14 @@ export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
 }): TemplateAction<any>;
 
+// Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createGithubWebhookAction(options: {
+  integrations: ScmIntegrationRegistry;
+  defaultWebhookSecret?: string;
+}): TemplateAction<any>;
+
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -192,6 +201,16 @@ export function fetchContents({
   fetchUrl?: JsonValue;
   outputPath: string;
 }): Promise<void>;
+
+// Warning: (ae-missing-release-tag) "OctokitProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class OctokitProvider {
+  constructor(integrations: ScmIntegrationRegistry);
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
+  getOctokit(repoUrl: string): Promise<OctokitIntegration>;
+}
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

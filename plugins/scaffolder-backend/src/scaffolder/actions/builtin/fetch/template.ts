@@ -262,8 +262,9 @@ export function createFetchTemplateAction(options: {
             );
             await fs.copy(inputFilePath, outputPath);
           } else {
+            const statsObj = await fs.stat(inputFilePath);
             ctx.logger.info(
-              `Writing file ${location} to template output path.`,
+              `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
             );
             const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
             await fs.outputFile(
@@ -271,6 +272,7 @@ export function createFetchTemplateAction(options: {
               renderContents
                 ? templater.renderString(inputFileContents, context)
                 : inputFileContents,
+              { mode: statsObj.mode },
             );
           }
         }

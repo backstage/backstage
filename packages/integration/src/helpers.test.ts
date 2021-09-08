@@ -14,7 +14,35 @@
  * limitations under the License.
  */
 
-import { defaultScmResolveUrl, isValidHost } from './helpers';
+import { BitbucketIntegration } from './bitbucket';
+import {
+  basicIntegrations,
+  defaultScmResolveUrl,
+  isValidHost,
+} from './helpers';
+
+describe('basicIntegrations', () => {
+  describe('byUrl', () => {
+    it('handles hosts without a port', () => {
+      const integration = new BitbucketIntegration({ host: 'host.com' });
+      const integrations = basicIntegrations<BitbucketIntegration>(
+        [integration],
+        i => i.config.host,
+      );
+      expect(integrations.byUrl('https://host.com/a')).toBe(integration);
+      expect(integrations.byUrl('https://host.com:8080/a')).toBeUndefined();
+    });
+    it('handles hosts with a port', () => {
+      const integration = new BitbucketIntegration({ host: 'host.com:8080' });
+      const integrations = basicIntegrations<BitbucketIntegration>(
+        [integration],
+        i => i.config.host,
+      );
+      expect(integrations.byUrl('https://host.com:8080/a')).toBe(integration);
+      expect(integrations.byUrl('https://host.com/a')).toBeUndefined();
+    });
+  });
+});
 
 describe('isValidHost', () => {
   it.each([

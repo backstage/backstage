@@ -195,7 +195,7 @@ describe('ConfigReader', () => {
       {
         data: DATA,
         context: CTX,
-        filteredKeys: ['a', 'b[0]'],
+        filteredKeys: ['a', 'a2', 'b[0]'],
       },
     ]);
 
@@ -204,19 +204,43 @@ describe('ConfigReader', () => {
         "Failed to read configuration value at 'a' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
       ],
     });
-    expect(withLogCollector(() => config.getOptionalString('a'))).toMatchObject(
-      {
-        warn: [
-          "Failed to read configuration value at 'a' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
-        ],
-      },
-    );
+    expect(
+      withLogCollector(() => config.getOptionalString('a2')),
+    ).toMatchObject({
+      warn: [
+        "Failed to read configuration value at 'a2' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
+      ],
+    });
     expect(
       withLogCollector(() => config.getOptionalConfigArray('b')),
     ).toMatchObject({
       warn: [
         "Failed to read configuration array at 'b' as it does not have any visible elements. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
       ],
+    });
+
+    (process.env as any).NODE_ENV = oldEnv;
+  });
+
+  it('only warns once when accessing filtered keys in development mode', () => {
+    const oldEnv = process.env.NODE_ENV;
+    (process.env as any).NODE_ENV = 'development';
+
+    const config = ConfigReader.fromConfigs([
+      {
+        data: DATA,
+        context: CTX,
+        filteredKeys: ['a'],
+      },
+    ]);
+
+    expect(withLogCollector(() => config.getOptional('a'))).toMatchObject({
+      warn: [
+        "Failed to read configuration value at 'a' as it is not visible. See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.",
+      ],
+    });
+    expect(withLogCollector(() => config.getOptional('a'))).toMatchObject({
+      warn: [],
     });
 
     (process.env as any).NODE_ENV = oldEnv;

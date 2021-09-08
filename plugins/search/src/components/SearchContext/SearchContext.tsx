@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
-import { useAsync, usePrevious } from 'react-use';
-import { SearchResultSet } from '@backstage/search-common';
-import { searchApiRef } from '../../apis';
-import { AsyncState } from 'react-use/lib/useAsync';
 import { JsonObject } from '@backstage/config';
 import { useApi } from '@backstage/core-plugin-api';
+import { SearchResultSet } from '@backstage/search-common';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { useAsync, usePrevious } from 'react-use';
+import { AsyncState } from 'react-use/lib/useAsync';
+import { searchApiRef } from '../../apis';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
@@ -36,13 +37,21 @@ type SearchContextValue = {
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
   filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  pageCursor: string;
-  setPageCursor: React.Dispatch<React.SetStateAction<string>>;
+  pageCursor?: string;
+  setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
+  fetchNextPage?: React.DispatchWithoutAction;
+  fetchPreviousPage?: React.DispatchWithoutAction;
 };
 
 type SettableSearchContext = Omit<
   SearchContextValue,
-  'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPageCursor'
+  | 'result'
+  | 'setTerm'
+  | 'setTypes'
+  | 'setFilters'
+  | 'setPageCursor'
+  | 'fetchNextPage'
+  | 'fetchPreviousPage'
 >;
 
 export const SearchContext = createContext<SearchContextValue | undefined>(
@@ -52,14 +61,16 @@ export const SearchContext = createContext<SearchContextValue | undefined>(
 export const SearchContextProvider = ({
   initialState = {
     term: '',
-    pageCursor: '',
+    pageCursor: undefined,
     filters: {},
-    types: ['*'],
+    types: [],
   },
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const searchApi = useApi(searchApiRef);
-  const [pageCursor, setPageCursor] = useState<string>(initialState.pageCursor);
+  const [pageCursor, setPageCursor] = useState<string | undefined>(
+    initialState.pageCursor,
+  );
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
@@ -70,18 +81,29 @@ export const SearchContextProvider = ({
       searchApi.query({
         term,
         filters,
-        pageCursor,
+        pageCursor: pageCursor,
         types,
       }),
     [term, filters, types, pageCursor],
   );
 
+  const hasNextPage =
+    !result.loading && !result.error && result.value?.nextPageCursor;
+  const hasPreviousPage =
+    !result.loading && !result.error && result.value?.previousPageCursor;
+  const fetchNextPage = useCallback(() => {
+    setPageCursor(result.value?.nextPageCursor);
+  }, [result.value?.nextPageCursor]);
+  const fetchPreviousPage = useCallback(() => {
+    setPageCursor(result.value?.previousPageCursor);
+  }, [result.value?.previousPageCursor]);
+
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.
     if (term && prevTerm && term !== prevTerm) {
-      setPageCursor('');
+      setPageCursor(undefined);
     }
-  }, [term, prevTerm]);
+  }, [term, prevTerm, initialState.pageCursor]);
 
   const value: SearchContextValue = {
     result,
@@ -93,6 +115,8 @@ export const SearchContextProvider = ({
     setTypes,
     pageCursor,
     setPageCursor,
+    fetchNextPage: hasNextPage ? fetchNextPage : undefined,
+    fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
   return <SearchContext.Provider value={value} children={children} />;

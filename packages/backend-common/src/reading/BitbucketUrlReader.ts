@@ -43,6 +43,8 @@ import {
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
  * the one exposed by Bitbucket Cloud itself.
+ *
+ * @public
  */
 export class BitbucketUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

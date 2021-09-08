@@ -1,5 +1,109 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- a42a142c2: Errors encountered while attempting to load TechDocs search indices at
+  collation-time are now logged at `DEBUG` instead of `WARN` level.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.0
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 58452cdb7: OpenStack Swift Client changed with Trendyol's OpenStack Swift SDK.
+
+  ## Migration from old OpenStack Swift Configuration
+
+  Let's assume we have the old OpenStack Swift configuration here.
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          username: ${OPENSTACK_SWIFT_STORAGE_USERNAME}
+          password: ${OPENSTACK_SWIFT_STORAGE_PASSWORD}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        keystoneAuthVersion: ${OPENSTACK_SWIFT_STORAGE_AUTH_VERSION}
+        domainId: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_ID}
+        domainName: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME}
+        region: ${OPENSTACK_SWIFT_STORAGE_REGION}
+  ```
+
+  ##### Step 1: Change the credential keys
+
+  Since the new SDK uses _Application Credentials_ to authenticate OpenStack, we
+  need to change the keys `credentials.username` to `credentials.id`,
+  `credentials.password` to `credentials.secret` and use Application Credential ID
+  and secret here. For more detail about credentials look
+  [here](https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential).
+
+  ##### Step 2: Remove the unused keys
+
+  Since the new SDK doesn't use the old way authentication, we don't need the keys
+  `openStackSwift.keystoneAuthVersion`, `openStackSwift.domainId`,
+  `openStackSwift.domainName` and `openStackSwift.region`. So you can remove them.
+
+  ##### Step 3: Add Swift URL
+
+  The new SDK needs the OpenStack Swift connection URL for connecting the Swift.
+  So you need to add a new key called `openStackSwift.swiftUrl` and give the
+  OpenStack Swift url here. Example url should look like that:
+  `https://example.com:6780/swift/v1`
+
+  ##### That's it!
+
+  Your new configuration should look like that!
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+          secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
+  ```
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/techdocs-common@0.9.0
+
 ## 0.9.2
 
 ### Patch Changes

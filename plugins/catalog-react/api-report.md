@@ -693,7 +693,7 @@ export const MockEntityListContextProvider: ({
   children,
   value,
 }: React_2.PropsWithChildren<{
-  value: Partial<EntityListContextProps>;
+  value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
 }>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "reduceCatalogFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -749,6 +749,15 @@ export const useEntityCompoundName: () => {
 //
 // @public (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
+
+// Warning: (ae-missing-release-tag) "useEntityKinds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useEntityKinds(): {
+  error: Error | undefined;
+  loading: boolean;
+  kinds: string[] | undefined;
+};
 
 // Warning: (ae-missing-release-tag) "useEntityListProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

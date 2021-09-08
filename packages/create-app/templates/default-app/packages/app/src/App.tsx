@@ -16,11 +16,13 @@ import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
+  techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
+import { searchPage } from './components/search/SearchPage';
 import { Root } from './components/Root';
 
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
@@ -31,6 +33,7 @@ const app = createApp({
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
+      viewTechDoc: techdocsPlugin.routes.docRoot,
     });
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
@@ -68,7 +71,9 @@ const routes = (
       element={<TechRadarPage width={1500} height={800} />}
     />
     <Route path="/catalog-import" element={<CatalogImportPage />} />
-    <Route path="/search" element={<SearchPage />} />
+    <Route path="/search" element={<SearchPage />}>
+      {searchPage}
+    </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
   </FlatRoutes>
 );

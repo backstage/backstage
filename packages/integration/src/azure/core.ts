@@ -100,7 +100,17 @@ export function getAzureDownloadUrl(url: string): string {
     ? `&scopePath=${encodeURIComponent(filepath)}`
     : '';
 
-  return `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
+  if (resource === 'dev.azure.com') {
+    return `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
+  }
+
+  // For Azure DevOps Server `parseGitUrl` returns the same values
+  // for `organization` and `project` like this: `organization/project/_git`
+  // so we drop `project` and then strip `/_git` from `organization`
+  return `${protocol}://${resource}/${organization.replace(
+    '/_git',
+    '',
+  )}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`;
 }
 
 /**

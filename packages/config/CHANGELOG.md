@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 0.1.8
+
+### Patch Changes
+
+- 47113f1f1: Only warn once per key when trying to read visibility-filtered values
+
 ## 0.1.7
 
 ### Patch Changes
