@@ -26,7 +26,7 @@ import {
   getEntityRelations,
   formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -42,16 +42,20 @@ import {
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
+  graph: {
+    flex: 1,
+    minHeight: 0,
+  },
   organizationNode: {
-    fill: 'coral',
-    stroke: theme.palette.border,
+    fill: theme.palette.background.paper,
+    stroke: theme.palette.primary.main,
   },
   groupNode: {
-    fill: 'yellowgreen',
+    fill: theme.palette.background.paper,
     stroke: theme.palette.border,
   },
   centeredContent: {
-    padding: '10px',
+    padding: theme.spacing(1),
     height: '100%',
     display: 'flex',
     alignItems: 'center',
@@ -59,6 +63,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     color: 'black',
   },
   textWrapper: {
+    color: theme.palette.textContrast,
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
@@ -70,14 +75,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-const dimensions = {
-  nodeWidth: 180,
-  nodeHeight: 90,
-  nodeCornerRadius: 20,
-  nodeAligmentShift: 5,
-};
-
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
+  const nodeWidth = 180;
+  const nodeHeight = 80;
+  const theme = useTheme();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
@@ -85,16 +86,13 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     return (
       <g>
         <rect
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-          rx={dimensions.nodeCornerRadius}
+          width={nodeWidth}
+          height={nodeHeight}
+          rx={theme.shape.borderRadius}
           className={classes.organizationNode}
         />
         <title>{props.node.name}</title>
-        <foreignObject
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-        >
+        <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
             <div className={classes.textWrapper}>{props.node.name}</div>
           </div>
@@ -108,9 +106,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   return (
     <g>
       <rect
-        width={dimensions.nodeWidth}
-        height={dimensions.nodeHeight}
-        rx={dimensions.nodeCornerRadius}
+        width={nodeWidth}
+        height={nodeHeight}
+        rx={theme.shape.borderRadius}
         className={classes.groupNode}
       />
       <title>{props.node.name}</title>
@@ -122,10 +120,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           name: ref.name,
         })}
       >
-        <foreignObject
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-        >
+        <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
             <div className={classes.textWrapper}>{props.node.name}</div>
           </div>
@@ -146,6 +141,7 @@ export function GroupsDiagram() {
   }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 
+  const classes = useStyles();
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
   const organizationName =
@@ -218,6 +214,7 @@ export function GroupsDiagram() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
+        className={classes.graph}
       />
       <Typography
         variant="caption"
