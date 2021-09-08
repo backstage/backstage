@@ -97,7 +97,6 @@ describe('GithubAuthProvider', () => {
         },
         profile: {
           email: 'jimmymarkum@gmail.com',
-          username: 'jimmymarkum',
           displayName: 'Jimmy Markum',
           picture:
             'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
@@ -143,7 +142,6 @@ describe('GithubAuthProvider', () => {
         },
         profile: {
           displayName: 'Jimmy Markum',
-          username: 'jimmymarkum',
           picture:
             'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
         },
@@ -187,7 +185,6 @@ describe('GithubAuthProvider', () => {
         },
         profile: {
           displayName: 'jimmymarkum',
-          username: 'jimmymarkum',
           picture:
             'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
         },

@@ -65,7 +65,7 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
 };
 
 export const extractGitLabUserId = (profile: ProfileInfo): string => {
-  return profile.username || (profile.email?.split('@')[0] as string);
+  return profile.email?.split('@')[0] as string;
 };
 
 export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
@@ -74,8 +74,8 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
 ) => {
   const { profile } = info;
 
-  if (!profile.username && !profile.email) {
-    throw new Error('Profile contained no username or email');
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
   }
 
   const id = extractGitLabUserId(profile);
@@ -238,8 +238,8 @@ export class GitlabAuthProvider implements OAuthHandlers {
 
     const profile = makeProfileInfo(fullProfile);
 
-    if (!profile.username && !profile.email) {
-      throw new Error('Profile contained no username or email');
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
     }
 
     fullProfile.id = extractGitLabUserId(profile);
