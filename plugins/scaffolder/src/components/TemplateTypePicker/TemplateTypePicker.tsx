@@ -69,7 +69,7 @@ export const TemplateTypePicker = () => {
                 checked={selected}
               />
             }
-            label={option}
+            label={capitalize(option)}
           />
         )}
         size="small"
