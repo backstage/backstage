@@ -15,31 +15,31 @@
  */
 
 import {
+  GroupEntity,
+  parseEntityRef,
   RELATION_CHILD_OF,
   stringifyEntityRef,
-  parseEntityRef,
-  GroupEntity,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  entityRouteRef,
-  getEntityRelations,
-  formatEntityRefTitle,
-} from '@backstage/plugin-catalog-react';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { BackstageTheme } from '@backstage/theme';
-
 import {
   DependencyGraph,
   DependencyGraphTypes,
+  Link,
   Progress,
   ResponseErrorPanel,
-  Link,
 } from '@backstage/core-components';
-import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  catalogApiRef,
+  entityRouteRef,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
+import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import classNames from 'classnames';
+import React from 'react';
+import { useAsync } from 'react-use';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
@@ -47,12 +47,12 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     minHeight: 0,
   },
   organizationNode: {
-    fill: theme.palette.background.paper,
-    stroke: theme.palette.primary.main,
+    fill: theme.palette.secondary.light,
+    stroke: theme.palette.secondary.light,
   },
   groupNode: {
-    fill: theme.palette.background.paper,
-    stroke: theme.palette.border,
+    fill: theme.palette.primary.light,
+    stroke: theme.palette.primary.light,
   },
   centeredContent: {
     padding: theme.spacing(1),
@@ -62,8 +62,13 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     justifyContent: 'center',
     color: 'black',
   },
+  textOrganization: {
+    color: theme.palette.secondary.contrastText,
+  },
+  textGroup: {
+    color: theme.palette.primary.contrastText,
+  },
   textWrapper: {
-    color: theme.palette.textContrast,
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
@@ -77,7 +82,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const nodeWidth = 180;
-  const nodeHeight = 80;
+  const nodeHeight = 60;
   const theme = useTheme();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
@@ -94,7 +99,14 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
         <title>{props.node.name}</title>
         <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
-            <div className={classes.textWrapper}>{props.node.name}</div>
+            <div
+              className={classNames(
+                classes.textWrapper,
+                classes.textOrganization,
+              )}
+            >
+              {props.node.name}
+            </div>
           </div>
         </foreignObject>
       </g>
@@ -122,7 +134,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
       >
         <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
-            <div className={classes.textWrapper}>{props.node.name}</div>
+            <div className={classNames(classes.textWrapper, classes.textGroup)}>
+              {props.node.name}
+            </div>
           </div>
         </foreignObject>
       </Link>
