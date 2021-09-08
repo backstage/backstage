@@ -25,28 +25,19 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../routes';
 import {
-  Button,
-  EmptyState,
   Table,
-  TableColumn,
-  TableProps,
+  EmptyState,
+  Button,
+  SubvalueCell,
+  Link,
 } from '@backstage/core-components';
-import * as actionFactories from './actions';
-import * as columnFactories from './columns';
-import { DocsTableRow } from './types';
 
 export const DocsTable = ({
   entities,
   title,
-  loading,
-  columns,
-  actions,
 }: {
   entities: Entity[] | undefined;
   title?: string | undefined;
-  loading?: boolean | undefined;
-  columns?: TableColumn<DocsTableRow>[];
-  actions?: TableProps<DocsTableRow>['actions'];
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
@@ -61,8 +52,6 @@ export const DocsTable = ({
   if (!entities) return null;
 
   const documents = entities.map(entity => {
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-
     return {
       entity,
       resolved: {
@@ -79,30 +68,54 @@ export const DocsTable = ({
     };
   });
 
-  const defaultColumns: TableColumn<DocsTableRow>[] = [
-    columnFactories.createNameColumn(),
-    columnFactories.createOwnerColumn(),
-    columnFactories.createTypeColumn(),
-  ];
-
-  const defaultActions: TableProps<DocsTableRow>['actions'] = [
-    actionFactories.createCopyDocsUrlAction(copyToClipboard),
+  const columns = [
+    {
+      title: 'Document',
+      field: 'name',
+      highlight: true,
+      render: (row: any): React.ReactNode => (
+        <SubvalueCell
+          value={<Link to={row.docsUrl}>{row.name}</Link>}
+          subvalue={row.description}
+        />
+      ),
+    },
+    {
+      title: 'Owner',
+      field: 'owner',
+    },
+    {
+      title: 'Type',
+      field: 'type',
+    },
+    {
+      title: 'Actions',
+      width: '10%',
+      render: (row: any) => (
+        <Tooltip title="Click to copy documentation link to clipboard">
+          <IconButton
+            onClick={() =>
+              copyToClipboard(`${window.location.href}/${row.docsUrl}`)
+            }
+          >
+            <ShareIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
   ];
 
   return (
     <>
-      {loading || (documents && documents.length > 0) ? (
-        <Table<DocsTableRow>
-          isLoading={loading}
+      {documents && documents.length > 0 ? (
+        <Table
           options={{
             paging: true,
             pageSize: 20,
             search: true,
-            actionsColumnIndex: -1,
           }}
           data={documents}
-          columns={columns || defaultColumns}
-          actions={actions || defaultActions}
+          columns={columns}
           title={
             title
               ? `${title} (${documents.length})`

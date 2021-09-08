@@ -40,6 +40,25 @@ jest.mock('@backstage/core-plugin-api', () => ({
   },
 }));
 
+// Hacky way to mock a specific boolean config value.
+const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: (apiRef: any) => {
+    const actualUseApi = jest.requireActual(
+      '@backstage/core-plugin-api',
+    ).useApi;
+    const actualApi = actualUseApi(apiRef);
+    if (apiRef === configApiRef) {
+      const configReader = actualApi;
+      configReader.getOptionalBoolean = getOptionalBooleanMock;
+      return configReader;
+    }
+
+    return actualApi;
+  },
+}));
+
 describe('Entity Docs Card Grid', () => {
   beforeEach(() => {
     jest.resetAllMocks();
