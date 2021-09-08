@@ -21,5 +21,6 @@ const directoryNameRegex = /^[^\/]+\//;
 
 // Removes the first segment of a forward-slash-separated path
 export function stripFirstDirectoryFromPath(path: string): string {
+  console.log('stripFirstDirectoryPath path:', path);
   return path.replace(directoryNameRegex, '');
 }

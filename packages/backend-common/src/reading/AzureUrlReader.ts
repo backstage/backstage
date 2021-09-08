@@ -94,8 +94,6 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    // TODO: Support filepath based reading tree feature like other providers
-
     // Get latest commit SHA
 
     const commitsAzureResponse = await fetch(
@@ -129,11 +127,13 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(message);
     }
 
+    const { filepath } = parseGitUrl(url);
+
     return await this.deps.treeResponseFactory.fromZipArchive({
       stream: archiveAzureResponse.body as unknown as Readable,
       etag: commitSha,
       filter: options?.filter,
-      stripFirstDirectory: true,
+      subpath: filepath,
     });
   }
 
