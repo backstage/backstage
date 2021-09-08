@@ -136,7 +136,7 @@ export class ScaffolderClient implements ScaffolderApi {
     });
 
     if (!response.ok) {
-      throw ResponseError.fromResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
     const schema: TemplateParameterSchema = await response.json();

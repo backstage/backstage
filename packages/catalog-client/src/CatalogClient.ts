@@ -36,6 +36,7 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
+/** @public */
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
 

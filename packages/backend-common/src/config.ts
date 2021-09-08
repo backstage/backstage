@@ -101,12 +101,6 @@ class ObservableConfigProxy implements Config {
   }
 }
 
-type Options = {
-  logger: Logger;
-  // process.argv or any other overrides
-  argv: string[];
-};
-
 // A global used to ensure that only a single file watcher is active at a time.
 let currentCancelFunc: () => void;
 
@@ -114,8 +108,14 @@ let currentCancelFunc: () => void;
  * Load configuration for a Backend.
  *
  * This function should only be called once, during the initialization of the backend.
+ *
+ * @public
  */
-export async function loadBackendConfig(options: Options): Promise<Config> {
+export async function loadBackendConfig(options: {
+  logger: Logger;
+  // process.argv or any other overrides
+  argv: string[];
+}): Promise<Config> {
   const args = parseArgs(options.argv);
   const configPaths: string[] = [args.config ?? []].flat();
 

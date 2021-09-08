@@ -40,6 +40,7 @@ import {
   ReadUrlResponse,
 } from './types';
 
+/** @public */
 export class AzureUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);

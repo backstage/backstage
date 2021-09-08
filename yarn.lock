@@ -4861,7 +4861,7 @@
     "@octokit/types" "^6.16.2"
     deprecation "^2.3.1"
 
-"@octokit/request-error@^2.0.0", "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
+"@octokit/request-error@^2.0.0", "@octokit/request-error@^2.0.2", "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@octokit/request-error/-/request-error-2.1.0.tgz#9e150357831bfc788d13a4fd4b1913d60c74d677"
   integrity sha512-1VIvgXxs9WHSjicsRwq8PlR2LR2x6DwsJAaFgzdi0JfJoGSO8mYI/cHJQ+9FbN21aa+DrgNLnwObmyeSC8Rmpg==
@@ -4905,6 +4905,26 @@
   integrity sha512-UxhWCdSzloULfUyamfOg4dJxV9B+XjgrIZscI0VCbp4eNrjmorGEw+4qdwcpTsu6DIrm9tQsFQS2pK5QkqQ04A==
   dependencies:
     "@octokit/openapi-types" "^7.3.2"
+
+"@octokit/webhooks-methods@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-2.0.0.tgz#1108b9ea661ca6c81e4a8bfa63a09eb27d5bc2db"
+  integrity sha512-35cfQ4YWlnZnmZKmIxlGPUPLtbkF8lr/A/1Sk1eC0ddLMwQN06dOuLc+dI3YLQS+T+MoNt3DIQ0NynwgKPilig==
+
+"@octokit/webhooks-types@4.4.0":
+  version "4.4.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.4.0.tgz#0985964b72d577221574cca614770e0743fe0830"
+  integrity sha512-gK9L2pWLZ1CWWlf9zwzFBQeA3dgyWdRe6gqAedR5T7adFZpoHg4De6GeXIFySV796ooQtKhW4eFfQLFQF5ydAA==
+
+"@octokit/webhooks@^9.14.1":
+  version "9.14.1"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.14.1.tgz#d1b8fcc4c1c18ee46ec30cef9e84043b57c8d2dd"
+  integrity sha512-INsqtHKQJys5NbuE71kq6uR8BMSSkZ2L9dLanAc1jylGroQ80SW1TYXLuJlcYNakNrHCCe4c5qvNKfR/KJXrJA==
+  dependencies:
+    "@octokit/request-error" "^2.0.2"
+    "@octokit/webhooks-methods" "^2.0.0"
+    "@octokit/webhooks-types" "4.4.0"
+    aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":
   version "1.0.3"
@@ -6333,9 +6353,9 @@
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
 "@types/color@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@types/color/-/color-3.0.1.tgz#2900490ed04da8116c5058cd5dba3572d5a25071"
-  integrity sha512-oeUWVaAwI+xINDUx+3F2vJkl/vVB03VChFF/Gl3iQCdbcakjuoJyMOba+3BXRtnBhxZ7uBYqQBi9EpLnvSoztA==
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@types/color/-/color-3.0.2.tgz#3779043e782f562aa9157b5fc6bd07e14fd8e7f3"
+  integrity sha512-INiJl6sfNn8iyC5paxVzqiVUEj2boIlFki02uRTAkKwAj++7aAF+ZfEv/XrIeBa0XI/fTZuDHW8rEEcEVnON+Q==
   dependencies:
     "@types/color-convert" "*"
 

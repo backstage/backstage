@@ -38,6 +38,7 @@ import {
   ReadUrlOptions,
 } from './types';
 
+/** @public */
 export class GitlabUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
