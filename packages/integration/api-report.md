@@ -434,6 +434,14 @@ export function readGoogleGcsIntegrationConfig(
   config: Config,
 ): GoogleGcsIntegrationConfig;
 
+// Warning: (ae-missing-release-tag) "replaceUrlType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function replaceGitHubUrlType(
+  url: string,
+  type: 'blob' | 'tree' | 'edit',
+): string;
+
 // Warning: (ae-missing-release-tag) "ScmIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public

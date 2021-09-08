@@ -19,7 +19,8 @@ import Router from 'express-promise-router';
 import express from 'express';
 import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
 
-export interface StatusCheckRouterOptions {
+/** @public */
+export async function createStatusCheckRouter(options: {
   logger: Logger;
   path?: string;
   /**
@@ -27,11 +28,7 @@ export interface StatusCheckRouterOptions {
    * Override this to implement your own logic for a health check.
    */
   statusCheck?: StatusCheck;
-}
-
-export async function createStatusCheckRouter(
-  options: StatusCheckRouterOptions,
-): Promise<express.Router> {
+}): Promise<express.Router> {
   const router = Router();
   const { path = '/healthcheck', statusCheck } = options;
 

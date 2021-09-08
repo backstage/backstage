@@ -50,6 +50,7 @@ import {
   FileReaderProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
+  GitLabDiscoveryProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   UrlReaderProcessor,
@@ -384,7 +385,11 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new PlaceholderProcessor({
+        resolvers: placeholderResolvers,
+        reader,
+        integrations,
+      }),
       new BuiltinKindsEntityProcessor(),
     ];
 
@@ -395,6 +400,7 @@ export class NextCatalogBuilder {
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
         GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
         new AnnotateLocationEntityProcessor({ integrations }),

@@ -25,12 +25,12 @@ export const MockEntityListContextProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: Partial<EntityListContextProps>;
+  value?: Partial<EntityListContextProps>;
 }>) => {
   // Provides a default implementation that stores filter state, for testing components that
   // reflect filter state.
   const [filters, setFilters] = useState<DefaultEntityFilters>(
-    value.filters ?? {},
+    value?.filters ?? {},
   );
   const updateFilters = useCallback(
     (
@@ -60,7 +60,7 @@ export const MockEntityListContextProvider = ({
 
   // Extract value.filters to avoid overwriting it; some tests exercise filter updates. The value
   // provided is used as the initial seed in useState above.
-  const { filters: _, ...otherContextFields } = value;
+  const { filters: _, ...otherContextFields } = value ?? {};
 
   return (
     <EntityListContext.Provider

@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-import
 
+## 0.5.20
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
+## 0.5.19
+
+### Patch Changes
+
+- cfcb486aa: Add system icons for the built-in entity types and use them in the entity list of the `catalog-import` plugin.
+- b5a2896ed: handle azure devops url query parameter for importing .yaml
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
 ## 0.5.18
 
 ### Patch Changes

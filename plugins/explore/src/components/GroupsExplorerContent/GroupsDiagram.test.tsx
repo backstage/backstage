@@ -33,7 +33,7 @@ describe('<GroupsDiagram />', () => {
     });
   });
 
-  it('shows groups', async () => {
+  it('show single group', async () => {
     const catalogApi: Partial<CatalogApi> = {
       getEntities: () =>
         Promise.resolve({
@@ -66,7 +66,6 @@ describe('<GroupsDiagram />', () => {
         },
       },
     );
-
-    expect(getByText('Group A')).toBeInTheDocument();
+    expect(getByText('Group A', { selector: 'div' })).toBeInTheDocument();
   });
 });

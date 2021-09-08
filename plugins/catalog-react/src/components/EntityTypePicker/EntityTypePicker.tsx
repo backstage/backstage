@@ -36,7 +36,7 @@ export const EntityTypePicker = () => {
     }
   }, [error, alertApi]);
 
-  if (!availableTypes || error) return null;
+  if (availableTypes.length === 0 || error) return null;
 
   const items = [
     { value: 'all', label: 'All' },

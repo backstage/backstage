@@ -7,6 +7,8 @@
 
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
+import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -202,22 +204,6 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
-}
-
-// Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface CatalogEntityDocument extends IndexableDocument {
-  // (undocumented)
-  componentType: string;
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  lifecycle: string;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  owner: string;
 }
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -581,9 +567,13 @@ export class DefaultCatalogCollator implements DocumentCollator {
   constructor({
     discovery,
     locationTemplate,
+    filter,
+    catalogClient,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
+    filter?: CatalogEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
   });
   // (undocumented)
   protected applyArgsToFormat(
@@ -591,9 +581,23 @@ export class DefaultCatalogCollator implements DocumentCollator {
     args: Record<string, string>,
   ): string;
   // (undocumented)
+  protected readonly catalogClient: CatalogApi;
+  // (undocumented)
   protected discovery: PluginEndpointDiscovery;
+  // Warning: (ae-forgotten-export) The symbol "CatalogEntityDocument" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
+  // (undocumented)
+  protected filter?: CatalogEntitiesRequest['filter'];
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      filter?: CatalogEntitiesRequest['filter'];
+    },
+  ): DefaultCatalogCollator;
   // (undocumented)
   protected locationTemplate: string;
   // (undocumented)
@@ -811,6 +815,27 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
+}
+
+// Warning: (ae-missing-release-tag) "GitLabDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class GitLabDiscoveryProcessor implements CatalogProcessor {
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GitLabDiscoveryProcessor;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+  // (undocumented)
+  updateLastActivity(): Promise<string | undefined>;
 }
 
 // Warning: (ae-missing-release-tag) "HigherOrderOperation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

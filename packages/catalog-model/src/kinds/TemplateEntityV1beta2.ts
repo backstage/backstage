@@ -15,16 +15,14 @@
  */
 
 import { JsonObject } from '@backstage/config';
-import type { Entity, EntityMeta } from '../entity/Entity';
+import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Template.v1beta2.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
+/** @public */
 export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: 'backstage.io/v1beta2';
   kind: 'Template';
-  metadata: EntityMeta & {
-    title?: string;
-  };
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];
@@ -40,5 +38,6 @@ export interface TemplateEntityV1beta2 extends Entity {
   };
 }
 
+/** @public */
 export const templateEntityV1beta2Validator =
   ajvCompiledJsonSchemaValidator(schema);

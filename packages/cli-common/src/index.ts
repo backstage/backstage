@@ -16,4 +16,4 @@
 
 export { findPaths } from './paths';
 export { isChildPath } from './isChildPath';
-export type { Paths } from './paths';
+export type { Paths, ResolveFunc } from './paths';

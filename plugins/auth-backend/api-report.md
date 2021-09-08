@@ -84,6 +84,13 @@ export type BackstageIdentity = {
   entity?: Entity;
 };
 
+// Warning: (ae-missing-release-tag) "createGithubProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGithubProvider: (
+  options?: GithubProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createGitlabProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -103,6 +110,13 @@ export const createGoogleProvider: (
 // @public (undocumented)
 export const createMicrosoftProvider: (
   options?: MicrosoftProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// Warning: (ae-missing-release-tag) "createOAuth2Provider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOAuth2Provider: (
+  options?: OAuth2ProviderOptions | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -144,6 +158,30 @@ export const encodeState: (state: OAuthState) => string;
 //
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
+
+// Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GithubOAuthResult = {
+  fullProfile: Profile;
+  params: {
+    scope: string;
+    expires_in?: string;
+    refresh_token_expires_in?: string;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
+// Warning: (ae-missing-release-tag) "GithubProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GithubProviderOptions = {
+  authHandler?: AuthHandler<GithubOAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<GithubOAuthResult>;
+  };
+};
 
 // Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -193,6 +231,16 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 //
 // @public (undocumented)
 export type MicrosoftProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "OAuth2ProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;
@@ -420,8 +468,8 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/gitlab/provider.d.ts:38:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/gitlab/provider.d.ts:49:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:50:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:58:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative

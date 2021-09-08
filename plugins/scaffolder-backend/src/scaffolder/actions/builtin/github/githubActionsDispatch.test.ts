@@ -54,42 +54,6 @@ describe('github:actions:dispatch', () => {
     jest.resetAllMocks();
   });
 
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-  });
-
-  it('should throw if there is no integration config provided', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
-      }),
-    ).rejects.toThrow(/No matching integration configuration/);
-  });
-
-  it('should throw if there is no token in the integration config that is returned', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          repoUrl: 'ghe.github.com?repo=bob&owner=owner',
-        },
-      }),
-    ).rejects.toThrow(/No token available for host/);
-  });
-
   it('should call the githubApis for creating WorkflowDispatch', async () => {
     mockGithubClient.rest.actions.createWorkflowDispatch.mockResolvedValue({
       data: {

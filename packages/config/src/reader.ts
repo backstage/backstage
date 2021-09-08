@@ -54,6 +54,12 @@ const errors = {
   },
 };
 
+/**
+ * An implementation of the `Config` interface that uses a plain JavaScript object
+ * for the backing data, with the ability of linking multiple readers together.
+ *
+ * @public
+ */
 export class ConfigReader implements Config {
   /**
    * A set of key paths that where removed from the config due to not being visible.
@@ -63,6 +69,7 @@ export class ConfigReader implements Config {
    * the frontend in development mode.
    */
   private filteredKeys?: string[];
+  private notifiedFilteredKeys = new Set<string>();
 
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
@@ -118,7 +125,11 @@ export class ConfigReader implements Config {
       if (process.env.NODE_ENV === 'development') {
         if (fallbackValue === undefined && key) {
           const fullKey = this.fullKey(key);
-          if (this.filteredKeys?.includes(fullKey)) {
+          if (
+            this.filteredKeys?.includes(fullKey) &&
+            !this.notifiedFilteredKeys.has(fullKey)
+          ) {
+            this.notifiedFilteredKeys.add(fullKey);
             // eslint-disable-next-line no-console
             console.warn(
               `Failed to read configuration value at '${fullKey}' as it is not visible. ` +
@@ -190,7 +201,11 @@ export class ConfigReader implements Config {
     if (!configs) {
       if (process.env.NODE_ENV === 'development') {
         const fullKey = this.fullKey(key);
-        if (this.filteredKeys?.some(k => k.startsWith(fullKey))) {
+        if (
+          this.filteredKeys?.some(k => k.startsWith(fullKey)) &&
+          !this.notifiedFilteredKeys.has(key)
+        ) {
+          this.notifiedFilteredKeys.add(key);
           // eslint-disable-next-line no-console
           console.warn(
             `Failed to read configuration array at '${key}' as it does not have any visible elements. ` +
@@ -310,7 +325,11 @@ export class ConfigReader implements Config {
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {
         const fullKey = this.fullKey(key);
-        if (this.filteredKeys?.includes(fullKey)) {
+        if (
+          this.filteredKeys?.includes(fullKey) &&
+          !this.notifiedFilteredKeys.has(fullKey)
+        ) {
+          this.notifiedFilteredKeys.add(fullKey);
           // eslint-disable-next-line no-console
           console.warn(
             `Failed to read configuration value at '${fullKey}' as it is not visible. ` +

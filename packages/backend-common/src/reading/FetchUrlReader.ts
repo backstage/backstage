@@ -27,6 +27,8 @@ import {
 
 /**
  * A UrlReader that does a plain fetch of the URL.
+ *
+ * @public
  */
 export class FetchUrlReader implements UrlReader {
   /**
