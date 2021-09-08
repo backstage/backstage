@@ -38,8 +38,6 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = getVoidLogger();
-const loggerInfoSpy = jest.spyOn(logger, 'info');
-const loggerErrorSpy = jest.spyOn(logger, 'error');
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
@@ -65,7 +63,7 @@ const createPublisherFromConfig = ({
     },
   });
 
-  return AwsS3Publish.fromConfig(mockConfig, logger);
+  return AwsS3Publish.fromConfig(config, logger);
 };
 
 describe('AwsS3Publish', () => {

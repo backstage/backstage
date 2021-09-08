@@ -139,7 +139,7 @@ describe('AzureBlobStoragePublish', () => {
         containerName: 'bad_container',
       });
 
-      expect(await errorPublisher.getReadiness()).toEqual({
+      expect(await publisher.getReadiness()).toEqual({
         isAvailable: false,
       });
 
@@ -184,7 +184,7 @@ describe('AzureBlobStoragePublish', () => {
 
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(
-          'Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory',
+          `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
         ),
       });
 
@@ -205,7 +205,9 @@ describe('AzureBlobStoragePublish', () => {
         error = e;
       }
 
-      expect(error.message).toContain(`Unable to upload file(s) to Azure`);
+      expect(error.message).toContain(
+        `Unable to upload file(s) to Azure Blob Storage.`,
+      );
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(

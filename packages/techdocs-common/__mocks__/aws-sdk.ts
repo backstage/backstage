@@ -90,20 +90,11 @@ export class S3 {
           return Promise.resolve({
             Contents: [{ Key: 'stale_file.png' }],
           });
-        }
-        return Promise.resolve({});
-      },
-    };
-  }
-
-  deleteObject({ Bucket }) {
-    return {
-      promise: () => {
-        if (Bucket === 'delete_stale_files_error') {
-          throw new Error('Message');
-        }
-        return Promise.resolve();
-      },
+          Body.once('end', () => {
+            storage.writeFile(Key, Buffer.concat(chunks));
+            resolve(null);
+          });
+        }),
     };
   }
 }
