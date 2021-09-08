@@ -306,7 +306,11 @@ export class CatalogBuilder {
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
       StaticLocationProcessor.fromConfig(config),
-      new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new PlaceholderProcessor({
+        resolvers: placeholderResolvers,
+        reader,
+        integrations,
+      }),
       new BuiltinKindsEntityProcessor(),
     ];
 

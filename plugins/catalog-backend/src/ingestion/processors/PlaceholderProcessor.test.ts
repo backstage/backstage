@@ -15,6 +15,8 @@
  */
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
@@ -24,6 +26,8 @@ import {
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
+
+const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
   const read: jest.MockedFunction<ResolverRead> = jest.fn();
@@ -44,6 +48,7 @@ describe('PlaceholderProcessor', () => {
         foo: async () => 'replaced',
       },
       reader,
+      integrations,
     });
     await expect(
       processor.preProcessEntity(input, { type: 't', target: 'l' }),
@@ -59,6 +64,7 @@ describe('PlaceholderProcessor', () => {
         upper: upperResolver,
       },
       reader,
+      integrations,
     });
 
     await expect(
@@ -95,6 +101,7 @@ describe('PlaceholderProcessor', () => {
         bar: jest.fn(),
       },
       reader,
+      integrations,
     });
     const entity: Entity = {
       apiVersion: 'a',
@@ -115,6 +122,7 @@ describe('PlaceholderProcessor', () => {
         bar: jest.fn(),
       },
       reader,
+      integrations,
     });
     const entity: Entity = {
       apiVersion: 'a',
@@ -134,6 +142,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -169,6 +178,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { json: jsonPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -202,6 +212,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { yaml: yamlPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -235,6 +246,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -272,6 +284,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -311,6 +324,7 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
+      integrations,
     });
 
     await expect(
@@ -331,7 +345,7 @@ describe('PlaceholderProcessor', () => {
         },
       ),
     ).rejects.toThrow(
-      'Placeholder $text could not form a URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
+      'Placeholder $text could not form a URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml, TypeError: Invalid base URL: ./a/b/catalog-info.yaml',
     );
 
     expect(read).not.toBeCalled();
@@ -345,6 +359,7 @@ describe('yamlPlaceholderResolver', () => {
     value: './file.yaml',
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
+    resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
   };
 
   beforeEach(() => {
@@ -389,6 +404,7 @@ describe('jsonPlaceholderResolver', () => {
     value: './file.json',
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
+    resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
   };
 
   beforeEach(() => {

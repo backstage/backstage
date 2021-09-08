@@ -385,7 +385,11 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new PlaceholderProcessor({
+        resolvers: placeholderResolvers,
+        reader,
+        integrations,
+      }),
       new BuiltinKindsEntityProcessor(),
     ];
 
