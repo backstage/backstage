@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
 export * from './google';
 export * from './microsoft';
-export * from './okta';
+export * from './oauth2';
 export { factories as defaultAuthProviderFactories } from './factories';
 
 // Export the minimal interface required for implementing a
