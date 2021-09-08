@@ -258,7 +258,7 @@ describe('AwsS3Publish', () => {
         name: 'path',
       };
 
-      const techDocsMetadaFilePath = path.join(
+      const techDocsMetadaFilePath = path.posix.join(
         ...Object.values(invalidEntityName),
         'techdocs_metadata.json',
       );
