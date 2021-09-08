@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
@@ -214,8 +218,10 @@ export class GoogleGCSPublish implements PublisherBase {
   docsRouter(): express.Handler {
     return (req, res) => {
       // Decode and trim the leading forward slash
-      // filePath example - /default/Component/documented-component/index.html
-      const filePath = decodeURI(req.path.replace(/^\//, ''));
+      const decodedUri = decodeURI(req.path.replace(/^\//, ''));
+
+      // filePath example - /default/component/documented-component/index.html
+      const filePath = lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
