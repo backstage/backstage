@@ -65,6 +65,7 @@ export const techdocsPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
+    docRoot: rootDocsRouteRef,
     entityContent: rootCatalogDocsRouteRef,
   },
 });

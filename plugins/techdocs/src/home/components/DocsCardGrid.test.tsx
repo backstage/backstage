@@ -19,6 +19,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsCardGrid } from './DocsCardGrid';
+import { rootDocsRouteRef } from '../../routes';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -71,16 +72,21 @@ describe('Entity Docs Card Grid', () => {
             },
           ]}
         />,
+        {
+          mountedRoutes: {
+            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
       ),
     );
     expect(await findByText('testName')).toBeInTheDocument();
     expect(await findByText('testName2')).toBeInTheDocument();
     const [button1, button2] = await findAllByRole('button');
     expect(button1.getAttribute('href')).toContain(
-      '/default/testkind/testname',
+      '/docs/default/testkind/testname',
     );
     expect(button2.getAttribute('href')).toContain(
-      '/default/testkind2/testname2',
+      '/docs/default/testkind2/testname2',
     );
   });
 
@@ -104,6 +110,11 @@ describe('Entity Docs Card Grid', () => {
             },
           ]}
         />,
+        {
+          mountedRoutes: {
+            '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
       ),
     );
 
@@ -112,7 +123,7 @@ describe('Entity Docs Card Grid', () => {
       'techdocs.legacyUseCaseSensitiveTripletPaths',
     );
     expect(button.getAttribute('href')).toContain(
-      '/SomeNamespace/TestKind/testName',
+      '/techdocs/SomeNamespace/TestKind/testName',
     );
   });
 });
