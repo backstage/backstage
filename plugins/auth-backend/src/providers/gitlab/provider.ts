@@ -54,7 +54,7 @@ type PrivateInfo = {
 export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
   signInResolver?: SignInResolver<OAuthResult>;
-  authHandler?: AuthHandler<OAuthResult>;
+  authHandler: AuthHandler<OAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -227,22 +227,6 @@ export class GitlabAuthProvider implements OAuthHandlers {
     return response;
   }
 
-  private createSignInResolverFn({
-    signInResolver,
-    catalogIdentityClient,
-    tokenIssuer,
-    logger,
-  }: GitlabAuthProviderOptions): SignInResolver<OAuthResult> {
-    const resolver = signInResolver || gitlabDefaultSignInResolver;
-
-    return info =>
-      resolver(info, {
-        catalogIdentityClient,
-        tokenIssuer,
-        logger,
-      });
-  }
-
   private transformResult(result: OAuthResult): OAuthResult {
     const { fullProfile, ...authResult } = result;
 
@@ -330,8 +314,8 @@ export const createGitlabProvider = (
         clientSecret,
         callbackUrl,
         baseUrl,
-        authHandler: options?.authHandler,
-        signInResolver: options?.signIn?.resolver,
+        authHandler,
+        signInResolver,
         catalogIdentityClient,
         logger,
         tokenIssuer,
