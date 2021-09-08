@@ -84,6 +84,13 @@ export type BackstageIdentity = {
   entity?: Entity;
 };
 
+// Warning: (ae-missing-release-tag) "createGitlabProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGitlabProvider: (
+  options?: GitlabProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createGoogleProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -138,7 +145,16 @@ export const encodeState: (state: OAuthState) => string;
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
-// Warning: (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GitlabProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "googleEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
