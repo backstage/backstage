@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
 import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
