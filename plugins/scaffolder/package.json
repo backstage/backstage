@@ -47,7 +47,7 @@
     "@rjsf/material-ui": "^3.0.0",
     "@types/react": "*",
     "classnames": "^2.2.6",
-    "git-url-parse": "~11.4.4",
+    "git-url-parse": "^11.6.0",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "json-schema": "^0.3.0",

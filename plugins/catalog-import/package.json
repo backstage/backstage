@@ -43,7 +43,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/rest": "^18.5.3",
     "@types/react": "*",
-    "git-url-parse": "~11.4.4",
+    "git-url-parse": "^11.6.0",
     "js-base64": "^3.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

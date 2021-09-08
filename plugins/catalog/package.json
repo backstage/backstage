@@ -44,7 +44,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@types/react": "*",
     "classnames": "^2.2.6",
-    "git-url-parse": "~11.4.4",
+    "git-url-parse": "^11.6.0",
     "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
