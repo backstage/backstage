@@ -17,7 +17,7 @@
 export {
   homePlugin,
   HomepageCompositionRoot,
-  RandomJokeHomePageComponent,
+  HomePageRandomJoke,
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,

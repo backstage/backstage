@@ -19,6 +19,8 @@ import { Knex } from 'knex';
 
 /**
  * The possible databases to test against.
+ *
+ * @public
  */
 export type TestDatabaseId =
   | 'POSTGRES_13'

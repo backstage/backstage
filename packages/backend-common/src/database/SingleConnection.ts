@@ -22,6 +22,7 @@ import { DatabaseManager } from './DatabaseManager';
  * credentials provided; if the database already exists no attempt to create
  * the database will be made.
  *
+ * @public
  * @deprecated Use `DatabaseManager` from `@backend-common` instead.
  */
 export const SingleConnectionDatabaseManager = DatabaseManager;

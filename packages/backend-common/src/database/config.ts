@@ -19,6 +19,7 @@ import { merge } from 'lodash';
 /**
  * Merges database objects together
  *
+ * @public
  * @param config The base config. The input is not modified
  * @param overrides Any additional overrides
  */

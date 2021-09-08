@@ -37,4 +37,5 @@ export {
   searchPlugin as plugin,
   searchPlugin,
   SearchResult,
+  HomePageSearchBar,
 } from './plugin';
