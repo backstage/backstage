@@ -17,6 +17,9 @@
 import { GitlabAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
+import { getVoidLogger } from '../../../../../packages/backend-common/src';
+import { TokenIssuer } from '../../identity';
+import { CatalogIdentityClient } from '../../lib/catalog';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -64,6 +67,7 @@ describe('GitlabAuthProvider', () => {
           profile: {
             email: 'jimmymarkum@gmail.com',
             displayName: 'Jimmy Markum',
+            username: 'jimmymarkum',
             picture:
               'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
           },
@@ -107,16 +111,29 @@ describe('GitlabAuthProvider', () => {
           profile: {
             displayName: 'Dave Boyle',
             email: 'daveboyle@gitlab.org',
+            username: 'daveboyle',
           },
         },
       },
     ];
+
+    const tokenIssuer = {
+      issueToken: jest.fn(),
+      listPublicKeys: jest.fn(),
+    };
+    const catalogIdentityClient = {
+      findUser: jest.fn(),
+    };
 
     const provider = new GitlabAuthProvider({
       clientId: 'mock',
       clientSecret: 'mock',
       callbackUrl: 'mock',
       baseUrl: 'mock',
+      catalogIdentityClient:
+        catalogIdentityClient as unknown as CatalogIdentityClient,
+      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      logger: getVoidLogger(),
     });
     for (const test of tests) {
       mockFrameHandler.mockResolvedValueOnce(test.input);
