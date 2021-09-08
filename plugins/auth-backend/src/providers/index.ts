@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './gitlab';
 export * from './google';
 export * from './microsoft';
 export * from './okta';
