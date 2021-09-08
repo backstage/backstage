@@ -85,6 +85,25 @@ export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   profile: makeProfileInfo(fullProfile, params.id_token),
 });
 
+export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
+
+  const userId = profile.email.split('@')[0];
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
+
+  return { id: userId, token };
+};
+
 export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;

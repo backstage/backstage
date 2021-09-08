@@ -61,6 +61,10 @@ export const makeProfileInfo = (
       if (!displayName && decoded.name) {
         displayName = decoded.name;
       }
+
+      if (!username && decoded.username) {
+        username = decoded.username;
+      }
     } catch (e) {
       throw new Error(`Failed to parse id token and get profile info, ${e}`);
     }
@@ -70,6 +74,7 @@ export const makeProfileInfo = (
     email,
     picture,
     displayName,
+    username,
   };
 };
 
