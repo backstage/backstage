@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
 export * from './google';
 export * from './microsoft';
 export * from './oauth2';
