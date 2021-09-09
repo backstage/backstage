@@ -31,7 +31,7 @@
     "@backstage/plugin-techdocs-backend": "^0.10.1",
     "@gitbeaker/node": "^30.2.0",
     "@octokit/rest": "^18.5.3",
-    "app": "0.0.0",
+    "app": "0.0.1",
     "dockerode": "^3.2.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

@@ -1215,51 +1215,7 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@backstage/backend-common@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.9.0.tgz#b69d520c281fcb9934434d2ffc433aa6527b1be6"
-  integrity sha512-GtSRa0mqyK57FSxv4yByTxVY/U+Khyv6lAyA7jdfFnnfYeo/4nuFLsAZXbifvVJTcewCiZafdWpHlU1kRoxuGw==
-  dependencies:
-    "@backstage/cli-common" "^0.1.2"
-    "@backstage/config" "^0.1.8"
-    "@backstage/config-loader" "^0.6.7"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/integration" "^0.6.2"
-    "@google-cloud/storage" "^5.8.0"
-    "@octokit/rest" "^18.5.3"
-    "@types/cors" "^2.8.6"
-    "@types/dockerode" "^3.2.1"
-    "@types/express" "^4.17.6"
-    archiver "^5.0.2"
-    aws-sdk "^2.840.0"
-    compression "^1.7.4"
-    concat-stream "^2.0.0"
-    cors "^2.8.5"
-    cross-fetch "^3.0.6"
-    dockerode "^3.2.1"
-    express "^4.17.1"
-    express-promise-router "^4.1.0"
-    fs-extra "9.1.0"
-    git-url-parse "~11.4.4"
-    helmet "^4.0.0"
-    isomorphic-git "^1.8.0"
-    keyv "^4.0.3"
-    keyv-memcache "^1.2.5"
-    knex "^0.95.1"
-    lodash "^4.17.15"
-    logform "^2.1.1"
-    minimatch "^3.0.4"
-    minimist "^1.2.5"
-    morgan "^1.10.0"
-    raw-body "^2.4.1"
-    selfsigned "^1.10.7"
-    stoppable "^1.1.0"
-    tar "^6.1.2"
-    unzipper "^0.10.11"
-    winston "^3.2.1"
-    yn "^4.0.0"
-
-"@backstage/backend-common@^0.9.1":
+"@backstage/backend-common@^0.9.0", "@backstage/backend-common@^0.9.1":
   version "0.9.1"
   resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.9.1.tgz#f7753922b5264b6e0eb6286369fd9a211c3357f2"
   integrity sha512-hXyEu/jZMZ/DJ/4mKrCNWg8yrttmSGXCVJ5Yiiv8XqXgaYOgnJqU+siRLVlrp6oC0HqGVoxtXm6rO9M6cTJ1Ag==
@@ -1313,22 +1269,7 @@
     "@backstage/errors" "^0.1.1"
     cross-fetch "^3.0.6"
 
-"@backstage/catalog-model@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.9.0.tgz#6ff9863163098298788996a9bacd1009ccbbf008"
-  integrity sha512-iYZ+lt7zV7BCGXTHdxgWnS2kyeiyJgtpFNGSEFVFwNWlCHYptgCkP57syaNrpRNFmMaDlDZyv8dtNHpK9ygfGw==
-  dependencies:
-    "@backstage/config" "^0.1.5"
-    "@backstage/errors" "^0.1.1"
-    "@types/json-schema" "^7.0.5"
-    "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
-    json-schema "^0.3.0"
-    lodash "^4.17.15"
-    uuid "^8.0.0"
-    yup "^0.29.3"
-
-"@backstage/catalog-model@^0.9.1":
+"@backstage/catalog-model@^0.9.0", "@backstage/catalog-model@^0.9.1":
   version "0.9.1"
   resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.9.1.tgz#dc3a497e26894a768c9ceaf4c5af94d35782a048"
   integrity sha512-Q/N0p7ATNBwZUSzbSP3lFSUZ5UsDGdTmOUfjR2cupBe4tnJfK8KbE+TQCKlIsznBENRq4vtBGJqiAe+7oxpZWQ==
@@ -1468,26 +1409,7 @@
   dependencies:
     lodash "^4.17.15"
 
-"@backstage/core-app-api@^0.1.10", "@backstage/core-app-api@^0.1.8":
-  version "0.1.10"
-  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.1.10.tgz#3c4fd051836065b165bd602519ca1de865938191"
-  integrity sha512-pDvcRScF8npLVE6YNUPhjWIycvP4uc1c25zf6Ry3tcgRXaFIgyttLNpqZbJysCeUgXXd3f5RQTH1fi1YW04BOA==
-  dependencies:
-    "@backstage/config" "^0.1.8"
-    "@backstage/core-components" "^0.3.3"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/theme" "^0.2.10"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@types/prop-types" "^15.7.3"
-    "@types/react" "*"
-    prop-types "^15.7.2"
-    react "^16.12.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-    zen-observable "^0.8.15"
-
-"@backstage/core-app-api@^0.1.11", "@backstage/core-app-api@^0.1.3", "@backstage/core-app-api@^0.1.4":
+"@backstage/core-app-api@^0.1.10", "@backstage/core-app-api@^0.1.11", "@backstage/core-app-api@^0.1.3", "@backstage/core-app-api@^0.1.4", "@backstage/core-app-api@^0.1.8":
   version "0.1.11"
   resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.1.11.tgz#1176aeda38dc69b564dc07bec3bfd12503c56bed"
   integrity sha512-UcajTdq1dQb1E2vbno5qMULAesWNiIOap8VZP/pt9BT/TgX1gLC3JpOwhUCwqUYfT/C+Oks7CZZrZzq/TEVsYw==
@@ -1506,7 +1428,7 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
-"@backstage/core-components@^0.3.1", "@backstage/core-components@^0.3.3":
+"@backstage/core-components@^0.3.3":
   version "0.3.3"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.3.3.tgz#ec63eac6d789303f90219857849fa1cefe4e0dde"
   integrity sha512-u75+YiXu33NHSFT5MqTgY+uqtxyye4Tmy3I7D21wLUgeW6aFhmS1IUBGckCqv8UG1nqZS7gBmJLccm88tDsJaA==
@@ -1621,24 +1543,7 @@
     cross-fetch "^3.0.6"
     serialize-error "^8.0.1"
 
-"@backstage/integration-react@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-0.1.7.tgz#5e078773b56f600744ab1ba0233316c77ad138b0"
-  integrity sha512-idm3kOpck27T/D3UQoyc6PQRFf1GMvaAoXwIAtx0+GZQIAlMVPDZWXVbUPEAPFpbWQ4pvqeJsOLmZJvu5X1hcQ==
-  dependencies:
-    "@backstage/config" "^0.1.6"
-    "@backstage/core-components" "^0.3.1"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/integration" "^0.6.0"
-    "@backstage/theme" "^0.2.9"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-use "^17.2.4"
-
-"@backstage/integration-react@^0.1.8":
+"@backstage/integration-react@^0.1.7", "@backstage/integration-react@^0.1.8":
   version "0.1.8"
   resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-0.1.8.tgz#b7da7c57521028c15d34a5243e536a95c4102e78"
   integrity sha512-Vf+w3075QhOrJ+ocxN7nuZaR/OOyw46pjB96/DHi7MqAomqN1/yYvNgwr+uFwBvubKs73w49dXt+m2GWv7OGfA==
@@ -1655,19 +1560,7 @@
     react-dom "^16.13.1"
     react-use "^17.2.4"
 
-"@backstage/integration@^0.6.0", "@backstage/integration@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.2.tgz#819536f262b3e6bc67b6ed0cd9b09b0a2b16aa62"
-  integrity sha512-1OO/wd/uFF4ZbEiqTfsajDel5hJQfiBAq2Z1/wlkyK1jaCAYMgirN4BKwOn6Tt8pTVAgjUDLfrNVyMeJXzUivQ==
-  dependencies:
-    "@backstage/config" "^0.1.8"
-    "@octokit/auth-app" "^3.4.0"
-    "@octokit/rest" "^18.5.3"
-    cross-fetch "^3.0.6"
-    git-url-parse "~11.4.4"
-    luxon "^2.0.2"
-
-"@backstage/integration@^0.6.3":
+"@backstage/integration@^0.6.2", "@backstage/integration@^0.6.3":
   version "0.6.3"
   resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.3.tgz#e94f47d82e1325a5542dc883347192f949dd8adb"
   integrity sha512-Dg+k0l0hU7r+MlZHFNQbUXG/hIO75KKUiqinQQ7V3MYs4zRKDhzaTXcxuWU258WgFaA8oxOr7pQdqqKdN7qZlw==
@@ -1832,7 +1725,7 @@
     react-use "^17.2.4"
     yaml "^1.10.0"
 
-"@backstage/plugin-catalog-react@^0.4.0", "@backstage/plugin-catalog-react@^0.4.5":
+"@backstage/plugin-catalog-react@^0.4.0", "@backstage/plugin-catalog-react@^0.4.4", "@backstage/plugin-catalog-react@^0.4.5":
   version "0.4.5"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.4.5.tgz#8cce9ed1ec20072cf654e46f4d09cadf08511556"
   integrity sha512-yfBJEWKEz+/iA/VK1o4V4qBIWqFD81MhSkNfJX0bjlgPMluwCCQCiiBjtX3NJs4cN4mIHbyJXzD41HPVTWaM2g==
@@ -1855,58 +1748,7 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
 
-"@backstage/plugin-catalog-react@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.4.4.tgz#5a5bece064b7c8127e2c608ad4179f135f4aa4c6"
-  integrity sha512-Hu3oQXxegkdkMFuwWNDbgEct6OOwKh6HAElxz+76hA2fpb+5B2eER2NcnF+JwMUJachFuBlu7Vg+aAhQ6H+Gzw==
-  dependencies:
-    "@backstage/catalog-client" "^0.3.18"
-    "@backstage/catalog-model" "^0.9.0"
-    "@backstage/core-app-api" "^0.1.10"
-    "@backstage/core-components" "^0.3.3"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/integration" "^0.6.2"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "*"
-    jwt-decode "^3.1.0"
-    lodash "^4.17.15"
-    qs "^6.9.4"
-    react "^16.13.1"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-
-"@backstage/plugin-catalog@^0.6.13":
-  version "0.6.13"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-0.6.13.tgz#12577f8802c293ebecdbc9c00c3cc67b8b277bb0"
-  integrity sha512-PKmBStRwrEBo9mSS9EMwg0eZyGmtrCp9ScdPimeSoLmKz97+bSHa6nxDGzKZ6Ud7wQvnvRLHGpqUYEa/3GYg3A==
-  dependencies:
-    "@backstage/catalog-client" "^0.3.18"
-    "@backstage/catalog-model" "^0.9.0"
-    "@backstage/core-components" "^0.3.3"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/integration" "^0.6.2"
-    "@backstage/integration-react" "^0.1.7"
-    "@backstage/plugin-catalog-react" "^0.4.4"
-    "@backstage/theme" "^0.2.10"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "*"
-    classnames "^2.2.6"
-    git-url-parse "~11.4.4"
-    lodash "^4.17.21"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-
-"@backstage/plugin-catalog@^0.6.14":
+"@backstage/plugin-catalog@^0.6.13", "@backstage/plugin-catalog@^0.6.14":
   version "0.6.14"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-0.6.14.tgz#37568e2f22d6089e41d9ba789b7b549e4668c06a"
   integrity sha512-3/1CNSYoosrrlEk+jlsE47ZR4kusgWPe4MjxPOFXs5R1XV8n1KJA0JzPwsyd+mCHhXfDAHM9KnzwGvDNj/xyxQ==
@@ -2113,31 +1955,7 @@
     winston "^3.2.1"
     yn "^4.0.0"
 
-"@backstage/plugin-search@^0.4.8":
-  version "0.4.8"
-  resolved "https://registry.npmjs.org/@backstage/plugin-search/-/plugin-search-0.4.8.tgz#fc4b6f0192df30557ac2cce186c8465459bee59d"
-  integrity sha512-sFQDI5l3p/2kwR+BaVJdLjuGis4q4xF+fKZvEE2XAPf5PnnRwFQR+v6RPmgitGYnCy3YD4Aj5/d/BJdWy0uK2A==
-  dependencies:
-    "@backstage/catalog-model" "^0.9.0"
-    "@backstage/config" "^0.1.8"
-    "@backstage/core-components" "^0.3.3"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/plugin-catalog-react" "^0.4.4"
-    "@backstage/search-common" "^0.1.3"
-    "@backstage/theme" "^0.2.10"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "*"
-    qs "^6.9.4"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-
-"@backstage/plugin-search@^0.4.9":
+"@backstage/plugin-search@^0.4.8", "@backstage/plugin-search@^0.4.9":
   version "0.4.9"
   resolved "https://registry.npmjs.org/@backstage/plugin-search/-/plugin-search-0.4.9.tgz#3a68e1f63d40bbc7cd8b056fd9b34535aac8d433"
   integrity sha512-dO68R4CaZg2IwGxmzn1b9GfSrbO/FBlWdK8ej6hQ/ZSbluen1zv/5a/mYBo1m9hFu83AzyHCDIwmb6hPXPFV0A==
@@ -2252,7 +2070,7 @@
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
-"@backstage/search-common@^0.1.2", "@backstage/search-common@^0.1.3":
+"@backstage/search-common@^0.1.2":
   version "0.1.3"
   resolved "https://registry.npmjs.org/@backstage/search-common/-/search-common-0.1.3.tgz#3f9da0cd67f4bd9044df7804f7664e98e85bb436"
   integrity sha512-NdRytYLBEVH9nN9o+ZWARsBcwQASFkiG+ToEsba0f3MFXqXn6BH4V9XLbTSQaF1TkMIArsZPJp6UroAyM0dSqQ==
@@ -10195,7 +10013,7 @@ graphlib@^2.1.8:
   dependencies:
     lodash "^4.17.15"
 
-graphql-language-service-interface@^2.8.2:
+graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.8.2:
   version "2.8.2"
   resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
   integrity sha512-otbOQmhgkAJU1QJgQkMztNku6SbJLu/uodoFOYOOtJsizTjrMs93vkYaHCcYnLA3oi1Goj27XcHjMnRCYQOZXQ==
@@ -10205,7 +10023,7 @@ graphql-language-service-interface@^2.8.2:
     graphql-language-service-utils "^2.5.1"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.9.0:
+graphql-language-service-parser@1.9.0, graphql-language-service-parser@^1.9.0:
   version "1.9.0"
   resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
   integrity sha512-B5xPZLbBmIp0kHvpY1Z35I5DtPoDK9wGxQVRDIzcBaiIvAmlTrDvjo3bu7vKREdjFbYKvWNgrEWENuprMbF17Q==
