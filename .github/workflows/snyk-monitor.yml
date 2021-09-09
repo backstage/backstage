@@ -1,0 +1,29 @@
+name: Snyk Monitoring
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.snyk'
+      - '.github/workflows/snyk-monitor.yml'
+      - '**/package.json'
+      - 'yarn.lock'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Monitor and Synchronize Snyk Policies
+        uses: snyk/actions/node@master
+        with:
+          command: monitor
+          args: >
+            --yarn-workspaces
+            --policy-path=.snyk
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --remote-repo-url=https://github.com/backstage/backstage
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
