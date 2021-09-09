@@ -220,21 +220,6 @@ describe('AzureUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('returns the wanted files from an archive when a subpath is passed through', async () => {
-      const response = await processor.readTree(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
-      );
-
-      expect(response.etag).toBe('123abc2');
-
-      const files = await response.files();
-
-      expect(files.length).toBe(1);
-      const indexMarkdownFile = await files[0].content();
-
-      expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-
     it('creates a directory with the wanted files', async () => {
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',

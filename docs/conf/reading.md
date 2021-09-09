@@ -112,7 +112,16 @@ example `getString`. These will throw an error if there is no value available.
 
 The [ConfigApi](../reference/utility-apis/Config.md) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
-`configApiRef` exported from `@backstage/core-plugin-api`.
+`configApiRef` exported from `@backstage/core-plugin-api`:
+
+```
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
+...
+const MyReactComponent = (...) => {
+  const config = useApi(configApiRef);
+  ...
+}
+```
 
 Depending on the config api in another API is slightly different though, as the
 `ConfigApi` implementation is supplied via the App itself and not instantiated
