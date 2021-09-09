@@ -21,6 +21,7 @@ import fetch from 'cross-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
+import { Config } from '@backstage/config';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 
@@ -29,6 +30,21 @@ interface MkSearchIndexDoc {
   text: string;
   location: string;
 }
+
+type TechDocsCollatorOptions = {
+  discovery: PluginEndpointDiscovery;
+  logger: Logger;
+  locationTemplate?: string;
+  catalogClient?: CatalogApi;
+  parallelismLimit?: number;
+  legacyPathCasing?: boolean;
+};
+
+type EntityInfo = {
+  name: string;
+  namespace: string;
+  kind: string;
+};
 
 export class DefaultTechDocsCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
@@ -39,6 +55,9 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
 
+  /**
+   * @deprecated use static fromConfig method instead.
+   */
   constructor({
     discovery,
     locationTemplate,
@@ -46,14 +65,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     catalogClient,
     parallelismLimit = 10,
     legacyPathCasing = false,
-  }: {
-    discovery: PluginEndpointDiscovery;
-    logger: Logger;
-    locationTemplate?: string;
-    catalogClient?: CatalogApi;
-    parallelismLimit?: number;
-    legacyPathCasing?: boolean;
-  }) {
+  }: TechDocsCollatorOptions) {
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/docs/:namespace/:kind/:name/:path';
@@ -62,6 +74,10 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.parallelismLimit = parallelismLimit;
     this.legacyPathCasing = legacyPathCasing;
+  }
+
+  static fromConfig(_config: Config, options: TechDocsCollatorOptions) {
+    return new DefaultTechDocsCollator(options);
   }
 
   async execute() {
@@ -83,13 +99,14 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
       .map((entity: Entity) =>
         limit(async (): Promise<TechDocsDocument[]> => {
-          const entityInfo = {
-            kind: this.legacyPathCasing
-              ? entity.kind
-              : entity.kind.toLowerCase(),
-            namespace: entity.metadata.namespace || 'default',
-            name: entity.metadata.name,
-          };
+          const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
+            this.legacyPathCasing,
+            {
+              kind: entity.kind,
+              namespace: entity.metadata.namespace || 'default',
+              name: entity.metadata.name,
+            },
+          );
 
           try {
             const searchIndexResponse = await fetch(
@@ -143,5 +160,16 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     entityInfo: { kind: string; namespace: string; name: string },
   ) {
     return `${techDocsBaseUrl}/static/docs/${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}/search/search_index.json`;
+  }
+
+  private static handleEntityInfoCasing(
+    legacyPaths: boolean,
+    entityInfo: EntityInfo,
+  ): EntityInfo {
+    return legacyPaths
+      ? entityInfo
+      : Object.entries(entityInfo).reduce((acc, [key, value]) => {
+          return { ...acc, [key]: value.toLowerCase() };
+        }, {} as EntityInfo);
   }
 }

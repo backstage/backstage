@@ -73,7 +73,7 @@ export default async function createPlugin({
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultTechDocsCollator({
+    collator: DefaultTechDocsCollator.fromConfig(config, {
       discovery,
       logger,
       legacyPathCasing:
