@@ -1,5 +1,16 @@
 # @backstage/dev-utils
 
+## 0.2.9
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-app-api@0.1.12
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.2.8
 
 ### Patch Changes

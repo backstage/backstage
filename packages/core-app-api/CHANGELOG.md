@@ -1,5 +1,15 @@
 # @backstage/core-app-api
 
+## 0.1.12
+
+### Patch Changes
+
+- 841666a19: Removed deprecated internal functions.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.1.11
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/core-components
 
+## 0.4.1
+
+### Patch Changes
+
+- 06e275705: Fix warning produced by BottomLink component
+
+  During development, we noticed warnings such as:
+
+  ```
+  react_devtools_backend.js:2842 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  ```
+
+  The BottomLink component renders a Box component within a Typography component which leads to a div tag within a p tag.
+  This change inverts that ordering without changing the visual appearance.
+
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.4.0
 
 ### Minor Changes
