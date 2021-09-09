@@ -23,5 +23,5 @@ export const HomepageCompositionRoot = (props: {
 }) => {
   const outlet = useOutlet();
   const children = props.children ?? outlet;
-  return <div>{children}</div>;
+  return <>{children}</>;
 };
