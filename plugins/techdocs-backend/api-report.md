@@ -25,6 +25,9 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 //
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
+  // Warning: (ae-forgotten-export) The symbol "TechDocsCollatorOptions" needs to be exported by the entry point index.d.ts
+  //
+  // @deprecated
   constructor({
     discovery,
     locationTemplate,
@@ -32,14 +35,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     catalogClient,
     parallelismLimit,
     legacyPathCasing,
-  }: {
-    discovery: PluginEndpointDiscovery;
-    logger: Logger_2;
-    locationTemplate?: string;
-    catalogClient?: CatalogApi;
-    parallelismLimit?: number;
-    legacyPathCasing?: boolean;
-  });
+  }: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,
@@ -49,6 +45,11 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   // (undocumented)
   execute(): Promise<TechDocsDocument[]>;
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    options: TechDocsCollatorOptions,
+  ): DefaultTechDocsCollator;
   // (undocumented)
   protected locationTemplate: string;
   // (undocumented)
