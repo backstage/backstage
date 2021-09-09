@@ -19,7 +19,7 @@
     "@backstage/plugin-scaffolder": "^0.11.1",
     "@backstage/plugin-search": "^0.4.8",
     "@backstage/plugin-tech-radar": "^0.4.5",
-    "@backstage/plugin-techdocs": "^0.11.0",
+    "@backstage/plugin-techdocs": "^0.11.1",
     "@backstage/plugin-user-settings": "^0.3.3",
     "@backstage/test-utils": "^0.1.17",
     "@backstage/theme": "^0.2.10",
