@@ -5,8 +5,8 @@ on:
   push:
     branches: [master]
     paths:
-      - '.snyk'
       - '.github/workflows/snyk-monitor.yml'
+      - '**/.snyk'
       - '**/package.json'
       - 'yarn.lock'
 
