@@ -21,7 +21,6 @@ jobs:
           command: monitor
           args: >
             --yarn-workspaces
-            --policy-path=.snyk
             --org=backstage-dgh
             --strict-out-of-sync=false
             --remote-repo-url=https://github.com/backstage/backstage
