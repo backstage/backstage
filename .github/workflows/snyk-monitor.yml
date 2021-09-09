@@ -10,6 +10,11 @@ on:
       - '**/package.json'
       - 'yarn.lock'
 
+# This workflow synchronizes the packages in this repo along with policies in
+# each .snyk file with the remote state in our snyk org. It allows us to define
+# ignore policies in the .snyk files and then have them show up in the snyk web
+# UI, and also automatically adds any new packages that are created.
+
 jobs:
   sync:
     runs-on: ubuntu-latest
