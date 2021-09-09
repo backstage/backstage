@@ -15,48 +15,58 @@
  */
 
 import {
+  GroupEntity,
+  parseEntityRef,
   RELATION_CHILD_OF,
   stringifyEntityRef,
-  parseEntityRef,
-  GroupEntity,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  entityRouteRef,
-  getEntityRelations,
-  formatEntityRefTitle,
-} from '@backstage/plugin-catalog-react';
-import { makeStyles, Typography } from '@material-ui/core';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { BackstageTheme } from '@backstage/theme';
-
 import {
   DependencyGraph,
   DependencyGraphTypes,
+  Link,
   Progress,
   ResponseErrorPanel,
-  Link,
 } from '@backstage/core-components';
-import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  catalogApiRef,
+  entityRouteRef,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
+import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import classNames from 'classnames';
+import React from 'react';
+import { useAsync } from 'react-use';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
+  graph: {
+    flex: 1,
+    minHeight: 0,
+  },
   organizationNode: {
-    fill: 'coral',
-    stroke: theme.palette.border,
+    fill: theme.palette.secondary.light,
+    stroke: theme.palette.secondary.light,
   },
   groupNode: {
-    fill: 'yellowgreen',
-    stroke: theme.palette.border,
+    fill: theme.palette.primary.light,
+    stroke: theme.palette.primary.light,
   },
   centeredContent: {
-    padding: '10px',
+    padding: theme.spacing(1),
     height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: 'black',
+  },
+  textOrganization: {
+    color: theme.palette.secondary.contrastText,
+  },
+  textGroup: {
+    color: theme.palette.primary.contrastText,
   },
   textWrapper: {
     display: '-webkit-box',
@@ -70,14 +80,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-const dimensions = {
-  nodeWidth: 180,
-  nodeHeight: 90,
-  nodeCornerRadius: 20,
-  nodeAligmentShift: 5,
-};
-
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
+  const nodeWidth = 180;
+  const nodeHeight = 60;
+  const theme = useTheme();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
@@ -85,18 +91,22 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     return (
       <g>
         <rect
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-          rx={dimensions.nodeCornerRadius}
+          width={nodeWidth}
+          height={nodeHeight}
+          rx={theme.shape.borderRadius}
           className={classes.organizationNode}
         />
         <title>{props.node.name}</title>
-        <foreignObject
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-        >
+        <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
-            <div className={classes.textWrapper}>{props.node.name}</div>
+            <div
+              className={classNames(
+                classes.textWrapper,
+                classes.textOrganization,
+              )}
+            >
+              {props.node.name}
+            </div>
           </div>
         </foreignObject>
       </g>
@@ -108,9 +118,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   return (
     <g>
       <rect
-        width={dimensions.nodeWidth}
-        height={dimensions.nodeHeight}
-        rx={dimensions.nodeCornerRadius}
+        width={nodeWidth}
+        height={nodeHeight}
+        rx={theme.shape.borderRadius}
         className={classes.groupNode}
       />
       <title>{props.node.name}</title>
@@ -122,12 +132,11 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           name: ref.name,
         })}
       >
-        <foreignObject
-          width={dimensions.nodeWidth}
-          height={dimensions.nodeHeight}
-        >
+        <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
-            <div className={classes.textWrapper}>{props.node.name}</div>
+            <div className={classNames(classes.textWrapper, classes.textGroup)}>
+              {props.node.name}
+            </div>
           </div>
         </foreignObject>
       </Link>
@@ -146,6 +155,7 @@ export function GroupsDiagram() {
   }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 
+  const classes = useStyles();
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
   const organizationName =
@@ -218,6 +228,7 @@ export function GroupsDiagram() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
+        className={classes.graph}
       />
       <Typography
         variant="caption"
