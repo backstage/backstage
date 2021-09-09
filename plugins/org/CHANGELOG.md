@@ -1,5 +1,16 @@
 # @backstage/plugin-org
 
+## 0.3.22
+
+### Patch Changes
+
+- 6ad8fe1a0: Make ownership card style customizable via custom `theme.getPageTheme()`.
+- 70718686f: Use correct `Link` in ownership card to avoid a full reload of the app while navigating.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.3.21
 
 ### Patch Changes

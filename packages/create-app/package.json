@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.39",
+  "version": "0.3.40",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -27,7 +27,7 @@
     "start": "nodemon --"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.2",
+    "@backstage/cli-common": "^0.1.3",
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "fs-extra": "9.1.0",

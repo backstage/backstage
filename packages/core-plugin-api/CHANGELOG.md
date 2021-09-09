@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 0.1.7
+
+### Patch Changes
+
+- 3d238b028: Migrated component data attachment method to have better compatibility with component proxies such as `react-hot-loader`.
+- Updated dependencies
+  - @backstage/config@0.1.9
+
 ## 0.1.6
 
 ### Patch Changes

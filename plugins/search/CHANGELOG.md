@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 0.4.10
+
+### Patch Changes
+
+- 7f00902d9: Add Home Page Search Bar Component, to be included in composable Home Page.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.4.9
 
 ### Patch Changes
