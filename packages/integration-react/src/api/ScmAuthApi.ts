@@ -59,7 +59,7 @@ export interface ScmAuthTokenResponse {
 /**
  * ScmAuthApi provides methods for authenticating towards source code management services.
  *
- * As opposed to using the using the GitHub, GitLab and other auth APIs
+ * As opposed to using the GitHub, GitLab and other auth APIs
  * directly, this API allows for more generic access to SCM services.
  *
  * @public

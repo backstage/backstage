@@ -42,3 +42,48 @@ createApiFactory({
     ),
 });
 ```
+
+The additional `gheAuthApiRef` utility API can be defined either inside the app itself if it's only used for this purpose, for inside an internal common package for APIs, such as `@internal/apis`:
+
+```ts
+const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
+  createApiRef({
+    id: 'internal.auth.ghe',
+  });
+```
+
+And then implemented using the `GithubAuth` class from `@backstage/core-app-api`:
+
+```ts
+createApiFactory({
+  api: githubAuthApiRef,
+  deps: {
+    discoveryApi: discoveryApiRef,
+    oauthRequestApi: oauthRequestApiRef,
+    configApi: configApiRef,
+  },
+  factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+    GithubAuth.create({
+      provider: {
+        id: 'ghe',
+        icon: ...,
+        title: 'GHE'
+      },
+      discoveryApi,
+      oauthRequestApi,
+      defaultScopes: ['read:user'],
+      environment: configApi.getOptionalString('auth.environment'),
+    }),
+})
+```
+
+Finally you also need to add and configure another GitHub provider to the `auth-backend` using the provider ID `ghe`:
+
+```ts
+// Add the following options to `createRouter` in packages/backend/src/plugins/auth.ts
+providerFactories: {
+  ghe: createGithubProvider(),
+},
+```
+
+Other providers follow the same steps, but you will want to use the appropriate auth API implementation in the frontend, such as for example `GitlabAuth`.

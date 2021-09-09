@@ -36,7 +36,7 @@ type ScopeMapping = {
 };
 
 class ScmAuthMux implements ScmAuthApi {
-  #providers = new Array<ScmAuth>();
+  #providers: Array<ScmAuth>;
 
   constructor(providers: ScmAuth[]) {
     this.#providers = providers;
