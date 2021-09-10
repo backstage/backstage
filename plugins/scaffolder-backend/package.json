@@ -49,7 +49,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.0.0",
-    "git-url-parse": "~11.4.4",
+    "git-url-parse": "^11.6.0",
     "globby": "^11.0.0",
     "handlebars": "^4.7.6",
     "helmet": "^4.0.0",

@@ -49,7 +49,7 @@
     "@types/react": "*",
     "dompurify": "^2.2.9",
     "event-source-polyfill": "^1.0.25",
-    "git-url-parse": "~11.4.4",
+    "git-url-parse": "^11.6.0",
     "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
