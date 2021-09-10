@@ -18,7 +18,7 @@ WORKDIR /app
 # can start to remove this piece and lighten the load on the backend of the application.
 RUN apt-get update && apt-get install -y python3.4 
 RUN apt-get update && apt-get install -y python3-pip
-RUN pip3 install --upgrade pip && pip3 install mkdocs-techdocs-core==0.0.16
+RUN pip3 install --upgrade pip && pip3 install mkdocs-techdocs-core
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
