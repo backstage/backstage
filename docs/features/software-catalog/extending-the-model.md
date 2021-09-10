@@ -393,3 +393,20 @@ of interest to you, you might consider contacting the maintainers on Discord or
 my making a GitHub issue describing your use case.
 [This issue](https://github.com/backstage/backstage/issues/2292) also contains
 more context.
+
+## Referencing different environments with the model
+
+Example intent:
+
+> "I have multiple versions of my API deployed in different environments so I
+> want to have `mytool-dev` and `mytool-prod` as different entities."
+
+Whilst it's possible to have different versions of different entities deployed
+as separate entities, it's something we recommend against. We believe that a
+developer should be able to just find one `Component` and be able to see the
+different code versions that are deployed throughout your stack, and also
+similarly for any other `kind` like `API` too.
+
+When writing your custom plugins, we encourage the behavior to expect if
+possible that you should be showing all the different variations through
+environments etc under one canonical reference to your software in the catalog.
