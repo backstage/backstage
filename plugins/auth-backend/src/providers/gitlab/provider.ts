@@ -177,6 +177,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
       providerInfo: {
         idToken: result.params.id_token,
         accessToken: result.accessToken,
+        refreshToken: result.refreshToken, // GitLab expires the old refresh token when used
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
       },
