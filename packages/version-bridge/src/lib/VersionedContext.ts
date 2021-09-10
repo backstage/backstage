@@ -18,6 +18,20 @@ import { createContext, useContext, Context } from 'react';
 import { getGlobalSingleton } from './globalObject';
 import { createVersionedValueMap, VersionedValue } from './VersionedValue';
 
+/**
+ * A hook that simplifies the consumption of a versioned contexts that's
+ * stored inside a global singleton.
+ *
+ * @example
+ *
+ * ```ts
+ * const versionedHolder = useVersionedContext<{ 1: string }>('my-context');
+ *
+ * const myValue = versionedHolder.atVersion(1);
+ *
+ * // ...
+ * ````
+ */
 export function useVersionedContext<
   Versions extends { [version in number]: any },
 >(key: string): VersionedValue<Versions> {
@@ -30,6 +44,26 @@ export function useVersionedContext<
   return versionedValue;
 }
 
+/**
+ * Creates a helper for writing tests towards multiple different
+ * combinations of versions provided from a context.
+ *
+ * @example
+ *
+ * ```ts
+ * const context = createVersionedContextForTesting('my-context');
+ *
+ * afterEach(() => {
+ *   context.reset();
+ * });
+ *
+ * it('should work when provided with version 1', () => {
+ *   context.set({1: 'value-for-version-1'})
+ *
+ *   // ...
+ * })
+ * ```
+ */
 export function createVersionedContextForTesting(key: string) {
   return {
     set(versions: { [version in number]: unknown }) {
