@@ -2157,31 +2157,43 @@
   resolved "https://registry.npmjs.org/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gitbeaker/core@^29.2.0", "@gitbeaker/core@^29.3.0":
-  version "29.3.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-29.3.0.tgz#25e38d81dff31fa3864cf24151c3ff358f0c7796"
-  integrity sha512-uNFIQG7UIG/QyLkcFrrULPrqWjI/bU1mxFJ92pfZlzUHaWQB/r0CiPNatTkEGxkutqByiZu0CKHc2Y4LwusC5g==
+"@gitbeaker/core@30.3":
+  version "30.3.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-30.3.0.tgz#d005891d47cfacb41d4a3cc8bf3ee8c68c53d378"
+  integrity sha512-j7GHsFo6AOuRmLaK4F4Kx967jTy6LFZh5vjmRxjlRvX0qlfl3NJKiQIl30fZz1rPXWdQLAq+kwl1i0BKrWhOpA==
   dependencies:
-    "@gitbeaker/requester-utils" "^29.3.0"
+    "@gitbeaker/requester-utils" "^30.3.0"
     form-data "^4.0.0"
     li "^1.3.0"
+    query-string "^7.0.0"
     xcase "^2.0.1"
 
-"@gitbeaker/node@^29.2.0":
-  version "29.3.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-29.3.0.tgz#77810280cf8bd612ab9257a0daf02e3a880223c8"
-  integrity sha512-DWKz/3HkmrvP+w3xvDuGw2ZA9yobHTum/WT7M+stmwo4ivbItVGWdx98KVuhDDgxcQwr8uJTfuPDfYBhK9WiiQ==
+"@gitbeaker/core@^30.3.0":
+  version "30.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-30.5.0.tgz#e420daf5de94de29e656d9f259840a950d8962a6"
+  integrity sha512-3H4uSfFoogIIXz9ht1SQhw2FO43uzqtqKIY0gNJVwXDjYFNIhRfzPYUZLrB33iaGtZ9MP9U9H7i1ineHGqCg6w==
   dependencies:
-    "@gitbeaker/core" "^29.3.0"
-    "@gitbeaker/requester-utils" "^29.3.0"
+    "@gitbeaker/requester-utils" "^30.5.0"
+    form-data "^4.0.0"
+    li "^1.3.0"
+    query-string "^7.0.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/node@30.3":
+  version "30.3.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-30.3.0.tgz#ceebde08a13d3f655fa614a4ced56eb1f0a71ec1"
+  integrity sha512-Ythbadb1+yMO2hSgvp3nvaroHTkI4+mdLg1rdV3YNIF1n+kUYXQD2GY7wpAjH0KjAnBAmgxw/JsFmlfnRu3KAg==
+  dependencies:
+    "@gitbeaker/core" "^30.3.0"
+    "@gitbeaker/requester-utils" "^30.3.0"
     delay "^5.0.0"
     got "^11.8.2"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^29.3.0":
-  version "29.3.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-29.3.0.tgz#4aad506325fa2fadc3a87da1d7ea4758ceeccfa5"
-  integrity sha512-qFS5LgbUZ1ms4C11yV7ttou9eBEimkhN0779MX7ykZWyfiEuoLBT89s0sCbX7Xy4/kCJ4z1yX4K4u4xF3O4QIw==
+"@gitbeaker/requester-utils@^30.3.0", "@gitbeaker/requester-utils@^30.5.0":
+  version "30.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-30.5.0.tgz#4b0039a4340edbc06fe0b7751b871a91d617728d"
+  integrity sha512-MtDne1QRGHTprgDsFjySXgOmu9zUPUS2L8qS74kJm9Wnz4RY/+d/n5HRl6i34shidkQJWRqAOiAwn8zDFqhovA==
   dependencies:
     form-data "^4.0.0"
     query-string "^7.0.0"
@@ -21847,7 +21859,7 @@ react-router-dom@^6.0.0-beta.0:
   dependencies:
     react-router "6.0.0-beta.3"
 
-react-router@5.2.1, react-router@^5.2.1:
+react-router@5.2.1:
   version "5.2.1"
   resolved "https://registry.npmjs.org/react-router/-/react-router-5.2.1.tgz#4d2e4e9d5ae9425091845b8dbc6d9d276239774d"
   integrity sha512-lIboRiOtDLFdg1VTemMwud9vRVuOCZmUIT/7lUoZiSpPODiiH1UQlfXy+vPLC/7IWdFYnhRwAyNqA/+I7wnvKQ==
@@ -24514,7 +24526,7 @@ svgo@^2.3.0:
     csso "^4.2.0"
     stable "^0.1.8"
 
-swagger-client@^3.15.0:
+swagger-client@^3.16.1:
   version "3.16.1"
   resolved "https://registry.npmjs.org/swagger-client/-/swagger-client-3.16.1.tgz#df86c9d407ab52c00cb356e714b0ec732bb3ad40"
   integrity sha512-BcNRQzXHRGuXfhN0f80ptlr+bSaPvXwo8+gWbpmTnbKdAjcWOKAWwUx7rgGHjTKZh0qROr/GX9xOZIY8LrBuTg==
@@ -24536,9 +24548,9 @@ swagger-client@^3.15.0:
     url "~0.11.0"
 
 swagger-ui-react@^3.37.2:
-  version "3.52.0"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.52.0.tgz#edf85fed58d55677fc49807ff7d67e43e2d5bf44"
-  integrity sha512-JBw2Omif7i8pFIW8PHsoHZDXhn1LhiPmzxl6NRYGaoCxKDi+HQAQthvZ3piJbDQ8vS3EjtlVh7lkBn/RtrkPww==
+  version "3.52.1"
+  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.52.1.tgz#ed5c69b99a6efd5ab779db1390e3c3d78cc8e3d3"
+  integrity sha512-aBhmSmWmAvxKWQbyqslWa3e2s3nMKo9KVZH4gaitvc8IF9p3cdgS24Unh7b0TY8nDMMsJAlXlAxz9lBw1GzvJQ==
   dependencies:
     "@babel/runtime-corejs3" "^7.14.7"
     "@braintree/sanitize-url" "^5.0.2"
@@ -24571,7 +24583,7 @@ swagger-ui-react@^3.37.2:
     reselect "^4.0.0"
     serialize-error "^8.1.0"
     sha.js "^2.4.11"
-    swagger-client "^3.15.0"
+    swagger-client "^3.16.1"
     url-parse "^1.5.1"
     xml-but-prettier "^1.0.1"
     zenscroll "^4.0.2"

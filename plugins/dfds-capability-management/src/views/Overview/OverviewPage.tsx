@@ -24,7 +24,7 @@ import { Container } from '../../components/styles';
 import { Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 import { Button } from '@material-ui/core';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import { useUserContext } from '../../components/App/App';
@@ -36,7 +36,7 @@ const LeftContainer = styled.div`
 
 const OverviewPage: React.FC<{}> = () => {
   const { value, loading, error } = useUserContext();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   if (!value) return null;
   if (loading) {
     return <Progress />;
@@ -49,62 +49,61 @@ const OverviewPage: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
-      <Button
+      {/* <Button
         onClick={() => navigate(-1)}
         startIcon={<NavigateBefore />}
         style={{ marginBottom: 16 }}
       >
         back
-      </Button>
+      </Button> */}
       <HeaderComponent title={`${value.selectedCapability.name}`} />
 
       <Container>
-        <LeftContainer>
-          <OverviewComponent
-            // title={value.selectedCapability.name}
-            capabilityId={value.selectedCapability.rootId}
-            description={value.selectedCapability.description}
-            createdAt={value.selectedCapability.created}
-          />
-          <MembersFetchComponent data={value.selectedCapability.members} />
-          {isMember ? (
-            <ButtonComponent
-              color="secondary"
-              onClick={async () => {
-                await fetch(
-                  `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members/${value.profile?.email}`,
-                  {
-                    method: 'DELETE',
-                    headers: {
-                      Authorization: `Bearer ${value.token}`,
-                      'Content-Type': 'application/json',
-                    },
+        <OverviewComponent
+          // title={value.selectedCapability.name}
+          capabilityId={value.selectedCapability.rootId}
+          description={value.selectedCapability.description}
+          createdAt={value.selectedCapability.created}
+        />
+        <MembersFetchComponent data={value.selectedCapability.members} />
+        {isMember ? (
+          <ButtonComponent
+            color="secondary"
+            onClick={async () => {
+              await fetch(
+                `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members/${value.profile?.email}`,
+                {
+                  method: 'DELETE',
+                  headers: {
+                    Authorization: `Bearer ${value.token}`,
+                    'Content-Type': 'application/json',
                   },
-                );
-              }}
-            >
-              leave
-            </ButtonComponent>
-          ) : (
-            <ButtonComponent
-              onClick={async () => {
-                await fetch(
-                  `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members`,
-                  {
-                    method: 'POST',
-                    headers: {
-                      Authorization: `Bearer ${value.token}`,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: value.profile.email }),
+                },
+              );
+            }}
+          >
+            leave
+          </ButtonComponent>
+        ) : (
+          <ButtonComponent
+            onClick={async () => {
+              await fetch(
+                `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members`,
+                {
+                  method: 'POST',
+                  headers: {
+                    Authorization: `Bearer ${value.token}`,
+                    'Content-Type': 'application/json',
                   },
-                );
-              }}
-            >
-              join
-            </ButtonComponent>
-          )}
-        </LeftContainer>
+                  body: JSON.stringify({ email: value.profile.email }),
+                },
+              );
+            }}
+          >
+            join
+          </ButtonComponent>
+        )}
+
         {/* <
           StatusFetchComponent
           statusColor={value.status.value}
