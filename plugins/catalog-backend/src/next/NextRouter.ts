@@ -34,7 +34,11 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { CatalogProcessingEngine, LocationService, EntityRefreshOptions } from './types';
+import {
+  CatalogProcessingEngine,
+  LocationService,
+  EntityRefreshOptions,
+} from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -48,8 +52,14 @@ export interface NextRouterOptions {
 export async function createNextRouter(
   options: NextRouterOptions,
 ): Promise<express.Router> {
-  const { entitiesCatalog, locationAnalyzer, locationService, processingEngine, config, logger } =
-    options;
+  const {
+    entitiesCatalog,
+    locationAnalyzer,
+    locationService,
+    processingEngine,
+    config,
+    logger,
+  } = options;
 
   const router = Router();
   router.use(express.json());
@@ -61,10 +71,10 @@ export async function createNextRouter(
   }
 
   if (processingEngine) {
-    router.post('/refresh'), async (req, res) => {
-      const options: EntityRefreshOptions = req.body;
-      await processingEngine.refresh(options);
-      res.status(200);
+    router.post('/refresh', async (req, res) => {
+      const refreshOptions: EntityRefreshOptions = req.body;
+      await processingEngine.refresh(refreshOptions);
+      res.status(200).send();
     });
   }
 
