@@ -15,13 +15,39 @@
  */
 
 import { createContext, useContext, Context } from 'react';
-import { getGlobalSingleton } from './globalObject';
+import { getGlobalSingleton, getOrCreateGlobalSingleton } from './globalObject';
 import { createVersionedValueMap, VersionedValue } from './VersionedValue';
+
+/**
+ * Get the existing or create a new versioned React context that's
+ * stored inside a global singleton.
+ *
+ * @param key - A key that uniquely identifies the context.
+ * @example
+ *
+ * ```ts
+ * const MyContext = createVersionedContext<{ 1: string }>('my-context');
+ *
+ * const MyContextProvider = ({children}) => (
+ *   <MyContext.Provider value={createVersionedValueMap({ 1: 'value-for-version-1' })}>
+ *     {children}
+ *   <MyContext.Provider>
+ * )
+ * ```
+ */
+export function createVersionedContext<
+  Versions extends { [version in number]: any },
+>(key: string): Context<VersionedValue<Versions> | undefined> {
+  return getOrCreateGlobalSingleton(key, () =>
+    createContext<VersionedValue<Versions> | undefined>(undefined),
+  );
+}
 
 /**
  * A hook that simplifies the consumption of a versioned contexts that's
  * stored inside a global singleton.
  *
+ * @param key - A key that uniquely identifies the context.
  * @example
  *
  * ```ts
@@ -48,6 +74,7 @@ export function useVersionedContext<
  * Creates a helper for writing tests towards multiple different
  * combinations of versions provided from a context.
  *
+ * @param key - A key that uniquely identifies the context.
  * @example
  *
  * ```ts
