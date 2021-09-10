@@ -6,6 +6,7 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
+import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
 import {
   CatalogImportPage,
   catalogImportPlugin,
@@ -46,6 +47,9 @@ const app = createApp({
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
     });
+    bind(explorePlugin.externalRoutes, {
+      catalogEntity: catalogPlugin.routes.catalogEntity,
+    });
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,
     });
@@ -81,6 +85,7 @@ const routes = (
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/search" element={<SearchPage />} />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/explore" element={<ExplorePage />} />
   </FlatRoutes>
 );
 
