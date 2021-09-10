@@ -73,11 +73,12 @@ class Connection implements EntityProviderConnection {
         });
       });
     } else if (mutation.type === 'refresh') {
-      await db.transaction(async tx => {
-        await db.refreshUnprocessedEntities(tx, {
-          match: mutation.match,
-        });
-      });
+      // await db.transaction(async tx => {
+      //   await db.refreshUnprocessedEntities(tx, {
+      //     match: mutation.match,
+      //   });
+      // });
+      console.log('wopoop');
     }
   }
 
@@ -245,17 +246,20 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   }
 
   async refresh(options: EntityRefreshOptions) {
-    await Promise.all(
-      this.entityProviders.map(async provider => {
-        try {
-          await provider.refresh?.(options);
-        } catch (e) {
-          throw new Error(
-            `Provider ${provider.getProviderName()} failed refresh, ${e}`,
-          );
-        }
-      }),
-    );
+    await this.processingDatabase.transaction(async tx => {
+      await this.processingDatabase.refreshUnprocessedEntities(tx, options);
+    });
+    // await Promise.all(
+    //   this.entityProviders.map(async provider => {
+    //     try {
+    //       await provider.refresh?.(options);
+    //     } catch (e) {
+    //       throw new Error(
+    //         `Provider ${provider.getProviderName()} failed refresh, ${e}`,
+    //       );
+    //     }
+    //   }),
+    // );
   }
 }
 

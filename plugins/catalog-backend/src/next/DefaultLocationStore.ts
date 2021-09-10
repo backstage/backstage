@@ -137,23 +137,20 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     });
   }
 
-  async refresh(options: EntityRefreshOptions) {
-    const match: RefreshStateMatch = {};
-
-    // locationKey?: string;
-    // entityRef?: string;
-
-    if (options.entityRef) {
-      match.entityRef = options.entityRef;
-    }
-    if (options.locationRef) {
-      // TODO
-    }
-
-    await this.connection.applyMutation({
-      type: 'refresh',
-      match,
-    });
+  async refresh(_options: EntityRefreshOptions) {
+    // const match: RefreshStateMatch = {};
+    // // locationKey?: string;
+    // // entityRef?: string;
+    // if (options.entityRef) {
+    //    match.entityRef = options.entityRef;
+    // }
+    // if (options.locationRef) {
+    //   // TODO
+    // }
+    // await this.connection.applyMutation({
+    //   type: 'refresh',
+    //   match,
+    // });
   }
 
   private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {

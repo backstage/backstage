@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  LOCATION_ANNOTATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { ConflictError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -351,6 +355,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           unprocessed_entity: serializedEntity,
           location_key: locationKey,
           last_discovery_at: tx.fn.now(),
+          next_update_at: tx.fn.now(),
         })
         .where('entity_ref', entityRef)
         .andWhere(inner => {
@@ -509,11 +514,62 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     };
   }
 
+  // TODO(jhaals): Rename this to refreshEntity?
   async refreshUnprocessedEntities(
     txOpaque: Transaction,
     options: RefreshUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
+    if ('entityRef' in options) {
+      const { entityRef } = options;
+      const [result] = await tx<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .select();
+
+      if (!result) {
+        throw new NotFoundError(`EntityRef ${entityRef} not found`);
+      }
+
+      const refs = await tx<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        .where({ target_entity_ref: entityRef })
+        .select();
+
+      for (const ref of refs) {
+        if (ref.source_entity_ref?.startsWith('location:')) {
+          const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+            .where({ entity_ref: ref.source_entity_ref })
+            .update({ next_update_at: tx.fn.now() });
+
+          if (updateResult === 0) {
+            throw new ConflictError(
+              `Failed to schedule ${ref.source_entity_ref} for refresh`,
+            );
+          }
+        }
+      }
+      /*
+        For a given entityRef:
+        - Fetch entity
+        - recursively select from refresh_state_references where target is our entityRef.
+          Continue until we find a location.
+        - Process and run addUnprocessedEntities with a flag telling it to bump the timestamp for all deferred entities.
+        */
+      /*
+        For a given URL
+        - Fetch entity based on managed by location URL?
+        - repeat for entityRef
+        */
+    }
+
+    if ('locationRef' in options) {
+      // TODO(jhaals): managed by or origin?
+      // const entity: Entity = JSON.parse(result.processed_entity);
+      // // TODO: ONly required for URLz
+      // const managedBy = entity.metadata?.annotations?.[LOCATION_ANNOTATION]
+      // console.log(managedBy);
+    }
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

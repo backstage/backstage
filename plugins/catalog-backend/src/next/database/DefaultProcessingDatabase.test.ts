@@ -1017,4 +1017,87 @@ describe('Default Processing Database', () => {
       60_000,
     );
   });
+
+  describe('refreshEntities', () => {
+    it.each(databases.eachSupportedId())(
+      'should refresh the location further up the tree, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: '7',
+          entity_ref: 'location:default/myloc',
+          unprocessed_entity: JSON.stringify({
+            kind: 'Location',
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'xyz',
+            },
+          } as Entity),
+          errors: '[]',
+          next_update_at: '2031-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: '8',
+          entity_ref: 'component:default/mycomp',
+          unprocessed_entity: JSON.stringify({
+            kind: 'Component',
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'xyz',
+            },
+          } as Entity),
+          errors: '[]',
+          next_update_at: '2031-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: '9',
+          entity_ref: 'api:default/myapi',
+          unprocessed_entity: JSON.stringify({
+            kind: 'Api',
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'xyz',
+            },
+          } as Entity),
+          errors: '[]',
+          next_update_at: '2031-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        await insertRefRow(knex, {
+          source_entity_ref: 'component:default/mycomp',
+          target_entity_ref: 'api:default/myapi',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/myloc',
+          target_entity_ref: 'component:default/mycomp',
+        });
+
+        await insertRefRow(knex, {
+          source_key: 'ConfigLocationProvider',
+          target_entity_ref: 'location:default/myloc',
+        });
+
+        await db.transaction(async tx => {
+          await db.refreshUnprocessedEntities(tx, {
+            entityRef: 'api:default/myapi',
+          });
+        });
+
+        const [result] = await knex<DbRefreshStateRow>('refresh_state')
+          .where('entity_ref', 'api:default/myapi')
+          .select();
+
+        // TODO: This is going to break after 2031
+        expect(parseDate(result.next_update_at).year).toEqual(
+          DateTime.local().year,
+        );
+      },
+    );
+  });
 });

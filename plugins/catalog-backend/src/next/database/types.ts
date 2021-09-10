@@ -85,9 +85,12 @@ export type RefreshStateMatch = {
   parentOfEntityRef: string;
 };
 
-export type RefreshUnprocessedEntitiesOptions = {
-  match: RefreshStateMatch;
-};
+export type RefreshUnprocessedEntitiesOptions =
+  | {
+      // match: RefreshStateMatch;
+      entityRef: string;
+    }
+  | { locationRef: string };
 
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
