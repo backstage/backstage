@@ -48,12 +48,18 @@ export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<EntityRow>[];
   actions?: TableProps<EntityRow>['actions'];
+  createButton?: boolean;
+  supportButton?: boolean;
+  createButtonTitle?: string;
 };
 
 export const CatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
+  createButton = true,
+  supportButton = true,
+  createButtonTitle = 'Create Component',
 }: CatalogPageProps) => {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -64,11 +70,15 @@ export const CatalogPage = ({
       <EntityListProvider>
         <Content>
           <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton
-              title="Create Component"
-              to={createComponentLink && createComponentLink()}
-            />
-            <SupportButton>All your software catalog entities</SupportButton>
+            {createButton && (
+              <CreateButton
+                title={createButtonTitle}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            {supportButton && (
+              <SupportButton>All your software catalog entities</SupportButton>
+            )}
           </ContentHeader>
           <FilteredEntityLayout>
             <FilterContainer>
