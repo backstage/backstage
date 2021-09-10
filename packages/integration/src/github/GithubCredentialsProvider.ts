@@ -111,8 +111,8 @@ class GithubAppManager {
           auth: result.data.token,
         });
         const repos =
-          await installationClient.apps.listReposAccessibleToInstallation();
-        const hasRepo = repos.data.repositories.some(repository => {
+          await installationClient.paginate(installationClient.apps.listReposAccessibleToInstallation);
+        const hasRepo = repos && repos.repositories.some(repository => {
           return repository.name === repo;
         });
         if (!hasRepo) {
