@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { MemoryRouter } from 'react-router';
 
 import { SearchType } from '../index';
 import { SearchContext } from '../SearchContext';
@@ -30,15 +29,8 @@ export const Default = () => {
   const [types, setTypes] = useState<string[]>([]);
 
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (value requires more than what is used here) */}
-      <SearchContext.Provider value={{ types, setTypes }}>
-        <SearchType
-          name="Search type"
-          values={values}
-          defaultValue={values[0]}
-        />
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <SearchContext.Provider value={{ types, setTypes } as any}>
+      <SearchType name="Search type" values={values} defaultValue={values[0]} />
+    </SearchContext.Provider>
   );
 };
