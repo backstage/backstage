@@ -24,7 +24,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
 import { buildRouteRef } from '../../routes';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Table, TableColumn } from '@backstage/core-components';
 
 const generatedColumns: TableColumn[] = [
@@ -84,7 +84,11 @@ const generatedColumns: TableColumn[] = [
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
       <Typography data-testid="cell-created" variant="body2" noWrap>
-        <p>{moment(row.createTime).format('DD-MM-YYYY hh:mm:ss')}</p>
+        <p>
+          {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()).toFormat(
+            'dd-MM-yyyy hh:mm:ss',
+          )}
+        </p>
       </Typography>
     ),
   },
