@@ -23,6 +23,7 @@ import { createVersionedValueMap, VersionedValue } from './VersionedValue';
  * stored inside a global singleton.
  *
  * @param key - A key that uniquely identifies the context.
+ * @public
  * @example
  *
  * ```ts
@@ -48,6 +49,7 @@ export function createVersionedContext<
  * stored inside a global singleton.
  *
  * @param key - A key that uniquely identifies the context.
+ * @public
  * @example
  *
  * ```ts
@@ -56,7 +58,7 @@ export function createVersionedContext<
  * const myValue = versionedHolder.atVersion(1);
  *
  * // ...
- * ````
+ * ```
  */
 export function useVersionedContext<
   Versions extends { [version in number]: any },
@@ -75,6 +77,7 @@ export function useVersionedContext<
  * combinations of versions provided from a context.
  *
  * @param key - A key that uniquely identifies the context.
+ * @public
  * @example
  *
  * ```ts

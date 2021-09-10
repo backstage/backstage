@@ -32,6 +32,8 @@ const makeKey = (id: string) => `__@backstage/${id}__`;
 
 /**
  * Used to access a global singleton value, failing if it is not already set.
+ *
+ * @public
  */
 export function getGlobalSingleton<T>(id: string): T {
   const key = makeKey(id);
@@ -44,6 +46,8 @@ export function getGlobalSingleton<T>(id: string): T {
 
 /**
  * Serializes access to a global singleton value, with the first caller creating the value.
+ *
+ * @public
  */
 export function getOrCreateGlobalSingleton<T>(
   id: string,
