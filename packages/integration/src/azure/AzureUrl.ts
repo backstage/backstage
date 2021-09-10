@@ -81,11 +81,11 @@ export class AzureUrl {
     this.#ref = ref;
   }
 
-  #baseUrl(...parts: string[]): URL {
+  #baseUrl = (...parts: string[]): URL => {
     const url = new URL(this.#origin);
     url.pathname = parts.map(part => encodeURIComponent(part)).join('/');
     return url;
-  }
+  };
 
   /**
    * Returns a repo URL that can be used to navigate to the resource in azure.
