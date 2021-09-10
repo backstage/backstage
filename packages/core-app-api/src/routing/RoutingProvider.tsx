@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
 import {
-  VersionedValue,
   createVersionedValueMap,
-  getOrCreateGlobalSingleton,
+  createVersionedContext,
 } from '@backstage/version-bridge';
 import { RouteResolver } from './RouteResolver';
 import { BackstageRouteObject } from './types';
 
-type RoutingContextType = VersionedValue<{ 1: RouteResolver }> | undefined;
-const RoutingContext = getOrCreateGlobalSingleton('routing-context', () =>
-  createContext<RoutingContextType>(undefined),
-);
+const RoutingContext =
+  createVersionedContext<{ 1: RouteResolver }>('routing-context');
 
 type ProviderProps = {
   routePaths: Map<RouteRef, string>;
