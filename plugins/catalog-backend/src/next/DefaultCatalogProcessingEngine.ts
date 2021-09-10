@@ -36,6 +36,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
+  EntityRefreshOptions,
 } from './types';
 
 class Connection implements EntityProviderConnection {
@@ -43,8 +44,8 @@ class Connection implements EntityProviderConnection {
 
   constructor(
     private readonly config: {
-      processingDatabase: ProcessingDatabase;
       id: string;
+      processingDatabase: ProcessingDatabase;
     },
   ) {}
 
@@ -60,19 +61,24 @@ class Connection implements EntityProviderConnection {
           items: mutation.entities,
         });
       });
-      return;
-    }
-
-    this.check(mutation.added.map(e => e.entity));
-    this.check(mutation.removed.map(e => e.entity));
-    await db.transaction(async tx => {
-      await db.replaceUnprocessedEntities(tx, {
-        sourceKey: this.config.id,
-        type: 'delta',
-        added: mutation.added,
-        removed: mutation.removed,
+    } else if (mutation.type === 'delta') {
+      this.check(mutation.added.map(e => e.entity));
+      this.check(mutation.removed.map(e => e.entity));
+      await db.transaction(async tx => {
+        await db.replaceUnprocessedEntities(tx, {
+          sourceKey: this.config.id,
+          type: 'delta',
+          added: mutation.added,
+          removed: mutation.removed,
+        });
       });
-    });
+    } else if (mutation.type === 'refresh') {
+      await db.transaction(async tx => {
+        await db.refreshUnprocessedEntities(tx, {
+          match: mutation.match,
+        });
+      });
+    }
   }
 
   private check(entities: Entity[]) {
@@ -107,8 +113,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     for (const provider of this.entityProviders) {
       await provider.connect(
         new Connection({
-          processingDatabase: this.processingDatabase,
           id: provider.getProviderName(),
+          processingDatabase: this.processingDatabase,
         }),
       );
     }
@@ -236,6 +242,20 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       this.stopFunc();
       this.stopFunc = undefined;
     }
+  }
+
+  async refresh(options: EntityRefreshOptions) {
+    await Promise.all(
+      this.entityProviders.map(async provider => {
+        try {
+          await provider.refresh?.(options);
+        } catch (e) {
+          throw new Error(
+            `Provider ${provider.getProviderName()} failed refresh, ${e}`,
+          );
+        }
+      }),
+    );
   }
 }
 

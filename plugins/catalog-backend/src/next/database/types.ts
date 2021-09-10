@@ -79,6 +79,16 @@ export type ReplaceUnprocessedEntitiesOptions =
       type: 'delta';
     };
 
+export type RefreshStateMatch = {
+  locationKey?: string;
+  entityRef?: string;
+  parentOfEntityRef: string;
+};
+
+export type RefreshUnprocessedEntitiesOptions = {
+  match: RefreshStateMatch;
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
@@ -86,6 +96,7 @@ export interface ProcessingDatabase {
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void>;
+
   getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
@@ -105,5 +116,10 @@ export interface ProcessingDatabase {
   updateProcessedEntityErrors(
     txOpaque: Transaction,
     options: UpdateProcessedEntityErrorsOptions,
+  ): Promise<void>;
+
+  refreshUnprocessedEntities(
+    txOpaque: Transaction,
+    options: RefreshUnprocessedEntitiesOptions,
   ): Promise<void>;
 }

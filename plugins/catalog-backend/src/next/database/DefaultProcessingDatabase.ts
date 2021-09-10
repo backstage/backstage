@@ -36,6 +36,7 @@ import {
   GetProcessableEntitiesResult,
   ProcessingDatabase,
   RefreshStateItem,
+  RefreshUnprocessedEntitiesOptions,
   ReplaceUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
 } from './types';
@@ -506,6 +507,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           } as RefreshStateItem),
       ),
     };
+  }
+
+  async refreshUnprocessedEntities(
+    txOpaque: Transaction,
+    options: RefreshUnprocessedEntitiesOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

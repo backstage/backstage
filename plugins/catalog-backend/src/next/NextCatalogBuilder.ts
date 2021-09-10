@@ -27,6 +27,7 @@ import {
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
+import { Router } from 'express';
 import lodash from 'lodash';
 import {
   DatabaseLocationsCatalog,
@@ -75,6 +76,7 @@ import {
   RefreshIntervalFunction,
 } from './refresh';
 import { CatalogEnvironment } from '../service/CatalogBuilder';
+import { createNextRouter } from './NextRouter';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -277,6 +279,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    router: Router;
   }> {
     const { config, database, logger } = this.env;
 
@@ -333,12 +336,22 @@ export class NextCatalogBuilder {
       orchestrator,
     );
 
+    const router = await createNextRouter({
+      entitiesCatalog,
+      locationAnalyzer,
+      locationService,
+      processingEngine,
+      logger,
+      config,
+    });
+
     return {
       entitiesCatalog,
       locationsCatalog,
       locationAnalyzer,
       processingEngine,
       locationService,
+      router,
     };
   }
 
