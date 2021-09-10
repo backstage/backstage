@@ -15,7 +15,7 @@
  */
 
 import { renderHook } from '@testing-library/react-hooks';
-import { createVersionedContextForTesting } from '../lib/versionedValues';
+import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useApp } from './useApp';
 
 describe('v1 consumer', () => {

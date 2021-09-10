@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
-import { useVersionedContext } from '../lib/versionedValues';
+import { useVersionedContext } from '@backstage/version-bridge';
 import {
   AnyParams,
   ExternalRouteRef,

@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
-import { useVersionedContext } from '../../lib/versionedValues';
+import { useVersionedContext } from '@backstage/version-bridge';
 
 export function useApiHolder(): ApiHolder {
   const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');

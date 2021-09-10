@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useVersionedContext } from '../lib/versionedValues';
+import { useVersionedContext } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 
 export const useApp = (): AppContextV1 => {
