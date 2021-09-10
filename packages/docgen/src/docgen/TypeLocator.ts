@@ -57,9 +57,9 @@ export default class TypeLocator {
    * Find exported instances and return values from calls using the types
    * provided in the lookup table.
    */
-  findExportedInstances<T extends string>(
-    typeLookupTable: { [key in T]: ts.Type },
-  ): { [key in T]: ExportedInstance[] } {
+  findExportedInstances<T extends string>(typeLookupTable: {
+    [key in T]: ts.Type;
+  }): { [key in T]: ExportedInstance[] } {
     const docMap = new Map<ts.Type, ExportedInstance[]>();
     for (const type of Object.values<ts.Type>(typeLookupTable)) {
       docMap.set(type, []);
