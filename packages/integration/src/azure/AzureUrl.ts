@@ -59,4 +59,39 @@ export class AzureUrl {
   toCommitsUrl(): string {
     throw new Error('not implemented');
   }
+
+  /**
+   * Returns the name of the owner, a user or an organization.
+   */
+  getOwner(): string {
+    throw new Error('not implemented');
+  }
+
+  /**
+   * Returns the name of the project.
+   */
+  getProject(): string {
+    throw new Error('not implemented');
+  }
+
+  /**
+   * Returns the name of the repo.
+   */
+  getRepo(): string {
+    throw new Error('not implemented');
+  }
+
+  /**
+   * Returns the file path within the repo if the URL contains one.
+   */
+  getPath(): string | undefined {
+    throw new Error('not implemented');
+  }
+
+  /**
+   * Returns the git ref in the repo if the URL contains one.
+   */
+  getRef(): string | undefined {
+    throw new Error('not implemented');
+  }
 }
