@@ -45,7 +45,7 @@ const generatedColumns: TableColumn[] = [
     width: '150px',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.id?.substring(0, 8)}</p>
+        {row.id?.substring(0, 8)}
       </Typography>
     ),
   },
@@ -68,7 +68,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Ref',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.substitutions?.BRANCH_NAME}</p>
+        {row.substitutions?.BRANCH_NAME}
       </Typography>
     ),
   },
@@ -76,7 +76,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Commit',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.substitutions?.SHORT_SHA}</p>
+        {row.substitutions?.SHORT_SHA}
       </Typography>
     ),
   },
@@ -84,11 +84,9 @@ const generatedColumns: TableColumn[] = [
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
       <Typography data-testid="cell-created" variant="body2" noWrap>
-        <p>
-          {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()).toFormat(
-            'dd-MM-yyyy hh:mm:ss',
-          )}
-        </p>
+        {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()).toFormat(
+          'dd-MM-yyyy hh:mm:ss',
+        )}
       </Typography>
     ),
   },
