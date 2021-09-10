@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Change the catagories filter to a dropdown component
+Change the Categories filter to a dropdown component
