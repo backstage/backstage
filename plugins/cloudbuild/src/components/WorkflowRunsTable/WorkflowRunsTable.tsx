@@ -57,6 +57,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Link
         component={RouterLink}
+        data-testid="cell-source"
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
         {row.message}
@@ -82,7 +83,7 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
-      <Typography variant="body2" noWrap>
+      <Typography data-testid="cell-created" variant="body2" noWrap>
         <p>{moment(row.createTime).format('DD-MM-YYYY hh:mm:ss')}</p>
       </Typography>
     ),
@@ -91,7 +92,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     render: (row: Partial<WorkflowRun>) => (
       <Tooltip title="Rerun workflow">
-        <IconButton onClick={row.rerun}>
+        <IconButton data-testid="action-rerun" onClick={row.rerun}>
           <RetryIcon />
         </IconButton>
       </Tooltip>
