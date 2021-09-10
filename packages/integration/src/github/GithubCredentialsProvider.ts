@@ -110,9 +110,10 @@ class GithubAppManager {
         const installationClient = new Octokit({
           auth: result.data.token,
         });
-        const repos =
-          await installationClient.paginate(installationClient.apps.listReposAccessibleToInstallation);
-        const hasRepo = repos && repos.repositories.some(repository => {
+        const repos = await installationClient.paginate(
+          installationClient.apps.listReposAccessibleToInstallation,
+        );
+        const hasRepo = repos.some(repository => {
           return repository.name === repo;
         });
         if (!hasRepo) {
