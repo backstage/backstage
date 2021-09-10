@@ -15,7 +15,7 @@
  */
 
 import { createContext, useContext, Context } from 'react';
-import { getGlobalSingleton, setGlobalSingleton } from './globalObject';
+import { getGlobalSingleton } from './globalObject';
 import { createVersionedValueMap, VersionedValue } from './VersionedValue';
 
 export function useVersionedContext<
@@ -33,7 +33,9 @@ export function useVersionedContext<
 export function createVersionedContextForTesting(key: string) {
   return {
     set(versions: { [version in number]: unknown }) {
-      setGlobalSingleton(key, createContext(createVersionedValueMap(versions)));
+      (globalThis as any)[`__@backstage/${key}__`] = createContext(
+        createVersionedValueMap(versions),
+      );
     },
     reset() {
       delete (globalThis as any)[`__@backstage/${key}__`];

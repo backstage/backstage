@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  getGlobalSingleton,
-  getOrCreateGlobalSingleton,
-  setGlobalSingleton,
-} from './globalObject';
+export { getGlobalSingleton, getOrCreateGlobalSingleton } from './globalObject';
 export {
   createVersionedContextForTesting,
   useVersionedContext,
-} from './versionedValues';
+} from './VersionedContext';
 export { createVersionedValueMap } from './VersionedValue';
 export type { VersionedValue } from './VersionedValue';
