@@ -23,8 +23,7 @@ import React, {
 import { MemoryRouter, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { VersionedValue } from '../lib/versionedValues';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { VersionedValue, getGlobalSingleton } from '@backstage/version-bridge';
 import {
   childDiscoverer,
   routeElementDiscoverer,

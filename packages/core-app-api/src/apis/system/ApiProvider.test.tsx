@@ -26,8 +26,7 @@ import { ApiProvider } from './ApiProvider';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils-core';
-import { getGlobalSingleton } from '../../lib/globalObject';
-import { VersionedValue } from '../../lib/versionedValues';
+import { getGlobalSingleton, VersionedValue } from '@backstage/version-bridge';
 
 describe('ApiProvider', () => {
   type Api = () => string;

@@ -16,8 +16,7 @@
 
 import React, { useContext, Context } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { VersionedValue } from '../lib/versionedValues';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { getGlobalSingleton, VersionedValue } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 import { AppContextProvider } from './AppContext';
 

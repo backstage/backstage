@@ -19,7 +19,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 type RouteRefType = Exclude<
   keyof RouteRef,

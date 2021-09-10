@@ -18,8 +18,8 @@ import React, { createContext, PropsWithChildren } from 'react';
 import {
   VersionedValue,
   createVersionedValueMap,
-} from '../lib/versionedValues';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+  getOrCreateGlobalSingleton,
+} from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 
 type AppContextType = VersionedValue<{ 1: AppContextV1 }> | undefined;

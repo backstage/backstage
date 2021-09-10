@@ -20,11 +20,11 @@ import {
   RouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 import {
-  createVersionedValueMap,
   VersionedValue,
-} from '../lib/versionedValues';
+  createVersionedValueMap,
+  getOrCreateGlobalSingleton,
+} from '@backstage/version-bridge';
 import { RouteResolver } from './RouteResolver';
 import { BackstageRouteObject } from './types';
 

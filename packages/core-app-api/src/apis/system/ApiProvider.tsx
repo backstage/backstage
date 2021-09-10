@@ -23,11 +23,11 @@ import React, {
 import PropTypes from 'prop-types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiAggregator } from './ApiAggregator';
-import { getOrCreateGlobalSingleton } from '../../lib/globalObject';
 import {
   VersionedValue,
   createVersionedValueMap,
-} from '../../lib/versionedValues';
+  getOrCreateGlobalSingleton,
+} from '@backstage/version-bridge';
 
 type ApiProviderProps = {
   apis: ApiHolder;
