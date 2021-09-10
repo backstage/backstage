@@ -64,7 +64,7 @@
     "passport-oauth2": "^1.5.0",
     "passport-okta-oauth": "^0.0.1",
     "passport-onelogin-oauth": "^0.0.1",
-    "passport-saml": "^2.0.0",
+    "passport-saml": "^3.1.2",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
@@ -78,7 +78,7 @@
     "@types/passport-github2": "^1.2.4",
     "@types/passport-google-oauth20": "^2.0.3",
     "@types/passport-microsoft": "^0.0.0",
-    "@types/passport-saml": "^1.1.2",
+    "@types/passport-saml": "^1.1.3",
     "@types/passport-strategy": "^0.2.35",
     "@types/xml2js": "^0.4.7",
     "msw": "^0.29.0"
