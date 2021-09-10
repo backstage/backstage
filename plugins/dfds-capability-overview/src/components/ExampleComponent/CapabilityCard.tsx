@@ -26,12 +26,12 @@ import {
 } from '@material-ui/core';
 import { blue, grey, green } from '@material-ui/core/colors';
 import DoneIcon from '@material-ui/icons/Done';
-
 import React from 'react';
 import { PopOverProvider, MoreActions, MenuActions } from './MoreActions';
 
 // import { ServicesCard } from './ServicesTab';
 import { ProvidersTab } from './ProvidersTab';
+import { ServicesCard } from './ServicesTab';
 import { SourceControlIcon } from './SourceControlIcon';
 
 export const CapabilityCard = ({
@@ -132,14 +132,16 @@ export const CapabilityCard = ({
               )}
             </Box>
           </Box>
-          {condensed && (
+          {true && (
             <>
               <Divider />
               <Box p={3} pt={2} pb={2}>
                 <Box mb={1}>
                   <ProvidersTab />
                 </Box>
-                <Box>{/* <ServicesCard services={rest.services} /> */}</Box>
+                <Box>
+                  <ServicesCard services={[1, 2, 3, 4]} />
+                </Box>
               </Box>
             </>
           )}
