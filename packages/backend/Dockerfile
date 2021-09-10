@@ -9,9 +9,10 @@
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 
-FROM container-registry.dev8.bip.va.gov/bip/node:14
+FROM container-registry.dev8.bip.va.gov/ironbank/opensource/nodejs/nodejs14:14.17.6
 
-WORKDIR /app
+WORKDIR /appexit
+
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
