@@ -110,6 +110,62 @@ export class LdapClient {
   }
 
   /**
+   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
+   *
+   * @param dn The fully qualified base DN to search within
+   * @param options The search options
+   */
+  *searchStreaming(dn: string, options: SearchOptions) {
+    let queuesize = 25;
+    if (options) {
+      if (
+        options.paged &&
+        typeof options.paged === 'object' &&
+        typeof options.paged.pageSize === 'number' &&
+        options.paged.pageSize > 0
+      ) {
+        queuesize = options.paged.pageSize;
+      }
+    }
+    const queue: SearchEntry[] = new Array(queuesize);
+    let done = false;
+    try {
+      this.client.search(dn, options, (err, res) => {
+        if (err) {
+          throw new Error(errorString(err));
+        }
+
+        res.on('searchReference', () => {
+          throw new Error('Unable to handle referral');
+        });
+
+        res.on('searchEntry', entry => {
+          queue.push(entry);
+        });
+
+        res.on('error', e => {
+          throw new Error(errorString(e));
+        });
+
+        res.on('end', r => {
+          if (!r) {
+            throw new Error('Null response');
+          } else if (r.status !== 0) {
+            throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+          } else {
+            done = true;
+          }
+        });
+      });
+    } catch (e) {
+      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+    }
+    while (!done && queue.length > 0) {
+      yield queue.pop();
+    }
+  }
+
+  /**
    * Get the Server Vendor.
    * Currently only detects Microsoft Active Directory Servers.
    *

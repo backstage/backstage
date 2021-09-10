@@ -107,16 +107,19 @@ export async function readLdapUsers(
 
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  const entries = await client.search(dn, options);
+  const entries = client.searchStreaming(dn, options);
+  for (const entry of entries) {
+    if (!entry) {
+      continue;
+    }
 
-  for (const user of entries) {
-    const entity = await transformer(vendor, config, user);
+    const entity = await transformer(vendor, config, entry);
 
     if (!entity) {
       continue;
     }
 
-    mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
+    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
 
@@ -210,19 +213,23 @@ export async function readLdapGroups(
 
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  const entries = await client.search(dn, options);
+  const entries = client.searchStreaming(dn, options);
 
-  for (const group of entries) {
-    const entity = await transformer(vendor, config, group);
+  for (const entry of entries) {
+    if (!entry) {
+      continue;
+    }
+
+    const entity = await transformer(vendor, config, entry);
 
     if (!entity) {
       continue;
     }
 
-    mapReferencesAttr(group, vendor, map.memberOf, (myDn, vs) => {
+    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(groupMemberOf, myDn, vs);
     });
-    mapReferencesAttr(group, vendor, map.members, (myDn, vs) => {
+    mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
       ensureItems(groupMember, myDn, vs);
     });
 
