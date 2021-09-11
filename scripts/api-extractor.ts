@@ -32,7 +32,6 @@ import {
   ExtractorLogLevel,
 } from '@microsoft/api-extractor';
 import { DocNode, IDocNodeContainerParameters } from '@microsoft/tsdoc';
-import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
 import { MarkdownDocumenter } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
@@ -154,11 +153,6 @@ async function runApiExtraction({
     const projectFolder = resolvePath(__dirname, '..', packageDir);
     const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
-    const tsdocConf = TSDocConfigFile.loadFile(
-      resolvePath(__dirname, '../tsdoc.json'),
-    );
-    tsdocConf.setSupportForTag('@component', true);
-
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
         mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
@@ -220,7 +214,6 @@ async function runApiExtraction({
       },
       configObjectFullPath: projectFolder,
       packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
-      tsdocConfigFile: tsdocConf,
     });
 
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative
@@ -308,11 +301,6 @@ async function runApiExtraction({
   }
 }
 
-function isComponentMember(member: any) {
-  // React components are annotated with @component, and we want to skip those
-  return Boolean(member.docComment.match(/\n\s*\**\s*@component/m));
-}
-
 async function buildDocs({
   inputDir,
   outputDir,
@@ -334,9 +322,7 @@ async function buildDocs({
 
   const newModel = new ApiModel();
   for (const serialized of serializedPackages) {
-    serialized.members[0].members = serialized.members[0].members.filter(
-      member => !isComponentMember(member),
-    );
+    // Add any docs filtering logic here
 
     const pkg = ApiPackage.deserialize(
       serialized,
