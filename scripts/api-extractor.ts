@@ -31,8 +31,12 @@ import {
   CompilerState,
   ExtractorLogLevel,
 } from '@microsoft/api-extractor';
+import { DocNode, IDocNodeContainerParameters } from '@microsoft/tsdoc';
+import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
 import { MarkdownDocumenter } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
 const tmpDir = resolvePath(__dirname, '../node_modules/.cache/api-extractor');
 
@@ -150,6 +154,11 @@ async function runApiExtraction({
     const projectFolder = resolvePath(__dirname, '..', packageDir);
     const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
+    const tsdocConf = TSDocConfigFile.loadFile(
+      resolvePath(__dirname, '../tsdoc.json'),
+    );
+    tsdocConf.setSupportForTag('@component', true);
+
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
         mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
@@ -211,6 +220,7 @@ async function runApiExtraction({
       },
       configObjectFullPath: projectFolder,
       packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
+      tsdocConfigFile: tsdocConf,
     });
 
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative
@@ -349,6 +359,116 @@ async function buildDocs({
     } as any,
     outputFolder: outputDir,
   });
+
+  class DocFrontMatter extends DocNode {
+    static kind = 'DocFrontMatter';
+
+    public readonly id: string;
+    public readonly title: string;
+    public readonly description: string;
+
+    public constructor(
+      parameters: IDocNodeContainerParameters & {
+        id: string;
+        title: string;
+        description: string;
+      },
+    ) {
+      super(parameters);
+      this.id = parameters.id;
+      this.title = parameters.title;
+      this.description = parameters.description;
+    }
+
+    /** @override */
+    public get kind(): string {
+      return DocFrontMatter.kind;
+    }
+  }
+
+  const anyDocumenter = documenter as any;
+
+  anyDocumenter._tsdocConfiguration.docNodeManager.registerDocNodes(
+    '@backstage/docs',
+    [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
+  );
+  anyDocumenter._tsdocConfiguration.docNodeManager.registerAllowableChildren(
+    'Paragraph',
+    [DocFrontMatter.kind],
+  );
+
+  class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
+    /** @override */
+    protected writeNode(
+      docNode: DocNode,
+      context: IMarkdownEmitterContext,
+      docNodeSiblings: boolean,
+    ): void {
+      switch (docNode.kind) {
+        case DocFrontMatter.kind: {
+          const node = docNode as DocFrontMatter;
+          context.writer.writeLine('---');
+          context.writer.writeLine(`id: ${node.id}`);
+          context.writer.writeLine(`title: ${node.title}`);
+          context.writer.writeLine(`description: ${node.description}`);
+          context.writer.writeLine('---');
+          context.writer.writeLine();
+          break;
+        }
+        default:
+          super.writeNode(docNode, context, docNodeSiblings);
+      }
+    }
+
+    /** @override */
+    emit(stringBuilder, docNode, options) {
+      // Hack to get rid of the leading comment
+      stringBuilder._chunks.length = 0;
+      return super.emit(stringBuilder, docNode, options);
+    }
+  }
+
+  const emitter = new CustomCustomMarkdownEmitter(newModel);
+  anyDocumenter._markdownEmitter = emitter;
+
+  const oldWrite = anyDocumenter._writeBreadcrumb;
+
+  anyDocumenter._writeBreadcrumb = function patchedWriteBreadcrumb(
+    output,
+    apiItem,
+  ) {
+    let title;
+    let description;
+
+    const name = apiItem.getScopedNameWithinPackage();
+    if (name) {
+      title = name;
+      description = `API reference for ${apiItem.getScopedNameWithinPackage()}`;
+    } else if (apiItem.kind === 'Model') {
+      title = 'Package Index';
+      description = 'Index of all Backstage Packages';
+    } else {
+      title = apiItem.name;
+      description = `API Reference for ${apiItem.name}`;
+    }
+
+    output.appendNodeInParagraph(
+      new DocFrontMatter({
+        configuration: this._tsdocConfiguration,
+        id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+        title,
+        description,
+      }),
+    );
+
+    oldWrite.call(this, output, apiItem);
+
+    // We wanna ignore the header that always gets written after the breadcrumb
+    const oldAppendNode = output.appendNode;
+    output.appendNode = () => {
+      output.appendNode = oldAppendNode;
+    };
+  };
 
   documenter.generateFiles();
 }
