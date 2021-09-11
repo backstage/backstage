@@ -16,46 +16,36 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  InfoCard,
+  InfoCardVariants,
+  Link,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
   catalogApiRef,
+  catalogRouteRef,
+  formatEntityRefTitle,
   isOwnerOf,
   useEntity,
-  catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, genPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
   Grid,
   makeStyles,
   Typography,
-  Link,
 } from '@material-ui/core';
+import qs from 'qs';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { generatePath } from 'react-router';
-import qs from 'qs';
-import {
-  InfoCard,
-  InfoCardVariants,
-  Progress,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 type EntityTypeProps = {
   kind: string;
   type: string;
   count: number;
-};
-
-const createPageTheme = (
-  theme: BackstageTheme,
-  shapeKey: string,
-  colorsKey: string,
-) => {
-  const { colors } = theme.getPageTheme({ themeId: colorsKey });
-  const { shape } = theme.getPageTheme({ themeId: shapeKey });
-  return genPageTheme(colors, shape).backgroundImage;
 };
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
@@ -76,7 +66,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     },
     entityTypeBox: {
       background: (props: { type: string }) =>
-        createPageTheme(theme, props.type, props.type),
+        theme.getPageTheme({ themeId: props.type }).backgroundImage,
     },
   }),
 );
@@ -95,7 +85,7 @@ const EntityCountTile = ({
   const classes = useStyles({ type });
 
   return (
-    <Link href={url} target="_blank" rel="noreferrer noopenner" variant="body2">
+    <Link to={url} variant="body2">
       <Box
         className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
@@ -117,7 +107,7 @@ const getQueryParams = (
   owner: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
-  const ownerName = owner.metadata.name;
+  const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
   const queryParams = qs.stringify({
     filters: {
@@ -217,7 +207,7 @@ export const OwnershipCard = ({
               counter={c.counter}
               type={c.type}
               name={c.name}
-              url={generatePath(`${catalogLink()}/?${c.queryParams}`)}
+              url={`${catalogLink()}/?${c.queryParams}`}
             />
           </Grid>
         ))}

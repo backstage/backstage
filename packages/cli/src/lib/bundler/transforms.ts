@@ -90,6 +90,17 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
+      test: /\.(eot|woff|woff2|ttf)$/,
+      use: [
+        {
+          loader: require.resolve('file-loader'),
+          options: {
+            name: 'static/[name].[hash:8].[ext]',
+          },
+        },
+      ],
+    },
+    {
       test: /\.ya?ml$/,
       use: require.resolve('yml-loader'),
     },

@@ -25,6 +25,7 @@ import React from 'react';
 import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
 import { Reader } from './Reader';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
@@ -50,10 +51,16 @@ describe('<Reader />', () => {
         }),
       );
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {};
-
+    const searchApi = {
+      query: () =>
+        Promise.resolve({
+          results: [],
+        }),
+    };
     const apiRegistry = ApiRegistry.from([
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
+      [searchApiRef, searchApi],
     ]);
 
     await act(async () => {

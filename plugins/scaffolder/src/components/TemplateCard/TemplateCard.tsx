@@ -27,7 +27,7 @@ import {
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, pageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -149,7 +149,9 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     template as Entity,
     RELATION_OWNED_BY,
   );
-  const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
+  const themeId = backstageTheme.getPageTheme({ themeId: templateProps.type })
+    ? templateProps.type
+    : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const href = generatePath(`${rootLink()}/templates/:templateName`, {

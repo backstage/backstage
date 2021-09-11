@@ -7,22 +7,84 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EntityTodoContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityTodoContent: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "TodoApi" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "todoApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface TodoApi {
+  listTodos(options: TodoListOptions): Promise<TodoListResult>;
+}
+
+// @public
 export const todoApiRef: ApiRef<TodoApi>;
 
-// Warning: (ae-missing-release-tag) "todoPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export class TodoClient implements TodoApi {
+  constructor(options: TodoClientOptions);
+  // (undocumented)
+  listTodos({
+    entity,
+    offset,
+    limit,
+    orderBy,
+    filters,
+  }: TodoListOptions): Promise<TodoListResult>;
+}
+
+// @public
+export interface TodoClientOptions {
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+  // (undocumented)
+  identityApi: IdentityApi;
+}
+
+// @public
+export type TodoItem = {
+  text: string;
+  tag: string;
+  author?: string;
+  viewUrl?: string;
+  lineNumber?: number;
+  repoFilePath?: string;
+};
+
+// @public
+export type TodoListFields =
+  | 'text'
+  | 'tag'
+  | 'author'
+  | 'viewUrl'
+  | 'repoFilePath';
+
+// @public
+export type TodoListOptions = {
+  entity?: Entity;
+  offset?: number;
+  limit?: number;
+  orderBy?: {
+    field: TodoListFields;
+    direction: 'asc' | 'desc';
+  };
+  filters?: {
+    field: TodoListFields;
+    value: string;
+  }[];
+};
+
+// @public
+export type TodoListResult = {
+  items: TodoItem[];
+  totalCount: number;
+  offset: number;
+  limit: number;
+};
+
+// @public
 export const todoPlugin: BackstagePlugin<{}, {}>;
 
 // (No @packageDocumentation comment for this package)

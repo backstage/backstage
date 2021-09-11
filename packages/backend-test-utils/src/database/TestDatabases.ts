@@ -31,6 +31,8 @@ import {
 /**
  * Encapsulates the creation of ephemeral test database instances for use
  * inside unit or integration tests.
+ *
+ * @public
  */
 export class TestDatabases {
   private readonly instanceById: Map<string, Instance>;
@@ -113,7 +115,7 @@ export class TestDatabases {
    * Returns a fresh, unique, empty logical database on an instance of the
    * given database ID platform.
    *
-   * @param id The ID of the database platform to use, e.g. 'POSTGRES_13'
+   * @param id - The ID of the database platform to use, e.g. 'POSTGRES_13'
    * @returns A `Knex` connection object
    */
   async init(id: TestDatabaseId): Promise<Knex> {

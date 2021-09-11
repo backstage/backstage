@@ -23,6 +23,7 @@ export type UserOptions = {
   User?: string;
 };
 
+/** @public */
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
 

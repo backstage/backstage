@@ -20,6 +20,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { asInputRef } from '../helpers';
 import {
   generateEntities,
   StepPrepareCreatePullRequest,
@@ -91,10 +92,10 @@ describe('<StepPrepareCreatePullRequest />', () => {
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
-                <TextField name="owner" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
               </>
             );
           }}
@@ -132,19 +133,17 @@ describe('<StepPrepareCreatePullRequest />', () => {
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
                 <TextField
+                  {...asInputRef(register('componentName'))}
                   id="name"
                   label="name"
-                  name="componentName"
-                  inputRef={register()}
                 />
                 <TextField
+                  {...asInputRef(register('owner'))}
                   id="owner"
                   label="owner"
-                  name="owner"
-                  inputRef={register()}
                 />
               </>
             );
@@ -222,10 +221,10 @@ spec:
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
-                <TextField name="owner" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
               </>
             );
           }}

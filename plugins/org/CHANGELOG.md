@@ -1,5 +1,28 @@
 # @backstage/plugin-org
 
+## 0.3.22
+
+### Patch Changes
+
+- 6ad8fe1a0: Make ownership card style customizable via custom `theme.getPageTheme()`.
+- 70718686f: Use correct `Link` in ownership card to avoid a full reload of the app while navigating.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.3.21
+
+### Patch Changes
+
+- c9927b1c7: Don't open a new tab when clicking on the ownership card.
+- 7e5f14dda: This change hides pagination counter of search tables and group members list when results fit in one page
+- ff304cfc3: Fix OwnershipCard links to support namespaced owners
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
 ## 0.3.20
 
 ### Patch Changes

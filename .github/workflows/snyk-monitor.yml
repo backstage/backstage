@@ -1,0 +1,33 @@
+name: Snyk Monitoring
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/snyk-monitor.yml'
+      - '**/.snyk'
+      - '**/package.json'
+      - 'yarn.lock'
+
+# This workflow synchronizes the packages in this repo along with policies in
+# each .snyk file with the remote state in our snyk org. It allows us to define
+# ignore policies in the .snyk files and then have them show up in the snyk web
+# UI, and also automatically adds any new packages that are created.
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Monitor and Synchronize Snyk Policies
+        uses: snyk/actions/node@master
+        with:
+          command: monitor
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --remote-repo-url=https://github.com/backstage/backstage
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

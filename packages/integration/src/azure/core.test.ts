@@ -45,22 +45,22 @@ describe('azure core', () => {
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
-          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
       },
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         result:
-          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
       },
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         result:
-          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
       },
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
-          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
       },
     ])('should handle happy path %#', async ({ url, result }) => {
       expect(getAzureFileFetchUrl(url)).toBe(result);
@@ -69,13 +69,11 @@ describe('azure core', () => {
     it.each([
       {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-        error:
-          'Incorrect URL: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
+        error: 'Azure URL must point to a git repository',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
-        error:
-          'Incorrect URL: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
       },
     ])('should handle error path %#', ({ url, error }) => {
       expect(() => getAzureFileFetchUrl(url)).toThrow(error);
@@ -95,7 +93,22 @@ describe('azure core', () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
       );
-      expect(new URL(result).searchParams.get('scopePath')).toEqual('docs');
+      expect(new URL(result).searchParams.get('scopePath')).toEqual('/docs');
+    });
+
+    it.each([
+      {
+        url: 'https://dev.azure.com/org-name/project-name/_git/repo-name',
+        result:
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
+      },
+      {
+        url: 'https://api.com/org-name/project-name/_git/repo-name',
+        result:
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
+      },
+    ])('should handle happy path %#', async ({ url, result }) => {
+      expect(getAzureDownloadUrl(url)).toBe(result);
     });
   });
 });

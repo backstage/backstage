@@ -16,12 +16,14 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/search-common';
-import {
-  ConcreteElasticSearchQuery,
-  ElasticSearchSearchEngine,
-} from './ElasticSearchSearchEngine';
 import { Client } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
+import {
+  ConcreteElasticSearchQuery,
+  decodePageCursor,
+  ElasticSearchSearchEngine,
+  encodePageCursor,
+} from './ElasticSearchSearchEngine';
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
@@ -87,13 +89,11 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
     });
 
@@ -104,7 +104,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind' },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -132,7 +131,43 @@ describe('ElasticSearchSearchEngine', () => {
             },
           },
         },
-        size: 100,
+        from: 0,
+        size: 25,
+      });
+    });
+
+    it('should pass page cursor', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        types: ['indexName'],
+        term: 'testTerm',
+        pageCursor: 'MQ==',
+      }) as ConcreteElasticSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: ['indexName'],
+        elasticSearchQuery: expect.any(Object),
+      });
+
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+
+      expect(queryBody).toEqual({
+        query: {
+          bool: {
+            filter: [],
+            must: {
+              multi_match: {
+                query: 'testTerm',
+                fields: ['*'],
+                fuzziness: 'auto',
+                minimum_should_match: 1,
+              },
+            },
+          },
+        },
+        from: 25,
+        size: 25,
       });
     });
 
@@ -143,7 +178,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind', namespace: 'testNameSpace' },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -178,7 +212,8 @@ describe('ElasticSearchSearchEngine', () => {
             ],
           },
         },
-        size: 100,
+        from: 0,
+        size: 25,
       });
     });
 
@@ -189,7 +224,6 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: ['testKind', 'kastTeint'] },
-        pageCursor: '',
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -228,7 +262,8 @@ describe('ElasticSearchSearchEngine', () => {
             },
           },
         },
-        size: 100,
+        from: 0,
+        size: 25,
       });
     });
 
@@ -239,7 +274,6 @@ describe('ElasticSearchSearchEngine', () => {
           types: ['indexName'],
           term: 'testTerm',
           filters: { kind: { a: 'b' } },
-          pageCursor: '',
         }) as ConcreteElasticSearchQuery;
       expect(actualTranslatedQuery).toThrow();
     });
@@ -315,11 +349,106 @@ describe('ElasticSearchSearchEngine', () => {
       const mockedSearchResult = await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       // Should return 0 results as nothing is indexed here
-      expect(mockedSearchResult).toMatchObject({ results: [] });
+      expect(mockedSearchResult).toMatchObject({
+        results: [],
+        nextPageCursor: undefined,
+      });
+    });
+
+    it('should perform search query with more results than one page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'eq' },
+              hits: Array(25)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(25)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            })),
+        ),
+        nextPageCursor: 'MQ==',
+      });
+    });
+
+    it('should perform search query for second page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'eq' },
+              hits: Array(30)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                }))
+                .slice(25),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+        pageCursor: 'MQ==',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(30)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            }))
+            .slice(25),
+        ),
+        previousPageCursor: 'MA==',
+      });
     });
 
     it('should handle index/search type filtering correctly', async () => {
@@ -327,7 +456,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
-        pageCursor: '',
       });
 
       expect(elasticSearchQuerySpy).toHaveBeenCalled();
@@ -346,7 +474,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: '*__search',
       });
@@ -359,7 +488,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: '',
         filters: {},
-        pageCursor: '',
       });
 
       expect(elasticSearchQuerySpy).toHaveBeenCalled();
@@ -373,7 +501,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: '*__search',
       });
@@ -386,7 +515,6 @@ describe('ElasticSearchSearchEngine', () => {
       await testSearchEngine.query({
         term: '',
         filters: {},
-        pageCursor: '',
         types: ['test-type'],
       });
 
@@ -401,7 +529,8 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
-          size: 100,
+          from: 0,
+          size: 25,
         },
         index: ['test-type__search'],
       });
@@ -428,5 +557,21 @@ describe('ElasticSearchSearchEngine', () => {
         { title: 'testTerm', text: 'testText', location: 'test/location' },
       ]);
     });
+  });
+});
+
+describe('decodePageCursor', () => {
+  test('should decode page', () => {
+    expect(decodePageCursor('MQ==')).toEqual({ page: 1 });
+  });
+
+  test('should fallback to first page if empty', () => {
+    expect(decodePageCursor()).toEqual({ page: 0 });
+  });
+});
+
+describe('encodePageCursor', () => {
+  test('should encode page', () => {
+    expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
   });
 });

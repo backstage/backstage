@@ -1,5 +1,15 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.1
+
+### Patch Changes
+
+- 38fd73fb5: Update README to show a simpler proxy configuration.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
 ## 0.2.0
 
 ### Minor Changes

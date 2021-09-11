@@ -29,6 +29,8 @@ import { Entity } from '../Entity';
  *
  * This does not take into account machine generated fields such as uid, etag
  * and generation.
+ *
+ * @public
  */
 export class FieldFormatEntityPolicy implements EntityPolicy {
   private readonly validators: Validators;

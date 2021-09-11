@@ -8,12 +8,12 @@ import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
-import { IndexableDocument } from '@backstage/search-common';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
+import { TechDocsDocument } from '@backstage/techdocs-common';
 
 // Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -53,21 +53,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   readonly type: string;
 }
 
-// Warning: (ae-missing-release-tag) "TechDocsDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface TechDocsDocument extends IndexableDocument {
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  lifecycle: string;
-  // (undocumented)
-  name: string;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  owner: string;
-}
+export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
 

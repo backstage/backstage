@@ -27,7 +27,7 @@ type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
-const SearchResultComponent = ({ children }: Props) => {
+export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -48,7 +48,7 @@ const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return children({ results: value.results });
+  return <>{children({ results: value.results })}</>;
 };
 
 export { SearchResultComponent as SearchResult };

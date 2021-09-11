@@ -1,5 +1,38 @@
 # @backstage/create-app
 
+## 0.3.40
+
+### Patch Changes
+
+- a5013957e: Updated the search configuration class to use the static `fromConfig`-based constructor for the `DefaultCatalogCollator`.
+
+  To apply this change to an existing app, replace the following line in `search.ts`:
+
+  ```diff
+  -collator: new DefaultCatalogCollator({ discovery })
+  +collator: DefaultCatalogCollator.fromConfig(config, { discovery })
+  ```
+
+  The `config` parameter was not needed before, so make sure you also add that in the signature of `createPlugin`
+  in `search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    discovery,
+  +  config,
+  }: PluginEnvironment) {
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
 ## 0.3.38
 
 ### Patch Changes
@@ -31,7 +64,7 @@
 
 - d02768171: Updated the default create-app `EntityPage` to include orphan and processing error alerts for all entity types. Previously these were only shown for entities with the `Component` kind. This also adds the `EntityLinkCard` for API entities.
 
-  As an example, you might add this to your `packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx`:
+  As an example, you might add this to your `packages/app/src/components/catalog/EntityPage.tsx`:
 
   ```tsx
   const entityWarningContent = (
@@ -690,7 +723,7 @@
   -<Route path="/search" element={<SearchPage />} />
   +<Route path="/search" element={<SearchPage />}>
   +  {searchPage}
-  +</Route>;
+  +</Route>
   ```
 
 - Updated dependencies [9cd3c533c]

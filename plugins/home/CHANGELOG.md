@@ -1,5 +1,25 @@
 # @backstage/plugin-home
 
+## 0.3.0
+
+### Minor Changes
+
+- 7f00902d9: Rename RandomJokeHomePageComponent to HomePageRandomJoke to fit convention, and update example app accordingly.
+  **NOTE**: If you're using the RandomJoke component in your instance, it now has to be renamed to `HomePageRandomJoke`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
 ## 0.2.0
 
 ### Minor Changes

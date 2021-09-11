@@ -1,5 +1,40 @@
 # @backstage/core-components
 
+## 0.4.1
+
+### Patch Changes
+
+- 06e275705: Fix warning produced by BottomLink component
+
+  During development, we noticed warnings such as:
+
+  ```
+  react_devtools_backend.js:2842 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  ```
+
+  The BottomLink component renders a Box component within a Typography component which leads to a div tag within a p tag.
+  This change inverts that ordering without changing the visual appearance.
+
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.4.0
+
+### Minor Changes
+
+- 3ed78fca3: Changed the `titleComponent` prop on `ContentHeader` to accept `ReactNode` instead of a React `ComponentType`. Usages of this prop should be converted from passing a component to passing in the rendered element:
+
+  ```diff
+  -<ContentHeader titleComponent={MyComponent}>
+  +<ContentHeader titleComponent={<MyComponent />}>
+  ```
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+
 ## 0.3.3
 
 ### Patch Changes

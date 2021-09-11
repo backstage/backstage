@@ -48,7 +48,7 @@ export interface Config {
         entryPoint: string;
         logoutUrl?: string;
         issuer: string;
-        cert?: string;
+        cert: string;
         privateKey?: string;
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';

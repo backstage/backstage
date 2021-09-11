@@ -25,6 +25,8 @@
  * Implementations of the discovery API can be as simple as a URL pattern
  * using the pluginId, but could also have overrides for individual plugins,
  * or query a separate discovery service.
+ *
+ * @public
  */
 export type PluginEndpointDiscovery = {
   /**

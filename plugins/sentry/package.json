@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-sentry",
-  "version": "0.3.19",
+  "version": "0.3.20",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -31,10 +31,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.9.0",
-    "@backstage/core-components": "^0.3.3",
-    "@backstage/core-plugin-api": "^0.1.6",
-    "@backstage/plugin-catalog-react": "^0.4.3",
+    "@backstage/catalog-model": "^0.9.1",
+    "@backstage/core-components": "^0.4.1",
+    "@backstage/core-plugin-api": "^0.1.7",
+    "@backstage/plugin-catalog-react": "^0.4.5",
     "@backstage/theme": "^0.2.10",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -47,9 +47,9 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.9",
-    "@backstage/core-app-api": "^0.1.10",
-    "@backstage/dev-utils": "^0.2.7",
+    "@backstage/cli": "^0.7.11",
+    "@backstage/core-app-api": "^0.1.12",
+    "@backstage/dev-utils": "^0.2.9",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

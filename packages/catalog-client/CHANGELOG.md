@@ -1,5 +1,15 @@
 # @backstage/catalog-client
 
+## 0.3.19
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
 ## 0.3.18
 
 ### Patch Changes
