@@ -110,13 +110,16 @@ export class LdapClient {
   }
 
   /**
-   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
+   * Performs an LDAP search operation, creates a generator to limit memory usage
    *
    * @param dn The fully qualified base DN to search within
    * @param options The search options
    */
-  *searchStreaming(dn: string, options: SearchOptions) {
-    let queuesize = 25;
+  *searchStreaming(
+    dn: string,
+    options: SearchOptions,
+  ): IterableIterator<SearchEntry> {
+    let queueSize = 25;
     if (options) {
       if (
         options.paged &&
@@ -124,10 +127,10 @@ export class LdapClient {
         typeof options.paged.pageSize === 'number' &&
         options.paged.pageSize > 0
       ) {
-        queuesize = options.paged.pageSize;
+        queueSize = options.paged.pageSize;
       }
     }
-    const queue: SearchEntry[] = new Array(queuesize);
+    const queue: SearchEntry[] = new Array(queueSize);
     let done = false;
     try {
       this.client.search(dn, options, (err, res) => {
@@ -161,7 +164,11 @@ export class LdapClient {
       throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
     }
     while (!done && queue.length > 0) {
-      yield queue.pop();
+      const res = queue.pop();
+      if (!res) {
+        continue;
+      }
+      yield res;
     }
   }
 
