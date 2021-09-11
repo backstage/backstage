@@ -24,7 +24,6 @@ import React, {
   ReactNode,
   useEffect,
   createContext,
-  useContext,
   Provider,
   Context,
 } from 'react';
@@ -51,6 +50,7 @@ export const EntityContext: Context<EntityLoadingStatus> =
     error: undefined,
     refresh: () => {},
   });
+// We grab this for use in the new provider, since we're overriding it later on
 const OldEntityProvider = EntityContext.Provider;
 
 // This context has support for multiple concurrent versions of this package.
@@ -85,6 +85,8 @@ export const AsyncEntityProvider = ({
   refresh,
 }: AsyncEntityProviderProps) => {
   const value = { entity, loading, error, refresh };
+  // We provide both the old and the new context, since
+  // consumers might be doing things like `useContext(EntityContext)`
   return (
     <OldEntityProvider value={value}>
       <NewEntityContext.Provider value={createVersionedValueMap({ 1: value })}>
@@ -120,8 +122,16 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
 );
 
 // This is used for forwards compatibility with the new entity context
-EntityContext.Provider =
-  EntityProvider as unknown as Provider<EntityLoadingStatus>;
+const CompatibilityProvider = ({
+  value,
+  children,
+}: {
+  value: EntityLoadingStatus;
+  children: ReactNode;
+}) => {
+  return <AsyncEntityProvider {...value} children={children} />;
+};
+EntityContext.Provider = CompatibilityProvider as Provider<EntityLoadingStatus>;
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {
   const { kind, namespace, name } = useEntityCompoundName();
@@ -157,20 +167,12 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 export function useEntity<T extends Entity = Entity>() {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
-  const oldContextValue = useContext(EntityContext);
 
   if (!versionedHolder) {
-    const { entity, loading, error, refresh } = oldContextValue;
-    return { entity: entity as T, loading, error, refresh };
-
-    // TODO(Rugvip): Throw this once we fully migrate to the new context
-    // throw new Error(
-    //   'Component can not be used outside of the context of an Entity',
-    // );
+    throw new Error('Entity context is not available');
   }
 
   const value = versionedHolder.atVersion(1);
-
   if (!value) {
     throw new Error('EntityContext v1 not available');
   }
