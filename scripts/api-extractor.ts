@@ -301,6 +301,14 @@ async function runApiExtraction({
   }
 }
 
+/*
+WARNING: Bring a blanket if you're gonna read the code below
+
+There's some weird shit going on here, and it's because we cba
+forking rushstash to modify the api-documenter markdown generation,
+which otherwise is the recommended way to do customizations.
+*/
+
 async function buildDocs({
   inputDir,
   outputDir,
@@ -308,6 +316,8 @@ async function buildDocs({
   inputDir: string;
   outputDir: string;
 }) {
+  // We start by constructing our own model from the files so that
+  // we get a change to modify them, as the model is otherwise read-only.
   const parseFile = async (filename: string): Promise<any> => {
     console.log(`Reading ${filename}`);
     return fs.readJson(resolvePath(inputDir, filename));
@@ -331,9 +341,9 @@ async function buildDocs({
     newModel.addMember(pkg);
   }
 
-  await fs.remove(outputDir);
-  await fs.ensureDir(outputDir);
-
+  // This is root of the documentation generation, but it's not directly
+  // responsible for generating markdown, it just constructs an AST that
+  // is the consumed by an emitter to actually write the files.
   const documenter = new MarkdownDocumenter({
     apiModel: newModel,
     documenterConfig: {
@@ -346,6 +356,12 @@ async function buildDocs({
     outputFolder: outputDir,
   });
 
+  // We're accessing a lot of internal things...
+  const anyDocumenter = documenter as any;
+
+  // The doc AST need to be extended with custom nodes if we want to
+  // add any extra content.
+  // This one is for the YAML front matter that we need for the microsite.
   class DocFrontMatter extends DocNode {
     static kind = 'DocFrontMatter';
 
@@ -372,8 +388,7 @@ async function buildDocs({
     }
   }
 
-  const anyDocumenter = documenter as any;
-
+  // It's a strict model, we gotta register the allowed usage of our new node
   anyDocumenter._tsdocConfiguration.docNodeManager.registerDocNodes(
     '@backstage/docs',
     [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
@@ -383,6 +398,8 @@ async function buildDocs({
     [DocFrontMatter.kind],
   );
 
+  // This is where we actually write the markdown and where we can hook
+  // in the rendering of our own nodes.
   class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
     /** @override */
     protected writeNode(
@@ -408,17 +425,22 @@ async function buildDocs({
 
     /** @override */
     emit(stringBuilder, docNode, options) {
-      // Hack to get rid of the leading comment
+      // Hack to get rid of the leading comment of each file, since
+      // we want the front matter to come first
       stringBuilder._chunks.length = 0;
       return super.emit(stringBuilder, docNode, options);
     }
   }
 
-  const emitter = new CustomCustomMarkdownEmitter(newModel);
-  anyDocumenter._markdownEmitter = emitter;
+  // The emitter is an internal thing, but it's fine to rewrite
+  anyDocumenter._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
 
+  // Gotta keep this around so we can call the real implementation
   const oldWrite = anyDocumenter._writeBreadcrumb;
 
+  // We don't really get many chances to modify the generated AST
+  // so we hook in wherever we can. In this case we add the front matter
+  // just before writing the breadcrumbs at the top.
   anyDocumenter._writeBreadcrumb = function patchedWriteBreadcrumb(
     output,
     apiItem,
@@ -438,6 +460,7 @@ async function buildDocs({
       description = `API Reference for ${apiItem.name}`;
     }
 
+    // Add our front matter
     output.appendNodeInParagraph(
       new DocFrontMatter({
         configuration: this._tsdocConfiguration,
@@ -447,15 +470,20 @@ async function buildDocs({
       }),
     );
 
+    // Now write the actual breadcrumbs
     oldWrite.call(this, output, apiItem);
 
     // We wanna ignore the header that always gets written after the breadcrumb
+    // This otherwise becomes more or less a duplicate of the title in the front matter
     const oldAppendNode = output.appendNode;
     output.appendNode = () => {
       output.appendNode = oldAppendNode;
     };
   };
 
+  // Clean up existing stuff and write ALL the docs!
+  await fs.remove(outputDir);
+  await fs.ensureDir(outputDir);
   documenter.generateFiles();
 }
 
