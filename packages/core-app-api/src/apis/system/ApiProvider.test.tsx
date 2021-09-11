@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Context, useContext } from 'react';
+import React from 'react';
 import {
   useApi,
   createApiRef,
@@ -26,7 +26,7 @@ import { ApiProvider } from './ApiProvider';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils-core';
-import { getGlobalSingleton, VersionedValue } from '@backstage/version-bridge';
+import { useVersionedContext } from '@backstage/version-bridge';
 
 describe('ApiProvider', () => {
   type Api = () => string;
@@ -184,13 +184,10 @@ describe('ApiProvider', () => {
 });
 
 describe('v1 consumer', () => {
-  const ApiContext =
-    getGlobalSingleton<Context<VersionedValue<{ 1: ApiHolder }>>>(
-      'api-context',
-    );
-
   function useMockApiV1<T>(apiRef: ApiRef<T>): T {
-    const impl = useContext(ApiContext)?.atVersion(1)?.get(apiRef);
+    const impl = useVersionedContext<{ 1: ApiHolder }>('api-context')
+      ?.atVersion(1)
+      ?.get(apiRef);
     if (!impl) {
       throw new Error('no impl');
     }

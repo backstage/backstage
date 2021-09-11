@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { getGlobalSingleton, getOrCreateGlobalSingleton } from './globalObject';
+export { getOrCreateGlobalSingleton } from './globalObject';
 export {
   createVersionedContextForTesting,
   useVersionedContext,

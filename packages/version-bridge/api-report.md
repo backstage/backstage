@@ -26,9 +26,6 @@ export function createVersionedValueMap<
 >(versions: Versions): VersionedValue<Versions>;
 
 // @public
-export function getGlobalSingleton<T>(id: string): T;
-
-// @public
 export function getOrCreateGlobalSingleton<T>(id: string, supplier: () => T): T;
 
 // @public
