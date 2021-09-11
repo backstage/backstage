@@ -37,7 +37,7 @@ import { createVersionedValueMap, VersionedValue } from './VersionedValue';
  * ```
  */
 export function createVersionedContext<
-  Versions extends { [version in number]: any },
+  Versions extends { [version in number]: unknown },
 >(key: string): Context<VersionedValue<Versions> | undefined> {
   return getOrCreateGlobalSingleton(key, () =>
     createContext<VersionedValue<Versions> | undefined>(undefined),
@@ -65,7 +65,7 @@ export function createVersionedContext<
  * ```
  */
 export function useVersionedContext<
-  Versions extends { [version in number]: any },
+  Versions extends { [version in number]: unknown },
 >(key: string): VersionedValue<Versions> | undefined {
   return useContext(createVersionedContext<Versions>(key));
 }

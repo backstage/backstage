@@ -21,7 +21,7 @@
  *
  * @public
  */
-export type VersionedValue<Versions extends { [version: number]: any }> = {
+export type VersionedValue<Versions extends { [version: number]: unknown }> = {
   atVersion<Version extends keyof Versions>(
     version: Version,
   ): Versions[Version] | undefined;
@@ -33,7 +33,7 @@ export type VersionedValue<Versions extends { [version: number]: any }> = {
  * @public
  */
 export function createVersionedValueMap<
-  Versions extends { [version: number]: any },
+  Versions extends { [version: number]: unknown },
 >(versions: Versions): VersionedValue<Versions> {
   Object.freeze(versions);
   return {

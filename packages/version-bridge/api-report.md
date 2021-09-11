@@ -8,7 +8,7 @@ import { Context } from 'react';
 // @public
 export function createVersionedContext<
   Versions extends {
-    [version in number]: any;
+    [version in number]: unknown;
   },
 >(key: string): Context<VersionedValue<Versions> | undefined>;
 
@@ -21,7 +21,7 @@ export function createVersionedContextForTesting(key: string): {
 // @public
 export function createVersionedValueMap<
   Versions extends {
-    [version: number]: any;
+    [version: number]: unknown;
   },
 >(versions: Versions): VersionedValue<Versions>;
 
@@ -31,14 +31,14 @@ export function getOrCreateGlobalSingleton<T>(id: string, supplier: () => T): T;
 // @public
 export function useVersionedContext<
   Versions extends {
-    [version in number]: any;
+    [version in number]: unknown;
   },
 >(key: string): VersionedValue<Versions> | undefined;
 
 // @public
 export type VersionedValue<
   Versions extends {
-    [version: number]: any;
+    [version: number]: unknown;
   },
 > = {
   atVersion<Version extends keyof Versions>(
