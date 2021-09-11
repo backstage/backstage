@@ -15,7 +15,7 @@
  */
 
 import { createContext, useContext, Context } from 'react';
-import { getGlobalSingleton, getOrCreateGlobalSingleton } from './globalObject';
+import { getOrCreateGlobalSingleton } from './globalObject';
 import { createVersionedValueMap, VersionedValue } from './VersionedValue';
 
 /**
@@ -55,6 +55,10 @@ export function createVersionedContext<
  * ```ts
  * const versionedHolder = useVersionedContext<{ 1: string }>('my-context');
  *
+ * if (!versionedHolder) {
+ *   throw new Error('My context is not available!')
+ * }
+ *
  * const myValue = versionedHolder.atVersion(1);
  *
  * // ...
@@ -62,14 +66,8 @@ export function createVersionedContext<
  */
 export function useVersionedContext<
   Versions extends { [version in number]: any },
->(key: string): VersionedValue<Versions> {
-  const versionedValue = useContext(
-    getGlobalSingleton<Context<VersionedValue<Versions>>>(key),
-  );
-  if (!versionedValue) {
-    throw new Error(`No provider available for ${key} context`);
-  }
-  return versionedValue;
+>(key: string): VersionedValue<Versions> | undefined {
+  return useContext(createVersionedContext<Versions>(key));
 }
 
 /**

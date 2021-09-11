@@ -65,13 +65,9 @@ describe('VersionedContext', () => {
 
     const rendered = renderHook(() => useVersionedContext('test-context-3'));
 
-    expect(() => rendered.result.current).toThrow(
-      'Global test-context-3 is not set',
-    );
+    expect(rendered.result.current).toBeUndefined();
     context.set({ 1: '3v1' });
-    expect(() => rendered.result.current).toThrow(
-      'Global test-context-3 is not set',
-    );
+    expect(rendered.result.current).toBeUndefined();
     // should need a rerender before update
     rendered.rerender();
 
@@ -86,9 +82,7 @@ describe('VersionedContext', () => {
 
     context.reset();
     rendered.rerender();
-    expect(() => rendered.result.current).toThrow(
-      'Global test-context-3 is not set',
-    );
+    expect(rendered.result.current).toBeUndefined();
 
     context.set({ 1: '3v1', 2: '3v2' });
 

@@ -115,11 +115,11 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHookConsumer />);
-        }).toThrow(/^No provider available for api-context context/);
+        }).toThrow(/^API context is not available/);
       }).error,
     ).toEqual([
       expect.stringMatching(
-        /^Error: Uncaught \[Error: No provider available for api-context context/,
+        /^Error: Uncaught \[Error: API context is not available/,
       ),
       expect.stringMatching(
         /^The above error occurred in the <MyHookConsumer> component/,
@@ -130,11 +130,11 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHocConsumer />);
-        }).toThrow(/^No provider available for api-context context/);
+        }).toThrow(/^API context is not available/);
       }).error,
     ).toEqual([
       expect.stringMatching(
-        /^Error: Uncaught \[Error: No provider available for api-context context/,
+        /^Error: Uncaught \[Error: API context is not available/,
       ),
       expect.stringMatching(
         /^The above error occurred in the <withApis\(Component\)> component/,

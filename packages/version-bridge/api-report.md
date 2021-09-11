@@ -36,7 +36,7 @@ export function useVersionedContext<
   Versions extends {
     [version in number]: any;
   },
->(key: string): VersionedValue<Versions>;
+>(key: string): VersionedValue<Versions> | undefined;
 
 // @public
 export type VersionedValue<
