@@ -41,7 +41,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   leftItemsBox: {
     maxWidth: '100%',
     flexGrow: 1,
-    marginBottom: theme.spacing(1),
   },
   rightItemsBox: {
     width: 'auto',
@@ -50,11 +49,13 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.bursts.fontColor,
     wordBreak: 'break-all',
     fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
-    marginBottom: theme.spacing(1),
+    marginBottom: 0,
   },
   subtitle: {
     color: 'rgba(255, 255, 255, 0.8)',
     lineHeight: '1.0em',
+    display: 'inline-block', // prevents margin collapse of adjacent siblings
+    marginTop: theme.spacing(1),
   },
   type: {
     textTransform: 'uppercase',
