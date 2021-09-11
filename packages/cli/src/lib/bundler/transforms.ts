@@ -93,7 +93,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: /\.(eot|woff|woff2|ttf)$/i,
       type: 'asset/resource',
       generator: {
-        filename: 'static/[hash][ext][query]',
+        filename: 'static/[name].[hash][ext][query]',
       },
     },
     {
