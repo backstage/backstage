@@ -90,15 +90,11 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
-      test: /\.(eot|woff|woff2|ttf)$/,
-      use: [
-        {
-          loader: require.resolve('file-loader'),
-          options: {
-            name: 'static/[name].[hash:8].[ext]',
-          },
-        },
-      ],
+      test: /\.(eot|woff|woff2|ttf)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[hash][ext][query]',
+      },
     },
     {
       test: /\.ya?ml$/,
