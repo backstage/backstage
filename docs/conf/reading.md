@@ -7,7 +7,7 @@ description: Documentation on Reading Backstage Configuration
 ## Config API
 
 There's a common configuration API for by both frontend and backend plugins. An
-API reference can be found [here](../reference/utility-apis/Config.md).
+API reference can be found [here](../reference/config.Config.md).
 
 The configuration API is tailored towards failing fast in case of missing or bad
 config. That's because configuration errors can always be considered programming
@@ -110,7 +110,7 @@ example `getString`. These will throw an error if there is no value available.
 
 ## Accessing ConfigApi in Frontend Plugins
 
-The [ConfigApi](../reference/utility-apis/Config.md) in the frontend is a
+The [ConfigApi](../reference/core-plugin-api.ConfigApi.md) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 
