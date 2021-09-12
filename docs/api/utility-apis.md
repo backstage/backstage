@@ -13,31 +13,31 @@ both with other plugins and the app itself.
 
 Backstage provides two primary methods for plugins to communicate across their
 boundaries in client-side code. The first one being the
-[createPlugin](../reference/core-plugin-api.createPlugin.md) API along with the
+[createPlugin](../reference/core-plugin-api.createplugin.md) API along with the
 extensions that it can provide, and the second one being Utility APIs. While the
-[createPlugin](../reference/core-plugin-api.createPlugin.md) API is focused on
+[createPlugin](../reference/core-plugin-api.createplugin.md) API is focused on
 the initialization plugins and the app, the Utility APIs provide ways for
 plugins to communicate during their entire life cycle.
 
 ## Consuming APIs
 
-Each Utility API is tied to an [ApiRef](../reference/core-plugin-api.ApiRef.md)
+Each Utility API is tied to an [ApiRef](../reference/core-plugin-api.apiref.md)
 instance, which is a global singleton object without any additional state or
 functionality, its only purpose is to reference Utility APIs.
-[ApiRef](../reference/core-plugin-api.ApiRef.md)s are created using
-[createApiRef](../reference/core-plugin-api.createApiRef.md), which is exported
+[ApiRef](../reference/core-plugin-api.apiref.md)s are created using
+[createApiRef](../reference/core-plugin-api.createapiref.md), which is exported
 by [@backstage/core-plugin-api](../reference/core-plugin-api.md). There are also
 many predefined Utility APIs in
 [@backstage/core-plugin-api](../reference/core-plugin-api.md), and they're all
 exported with a name of the pattern `*ApiRef`, for example
-[errorApiRef](../reference/core-plugin-api.errorApiRef.md).
+[errorApiRef](../reference/core-plugin-api.errorapiref.md).
 
 To access one of the Utility APIs inside a React component, use the
-[useApi](../reference/core-plugin-api.useApi.md) hook exported by
+[useApi](../reference/core-plugin-api.useapi.md) hook exported by
 [@backstage/core-plugin-api](../reference/core-plugin-api.md), or the
-[withApis](../reference/core-plugin-api.withApis.md) HOC if you prefer class
+[withApis](../reference/core-plugin-api.withapis.md) HOC if you prefer class
 components. For example, the
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md) can be accessed like this:
+[ErrorApi](../reference/core-plugin-api.errorapi.md) can be accessed like this:
 
 ```tsx
 import React from 'react';
@@ -56,9 +56,9 @@ export const MyComponent = () => {
 ```
 
 Note that there is no explicit type given for
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md). This is because the
-[errorApiRef](../reference/core-plugin-api.errorApiRef.md) has the type
-embedded, and [useApi](../reference/core-plugin-api.useApi.md) is able to infer
+[ErrorApi](../reference/core-plugin-api.errorapi.md). This is because the
+[errorApiRef](../reference/core-plugin-api.errorapiref.md) has the type
+embedded, and [useApi](../reference/core-plugin-api.useapi.md) is able to infer
 the type.
 
 Also note that consuming Utility APIs is not limited to plugins, it can be done
@@ -71,15 +71,15 @@ requirement is that they are beneath the `AppProvider` in the react tree.
 ### API Factories
 
 APIs are registered in the form of
-[ApiFactories](../reference/core-plugin-api.ApiFactory.md), which encapsulate
+[ApiFactories](../reference/core-plugin-api.apifactory.md), which encapsulate
 the process of instantiating an API. It is a collection of three things: the
-[ApiRef](../reference/core-plugin-api.ApiRef.md) of the API to instantiate, a
+[ApiRef](../reference/core-plugin-api.apiref.md) of the API to instantiate, a
 list of all required dependencies, and a factory function that returns a new API
 instance.
 
 For example, this is the default
-[ApiFactory](../reference/core-plugin-api.ApiFactory.md) for the
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md):
+[ApiFactory](../reference/core-plugin-api.apifactory.md) for the
+[ErrorApi](../reference/core-plugin-api.errorapi.md):
 
 ```ts
 createApiFactory({
@@ -93,25 +93,25 @@ createApiFactory({
 });
 ```
 
-In this example the [errorApiRef](../reference/core-plugin-api.errorApiRef.md)
+In this example the [errorApiRef](../reference/core-plugin-api.errorapiref.md)
 is our API, which encapsulates the
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md) type. The
-[alertApiRef](../reference/core-plugin-api.alertApiRef.md) is our single
+[ErrorApi](../reference/core-plugin-api.errorapi.md) type. The
+[alertApiRef](../reference/core-plugin-api.alertapiref.md) is our single
 dependency, which we give the name `alertApi`, and is then passed on to the
 factory function, which returns an implementation of the
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md).
+[ErrorApi](../reference/core-plugin-api.errorapi.md).
 
-The [createApiFactory](../reference/core-plugin-api.createApiFactory.md)
+The [createApiFactory](../reference/core-plugin-api.createapifactory.md)
 function is a thin wrapper that enables TypeScript type inference. You may
 notice that there are no type annotations in the above example, and that is
 because we're able to infer all types from the
-[ApiRef](../reference/core-plugin-api.ApiRef.md)s. TypeScript will make sure
+[ApiRef](../reference/core-plugin-api.apiref.md)s. TypeScript will make sure
 that the return value of the `factory` function matches the type embedded in
-`api`'s [ApiRef](../reference/core-plugin-api.ApiRef.md), in this case the
-[ErrorApi](../reference/core-plugin-api.ErrorApi.md). It will also match the
+`api`'s [ApiRef](../reference/core-plugin-api.apiref.md), in this case the
+[ErrorApi](../reference/core-plugin-api.errorapi.md). It will also match the
 types between the `deps` and the parameters of the `factory` function, again
 using the type embedded within the
-[ApiRef](../reference/core-plugin-api.ApiRef.md)s.
+[ApiRef](../reference/core-plugin-api.apiref.md)s.
 
 ## Registering API Factories
 
@@ -124,11 +124,11 @@ app, and the app itself.
 Starting with the Backstage core library, it provides implementations for all of
 the core APIs. The core APIs are the ones exported by
 [@backstage/core-plugin-api](../reference/core-plugin-api.md), such as the
-[errorApiRef](../reference/core-plugin-api.errorApiRef.md) and
-[configApiRef](../reference/core-plugin-api.configApiRef.md).
+[errorApiRef](../reference/core-plugin-api.errorapiref.md) and
+[configApiRef](../reference/core-plugin-api.configapiref.md).
 
 The core APIs are loaded for any app created with
-[createApp](../reference/core-app-api.createApp.md) from
+[createApp](../reference/core-app-api.createapp.md) from
 [@backstage/core-plugin-api](../reference/core-plugin-api.md), which means that
 there is no step that needs to be taken to include these APIs in an app.
 
@@ -137,13 +137,13 @@ there is no step that needs to be taken to include these APIs in an app.
 In addition to the core APIs, plugins can define and export their own APIs.
 While doing so they should usually also provide default implementations of their
 own APIs, for example, the `catalog` plugin exports `catalogApiRef`, and also
-supplies a default [ApiFactory](../reference/core-plugin-api.ApiFactory.md) of
+supplies a default [ApiFactory](../reference/core-plugin-api.apifactory.md) of
 that API using the `CatalogClient`. There is one restriction to plugin-provided
 API Factories: plugins may not supply factories for core APIs, trying to do so
 will cause the app to refuse to start.
 
 Plugins supply their APIs through the `apis` option of
-[createPlugin](../reference/core-plugin-api.createPlugin.md), for example:
+[createPlugin](../reference/core-plugin-api.createplugin.md), for example:
 
 ```ts
 export const techdocsPlugin = createPlugin({
@@ -168,7 +168,7 @@ Lastly, the app itself is the final point where APIs can be added, and what has
 the final say in what APIs will be loaded at runtime. The app may override the
 factories for any of the core or plugin APIs, with the exception of the config,
 app theme, and identity APIs. These are static APIs that are tied into the
-[createApp](../reference/core-app-api.createApp.md) implementation, and
+[createApp](../reference/core-app-api.createapp.md) implementation, and
 therefore not possible to override.
 
 Overriding APIs is useful for apps that want to switch out behavior to tailor it
@@ -231,19 +231,19 @@ const app = createApp({
 ```
 
 Note that the above line will cause an error if `IgnoreErrorApi` does not fully
-implement the [ErrorApi](../reference/core-plugin-api.ErrorApi.md), as it is
+implement the [ErrorApi](../reference/core-plugin-api.errorapi.md), as it is
 checked by the type embedded in the
-[errorApiRef](../reference/core-plugin-api.errorApiRef.md) at compile time.
+[errorApiRef](../reference/core-plugin-api.errorapiref.md) at compile time.
 
 ## Defining custom Utility APIs
 
 Plugins are free to define their own Utility APIs. Simply define the TypeScript
 interface for the API, and create an
-[ApiRef](../reference/core-plugin-api.ApiRef.md) using
-[createApiRef](../reference/core-plugin-api.createApiRef.md) exported from
+[ApiRef](../reference/core-plugin-api.apiref.md) using
+[createApiRef](../reference/core-plugin-api.createapiref.md) exported from
 [@backstage/core-plugin-api](../reference/core-plugin-api.md). Also be sure to
 provide at least one implementation of the API, and to declare a default factory
-for the API in [createPlugin](../reference/core-plugin-api.createPlugin.md).
+for the API in [createPlugin](../reference/core-plugin-api.createplugin.md).
 
 Custom Utility APIs can be either public or private, which is up to the plugin
 to choose. Private APIs do not expose an external API surface, and it's
@@ -255,16 +255,16 @@ backwards compatibility of public APIs, as you may otherwise break apps that are
 using your plugin.
 
 To make an API public, simply export the
-[ApiRef](../reference/core-plugin-api.ApiRef.md) of the API, and any associated
+[ApiRef](../reference/core-plugin-api.apiref.md) of the API, and any associated
 types. To make an API private, just avoid exporting the
-[ApiRef](../reference/core-plugin-api.ApiRef.md), but still be sure to supply a
-default factory to [createPlugin](../reference/core-plugin-api.createPlugin.md).
+[ApiRef](../reference/core-plugin-api.apiref.md), but still be sure to supply a
+default factory to [createPlugin](../reference/core-plugin-api.createplugin.md).
 
 Private APIs are useful for plugins that want to depend on other APIs outside of
 React components, but not have to expose an entire API surface to maintain. When
 using private APIs, it is fine to use the `typeof` of an implementing class as
 the type parameter passed to
-[createApiRef](../reference/core-plugin-api.createApiRef.md), while public APIs
+[createApiRef](../reference/core-plugin-api.createapiref.md), while public APIs
 should always define a separate TypeScript interface type.
 
 Plugins may depend on APIs from other plugins, both in React components and as
@@ -273,13 +273,13 @@ dependencies between plugins.
 
 ## Architecture
 
-The [ApiRef](../reference/core-plugin-api.ApiRef.md) instances mentioned above
+The [ApiRef](../reference/core-plugin-api.apiref.md) instances mentioned above
 provide a point of indirection between consumers and producers of Utility APIs.
 It allows for plugins and components to depend on APIs in a type-safe way,
 without having a direct reference to a concrete implementation of the APIs. The
 Apps are also given a lot of flexibility in what implementations to provide. As
 long as they adhere to the contract established by an
-[ApiRef](../reference/core-plugin-api.ApiRef.md), they are free to choose any
+[ApiRef](../reference/core-plugin-api.apiref.md), they are free to choose any
 implementation they want.
 
 The figure below shows the relationship between
@@ -310,10 +310,10 @@ interaction with the API.
 
 The common development environment for plugins is included in
 [@backstage/dev-utils](../reference/dev-utils.md), where the exported
-[createDevApp](../reference/dev-utils.createDevApp.md) function creates an
+[createDevApp](../reference/dev-utils.createdevapp.md) function creates an
 application with implementations for all core APIs already present. Contrary to
 the method for wiring up Utility API implementations in an app created with
-[createApp](../reference/core-app-api.createApp.md),
-[createDevApp](../reference/dev-utils.createDevApp.md) uses automatic dependency
+[createApp](../reference/core-app-api.createapp.md),
+[createDevApp](../reference/dev-utils.createdevapp.md) uses automatic dependency
 injection. This is to make it possible to replace any API implementation, and
 having that be reflected in dependents of that API.
