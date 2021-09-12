@@ -238,7 +238,12 @@
       {
         "type": "subcategory",
         "label": "Guides",
-        "ids": [ "api/utility-apis" ]
+        "ids": ["api/utility-apis"]
+      },
+      {
+        "type": "subcategory",
+        "label": "API Reference",
+        "ids": ["reference/index"]
       }
     ],
     "Tutorials": [
