@@ -282,7 +282,7 @@ type SidebarSearchFieldProps = {
   to?: string;
 };
 
-export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
+export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
@@ -334,7 +334,7 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
       </SidebarItem>
     </div>
   );
-};
+}
 
 export const SidebarSpace = styled('div')({
   flex: 1,

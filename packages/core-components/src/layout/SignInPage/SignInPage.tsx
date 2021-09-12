@@ -192,10 +192,10 @@ export const SingleSignInPage = ({
   );
 };
 
-export const SignInPage = (props: Props) => {
+export function SignInPage(props: Props) {
   if ('provider' in props) {
     return <SingleSignInPage {...props} />;
   }
 
   return <MultiSignInPage {...props} />;
-};
+}

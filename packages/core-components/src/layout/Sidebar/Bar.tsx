@@ -74,11 +74,12 @@ type Props = {
   closeDelayMs?: number;
 };
 
-export const Sidebar = ({
-  openDelayMs = sidebarConfig.defaultOpenDelayMs,
-  closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-  children,
-}: PropsWithChildren<Props>) => {
+export function Sidebar(props: PropsWithChildren<Props>) {
+  const {
+    openDelayMs = sidebarConfig.defaultOpenDelayMs,
+    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+    children,
+  } = props;
   const classes = useStyles();
   const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
@@ -149,4 +150,4 @@ export const Sidebar = ({
       </SidebarContext.Provider>
     </div>
   );
-};
+}
