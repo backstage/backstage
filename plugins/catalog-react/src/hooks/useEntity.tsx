@@ -169,7 +169,15 @@ export function useEntity<T extends Entity = Entity>() {
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
   if (!versionedHolder) {
-    throw new Error('Entity context is not available');
+    // TODO(Rugvip): Throw this once we fully migrate to the new context
+    // throw new Error('Entity context is not available');
+
+    return {
+      entity: undefined as unknown as T,
+      loading: true,
+      error: undefined,
+      refresh: () => {},
+    };
   }
 
   const value = versionedHolder.atVersion(1);
