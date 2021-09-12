@@ -38,7 +38,8 @@ type Props = {
   action?: JSX.Element;
 };
 
-export const EmptyState = ({ title, description, missing, action }: Props) => {
+export function EmptyState(props: Props) {
+  const { title, description, missing, action } = props;
   const classes = useStyles();
   return (
     <Grid
@@ -67,4 +68,4 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
       </Grid>
     </Grid>
   );
-};
+}

@@ -93,12 +93,8 @@ type Placement = {
   textWidth: number;
 };
 
-export const FeatureCalloutCircular = ({
-  featureId,
-  title,
-  description,
-  children,
-}: PropsWithChildren<Props>) => {
+export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
+  const { featureId, title, description, children } = props;
   const { show, hide } = useShowCallout(featureId);
   const portalElement = usePortal('core.callout');
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -196,4 +192,4 @@ export const FeatureCalloutCircular = ({
       )}
     </>
   );
-};
+}

@@ -9,10 +9,8 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core';
-import { ButtonTypeMap } from '@material-ui/core';
 import { CardHeaderProps } from '@material-ui/core';
 import { Column } from '@material-table/core';
-import { CommonProps } from '@material-ui/core/OverridableComponent';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
 import { Context } from 'react';
@@ -50,7 +48,7 @@ import { WithStyles } from '@material-ui/core';
 // Warning: (ae-missing-release-tag) "AlertDisplay" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AlertDisplay: () => JSX.Element | null;
+export function AlertDisplay(_props: {}): JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "Alignment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -70,11 +68,7 @@ enum Alignment {
 // Warning: (ae-missing-release-tag) "Avatar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Avatar: ({
-  displayName,
-  picture,
-  customStyles,
-}: AvatarProps) => JSX.Element;
+export function Avatar(props: AvatarProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Breadcrumbs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -88,316 +82,10 @@ export const Breadcrumbs: ({ children, ...props }: Props_24) => JSX.Element;
 export const BrokenImageIcon: IconComponent;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Button" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ButtonType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
-export const Button: React_2.ForwardRefExoticComponent<
-  Pick<
-    Props,
-    | 'replace'
-    | 'media'
-    | 'hidden'
-    | 'dir'
-    | 'form'
-    | 'slot'
-    | 'title'
-    | 'disabled'
-    | 'color'
-    | 'size'
-    | 'underline'
-    | 'display'
-    | 'translate'
-    | 'prefix'
-    | 'children'
-    | 'key'
-    | 'value'
-    | 'id'
-    | 'name'
-    | 'action'
-    | 'defaultChecked'
-    | 'defaultValue'
-    | 'suppressContentEditableWarning'
-    | 'suppressHydrationWarning'
-    | 'accessKey'
-    | 'contentEditable'
-    | 'contextMenu'
-    | 'draggable'
-    | 'lang'
-    | 'placeholder'
-    | 'spellCheck'
-    | 'tabIndex'
-    | 'radioGroup'
-    | 'role'
-    | 'about'
-    | 'datatype'
-    | 'inlist'
-    | 'property'
-    | 'resource'
-    | 'typeof'
-    | 'vocab'
-    | 'autoCapitalize'
-    | 'autoCorrect'
-    | 'autoSave'
-    | 'itemProp'
-    | 'itemScope'
-    | 'itemType'
-    | 'itemID'
-    | 'itemRef'
-    | 'results'
-    | 'security'
-    | 'unselectable'
-    | 'inputMode'
-    | 'is'
-    | 'aria-activedescendant'
-    | 'aria-atomic'
-    | 'aria-autocomplete'
-    | 'aria-busy'
-    | 'aria-checked'
-    | 'aria-colcount'
-    | 'aria-colindex'
-    | 'aria-colspan'
-    | 'aria-controls'
-    | 'aria-current'
-    | 'aria-describedby'
-    | 'aria-details'
-    | 'aria-disabled'
-    | 'aria-dropeffect'
-    | 'aria-errormessage'
-    | 'aria-expanded'
-    | 'aria-flowto'
-    | 'aria-grabbed'
-    | 'aria-haspopup'
-    | 'aria-hidden'
-    | 'aria-invalid'
-    | 'aria-keyshortcuts'
-    | 'aria-label'
-    | 'aria-labelledby'
-    | 'aria-level'
-    | 'aria-live'
-    | 'aria-modal'
-    | 'aria-multiline'
-    | 'aria-multiselectable'
-    | 'aria-orientation'
-    | 'aria-owns'
-    | 'aria-placeholder'
-    | 'aria-posinset'
-    | 'aria-pressed'
-    | 'aria-readonly'
-    | 'aria-relevant'
-    | 'aria-required'
-    | 'aria-roledescription'
-    | 'aria-rowcount'
-    | 'aria-rowindex'
-    | 'aria-rowspan'
-    | 'aria-selected'
-    | 'aria-setsize'
-    | 'aria-sort'
-    | 'aria-valuemax'
-    | 'aria-valuemin'
-    | 'aria-valuenow'
-    | 'aria-valuetext'
-    | 'dangerouslySetInnerHTML'
-    | 'onCopy'
-    | 'onCopyCapture'
-    | 'onCut'
-    | 'onCutCapture'
-    | 'onPaste'
-    | 'onPasteCapture'
-    | 'onCompositionEnd'
-    | 'onCompositionEndCapture'
-    | 'onCompositionStart'
-    | 'onCompositionStartCapture'
-    | 'onCompositionUpdate'
-    | 'onCompositionUpdateCapture'
-    | 'onFocus'
-    | 'onFocusCapture'
-    | 'onBlur'
-    | 'onBlurCapture'
-    | 'onChange'
-    | 'onChangeCapture'
-    | 'onBeforeInput'
-    | 'onBeforeInputCapture'
-    | 'onInput'
-    | 'onInputCapture'
-    | 'onReset'
-    | 'onResetCapture'
-    | 'onSubmit'
-    | 'onSubmitCapture'
-    | 'onInvalid'
-    | 'onInvalidCapture'
-    | 'onLoad'
-    | 'onLoadCapture'
-    | 'onError'
-    | 'onErrorCapture'
-    | 'onKeyDown'
-    | 'onKeyDownCapture'
-    | 'onKeyPress'
-    | 'onKeyPressCapture'
-    | 'onKeyUp'
-    | 'onKeyUpCapture'
-    | 'onAbort'
-    | 'onAbortCapture'
-    | 'onCanPlay'
-    | 'onCanPlayCapture'
-    | 'onCanPlayThrough'
-    | 'onCanPlayThroughCapture'
-    | 'onDurationChange'
-    | 'onDurationChangeCapture'
-    | 'onEmptied'
-    | 'onEmptiedCapture'
-    | 'onEncrypted'
-    | 'onEncryptedCapture'
-    | 'onEnded'
-    | 'onEndedCapture'
-    | 'onLoadedData'
-    | 'onLoadedDataCapture'
-    | 'onLoadedMetadata'
-    | 'onLoadedMetadataCapture'
-    | 'onLoadStart'
-    | 'onLoadStartCapture'
-    | 'onPause'
-    | 'onPauseCapture'
-    | 'onPlay'
-    | 'onPlayCapture'
-    | 'onPlaying'
-    | 'onPlayingCapture'
-    | 'onProgress'
-    | 'onProgressCapture'
-    | 'onRateChange'
-    | 'onRateChangeCapture'
-    | 'onSeeked'
-    | 'onSeekedCapture'
-    | 'onSeeking'
-    | 'onSeekingCapture'
-    | 'onStalled'
-    | 'onStalledCapture'
-    | 'onSuspend'
-    | 'onSuspendCapture'
-    | 'onTimeUpdate'
-    | 'onTimeUpdateCapture'
-    | 'onVolumeChange'
-    | 'onVolumeChangeCapture'
-    | 'onWaiting'
-    | 'onWaitingCapture'
-    | 'onAuxClick'
-    | 'onAuxClickCapture'
-    | 'onClick'
-    | 'onClickCapture'
-    | 'onContextMenu'
-    | 'onContextMenuCapture'
-    | 'onDoubleClick'
-    | 'onDoubleClickCapture'
-    | 'onDrag'
-    | 'onDragCapture'
-    | 'onDragEnd'
-    | 'onDragEndCapture'
-    | 'onDragEnter'
-    | 'onDragEnterCapture'
-    | 'onDragExit'
-    | 'onDragExitCapture'
-    | 'onDragLeave'
-    | 'onDragLeaveCapture'
-    | 'onDragOver'
-    | 'onDragOverCapture'
-    | 'onDragStart'
-    | 'onDragStartCapture'
-    | 'onDrop'
-    | 'onDropCapture'
-    | 'onMouseDown'
-    | 'onMouseDownCapture'
-    | 'onMouseEnter'
-    | 'onMouseLeave'
-    | 'onMouseMove'
-    | 'onMouseMoveCapture'
-    | 'onMouseOut'
-    | 'onMouseOutCapture'
-    | 'onMouseOver'
-    | 'onMouseOverCapture'
-    | 'onMouseUp'
-    | 'onMouseUpCapture'
-    | 'onSelect'
-    | 'onSelectCapture'
-    | 'onTouchCancel'
-    | 'onTouchCancelCapture'
-    | 'onTouchEnd'
-    | 'onTouchEndCapture'
-    | 'onTouchMove'
-    | 'onTouchMoveCapture'
-    | 'onTouchStart'
-    | 'onTouchStartCapture'
-    | 'onPointerDown'
-    | 'onPointerDownCapture'
-    | 'onPointerMove'
-    | 'onPointerMoveCapture'
-    | 'onPointerUp'
-    | 'onPointerUpCapture'
-    | 'onPointerCancel'
-    | 'onPointerCancelCapture'
-    | 'onPointerEnter'
-    | 'onPointerEnterCapture'
-    | 'onPointerLeave'
-    | 'onPointerLeaveCapture'
-    | 'onPointerOver'
-    | 'onPointerOverCapture'
-    | 'onPointerOut'
-    | 'onPointerOutCapture'
-    | 'onGotPointerCapture'
-    | 'onGotPointerCaptureCapture'
-    | 'onLostPointerCapture'
-    | 'onLostPointerCaptureCapture'
-    | 'onScroll'
-    | 'onScrollCapture'
-    | 'onWheel'
-    | 'onWheelCapture'
-    | 'onAnimationStart'
-    | 'onAnimationStartCapture'
-    | 'onAnimationEnd'
-    | 'onAnimationEndCapture'
-    | 'onAnimationIteration'
-    | 'onAnimationIterationCapture'
-    | 'onTransitionEnd'
-    | 'onTransitionEndCapture'
-    | 'component'
-    | 'variant'
-    | 'download'
-    | 'href'
-    | 'hrefLang'
-    | 'ping'
-    | 'rel'
-    | 'target'
-    | 'type'
-    | 'referrerPolicy'
-    | 'disableElevation'
-    | 'fullWidth'
-    | 'startIcon'
-    | 'endIcon'
-    | 'noWrap'
-    | 'gutterBottom'
-    | 'paragraph'
-    | 'autoFocus'
-    | 'formAction'
-    | 'formEncType'
-    | 'formMethod'
-    | 'formNoValidate'
-    | 'formTarget'
-    | 'disableFocusRipple'
-    | 'buttonRef'
-    | 'centerRipple'
-    | 'disableRipple'
-    | 'disableTouchRipple'
-    | 'focusRipple'
-    | 'focusVisibleClassName'
-    | 'onFocusVisible'
-    | 'TouchRippleProps'
-    | 'align'
-    | 'variantMapping'
-    | 'to'
-    | 'state'
-    | 'TypographyClasses'
-    | keyof CommonProps<ButtonTypeMap<{}, 'button'>>
-  > &
-    React_2.RefAttributes<any>
->;
+// @public (undocumented)
+export function Button(props: Props): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "CardTabProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CardTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -422,14 +110,7 @@ export const ChatIcon: IconComponent;
 // Warning: (ae-missing-release-tag) "CodeSnippet" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CodeSnippet: ({
-  text,
-  language,
-  showLineNumbers,
-  showCopyCodeButton,
-  highlightedNumbers,
-  customStyle,
-}: Props_2) => JSX.Element;
+export const CodeSnippet: (props: Props_2) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Content" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -455,26 +136,28 @@ export const ContentHeader: ({
   textAlign,
 }: PropsWithChildren<ContentHeaderProps>) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CopyTextButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-missing-release-tag) "CopyTextButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CopyTextButton: {
-  (props: Props_3): JSX.Element;
-  propTypes: {
-    text: PropTypes.Validator<string>;
-    tooltipDelay: PropTypes.Requireable<number>;
-    tooltipText: PropTypes.Requireable<string>;
-  };
-};
+export function CopyTextButton(props: Props_3): JSX.Element;
+
+// @public (undocumented)
+export namespace CopyTextButton {
+  var // (undocumented)
+    propTypes: {
+      text: PropTypes.Validator<string>;
+      tooltipDelay: PropTypes.Requireable<number>;
+      tooltipText: PropTypes.Requireable<string>;
+    };
+}
 
 // Warning: (ae-forgotten-export) The symbol "CreateButtonProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CreateButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CreateButton: ({
-  title,
-  to,
-}: CreateButtonProps) => JSX.Element | null;
+export function CreateButton(props: CreateButtonProps): JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "DashboardIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -495,27 +178,7 @@ type DependencyEdge<T = CustomType> = T & {
 // Warning: (ae-missing-release-tag) "DependencyGraph" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function DependencyGraph({
-  edges,
-  nodes,
-  renderNode,
-  direction,
-  align,
-  nodeMargin,
-  edgeMargin,
-  rankMargin,
-  paddingX,
-  paddingY,
-  acyclicer,
-  ranker,
-  labelPosition,
-  labelOffset,
-  edgeRanks,
-  edgeWeight,
-  renderLabel,
-  defs,
-  ...svgProps
-}: DependencyGraphProps): JSX.Element;
+export function DependencyGraph(props: DependencyGraphProps): JSX.Element;
 
 declare namespace DependencyGraphTypes {
   export {
@@ -561,12 +224,7 @@ enum Direction {
 // Warning: (ae-missing-release-tag) "DismissableBanner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const DismissableBanner: ({
-  variant,
-  message,
-  id,
-  fixed,
-}: Props_4) => JSX.Element;
+export const DismissableBanner: (props: Props_4) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DocsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -596,12 +254,7 @@ export const EmailIcon: IconComponent;
 // Warning: (ae-missing-release-tag) "EmptyState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EmptyState: ({
-  title,
-  description,
-  missing,
-  action,
-}: Props_5) => JSX.Element;
+export function EmptyState(props: Props_5): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorBoundary" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -630,12 +283,9 @@ export const ErrorPage: ({
 // Warning: (ae-missing-release-tag) "ErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const ErrorPanel: ({
-  title,
-  error,
-  defaultExpanded,
-  children,
-}: PropsWithChildren<ErrorPanelProps>) => JSX.Element;
+export function ErrorPanel(
+  props: PropsWithChildren<ErrorPanelProps>,
+): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ErrorPanelProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -650,24 +300,21 @@ export type ErrorPanelProps = {
 // Warning: (ae-missing-release-tag) "FeatureCalloutCircular" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const FeatureCalloutCircular: ({
-  featureId,
-  title,
-  description,
-  children,
-}: PropsWithChildren<Props_7>) => JSX.Element;
+export function FeatureCalloutCircular(
+  props: PropsWithChildren<Props_7>,
+): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Gauge" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Gauge: (props: Props_14) => JSX.Element;
+export function Gauge(props: Props_14): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "GaugeCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const GaugeCard: (props: Props_13) => JSX.Element;
+export function GaugeCard(props: Props_13): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "GitHubIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -710,7 +357,7 @@ export const Header: ({
 // Warning: (ae-missing-release-tag) "HeaderIconLinkRow" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const HeaderIconLinkRow: ({ links }: Props_8) => JSX.Element;
+export function HeaderIconLinkRow(props: Props_8): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "HeaderLabelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "HeaderLabel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -746,9 +393,9 @@ export const HomepageTimer: () => JSX.Element | null;
 // Warning: (ae-missing-release-tag) "HorizontalScrollGrid" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const HorizontalScrollGrid: (
+export function HorizontalScrollGrid(
   props: PropsWithChildren<Props_9>,
-) => JSX.Element;
+): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "IconLinkVerticalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -872,302 +519,18 @@ enum LabelPosition {
 // Warning: (ae-missing-release-tag) "Lifecycle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Lifecycle: (props: Props_10) => JSX.Element;
+export function Lifecycle(props: Props_10): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "LinearGauge" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LinearGauge: ({ value }: Props_15) => JSX.Element | null;
+export function LinearGauge(props: Props_15): JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "Link" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "LinkType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
-export const Link: React_2.ForwardRefExoticComponent<
-  Pick<
-    LinkProps,
-    | 'replace'
-    | 'media'
-    | 'hidden'
-    | 'dir'
-    | 'slot'
-    | 'style'
-    | 'title'
-    | 'color'
-    | 'underline'
-    | 'display'
-    | 'translate'
-    | 'prefix'
-    | 'children'
-    | 'key'
-    | 'id'
-    | 'classes'
-    | 'defaultChecked'
-    | 'defaultValue'
-    | 'suppressContentEditableWarning'
-    | 'suppressHydrationWarning'
-    | 'accessKey'
-    | 'className'
-    | 'contentEditable'
-    | 'contextMenu'
-    | 'draggable'
-    | 'lang'
-    | 'placeholder'
-    | 'spellCheck'
-    | 'tabIndex'
-    | 'radioGroup'
-    | 'role'
-    | 'about'
-    | 'datatype'
-    | 'inlist'
-    | 'property'
-    | 'resource'
-    | 'typeof'
-    | 'vocab'
-    | 'autoCapitalize'
-    | 'autoCorrect'
-    | 'autoSave'
-    | 'itemProp'
-    | 'itemScope'
-    | 'itemType'
-    | 'itemID'
-    | 'itemRef'
-    | 'results'
-    | 'security'
-    | 'unselectable'
-    | 'inputMode'
-    | 'is'
-    | 'aria-activedescendant'
-    | 'aria-atomic'
-    | 'aria-autocomplete'
-    | 'aria-busy'
-    | 'aria-checked'
-    | 'aria-colcount'
-    | 'aria-colindex'
-    | 'aria-colspan'
-    | 'aria-controls'
-    | 'aria-current'
-    | 'aria-describedby'
-    | 'aria-details'
-    | 'aria-disabled'
-    | 'aria-dropeffect'
-    | 'aria-errormessage'
-    | 'aria-expanded'
-    | 'aria-flowto'
-    | 'aria-grabbed'
-    | 'aria-haspopup'
-    | 'aria-hidden'
-    | 'aria-invalid'
-    | 'aria-keyshortcuts'
-    | 'aria-label'
-    | 'aria-labelledby'
-    | 'aria-level'
-    | 'aria-live'
-    | 'aria-modal'
-    | 'aria-multiline'
-    | 'aria-multiselectable'
-    | 'aria-orientation'
-    | 'aria-owns'
-    | 'aria-placeholder'
-    | 'aria-posinset'
-    | 'aria-pressed'
-    | 'aria-readonly'
-    | 'aria-relevant'
-    | 'aria-required'
-    | 'aria-roledescription'
-    | 'aria-rowcount'
-    | 'aria-rowindex'
-    | 'aria-rowspan'
-    | 'aria-selected'
-    | 'aria-setsize'
-    | 'aria-sort'
-    | 'aria-valuemax'
-    | 'aria-valuemin'
-    | 'aria-valuenow'
-    | 'aria-valuetext'
-    | 'dangerouslySetInnerHTML'
-    | 'onCopy'
-    | 'onCopyCapture'
-    | 'onCut'
-    | 'onCutCapture'
-    | 'onPaste'
-    | 'onPasteCapture'
-    | 'onCompositionEnd'
-    | 'onCompositionEndCapture'
-    | 'onCompositionStart'
-    | 'onCompositionStartCapture'
-    | 'onCompositionUpdate'
-    | 'onCompositionUpdateCapture'
-    | 'onFocus'
-    | 'onFocusCapture'
-    | 'onBlur'
-    | 'onBlurCapture'
-    | 'onChange'
-    | 'onChangeCapture'
-    | 'onBeforeInput'
-    | 'onBeforeInputCapture'
-    | 'onInput'
-    | 'onInputCapture'
-    | 'onReset'
-    | 'onResetCapture'
-    | 'onSubmit'
-    | 'onSubmitCapture'
-    | 'onInvalid'
-    | 'onInvalidCapture'
-    | 'onLoad'
-    | 'onLoadCapture'
-    | 'onError'
-    | 'onErrorCapture'
-    | 'onKeyDown'
-    | 'onKeyDownCapture'
-    | 'onKeyPress'
-    | 'onKeyPressCapture'
-    | 'onKeyUp'
-    | 'onKeyUpCapture'
-    | 'onAbort'
-    | 'onAbortCapture'
-    | 'onCanPlay'
-    | 'onCanPlayCapture'
-    | 'onCanPlayThrough'
-    | 'onCanPlayThroughCapture'
-    | 'onDurationChange'
-    | 'onDurationChangeCapture'
-    | 'onEmptied'
-    | 'onEmptiedCapture'
-    | 'onEncrypted'
-    | 'onEncryptedCapture'
-    | 'onEnded'
-    | 'onEndedCapture'
-    | 'onLoadedData'
-    | 'onLoadedDataCapture'
-    | 'onLoadedMetadata'
-    | 'onLoadedMetadataCapture'
-    | 'onLoadStart'
-    | 'onLoadStartCapture'
-    | 'onPause'
-    | 'onPauseCapture'
-    | 'onPlay'
-    | 'onPlayCapture'
-    | 'onPlaying'
-    | 'onPlayingCapture'
-    | 'onProgress'
-    | 'onProgressCapture'
-    | 'onRateChange'
-    | 'onRateChangeCapture'
-    | 'onSeeked'
-    | 'onSeekedCapture'
-    | 'onSeeking'
-    | 'onSeekingCapture'
-    | 'onStalled'
-    | 'onStalledCapture'
-    | 'onSuspend'
-    | 'onSuspendCapture'
-    | 'onTimeUpdate'
-    | 'onTimeUpdateCapture'
-    | 'onVolumeChange'
-    | 'onVolumeChangeCapture'
-    | 'onWaiting'
-    | 'onWaitingCapture'
-    | 'onAuxClick'
-    | 'onAuxClickCapture'
-    | 'onClick'
-    | 'onClickCapture'
-    | 'onContextMenu'
-    | 'onContextMenuCapture'
-    | 'onDoubleClick'
-    | 'onDoubleClickCapture'
-    | 'onDrag'
-    | 'onDragCapture'
-    | 'onDragEnd'
-    | 'onDragEndCapture'
-    | 'onDragEnter'
-    | 'onDragEnterCapture'
-    | 'onDragExit'
-    | 'onDragExitCapture'
-    | 'onDragLeave'
-    | 'onDragLeaveCapture'
-    | 'onDragOver'
-    | 'onDragOverCapture'
-    | 'onDragStart'
-    | 'onDragStartCapture'
-    | 'onDrop'
-    | 'onDropCapture'
-    | 'onMouseDown'
-    | 'onMouseDownCapture'
-    | 'onMouseEnter'
-    | 'onMouseLeave'
-    | 'onMouseMove'
-    | 'onMouseMoveCapture'
-    | 'onMouseOut'
-    | 'onMouseOutCapture'
-    | 'onMouseOver'
-    | 'onMouseOverCapture'
-    | 'onMouseUp'
-    | 'onMouseUpCapture'
-    | 'onSelect'
-    | 'onSelectCapture'
-    | 'onTouchCancel'
-    | 'onTouchCancelCapture'
-    | 'onTouchEnd'
-    | 'onTouchEndCapture'
-    | 'onTouchMove'
-    | 'onTouchMoveCapture'
-    | 'onTouchStart'
-    | 'onTouchStartCapture'
-    | 'onPointerDown'
-    | 'onPointerDownCapture'
-    | 'onPointerMove'
-    | 'onPointerMoveCapture'
-    | 'onPointerUp'
-    | 'onPointerUpCapture'
-    | 'onPointerCancel'
-    | 'onPointerCancelCapture'
-    | 'onPointerEnter'
-    | 'onPointerEnterCapture'
-    | 'onPointerLeave'
-    | 'onPointerLeaveCapture'
-    | 'onPointerOver'
-    | 'onPointerOverCapture'
-    | 'onPointerOut'
-    | 'onPointerOutCapture'
-    | 'onGotPointerCapture'
-    | 'onGotPointerCaptureCapture'
-    | 'onLostPointerCapture'
-    | 'onLostPointerCaptureCapture'
-    | 'onScroll'
-    | 'onScrollCapture'
-    | 'onWheel'
-    | 'onWheelCapture'
-    | 'onAnimationStart'
-    | 'onAnimationStartCapture'
-    | 'onAnimationEnd'
-    | 'onAnimationEndCapture'
-    | 'onAnimationIteration'
-    | 'onAnimationIterationCapture'
-    | 'onTransitionEnd'
-    | 'onTransitionEndCapture'
-    | 'component'
-    | 'variant'
-    | 'innerRef'
-    | 'download'
-    | 'href'
-    | 'hrefLang'
-    | 'ping'
-    | 'rel'
-    | 'target'
-    | 'type'
-    | 'referrerPolicy'
-    | 'noWrap'
-    | 'gutterBottom'
-    | 'paragraph'
-    | 'align'
-    | 'variantMapping'
-    | 'to'
-    | 'state'
-    | 'TypographyClasses'
-  > &
-    React_2.RefAttributes<any>
->;
+// @public (undocumented)
+export function Link(props: LinkProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1181,26 +544,24 @@ export type LinkProps = LinkProps_2 &
 // Warning: (ae-missing-release-tag) "MarkdownContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const MarkdownContent: ({ content, dialect }: Props_11) => JSX.Element;
+export function MarkdownContent(props: Props_11): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "MissingAnnotationEmptyState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const MissingAnnotationEmptyState: ({
-  annotation,
-}: Props_6) => JSX.Element;
+export function MissingAnnotationEmptyState(props: Props_6): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "OAuthRequestDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const OAuthRequestDialog: () => JSX.Element;
+export function OAuthRequestDialog(_props: {}): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "OverflowTooltip" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const OverflowTooltip: (props: Props_12) => JSX.Element;
+export function OverflowTooltip(props: Props_12): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Page" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1224,9 +585,9 @@ export const PageWithHeader: ({
 // Warning: (ae-missing-release-tag) "Progress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Progress: (
+export function Progress(
   props: PropsWithChildren<LinearProgressProps>,
-) => JSX.Element;
+): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1267,30 +628,18 @@ type RenderNodeProps<T = CustomType> = {
 // Warning: (ae-missing-release-tag) "ResponseErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const ResponseErrorPanel: ({
-  title,
-  error,
-  defaultExpanded,
-}: ErrorPanelProps) => JSX.Element;
+export function ResponseErrorPanel(props: ErrorPanelProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RoutedTabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RoutedTabs: ({ routes }: { routes: SubRoute_2[] }) => JSX.Element;
+export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SelectComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Select: ({
-  multiple,
-  items,
-  label,
-  placeholder,
-  selected,
-  onChange,
-  triggerReset,
-}: SelectProps) => JSX.Element;
+export function Select(props: SelectProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Sidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2473,82 +1822,65 @@ export type SignInProviderConfig = {
 // Warning: (ae-missing-release-tag) "SimpleStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SimpleStepper: ({
-  children,
-  elevated,
-  onStepChange,
-  activeStep,
-}: PropsWithChildren<StepperProps>) => JSX.Element;
+export function SimpleStepper(
+  props: PropsWithChildren<StepperProps>,
+): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "StepProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SimpleStepperStep" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SimpleStepperStep: ({
-  title,
-  children,
-  end,
-  actions,
-  ...muiProps
-}: PropsWithChildren<StepProps>) => JSX.Element;
+export function SimpleStepperStep(
+  props: PropsWithChildren<StepProps>,
+): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusAborted" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusAborted: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusAborted(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusError: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusError(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusOK" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusOK: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusOK(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusPending" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusPending: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusPending(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusRunning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusRunning: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusRunning(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusWarning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StatusWarning: (props: PropsWithChildren<{}>) => JSX.Element;
+export function StatusWarning(props: PropsWithChildren<{}>): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "StructuredMetadataTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StructuredMetadataTable: ({
-  metadata,
-  dense,
-  options,
-}: Props_16) => JSX.Element;
+export function StructuredMetadataTable(props: Props_16): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SubvalueCell: ({
-  value,
-  subvalue,
-}: SubvalueCellProps) => JSX.Element;
+export function SubvalueCell(props: SubvalueCellProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SupportButtonProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SupportButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SupportButton: ({
-  title,
-  children,
-}: SupportButtonProps) => JSX.Element;
+export function SupportButton(props: SupportButtonProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2604,27 +1936,23 @@ export const TabbedCard: ({
 }: PropsWithChildren<Props_23>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TabbedLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabbedLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const TabbedLayout: {
-  ({ children }: PropsWithChildren<{}>): JSX.Element;
-  Route: (props: SubRoute) => null;
-};
+export function TabbedLayout(props: PropsWithChildren<{}>): JSX.Element;
+
+// @public (undocumented)
+export namespace TabbedLayout {
+  var // Warning: (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    Route: (props: SubRoute) => null;
+}
 
 // Warning: (ae-missing-release-tag) "Table" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function Table<T extends object = {}>({
-  columns,
-  options,
-  title,
-  subtitle,
-  filters,
-  initialState,
-  emptyContent,
-  onStateChange,
-  ...props
-}: TableProps<T>): JSX.Element;
+export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TableColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2676,17 +2004,17 @@ export type TableState = {
 // Warning: (ae-missing-release-tag) "Tabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Tabs: ({ tabs }: TabsProps) => JSX.Element;
+export function Tabs(props: TabsProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TrendLine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const TrendLine: (
+export function TrendLine(
   props: SparklinesProps &
     Pick<SparklinesLineProps, 'color'> & {
       title?: string;
     },
-) => JSX.Element | null;
+): JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2728,19 +2056,11 @@ export const WarningIcon: IconComponent;
 // Warning: (ae-missing-release-tag) "WarningPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const WarningPanel: ({
-  severity,
-  title,
-  message,
-  children,
-  defaultExpanded,
-}: WarningProps) => JSX.Element;
+export function WarningPanel(props: WarningProps): JSX.Element;
 
 // Warnings were encountered during analysis:
 //
-// src/components/CopyTextButton/CopyTextButton.d.ts:24:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
-// src/components/TabbedLayout/TabbedLayout.d.ts:29:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:15:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:7:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 

@@ -82,10 +82,10 @@ export function createSubRoutesFromChildren(
  * </TabbedLayout>
  * ```
  */
-export const TabbedLayout = ({ children }: PropsWithChildren<{}>) => {
-  const routes = createSubRoutesFromChildren(children);
+export function TabbedLayout(props: PropsWithChildren<{}>) {
+  const routes = createSubRoutesFromChildren(props.children);
 
   return <RoutedTabs routes={routes} />;
-};
+}
 
 TabbedLayout.Route = Route;
