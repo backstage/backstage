@@ -34,8 +34,9 @@ function useTracker(): AnalyticsTracker {
           context,
           domain,
         });
-      } catch {
-        // Just don't throw on an instrumentation problem.
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Error during analytics event capture. %o', e);
       }
     },
   };

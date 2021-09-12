@@ -1,5 +1,5 @@
 ---
-'@backstage/core-plugin-api': minor
+'@backstage/core-plugin-api': patch
 ---
 
 Introducing the Analytics API: a lightweight way for plugins to instrument key
