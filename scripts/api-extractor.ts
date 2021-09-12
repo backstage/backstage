@@ -33,7 +33,10 @@ import {
 } from '@microsoft/api-extractor';
 import { DocNode, IDocNodeContainerParameters } from '@microsoft/tsdoc';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
-import { MarkdownDocumenter } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import {
+  IMarkdownDocumenterOptions,
+  MarkdownDocumenter,
+} from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
@@ -341,24 +344,6 @@ async function buildDocs({
     newModel.addMember(pkg);
   }
 
-  // This is root of the documentation generation, but it's not directly
-  // responsible for generating markdown, it just constructs an AST that
-  // is the consumed by an emitter to actually write the files.
-  const documenter = new MarkdownDocumenter({
-    apiModel: newModel,
-    documenterConfig: {
-      outputTarget: 'markdown',
-      newlineKind: '\n',
-      // De ba dålig kod
-      configFilePath: '',
-      configFile: {},
-    } as any,
-    outputFolder: outputDir,
-  });
-
-  // We're accessing a lot of internal things...
-  const anyDocumenter = documenter as any;
-
   // The doc AST need to be extended with custom nodes if we want to
   // add any extra content.
   // This one is for the YAML front matter that we need for the microsite.
@@ -387,16 +372,6 @@ async function buildDocs({
       return DocFrontMatter.kind;
     }
   }
-
-  // It's a strict model, we gotta register the allowed usage of our new node
-  anyDocumenter._tsdocConfiguration.docNodeManager.registerDocNodes(
-    '@backstage/docs',
-    [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
-  );
-  anyDocumenter._tsdocConfiguration.docNodeManager.registerAllowableChildren(
-    'Paragraph',
-    [DocFrontMatter.kind],
-  );
 
   // This is where we actually write the markdown and where we can hook
   // in the rendering of our own nodes.
@@ -432,54 +407,79 @@ async function buildDocs({
     }
   }
 
-  // The emitter is an internal thing, but it's fine to rewrite
-  anyDocumenter._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
+  class CustomMarkdownDocumenter extends (MarkdownDocumenter as any) {
+    constructor(options: IMarkdownDocumenterOptions) {
+      super(options);
 
-  // Gotta keep this around so we can call the real implementation
-  const oldWrite = anyDocumenter._writeBreadcrumb;
+      // It's a strict model, we gotta register the allowed usage of our new node
+      this._tsdocConfiguration.docNodeManager.registerDocNodes(
+        '@backstage/docs',
+        [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
+      );
+      this._tsdocConfiguration.docNodeManager.registerAllowableChildren(
+        'Paragraph',
+        [DocFrontMatter.kind],
+      );
 
-  // We don't really get many chances to modify the generated AST
-  // so we hook in wherever we can. In this case we add the front matter
-  // just before writing the breadcrumbs at the top.
-  anyDocumenter._writeBreadcrumb = function patchedWriteBreadcrumb(
-    output,
-    apiItem,
-  ) {
-    let title;
-    let description;
-
-    const name = apiItem.getScopedNameWithinPackage();
-    if (name) {
-      title = name;
-      description = `API reference for ${apiItem.getScopedNameWithinPackage()}`;
-    } else if (apiItem.kind === 'Model') {
-      title = 'Package Index';
-      description = 'Index of all Backstage Packages';
-    } else {
-      title = apiItem.name;
-      description = `API Reference for ${apiItem.name}`;
+      this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
     }
 
-    // Add our front matter
-    output.appendNodeInParagraph(
-      new DocFrontMatter({
-        configuration: this._tsdocConfiguration,
-        id: this._getFilenameForApiItem(apiItem).slice(0, -3),
-        title,
-        description,
-      }),
-    );
+    // We don't really get many chances to modify the generated AST
+    // so we hook in wherever we can. In this case we add the front matter
+    // just before writing the breadcrumbs at the top.
+    /** @override */
+    _writeBreadcrumb(output, apiItem) {
+      let title;
+      let description;
 
-    // Now write the actual breadcrumbs
-    oldWrite.call(this, output, apiItem);
+      const name = apiItem.getScopedNameWithinPackage();
+      if (name) {
+        title = name;
+        description = `API reference for ${apiItem.getScopedNameWithinPackage()}`;
+      } else if (apiItem.kind === 'Model') {
+        title = 'Package Index';
+        description = 'Index of all Backstage Packages';
+      } else {
+        title = apiItem.name;
+        description = `API Reference for ${apiItem.name}`;
+      }
 
-    // We wanna ignore the header that always gets written after the breadcrumb
-    // This otherwise becomes more or less a duplicate of the title in the front matter
-    const oldAppendNode = output.appendNode;
-    output.appendNode = () => {
-      output.appendNode = oldAppendNode;
-    };
-  };
+      // Add our front matter
+      output.appendNodeInParagraph(
+        new DocFrontMatter({
+          configuration: this._tsdocConfiguration,
+          id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+          title,
+          description,
+        }),
+      );
+
+      // Now write the actual breadcrumbs
+      super._writeBreadcrumb(output, apiItem);
+
+      // We wanna ignore the header that always gets written after the breadcrumb
+      // This otherwise becomes more or less a duplicate of the title in the front matter
+      const oldAppendNode = output.appendNode;
+      output.appendNode = () => {
+        output.appendNode = oldAppendNode;
+      };
+    }
+  }
+
+  // This is root of the documentation generation, but it's not directly
+  // responsible for generating markdown, it just constructs an AST that
+  // is the consumed by an emitter to actually write the files.
+  const documenter = new CustomMarkdownDocumenter({
+    apiModel: newModel,
+    documenterConfig: {
+      outputTarget: 'markdown',
+      newlineKind: '\n',
+      // De ba dålig kod
+      configFilePath: '',
+      configFile: {},
+    } as any,
+    outputFolder: outputDir,
+  });
 
   // Clean up existing stuff and write ALL the docs!
   await fs.remove(outputDir);
