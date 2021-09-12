@@ -234,21 +234,11 @@
       "dls/contributing-to-storybook",
       "dls/figma"
     ],
-    "API references": [
+    "API Reference": [
       {
         "type": "subcategory",
-        "label": "TypeScript API",
-        "ids": [
-          "api/utility-apis",
-          "reference/utility-apis/README",
-          "reference/createPlugin",
-          "reference/createPlugin-feature-flags"
-        ]
-      },
-      {
-        "type": "subcategory",
-        "label": "Backend APIs",
-        "ids": ["api/backend"]
+        "label": "Guides",
+        "ids": [ "api/utility-apis" ]
       }
     ],
     "Tutorials": [
