@@ -43,9 +43,14 @@ import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { HomePage } from './components/home/HomePage';
 
 // ...
-<Route path="/" element={<HomepageCompositionRoot />}>
-  <HomePage />
-</Route>;
+<Route
+  path="/"
+  element={
+    <HomepageCompositionRoot>
+      <HomePage />
+    </HomepageCompositionRoot>
+  }
+/>;
 // ...
 ```
 
