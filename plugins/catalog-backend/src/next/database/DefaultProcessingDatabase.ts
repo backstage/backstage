@@ -513,77 +513,54 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
   async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    if ('entityRef' in options) {
-      const { entityRef } = options;
+    const { entityRef } = options;
 
-      let refreshTarget = entityRef;
+    let refreshTarget = entityRef;
 
-      let currentRef = entityRef;
-      let depth = 0;
-      for (;;) {
-        if (depth++ > MAX_REFRESH_DEPTH) {
-          throw new Error(
-            `Unable to refresh Entity ${entityRef}, maximum refresh depth of ${MAX_REFRESH_DEPTH} reached`,
-          );
-        }
-
-        const rows = await tx<DbRefreshStateReferencesRow>(
-          'refresh_state_references',
-        )
-          .where({ target_entity_ref: currentRef })
-          .select();
-
-        if (rows.length === 0) {
-          if (depth === 1) {
-            throw new NotFoundError(`Entity ${currentRef} not found`);
-          }
-          throw new NotFoundError(
-            `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
-          );
-        }
-
-        const parentRef = rows[0].source_entity_ref;
-        if (!parentRef) {
-          // We've reached the top of the tree which is the entityProvider.
-          // In this case we refresh the entity itself.
-          break;
-        }
-        if (parentRef.startsWith('location:')) {
-          refreshTarget = parentRef;
-          break;
-        }
-        currentRef = parentRef;
-      }
-
-      const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-        .where({ entity_ref: refreshTarget })
-        .update({ next_update_at: tx.fn.now() });
-      if (updateResult === 0) {
-        throw new ConflictError(
-          `Failed to schedule ${refreshTarget} for refresh`,
+    let currentRef = entityRef;
+    let depth = 0;
+    for (;;) {
+      if (depth++ > MAX_REFRESH_DEPTH) {
+        throw new Error(
+          `Unable to refresh Entity ${entityRef}, maximum refresh depth of ${MAX_REFRESH_DEPTH} reached`,
         );
       }
 
-      /*
-        For a given entityRef:
-        - Fetch entity
-        - recursively select from refresh_state_references where target is our entityRef.
-          Continue until we find a location.
-        - Process and run addUnprocessedEntities with a flag telling it to bump the timestamp for all deferred entities.
-        */
-      /*
-        For a given URL
-        - Fetch entity based on managed by location URL?
-        - repeat for entityRef
-        */
+      const rows = await tx<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        .where({ target_entity_ref: currentRef })
+        .select();
+
+      if (rows.length === 0) {
+        if (depth === 1) {
+          throw new NotFoundError(`Entity ${currentRef} not found`);
+        }
+        throw new NotFoundError(
+          `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
+        );
+      }
+
+      const parentRef = rows[0].source_entity_ref;
+      if (!parentRef) {
+        // We've reached the top of the tree which is the entityProvider.
+        // In this case we refresh the entity itself.
+        break;
+      }
+      if (parentRef.startsWith('location:')) {
+        refreshTarget = parentRef;
+        break;
+      }
+      currentRef = parentRef;
     }
 
-    if ('locationRef' in options) {
-      // TODO(jhaals): managed by or origin?
-      // const entity: Entity = JSON.parse(result.processed_entity);
-      // // TODO: ONly required for URLz
-      // const managedBy = entity.metadata?.annotations?.[LOCATION_ANNOTATION]
-      // console.log(managedBy);
+    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+      .where({ entity_ref: refreshTarget })
+      .update({ next_update_at: tx.fn.now() });
+    if (updateResult === 0) {
+      throw new ConflictError(
+        `Failed to schedule ${refreshTarget} for refresh`,
+      );
     }
   }
 
