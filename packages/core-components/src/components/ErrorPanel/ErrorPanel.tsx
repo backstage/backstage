@@ -92,12 +92,8 @@ export type ErrorPanelProps = {
 /**
  * Renders a warning panel as the effect of an error.
  */
-export const ErrorPanel = ({
-  title,
-  error,
-  defaultExpanded,
-  children,
-}: PropsWithChildren<ErrorPanelProps>) => {
+export function ErrorPanel(props: PropsWithChildren<ErrorPanelProps>) {
+  const { title, error, defaultExpanded, children } = props;
   return (
     <WarningPanel
       severity="error"
@@ -112,4 +108,4 @@ export const ErrorPanel = ({
       />
     </WarningPanel>
   );
-};
+}

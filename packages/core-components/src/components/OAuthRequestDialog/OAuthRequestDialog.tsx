@@ -44,7 +44,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const OAuthRequestDialog = () => {
+export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
@@ -86,4 +86,4 @@ export const OAuthRequestDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
+}

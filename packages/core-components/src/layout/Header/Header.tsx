@@ -172,16 +172,17 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   );
 };
 
-export const Header = ({
-  children,
-  pageTitleOverride,
-  style,
-  subtitle,
-  title,
-  tooltip,
-  type,
-  typeLink,
-}: PropsWithChildren<Props>) => {
+export function Header(props: PropsWithChildren<Props>) {
+  const {
+    children,
+    pageTitleOverride,
+    style,
+    subtitle,
+    title,
+    tooltip,
+    type,
+    typeLink,
+  } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
@@ -214,4 +215,4 @@ export const Header = ({
       </header>
     </>
   );
-};
+}

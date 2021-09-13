@@ -41,7 +41,8 @@ const StyledBox = withStyles({
   },
 })(Box);
 
-export const Breadcrumbs = ({ children, ...props }: Props) => {
+export function Breadcrumbs(props: Props) {
+  const { children, ...restProps } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
@@ -65,7 +66,7 @@ export const Breadcrumbs = ({ children, ...props }: Props) => {
   const open = Boolean(anchorEl);
   return (
     <Fragment>
-      <MaterialBreadcrumbs aria-label="breadcrumb" {...props}>
+      <MaterialBreadcrumbs aria-label="breadcrumb" {...restProps}>
         {childrenArray.length > 1 && <StyledBox clone>{firstPage}</StyledBox>}
         {childrenArray.length > 2 && <StyledBox clone>{secondPage}</StyledBox>}
         {hasHiddenBreadcrumbs && (
@@ -96,4 +97,4 @@ export const Breadcrumbs = ({ children, ...props }: Props) => {
       </Popover>
     </Fragment>
   );
-};
+}

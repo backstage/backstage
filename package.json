@@ -54,9 +54,10 @@
   },
   "version": "1.0.0",
   "dependencies": {
-    "@microsoft/api-documenter": "^7.13.30",
-    "@microsoft/api-extractor": "^7.18.1",
-    "@microsoft/api-extractor-model": "^7.13.3"
+    "@microsoft/api-documenter": "^7.13.47",
+    "@microsoft/api-extractor": "^7.18.7",
+    "@microsoft/api-extractor-model": "^7.13.5",
+    "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
     "@types/webpack": "^5.28.0",

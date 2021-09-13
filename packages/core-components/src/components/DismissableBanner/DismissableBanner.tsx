@@ -70,12 +70,8 @@ type Props = {
   fixed?: boolean;
 };
 
-export const DismissableBanner = ({
-  variant,
-  message,
-  id,
-  fixed = false,
-}: Props) => {
+export const DismissableBanner = (props: Props) => {
+  const { variant, message, id, fixed = false } = props;
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');

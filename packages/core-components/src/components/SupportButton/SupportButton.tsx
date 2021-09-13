@@ -80,7 +80,8 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
   );
 };
 
-export const SupportButton = ({ title, children }: SupportButtonProps) => {
+export function SupportButton(props: SupportButtonProps) {
+  const { title, children } = props;
   const { items } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -160,4 +161,4 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
       </Popover>
     </>
   );
-};
+}

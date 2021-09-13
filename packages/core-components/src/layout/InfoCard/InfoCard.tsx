@@ -128,26 +128,27 @@ type Props = {
   titleTypographyProps?: object;
 };
 
-export const InfoCard = ({
-  title,
-  subheader,
-  divider = true,
-  deepLink,
-  slackChannel,
-  errorBoundaryProps,
-  variant,
-  children,
-  headerStyle,
-  headerProps,
-  action,
-  actionsClassName,
-  actions,
-  cardClassName,
-  actionsTopRight,
-  className,
-  noPadding,
-  titleTypographyProps,
-}: Props): JSX.Element => {
+export function InfoCard(props: Props): JSX.Element {
+  const {
+    title,
+    subheader,
+    divider = true,
+    deepLink,
+    slackChannel,
+    errorBoundaryProps,
+    variant,
+    children,
+    headerStyle,
+    headerProps,
+    action,
+    actionsClassName,
+    actions,
+    cardClassName,
+    actionsTopRight,
+    className,
+    noPadding,
+    titleTypographyProps,
+  } = props;
   const classes = useStyles();
   /**
    * If variant is specified, we build up styles for that particular variant for both
@@ -214,4 +215,4 @@ export const InfoCard = ({
       </ErrorBoundary>
     </Card>
   );
-};
+}

@@ -106,15 +106,16 @@ export type SelectProps = {
   triggerReset?: boolean;
 };
 
-export const SelectComponent = ({
-  multiple,
-  items,
-  label,
-  placeholder,
-  selected,
-  onChange,
-  triggerReset,
-}: SelectProps) => {
+export function SelectComponent(props: SelectProps) {
+  const {
+    multiple,
+    items,
+    label,
+    placeholder,
+    selected,
+    onChange,
+    triggerReset,
+  } = props;
   const classes = useStyles();
   const [value, setValue] = useState<Selection>(
     selected || (multiple ? [] : ''),
@@ -228,4 +229,4 @@ export const SelectComponent = ({
       </ClickAwayListener>
     </div>
   );
-};
+}

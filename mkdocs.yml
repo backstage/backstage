@@ -156,14 +156,9 @@ nav:
       - Design: 'dls/design.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
-  - API references:
-      - TypeScript API:
+  - API Reference:
+      - Guides:
           - Utility APIs: 'api/utility-apis.md'
-          - reference/utility-apis/README: 'reference/utility-apis/README.md'
-          - createPlugin: 'reference/createPlugin.md'
-          - createPlugin -feature flags: 'reference/createPlugin-feature-flags.md'
-      - Backend APIs:
-          - Backend: 'api/backend.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'

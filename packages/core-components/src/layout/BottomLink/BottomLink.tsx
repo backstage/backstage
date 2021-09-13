@@ -41,7 +41,8 @@ export type BottomLinkProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
+export function BottomLink(props: BottomLinkProps) {
+  const { link, title, onClick } = props;
   const classes = useStyles();
 
   return (
@@ -59,4 +60,4 @@ export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
       </Link>
     </div>
   );
-};
+}
