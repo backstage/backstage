@@ -16,12 +16,10 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
-import { TextField, Box, Tooltip, Paper } from '@material-ui/core';
+import { TextField, Box, Tooltip } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { StatusColor } from '../styles';
 import { css, cx } from '@emotion/css';
-import { UserContext, useUserContext } from '../App/App';
-import { DataGrid } from '@mui/x-data-grid';
 
 type DenseTableProps = {
   dataSource: any[];
@@ -97,96 +95,37 @@ export const DenseTable: FC<DenseTableProps> = props => {
 };
 
 const CloudFetchComponent: FC<{}> = () => {
-  const {
-    value: { token, selectedCapability },
-  } = useUserContext();
   const { value, loading, error } = useAsync(async (): Promise<any> => {
-    if (!token) return null;
     const response = await fetch(
-      `https://inventa-master.hellman.oxygen.dfds.cloud/api/serviceproxy/${selectedCapability?.rootId}`,
-      {
-        method: 'GET',
-      },
+      'https://private-aa6799-zaradardfds.apiary-mock.com/servicebroker/1234',
     );
     const data = await response.json();
-    return data;
+    return data.data;
   }, []);
+  const [options, setOptions] = useState([value]);
+
+  useEffect(() => {
+    setOptions(value);
+  }, [value]);
 
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
+
   return (
     <React.Fragment>
       <Box width="auto" mb="2rem">
         <Autocomplete
-          options={[...value?.[0].ingresses, ...value?.[0].services]}
-          getOptionLabel={option => option.metadata.name}
+          options={options}
+          getOptionLabel={option => option.name}
           renderInput={params => (
             <TextField {...params} label="Search ..." variant="outlined" />
           )}
         />
       </Box>
-
-      <>
-        <DataGrid
-          rows={[
-            ...value?.[0].ingresses.map(i => ({ ...i, id: i.metadata.uid })),
-            ...value?.[0].services.map(i => ({ ...i, id: i.metadata.uid })),
-          ]}
-          columns={[
-            {
-              field: 'name',
-              headerName: 'name',
-              flex: 2,
-              valueGetter: params => {
-                return params.row.metadata.name;
-              },
-            },
-            {
-              field: 'kind',
-              headerName: 'kind',
-              flex: 1,
-              valueGetter: params => {
-                return params.row.kind;
-              },
-            },
-            {
-              field: 'namespaceProperty',
-              headerName: 'namespace property',
-              flex: 1,
-              valueGetter: params => {
-                return params.row.metadata.namespaceProperty;
-              },
-            },
-            {
-              field: 'annotations',
-              headerName: 'annotations',
-              flex: 3,
-              valueGetter: params => {
-                return JSON.stringify(params.row.metadata.annotations, null, 2);
-              },
-            },
-            {
-              field: 'apiVersion',
-              headerName: 'api version',
-              flex: 1,
-              valueGetter: params => {
-                return params.row.apiVersion;
-              },
-            },
-            {
-              field: 'created',
-              headerName: 'created at',
-              flex: 1,
-              valueGetter: params => {
-                return params.row.metadata.creationTimestamp;
-              },
-            },
-          ]}
-        />
-      </>
+      <DenseTable dataSource={value || []} />
     </React.Fragment>
   );
 };

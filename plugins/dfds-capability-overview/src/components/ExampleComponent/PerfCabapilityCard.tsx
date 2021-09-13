@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Box, Button, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
 import { blue, green } from '@material-ui/core/colors';
-import CloudQueueOutlined from '@material-ui/icons/CloudQueueOutlined';
+
 import classNames from 'classnames';
 import React from 'react';
 import { Link } from '../../../../../packages/core/src';
@@ -64,7 +64,6 @@ export const PerfCapabilityCard: React.FC<any> = React.memo(
     id,
     onLeaveButtonClick,
     onJoinButtonClick,
-    services,
   }) => {
     const classes = useStyles({ isMember });
     return (
@@ -108,50 +107,8 @@ export const PerfCapabilityCard: React.FC<any> = React.memo(
               )}
             </div>
           </div>
-          <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.12)', height: 1 }} />
-          <Box display="flex">
-            {services.ingressCount !== 0 && (
-              <Box p={2} flex={1}>
-                <Paper>
-                  <Box
-                    p={1}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography>Ingresses</Typography>
-                    <Box display="flex" alignItems="center">
-                      <Typography style={{ marginRight: 5 }}>
-                        {services.ingressCount}
-                      </Typography>
-                      <CloudQueueOutlined fontSize="small" />
-                    </Box>
-                  </Box>
-                </Paper>
-              </Box>
-            )}
-            {services.serviceCount !== 0 && (
-              <Box p={2} flex={1}>
-                <Paper>
-                  <Box
-                    p={1}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography>Services</Typography>
-                    <Box display="flex" alignItems="center">
-                      <Typography style={{ marginRight: 5 }}>
-                        {services.serviceCount}
-                      </Typography>
-                      <CloudQueueOutlined fontSize="small" />
-                    </Box>
-                  </Box>
-                </Paper>
-              </Box>
-            )}
-          </Box>
-          {/* <div className={classes.statusBox}>
+          {/* <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.12)', height: 1 }} />
+          <div className={classes.statusBox}>
             <span className={classes.updatedAt}>Status:</span>
             <div className={classes.statusBoxActions}>
               <caption className={classes.colorGreen}>✔ Available</caption>

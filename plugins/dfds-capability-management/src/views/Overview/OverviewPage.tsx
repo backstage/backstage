@@ -15,19 +15,26 @@
  */
 import React from 'react';
 import styled from '@emotion/styled';
+import { useAsync } from 'react-use';
 
 import OverviewComponent from '../../components/OverviewComponent';
 import MembersFetchComponent from '../../components/MembersComponent';
+// import StatusFetchComponent from '../../components/StatusComponent';
 import ButtonComponent from '../../components/shared/ButtonComponent';
 import HeaderComponent from '../../components/shared/HeaderComponent';
 import { Container } from '../../components/styles';
-import { Progress } from '@backstage/core';
+import {
+  configApiRef,
+  microsoftAuthApiRef,
+  Progress,
+  useApi,
+} from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
+import queryString from 'query-string';
 
-// import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
-import { useUserContext } from '../../components/App/App';
 
 const LeftContainer = styled.div`
   display: grid;
@@ -35,77 +42,105 @@ const LeftContainer = styled.div`
 `;
 
 const OverviewPage: React.FC<{}> = () => {
-  const { value, loading, error } = useUserContext();
-  // const navigate = useNavigate();
-  if (!value) return null;
+  const authApi = useApi(microsoftAuthApiRef);
+  const location = useLocation();
+
+  const configApi = useApi(configApiRef);
+  const baseUrl = configApi.getOptionalString('backend.baseUrl');
+  const { value, loading, error } = useAsync(async (): Promise<any> => {
+    // eslint-disable-next-line new-cap
+    const token = await authApi.GetAccessTokenClientSide([
+      'api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user',
+    ]);
+    const authProfile = await authApi.getProfile();
+    const response = await fetch(
+      `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${
+        queryString.parse(location.search).id
+      }`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const data = await response.json();
+    return { ...data, profile: authProfile, token };
+  }, []);
+
+  const navigate = useNavigate();
+
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
-  const isMember = value.selectedCapability.members.some(
+  const isMember = value.members.some(
     (member: { email: string }) => member.email === value.profile.email,
   );
 
   return (
     <React.Fragment>
-      {/* <Button
+      <Button
         onClick={() => navigate(-1)}
         startIcon={<NavigateBefore />}
         style={{ marginBottom: 16 }}
       >
         back
-      </Button> */}
-      <HeaderComponent title={`${value.selectedCapability.name}`} />
+      </Button>
+      <HeaderComponent title={`${value.name}`} />
 
       <Container>
-        <OverviewComponent
-          // title={value.selectedCapability.name}
-          capabilityId={value.selectedCapability.rootId}
-          description={value.selectedCapability.description}
-          createdAt={value.selectedCapability.created}
-        />
-        <MembersFetchComponent data={value.selectedCapability.members} />
-        {isMember ? (
-          <ButtonComponent
-            color="secondary"
-            onClick={async () => {
-              await fetch(
-                `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members/${value.profile?.email}`,
-                {
-                  method: 'DELETE',
-                  headers: {
-                    Authorization: `Bearer ${value.token}`,
-                    'Content-Type': 'application/json',
+        <LeftContainer>
+          <OverviewComponent
+            // title={value.name}
+            capabilityId={value.rootId}
+            description={value.description}
+            createdAt={value.created}
+            baseUrl={baseUrl}
+            id={value.id}
+            token={value.token}
+          />
+          <MembersFetchComponent data={value.members} />
+          {isMember ? (
+            <ButtonComponent
+              color="secondary"
+              onClick={async id => {
+                await fetch(
+                  `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${id}/members/${value.authProfile?.email}`,
+                  {
+                    method: 'DELETE',
+                    headers: {
+                      Authorization: `Bearer ${value.token}`,
+                      'Content-Type': 'application/json',
+                    },
                   },
-                },
-              );
-            }}
-          >
-            leave
-          </ButtonComponent>
-        ) : (
-          <ButtonComponent
-            onClick={async () => {
-              await fetch(
-                `${value.baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${value.selectedCapability.id}/members`,
-                {
-                  method: 'POST',
-                  headers: {
-                    Authorization: `Bearer ${value.token}`,
-                    'Content-Type': 'application/json',
+                );
+              }}
+            >
+              leave
+            </ButtonComponent>
+          ) : (
+            <ButtonComponent
+              onClick={async id => {
+                await fetch(
+                  `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${id}/members`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      Authorization: `Bearer ${value.token}`,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: value.authProfile.email }),
                   },
-                  body: JSON.stringify({ email: value.profile.email }),
-                },
-              );
-            }}
-          >
-            join
-          </ButtonComponent>
-        )}
-
-        {/* <
-          StatusFetchComponent
+                );
+              }}
+            >
+              join
+            </ButtonComponent>
+          )}
+        </LeftContainer>
+        {/* <StatusFetchComponent
           statusColor={value.status.value}
           tooltip={value.status.reasonPhrase}
           comments={value.status.comments}
