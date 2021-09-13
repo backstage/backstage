@@ -83,10 +83,9 @@ export const transforms = (options: TransformOptions): Transforms => {
         { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
         /\.xml/,
       ],
-      loader: require.resolve('url-loader'),
-      options: {
-        limit: 10000,
-        name: 'static/[name].[hash:8].[ext]',
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8].[ext]',
       },
     },
     {
@@ -102,7 +101,10 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       include: /\.(md)$/,
-      use: require.resolve('raw-loader'),
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
     },
     {
       test: /\.css$/i,
