@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  LOCATION_ANNOTATION,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -40,7 +36,7 @@ import {
   GetProcessableEntitiesResult,
   ProcessingDatabase,
   RefreshStateItem,
-  RefreshUnprocessedEntitiesOptions,
+  RefreshOptions,
   ReplaceUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
 } from './types';
@@ -515,11 +511,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     };
   }
 
-  // TODO(jhaals): Rename this to refreshEntity/refreshEntities?
-  async refreshUnprocessedEntities(
-    txOpaque: Transaction,
-    options: RefreshUnprocessedEntitiesOptions,
-  ): Promise<void> {
+  async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
     if ('entityRef' in options) {
       const { entityRef } = options;

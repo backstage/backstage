@@ -19,12 +19,10 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { DbLocationsRow } from './database/tables';
-import { RefreshStateMatch } from './database/types';
 import { getEntityLocationRef } from './processing/util';
 import {
   EntityProvider,
   EntityProviderConnection,
-  EntityRefreshOptions,
   LocationStore,
 } from './types';
 import { locationSpecToLocationEntity } from './util';
@@ -135,22 +133,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'full',
       entities,
     });
-  }
-
-  async refresh(_options: EntityRefreshOptions) {
-    // const match: RefreshStateMatch = {};
-    // // locationKey?: string;
-    // // entityRef?: string;
-    // if (options.entityRef) {
-    //    match.entityRef = options.entityRef;
-    // }
-    // if (options.locationRef) {
-    //   // TODO
-    // }
-    // await this.connection.applyMutation({
-    //   type: 'refresh',
-    //   match,
-    // });
   }
 
   private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {

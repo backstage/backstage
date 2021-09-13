@@ -15,7 +15,6 @@
  */
 
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { RefreshStateMatch } from './database/types';
 import { DeferredEntity } from './processing/types';
 
 export interface LocationService {
@@ -41,12 +40,9 @@ export interface CatalogProcessingEngine {
   refresh(options: EntityRefreshOptions): Promise<void>;
 }
 
-export type EntityRefreshOptions =
-  | { entityRef: string } // example: component:default/backstage
-  | { locationRef: string }; // example: url:https://github.com/backstage/backstage/blob/master/catalog-info.yaml
+export type EntityRefreshOptions = { entityRef: string };
 
 export type EntityProviderMutation =
-  | { type: 'refresh'; match: RefreshStateMatch } // TODO(jhaals): Should this really use a type from the db?
   | { type: 'full'; entities: DeferredEntity[] }
   | { type: 'delta'; added: DeferredEntity[]; removed: DeferredEntity[] };
 
@@ -57,5 +53,4 @@ export interface EntityProviderConnection {
 export interface EntityProvider {
   getProviderName(): string;
   connect(connection: EntityProviderConnection): Promise<void>;
-  refresh?(options: EntityRefreshOptions): Promise<void>;
 }
