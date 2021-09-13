@@ -95,7 +95,6 @@ const SKIPPED_PACKAGES = [
   'packages/cli',
   'packages/codemods',
   'packages/create-app',
-  'packages/docgen',
   'packages/e2e-test',
   'packages/storybook',
   'packages/techdocs-cli',

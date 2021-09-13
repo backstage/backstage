@@ -145,12 +145,6 @@ Provides utilities for developing plugins in isolation.
 
 Stability: `0`. This package is largely broken and needs updates.
 
-### `docgen` [GitHub](https://github.com/backstage/backstage/tree/master/packages/docgen/)
-
-Internal CLI utility for generating API Documentation.
-
-Stability: `N/A`
-
 ### `e2e-test` [GitHub](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
 
 Internal CLI utility for running e2e tests.
