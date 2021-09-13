@@ -103,8 +103,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       sourceEntityRef: stringifyEntityRef(processedEntity),
     });
 
-    // Update fragments
-
     // Delete old relations
     await tx<DbRelationsRow>('relations')
       .where({ originating_entity_id: id })
@@ -329,6 +327,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
+  /**
+   * Add a set of deferred entities for processing.
+   * The entities will be added at the front of the processing queue.
+   */
   async addUnprocessedEntities(
     txOpaque: Transaction,
     options: AddUnprocessedEntitiesOptions,
@@ -352,6 +354,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           unprocessed_entity: serializedEntity,
           location_key: locationKey,
           last_discovery_at: tx.fn.now(),
+          // We only get to this point if a processed entity actually had any changes, or
+          // if an entity provider requested this mutation, meaning that we can safely
+          // bump the deferred entities to the front of the queue for immediate processing.
           next_update_at: tx.fn.now(),
         })
         .where('entity_ref', entityRef)

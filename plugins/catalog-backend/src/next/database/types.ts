@@ -86,6 +86,9 @@ export type RefreshOptions = {
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
+  /**
+   * Add unprocessed entities to the front of the processing queue using a mutation.
+   */
   replaceUnprocessedEntities(
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
@@ -97,7 +100,10 @@ export interface ProcessingDatabase {
   ): Promise<GetProcessableEntitiesResult>;
 
   /**
-   * Updates a processed entity
+   * Updates a processed entity.
+   *
+   * Any deferred entities are added at the front of the processing queue for
+   * immediate processing, meaning this should only be called when the entity has changes.
    */
   updateProcessedEntity(
     txOpaque: Transaction,
@@ -112,5 +118,8 @@ export interface ProcessingDatabase {
     options: UpdateProcessedEntityErrorsOptions,
   ): Promise<void>;
 
+  /**
+   * Schedules a refresh of a given entityRef.
+   */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
 }
