@@ -514,7 +514,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     };
   }
 
-  // TODO(jhaals): Rename this to refreshEntity?
+  // TODO(jhaals): Rename this to refreshEntity/refreshEntities?
   async refreshUnprocessedEntities(
     txOpaque: Transaction,
     options: RefreshUnprocessedEntitiesOptions,

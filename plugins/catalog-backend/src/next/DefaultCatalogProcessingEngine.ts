@@ -104,6 +104,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
+    private readonly pollingIntervalMs: number = 1000,
   ) {}
 
   async start() {
@@ -123,6 +124,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     this.stopFunc = startTaskPipeline<RefreshStateItem>({
       lowWatermark: 5,
       highWatermark: 10,
+      pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
           const { items } = await this.processingDatabase.transaction(
