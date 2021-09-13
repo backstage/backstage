@@ -21,22 +21,25 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
 import { CatalogProcessor } from './types';
 
-export type ResolverRead = (url: string) => Promise<Buffer>;
-export type ResolverResolveUrl = (url: string, base: string) => string;
+export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
+export type PlaceholderResolverResolveUrl = (
+  url: string,
+  base: string,
+) => string;
 
-export type ResolverParams = {
+export type PlaceholderResolverParams = {
   key: string;
   value: JsonValue;
   baseUrl: string;
-  read: ResolverRead;
-  resolveUrl: ResolverResolveUrl;
+  read: PlaceholderResolverRead;
+  resolveUrl: PlaceholderResolverResolveUrl;
 };
 
 export type PlaceholderResolver = (
-  params: ResolverParams,
+  params: PlaceholderResolverParams,
 ) => Promise<JsonValue>;
 
-type Options = {
+export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver>;
   reader: UrlReader;
   integrations: ScmIntegrationRegistry;
@@ -47,7 +50,7 @@ type Options = {
  * that it then fills in with actual data.
  */
 export class PlaceholderProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  constructor(private readonly options: PlaceholderProcessorOptions) {}
 
   async preProcessEntity(
     entity: Entity,
@@ -135,7 +138,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
  */
 
 export async function yamlPlaceholderResolver(
-  params: ResolverParams,
+  params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   const text = await readTextLocation(params);
 
@@ -166,7 +169,7 @@ export async function yamlPlaceholderResolver(
 }
 
 export async function jsonPlaceholderResolver(
-  params: ResolverParams,
+  params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   const text = await readTextLocation(params);
 
@@ -180,7 +183,7 @@ export async function jsonPlaceholderResolver(
 }
 
 export async function textPlaceholderResolver(
-  params: ResolverParams,
+  params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   return await readTextLocation(params);
 }
@@ -189,7 +192,9 @@ export async function textPlaceholderResolver(
  * Helpers
  */
 
-async function readTextLocation(params: ResolverParams): Promise<string> {
+async function readTextLocation(
+  params: PlaceholderResolverParams,
+): Promise<string> {
   const newUrl = relativeUrl(params);
 
   try {
@@ -207,7 +212,7 @@ function relativeUrl({
   value,
   baseUrl,
   resolveUrl,
-}: ResolverParams): string {
+}: PlaceholderResolverParams): string {
   if (typeof value !== 'string') {
     throw new Error(
       `Placeholder \$${key} expected a string value parameter, in the form of an absolute URL or a relative path`,

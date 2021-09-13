@@ -15,3 +15,4 @@
  */
 
 export { DefaultCatalogCollator } from './DefaultCatalogCollator';
+export type { CatalogEntityDocument } from './DefaultCatalogCollator';

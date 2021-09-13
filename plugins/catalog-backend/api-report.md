@@ -40,6 +40,36 @@ export type AddLocationResult = {
   entities: Entity[];
 };
 
+// Warning: (ae-missing-release-tag) "AnalyzeLocationEntityField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AnalyzeLocationEntityField = {
+  field: string;
+  state:
+    | 'analysisSuggestedValue'
+    | 'analysisSuggestedNoValue'
+    | 'needsUserInput';
+  value: string | null;
+  description: string;
+};
+
+// Warning: (ae-missing-release-tag) "AnalyzeLocationExistingEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AnalyzeLocationExistingEntity = {
+  location: LocationSpec;
+  isRegistered: boolean;
+  entity: Entity;
+};
+
+// Warning: (ae-missing-release-tag) "AnalyzeLocationGenerateEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AnalyzeLocationGenerateEntity = {
+  entity: RecursivePartial<Entity>;
+  fields: AnalyzeLocationEntityField[];
+};
+
 // Warning: (ae-missing-release-tag) "AnalyzeLocationRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -111,8 +141,6 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   normalizeName(name: string): string;
   // (undocumented)
   organizations: Organizations;
-  // Warning: (ae-forgotten-export) The symbol "AwsOrganizationProviderConfig" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   provider: AwsOrganizationProviderConfig;
   // (undocumented)
@@ -122,6 +150,13 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// Warning: (ae-missing-release-tag) "AwsOrganizationProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AwsOrganizationProviderConfig = {
+  roleArn?: string;
+};
 
 // Warning: (ae-missing-release-tag) "BitbucketDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -186,8 +221,6 @@ export class CatalogBuilder {
     higherOrderOperation: HigherOrderOperation;
     locationAnalyzer: LocationAnalyzer;
   }>;
-  // Warning: (ae-forgotten-export) The symbol "CatalogEnvironment" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create(env: CatalogEnvironment): Promise<NextCatalogBuilder>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -204,6 +237,42 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+}
+
+// Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CatalogEntityDocument extends IndexableDocument {
+  // (undocumented)
+  componentType: string;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  lifecycle: string;
+  // (undocumented)
+  namespace: string;
+  // (undocumented)
+  owner: string;
+}
+
+// Warning: (ae-missing-release-tag) "CatalogEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogEnvironment = {
+  logger: Logger_2;
+  database: PluginDatabaseManager;
+  config: Config;
+  reader: UrlReader;
+};
+
+// Warning: (ae-missing-release-tag) "CatalogProcessingEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CatalogProcessingEngine {
+  // (undocumented)
+  start(): Promise<void>;
+  // (undocumented)
+  stop(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -332,15 +401,11 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]>;
-  // Warning: (ae-forgotten-export) The symbol "DbLocationsRow" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   addLocation(
     txOpaque: Transaction,
     location: Location_2,
   ): Promise<DbLocationsRow>;
-  // Warning: (ae-forgotten-export) The symbol "DatabaseLocationUpdateLogStatus" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   addLocationUpdateLogEvent(
     locationId: string,
@@ -348,9 +413,6 @@ export class CommonDatabase implements Database {
     entityName?: string | string[],
     message?: string,
   ): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "DbEntitiesRequest" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "DbEntitiesResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   entities(
     txOpaque: Transaction,
@@ -366,12 +428,8 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined>;
-  // Warning: (ae-forgotten-export) The symbol "DbLocationsRowWithStatus" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   location(id: string): Promise<DbLocationsRowWithStatus>;
-  // Warning: (ae-forgotten-export) The symbol "DatabaseLocationUpdateLogEvent" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
   // (undocumented)
@@ -397,12 +455,18 @@ export class CommonDatabase implements Database {
   ): Promise<DbEntityResponse>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CreateDatabaseOptions = {
+  logger: Logger_2;
+};
+
 // Warning: (ae-missing-release-tag) "createNextRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function createNextRouter(
-  options: RouterOptions_2,
+  options: NextRouterOptions,
 ): Promise<express.Router>;
 
 // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -471,9 +535,6 @@ export type Database = {
 // @public (undocumented)
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(database: Database, logger: Logger_2);
-  // Warning: (ae-forgotten-export) The symbol "EntityUpsertRequest" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "EntityUpsertResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   batchAddOrUpdateEntities(
     requests: EntityUpsertRequest[],
@@ -483,9 +544,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
-  // Warning: (ae-forgotten-export) The symbol "EntitiesRequest" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "EntitiesResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
   // (undocumented)
@@ -503,8 +561,6 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   location(id: string): Promise<LocationResponse>;
   // (undocumented)
   locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
-  // Warning: (ae-forgotten-export) The symbol "LocationResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   locations(): Promise<LocationResponse[]>;
   // (undocumented)
@@ -522,12 +578,32 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   removeLocation(id: string): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "DatabaseLocationUpdateLogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DatabaseLocationUpdateLogEvent = {
+  id: string;
+  status: DatabaseLocationUpdateLogStatus;
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
+};
+
+// Warning: (ae-missing-release-tag) "DatabaseLocationUpdateLogStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum DatabaseLocationUpdateLogStatus {
+  // (undocumented)
+  FAIL = 'fail',
+  // (undocumented)
+  SUCCESS = 'success',
+}
+
 // Warning: (ae-missing-release-tag) "DatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class DatabaseManager {
-  // Warning: (ae-forgotten-export) The symbol "CreateDatabaseOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static createDatabase(
     knex: Knex,
@@ -542,6 +618,22 @@ export class DatabaseManager {
   // (undocumented)
   static createTestDatabaseConnection(): Promise<Knex>;
 }
+
+// Warning: (ae-missing-release-tag) "DbEntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DbEntitiesRequest = {
+  filter?: EntityFilter;
+  pagination?: EntityPagination;
+};
+
+// Warning: (ae-missing-release-tag) "DbEntitiesResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DbEntitiesResponse = {
+  entities: DbEntityResponse[];
+  pageInfo: DbPageInfo;
+};
 
 // Warning: (ae-missing-release-tag) "DbEntityRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -559,6 +651,36 @@ export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
 };
+
+// Warning: (ae-missing-release-tag) "DbLocationsRow" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DbLocationsRow = {
+  id: string;
+  type: string;
+  target: string;
+};
+
+// Warning: (ae-missing-release-tag) "DbLocationsRowWithStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DbLocationsRowWithStatus = DbLocationsRow & {
+  status: string | null;
+  timestamp: string | null;
+  message: string | null;
+};
+
+// Warning: (ae-missing-release-tag) "DbPageInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DbPageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -584,8 +706,6 @@ export class DefaultCatalogCollator implements DocumentCollator {
   protected readonly catalogClient: CatalogApi;
   // (undocumented)
   protected discovery: PluginEndpointDiscovery;
-  // Warning: (ae-forgotten-export) The symbol "CatalogEntityDocument" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
@@ -621,6 +741,14 @@ export class DefaultCatalogProcessingOrchestrator
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
+// Warning: (ae-missing-release-tag) "DeferredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DeferredEntity = {
+  entity: Entity;
+  locationKey?: string;
+};
+
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -641,6 +769,23 @@ export type EntitiesCatalog = {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
+};
+
+// Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntitiesRequest = {
+  filter?: EntityFilter;
+  fields?: (entity: Entity) => Entity;
+  pagination?: EntityPagination;
+};
+
+// Warning: (ae-missing-release-tag) "EntitiesResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntitiesResponse = {
+  entities: Entity[];
+  pageInfo: PageInfo;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesSearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -734,6 +879,22 @@ export type EntityProviderMutation =
       added: DeferredEntity[];
       removed: DeferredEntity[];
     };
+
+// Warning: (ae-missing-release-tag) "EntityUpsertRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityUpsertRequest = {
+  entity: Entity;
+  relations: EntityRelationSpec[];
+};
+
+// Warning: (ae-missing-release-tag) "EntityUpsertResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityUpsertResponse = {
+  entityId: string;
+  entity?: Entity;
+};
 
 // Warning: (ae-missing-release-tag) "FileReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -900,8 +1061,7 @@ export type LocationAnalyzer = {
 //
 // @public (undocumented)
 export class LocationEntityProcessor implements CatalogProcessor {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options_3);
+  constructor(options: LocationEntityProcessorOptions);
   // (undocumented)
   postProcessEntity(
     entity: Entity,
@@ -909,6 +1069,13 @@ export class LocationEntityProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<Entity>;
 }
+
+// Warning: (ae-missing-release-tag) "LocationEntityProcessorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LocationEntityProcessorOptions = {
+  integrations: ScmIntegrationRegistry;
+};
 
 // Warning: (ae-missing-release-tag) "LocationReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -926,6 +1093,14 @@ export class LocationReaders implements LocationReader {
   // (undocumented)
   read(location: LocationSpec): Promise<ReadLocationResult>;
 }
+
+// Warning: (ae-missing-release-tag) "LocationResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LocationResponse = {
+  data: Location_2;
+  currentStatus: LocationUpdateStatus;
+};
 
 // Warning: (ae-missing-release-tag) "LocationsCatalog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -947,12 +1122,66 @@ export type LocationsCatalog = {
   ): Promise<void>;
 };
 
+// Warning: (ae-missing-release-tag) "LocationService" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface LocationService {
+  // (undocumented)
+  createLocation(
+    spec: LocationSpec,
+    dryRun: boolean,
+  ): Promise<{
+    location: Location_2;
+    entities: Entity[];
+  }>;
+  // (undocumented)
+  deleteLocation(id: string): Promise<void>;
+  // (undocumented)
+  getLocation(id: string): Promise<Location_2>;
+  // (undocumented)
+  listLocations(): Promise<Location_2[]>;
+}
+
+// Warning: (ae-missing-release-tag) "LocationStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface LocationStore {
+  // (undocumented)
+  createLocation(spec: LocationSpec): Promise<Location_2>;
+  // (undocumented)
+  deleteLocation(id: string): Promise<void>;
+  // (undocumented)
+  getLocation(id: string): Promise<Location_2>;
+  // (undocumented)
+  listLocations(): Promise<Location_2[]>;
+}
+
+// Warning: (ae-missing-release-tag) "LocationUpdateLogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LocationUpdateLogEvent = {
+  id: string;
+  status: 'fail' | 'success';
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
+};
+
+// Warning: (ae-missing-release-tag) "LocationUpdateStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LocationUpdateStatus = {
+  timestamp: string | null;
+  status: string | null;
+  message: string | null;
+};
+
 // Warning: (ae-missing-release-tag) "NextCatalogBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export class NextCatalogBuilder {
-  // Warning: (ae-forgotten-export) The symbol "CatalogEnvironment" needs to be exported by the entry point index.d.ts
-  constructor(env: CatalogEnvironment_2);
+  constructor(env: CatalogEnvironment);
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -986,6 +1215,22 @@ export class NextCatalogBuilder {
   setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder;
 }
 
+// Warning: (ae-missing-release-tag) "NextRouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface NextRouterOptions {
+  // (undocumented)
+  config: Config;
+  // (undocumented)
+  entitiesCatalog?: EntitiesCatalog;
+  // (undocumented)
+  locationAnalyzer?: LocationAnalyzer;
+  // (undocumented)
+  locationService: LocationService;
+  // (undocumented)
+  logger: Logger_2;
+}
+
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -993,6 +1238,18 @@ function notFoundError(
   atLocation: LocationSpec,
   message: string,
 ): CatalogProcessorResult;
+
+// Warning: (ae-missing-release-tag) "PageInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
 
 // Warning: (ae-missing-release-tag) "parseEntityYaml" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1006,19 +1263,50 @@ export function parseEntityYaml(
 //
 // @public
 export class PlaceholderProcessor implements CatalogProcessor {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options_4);
+  constructor(options: PlaceholderProcessorOptions);
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "ResolverParams" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "PlaceholderProcessorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PlaceholderProcessorOptions = {
+  resolvers: Record<string, PlaceholderResolver>;
+  reader: UrlReader;
+  integrations: ScmIntegrationRegistry;
+};
+
 // Warning: (ae-missing-release-tag) "PlaceholderResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type PlaceholderResolver = (
-  params: ResolverParams,
+  params: PlaceholderResolverParams,
 ) => Promise<JsonValue>;
+
+// Warning: (ae-missing-release-tag) "PlaceholderResolverParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PlaceholderResolverParams = {
+  key: string;
+  value: JsonValue;
+  baseUrl: string;
+  read: PlaceholderResolverRead;
+  resolveUrl: PlaceholderResolverResolveUrl;
+};
+
+// Warning: (ae-missing-release-tag) "PlaceholderResolverRead" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
+
+// Warning: (ae-missing-release-tag) "PlaceholderResolverResolveUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PlaceholderResolverResolveUrl = (
+  url: string,
+  base: string,
+) => string;
 
 // Warning: (ae-missing-release-tag) "ReadLocationEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1132,7 +1420,7 @@ export type Transaction = {
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options_5);
+  constructor(options: Options_3);
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -1150,7 +1438,6 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/catalog/types.d.ts:43:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:44:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:45:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:75:5 - (ae-forgotten-export) The symbol "LocationUpdateLogEvent" needs to be exported by the entry point index.d.ts
 // src/database/types.d.ts:125:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:131:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:132:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -1179,11 +1466,6 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/ingestion/processors/types.d.ts:58:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/types.d.ts:49:5 - (ae-forgotten-export) The symbol "AnalyzeLocationExistingEntity" needs to be exported by the entry point index.d.ts
-// src/ingestion/types.d.ts:50:5 - (ae-forgotten-export) The symbol "AnalyzeLocationGenerateEntity" needs to be exported by the entry point index.d.ts
-// src/next/NextCatalogBuilder.d.ts:147:9 - (ae-forgotten-export) The symbol "CatalogProcessingEngine" needs to be exported by the entry point index.d.ts
-// src/next/NextCatalogBuilder.d.ts:148:9 - (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
-// src/next/processing/types.d.ts:11:5 - (ae-forgotten-export) The symbol "DeferredEntity" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

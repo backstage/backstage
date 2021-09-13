@@ -16,5 +16,18 @@
 
 export { HigherOrderOperations } from './HigherOrderOperations';
 export { LocationReaders } from './LocationReaders';
-export * from './types';
+export type {
+  AddLocationResult,
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+  HigherOrderOperation,
+  LocationAnalyzer,
+  LocationReader,
+  ReadLocationEntity,
+  ReadLocationError,
+  ReadLocationResult,
+  AnalyzeLocationEntityField,
+  AnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity,
+} from './types';
 export * from './processors';

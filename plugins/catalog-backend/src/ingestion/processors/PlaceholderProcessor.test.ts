@@ -21,8 +21,8 @@ import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
   PlaceholderResolver,
-  ResolverParams,
-  ResolverRead,
+  PlaceholderResolverParams,
+  PlaceholderResolverRead,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
@@ -30,7 +30,7 @@ import {
 const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
-  const read: jest.MockedFunction<ResolverRead> = jest.fn();
+  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
   const reader: UrlReader = { read, readTree: jest.fn(), search: jest.fn() };
 
   beforeEach(() => {
@@ -353,8 +353,8 @@ describe('PlaceholderProcessor', () => {
 });
 
 describe('yamlPlaceholderResolver', () => {
-  const read: jest.MockedFunction<ResolverRead> = jest.fn();
-  const params: ResolverParams = {
+  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
+  const params: PlaceholderResolverParams = {
     key: 'a',
     value: './file.yaml',
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
@@ -398,8 +398,8 @@ describe('yamlPlaceholderResolver', () => {
 });
 
 describe('jsonPlaceholderResolver', () => {
-  const read: jest.MockedFunction<ResolverRead> = jest.fn();
-  const params: ResolverParams = {
+  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
+  const params: PlaceholderResolverParams = {
     key: 'a',
     value: './file.json',
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',

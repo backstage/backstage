@@ -38,12 +38,12 @@ export function toAbsoluteUrl(
   }
 }
 
-type Options = {
+export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
 
 export class LocationEntityProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  constructor(private readonly options: LocationEntityProcessorOptions) {}
 
   async postProcessEntity(
     entity: Entity,
