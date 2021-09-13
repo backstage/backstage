@@ -94,7 +94,8 @@ const headerProps = (
 ): { headerTitle: string; headerType: string } => {
   const kind = paramKind ?? entity?.kind ?? '';
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name = paramName ?? entity?.metadata.name ?? '';
+  const name =
+    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
   return {
     headerTitle: `${name}${
       namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
