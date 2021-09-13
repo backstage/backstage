@@ -40,7 +40,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     padding: 0,
   },
   actionButtons: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 0),
   },
 }));
 
@@ -82,9 +82,7 @@ export const OAuthRequestDialog = () => {
       </DialogContent>
 
       <DialogActions classes={{ root: classes.actionButtons }}>
-        <Button variant="contained" color="secondary" onClick={handleRejectAll}>
-          Reject All
-        </Button>
+        <Button onClick={handleRejectAll}>Reject All</Button>
       </DialogActions>
     </Dialog>
   );
