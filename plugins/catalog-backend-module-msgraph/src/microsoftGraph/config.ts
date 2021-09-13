@@ -52,6 +52,12 @@ export type MicrosoftGraphProviderConfig = {
    */
   userFilter?: string;
   /**
+   * The filter to apply to extract users by groups memberships.
+   *
+   * E.g. "displayName eq 'Backstage Users'"
+   */
+  userGroupMemberFilter?: string;
+  /**
    * The filter to apply to extract groups.
    *
    * E.g. "securityEnabled eq false and mailEnabled eq true"
@@ -74,6 +80,9 @@ export function readMicrosoftGraphConfig(
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
     const userFilter = providerConfig.getOptionalString('userFilter');
+    const userGroupMemberFilter = providerConfig.getOptionalString(
+      'userGroupMemberFilter',
+    );
     const groupFilter = providerConfig.getOptionalString('groupFilter');
 
     providers.push({
@@ -83,6 +92,7 @@ export function readMicrosoftGraphConfig(
       clientId,
       clientSecret,
       userFilter,
+      userGroupMemberFilter,
       groupFilter,
     });
   }
