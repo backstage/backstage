@@ -56,6 +56,9 @@ catalog:
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           userFilter: accountEnabled eq true and userType eq 'member'
+          # Optional filter for users, use group membership to get users
+          # This appends the users to the list of users retrieved via userFilter
+          userGroupMemberFilter: "displayName eq 'Backstage Users'"
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
           groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
