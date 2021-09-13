@@ -7,4 +7,64 @@ ignore:
         reason: Developer tools are not a valid target for ReDoS attacks
         expires: 2022-03-06T17:18:55.019Z
         created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-ANSIREGEX-1583908:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-CSSWHAT-1298035:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-BROWSERSLIST-1090194:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-ISSVG-1243891:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-ISSVG-1085627:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-POSTCSS-1255640:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-POSTCSS-1090595:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-WS-1296835:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-IMMER-1540542:
+    - '*':
+        reason: Prototype pollution is not an effective attack against a CLI as it already executes arbitrary code
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+
+  SNYK-JS-SETVALUE-1540541:
+    - '*':
+        reason: Prototype pollution is not an effective attack against a CLI as it already executes arbitrary code
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
 patch: {}
