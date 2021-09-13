@@ -19,6 +19,7 @@ import * as results from './results';
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 export { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
 export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
+export type { AwsOrganizationProviderConfig } from './awsOrganization/config';
 export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
@@ -28,8 +29,15 @@ export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
 export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';
+export type { LocationEntityProcessorOptions } from './LocationEntityProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
-export type { PlaceholderResolver } from './PlaceholderProcessor';
+export type {
+  PlaceholderProcessorOptions,
+  PlaceholderResolver,
+  PlaceholderResolverParams,
+  PlaceholderResolverRead,
+  PlaceholderResolverResolveUrl,
+} from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';
 export * from './types';
 export { UrlReaderProcessor } from './UrlReaderProcessor';

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -29,11 +25,9 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import lodash from 'lodash';
-import { Logger } from 'winston';
 import {
   DatabaseLocationsCatalog,
   EntitiesCatalog,
@@ -80,13 +74,7 @@ import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from './refresh';
-
-export type CatalogEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-};
+import { CatalogEnvironment } from '../service/CatalogBuilder';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
