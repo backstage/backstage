@@ -88,6 +88,8 @@ async function main() {
   });
   const createEnv = makeCreateEnv(config);
 
+  logger.info('hiiiii secret-1');
+
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const codeCoverageEnv = useHotMemoize(module, () =>
