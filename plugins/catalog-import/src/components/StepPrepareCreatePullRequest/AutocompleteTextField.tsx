@@ -37,7 +37,7 @@ type Props<TFieldValue extends string> = {
   textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
 };
 
-export const AutocompleteTextField = <TFieldValue extends string = string>({
+export const AutocompleteTextField = <TFieldValue extends string>({
   name,
   options,
   required,
