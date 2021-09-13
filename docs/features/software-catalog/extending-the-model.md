@@ -401,11 +401,31 @@ Example intent:
 > "I have multiple versions of my API deployed in different environments so I
 > want to have `mytool-dev` and `mytool-prod` as different entities."
 
-While it's possible to have different versions of the same thing represented
-as separate entities, it's something we generally recommend against. We believe that a
-developer should be able to just find for example one `Component` representing a service, and to be able to see the
-different code versions that are deployed throughout your stack within its view. This reasoning works similarly for other kinds as well, such as `API`.
+While it's possible to have different versions of the same thing represented as
+separate entities, it's something we generally recommend against. We believe
+that a developer should be able to just find for example one `Component`
+representing a service, and to be able to see the different code versions that
+are deployed throughout your stack within its view. This reasoning works
+similarly for other kinds as well, such as `API`.
 
-That being said - sometimes the differences between versions are so large, that they represent what is for all intents and purposes an entirely new entity as seen from the consumer's point of view. This can happen for example for different _significant_ major versions of an API, and in particular if the two major versions coexist in the ecosystem for some time. In those cases, it can be motivated to have one `my-api-v2` and one `my-api-v3` named entity. This matches the end user's expectations when searching for the API, and matches the desire to maybe have separate documentation for the two and similar. But use this sparingly - only do it if the extra modelling burden is outweighed by any potential better clarity for users.
+That being said - sometimes the differences between versions are so large, that
+they represent what is for all intents and purposes an entirely new entity as
+seen from the consumer's point of view. This can happen for example for
+different _significant_ major versions of an API, and in particular if the two
+major versions coexist in the ecosystem for some time. In those cases, it can be
+motivated to have one `my-api-v2` and one `my-api-v3` named entity. This matches
+the end user's expectations when searching for the API, and matches the desire
+to maybe have separate documentation for the two and similar. But use this
+sparingly - only do it if the extra modelling burden is outweighed by any
+potential better clarity for users.
 
-When writing your custom plugins, we encourage designing them such that they can show all the different variations through environments etc under one canonical reference to your software in the catalog. For example for a continuous deployment plugin, a user is likely to be greatly helped by being able to see the entity's versions deployed in all different environments next to each other in one view. That is also where they might be offered the ability to promote from one environment to the other, do rollbacks, see their relative performance metrics, and similar. This coherency and collection of tooling in one place is where something like Backstage can offer the most value and effectiveness of use. Splitting your entities apart into small islands makes this harder.
+When writing your custom plugins, we encourage designing them such that they can
+show all the different variations through environments etc under one canonical
+reference to your software in the catalog. For example for a continuous
+deployment plugin, a user is likely to be greatly helped by being able to see
+the entity's versions deployed in all different environments next to each other
+in one view. That is also where they might be offered the ability to promote
+from one environment to the other, do rollbacks, see their relative performance
+metrics, and similar. This coherency and collection of tooling in one place is
+where something like Backstage can offer the most value and effectiveness of
+use. Splitting your entities apart into small islands makes this harder.
