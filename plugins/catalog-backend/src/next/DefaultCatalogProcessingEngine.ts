@@ -242,7 +242,16 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async refresh(options: EntityRefreshOptions) {
     await this.processingDatabase.transaction(async tx => {
-      await this.processingDatabase.refresh(tx, options);
+      const { entityRefs } = await this.processingDatabase.listAncestors(tx, {
+        entityRef: options.entityRef,
+      });
+      const locationAncestor = entityRefs.find(ref =>
+        ref.startsWith('location:'),
+      );
+
+      await this.processingDatabase.refresh(tx, {
+        entityRef: locationAncestor ?? options.entityRef,
+      });
     });
   }
 }

@@ -83,6 +83,14 @@ export type RefreshOptions = {
   entityRef: string;
 };
 
+export type ListAncestorsOptions = {
+  entityRef: string;
+};
+
+export type ListAncestorsResult = {
+  entityRefs: string[];
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
@@ -122,4 +130,14 @@ export interface ProcessingDatabase {
    * Schedules a refresh of a given entityRef.
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
+
+  /**
+   * Lists all ancestors of a given entityRef.
+   *
+   * The returned list is ordered from the most immediate ancestor to the most distant one.
+   */
+  listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult>;
 }

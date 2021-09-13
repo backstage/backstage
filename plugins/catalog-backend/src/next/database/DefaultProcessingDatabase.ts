@@ -39,6 +39,8 @@ import {
   RefreshOptions,
   ReplaceUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
+  ListAncestorsOptions,
+  ListAncestorsResult,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -46,7 +48,7 @@ import {
 // errors in the underlying engine due to exceeding query limits, but large
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
-const MAX_REFRESH_DEPTH = 10;
+const MAX_ANCESTOR_DEPTH = 32;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
@@ -516,18 +518,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     };
   }
 
-  async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
+  async listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult> {
     const tx = txOpaque as Knex.Transaction;
     const { entityRef } = options;
-
-    let refreshTarget = entityRef;
+    const entityRefs = new Array<string>();
 
     let currentRef = entityRef;
     let depth = 0;
     for (;;) {
-      if (depth++ > MAX_REFRESH_DEPTH) {
+      if (depth++ > MAX_ANCESTOR_DEPTH) {
         throw new Error(
-          `Unable to refresh Entity ${entityRef}, maximum refresh depth of ${MAX_REFRESH_DEPTH} reached`,
+          `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
         );
       }
 
@@ -550,22 +554,22 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       if (!parentRef) {
         // We've reached the top of the tree which is the entityProvider.
         // In this case we refresh the entity itself.
-        break;
+        return { entityRefs };
       }
-      if (parentRef.startsWith('location:')) {
-        refreshTarget = parentRef;
-        break;
-      }
+      entityRefs.push(parentRef);
       currentRef = parentRef;
     }
+  }
+
+  async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { entityRef } = options;
 
     const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: refreshTarget })
+      .where({ entity_ref: entityRef })
       .update({ next_update_at: tx.fn.now() });
     if (updateResult === 0) {
-      throw new ConflictError(
-        `Failed to schedule ${refreshTarget} for refresh`,
-      );
+      throw new ConflictError(`Failed to schedule ${entityRef} for refresh`);
     }
   }
 
