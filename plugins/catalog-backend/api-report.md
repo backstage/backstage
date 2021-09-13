@@ -151,7 +151,13 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-<<<<<<< HEAD
+// Warning: (ae-missing-release-tag) "AwsOrganizationProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AwsOrganizationProviderConfig = {
+  roleArn?: string;
+};
+
 // Warning: (ae-missing-release-tag) "AwsS3DiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -165,14 +171,6 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
     parser: CatalogProcessorParser,
   ): Promise<boolean>;
 }
-=======
-// Warning: (ae-missing-release-tag) "AwsOrganizationProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type AwsOrganizationProviderConfig = {
-  roleArn?: string;
-};
->>>>>>> 11da7e59e940bb91e61c3b0d2db6ec7d38ce0126
 
 // Warning: (ae-missing-release-tag) "BitbucketDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
