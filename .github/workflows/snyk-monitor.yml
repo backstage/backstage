@@ -31,3 +31,21 @@ jobs:
             --remote-repo-url=https://github.com/backstage/backstage
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Above we run the `monitor` command, this runs the `test` command which is
+      # the one that generates the SARIF report that we can upload to GitHub.
+      - name: Create Snyk report
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        with:
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --sarif-file-output=snyk.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Upload Snyk report
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
