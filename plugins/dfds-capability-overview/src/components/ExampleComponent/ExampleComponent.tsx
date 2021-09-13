@@ -51,7 +51,6 @@ const CapabilityEntities = React.memo(
     onLeaveButtonClick,
     onJoinButtonClick,
     profile,
-    services,
   }: {
     entities: any[];
     onLeaveButtonClick: any;
@@ -61,9 +60,6 @@ const CapabilityEntities = React.memo(
     return (
       <>
         {entities.map((capability, index) => {
-          if (!capability?.rootId) {
-            return null;
-          }
           return (
             <PerfCapabilityCard
               key={index}
@@ -74,12 +70,6 @@ const CapabilityEntities = React.memo(
                 (member: { email: string }) => member.email === profile.email,
               )}
               members={capability?.members}
-              services={
-                services[capability.rootId] || {
-                  serviceCount: 0,
-                  ingressCount: 0,
-                }
-              }
               onLeaveButtonClick={onLeaveButtonClick}
               onJoinButtonClick={onJoinButtonClick}
             />
@@ -165,13 +155,6 @@ const CapabilitiesListBase = React.memo(() => {
     mutate,
     baseUrl,
   } = useCapabilitiesQuery();
-  const a = useSWR(
-    [
-      'https://inventa-master.hellman.oxygen.dfds.cloud/api/serviceproxy/stats',
-      '',
-    ],
-    fetcher,
-  );
 
   const [shouldFilterByMember, setShouldFilterByMember] = React.useState(false);
 
@@ -285,7 +268,6 @@ const CapabilitiesListBase = React.memo(() => {
               </div>
               <CapabilityEntities
                 entities={entities}
-                services={a.data?.namespaceItems || []}
                 profile={profile}
                 onLeaveButtonClick={async (id: string) => {
                   await fetch(
