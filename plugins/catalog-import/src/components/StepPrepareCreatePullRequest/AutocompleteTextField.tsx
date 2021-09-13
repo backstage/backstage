@@ -25,7 +25,7 @@ type Props<TFieldValue extends string> = {
   options: string[];
   required?: boolean;
 
-  errors?: FieldErrors<Record<TFieldValue, string>>;
+  errors?: FieldErrors;
   rules?: React.ComponentProps<typeof Controller>['rules'];
 
   loading?: boolean;
@@ -37,7 +37,7 @@ type Props<TFieldValue extends string> = {
   textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
 };
 
-export const AutocompleteTextField = <TFieldValue extends string>({
+export const AutocompleteTextField = <TFieldValue extends string = string>({
   name,
   options,
   required,
