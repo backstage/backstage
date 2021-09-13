@@ -16,9 +16,9 @@ WORKDIR /app
 # These three lines are in place to install python3, pip3 and mkdocs so that we can generate
 # within the application.  When we get to a point where BIH is just reading, we
 # can start to remove this piece and lighten the load on the backend of the application.
-RUN apt-get update && apt-get install -y python3.4 
-RUN apt-get update && apt-get install -y python3-pip
-RUN pip3 install --upgrade pip && pip3 install mkdocs-techdocs-core
+
+# RUN apt-get update && apt-get install -y python-pip
+# RUN pip install --upgrade pip && pip install mkdocs
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
