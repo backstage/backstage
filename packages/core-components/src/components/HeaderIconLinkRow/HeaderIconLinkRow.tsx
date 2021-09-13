@@ -31,7 +31,8 @@ type Props = {
   links: IconLinkVerticalProps[];
 };
 
-export const HeaderIconLinkRow = ({ links }: Props) => {
+export function HeaderIconLinkRow(props: Props) {
+  const { links } = props;
   const classes = useStyles();
   return (
     <nav className={classes.links}>
@@ -40,4 +41,4 @@ export const HeaderIconLinkRow = ({ links }: Props) => {
       ))}
     </nav>
   );
-};
+}

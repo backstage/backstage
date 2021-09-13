@@ -36,7 +36,7 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import { LocationService } from './types';
 
-export interface RouterOptions {
+export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
@@ -45,7 +45,7 @@ export interface RouterOptions {
 }
 
 export async function createNextRouter(
-  options: RouterOptions,
+  options: NextRouterOptions,
 ): Promise<express.Router> {
   const { entitiesCatalog, locationAnalyzer, locationService, config, logger } =
     options;

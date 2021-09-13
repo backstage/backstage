@@ -1,5 +1,17 @@
 # @backstage/plugin-todo
 
+## 0.1.9
+
+### Patch Changes
+
+- a3734ba27: Fix TodoList table column widths
+- b07378742: All types are now properly documented and exported.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.1.8
 
 ### Patch Changes

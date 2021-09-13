@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const OverflowTooltip = (props: Props) => {
+export function OverflowTooltip(props: Props) {
   const [hover, setHover] = useState(false);
   const classes = useStyles();
 
@@ -54,4 +54,4 @@ export const OverflowTooltip = (props: Props) => {
       />
     </Tooltip>
   );
-};
+}

@@ -15,9 +15,8 @@
  */
 
 import { isValidElement, ReactElement, ReactNode } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef, getComponentData } from '@backstage/core-plugin-api';
 import { BackstageRouteObject } from './types';
-import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
 

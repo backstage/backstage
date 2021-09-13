@@ -263,20 +263,20 @@ export function TableToolbar(toolbarProps: {
   );
 }
 
-export function Table<T extends object = {}>({
-  columns,
-  options,
-  title,
-  subtitle,
-  filters,
-  initialState,
-  emptyContent,
-  onStateChange,
-  ...props
-}: TableProps<T>) {
+export function Table<T extends object = {}>(props: TableProps<T>) {
+  const {
+    data,
+    columns,
+    options,
+    title,
+    subtitle,
+    filters,
+    initialState,
+    emptyContent,
+    onStateChange,
+    ...restProps
+  } = props;
   const tableClasses = useTableStyles();
-
-  const { data, ...propsWithoutData } = props;
 
   const theme = useTheme<BackstageTheme>();
 
@@ -495,7 +495,7 @@ export function Table<T extends object = {}>({
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
-        {...propsWithoutData}
+        {...restProps}
       />
     </div>
   );

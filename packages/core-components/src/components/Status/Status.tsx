@@ -63,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const StatusOK = (props: PropsWithChildren<{}>) => {
+export function StatusOK(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -73,9 +73,9 @@ export const StatusOK = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}
 
-export const StatusWarning = (props: PropsWithChildren<{}>) => {
+export function StatusWarning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -85,9 +85,9 @@ export const StatusWarning = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}
 
-export const StatusError = (props: PropsWithChildren<{}>) => {
+export function StatusError(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -97,9 +97,9 @@ export const StatusError = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}
 
-export const StatusPending = (props: PropsWithChildren<{}>) => {
+export function StatusPending(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -109,9 +109,9 @@ export const StatusPending = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}
 
-export const StatusRunning = (props: PropsWithChildren<{}>) => {
+export function StatusRunning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -121,9 +121,9 @@ export const StatusRunning = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}
 
-export const StatusAborted = (props: PropsWithChildren<{}>) => {
+export function StatusAborted(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
     <span
@@ -133,4 +133,4 @@ export const StatusAborted = (props: PropsWithChildren<{}>) => {
       {...props}
     />
   );
-};
+}

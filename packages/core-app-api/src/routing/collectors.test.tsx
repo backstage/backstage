@@ -31,8 +31,8 @@ import {
   createRouteRef,
   createPlugin,
   RouteRef,
+  attachComponentData,
 } from '@backstage/core-plugin-api';
-import { attachComponentData } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (

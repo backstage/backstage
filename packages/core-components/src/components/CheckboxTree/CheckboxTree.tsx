@@ -225,13 +225,8 @@ const indexer = (
     };
   }, {});
 
-export const CheckboxTree = ({
-  subCategories,
-  label,
-  selected,
-  onChange,
-  triggerReset,
-}: CheckboxTreeProps) => {
+export function CheckboxTree(props: CheckboxTreeProps) {
+  const { subCategories, label, selected, onChange, triggerReset } = props;
   const classes = useStyles();
 
   const [state, dispatch] = useReducer(reducer, indexer(subCategories));
@@ -355,4 +350,4 @@ export const CheckboxTree = ({
       </List>
     </div>
   );
-};
+}

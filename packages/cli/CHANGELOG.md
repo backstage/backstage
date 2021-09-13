@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.7.11
+
+### Patch Changes
+
+- 13895db37: Support importing font files in tests.
+  This fixes remaining issues from [#7019](https://github.com/backstage/backstage/pull/7019).
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/config@0.1.9
+
 ## 0.7.10
 
 ### Patch Changes

@@ -37,7 +37,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const GaugeCard = (props: Props) => {
+export function GaugeCard(props: Props) {
   const classes = useStyles(props);
   const { title, subheader, progress, inverse, deepLink, variant } = props;
 
@@ -53,4 +53,4 @@ export const GaugeCard = (props: Props) => {
       </InfoCard>
     </div>
   );
-};
+}

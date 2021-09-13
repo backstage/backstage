@@ -21,22 +21,20 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
-  FormGroup,
-  makeStyles,
-  Theme,
+  TextField,
   Typography,
 } from '@material-ui/core';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Autocomplete } from '@material-ui/lab';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles<Theme>(theme => ({
-  checkbox: {
-    padding: theme.spacing(1, 1, 1, 2),
-  },
-}));
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const TemplateTypePicker = () => {
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
@@ -53,32 +51,31 @@ export const TemplateTypePicker = () => {
     return null;
   }
 
-  function toggleSelection(type: string) {
-    setSelectedTypes(
-      selectedTypes.includes(type)
-        ? selectedTypes.filter(t => t !== type)
-        : [...selectedTypes, type],
-    );
-  }
-
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Categories</Typography>
-      <FormGroup>
-        {availableTypes.map(type => (
+      <Autocomplete<string>
+        multiple
+        aria-label="Categories"
+        options={availableTypes}
+        value={selectedTypes}
+        onChange={(_: object, value: string[]) => setSelectedTypes(value)}
+        renderOption={(option, { selected }) => (
           <FormControlLabel
             control={
               <Checkbox
-                checked={selectedTypes.includes(type)}
-                onChange={() => toggleSelection(type)}
-                className={classes.checkbox}
+                icon={icon}
+                checkedIcon={checkedIcon}
+                checked={selected}
               />
             }
-            label={capitalize(type)}
-            key={type}
+            label={capitalize(option)}
           />
-        ))}
-      </FormGroup>
+        )}
+        size="small"
+        popupIcon={<ExpandMoreIcon data-testid="categories-picker-expand" />}
+        renderInput={params => <TextField {...params} variant="outlined" />}
+      />
     </Box>
   );
 };

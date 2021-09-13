@@ -21,11 +21,11 @@ import { RenderNodeProps } from './types';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   node: {
-    fill: theme.palette.background.paper,
-    stroke: theme.palette.border,
+    fill: theme.palette.primary.light,
+    stroke: theme.palette.primary.light,
   },
   text: {
-    fill: theme.palette.textContrast,
+    fill: theme.palette.primary.contrastText,
   },
 }));
 
