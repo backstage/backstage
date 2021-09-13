@@ -23,6 +23,7 @@ import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 import { msw } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
 
 const logger = getVoidLogger();
 
@@ -94,7 +95,12 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
-    collator = new DefaultTechDocsCollator({
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
+    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
       logger,
       legacyPathCasing: true,
@@ -146,7 +152,7 @@ describe('DefaultTechDocsCollator', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
-    collator = new DefaultTechDocsCollator({
+    collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
       discovery: mockDiscoveryApi,
       logger,
     });

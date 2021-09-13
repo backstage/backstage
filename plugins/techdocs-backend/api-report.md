@@ -47,7 +47,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   execute(): Promise<TechDocsDocument[]>;
   // (undocumented)
   static fromConfig(
-    _config: Config,
+    config: Config,
     options: TechDocsCollatorOptions,
   ): DefaultTechDocsCollator;
   // (undocumented)

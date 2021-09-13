@@ -76,10 +76,6 @@ export default async function createPlugin({
     collator: DefaultTechDocsCollator.fromConfig(config, {
       discovery,
       logger,
-      legacyPathCasing:
-        config.getOptionalBoolean(
-          'techdocs.legacyUseCaseSensitiveTripletPaths',
-        ) || false,
     }),
   });
 

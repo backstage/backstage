@@ -76,8 +76,12 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     this.legacyPathCasing = legacyPathCasing;
   }
 
-  static fromConfig(_config: Config, options: TechDocsCollatorOptions) {
-    return new DefaultTechDocsCollator(options);
+  static fromConfig(config: Config, options: TechDocsCollatorOptions) {
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+    return new DefaultTechDocsCollator({ ...options, legacyPathCasing });
   }
 
   async execute() {
