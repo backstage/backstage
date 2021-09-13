@@ -50,6 +50,7 @@ import {
 // errors in the underlying engine due to exceeding query limits, but large
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
+const MAX_REFRESH_DEPTH = 10;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
@@ -522,33 +523,55 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
     if ('entityRef' in options) {
       const { entityRef } = options;
-      const [result] = await tx<DbRefreshStateRow>('refresh_state')
-        .where({ entity_ref: entityRef })
-        .select();
 
-      if (!result) {
-        throw new NotFoundError(`EntityRef ${entityRef} not found`);
-      }
+      let refreshTarget = entityRef;
 
-      const refs = await tx<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        .where({ target_entity_ref: entityRef })
-        .select();
-
-      for (const ref of refs) {
-        if (ref.source_entity_ref?.startsWith('location:')) {
-          const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-            .where({ entity_ref: ref.source_entity_ref })
-            .update({ next_update_at: tx.fn.now() });
-
-          if (updateResult === 0) {
-            throw new ConflictError(
-              `Failed to schedule ${ref.source_entity_ref} for refresh`,
-            );
-          }
+      let currentRef = entityRef;
+      let depth = 0;
+      for (;;) {
+        if (depth++ > MAX_REFRESH_DEPTH) {
+          throw new Error(
+            `Unable to refresh Entity ${entityRef}, maximum refresh depth of ${MAX_REFRESH_DEPTH} reached`,
+          );
         }
+
+        const rows = await tx<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .where({ target_entity_ref: currentRef })
+          .select();
+
+        if (rows.length === 0) {
+          if (depth === 1) {
+            throw new NotFoundError(`Entity ${currentRef} not found`);
+          }
+          throw new NotFoundError(
+            `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
+          );
+        }
+
+        const parentRef = rows[0].source_entity_ref;
+        if (!parentRef) {
+          // We've reached the top of the tree which is the entityProvider.
+          // In this case we refresh the entity itself.
+          break;
+        }
+        if (parentRef.startsWith('location:')) {
+          refreshTarget = parentRef;
+          break;
+        }
+        currentRef = parentRef;
       }
+
+      const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: refreshTarget })
+        .update({ next_update_at: tx.fn.now() });
+      if (updateResult === 0) {
+        throw new ConflictError(
+          `Failed to schedule ${refreshTarget} for refresh`,
+        );
+      }
+
       /*
         For a given entityRef:
         - Fetch entity
