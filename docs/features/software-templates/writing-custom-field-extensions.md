@@ -27,12 +27,17 @@ You can create your own Field Extension by using the
 ```tsx
 //packages/app/scaffolder/MyCustomExtension/MyCustomExtension.tsx
 import { FieldProps } from '@rjsf/core';
+
+/*
+ This is the actual component that will get rendered in the form
+*/
 export const MyCustomExtension = ({ onChange, required }: FieldProps<string>) => {
   return (
      <FormControl
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !formData}
+      onChange={onChange}
     >
   )
 };
@@ -43,6 +48,10 @@ export const MyCustomExtension = ({ onChange, required }: FieldProps<string>) =>
 import { FieldValidation } from '@rjsf/core';
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
+/*
+ This is a validation function that will run when the form is submitted.
+  You will get the value from the `onChange` handler before as the value here to make sure that the types are aligned\
+*/
 export const myCustomValidation = (
   value: string,
   validation: FieldValidation,
@@ -53,4 +62,91 @@ export const myCustomValidation = (
     );
   }
 };
+```
+
+```tsx
+// packages/app/scaffolder/MyCustomExtension/index.ts
+
+/* 
+  This is where the magic happens and creates the custom field extension.
+
+  Note that if you're writing extensions part of a separate plugin, 
+  then please use `plugin.provide` from there instead and export it part of your `plugin.ts` rather than re-using the `scaffolder.plugin`.
+*/
+
+import {
+  plugin,
+  createScaffolderFieldExtension,
+} from '@backstage/plugin-scaffolder';
+import { MyCustomExtension } from './MyCustomExtension';
+import { myCustomValidation } from './validation';
+
+export const MyCustomFieldExtension = plugin.provide(
+  createScaffolderFieldExtension({
+    name: 'MyCustomExtension',
+    component: MyCustomExtension,
+    validation: myCustomValidation,
+  }),
+);
+```
+
+Once all these files are in place, you then need to provide your custom
+extension to the `scaffolder` plugin.
+
+You do this in `packages/app/App.tsx`. You need to provide the
+`customFieldExtensions` as children to the `ScaffolderPage`.
+
+```tsx
+const routes = (
+  <FlatRoutes>
+    ...
+    <Route path="/create" element={<ScaffolderPage />} />
+    ...
+  </FlatRoutes>
+);
+```
+
+Should look something like this instead:
+
+```tsx
+import { MyCustomFieldExtension } from './scafffolder/MyCustomExtension';
+const routes = (
+  <FlatRoutes>
+    ...
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderFieldExtensions>
+        <MyCustomFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
+    ...
+  </FlatRoutes>
+);
+```
+
+## Using the Custom Field Extension
+
+Once it's been passed to the `ScaffolderPage` you should now be able to use the
+`ui:field` property in your templates to point it to the name of the
+`customFieldExtension` that you registered.
+
+Something like this:
+
+```yaml
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: Test template
+  title: Test template with custom extension
+  description: Test template
+spec:
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: My custom name for the component
+          ui:field: MyCustomExtension
 ```
