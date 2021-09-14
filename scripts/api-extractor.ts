@@ -352,21 +352,15 @@ async function buildDocs({
   class DocFrontMatter extends DocNode {
     static kind = 'DocFrontMatter';
 
-    public readonly id: string;
-    public readonly title: string;
-    public readonly description: string;
+    public readonly values: { [name: string]: unknown };
 
     public constructor(
       parameters: IDocNodeContainerParameters & {
-        id: string;
-        title: string;
-        description: string;
+        values: { [name: string]: unknown };
       },
     ) {
       super(parameters);
-      this.id = parameters.id;
-      this.title = parameters.title;
-      this.description = parameters.description;
+      this.values = parameters.values;
     }
 
     /** @override */
@@ -388,9 +382,11 @@ async function buildDocs({
         case DocFrontMatter.kind: {
           const node = docNode as DocFrontMatter;
           context.writer.writeLine('---');
-          context.writer.writeLine(`id: ${node.id}`);
-          context.writer.writeLine(`title: ${node.title}`);
-          context.writer.writeLine(`description: ${node.description}`);
+          for (const [name, value] of Object.entries(node.values)) {
+            if (value) {
+              context.writer.writeLine(`${name}: ${value}`);
+            }
+          }
           context.writer.writeLine('---');
           context.writer.writeLine();
           break;
@@ -450,9 +446,11 @@ async function buildDocs({
       output.appendNodeInParagraph(
         new DocFrontMatter({
           configuration: this._tsdocConfiguration,
-          id: this._getFilenameForApiItem(apiItem).slice(0, -3),
-          title,
-          description,
+          values: {
+            id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+            title,
+            description,
+          },
         }),
       );
 
