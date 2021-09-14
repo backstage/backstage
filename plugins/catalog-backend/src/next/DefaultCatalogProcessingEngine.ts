@@ -36,7 +36,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-  EntityRefreshOptions,
+  CatalogProcessingEngineRefreshOptions,
 } from './types';
 
 class Connection implements EntityProviderConnection {
@@ -240,7 +240,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     }
   }
 
-  async refresh(options: EntityRefreshOptions) {
+  async refresh(options: CatalogProcessingEngineRefreshOptions) {
     await this.processingDatabase.transaction(async tx => {
       const { entityRefs } = await this.processingDatabase.listAncestors(tx, {
         entityRef: options.entityRef,

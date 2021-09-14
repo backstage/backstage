@@ -31,7 +31,7 @@ import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
 import {
   LocationService,
   CatalogProcessingEngine,
-  EntityRefreshOptions,
+  CatalogProcessingEngineRefreshOptions,
 } from '../next/types';
 import {
   basicEntityFilter,
@@ -81,7 +81,7 @@ export async function createRouter(
 
   if (processingEngine) {
     router.post('/refresh', async (req, res) => {
-      const refreshOptions: EntityRefreshOptions = req.body;
+      const refreshOptions: CatalogProcessingEngineRefreshOptions = req.body;
       await processingEngine.refresh(refreshOptions);
       res.status(200).send();
     });

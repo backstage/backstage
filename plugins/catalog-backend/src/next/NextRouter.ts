@@ -37,7 +37,7 @@ import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import {
   CatalogProcessingEngine,
   LocationService,
-  EntityRefreshOptions,
+  CatalogProcessingEngineRefreshOptions,
 } from './types';
 
 export interface NextRouterOptions {
@@ -72,7 +72,7 @@ export async function createNextRouter(
 
   if (processingEngine) {
     router.post('/refresh', async (req, res) => {
-      const refreshOptions: EntityRefreshOptions = req.body;
+      const refreshOptions: CatalogProcessingEngineRefreshOptions = req.body;
       await processingEngine.refresh(refreshOptions);
       res.status(200).send();
     });

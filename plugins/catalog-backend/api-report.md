@@ -27,6 +27,7 @@ import { Organizations } from 'aws-sdk';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
+import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -270,10 +271,17 @@ export type CatalogEnvironment = {
 // @public (undocumented)
 export interface CatalogProcessingEngine {
   // (undocumented)
+  refresh(options: CatalogProcessingEngineRefreshOptions): Promise<void>;
+  // (undocumented)
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
 }
+
+// @public (undocumented)
+export type CatalogProcessingEngineRefreshOptions = {
+  entityRef: string;
+};
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1194,6 +1202,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    router: Router;
   }>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
@@ -1229,6 +1238,8 @@ export interface NextRouterOptions {
   locationService: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  processingEngine?: CatalogProcessingEngine;
 }
 
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1384,6 +1395,8 @@ export interface RouterOptions {
   locationService?: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  processingEngine?: CatalogProcessingEngine;
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
