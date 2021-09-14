@@ -62,27 +62,23 @@ describe('EntityLayout', () => {
   });
 
   it('renders the entity title if defined', async () => {
-    const mockEntityDataWithTitle = {
-      loading: false,
-      error: undefined,
-      entity: {
-        kind: 'MyKind',
-        metadata: {
-          name: 'my-entity',
-          title: 'My Entity',
-        },
-      } as Entity,
-    };
+    const mockEntityWithTitle = {
+      kind: 'MyKind',
+      metadata: {
+        name: 'my-entity',
+        title: 'My Entity',
+      },
+    } as Entity;
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={mockEntityDataWithTitle}>
+        <EntityProvider entity={mockEntityWithTitle}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>,
     );
 
