@@ -147,8 +147,8 @@ export class LdapClient {
             reject(new Error('Unable to handle referral'));
           });
 
-          res.on('searchEntry', async entry => {
-            await f(entry);
+          res.on('searchEntry', entry => {
+            f(entry);
           });
 
           res.on('error', e => {

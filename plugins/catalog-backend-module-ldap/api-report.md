@@ -103,6 +103,15 @@ export class LdapClient {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (ae-forgotten-export) The symbol "SearchCallback" needs to be exported by the entry point index.d.ts
+  searchStreaming(
+    dn: string,
+    options: SearchOptions,
+    f: SearchCallback,
+  ): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "LdapOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

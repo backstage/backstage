@@ -75,25 +75,20 @@ describe('readLdapUsers', () => {
 
   it('transfers all attributes from a default ldap vendor', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(
-      async (_dn, _opts, fn): Promise<void> => {
-        return await new Promise<void>((resolve, _reject) => {
-          fn(
-            searchEntry({
-              uid: ['uid-value'],
-              description: ['description-value'],
-              cn: ['cn-value'],
-              mail: ['mail-value'],
-              avatarUrl: ['avatarUrl-value'],
-              memberOf: ['x', 'y', 'z'],
-              entryDN: ['dn-value'],
-              entryUUID: ['uuid-value'],
-            }),
-          );
-          resolve();
-        });
-      },
-    );
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          uid: ['uid-value'],
+          description: ['description-value'],
+          cn: ['cn-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          entryDN: ['dn-value'],
+          entryUUID: ['uuid-value'],
+        }),
+      );
+    });
     const config: UserConfig = {
       dn: 'ddd',
       options: {},
@@ -136,44 +131,25 @@ describe('readLdapUsers', () => {
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
-    client.searchStreaming.mockImplementation(
-      async (_dn, _opts, fn): Promise<void> => {
-        return await new Promise<void>((resolve, _reject) => {
-          fn(
-            searchEntry({
-              uid: ['uid-value'],
-              description: ['description-value'],
-              cn: ['cn-value'],
-              mail: ['mail-value'],
-              avatarUrl: ['avatarUrl-value'],
-              memberOf: ['x', 'y', 'z'],
-              distinguishedName: ['dn-value'],
-              objectGUID: [
-                Buffer.from([
-                  68,
-                  2,
-                  125,
-                  190,
-                  209,
-                  0,
-                  94,
-                  73,
-                  133,
-                  33,
-                  230,
-                  174,
-                  234,
-                  195,
-                  160,
-                  152,
-                ]),
-              ],
-            }),
-          );
-          resolve();
-        });
-      },
-    );
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          uid: ['uid-value'],
+          description: ['description-value'],
+          cn: ['cn-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          distinguishedName: ['dn-value'],
+          objectGUID: [
+            Buffer.from([
+              68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
+              152,
+            ]),
+          ],
+        }),
+      );
+    });
     const config: UserConfig = {
       dn: 'ddd',
       options: {},
@@ -225,26 +201,21 @@ describe('readLdapGroups', () => {
 
   it('transfers all attributes from a default ldap vendor', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(
-      async (_dn, _opts, fn): Promise<void> => {
-        return await new Promise<void>((resolve, _reject) => {
-          fn(
-            searchEntry({
-              cn: ['cn-value'],
-              description: ['description-value'],
-              tt: ['type-value'],
-              mail: ['mail-value'],
-              avatarUrl: ['avatarUrl-value'],
-              memberOf: ['x', 'y', 'z'],
-              member: ['e', 'f', 'g'],
-              entryDN: ['dn-value'],
-              entryUUID: ['uuid-value'],
-            }),
-          );
-          resolve();
-        });
-      },
-    );
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          cn: ['cn-value'],
+          description: ['description-value'],
+          tt: ['type-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          member: ['e', 'f', 'g'],
+          entryDN: ['dn-value'],
+          entryUUID: ['uuid-value'],
+        }),
+      );
+    });
     const config: GroupConfig = {
       dn: 'ddd',
       options: {},
@@ -295,45 +266,26 @@ describe('readLdapGroups', () => {
   });
   it('transfers all attributes from Microsoft Active Directory', async () => {
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
-    client.searchStreaming.mockImplementation(
-      async (_dn, _opts, fn): Promise<void> => {
-        return await new Promise<void>((resolve, _reject) => {
-          fn(
-            searchEntry({
-              cn: ['cn-value'],
-              description: ['description-value'],
-              tt: ['type-value'],
-              mail: ['mail-value'],
-              avatarUrl: ['avatarUrl-value'],
-              memberOf: ['x', 'y', 'z'],
-              member: ['e', 'f', 'g'],
-              distinguishedName: ['dn-value'],
-              objectGUID: [
-                Buffer.from([
-                  68,
-                  2,
-                  125,
-                  190,
-                  209,
-                  0,
-                  94,
-                  73,
-                  133,
-                  33,
-                  230,
-                  174,
-                  234,
-                  195,
-                  160,
-                  152,
-                ]),
-              ],
-            }),
-          );
-          resolve();
-        });
-      },
-    );
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          cn: ['cn-value'],
+          description: ['description-value'],
+          tt: ['type-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          member: ['e', 'f', 'g'],
+          distinguishedName: ['dn-value'],
+          objectGUID: [
+            Buffer.from([
+              68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
+              152,
+            ]),
+          ],
+        }),
+      );
+    });
     const config: GroupConfig = {
       dn: 'ddd',
       options: {},
