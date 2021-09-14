@@ -61,6 +61,36 @@ describe('EntityLayout', () => {
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
+  it('renders the entity title if defined', async () => {
+    const mockEntityDataWithTitle = {
+      loading: false,
+      error: undefined,
+      entity: {
+        kind: 'MyKind',
+        metadata: {
+          name: 'my-entity',
+          title: 'My Entity',
+        },
+      } as Entity,
+    };
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityContext.Provider value={mockEntityDataWithTitle}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityContext.Provider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('My Entity')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+  });
+
   it('renders error message when entity is not found', async () => {
     const noEntityData = {
       ...mockEntityData,
