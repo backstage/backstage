@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
+  "description": "A module for the search backend that implements search using PostgreSQL",
   "version": "0.2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

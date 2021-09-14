@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-jenkins",
+  "description": "A Backstage plugin that integrates towards Jenkins",
   "version": "0.5.5",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-todo",
+  "description": "A Backstage plugin that lets you browse TODO comments in your source code",
   "version": "0.1.9",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-shortcuts",
+  "description": "A Backstage plugin that provides a shortcuts feature to the sidebar",
   "version": "0.1.7",
   "main": "src/index.ts",
   "types": "src/index.ts",

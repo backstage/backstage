@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-git-release-manager",
+  "description": "A Backstage plugin that helps you manage releases in git",
   "version": "0.2.5",
   "main": "src/index.ts",
   "types": "src/index.ts",

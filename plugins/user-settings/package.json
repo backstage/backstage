@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings",
+  "description": "A Backstage plugin that provides a settings page",
   "version": "0.3.4",
   "main": "src/index.ts",
   "types": "src/index.ts",

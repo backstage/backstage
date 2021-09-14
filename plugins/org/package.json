@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-org",
+  "description": "A Backstage plugin that helps you create entity pages for your organization",
   "version": "0.3.22",
   "main": "src/index.ts",
   "types": "src/index.ts",

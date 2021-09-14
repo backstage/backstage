@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-cost-insights",
+  "description": "A Backstage plugin that helps you keep track of your cloud spend",
   "version": "0.11.5",
   "main": "src/index.ts",
   "types": "src/index.ts",

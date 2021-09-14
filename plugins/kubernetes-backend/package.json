@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
+  "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "version": "0.3.15",
   "main": "src/index.ts",
   "types": "src/index.ts",

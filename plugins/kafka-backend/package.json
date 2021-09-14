@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-kafka-backend",
+  "description": "A Backstage backend plugin that integrates towards Kafka",
   "version": "0.2.9",
   "main": "src/index.ts",
   "types": "src/index.ts",

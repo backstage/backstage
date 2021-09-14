@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-bitrise",
+  "description": "A Backstage plugin that integrates towards Bitrise",
   "version": "0.1.11",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-rollbar",
+  "description": "A Backstage plugin that integrates towards Rollbar",
   "version": "0.3.13",
   "main": "src/index.ts",
   "types": "src/index.ts",

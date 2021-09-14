@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
+  "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "version": "0.4.5",
   "main": "src/index.ts",
   "types": "src/index.ts",

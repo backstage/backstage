@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-splunk-on-call",
+  "description": "A Backstage plugin that integrates towards Splunk On-Call",
   "version": "0.3.9",
   "main": "src/index.ts",
   "types": "src/index.ts",

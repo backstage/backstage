@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
+  "description": "The Backstage backend plugin that helps you create new things",
   "version": "0.15.4",
   "main": "src/index.ts",
   "types": "src/index.ts",

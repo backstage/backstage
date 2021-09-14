@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-welcome",
+  "description": "An old Backstage plugin that provides a welcome page",
   "version": "0.3.3",
   "main": "src/index.ts",
   "types": "src/index.ts",

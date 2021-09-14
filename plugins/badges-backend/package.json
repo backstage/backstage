@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-badges-backend",
+  "description": "A Backstage backend plugin that generates README badges for your entities",
   "version": "0.1.9",
   "main": "src/index.ts",
   "types": "src/index.ts",

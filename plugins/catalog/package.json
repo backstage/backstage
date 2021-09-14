@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
+  "description": "The Backstage plugin for browsing the Backstage catalog",
   "version": "0.6.14",
   "main": "src/index.ts",
   "types": "src/index.ts",

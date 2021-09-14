@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
+  "description": "The Backstage backend plugin that renders technical documentation for your components",
   "version": "0.10.1",
   "main": "src/index.ts",
   "types": "src/index.ts",

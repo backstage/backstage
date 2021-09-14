@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-code-coverage-backend",
+  "description": "A Backstage backend plugin that helps you keep track of your code coverage",
   "version": "0.1.10",
   "main": "src/index.ts",
   "types": "src/index.ts",

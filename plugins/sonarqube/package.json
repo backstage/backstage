@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-sonarqube",
+  "description": "",
   "version": "0.2.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
