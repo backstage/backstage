@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Grid, Typography, Link, makeStyles } from '@material-ui/core';
-import { InfoCard } from '@backstage/core';
+import { InfoCard } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   subheader: {
