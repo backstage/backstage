@@ -66,7 +66,7 @@ const Kafka = () => {
         },
       );
       const cluster: any = await fetch(
-        `${baseUrl}/api/proxy/dfds-api/capsvc/capabilities/${selectedCapability?.id}/cluster`,
+        `${baseUrl}/api/proxy/dfds-api/capkafkasvc/kafka/${selectedCapability?.id}/cluster`,
         {
           method: 'GET',
           headers: {
