@@ -24,6 +24,10 @@ import {
   LdapVendor,
 } from './vendors';
 
+export interface SearchCallback {
+  (entry: SearchEntry): void;
+}
+
 /**
  * Basic wrapper for the ldapjs library.
  *
@@ -110,65 +114,49 @@ export class LdapClient {
   }
 
   /**
-   * Performs an LDAP search operation, creates a generator to limit memory usage
+   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
    *
    * @param dn The fully qualified base DN to search within
    * @param options The search options
+   * @param f The callback to call on each search entry
    */
-  *searchStreaming(
+  async searchStreaming(
     dn: string,
     options: SearchOptions,
-  ): IterableIterator<SearchEntry> {
-    let queueSize = 25;
-    if (options) {
-      if (
-        options.paged &&
-        typeof options.paged === 'object' &&
-        typeof options.paged.pageSize === 'number' &&
-        options.paged.pageSize > 0
-      ) {
-        queueSize = options.paged.pageSize;
-      }
-    }
-    const queue: SearchEntry[] = new Array(queueSize);
-    let done = false;
+    f: SearchCallback,
+  ): Promise<void> {
     try {
-      this.client.search(dn, options, (err, res) => {
-        if (err) {
-          throw new Error(errorString(err));
-        }
-
-        res.on('searchReference', () => {
-          throw new Error('Unable to handle referral');
-        });
-
-        res.on('searchEntry', entry => {
-          queue.push(entry);
-        });
-
-        res.on('error', e => {
-          throw new Error(errorString(e));
-        });
-
-        res.on('end', r => {
-          if (!r) {
-            throw new Error('Null response');
-          } else if (r.status !== 0) {
-            throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
-          } else {
-            done = true;
+      return await new Promise<void>((resolve, reject) => {
+        this.client.search(dn, options, (err, res) => {
+          if (err) {
+            reject(new Error(errorString(err)));
           }
+
+          res.on('searchReference', () => {
+            reject(new Error('Unable to handle referral'));
+          });
+
+          res.on('searchEntry', async entry => {
+            await f(entry);
+          });
+
+          res.on('error', e => {
+            reject(new Error(errorString(e)));
+          });
+
+          res.on('end', r => {
+            if (!r) {
+              throw new Error('Null response');
+            } else if (r.status !== 0) {
+              throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+            } else {
+              resolve();
+            }
+          });
         });
       });
     } catch (e) {
       throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
-    }
-    while (!done && queue.length > 0) {
-      const res = queue.pop();
-      if (!res) {
-        continue;
-      }
-      yield res;
     }
   }
 

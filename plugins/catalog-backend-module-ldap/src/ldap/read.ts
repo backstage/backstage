@@ -107,24 +107,19 @@ export async function readLdapUsers(
 
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  const entries = client.searchStreaming(dn, options);
-  for (const entry of entries) {
-    if (!entry) {
-      continue;
-    }
-
-    const entity = await transformer(vendor, config, entry);
+  await client.searchStreaming(dn, options, async user => {
+    const entity = await transformer(vendor, config, user);
 
     if (!entity) {
-      continue;
+      return;
     }
 
-    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
+    mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
 
     entities.push(entity);
-  }
+  });
 
   return { users: entities, userMemberOf };
 }
@@ -213,17 +208,15 @@ export async function readLdapGroups(
 
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  const entries = client.searchStreaming(dn, options);
-
-  for (const entry of entries) {
+  await client.searchStreaming(dn, options, async entry => {
     if (!entry) {
-      continue;
+      return;
     }
 
     const entity = await transformer(vendor, config, entry);
 
     if (!entity) {
-      continue;
+      return;
     }
 
     mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
@@ -234,7 +227,7 @@ export async function readLdapGroups(
     });
 
     groups.push(entity);
-  }
+  });
 
   return {
     groups,
