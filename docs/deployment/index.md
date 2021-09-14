@@ -1,7 +1,7 @@
 ---
 id: index
 title: Deploying Backstage
-sidebar_title: Overview
+sidebar_label: Overview
 description: Packaging Backstage and deploying to production
 ---
 
