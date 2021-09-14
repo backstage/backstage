@@ -15,15 +15,16 @@
  */
 import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
+  AsyncEntityProvider,
   entityRoute,
   rootRoute,
   useEntity,
+  useEntityFromUrl,
 } from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, ReactNode } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router';
 import { CatalogPage } from './CatalogPage';
-import { EntityLoaderProvider } from './EntityLoaderProvider';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
 import { Content } from '@backstage/core-components';
@@ -73,6 +74,13 @@ const OldEntityRouteRedirect = () => {
   );
 };
 
+export const EntityLoader = (props: { children: ReactNode }) => (
+  <AsyncEntityProvider {...useEntityFromUrl()} {...props} />
+);
+
+/**
+ * @deprecated Use plugin extensions instead
+ * */
 export const Router = ({
   EntityPage = DefaultEntityPage,
 }: {
@@ -83,9 +91,9 @@ export const Router = ({
     <Route
       path={`${entityRoute.path}`}
       element={
-        <EntityLoaderProvider>
+        <EntityLoader>
           <EntityPageSwitch EntityPage={EntityPage} />
-        </EntityLoaderProvider>
+        </EntityLoader>
       }
     />
     <Route

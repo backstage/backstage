@@ -401,7 +401,7 @@ export const isOrphan: (entity: Entity) => boolean;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const Router: ({
   EntityPage,
 }: {
