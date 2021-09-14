@@ -51,9 +51,8 @@ export const CostOverviewCard = ({
   const styles = useOverviewTabsStyles(theme);
   const config = useConfig();
   const [tabIndex, setTabIndex] = useState(0);
-  const { setDuration, setProject, setMetric, ...filters } = useFilters(
-    mapFiltersToProps,
-  );
+  const { setDuration, setProject, setMetric, ...filters } =
+    useFilters(mapFiltersToProps);
 
   // Reset tabIndex if breakdowns available change
   useEffect(() => {

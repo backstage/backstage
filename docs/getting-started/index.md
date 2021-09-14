@@ -24,11 +24,9 @@ an easier path to make Pull Requests.
 Backstage provides the `@backstage/create-app` package to scaffold standalone
 instances of Backstage. You will need to have
 [Node.js](https://nodejs.org/en/download/) Active LTS Release installed
-(currently v14), [Yarn](https://classic.yarnpkg.com/en/docs/install) and
-[Python](https://www.python.org/downloads/) (although you likely have it
-already). You will also need to have
-[Docker](https://docs.docker.com/engine/install/) installed to use some features
-like Software Templates and TechDocs.
+(currently v14) and [Yarn](https://classic.yarnpkg.com/en/docs/install). You
+will also need to have [Docker](https://docs.docker.com/engine/install/)
+installed to use some features like Software Templates and TechDocs.
 
 Using `npx` you can then run the following to create an app in a chosen
 subdirectory of your current working directory:

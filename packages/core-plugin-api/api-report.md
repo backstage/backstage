@@ -13,21 +13,29 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SvgIconProps } from '@material-ui/core';
 
+// Warning: (ae-missing-release-tag) "AlertApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AlertApi = {
   post(alert: AlertMessage): void;
   alert$(): Observable<AlertMessage>;
 };
 
+// Warning: (ae-missing-release-tag) "alertApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const alertApiRef: ApiRef<AlertApi>;
 
+// Warning: (ae-missing-release-tag) "AlertMessage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AlertMessage = {
   message: string;
   severity?: 'success' | 'info' | 'warning' | 'error';
 };
 
+// Warning: (ae-missing-release-tag) "AnyApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AnyApiFactory = ApiFactory<
   unknown,
@@ -37,45 +45,59 @@ export type AnyApiFactory = ApiFactory<
   }
 >;
 
+// Warning: (ae-missing-release-tag) "AnyApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AnyApiRef = ApiRef<unknown>;
 
+// Warning: (ae-missing-release-tag) "ApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ApiFactory<
   Api,
   Impl extends Api,
   Deps extends {
     [name in string]: unknown;
-  }
+  },
 > = {
   api: ApiRef<Api>;
   deps: TypesToApiRefs<Deps>;
   factory(deps: Deps): Impl;
 };
 
+// Warning: (ae-missing-release-tag) "ApiHolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ApiHolder = {
   get<T>(api: ApiRef<T>): T | undefined;
 };
 
+// Warning: (ae-missing-release-tag) "ApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ApiRef<T> = {
   id: string;
   T: T;
 };
 
+// Warning: (ae-missing-release-tag) "ApiRefsToTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ApiRefsToTypes<
   T extends {
     [key in string]: ApiRef<unknown>;
-  }
+  },
 > = {
   [key in keyof T]: ApiRefType<T[key]>;
 };
 
+// Warning: (ae-missing-release-tag) "ApiRefType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
+// Warning: (ae-missing-release-tag) "AppComponents" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
@@ -86,6 +108,8 @@ export type AppComponents = {
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
+// Warning: (ae-missing-release-tag) "AppContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AppContext = {
   getPlugins(): BackstagePlugin<any, any>[];
@@ -93,6 +117,8 @@ export type AppContext = {
   getComponents(): AppComponents;
 };
 
+// Warning: (ae-missing-release-tag) "AppTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AppTheme = {
   id: string;
@@ -102,6 +128,8 @@ export type AppTheme = {
   icon?: React.ReactElement;
 };
 
+// Warning: (ae-missing-release-tag) "AppThemeApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AppThemeApi = {
   getInstalledThemes(): AppTheme[];
@@ -110,9 +138,13 @@ export type AppThemeApi = {
   setActiveThemeId(themeId?: string): void;
 };
 
+// Warning: (ae-missing-release-tag) "appThemeApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
+// Warning: (ae-missing-release-tag) "attachComponentData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function attachComponentData<P>(
   component: ComponentType<P>,
@@ -120,40 +152,56 @@ export function attachComponentData<P>(
   data: unknown,
 ): void;
 
+// Warning: (ae-missing-release-tag) "auth0AuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "AuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AuthProvider = {
   title: string;
   icon: IconComponent;
 };
 
+// Warning: (ae-missing-release-tag) "AuthRequester" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AuthRequester<AuthResponse> = (
   scopes: Set<string>,
 ) => Promise<AuthResponse>;
 
+// Warning: (ae-missing-release-tag) "AuthRequesterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type AuthRequesterOptions<AuthResponse> = {
   provider: AuthProvider;
   onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
 };
 
+// Warning: (ae-missing-release-tag) "AuthRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AuthRequestOptions = {
   optional?: boolean;
   instantPopup?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "BackstageIdentity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BackstageIdentity = {
   id: string;
   idToken: string;
+  token: string;
 };
 
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration
+// Warning: (ae-missing-release-tag) "BackstageIdentityApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type BackstageIdentityApi = {
   getBackstageIdentity(
@@ -161,10 +209,14 @@ export type BackstageIdentityApi = {
   ): Promise<BackstageIdentity | undefined>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "AnyRoutes" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AnyExternalRoutes" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "BackstagePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 > = {
   getId(): string;
   output(): PluginOutput[];
@@ -174,25 +226,34 @@ export type BackstagePlugin<
   externalRoutes: ExternalRoutes;
 };
 
+// Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
 };
 
+// Warning: (ae-missing-release-tag) "ConfigApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ConfigApi = Config;
 
+// Warning: (ae-missing-release-tag) "configApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const configApiRef: ApiRef<ConfigApi>;
 
+// Warning: (ae-missing-release-tag) "createApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "createApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function createApiFactory<
   Api,
   Impl extends Api,
   Deps extends {
     [name in string]: unknown;
-  }
+  },
 >(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
 
 // @public (undocumented)
@@ -201,54 +262,70 @@ export function createApiFactory<Api, Impl extends Api>(
   instance: Impl,
 ): ApiFactory<Api, Impl, {}>;
 
+// Warning: (ae-forgotten-export) The symbol "ApiRefConfig" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T>;
 
+// Warning: (ae-missing-release-tag) "createComponentExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: ComponentLoader<T> }): Extension<T>;
 
+// Warning: (ae-forgotten-export) The symbol "OptionalParams" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createExternalRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createExternalRouteRef<
   Params extends {
     [param in ParamKey]: string;
   },
   Optional extends boolean = false,
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(options: {
   id: string;
   params?: ParamKey[];
   optional?: Optional;
 }): ExternalRouteRef<OptionalParams<Params>, Optional>;
 
+// Warning: (ae-missing-release-tag) "createPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createPlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   config: PluginConfig<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes>;
 
+// Warning: (ae-missing-release-tag) "createReactExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createReactExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
 }): Extension<T>;
 
+// Warning: (ae-missing-release-tag) "createRoutableExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRoutableExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: () => Promise<T>; mountPoint: RouteRef }): Extension<T>;
 
+// Warning: (ae-missing-release-tag) "createRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouteRef<
   Params extends {
     [param in ParamKey]: string;
   },
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(config: {
   id?: string;
   params?: ParamKey[];
@@ -257,31 +334,42 @@ export function createRouteRef<
   title?: string;
 }): RouteRef<OptionalParams<Params>>;
 
+// Warning: (ae-forgotten-export) The symbol "AnyParams" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MakeSubRouteRef" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PathParams" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createSubRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyParams = never
+  ParentParams extends AnyParams = never,
 >(config: {
   id: string;
   path: Path;
   parent: RouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
+// Warning: (ae-missing-release-tag) "DiscoveryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
+// Warning: (ae-missing-release-tag) "discoveryApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const discoveryApiRef: ApiRef<DiscoveryApi>;
 
+// Warning: (ae-missing-release-tag) "ElementCollection" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export interface ElementCollection {
   findComponentData<T>(query: { key: string }): T[];
   getElements<
     Props extends {
       [name: string]: unknown;
-    }
+    },
   >(): Array<ReactElement<Props>>;
   selectByComponentData(query: {
     key: string;
@@ -289,6 +377,8 @@ export interface ElementCollection {
   }): ElementCollection;
 }
 
+// Warning: (ae-missing-release-tag) "ErrorApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ErrorApi = {
   post(error: Error_2, context?: ErrorContext): void;
@@ -298,9 +388,13 @@ export type ErrorApi = {
   }>;
 };
 
+// Warning: (ae-missing-release-tag) "errorApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const errorApiRef: ApiRef<ErrorApi>;
 
+// Warning: (ae-missing-release-tag) "ErrorBoundaryFallbackProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ErrorBoundaryFallbackProps = {
   plugin?: BackstagePlugin;
@@ -308,38 +402,50 @@ export type ErrorBoundaryFallbackProps = {
   resetError: () => void;
 };
 
+// Warning: (ae-missing-release-tag) "ErrorContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ErrorContext = {
   hidden?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "Extension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type Extension<T> = {
   expose(plugin: BackstagePlugin<any, any>): T;
 };
 
+// Warning: (ae-missing-release-tag) "ExternalRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type ExternalRouteRef<
   Params extends AnyParams = any,
-  Optional extends boolean = any
+  Optional extends boolean = any,
 > = {
   readonly [routeRefType]: 'external';
   params: ParamKeys<Params>;
   optional?: Optional;
 };
 
+// Warning: (ae-missing-release-tag) "FeatureFlag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type FeatureFlag = {
   name: string;
   pluginId: string;
 };
 
+// Warning: (ae-missing-release-tag) "FeatureFlagOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type FeatureFlagOutput = {
   type: 'feature-flag';
   name: string;
 };
 
+// Warning: (ae-missing-release-tag) "FeatureFlagsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlag[];
@@ -348,20 +454,28 @@ export interface FeatureFlagsApi {
   save(options: FeatureFlagsSaveOptions): void;
 }
 
+// Warning: (ae-missing-release-tag) "featureFlagsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi>;
 
+// Warning: (ae-missing-release-tag) "FeatureFlagsHooks" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type FeatureFlagsHooks = {
   register(name: string): void;
 };
 
+// Warning: (ae-missing-release-tag) "FeatureFlagsSaveOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type FeatureFlagsSaveOptions = {
   states: Record<string, FeatureFlagState>;
   merge?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "FeatureFlagState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export enum FeatureFlagState {
   // (undocumented)
@@ -370,22 +484,30 @@ export enum FeatureFlagState {
   None = 0,
 }
 
+// Warning: (ae-missing-release-tag) "getComponentData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function getComponentData<T>(
   node: ReactNode,
   type: string,
 ): T | undefined;
 
+// Warning: (ae-missing-release-tag) "githubAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "gitlabAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "googleAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
@@ -395,11 +517,15 @@ export const googleAuthApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "IconComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type IconComponent = ComponentType<{
   fontSize?: 'default' | 'small' | 'large';
 }>;
 
+// Warning: (ae-missing-release-tag) "IdentityApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type IdentityApi = {
   getUserId(): string;
@@ -408,9 +534,13 @@ export type IdentityApi = {
   signOut(): Promise<void>;
 };
 
+// Warning: (ae-missing-release-tag) "identityApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const identityApiRef: ApiRef<IdentityApi>;
 
+// Warning: (ae-missing-release-tag) "microsoftAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
@@ -420,6 +550,8 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "oauth2ApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
@@ -429,6 +561,8 @@ export const oauth2ApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "OAuthApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type OAuthApi = {
   getAccessToken(
@@ -437,6 +571,8 @@ export type OAuthApi = {
   ): Promise<string>;
 };
 
+// Warning: (ae-missing-release-tag) "OAuthRequestApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type OAuthRequestApi = {
   createAuthRequester<AuthResponse>(
@@ -445,12 +581,18 @@ export type OAuthRequestApi = {
   authRequest$(): Observable<PendingAuthRequest[]>;
 };
 
+// Warning: (ae-missing-release-tag) "oauthRequestApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
 
+// Warning: (ae-missing-release-tag) "OAuthScope" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type OAuthScope = string | string[];
 
+// Warning: (ae-missing-release-tag) "Observable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type Observable<T> = {
   [Symbol.observable](): Observable<T>;
@@ -462,6 +604,8 @@ export type Observable<T> = {
   ): Subscription;
 };
 
+// Warning: (ae-missing-release-tag) "Observer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type Observer<T> = {
   next?(value: T): void;
@@ -469,6 +613,8 @@ export type Observer<T> = {
   complete?(): void;
 };
 
+// Warning: (ae-missing-release-tag) "oidcAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
@@ -478,6 +624,8 @@ export const oidcAuthApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "oktaAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
@@ -487,6 +635,8 @@ export const oktaAuthApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "oneloginAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
@@ -496,11 +646,15 @@ export const oneloginAuthApiRef: ApiRef<
     SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "OpenIdConnectApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
 
+// Warning: (ae-missing-release-tag) "PendingAuthRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type PendingAuthRequest = {
   provider: AuthProvider;
@@ -508,10 +662,12 @@ export type PendingAuthRequest = {
   trigger(): Promise<void>;
 };
 
+// Warning: (ae-missing-release-tag) "PluginConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type PluginConfig<
   Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes
+  ExternalRoutes extends AnyExternalRoutes,
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
@@ -520,14 +676,20 @@ export type PluginConfig<
   externalRoutes?: ExternalRoutes;
 };
 
+// Warning: (ae-missing-release-tag) "PluginHooks" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type PluginHooks = {
   featureFlags: FeatureFlagsHooks;
 };
 
+// Warning: (ae-missing-release-tag) "PluginOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type PluginOutput = FeatureFlagOutput;
 
+// Warning: (ae-missing-release-tag) "ProfileInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ProfileInfo = {
   email?: string;
@@ -535,19 +697,27 @@ export type ProfileInfo = {
   picture?: string;
 };
 
+// Warning: (ae-missing-release-tag) "ProfileInfoApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type ProfileInfoApi = {
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
 };
 
+// Warning: (ae-missing-release-tag) "RouteOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type RouteOptions = {
   exact?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "RoutePath" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type RoutePath = string;
 
+// Warning: (ae-missing-release-tag) "RouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type RouteRef<Params extends AnyParams = any> = {
   readonly [routeRefType]: 'absolute';
@@ -557,11 +727,15 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
+// Warning: (ae-missing-release-tag) "samlAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// Warning: (ae-missing-release-tag) "SessionApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type SessionApi = {
   signIn(): Promise<void>;
@@ -569,6 +743,8 @@ export type SessionApi = {
   sessionState$(): Observable<SessionState>;
 };
 
+// Warning: (ae-missing-release-tag) "SessionState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export enum SessionState {
   // (undocumented)
@@ -577,11 +753,15 @@ export enum SessionState {
   SignedOut = 'SignedOut',
 }
 
+// Warning: (ae-missing-release-tag) "SignInPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type SignInPageProps = {
   onResult(result: SignInResult): void;
 };
 
+// Warning: (ae-missing-release-tag) "SignInResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type SignInResult = {
   userId: string;
@@ -590,24 +770,45 @@ export type SignInResult = {
   signOut?: () => Promise<void>;
 };
 
+// Warning: (ae-missing-release-tag) "StorageApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface StorageApi {
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   forBucket(name: string): StorageApi;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+  // Warning: (tsdoc-undefined-tag) The TSDoc tag "@return" is not defined in this configuration
   get<T>(key: string): T | undefined;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   remove(key: string): Promise<void>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   set(key: string, data: any): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "storageApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const storageApiRef: ApiRef<StorageApi>;
 
+// Warning: (ae-missing-release-tag) "StorageValueChange" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type StorageValueChange<T = any> = {
   key: string;
   newValue?: T;
 };
 
+// Warning: (ae-missing-release-tag) "SubRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type SubRouteRef<Params extends AnyParams = any> = {
   readonly [routeRefType]: 'sub';
@@ -616,26 +817,38 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   params: ParamKeys<Params>;
 };
 
+// Warning: (ae-missing-release-tag) "Subscription" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type Subscription = {
   unsubscribe(): void;
   readonly closed: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "TypesToApiRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;
 };
 
+// Warning: (ae-missing-release-tag) "useApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useApi<T>(apiRef: ApiRef<T>): T;
 
+// Warning: (ae-missing-release-tag) "useApiHolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useApiHolder(): ApiHolder;
 
+// Warning: (ae-missing-release-tag) "useApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const useApp: () => AppContext;
 
+// Warning: (ae-missing-release-tag) "useElementFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useElementFilter<T>(
   node: ReactNode,
@@ -643,9 +856,15 @@ export function useElementFilter<T>(
   dependencies?: any[],
 ): T;
 
+// Warning: (ae-missing-release-tag) "UserFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type UserFlags = {};
 
+// Warning: (ae-forgotten-export) The symbol "RouteFunc" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
@@ -656,20 +875,34 @@ export function useRouteRef<Params extends AnyParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): RouteFunc<Params>;
 
+// Warning: (ae-missing-release-tag) "useRouteRefParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useRouteRefParams<Params extends AnyParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
 
+// Warning: (ae-missing-release-tag) "withApis" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export function withApis<T>(
-  apis: TypesToApiRefs<T>,
-): <P extends T>(
+export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
   WrappedComponent: React_2.ComponentType<P>,
 ) => {
   (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
   displayName: string;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/apis/definitions/ErrorApi.d.ts:37:5 - (ae-forgotten-export) The symbol "Error" needs to be exported by the entry point index.d.ts
+// src/apis/definitions/auth.d.ts:29:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/apis/definitions/auth.d.ts:38:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/apis/definitions/auth.d.ts:96:68 - (tsdoc-undefined-tag) The TSDoc tag "@AuthRequestOptions" is not defined in this configuration
+// src/apis/definitions/auth.d.ts:110:16 - (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration
+// src/apis/definitions/auth.d.ts:113:68 - (tsdoc-undefined-tag) The TSDoc tag "@AuthRequestOptions" is not defined in this configuration
+// src/extensions/extensions.d.ts:14:5 - (ae-forgotten-export) The symbol "ComponentLoader" needs to be exported by the entry point index.d.ts
+// src/routing/RouteRef.d.ts:34:5 - (ae-forgotten-export) The symbol "OldIconComponent" needs to be exported by the entry point index.d.ts
+// src/routing/types.d.ts:30:5 - (ae-forgotten-export) The symbol "ParamKeys" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

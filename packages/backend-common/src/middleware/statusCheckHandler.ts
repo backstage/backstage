@@ -16,8 +16,10 @@
 
 import { NextFunction, Request, Response, RequestHandler } from 'express';
 
+/** @public */
 export type StatusCheck = () => Promise<any>;
 
+/** @public */
 export interface StatusCheckHandlerOptions {
   /**
    * Optional status function which returns a message.
@@ -30,7 +32,8 @@ export interface StatusCheckHandlerOptions {
  *
  * This is commonly used to implement healthcheck and readiness routes.
  *
- * @param options An optional configuration object.
+ * @public
+ * @param options - An optional configuration object.
  * @returns An Express error request handler
  */
 export async function statusCheckHandler(

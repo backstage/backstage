@@ -22,7 +22,6 @@
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "lerna run lint --",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
-    "docgen": "lerna run docgen",
     "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
     "create-plugin": "backstage-cli create-plugin --scope backstage --no-private",
     "remove-plugin": "backstage-cli remove-plugin",
@@ -38,9 +37,14 @@
     "packages": [
       "packages/*",
       "plugins/*"
+    ],
+    "nohoist": [
+      "**/@storybook/**",
+      "**/@storybook"
     ]
   },
   "resolutions": {
+    "**/@graphql-codegen/cli/**/ws": "^7.4.6",
     "**/@roadiehq/**/@backstage/core": "*",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
     "**/@roadiehq/**/@backstage/catalog-model": "*",
@@ -49,11 +53,13 @@
   },
   "version": "1.0.0",
   "dependencies": {
-    "@microsoft/api-documenter": "^7.13.30",
-    "@microsoft/api-extractor": "^7.18.1",
-    "@microsoft/api-extractor-model": "^7.13.3"
+    "@microsoft/api-documenter": "^7.13.47",
+    "@microsoft/api-extractor": "^7.18.7",
+    "@microsoft/api-extractor-model": "^7.13.5",
+    "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
+    "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
     "@octokit/openapi-types": "^2.2.0",
     "@spotify/prettier-config": "^10.0.0",

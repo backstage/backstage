@@ -78,32 +78,48 @@ describe('config', () => {
   });
 
   describe('readGithubMultiOrgConfig', () => {
-    function config(orgs: { name: string; groupNamespace?: string }[]) {
+    function config(
+      orgs: { name: string; groupNamespace?: string; userNamespace?: string }[],
+    ) {
       return new ConfigReader({ orgs });
     }
 
     it('reads org configs', () => {
       const output = readGithubMultiOrgConfig(
         config([
-          { name: 'foo', groupNamespace: 'apple' },
-          { name: 'bar', groupNamespace: 'Orange' },
+          { name: 'foo', groupNamespace: 'apple', userNamespace: 'red' },
+          { name: 'bar', groupNamespace: 'Orange', userNamespace: 'blue' },
         ]),
       );
 
       expect(output).toEqual([
-        { name: 'foo', groupNamespace: 'apple' },
-        { name: 'bar', groupNamespace: 'orange' },
+        { name: 'foo', groupNamespace: 'apple', userNamespace: 'red' },
+        { name: 'bar', groupNamespace: 'orange', userNamespace: 'blue' },
       ]);
     });
 
     it('defaults groupNamespace to org name if undefined', () => {
       const output = readGithubMultiOrgConfig(
+        config([
+          { name: 'foo', userNamespace: 'red' },
+          { name: 'bar', userNamespace: 'blue' },
+        ]),
+      );
+
+      expect(output).toEqual([
+        { name: 'foo', groupNamespace: 'foo', userNamespace: 'red' },
+        { name: 'bar', groupNamespace: 'bar', userNamespace: 'blue' },
+      ]);
+    });
+
+    it('defaults userNamespace to undefined if unspecified', () => {
+      const output = readGithubMultiOrgConfig(
         config([{ name: 'foo' }, { name: 'bar' }]),
       );
 
       expect(output).toEqual([
-        { name: 'foo', groupNamespace: 'foo' },
-        { name: 'bar', groupNamespace: 'bar' },
+        { name: 'foo', groupNamespace: 'foo', userNamespace: undefined },
+        { name: 'bar', groupNamespace: 'bar', userNamespace: undefined },
       ]);
     });
   });

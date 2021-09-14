@@ -29,16 +29,22 @@ import { CustomErrorBase } from './CustomErrorBase';
 
 /**
  * The given inputs are malformed and cannot be processed.
+ *
+ * @public
  */
 export class InputError extends CustomErrorBase {}
 
 /**
  * The request requires authentication, which was not properly supplied.
+ *
+ * @public
  */
 export class AuthenticationError extends CustomErrorBase {}
 
 /**
  * The authenticated caller is not allowed to perform this request.
+ *
+ * @public
  */
 export class NotAllowedError extends CustomErrorBase {}
 
@@ -47,16 +53,22 @@ export class NotAllowedError extends CustomErrorBase {}
  *
  * Note that this error usually is used to indicate that an entity with a given
  * ID does not exist, rather than signalling that an entire route is missing.
+ *
+ * @public
  */
 export class NotFoundError extends CustomErrorBase {}
 
 /**
  * The request could not complete due to a conflict in the current state of the
  * resource.
+ *
+ * @public
  */
 export class ConflictError extends CustomErrorBase {}
 
 /**
  * The requested resource has not changed since last request.
+ *
+ * @public
  */
 export class NotModifiedError extends CustomErrorBase {}

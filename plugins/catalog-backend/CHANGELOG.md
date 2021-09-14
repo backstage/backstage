@@ -1,5 +1,143 @@
 # @backstage/plugin-catalog-backend
 
+## 0.13.7
+
+### Patch Changes
+
+- ce17a1693: Allow the catalog search collator to filter the entities that it indexes
+- dbb952787: Use `ScmIntegrationRegistry#resolveUrl` in the placeholder processors instead of a custom implementation.
+
+  If you manually instantiate the `PlaceholderProcessor` (you most probably don't), add the new required constructor parameter:
+
+  ```diff
+  + import { ScmIntegrations } from '@backstage/integration';
+    // ...
+  + const integrations = ScmIntegrations.fromConfig(config);
+    // ...
+    new PlaceholderProcessor({
+      resolvers: placeholderResolvers,
+      reader,
+  +   integrations,
+    });
+  ```
+
+  All custom `PlaceholderResolver` can use the new `resolveUrl` parameter to resolve relative URLs.
+
+- 1797c5ce5: This change drops support for deprecated location types which have all been replaced by the `url` type.
+  There has been a deprecation warning in place since the beginning of this year so most should already be migrated and received information at this point.
+
+  The now removed location types are:
+
+  ```
+  github
+  github/api
+  bitbucket/api
+  gitlab/api
+  azure/api
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.13.6
+
+### Patch Changes
+
+- 4d62dc15b: GitHub discovery processor passes over repositories that do not have a default branch
+- 977b1dfbe: Adds optional namespacing for users in the GitHub Multi Org Plugin
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.13.5
+
+### Patch Changes
+
+- 8b39242c4: GitHub discovery processor adds support for discovering the default GitHub branch
+- 96785dce3: Added GitLabDiscoveryProcessor, which allows catalog discovery from a GitLab instance
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.13.4
+
+### Patch Changes
+
+- 7ab55167d: Properly handle Date objects being returned for timestamps in the database driver
+
+## 0.13.3
+
+### Patch Changes
+
+- 61aa6526f: Avoid duplicate work by comparing previous processing rounds with the next
+- fe960ad0f: Updates the `DefaultProcessingDatabase` to accept a refresh interval function instead of a fixed refresh interval in seconds which used to default to 100s. The catalog now ships with a default refresh interval function that schedules entities for refresh every 100-150 seconds, this should
+  help to smooth out bursts that occur when a lot of entities are scheduled for refresh at the same second.
+
+  Custom `RefreshIntervalFunction` can be implemented and passed to the CatalogBuilder using `.setInterval(fn)`
+
+- 54b441abe: Export the entity provider related types for external use.
+- 03bb05af6: Enabled live reload of locations configured in `catalog.locations`.
+- 2766b2aa5: Add experimental Prometheus metrics instrumentation to the catalog
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.13.1
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence. For example you can now query with `/entities?filter=metadata.annotations.blah` to fetch all entities that has the particular property defined.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.18
+
+## 0.13.0
+
+### Minor Changes
+
+- 8bfc0571c: Add a default catalog value for BitBucketDiscoveryProcessor. This allows to have a target like so: https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  which will be expanded to https://bitbucket.mycompany.com/projects/backstage/repos/service-a/catalog-info.yaml given that repository 'service-a' exists.
+
+  ## Migration
+
+  If you are using a custom [Bitbucket parser](https://backstage.io/docs/integrations/bitbucket/discovery#custom-repository-processing) and your `bitbucket-discovery` target (e.g. in your app-config.yaml) omits the catalog path in any of the following ways:
+
+  - https://bitbucket.mycompany.com/projects/backstage/repos/service-*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*
+  - https://bitbucket.mycompany.com/projects/backstage/repos/*/
+
+  then you will be affected by this change.
+  The 'target' input to your parser before this commit would be '/', and after this commit it will be '/catalog-info.yaml', and as such needs to be handled to maintain the same functionality.
+
+### Patch Changes
+
+- 8b048934b: The codeowners processor extracts the username of the primary owner and uses this as the owner field.
+  Given the kind isn't specified this is assumed to be a group and so the link to the owner in the about card
+  doesn't work. This change specifies the kind where the entity is a user. e.g:
+
+  `@iain-b` -> `user:iain-b`
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/plugin-search-backend-node@0.4.0
+
 ## 0.12.0
 
 ### Minor Changes
@@ -403,13 +541,11 @@
   and lets the other processors take care of further processing.
 
   ```typescript
-  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-    client,
-    repository,
-  }) {
-    // Custom logic for interpret the matching repository.
-    // See defaultRepositoryParser for an example
-  };
+  const customRepositoryParser: BitbucketRepositoryParser =
+    async function* customRepositoryParser({ client, repository }) {
+      // Custom logic for interpret the matching repository.
+      // See defaultRepositoryParser for an example
+    };
 
   const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
     parser: customRepositoryParser,
@@ -881,7 +1017,6 @@
   spec:
     type: website
   ---
-
   ```
 
   This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.

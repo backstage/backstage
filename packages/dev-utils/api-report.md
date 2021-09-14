@@ -6,8 +6,9 @@
 /// <reference types="react" />
 
 import { ApiFactory } from '@backstage/core-plugin-api';
+import { AppTheme } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
-import { createPlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -15,6 +16,32 @@ import { ReactNode } from 'react';
 
 // @public
 export function createDevApp(): DevAppBuilder;
+
+// @public
+export class DevAppBuilder {
+  addPage(opts: DevAppPageOptions): DevAppBuilder;
+  addRootChild(node: ReactNode): DevAppBuilder;
+  addThemes(themes: AppTheme[]): this;
+  build(): ComponentType<{}>;
+  registerApi<
+    Api,
+    Impl extends Api,
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder;
+  registerPlugin(...plugins: BackstagePlugin[]): DevAppBuilder;
+  render(): void;
+}
+
+// @public (undocumented)
+export type DevAppPageOptions = {
+  path?: string;
+  element: JSX.Element;
+  children?: JSX.Element;
+  title?: string;
+  icon?: IconComponent;
+};
 
 // @public (undocumented)
 export const EntityGridItem: ({

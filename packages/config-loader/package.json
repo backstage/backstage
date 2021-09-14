@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "0.6.4",
+  "version": "0.6.8",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,10 +30,11 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1",
-    "@backstage/config": "^0.1.5",
+    "@backstage/cli-common": "^0.1.3",
+    "@backstage/config": "^0.1.9",
     "@types/json-schema": "^7.0.6",
     "ajv": "^7.0.3",
+    "chokidar": "^3.5.2",
     "fs-extra": "9.1.0",
     "json-schema": "^0.3.0",
     "json-schema-merge-allof": "^0.8.1",

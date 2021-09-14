@@ -23,6 +23,7 @@ export type UserOptions = {
   User?: string;
 };
 
+/** @public */
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
 
@@ -38,6 +39,7 @@ export class DockerContainerRunner implements ContainerRunner {
     mountDirs = {},
     workingDir,
     envVars = {},
+    pullImage = true,
   }: RunContainerOptions) {
     // Show a better error message when Docker is unavailable.
     try {
@@ -48,15 +50,17 @@ export class DockerContainerRunner implements ContainerRunner {
       );
     }
 
-    await new Promise<void>((resolve, reject) => {
-      this.dockerClient.pull(imageName, {}, (err, stream) => {
-        if (err) return reject(err);
-        stream.pipe(logStream, { end: false });
-        stream.on('end', () => resolve());
-        stream.on('error', (error: Error) => reject(error));
-        return undefined;
+    if (pullImage) {
+      await new Promise<void>((resolve, reject) => {
+        this.dockerClient.pull(imageName, {}, (err, stream) => {
+          if (err) return reject(err);
+          stream.pipe(logStream, { end: false });
+          stream.on('end', () => resolve());
+          stream.on('error', (error: Error) => reject(error));
+          return undefined;
+        });
       });
-    });
+    }
 
     const userOptions: UserOptions = {};
     if (process.getuid && process.getgid) {
@@ -89,18 +93,17 @@ export class DockerContainerRunner implements ContainerRunner {
       Env.push(`${key}=${value}`);
     }
 
-    const [
-      { Error: error, StatusCode: statusCode },
-    ] = await this.dockerClient.run(imageName, args, logStream, {
-      Volumes,
-      HostConfig: {
-        Binds,
-      },
-      ...(workingDir ? { WorkingDir: workingDir } : {}),
-      Entrypoint: command,
-      Env,
-      ...userOptions,
-    } as Docker.ContainerCreateOptions);
+    const [{ Error: error, StatusCode: statusCode }] =
+      await this.dockerClient.run(imageName, args, logStream, {
+        Volumes,
+        HostConfig: {
+          Binds,
+        },
+        ...(workingDir ? { WorkingDir: workingDir } : {}),
+        Entrypoint: command,
+        Env,
+        ...userOptions,
+      } as Docker.ContainerCreateOptions);
 
     if (error) {
       throw new Error(

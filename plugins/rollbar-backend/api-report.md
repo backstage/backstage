@@ -7,18 +7,22 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "getRequestHeaders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export function getRequestHeaders(
-  token: string,
-): {
+export function getRequestHeaders(token: string): {
   headers: {
     'X-Rollbar-Access-Token': string;
   };
 };
 
+// Warning: (ae-missing-release-tag) "RollbarApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class RollbarApi {
   constructor(accessToken: string, logger: Logger_2);
@@ -30,8 +34,12 @@ export class RollbarApi {
       item_id?: number;
     },
   ): Promise<RollbarItemCount[]>;
+  // Warning: (ae-forgotten-export) The symbol "RollbarProject" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getAllProjects(): Promise<RollbarProject[]>;
+  // Warning: (ae-forgotten-export) The symbol "RollbarItemCount" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getOccuranceCounts(
     projectName: string,
@@ -42,8 +50,12 @@ export class RollbarApi {
   ): Promise<RollbarItemCount[]>;
   // (undocumented)
   getProject(projectName: string): Promise<RollbarProject>;
+  // Warning: (ae-forgotten-export) The symbol "RollbarItemsResponse" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getProjectItems(projectName: string): Promise<RollbarItemsResponse>;
+  // Warning: (ae-forgotten-export) The symbol "RollbarTopActiveItem" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getTopActiveItems(
     projectName: string,
@@ -54,6 +66,8 @@ export class RollbarApi {
   ): Promise<RollbarTopActiveItem[]>;
 }
 
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

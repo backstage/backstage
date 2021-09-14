@@ -8,16 +8,23 @@ import { DocumentDecorator } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
+import { QueryTranslator } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/search-common';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
 
+// Warning: (ae-missing-release-tag) "IndexBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class IndexBuilder {
+  // Warning: (ae-forgotten-export) The symbol "IndexBuilderOptions" needs to be exported by the entry point index.d.ts
   constructor({ logger, searchEngine }: IndexBuilderOptions);
+  // Warning: (ae-forgotten-export) The symbol "RegisterCollatorParameters" needs to be exported by the entry point index.d.ts
   addCollator({
     collator,
     defaultRefreshIntervalSeconds,
   }: RegisterCollatorParameters): void;
+  // Warning: (ae-forgotten-export) The symbol "RegisterDecoratorParameters" needs to be exported by the entry point index.d.ts
   addDecorator({ decorator }: RegisterDecoratorParameters): void;
   build(): Promise<{
     scheduler: Scheduler;
@@ -26,6 +33,8 @@ export class IndexBuilder {
   getSearchEngine(): SearchEngine;
 }
 
+// Warning: (ae-missing-release-tag) "LunrSearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class LunrSearchEngine implements SearchEngine {
   constructor({ logger }: { logger: Logger_2 });
@@ -39,12 +48,16 @@ export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr_2.Index>;
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
+  // Warning: (ae-forgotten-export) The symbol "LunrQueryTranslator" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   setTranslator(translator: LunrQueryTranslator): void;
   // (undocumented)
   protected translator: QueryTranslator;
 }
 
+// Warning: (ae-missing-release-tag) "Scheduler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export class Scheduler {
   constructor({ logger }: { logger: Logger_2 });
@@ -53,12 +66,7 @@ export class Scheduler {
   stop(): void;
 }
 
-// @public
-export interface SearchEngine {
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
-  query(query: SearchQuery): Promise<SearchResultSet>;
-  setTranslator(translator: QueryTranslator): void;
-}
+export { SearchEngine };
 
 // (No @packageDocumentation comment for this package)
 ```

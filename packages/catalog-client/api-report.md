@@ -22,6 +22,9 @@ export type AddLocationResponse = {
 };
 
 // @public (undocumented)
+export const CATALOG_FILTER_EXISTS: unique symbol;
+
+// @public (undocumented)
 export interface CatalogApi {
   // (undocumented)
   addLocation(
@@ -113,8 +116,8 @@ export class CatalogClient implements CatalogApi {
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
   filter?:
-    | Record<string, string | string[]>[]
-    | Record<string, string | string[]>
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
 };
@@ -122,6 +125,16 @@ export type CatalogEntitiesRequest = {
 // @public (undocumented)
 export type CatalogListResponse<T> = {
   items: T[];
+};
+
+// @public (undocumented)
+export type CatalogRequestOptions = {
+  token?: string;
+};
+
+// @public
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
 };
 
 // @public

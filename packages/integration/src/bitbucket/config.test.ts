@@ -30,8 +30,17 @@ describe('readBitbucketIntegrationConfig', () => {
   async function buildFrontendConfig(
     data: Partial<BitbucketIntegrationConfig>,
   ): Promise<Config> {
-    const schema = await loadConfigSchema({
+    const fullSchema = await loadConfigSchema({
       dependencies: [require('../../package.json').name],
+    });
+    const serializedSchema = fullSchema.serialize() as {
+      schemas: { path: string }[];
+    };
+    const schema = await loadConfigSchema({
+      serialized: {
+        ...serializedSchema, // grab the schema from this package only
+        schemas: serializedSchema.schemas.filter(s => s.path === 'config.d.ts'),
+      },
     });
     const processed = schema.process(
       [{ data: { integrations: { bitbucket: [data] } }, context: 'app' }],

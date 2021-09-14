@@ -16,7 +16,7 @@
 
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Box, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
@@ -26,7 +26,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
-    minHeight: 118,
     width: '100%',
     boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
     position: 'relative',
@@ -34,33 +33,29 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundImage: theme.page.backgroundImage,
     backgroundPosition: 'center',
     backgroundSize: 'cover',
   },
   leftItemsBox: {
-    flex: '1 1 auto',
+    maxWidth: '100%',
+    flexGrow: 1,
   },
   rightItemsBox: {
-    flex: '0 1 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginRight: theme.spacing(1),
+    width: 'auto',
   },
   title: {
     color: theme.palette.bursts.fontColor,
-    lineHeight: '1.0em',
     wordBreak: 'break-all',
     fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
-    marginBottom: theme.spacing(1),
+    marginBottom: 0,
   },
   subtitle: {
     color: 'rgba(255, 255, 255, 0.8)',
     lineHeight: '1.0em',
+    display: 'inline-block', // prevents margin collapse of adjacent siblings
+    marginTop: theme.spacing(1),
   },
   type: {
     textTransform: 'uppercase',
@@ -177,16 +172,17 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   );
 };
 
-export const Header = ({
-  children,
-  pageTitleOverride,
-  style,
-  subtitle,
-  title,
-  tooltip,
-  type,
-  typeLink,
-}: PropsWithChildren<Props>) => {
+export function Header(props: PropsWithChildren<Props>) {
+  const {
+    children,
+    pageTitleOverride,
+    style,
+    subtitle,
+    title,
+    tooltip,
+    type,
+    typeLink,
+  } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
@@ -199,7 +195,7 @@ export const Header = ({
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
       <header style={style} className={classes.header}>
-        <div className={classes.leftItemsBox}>
+        <Box className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}
             type={type}
@@ -212,9 +208,11 @@ export const Header = ({
             tooltip={tooltip}
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
-        </div>
-        <div className={classes.rightItemsBox}>{children}</div>
+        </Box>
+        <Grid container className={classes.rightItemsBox} spacing={4}>
+          {children}
+        </Grid>
       </header>
     </>
   );
-};
+}

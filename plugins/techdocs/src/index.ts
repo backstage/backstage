@@ -18,12 +18,20 @@ export * from './api';
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { TechDocsApi, TechDocsStorageApi } from './api';
 export { TechDocsClient, TechDocsStorageClient } from './client';
-export type { PanelType } from './home/components/TechDocsCustomHome';
+export type { DocsTableRow, PanelType } from './home/components';
+export {
+  EntityListDocsTable,
+  DefaultTechDocsHome,
+  TechDocsPageWrapper,
+  TechDocsPicker,
+} from './home/components';
+export * from './components/DocsResultListItem';
 export {
   DocsCardGrid,
   DocsTable,
   EntityTechdocsContent,
   TechDocsCustomHome,
+  TechDocsIndexPage,
   TechdocsPage,
   techdocsPlugin as plugin,
   techdocsPlugin,

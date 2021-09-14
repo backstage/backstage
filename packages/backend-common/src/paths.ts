@@ -25,6 +25,8 @@ import { resolve as resolvePath } from 'path';
  * This is particularly useful when you want to access assets shipped with
  * your backend plugin package. When doing so, do not forget to include the assets
  * in your published package by adding them to `files` in your `package.json`.
+ *
+ * @public
  */
 export function resolvePackagePath(name: string, ...paths: string[]) {
   const req =
@@ -40,8 +42,9 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
  * a path that point to or within the base path. This is useful for resolving
  * paths from user input, as it otherwise opens up for vulnerabilities.
  *
- * @param base The base directory to resolve the path from.
- * @param path The target path, relative or absolute
+ * @public
+ * @param base - The base directory to resolve the path from.
+ * @param path - The target path, relative or absolute
  * @returns A path that is guaranteed to point to or within the base path.
  */
 export function resolveSafeChildPath(base: string, path: string): string {

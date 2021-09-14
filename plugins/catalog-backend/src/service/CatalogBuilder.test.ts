@@ -166,7 +166,7 @@ describe('CatalogBuilder', () => {
 
     const { entitiesCatalog, higherOrderOperation } = await builder.build();
     await higherOrderOperation.addLocation({
-      type: 'github',
+      type: 'url',
       target: 'https://github.com/a/b/x.yaml',
     });
     const { entities } = await entitiesCatalog.entities();

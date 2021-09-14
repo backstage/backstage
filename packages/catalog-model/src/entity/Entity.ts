@@ -21,6 +21,7 @@ import { UNSTABLE_EntityStatus } from './EntityStatus';
 /**
  * The parts of the format that's common to all versions/kinds of entity.
  *
+ * @public
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
 export type Entity = {
@@ -62,6 +63,7 @@ export type Entity = {
 /**
  * Metadata fields common to all versions/kinds of entity.
  *
+ * @public
  * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
@@ -103,7 +105,13 @@ export type EntityMeta = JsonObject & {
    * The name of the entity.
    *
    * Must be unique within the catalog at any given point in time, for any
-   * given namespace + kind pair.
+   * given namespace + kind pair. This value is part of the technical
+   * identifier of the entity, and as such it will appear in URLs, database
+   * tables, entity references, and similar. It is subject to restrictions
+   * regarding what characters are allowed.
+   *
+   * If you want to use a different, more human readable string with fewer
+   * restrictions on it in user interfaces, see the `title` field below.
    */
   name: string;
 
@@ -111,6 +119,23 @@ export type EntityMeta = JsonObject & {
    * The namespace that the entity belongs to.
    */
   namespace?: string;
+
+  /**
+   * A display name of the entity, to be presented in user interfaces instead
+   * of the `name` property above, when available.
+   *
+   * This field is sometimes useful when the `name` is cumbersome or ends up
+   * being perceived as overly technical. The title generally does not have
+   * as stringent format requirements on it, so it may contain special
+   * characters and be more explanatory. Do keep it very short though, and
+   * avoid situations where a title can be confused with the name of another
+   * entity, or where two entities share a title.
+   *
+   * Note that this is only for display purposes, and may be ignored by some
+   * parts of the code. Entity references still always make use of the `name`
+   * property, not the title.
+   */
+  title?: string;
 
   /**
    * A short (typically relatively few words, on one line) description of the
@@ -143,6 +168,8 @@ export type EntityMeta = JsonObject & {
 
 /**
  * A relation of a specific type to another entity in the catalog.
+ *
+ * @public
  */
 export type EntityRelation = {
   /**
@@ -158,6 +185,8 @@ export type EntityRelation = {
 
 /**
  * Holds the relation data for entities.
+ *
+ * @public
  */
 export type EntityRelationSpec = {
   /**
@@ -178,6 +207,8 @@ export type EntityRelationSpec = {
 
 /**
  * A link to external information that is related to the entity.
+ *
+ * @public
  */
 export type EntityLink = {
   /**

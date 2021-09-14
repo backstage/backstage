@@ -82,8 +82,8 @@ export const ExamplePage = examplePlugin.provide(
 
 This is where the plugin is created and where it creates and exports extensions
 that can be imported and used the app. See reference docs for
-[createPlugin](../reference/createPlugin.md) or introduction to the new
-[Composability System](./composability.md).
+[createPlugin](../reference/core-plugin-api.createplugin.md) or introduction to
+the new [Composability System](./composability.md).
 
 ## Components
 
@@ -99,15 +99,14 @@ You may tweak these components, rename them and/or replace them completely.
 
 ## Connecting the plugin to the Backstage app
 
-There are three things needed for a Backstage app to start making use of a
-plugin.
+There are two things needed for a Backstage app to start making use of a plugin.
 
 1. Add plugin as dependency in `app/package.json`
 2. Import and use one or more plugin extensions, for example in
    `app/src/App.tsx`.
 
-Luckily these three steps happen automatically when you create a plugin with the
-Backstage CLI.
+Luckily both of these steps happen automatically when you create a plugin with
+the Backstage CLI.
 
 ## Talking to the outside world
 

@@ -44,7 +44,7 @@ The Microsoft provider is a structure with three configuration keys:
 
 - `clientId`: Application (client) ID, found on App Registration > Overview
 - `clientSecret`: Secret, found on App Registration > Certificates & secrets
-- `tenentId`: Directory (tenant) ID, found on App Registration > Overview
+- `tenantId`: Directory (tenant) ID, found on App Registration > Overview
 
 ## Adding the provider to the Backstage frontend
 

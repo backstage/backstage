@@ -118,6 +118,11 @@ export type EntitiesSearchFilter = {
    * case insensitive.
    */
   matchValueIn?: string[];
+
+  /**
+   * Match on existence of key.
+   */
+  matchValueExists?: boolean;
 };
 
 /**

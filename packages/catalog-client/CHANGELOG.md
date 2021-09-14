@@ -1,5 +1,27 @@
 # @backstage/catalog-client
 
+## 0.3.19
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.3.18
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence
+
+## 0.3.17
+
+### Patch Changes
+
+- 71c936eb6: Export `CatalogRequestOptions` type
+
 ## 0.3.16
 
 ### Patch Changes

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import webpack, { Module, Plugin } from 'webpack';
+import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
-  loaders: Module['rules'];
-  plugins: Plugin[];
+  loaders: ModuleOptions['rules'];
+  plugins: WebpackPluginInstance[];
 };
 
 type TransformOptions = {
@@ -52,6 +52,12 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
+      },
+    },
+    {
       test: [/\.icon\.svg$/],
       use: [
         {
@@ -77,10 +83,16 @@ export const transforms = (options: TransformOptions): Transforms => {
         { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
         /\.xml/,
       ],
-      loader: require.resolve('url-loader'),
-      options: {
-        limit: 10000,
-        name: 'static/[name].[hash:8].[ext]',
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8].[ext]',
+      },
+    },
+    {
+      test: /\.(eot|woff|woff2|ttf)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
       },
     },
     {
@@ -89,7 +101,10 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       include: /\.(md)$/,
-      use: require.resolve('raw-loader'),
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
     },
     {
       test: /\.css$/i,
@@ -105,7 +120,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<Plugin>();
+  const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());

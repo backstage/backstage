@@ -105,11 +105,8 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
-      - name: verify doc links
-        run: node scripts/verify-links.js
-
       - name: prettier
-        run: yarn prettier:check
+        run: yarn prettier:check '!ADOPTERS.md'
 
       - name: lock
         run: yarn lock:check
@@ -123,8 +120,12 @@ jobs:
       - name: type checking and declarations
         run: yarn tsc:full
 
-      - name: check api reports
-        run: yarn build:api-reports:only --ci
+        # We need to generate the API references as well, so that we can verify the doc links
+      - name: check api reports and generate API reference
+        run: yarn build:api-reports:only --ci --docs
+
+      - name: verify doc links
+        run: node scripts/verify-links.js
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}

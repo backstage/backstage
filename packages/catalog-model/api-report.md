@@ -143,7 +143,7 @@ export type EntityEnvelope = {
 
 // @public
 export function entityEnvelopeSchemaValidator<
-  T extends EntityEnvelope = EntityEnvelope
+  T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T;
 
 // @public
@@ -168,6 +168,7 @@ export type EntityMeta = JsonObject & {
   generation?: number;
   name: string;
   namespace?: string;
+  title?: string;
   description?: string;
   labels?: Record<string, string>;
   annotations?: Record<string, string>;
@@ -184,8 +185,8 @@ export type EntityName = {
 
 // @public (undocumented)
 export const EntityPolicies: {
-  allOf(policies: EntityPolicy[]): AllEntityPolicies;
-  oneOf(policies: EntityPolicy[]): AnyEntityPolicy;
+  allOf(policies: EntityPolicy[]): EntityPolicy;
+  oneOf(policies: EntityPolicy[]): EntityPolicy;
 };
 
 // @public
@@ -201,6 +202,12 @@ export type EntityRef =
       namespace?: string;
       name: string;
     };
+
+// @public
+export type EntityRefContext = {
+  defaultKind?: string;
+  defaultNamespace?: string;
+};
 
 // @public
 export type EntityRelation = {
@@ -240,9 +247,7 @@ export function generateUpdatedEntity(previous: Entity, next: Entity): Entity;
 export function getEntityName(entity: Entity): EntityName;
 
 // @public
-export function getEntitySourceLocation(
-  entity: Entity,
-): {
+export function getEntitySourceLocation(entity: Entity): {
   type: string;
   target: string;
 };
@@ -402,9 +407,7 @@ export function parseEntityRef(
 };
 
 // @public
-export function parseLocationReference(
-  ref: string,
-): {
+export function parseLocationReference(ref: string): {
   type: string;
   target: string;
 };
@@ -533,10 +536,6 @@ export interface TemplateEntityV1beta2 extends Entity {
   // (undocumented)
   kind: 'Template';
   // (undocumented)
-  metadata: EntityMeta & {
-    title?: string;
-  };
-  // (undocumented)
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];
@@ -610,6 +609,10 @@ export type Validators = {
 
 // @public
 export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
+
+// Warnings were encountered during analysis:
+//
+// src/entity/Entity.d.ts:38:5 - (ae-incompatible-release-tags) The symbol "status" is marked as @public, but its signature references "UNSTABLE_EntityStatus" which is marked as @alpha
 
 // (No @packageDocumentation comment for this package)
 ```

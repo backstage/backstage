@@ -1,5 +1,124 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.4
+
+### Patch Changes
+
+- 04aad2dab: Fix issue #7021 scaffolder action fetch:template preserves templates file permissions
+- 21ccd4997: GitHub Webhook action in Scaffolder Backend has been improved to validate event names against Octokit Webhook event names list.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.15.3
+
+### Patch Changes
+
+- 3f9dd1759: GitHub create repository webhook action: `github:webhook` for Backstage plugin Scaffolder has been added.
+- 774b08a5c: GitHubWebhook Action can be created with a default webhook secret. This allows getting secret from environment variable as an alternative to get it from context.
+- 536f4d844: Updated dependencies
+- 0b92a1e74: refactor: extract common Octokit related code and use it in actions: `publish:github`, `github:actions:dispatch`, `github:webhook`.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.15.2
+
+### Patch Changes
+
+- b438caf63: Add partial templating to `fetch:template` action.
+
+  If an `templateFileExtension` input is given, only files with that extension get their content processed. If `templateFileExtension` is `true`, the `.njk` extension is used. The `templateFileExtension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+  All other files get copied.
+
+  All output paths are subject to applying templating logic.
+
+- 1ce9b9571: Use more efficient approach to staging files in git during scaffolder actions
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.2
+
+## 0.15.1
+
+### Patch Changes
+
+- d622cfad1: GitHub branch protection option 'Require review from Code Owners' can be enabled by adding `requireCodeOwnersReview: true` in context input.
+
+## 0.15.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.1
+
+## 0.14.2
+
+### Patch Changes
+
+- 6cf48c609: Add the `scaffolder.defaultCommitMessage`, which defaults to `Initial commit`, so it can be customized.
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
+## 0.14.1
+
+### Patch Changes
+
+- c73f53bc2: Add new built-in action ci:github-actions-dispatch
+- 7cea90592: - Move out the `cookiecutter` templating to its own module that is depended on by the `scaffolder-backend` plugin. No breaking change yet, but we will drop first class support for `cookiecutter` in the future and it will become an opt-in feature.
+- eb740ee24: Moved sample software templates to the [backstage/software-templates](https://github.com/backstage/software-templates) repository. If you previously referenced the sample templates straight from `scaffolder-backend` plugin in the main [backstage/backstage](https://github.com/backstage/backstage) repository in your `app-config.yaml`, these references will need to be updated.
+
+  See https://github.com/backstage/software-templates
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+
+## 0.14.0
+
+### Minor Changes
+
+- 96fc27698: Updated inputs for the `publish:github:pull-request` action.
+
+  Now requires a `repoUrl` instead of separate `owner` and `repo` inputs. This aligns with the output of the `RepoUrlPicker` ui field used by the pull-request sample template.
+
+### Patch Changes
+
+- e75506fe7: Unsubscribe from broker after response is flushed
+- ea1d956ef: Updating fs-extra to 10.0.0 to handle broken symbolic links correctly
+- 31de5f27f: Add new `fetch:template` action which handles the same responsibilities as `fetch:cookiecutter` without the external dependency on `cookiecutter`. For information on migrating from `fetch:cookiecutter` to `fetch:template`, see the [migration guide](https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetch-cookiecutter-to-fetch-template) in the docs.
+- 84d329e2a: Scaffolder: Added an 'eq' handlebars helper for use in software template YAML files. This can be used to execute a step depending on the value of an input, e.g.:
+
+  ```yaml
+  steps:
+    id: 'conditional-step'
+    action: 'custom-action'
+    if: '{{ eq parameters.myvalue "custom" }}',
+  ```
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
 ## 0.13.0
 
 ### Minor Changes

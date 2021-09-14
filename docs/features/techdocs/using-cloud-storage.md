@@ -61,7 +61,7 @@ If you do not prefer (3a) and optionally like to use a service account, you can
 follow these steps.
 
 Create a new Service Account and a key associated with it. In roles of the
-service account, use "Storage Admin".
+service account, use "Storage Object Admin".
 
 If you want to create a custom role, make sure to include both `get` and
 `create` permissions for both "Objects" and "Buckets". See
@@ -143,12 +143,47 @@ permissions to:
 
 - `s3:ListBucket` to retrieve bucket metadata
 - `s3:PutObject` to upload files to the bucket
+- `s3:DeleteObject` and `s3:DeleteObjectVersion` to delete stale content during
+  re-publishing
 
 To _read_ TechDocs from the S3 bucket the IAM policy needs to have at a minimum
 permissions to:
 
 - `s3:ListBucket` - To retrieve bucket metadata
 - `s3:GetObject` - To retrieve files from the bucket
+
+> Note: If you need to migrate documentation objects from an older-style path
+> format including case-sensitive entity metadata, you will need to add some
+> additional permissions to be able to perform the migration, including:
+>
+> - `s3:PutBucketAcl` (for copying files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html))
+> - `s3:DeleteObject` and `s3:DeleteObjectVersion` (for deleting migrated files,
+>   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html))
+>
+> ...And you will need to ensure the permissions apply to the bucket itself, as
+> well as all resources under the bucket. See the example policy below.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TechDocsWithMigration",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObjectVersion",
+        "s3:ListBucket",
+        "s3:DeleteObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": ["arn:aws:s3:::your-bucket", "arn:aws:s3:::your-bucket/*"]
+    }
+  ]
+}
+```
 
 **4a. (Recommended) Setup authentication the AWS way, using environment
 variables**
@@ -312,6 +347,10 @@ techdocs:
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
 ```
 
+In either case, the account or credentials used to access your container and all
+TechDocs objects underneath it should have the `Storage Blog Data Owner` role
+applied, in order to read, write, and delete objects as needed.
+
 **4. That's it!**
 
 Your Backstage app is now ready to use Azure Blob Storage for TechDocs, to store
@@ -360,8 +399,33 @@ techdocs:
 
 Set the configs in your `app-config.yaml` to point to your container name.
 
-https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
+https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential
 for more details.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'openStackSwift'
+    openStackSwift:
+      containerName: 'name-of-techdocs-storage-bucket'
+      credentials:
+        id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+        secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
+      authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+      swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
+```
+
+**4. That's it!**
+
+Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to
+store and read the static generated documentation files. When you start the
+backend of the app, you should be able to see
+`techdocs info Successfully connected to the OpenStack Swift Storage container`
+in the logs.
+
+## Bonus: Migration from old OpenStack Swift Configuration
+
+Let's assume we have the old OpenStack Swift configuration here.
 
 ```yaml
 techdocs:
@@ -379,10 +443,40 @@ techdocs:
       region: ${OPENSTACK_SWIFT_STORAGE_REGION}
 ```
 
-**4. That's it!**
+##### Step 1: Change the credential keys
 
-Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to
-store and read the static generated documentation files. When you start the
-backend of the app, you should be able to see
-`techdocs info Successfully connected to the OpenStack Swift Storage container`
-in the logs.
+Since the new SDK uses _Application Credentials_ to authenticate OpenStack, we
+need to change the keys `credentials.username` to `credentials.id`,
+`credentials.password` to `credentials.secret` and use Application Credential ID
+and secret here. For more detail about credentials look
+[here](https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential).
+
+##### Step 2: Remove the unused keys
+
+Since the new SDK doesn't use the old way authentication, we don't need the keys
+`openStackSwift.keystoneAuthVersion`, `openStackSwift.domainId`,
+`openStackSwift.domainName` and `openStackSwift.region`. So you can remove them.
+
+##### Step 3: Add Swift URL
+
+The new SDK needs the OpenStack Swift connection URL for connecting the Swift.
+So you need to add a new key called `openStackSwift.swiftUrl` and give the
+OpenStack Swift url here. Example url should look like that:
+`https://example.com:6780/swift/v1`
+
+##### That's it!
+
+Your new configuration should look like that!
+
+```yaml
+techdocs:
+  publisher:
+    type: 'openStackSwift'
+    openStackSwift:
+      containerName: 'name-of-techdocs-storage-bucket'
+      credentials:
+        id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+        secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
+      authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+      swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
+```

@@ -9,7 +9,6 @@
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
-import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -17,7 +16,6 @@ import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
-import * as http from 'http';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
@@ -80,8 +78,22 @@ export class BitbucketUrlReader implements UrlReader {
 export interface CacheClient {
   delete(key: string): Promise<void>;
   get(key: string): Promise<JsonValue | undefined>;
-  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<void>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheClientSetOptions,
+  ): Promise<void>;
 }
+
+// @public (undocumented)
+export type CacheClientOptions = {
+  defaultTtl?: number;
+};
+
+// @public (undocumented)
+export type CacheClientSetOptions = {
+  ttl?: number;
+};
 
 // @public
 export class CacheManager {
@@ -91,6 +103,12 @@ export class CacheManager {
     options?: CacheManagerOptions,
   ): CacheManager;
 }
+
+// @public (undocumented)
+export type CacheManagerOptions = {
+  logger?: Logger_2;
+  onError?: (err: Error) => void;
+};
 
 // @public (undocumented)
 export const coloredFormat: winston.Logform.Format;
@@ -117,12 +135,14 @@ export function createRootLogger(
 ): winston.Logger;
 
 // @public
-export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
+export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public (undocumented)
-export function createStatusCheckRouter(
-  options: StatusCheckRouterOptions,
-): Promise<express.Router>;
+export function createStatusCheckRouter(options: {
+  logger: Logger_2;
+  path?: string;
+  statusCheck?: StatusCheck;
+}): Promise<express.Router>;
 
 // @public (undocumented)
 export class DatabaseManager {
@@ -142,6 +162,7 @@ export class DockerContainerRunner implements ContainerRunner {
     mountDirs,
     workingDir,
     envVars,
+    pullImage,
   }: RunContainerOptions): Promise<void>;
 }
 
@@ -321,14 +342,17 @@ export class GitlabUrlReader implements UrlReader {
 export { isChildPath };
 
 // @public
-export function loadBackendConfig(options: Options): Promise<Config>;
+export function loadBackendConfig(options: {
+  logger: Logger_2;
+  argv: string[];
+}): Promise<Config>;
 
 // @public
 export function notFoundHandler(): RequestHandler;
 
 // @public
 export type PluginCacheManager = {
-  getClient: (options?: ClientOptions) => CacheClient;
+  getClient: (options?: CacheClientOptions) => CacheClient;
 };
 
 // @public
@@ -343,11 +367,59 @@ export type PluginEndpointDiscovery = {
 };
 
 // @public
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger_2;
+  treeResponseFactory: ReadTreeResponseFactory;
+}) => UrlReaderPredicateTuple[];
+
+// @public
+export type ReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+};
+
+// @public
 export type ReadTreeResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
   etag: string;
+};
+
+// @public (undocumented)
+export type ReadTreeResponseDirOptions = {
+  targetDir?: string;
+};
+
+// @public (undocumented)
+export interface ReadTreeResponseFactory {
+  // (undocumented)
+  fromTarArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+  // (undocumented)
+  fromZipArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+}
+
+// @public (undocumented)
+export type ReadTreeResponseFactoryOptions = {
+  stream: Readable;
+  subpath?: string;
+  etag: string;
+  filter?: (
+    path: string,
+    info?: {
+      size: number;
+    },
+  ) => boolean;
 };
 
 // @public
@@ -357,7 +429,23 @@ export type ReadTreeResponseFile = {
 };
 
 // @public
+export type ReadUrlOptions = {
+  etag?: string;
+};
+
+// @public
+export type ReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  etag?: string;
+};
+
+// @public
 export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
+
+// @public (undocumented)
+export type RequestLoggingHandlerFactory = (
+  logger?: Logger_2,
+) => RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -374,6 +462,12 @@ export type RunContainerOptions = {
   mountDirs?: Record<string, string>;
   workingDir?: string;
   envVars?: Record<string, string>;
+  pullImage?: boolean;
+};
+
+// @public
+export type SearchOptions = {
+  etag?: string;
 };
 
 // @public
@@ -390,13 +484,25 @@ export type SearchResponseFile = {
 
 // @public (undocumented)
 export type ServiceBuilder = {
-  loadConfig(config: ConfigReader): ServiceBuilder;
+  loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
   setLogger(logger: Logger_2): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
-  setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
+  setHttpsSettings(settings: {
+    certificate:
+      | {
+          key: string;
+          cert: string;
+        }
+      | {
+          hostname: string;
+        };
+  }): ServiceBuilder;
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
+  setRequestLoggingHandler(
+    requestLoggingHandler: RequestLoggingHandlerFactory,
+  ): ServiceBuilder;
   start(): Promise<Server>;
 };
 
@@ -441,11 +547,24 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
+// @public (undocumented)
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
 // @public
 export class UrlReaders {
-  static create({ logger, config, factories }: CreateOptions): UrlReader;
-  static default({ logger, config, factories }: CreateOptions): UrlReader;
+  static create({ logger, config, factories }: UrlReadersOptions): UrlReader;
+  static default({ logger, config, factories }: UrlReadersOptions): UrlReader;
 }
+
+// @public (undocumented)
+export type UrlReadersOptions = {
+  config: Config;
+  logger: Logger_2;
+  factories?: ReaderFactory[];
+};
 
 // @public
 export function useHotCleanup(

@@ -34,12 +34,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityTagPicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
 
   const queryParamTags = [queryParameters.tags]
     .flat()
@@ -73,6 +69,7 @@ export const EntityTagPicker = () => {
       <Typography variant="button">Tags</Typography>
       <Autocomplete<string>
         multiple
+        aria-label="Tags"
         options={availableTags}
         value={selectedTags}
         onChange={(_: object, value: string[]) => setSelectedTags(value)}

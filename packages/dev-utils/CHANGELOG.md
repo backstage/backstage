@@ -1,5 +1,99 @@
 # @backstage/dev-utils
 
+## 0.2.9
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-app-api@0.1.12
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+  - @backstage/integration-react@0.1.8
+
+## 0.2.7
+
+### Patch Changes
+
+- be2cd4740: Fixed busy refresh loop that happened when registering a page at `/`.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
+## 0.2.6
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/test-utils@0.1.17
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/core-app-api@0.1.7
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.2.4
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/test-utils@0.1.16
+  - @backstage/theme@0.2.9
+
+## 0.2.3
+
+### Patch Changes
+
+- 01001a324: Allow custom theme for dev app.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+  - @backstage/core-app-api@0.1.5
+  - @backstage/test-utils@0.1.15
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

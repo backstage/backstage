@@ -30,14 +30,15 @@ type Props = {
   customStyle?: any;
 };
 
-export const CodeSnippet = ({
-  text,
-  language,
-  showLineNumbers = false,
-  showCopyCodeButton = false,
-  highlightedNumbers,
-  customStyle,
-}: Props) => {
+export const CodeSnippet = (props: Props) => {
+  const {
+    text,
+    language,
+    showLineNumbers = false,
+    showCopyCodeButton = false,
+    highlightedNumbers,
+    customStyle,
+  } = props;
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';

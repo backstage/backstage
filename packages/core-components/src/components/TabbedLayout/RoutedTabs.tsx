@@ -20,9 +20,11 @@ import { Content } from '../../layout/Content';
 import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
 
-export function useSelectedSubRoute(
-  subRoutes: SubRoute[],
-): { index: number; route: SubRoute; element: JSX.Element } {
+export function useSelectedSubRoute(subRoutes: SubRoute[]): {
+  index: number;
+  route: SubRoute;
+  element: JSX.Element;
+} {
   const params = useParams();
 
   const routes = subRoutes.map(({ path, children }) => ({
@@ -45,7 +47,8 @@ export function useSelectedSubRoute(
   };
 }
 
-export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
+export function RoutedTabs(props: { routes: SubRoute[] }) {
+  const { routes } = props;
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
@@ -78,4 +81,4 @@ export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
       </Content>
     </>
   );
-};
+}

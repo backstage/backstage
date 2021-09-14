@@ -41,7 +41,8 @@ export type AvatarProps = {
   customStyles?: CSSProperties;
 };
 
-export const Avatar = ({ displayName, picture, customStyles }: AvatarProps) => {
+export function Avatar(props: AvatarProps) {
+  const { displayName, picture, customStyles } = props;
   const classes = useStyles();
   return (
     <MaterialAvatar
@@ -56,4 +57,4 @@ export const Avatar = ({ displayName, picture, customStyles }: AvatarProps) => {
       {displayName && extractInitials(displayName)}
     </MaterialAvatar>
   );
-};
+}

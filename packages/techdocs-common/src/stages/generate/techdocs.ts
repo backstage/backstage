@@ -17,56 +17,65 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
-import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
+import {
   addBuildTimestampMetadata,
+  getMkdocsYml,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
   validateMkdocsYaml,
 } from './helpers';
-import { GeneratorBase, GeneratorRunOptions } from './types';
+import {
+  GeneratorBase,
+  GeneratorConfig,
+  GeneratorRunInType,
+  GeneratorRunOptions,
+} from './types';
 
-type TechdocsGeneratorOptions = {
-  // This option enables users to configure if they want to use TechDocs container
-  // or generate without the container.
-  // This is used to avoid running into Docker in Docker environment.
-  runGeneratorIn: string;
-};
-
-const createStream = (): [string[], PassThrough] => {
-  const log = [] as Array<string>;
-
-  const stream = new PassThrough();
-  stream.on('data', chunk => {
-    const textValue = chunk.toString().trim();
-    if (textValue?.length > 1) log.push(textValue);
-  });
-
-  return [log, stream];
-};
+const defaultDockerImage = 'spotify/techdocs';
 
 export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
-  private readonly options: TechdocsGeneratorOptions;
+  private readonly options: GeneratorConfig;
+  private readonly scmIntegrations: ScmIntegrationRegistry;
+
+  static fromConfig(
+    config: Config,
+    {
+      containerRunner,
+      logger,
+    }: { containerRunner: ContainerRunner; logger: Logger },
+  ) {
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    return new TechdocsGenerator({
+      logger,
+      containerRunner,
+      config,
+      scmIntegrations,
+    });
+  }
 
   constructor({
     logger,
     containerRunner,
     config,
+    scmIntegrations,
   }: {
     logger: Logger;
     containerRunner: ContainerRunner;
     config: Config;
+    scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = logger;
-    this.options = {
-      runGeneratorIn:
-        config.getOptionalString('techdocs.generators.techdocs') ?? 'docker',
-    };
+    this.options = readGeneratorConfig(config, logger);
     this.containerRunner = containerRunner;
+    this.scmIntegrations = scmIntegrations;
   }
 
   public async run({
@@ -74,22 +83,23 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     parsedLocationAnnotation,
     etag,
+    logger: childLogger,
+    logStream,
   }: GeneratorRunOptions): Promise<void> {
-    const [log, logStream] = createStream();
-
-    // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
-    // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
+
+    // validate the docs_dir first
+    await validateMkdocsYaml(inputDir, content);
+
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
         mkdocsYmlPath,
-        this.logger,
+        childLogger,
         parsedLocationAnnotation,
+        this.scmIntegrations,
       );
     }
-
-    await validateMkdocsYaml(inputDir, mkdocsYmlPath);
 
     // Directories to bind on container
     const mountDirs = {
@@ -98,7 +108,7 @@ export class TechdocsGenerator implements GeneratorBase {
     };
 
     try {
-      switch (this.options.runGeneratorIn) {
+      switch (this.options.runIn) {
         case 'local':
           await runCommand({
             command: 'mkdocs',
@@ -108,13 +118,13 @@ export class TechdocsGenerator implements GeneratorBase {
             },
             logStream,
           });
-          this.logger.info(
+          childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
         case 'docker':
           await this.containerRunner.runContainer({
-            imageName: 'spotify/techdocs',
+            imageName: this.options.dockerImage ?? defaultDockerImage,
             args: ['build', '-d', '/output'],
             logStream,
             mountDirs,
@@ -122,21 +132,21 @@ export class TechdocsGenerator implements GeneratorBase {
             // Set the home directory inside the container as something that applications can
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
+            pullImage: this.options.pullImage,
           });
-          this.logger.info(
+          childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
           );
           break;
         default:
           throw new Error(
-            `Invalid config value "${this.options.runGeneratorIn}" provided in 'techdocs.generators.techdocs'.`,
+            `Invalid config value "${this.options.runIn}" provided in 'techdocs.generators.techdocs'.`,
           );
       }
     } catch (error) {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      this.logger.error(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
@@ -150,7 +160,7 @@ export class TechdocsGenerator implements GeneratorBase {
     // Creates techdocs_metadata.json if file does not exist.
     await addBuildTimestampMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
-      this.logger,
+      childLogger,
     );
 
     // Add etag of the prepared tree to techdocs_metadata.json
@@ -162,4 +172,29 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
   }
+}
+
+export function readGeneratorConfig(
+  config: Config,
+  logger: Logger,
+): GeneratorConfig {
+  const legacyGeneratorType = config.getOptionalString(
+    'techdocs.generators.techdocs',
+  ) as GeneratorRunInType;
+
+  if (legacyGeneratorType) {
+    logger.warn(
+      `The 'techdocs.generators.techdocs' configuration key is deprecated and will be removed in the future. Please use 'techdocs.generator' instead. ` +
+        `See here https://backstage.io/docs/features/techdocs/configuration`,
+    );
+  }
+
+  return {
+    runIn:
+      legacyGeneratorType ??
+      config.getOptionalString('techdocs.generator.runIn') ??
+      'docker',
+    dockerImage: config.getOptionalString('techdocs.generator.dockerImage'),
+    pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
+  };
 }

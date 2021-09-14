@@ -11,15 +11,25 @@ import { JSONSchema7 } from 'json-schema';
 export type ConfigSchema = {
   process(
     appConfigs: AppConfig[],
-    options?: ConfigProcessingOptions,
+    options?: ConfigSchemaProcessingOptions,
   ): AppConfig[];
   serialize(): JsonObject;
 };
 
 // @public
-export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
+export type ConfigSchemaProcessingOptions = {
+  visibility?: ConfigVisibility[];
+  valueTransform?: TransformFunc<any>;
+  withFilteredKeys?: boolean;
+};
+
+// @public
+export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 // @public (undocumented)
+export type EnvFunc = (name: string) => Promise<string | undefined>;
+
+// @public
 export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 
 // @public (undocumented)
@@ -28,10 +38,25 @@ export type LoadConfigOptions = {
   configPaths: string[];
   env?: string;
   experimentalEnvFunc?: EnvFunc;
+  watch?: {
+    onChange: (configs: AppConfig[]) => void;
+    stopSignal?: Promise<void>;
+  };
 };
 
 // @public
-export function loadConfigSchema(options: Options): Promise<ConfigSchema>;
+export function loadConfigSchema(
+  options: LoadConfigSchemaOptions,
+): Promise<ConfigSchema>;
+
+// @public (undocumented)
+export type LoadConfigSchemaOptions =
+  | {
+      dependencies: string[];
+    }
+  | {
+      serialized: JsonObject;
+    };
 
 // @public
 export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;
@@ -40,6 +65,14 @@ export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;
 export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
+
+// @public
+export type TransformFunc<T extends number | string | boolean> = (
+  value: T,
+  context: {
+    visibility: ConfigVisibility;
+  },
+) => T | undefined;
 
 // (No @packageDocumentation comment for this package)
 ```

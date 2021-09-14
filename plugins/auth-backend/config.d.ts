@@ -48,11 +48,12 @@ export interface Config {
         entryPoint: string;
         logoutUrl?: string;
         issuer: string;
-        cert?: string;
+        cert: string;
         privateKey?: string;
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
+        acceptedClockSkewMs?: number;
       };
       okta?: {
         [authEnv: string]: { [key: string]: string };
@@ -64,6 +65,7 @@ export interface Config {
           authorizationUrl: string;
           tokenUrl: string;
           scope?: string;
+          disableRefresh?: boolean;
         };
       };
       oidc?: {

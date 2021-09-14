@@ -15,5 +15,4 @@
  */
 export * from './stages';
 export * from './helpers';
-export * from './default-branch';
-export * from './git-auth';
+export * from './techdocsTypes';

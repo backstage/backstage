@@ -1,5 +1,21 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.1.13
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
 ## 0.1.12
 
 ### Patch Changes

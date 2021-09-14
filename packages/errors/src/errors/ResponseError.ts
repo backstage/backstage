@@ -24,6 +24,8 @@ import {
  * An error thrown as the result of a failed server request.
  *
  * The server is expected to respond on the ErrorResponse format.
+ *
+ * @public
  */
 export class ResponseError extends Error {
   /**

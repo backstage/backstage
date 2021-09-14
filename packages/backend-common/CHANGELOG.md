@@ -1,5 +1,107 @@
 # @backstage/backend-common
 
+## 0.9.2
+
+### Patch Changes
+
+- 9e5ed27ec: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
+## 0.9.0
+
+### Minor Changes
+
+- a365f1faf: The `ZipArchiveResponse` class now accepts an optional `stripFirstDirectory` parameter. Note that its default value is `false`, which leads to a breaking change in behaviour to previous versions of the class. If you use this class explicitly and want to retain the old behaviour, add a `true` parameter value to its constructor.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.8.10
+
+### Patch Changes
+
+- 8543d9890: Add an optional `info` parameter to the `readTree` filter option with a `size` property.
+- 4d909268c: Read responses in `UrlReader#read()` as array buffer instead of as text to allow reading non-text locations such as images.
+- 9b4604b38: Add support for watching configuration by implementing the `subscribe` method in the configuration returned by `loadBackendConfig`.
+- b8cb12009: Add AWS S3 URL Reader
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+  - @backstage/integration@0.6.1
+
+## 0.8.9
+
+### Patch Changes
+
+- f7ce7c565: Use a more informative error message when URL reading isn't allowed due to no reader matching the target URL.
+- ce1958021: Pass on credentials to the integrations package, so that it can properly pick the API route when using GitHub apps based auth
+- Updated dependencies
+  - @backstage/integration@0.6.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/config-loader@0.6.6
+
+## 0.8.7
+
+### Patch Changes
+
+- f25357273: Implement the etag functionality in the `readUrl` method of `FetchUrlReader`.
+- bdd6ab5f1: It's possible to customize the request logging handler when building the service. For example in your `backend`
+
+  ```
+    const service = createServiceBuilder(module)
+      .loadConfig(config)
+      .setRequestLoggingHandler((logger?: Logger): RequestHandler => {
+        const actualLogger = (logger || getRootLogger()).child({
+          type: 'incomingRequest',
+        });
+        return expressWinston.logger({ ...
+  ```
+
+## 0.8.6
+
+### Patch Changes
+
+- 5f6f2fd96: Support a `ensureExists` config option to skip ensuring a configured database exists. This allows deployment scenarios where
+  limited permissions are given for provisioned databases without privileges to create new databases. If set to `false`, the
+  database connection will not be validated prior to use which means the backend will not attempt to create the database if it
+  doesn't exist. You can configure this in your app-config.yaml:
+
+  ```yaml
+  backend:
+    database:
+      ensureExists: false
+  ```
+
+  This defaults to `true` if unspecified. You can also configure this per plugin connection and will override the base option.
+
+- ad93bb035: Document the default behavior of `statusCheck` option in `createStatusCheckRouter`.
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/config-loader@0.6.5
+
 ## 0.8.5
 
 ### Patch Changes

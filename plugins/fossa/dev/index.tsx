@@ -135,7 +135,7 @@ createDevApp()
     api: catalogApiRef,
     deps: {},
     factory: () =>
-      (({
+      ({
         getEntities: async () => {
           await new Promise(r => setTimeout(r, 1000));
 
@@ -148,7 +148,7 @@ createDevApp()
             ],
           };
         },
-      } as Partial<CatalogApi>) as any),
+      } as Partial<CatalogApi> as any),
   })
   .addPage({
     title: 'Entity Content',

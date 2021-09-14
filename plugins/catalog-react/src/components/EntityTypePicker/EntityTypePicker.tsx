@@ -24,12 +24,8 @@ import { Select } from '@backstage/core-components';
 
 export const EntityTypePicker = () => {
   const alertApi = useApi(alertApiRef);
-  const {
-    error,
-    availableTypes,
-    selectedTypes,
-    setSelectedTypes,
-  } = useEntityTypeFilter();
+  const { error, availableTypes, selectedTypes, setSelectedTypes } =
+    useEntityTypeFilter();
 
   useEffect(() => {
     if (error) {
@@ -40,7 +36,7 @@ export const EntityTypePicker = () => {
     }
   }, [error, alertApi]);
 
-  if (!availableTypes || error) return null;
+  if (availableTypes.length === 0 || error) return null;
 
   const items = [
     { value: 'all', label: 'All' },

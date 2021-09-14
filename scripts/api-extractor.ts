@@ -31,8 +31,14 @@ import {
   CompilerState,
   ExtractorLogLevel,
 } from '@microsoft/api-extractor';
+import { DocNode, IDocNodeContainerParameters } from '@microsoft/tsdoc';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
-import { MarkdownDocumenter } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import {
+  IMarkdownDocumenterOptions,
+  MarkdownDocumenter,
+} from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
 const tmpDir = resolvePath(__dirname, '../node_modules/.cache/api-extractor');
 
@@ -50,17 +56,16 @@ const {
 } = require('@rushstack/node-core-library/lib/PackageJsonLookup');
 
 const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;
-PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackageJsonFilePathForPatch(
-  path: string,
-) {
-  if (
-    path.includes('@material-ui') &&
-    !dirname(path).endsWith('@material-ui')
-  ) {
-    return undefined;
-  }
-  return old.call(this, path);
-};
+PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor =
+  function tryGetPackageJsonFilePathForPatch(path: string) {
+    if (
+      path.includes('@material-ui') &&
+      !dirname(path).endsWith('@material-ui')
+    ) {
+      return undefined;
+    }
+    return old.call(this, path);
+  };
 
 /**
  * Another monkey patch where we apply prettier to the API reports. This has to be patched into
@@ -73,15 +78,14 @@ const {
 
 const originalGenerateReviewFileContent =
   ApiReportGenerator.generateReviewFileContent;
-ApiReportGenerator.generateReviewFileContent = function decoratedGenerateReviewFileContent(
-  ...args
-) {
-  const content = originalGenerateReviewFileContent.apply(this, args);
-  return prettier.format(content, {
-    ...require('@spotify/prettier-config'),
-    parser: 'markdown',
-  });
-};
+ApiReportGenerator.generateReviewFileContent =
+  function decoratedGenerateReviewFileContent(...args) {
+    const content = originalGenerateReviewFileContent.apply(this, args);
+    return prettier.format(content, {
+      ...require('@spotify/prettier-config'),
+      parser: 'markdown',
+    });
+  };
 
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
@@ -91,7 +95,6 @@ const SKIPPED_PACKAGES = [
   'packages/cli',
   'packages/codemods',
   'packages/create-app',
-  'packages/docgen',
   'packages/e2e-test',
   'packages/storybook',
   'packages/techdocs-cli',
@@ -150,16 +153,11 @@ async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
-    const packagePath = resolvePath(__dirname, `../${packageDir}/package.json`);
+    const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(
-          __dirname,
-          '../dist-types',
-          packageDir,
-          'src/index.d.ts',
-        ),
+        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
         bundledPackages: [],
 
         compiler: {
@@ -190,7 +188,7 @@ async function runApiExtraction({
         },
 
         messages: {
-          // Silence warnings, as these will prevent the CI build to work
+          // Silence compiler warnings, as these will prevent the CI build to work
           compilerMessageReporting: {
             default: {
               logLevel: 'none' as ExtractorLogLevel.None,
@@ -200,14 +198,14 @@ async function runApiExtraction({
           },
           extractorMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
           tsdocMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
         },
@@ -217,8 +215,17 @@ async function runApiExtraction({
         projectFolder,
       },
       configObjectFullPath: projectFolder,
-      packageJsonFullPath: packagePath,
+      packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
     });
+
+    // The `packageFolder` needs to point to the location within `dist-types` in order for relative
+    // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
+    // which needs to point to the actual file, so we override `packageFolder` afterwards.
+    (
+      extractorConfig as {
+        packageFolder: string;
+      }
+    ).packageFolder = packageFolder;
 
     if (!compilerState) {
       compilerState = CompilerState.create(extractorConfig, {
@@ -296,10 +303,13 @@ async function runApiExtraction({
   }
 }
 
-function isComponentMember(member: any) {
-  // React components are annotated with @component, and we want to skip those
-  return Boolean(member.docComment.match(/\n\s*\**\s*@component/m));
-}
+/*
+WARNING: Bring a blanket if you're gonna read the code below
+
+There's some weird shit going on here, and it's because we cba
+forking rushstash to modify the api-documenter markdown generation,
+which otherwise is the recommended way to do customizations.
+*/
 
 async function buildDocs({
   inputDir,
@@ -308,6 +318,8 @@ async function buildDocs({
   inputDir: string;
   outputDir: string;
 }) {
+  // We start by constructing our own model from the files so that
+  // we get a change to modify them, as the model is otherwise read-only.
   const parseFile = async (filename: string): Promise<any> => {
     console.log(`Reading ${filename}`);
     return fs.readJson(resolvePath(inputDir, filename));
@@ -322,9 +334,7 @@ async function buildDocs({
 
   const newModel = new ApiModel();
   for (const serialized of serializedPackages) {
-    serialized.members[0].members = serialized.members[0].members.filter(
-      member => !isComponentMember(member),
-    );
+    // Add any docs filtering logic here
 
     const pkg = ApiPackage.deserialize(
       serialized,
@@ -333,10 +343,132 @@ async function buildDocs({
     newModel.addMember(pkg);
   }
 
-  await fs.remove(outputDir);
-  await fs.ensureDir(outputDir);
+  // The doc AST need to be extended with custom nodes if we want to
+  // add any extra content.
+  // This one is for the YAML front matter that we need for the microsite.
+  class DocFrontMatter extends DocNode {
+    static kind = 'DocFrontMatter';
 
-  const documenter = new MarkdownDocumenter({
+    public readonly id: string;
+    public readonly title: string;
+    public readonly description: string;
+
+    public constructor(
+      parameters: IDocNodeContainerParameters & {
+        id: string;
+        title: string;
+        description: string;
+      },
+    ) {
+      super(parameters);
+      this.id = parameters.id;
+      this.title = parameters.title;
+      this.description = parameters.description;
+    }
+
+    /** @override */
+    public get kind(): string {
+      return DocFrontMatter.kind;
+    }
+  }
+
+  // This is where we actually write the markdown and where we can hook
+  // in the rendering of our own nodes.
+  class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
+    /** @override */
+    protected writeNode(
+      docNode: DocNode,
+      context: IMarkdownEmitterContext,
+      docNodeSiblings: boolean,
+    ): void {
+      switch (docNode.kind) {
+        case DocFrontMatter.kind: {
+          const node = docNode as DocFrontMatter;
+          context.writer.writeLine('---');
+          context.writer.writeLine(`id: ${node.id}`);
+          context.writer.writeLine(`title: ${node.title}`);
+          context.writer.writeLine(`description: ${node.description}`);
+          context.writer.writeLine('---');
+          context.writer.writeLine();
+          break;
+        }
+        default:
+          super.writeNode(docNode, context, docNodeSiblings);
+      }
+    }
+
+    /** @override */
+    emit(stringBuilder, docNode, options) {
+      // Hack to get rid of the leading comment of each file, since
+      // we want the front matter to come first
+      stringBuilder._chunks.length = 0;
+      return super.emit(stringBuilder, docNode, options);
+    }
+  }
+
+  class CustomMarkdownDocumenter extends (MarkdownDocumenter as any) {
+    constructor(options: IMarkdownDocumenterOptions) {
+      super(options);
+
+      // It's a strict model, we gotta register the allowed usage of our new node
+      this._tsdocConfiguration.docNodeManager.registerDocNodes(
+        '@backstage/docs',
+        [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
+      );
+      this._tsdocConfiguration.docNodeManager.registerAllowableChildren(
+        'Paragraph',
+        [DocFrontMatter.kind],
+      );
+
+      this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
+    }
+
+    // We don't really get many chances to modify the generated AST
+    // so we hook in wherever we can. In this case we add the front matter
+    // just before writing the breadcrumbs at the top.
+    /** @override */
+    _writeBreadcrumb(output, apiItem) {
+      let title;
+      let description;
+
+      const name = apiItem.getScopedNameWithinPackage();
+      if (name) {
+        title = name;
+        description = `API reference for ${apiItem.getScopedNameWithinPackage()}`;
+      } else if (apiItem.kind === 'Model') {
+        title = 'Package Index';
+        description = 'Index of all Backstage Packages';
+      } else {
+        title = apiItem.name;
+        description = `API Reference for ${apiItem.name}`;
+      }
+
+      // Add our front matter
+      output.appendNodeInParagraph(
+        new DocFrontMatter({
+          configuration: this._tsdocConfiguration,
+          id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+          title,
+          description,
+        }),
+      );
+
+      // Now write the actual breadcrumbs
+      super._writeBreadcrumb(output, apiItem);
+
+      // We wanna ignore the header that always gets written after the breadcrumb
+      // This otherwise becomes more or less a duplicate of the title in the front matter
+      const oldAppendNode = output.appendNode;
+      output.appendNode = () => {
+        output.appendNode = oldAppendNode;
+      };
+    }
+  }
+
+  // This is root of the documentation generation, but it's not directly
+  // responsible for generating markdown, it just constructs an AST that
+  // is the consumed by an emitter to actually write the files.
+  const documenter = new CustomMarkdownDocumenter({
     apiModel: newModel,
     documenterConfig: {
       outputTarget: 'markdown',
@@ -348,6 +480,9 @@ async function buildDocs({
     outputFolder: outputDir,
   });
 
+  // Clean up existing stuff and write ALL the docs!
+  await fs.remove(outputDir);
+  await fs.ensureDir(outputDir);
   documenter.generateFiles();
 }
 

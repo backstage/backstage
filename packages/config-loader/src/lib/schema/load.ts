@@ -24,7 +24,8 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 
-type Options =
+/** @public */
+export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
     }
@@ -34,9 +35,11 @@ type Options =
 
 /**
  * Loads config schema for a Backstage instance.
+ *
+ * @public
  */
 export async function loadConfigSchema(
-  options: Options,
+  options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema> {
   let schemas: ConfigSchemaPackageEntry[];
 
@@ -57,7 +60,7 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform } = {},
+      { visibility, valueTransform, withFilteredKeys } = {},
     ): AppConfig[] {
       const result = validate(configs);
       if (result.errors) {
@@ -73,21 +76,23 @@ export async function loadConfigSchema(
       if (visibility) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(
+          ...filterByVisibility(
             data,
             visibility,
             result.visibilityByPath,
             valueTransform,
+            withFilteredKeys,
           ),
         }));
       } else if (valueTransform) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(
+          ...filterByVisibility(
             data,
             Array.from(CONFIG_VISIBILITIES),
             result.visibilityByPath,
             valueTransform,
+            withFilteredKeys,
           ),
         }));
       }

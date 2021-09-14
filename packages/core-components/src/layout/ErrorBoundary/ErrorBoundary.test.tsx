@@ -42,18 +42,14 @@ describe('<ErrorBoundary/>', () => {
   it('should render error boundary with and without error', async () => {
     const { error } = await withLogCollector(['error'], async () => {
       const apis = ApiRegistry.with(errorApiRef, new MockErrorApi());
-      const {
-        rerender,
-        queryByRole,
-        getByRole,
-        getByText,
-      } = await renderInTestApp(
-        <ApiProvider apis={apis}>
-          <ErrorBoundary>
-            <Bomb />
-          </ErrorBoundary>
-        </ApiProvider>,
-      );
+      const { rerender, queryByRole, getByRole, getByText } =
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <ErrorBoundary>
+              <Bomb />
+            </ErrorBoundary>
+          </ApiProvider>,
+        );
 
       expect(queryByRole('alert')).not.toBeInTheDocument();
       expect(getByText(/working component/i)).toBeInTheDocument();

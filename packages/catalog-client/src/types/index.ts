@@ -20,5 +20,8 @@ export type {
   CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
+  CatalogRequestOptions,
 } from './api';
+export type { DiscoveryApi } from './discovery';
+export { CATALOG_FILTER_EXISTS } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

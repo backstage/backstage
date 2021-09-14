@@ -21,6 +21,7 @@ import { Reader } from './reader';
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
   return (
     <Reader
+      withSearch={false}
       entityId={{
         kind: entity.kind,
         namespace: entity.metadata.namespace ?? 'default',

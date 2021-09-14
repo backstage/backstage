@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
@@ -24,12 +25,12 @@ import {
   PublisherBase,
 } from '@backstage/techdocs-common';
 import fetch from 'cross-fetch';
-import express from 'express';
+import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
-import { DocsBuilder } from '../DocsBuilder';
-import { shouldCheckForUpdate } from '../DocsBuilder/BuildMetadataStorage';
+import { ScmIntegrations } from '@backstage/integration';
+import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -78,6 +79,14 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const scmIntegrations = ScmIntegrations.fromConfig(config);
+  const docsSynchronizer = new DocsSynchronizer({
+    publisher,
+    logger,
+    config,
+    scmIntegrations,
+  });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
@@ -120,7 +129,7 @@ export async function createRouter(
         )
       ).json()) as Entity;
 
-      const locationMetadata = getLocationForEntity(entity);
+      const locationMetadata = getLocationForEntity(entity, scmIntegrations);
       res.json({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
@@ -136,114 +145,58 @@ export async function createRouter(
   });
 
   // Check if docs are the latest version and trigger rebuilds if not
-  // Responds with immediate success if rebuild not needed
+  // Responds with an event-stream that closes after the build finished
+  // Responds with an immediate success if rebuild not needed
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const catalogUrl = await discovery.getBaseUrl('catalog');
-    const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
-
     const token = getBearerToken(req.headers.authorization);
-    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-    if (!catalogRes.ok) {
-      const catalogResText = await catalogRes.text();
-      res.status(catalogRes.status);
-      res.send(catalogResText);
-      return;
-    }
 
-    const entity: Entity = await catalogRes.json();
+    const entity = await catalogClient.getEntityByName(
+      { kind, namespace, name },
+      { token },
+    );
 
-    if (!entity.metadata.uid) {
+    if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
     }
-    if (!shouldCheckForUpdate(entity.metadata.uid)) {
-      res.status(200).json({
-        message: `Last check for documentation update is recent, did not retry.`,
-      });
-      return;
+
+    let responseHandler: DocsSynchronizerSyncOpts;
+    if (req.header('accept') !== 'text/event-stream') {
+      console.warn(
+        "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
+      );
+      responseHandler = createHttpResponse(res);
+    } else {
+      responseHandler = createEventStream(res);
     }
 
-    let publisherType = '';
-    try {
-      publisherType = config.getString('techdocs.publisher.type');
-    } catch (err) {
-      throw new Error(
-        'Unable to get techdocs.publisher.type in your app config. Set it to either ' +
-          "'local', 'googleGcs' or other support storage providers. Read more here " +
-          'https://backstage.io/docs/features/techdocs/architecture',
-      );
-    }
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
     if (config.getString('techdocs.builder') !== 'local') {
-      res.status(200).json({
-        message:
-          '`techdocs.builder` app config is not set to `local`, so docs will not be generated locally and sync is not required.',
+      responseHandler.finish({ updated: false });
+      return;
+    }
+
+    // Set the synchronization and build process if "out-of-the-box" configuration is provided.
+    if (isOutOfTheBoxOption(options)) {
+      const { preparers, generators } = options;
+
+      await docsSynchronizer.doSync({
+        responseHandler,
+        entity,
+        preparers,
+        generators,
       });
       return;
     }
 
-    // Set up a DocsBuilder if "out-of-the-box" configuration is provided.
-    if (isOutOfTheBoxOption(options)) {
-      const { preparers, generators } = options;
-      const docsBuilder = new DocsBuilder({
-        preparers,
-        generators,
-        publisher,
-        logger,
-        entity,
-        config,
-      });
-      let foundDocs = false;
-      switch (publisherType) {
-        case 'local':
-        case 'awsS3':
-        case 'azureBlobStorage':
-        case 'openStackSwift':
-        case 'googleGcs': {
-          // This block should be valid for all storage implementations. So no need to duplicate in future,
-          // add the publisher type in the list here.
-          const updated = await docsBuilder.build();
-
-          if (!updated) {
-            throw new NotModifiedError();
-          }
-
-          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-          // on the user's page. If not, respond with a message asking them to check back later.
-          // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
-          for (let attempt = 0; attempt < 5; attempt++) {
-            if (await publisher.hasDocsBeenGenerated(entity)) {
-              foundDocs = true;
-              break;
-            }
-            await new Promise(r => setTimeout(r, 1000));
-          }
-          if (!foundDocs) {
-            logger.error(
-              'Published files are taking longer to show up in storage. Something went wrong.',
-            );
-            throw new NotFoundError(
-              'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
-            );
-          }
-
-          res
-            .status(201)
-            .json({ message: 'Docs updated or did not need updating' });
-          break;
-        }
-
-        default:
-          throw new NotFoundError(
-            `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
-          );
-      }
-    }
+    responseHandler.error(
+      new Error(
+        "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization.",
+      ),
+    );
   });
 
   // Route middleware which serves files from the storage set in the publisher.
@@ -254,4 +207,80 @@ export async function createRouter(
 
 function getBearerToken(header?: string): string | undefined {
   return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
+}
+
+/**
+ * Create an event-stream response that emits the events 'log', 'error', and 'finish'.
+ *
+ * @param res the response to write the event-stream to
+ * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
+ *          will close the event-stream.
+ */
+export function createEventStream(
+  res: Response<any, any>,
+): DocsSynchronizerSyncOpts {
+  // Mandatory headers and http status to keep connection open
+  res.writeHead(200, {
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'text/event-stream',
+  });
+
+  // client closes connection
+  res.socket?.on('close', () => {
+    res.end();
+  });
+
+  // write the event to the stream
+  const send = (type: 'error' | 'finish' | 'log', data: any) => {
+    res.write(`event: ${type}\ndata: ${JSON.stringify(data)}\n\n`);
+
+    // res.flush() is only available with the compression middleware
+    if (res.flush) {
+      res.flush();
+    }
+  };
+
+  return {
+    log: data => {
+      send('log', data);
+    },
+
+    error: e => {
+      send('error', e.message);
+      res.end();
+    },
+
+    finish: result => {
+      send('finish', result);
+      res.end();
+    },
+  };
+}
+
+/**
+ * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
+ *
+ * @param res the response to write the event-stream to
+ * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
+ *          will close the event-stream.
+ */
+export function createHttpResponse(
+  res: Response<any, any>,
+): DocsSynchronizerSyncOpts {
+  return {
+    log: () => {},
+    error: e => {
+      throw e;
+    },
+    finish: ({ updated }) => {
+      if (!updated) {
+        throw new NotModifiedError();
+      }
+
+      res
+        .status(201)
+        .json({ message: 'Docs updated or did not need updating' });
+    },
+  };
 }

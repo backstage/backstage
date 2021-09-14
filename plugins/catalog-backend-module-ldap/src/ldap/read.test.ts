@@ -174,7 +174,6 @@ describe('readLdapUsers', () => {
         });
       },
     );
-
     const config: UserConfig = {
       dn: 'ddd',
       options: {},

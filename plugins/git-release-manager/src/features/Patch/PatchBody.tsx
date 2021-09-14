@@ -38,7 +38,7 @@ import {
   GetLatestReleaseResult,
 } from '../../api/GitReleaseClient';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
-import { ComponentConfigPatch } from '../../types/types';
+import { ComponentConfig, PatchOnSuccessArgs } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { getPatchCommitSuffix } from './helpers/getPatchCommitSuffix';
 import { gitReleaseManagerApiRef } from '../../api/serviceApiRef';
@@ -56,7 +56,7 @@ interface PatchBodyProps {
   bumpedTag: string;
   latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseBranch: GetBranchResult['branch'];
-  onSuccess?: ComponentConfigPatch['onSuccess'];
+  onSuccess?: ComponentConfig<PatchOnSuccessArgs>['onSuccess'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
@@ -164,15 +164,16 @@ export const PatchBody = ({
         {gitDataResponse.value.recentCommitsOnDefaultBranch.map(
           (commit, index) => {
             // FIXME: Performance improvement opportunity: Convert to object lookup
-            const commitExistsOnReleaseBranch = !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
-              releaseBranchCommit =>
-                releaseBranchCommit.sha === commit.sha ||
-                // The selected patch commit's sha is included in the commit message,
-                // which means it's part of a previous patch
-                releaseBranchCommit.commit.message.includes(
-                  getPatchCommitSuffix({ commitSha: commit.sha }),
-                ),
-            );
+            const commitExistsOnReleaseBranch =
+              !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
+                releaseBranchCommit =>
+                  releaseBranchCommit.sha === commit.sha ||
+                  // The selected patch commit's sha is included in the commit message,
+                  // which means it's part of a previous patch
+                  releaseBranchCommit.commit.message.includes(
+                    getPatchCommitSuffix({ commitSha: commit.sha }),
+                  ),
+              );
             const hasNoParent = !commit.firstParentSha;
 
             return (

@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
 import os from 'os';
+import createLimiter from 'p-limit';
 import path from 'path';
 import { Logger } from 'winston';
 import {
@@ -31,7 +32,11 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
-import { getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -53,6 +58,8 @@ try {
  * called "static" at the root of techdocs-backend plugin.
  */
 export class LocalPublish implements PublisherBase {
+  private legacyPathCasing: boolean;
+
   // TODO: Use a static fromConfig method to create a LocalPublish instance, similar to aws/gcs publishers.
   // Move the logic of setting staticDocsDir based on config over to fromConfig,
   // and set the value as a class parameter.
@@ -65,6 +72,10 @@ export class LocalPublish implements PublisherBase {
     this.config = config;
     this.logger = logger;
     this.discovery = discovery;
+    this.legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
   }
 
   async getReadiness(): Promise<ReadinessResponse> {
@@ -76,8 +87,7 @@ export class LocalPublish implements PublisherBase {
   publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
-    const publishDir = path.join(
-      staticDocsDir,
+    const publishDir = this.staticEntityPathJoin(
       entityNamespace,
       entity.kind,
       entity.metadata.name,
@@ -114,8 +124,7 @@ export class LocalPublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
-    const metadataPath = path.join(
-      staticDocsDir,
+    const metadataPath = this.staticEntityPathJoin(
       entityName.namespace,
       entityName.kind,
       entityName.name,
@@ -133,23 +142,61 @@ export class LocalPublish implements PublisherBase {
   }
 
   docsRouter(): express.Handler {
-    return express.static(staticDocsDir, {
-      // Handle content-type header the same as all other publishers.
-      setHeaders: (res, filePath) => {
-        const fileExtension = path.extname(filePath);
-        const headers = getHeadersForFileExtension(fileExtension);
-        for (const [header, value] of Object.entries(headers)) {
-          res.setHeader(header, value);
-        }
-      },
+    const router = express.Router();
+
+    // Redirect middleware ensuring that requests to case-sensitive entity
+    // triplet paths are always sent to lower-case versions.
+    router.use((req, res, next) => {
+      // If legacy path casing is on, let the request immediately continue.
+      if (this.legacyPathCasing) {
+        return next();
+      }
+
+      // Generate a lower-case entity triplet path.
+      const [_, namespace, kind, name, ...rest] = req.path.split('/');
+
+      // Ignore non-triplet objects.
+      if (!namespace || !kind || !name) {
+        return next();
+      }
+
+      const newPath = [
+        _,
+        namespace.toLowerCase(),
+        kind.toLowerCase(),
+        name.toLowerCase(),
+        ...rest,
+      ].join('/');
+
+      // If there was no change, then let express.static() handle the request.
+      if (newPath === req.path) {
+        return next();
+      }
+
+      // Otherwise, redirect to the new path.
+      return res.redirect(req.baseUrl + newPath, 301);
     });
+
+    router.use(
+      express.static(staticDocsDir, {
+        // Handle content-type header the same as all other publishers.
+        setHeaders: (res, filePath) => {
+          const fileExtension = path.extname(filePath);
+          const headers = getHeadersForFileExtension(fileExtension);
+          for (const [header, value] of Object.entries(headers)) {
+            res.setHeader(header, value);
+          }
+        },
+      }),
+    );
+
+    return router;
   }
 
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
 
-    const indexHtmlPath = path.join(
-      staticDocsDir,
+    const indexHtmlPath = this.staticEntityPathJoin(
       namespace,
       entity.kind,
       entity.metadata.name,
@@ -163,5 +210,64 @@ export class LocalPublish implements PublisherBase {
     } catch (err) {
       return false;
     }
+  }
+
+  /**
+   * This code will never run in practice. It is merely here to illustrate how
+   * to implement this method for other storage providers.
+   */
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    // Iterate through every file in the root of the publisher.
+    const files = await getFileTreeRecursively(staticDocsDir);
+    const limit = createLimiter(concurrency);
+
+    await Promise.all(
+      files.map(f =>
+        limit(async file => {
+          const relativeFile = file.replace(`${staticDocsDir}${path.sep}`, '');
+          const newFile = lowerCaseEntityTripletInStoragePath(relativeFile);
+
+          // If all parts are already lowercase, ignore.
+          if (relativeFile === newFile) {
+            return;
+          }
+
+          // Otherwise, copy or move the file.
+          await new Promise<void>(resolve => {
+            const migrate = removeOriginal ? fs.move : fs.copyFile;
+            this.logger.verbose(`Migrating ${relativeFile}`);
+            migrate(file, newFile, err => {
+              if (err) {
+                this.logger.warn(
+                  `Unable to migrate ${relativeFile}: ${err.message}`,
+                );
+              }
+              resolve();
+            });
+          });
+        }, f),
+      ),
+    );
+  }
+
+  /**
+   * Utility wrapper around path.join(), used to control legacy case logic.
+   */
+  protected staticEntityPathJoin(...allParts: string[]): string {
+    if (this.legacyPathCasing) {
+      const [namespace, kind, name, ...parts] = allParts;
+      return path.join(staticDocsDir, namespace, kind, name, ...parts);
+    }
+    const [namespace, kind, name, ...parts] = allParts;
+    return path.join(
+      staticDocsDir,
+      namespace.toLowerCase(),
+      kind.toLowerCase(),
+      name.toLowerCase(),
+      ...parts,
+    );
   }
 }

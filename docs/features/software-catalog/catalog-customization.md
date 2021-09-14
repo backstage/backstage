@@ -27,27 +27,32 @@ default catalog page and create a component in a
 ```tsx
 // imports, etc omitted for brevity. for full source see:
 // https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx
-export const CustomCatalogPage = () => {
+export const CustomCatalogPage = ({
+  columns,
+  actions,
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   return (
-    <CatalogLayout>
-      <Content>
-        <ContentHeader title="Components">
-          <CreateComponentButton />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <div className={styles.contentWrapper}>
-          <EntityListProvider>
-            <div>
-              <EntityKindPicker initialFilter="component" hidden />
+    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
+      <EntityListProvider>
+        <Content>
+          <ContentHeader titleComponent={<CatalogKindHeader />}>
+            <CreateButton title="Create Component" to={link} />
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
+          <FilteredEntityLayout>
+            <FilterContainer>
               <EntityTypePicker />
-              <UserListPicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />
-            </div>
-            <CatalogTable />
-          </EntityListProvider>
-        </div>
-      </Content>
-    </CatalogLayout>
+            </FilterContainer>
+            <EntityListContainer>
+              <CatalogTable columns={columns} actions={actions} />
+            </EntityListContainer>
+          </FilteredEntityLayout>
+        </Content>
+      </EntityListProvider>
+    </PageWithHeader>
   );
 };
 ```
@@ -137,19 +142,27 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CustomCatalogPage`:
 
 ```diff
-export const CustomCatalogPage = () => {
+export const CustomCatalogPage = ({
+  columns,
+  actions,
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   return (
     ...
-          <EntityListProvider>
-            <div>
+        <EntityListProvider>
+          <FilteredEntityLayout>
+            <FilterContainer>
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
-              <UserListPicker />
-+              <EntitySecurityTierPicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
++             <EntitySecurityTierPicker />
               <EntityTagPicker />
-            </div>
-            <CatalogTable />
-          </EntityListProvider>
+            <FilterContainer>
+            <EntityListContainer>
+              <CatalogTable columns={columns} actions={actions} />
+            </EntityListContainer>
+          </FilteredEntityLayout>
+        </EntityListProvider>
     ...
 };
 ```
@@ -173,7 +186,7 @@ new `CustomCatalogIndexPage`.
 # packages/app/src/App.tsx
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
 +    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
 ```

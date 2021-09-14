@@ -1,5 +1,89 @@
 # @backstage/core-app-api
 
+## 0.1.12
+
+### Patch Changes
+
+- 841666a19: Removed deprecated internal functions.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
+## 0.1.10
+
+### Patch Changes
+
+- cfcb486aa: Add system icons for the built-in entity types and use them in the entity list of the `catalog-import` plugin.
+- 392b36fa1: Added support for using authenticating via GitHub Apps in addition to GitHub OAuth Apps. It used to be possible to use GitHub Apps, but they did not handle session refresh correctly.
+
+  Note that GitHub Apps handle OAuth scope at the app installation level, meaning that the `scope` parameter for `getAccessToken` has no effect. When calling `getAccessToken` in open source plugins, one should still include the appropriate scope, but also document in the plugin README what scopes are required in the case of GitHub Apps.
+
+  In addition, the `authHandler` and `signInResolver` options have been implemented for the GitHub provider in the auth backend.
+
+- Updated dependencies
+  - @backstage/core-components@0.3.3
+  - @backstage/config@0.1.8
+
+## 0.1.9
+
+### Patch Changes
+
+- 72a31c29a: Add support for additional app origins
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
+## 0.1.8
+
+### Patch Changes
+
+- 362657623: Add support for serving the app with a base path other than `/`, which is enabled by including the path in `app.baseUrl`.
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.1.6
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.1.5
+
+### Patch Changes
+
+- ea249c6e6: Fix a bug in `FlatRoutes` that prevented outlets from working with the root route, as well as matching root routes too broadly.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+
 ## 0.1.4
 
 ### Patch Changes

@@ -38,7 +38,11 @@ The target is composed of four parts:
   repositories prefixed with `service-`.
 - The path within each repository to find the catalog YAML file. This will
   usually be `/catalog-info.yaml` or a similar variation for catalog files
-  stored in the root directory of each repository.
+  stored in the root directory of each repository. If omitted, the default value
+  `catalog-info.yaml` will be used. E.g. given that `my-project`and `service-a`
+  exists, `https://bitbucket.mycompany.com/projects/my-project/repos/service-*/`
+  will result in:
+  `https://bitbucket.mycompany.com/projects/my-project/repos/service-a/catalog-info.yaml`.
 
 ## Custom repository processing
 
@@ -52,13 +56,11 @@ matching repository is processed.
 repository.
 
 ```typescript
-const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-  client,
-  repository,
-}) {
-  // Custom logic for interpret the matching repository.
-  // See defaultRepositoryParser for an example
-};
+const customRepositoryParser: BitbucketRepositoryParser =
+  async function* customRepositoryParser({ client, repository }) {
+    // Custom logic for interpret the matching repository.
+    // See defaultRepositoryParser for an example
+  };
 
 const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
   parser: customRepositoryParser,

@@ -7,11 +7,14 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
+import { ComponentProps } from 'react';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
+import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -22,17 +25,27 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
 
+export { CATALOG_FILTER_EXISTS };
+
 export { CatalogApi };
 
+// Warning: (ae-missing-release-tag) "catalogApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const catalogApiRef: ApiRef<CatalogApi>;
 
+// Warning: (ae-missing-release-tag) "catalogRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const catalogRouteRef: RouteRef<undefined>;
 
+// Warning: (ae-missing-release-tag) "createDomainColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createDomainColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createEntityRefColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createEntityRefColumn<T extends Entity>({
   defaultKind,
@@ -40,6 +53,8 @@ function createEntityRefColumn<T extends Entity>({
   defaultKind?: string;
 }): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createEntityRelationColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createEntityRelationColumn<T extends Entity>({
   title,
@@ -55,21 +70,33 @@ function createEntityRelationColumn<T extends Entity>({
   };
 }): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createMetadataDescriptionColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createMetadataDescriptionColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createOwnerColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createOwnerColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createSpecLifecycleColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createSpecTypeColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createSpecTypeColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "createSystemColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 function createSystemColumn<T extends Entity>(): TableColumn<T>;
 
+// Warning: (ae-missing-release-tag) "DefaultEntityFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
@@ -81,16 +108,26 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
 };
 
+// Warning: (ae-forgotten-export) The symbol "EntityLoadingStatus" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityContext: Context<EntityLoadingStatus>;
 
+// Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type EntityFilter = {
-  getCatalogFilters?: () => Record<string, string | string[]>;
+  getCatalogFilters?: () => Record<
+    string,
+    string | symbol | (string | symbol)[]
+  >;
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };
 
+// Warning: (ae-missing-release-tag) "EntityKindFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityKindFilter implements EntityFilter {
   constructor(value: string);
@@ -102,12 +139,17 @@ export class EntityKindFilter implements EntityFilter {
   readonly value: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "EntityKindFilterProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityKindPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityKindPicker: ({
   initialFilter,
   hidden,
 }: EntityKindFilterProps) => JSX.Element | null;
 
+// Warning: (ae-missing-release-tag) "EntityLifecycleFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityLifecycleFilter implements EntityFilter {
   constructor(values: string[]);
@@ -119,19 +161,28 @@ export class EntityLifecycleFilter implements EntityFilter {
   readonly values: string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityLifecyclePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLifecyclePicker: () => JSX.Element | null;
 
+// Warning: (ae-forgotten-export) The symbol "EntityListContextProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityListContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityListContext: React_2.Context<
   EntityListContextProps<any> | undefined
 >;
 
+// Warning: (ae-missing-release-tag) "EntityListProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityOwnerFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
@@ -143,15 +194,23 @@ export class EntityOwnerFilter implements EntityFilter {
   readonly values: string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityOwnerPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
 
+// Warning: (ae-forgotten-export) The symbol "EntityProviderProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityProvider: ({
   entity,
   children,
 }: EntityProviderProps) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "EntityRefLinkProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityRefLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityRefLink: React_2.ForwardRefExoticComponent<
   Pick<
@@ -440,6 +499,9 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     React_2.RefAttributes<any>
 >;
 
+// Warning: (ae-forgotten-export) The symbol "EntityRefLinksProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityRefLinks" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityRefLinks: ({
   entityRefs,
@@ -447,6 +509,8 @@ export const EntityRefLinks: ({
   ...linkProps
 }: EntityRefLinksProps) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "entityRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const entityRoute: RouteRef<{
   name: string;
@@ -454,15 +518,17 @@ export const entityRoute: RouteRef<{
   namespace: string;
 }>;
 
+// Warning: (ae-missing-release-tag) "entityRouteParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export function entityRouteParams(
-  entity: Entity,
-): {
+export function entityRouteParams(entity: Entity): {
   readonly kind: string;
   readonly namespace: string;
   readonly name: string;
 };
 
+// Warning: (ae-missing-release-tag) "entityRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const entityRouteRef: RouteRef<{
   name: string;
@@ -470,15 +536,23 @@ export const entityRouteRef: RouteRef<{
   namespace: string;
 }>;
 
+// Warning: (ae-missing-release-tag) "EntitySearchBar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntitySearchBar: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntitySourceLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type EntitySourceLocation = {
   locationTargetUrl: string;
   integrationType?: string;
 };
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "EntityTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function EntityTable<T extends Entity>({
   entities,
@@ -490,7 +564,9 @@ export function EntityTable<T extends Entity>({
 
 // @public (undocumented)
 export namespace EntityTable {
-  var // (undocumented)
+  var // Warning: (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     columns: typeof columnFactories;
   var // (undocumented)
     systemEntityColumns: TableColumn<SystemEntity>[];
@@ -498,6 +574,8 @@ export namespace EntityTable {
     componentEntityColumns: TableColumn<ComponentEntity>[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTagFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityTagFilter implements EntityFilter {
   constructor(values: string[]);
@@ -509,9 +587,13 @@ export class EntityTagFilter implements EntityFilter {
   readonly values: string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTagPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityTagPicker: () => JSX.Element | null;
 
+// Warning: (ae-missing-release-tag) "EntityTextFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityTextFilter implements EntityFilter {
   constructor(value: string);
@@ -521,6 +603,8 @@ export class EntityTextFilter implements EntityFilter {
   readonly value: string;
 }
 
+// Warning: (ae-missing-release-tag) "EntityTypeFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class EntityTypeFilter implements EntityFilter {
   constructor(value: string | string[]);
@@ -534,9 +618,32 @@ export class EntityTypeFilter implements EntityFilter {
   readonly value: string | string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityTypePicker: () => JSX.Element | null;
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "FavoriteEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const FavoriteEntity: (props: Props_2) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "favoriteEntityIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const favoriteEntityIcon: (isStarred: boolean) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "favoriteEntityTooltip" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const favoriteEntityTooltip: (
+  isStarred: boolean,
+) => 'Remove from favorites' | 'Add to favorites';
+
+// Warning: (ae-missing-release-tag) "formatEntityRefTitle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function formatEntityRefTitle(
   entityRef: Entity | EntityName,
@@ -545,12 +652,18 @@ export function formatEntityRefTitle(
   },
 ): string;
 
+// Warning: (ae-missing-release-tag) "getEntityMetadataEditUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
 
+// Warning: (ae-missing-release-tag) "getEntityMetadataViewUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function getEntityMetadataViewUrl(entity: Entity): string | undefined;
 
+// Warning: (ae-missing-release-tag) "getEntityRelations" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function getEntityRelations(
   entity: Entity | undefined,
@@ -560,43 +673,71 @@ export function getEntityRelations(
   },
 ): EntityName[];
 
+// Warning: (ae-missing-release-tag) "getEntitySourceLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
 
+// Warning: (ae-missing-release-tag) "isOwnerOf" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
 
+// Warning: (ae-missing-release-tag) "MockEntityListContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const MockEntityListContextProvider: ({
   children,
   value,
 }: React_2.PropsWithChildren<{
-  value: Partial<EntityListContextProps>;
+  value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
 }>) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "reduceCatalogFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function reduceCatalogFilters(
   filters: EntityFilter[],
-): Record<string, string | string[]>;
+): Record<string, string | symbol | (string | symbol)[]>;
 
+// Warning: (ae-missing-release-tag) "reduceEntityFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function reduceEntityFilters(
   filters: EntityFilter[],
 ): (entity: Entity) => boolean;
 
+// Warning: (ae-missing-release-tag) "rootRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "UnregisterEntityDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UnregisterEntityDialog: ({
+  open,
+  onConfirm,
+  onClose,
+  entity,
+}: Props_3) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "useEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useEntity<T extends Entity = Entity>(): {
   entity: T;
   loading: boolean;
   error: Error | undefined;
+  refresh: VoidFunction | undefined;
 };
 
+// Warning: (ae-missing-release-tag) "useEntityCompoundName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export const useEntityCompoundName: () => {
   kind: string;
@@ -604,20 +745,48 @@ export const useEntityCompoundName: () => {
   name: string;
 };
 
+// Warning: (ae-missing-release-tag) "useEntityFromUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
 
+// Warning: (ae-missing-release-tag) "useEntityKinds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useEntityKinds(): {
+  error: Error | undefined;
+  loading: boolean;
+  kinds: string[] | undefined;
+};
+
+// Warning: (ae-missing-release-tag) "useEntityListProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
+// Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function useEntityOwnership(): {
+  loading: boolean;
+  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+};
+
+// Warning: (ae-forgotten-export) The symbol "EntityTypeReturn" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "useEntityTypeFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useEntityTypeFilter(): EntityTypeReturn;
 
+// Warning: (ae-missing-release-tag) "useOwnUser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useOwnUser(): AsyncState<UserEntity | undefined>;
 
+// Warning: (ae-missing-release-tag) "useRelatedEntities" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export function useRelatedEntities(
   entity: Entity,
@@ -634,40 +803,60 @@ export function useRelatedEntities(
   error: Error | undefined;
 };
 
+// Warning: (ae-missing-release-tag) "UserListFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export class UserListFilter implements EntityFilter {
   constructor(
     value: UserListFilterKind,
-    user: UserEntity | undefined,
+    isOwnedEntity: (entity: Entity) => boolean,
     isStarredEntity: (entity: Entity) => boolean,
   );
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  readonly isOwnedEntity: (entity: Entity) => boolean;
+  // (undocumented)
   readonly isStarredEntity: (entity: Entity) => boolean;
   // (undocumented)
   toQueryValue(): string;
   // (undocumented)
-  readonly user: UserEntity | undefined;
-  // (undocumented)
   readonly value: UserListFilterKind;
 }
 
+// Warning: (ae-missing-release-tag) "UserListFilterKind" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
 
+// Warning: (ae-forgotten-export) The symbol "UserListPickerProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "UserListPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const UserListPicker: ({
   initialFilter,
   availableFilters,
 }: UserListPickerProps) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "useStarredEntities" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const useStarredEntities: () => {
   starredEntities: Set<string>;
   toggleStarredEntity: (entity: Entity) => void;
   isStarredEntity: (entity: Entity) => boolean;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/types.d.ts:6:49 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/types.d.ts:6:10 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/types.d.ts:7:75 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/types.d.ts:7:10 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/types.d.ts:15:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.d.ts:16:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.d.ts:22:68 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/types.d.ts:22:88 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 ```

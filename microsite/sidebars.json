@@ -36,6 +36,7 @@
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",
+          "features/software-catalog/life-of-an-entity",
           "features/software-catalog/configuration",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
@@ -80,7 +81,8 @@
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
-          "features/search/architecture"
+          "features/search/architecture",
+          "features/search/search-engines"
         ]
       },
       {
@@ -103,6 +105,11 @@
     ],
     "Integrations": [
       "integrations/index",
+      {
+        "type": "subcategory",
+        "label": "AWS S3",
+        "ids": ["integrations/aws-s3/locations"]
+      },
       {
         "type": "subcategory",
         "label": "Azure",
@@ -227,21 +234,16 @@
       "dls/contributing-to-storybook",
       "dls/figma"
     ],
-    "API references": [
+    "API Reference": [
       {
         "type": "subcategory",
-        "label": "TypeScript API",
-        "ids": [
-          "api/utility-apis",
-          "reference/utility-apis/README",
-          "reference/createPlugin",
-          "reference/createPlugin-feature-flags"
-        ]
+        "label": "Guides",
+        "ids": ["api/utility-apis"]
       },
       {
         "type": "subcategory",
-        "label": "Backend APIs",
-        "ids": ["api/backend"]
+        "label": "API Reference",
+        "ids": ["reference/index"]
       }
     ],
     "Tutorials": [

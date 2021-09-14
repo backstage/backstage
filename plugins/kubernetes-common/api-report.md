@@ -12,9 +12,13 @@ import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 
+// Warning: (ae-missing-release-tag) "AuthProviderType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 
+// Warning: (ae-missing-release-tag) "ClusterObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ClusterObjects {
   // (undocumented)
@@ -27,6 +31,8 @@ export interface ClusterObjects {
   resources: FetchResponse[];
 }
 
+// Warning: (ae-missing-release-tag) "ConfigMapFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ConfigMapFetchResponse {
   // (undocumented)
@@ -35,6 +41,8 @@ export interface ConfigMapFetchResponse {
   type: 'configmaps';
 }
 
+// Warning: (ae-missing-release-tag) "CustomResourceFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface CustomResourceFetchResponse {
   // (undocumented)
@@ -43,6 +51,8 @@ export interface CustomResourceFetchResponse {
   type: 'customresources';
 }
 
+// Warning: (ae-missing-release-tag) "DeploymentFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface DeploymentFetchResponse {
   // (undocumented)
@@ -51,6 +61,8 @@ export interface DeploymentFetchResponse {
   type: 'deployments';
 }
 
+// Warning: (ae-missing-release-tag) "FetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type FetchResponse =
   | PodFetchResponse
@@ -62,6 +74,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse;
 
+// Warning: (ae-missing-release-tag) "HorizontalPodAutoscalersFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface HorizontalPodAutoscalersFetchResponse {
   // (undocumented)
@@ -70,6 +84,8 @@ export interface HorizontalPodAutoscalersFetchResponse {
   type: 'horizontalpodautoscalers';
 }
 
+// Warning: (ae-missing-release-tag) "IngressesFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface IngressesFetchResponse {
   // (undocumented)
@@ -78,6 +94,8 @@ export interface IngressesFetchResponse {
   type: 'ingresses';
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesErrorTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
@@ -85,6 +103,8 @@ export type KubernetesErrorTypes =
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 
+// Warning: (ae-missing-release-tag) "KubernetesFetchError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesFetchError {
   // (undocumented)
@@ -95,6 +115,8 @@ export interface KubernetesFetchError {
   statusCode?: number;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesRequestBody" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesRequestBody {
   // (undocumented)
@@ -105,12 +127,16 @@ export interface KubernetesRequestBody {
   entity: Entity;
 }
 
+// Warning: (ae-missing-release-tag) "ObjectsByEntityResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ObjectsByEntityResponse {
   // (undocumented)
   items: ClusterObjects[];
 }
 
+// Warning: (ae-missing-release-tag) "PodFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface PodFetchResponse {
   // (undocumented)
@@ -119,6 +145,8 @@ export interface PodFetchResponse {
   type: 'pods';
 }
 
+// Warning: (ae-missing-release-tag) "ReplicaSetsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ReplicaSetsFetchResponse {
   // (undocumented)
@@ -127,6 +155,8 @@ export interface ReplicaSetsFetchResponse {
   type: 'replicasets';
 }
 
+// Warning: (ae-missing-release-tag) "ServiceFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface ServiceFetchResponse {
   // (undocumented)

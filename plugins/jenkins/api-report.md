@@ -9,14 +9,21 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
+import { EntityRef } from '@backstage/catalog-model';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityJenkinsContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const EntityLatestJenkinsRunCard: ({
   branch,
@@ -26,46 +33,95 @@ export const EntityLatestJenkinsRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isJenkinsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const isJenkinsAvailable: (entity: Entity) => boolean;
 export { isJenkinsAvailable };
 export { isJenkinsAvailable as isPluginApplicableToEntity };
 
+// Warning: (ae-missing-release-tag) "JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 
+// Warning: (ae-missing-release-tag) "JenkinsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export class JenkinsApi {
-  constructor(options: Options);
+export interface JenkinsApi {
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (ae-forgotten-export) The symbol "Build" needs to be exported by the entry point index.d.ts
+  getBuild(options: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<Build>;
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
+  getProjects(options: {
+    entity: EntityRef;
+    filter: {
+      branch?: string;
+    };
+  }): Promise<Project[]>;
   // (undocumented)
-  extractJobDetailsFromBuildName(
-    buildName: string,
-  ): {
-    jobName: string;
-    buildNumber: number;
-  };
-  // (undocumented)
-  extractScmDetailsFromJob(jobDetails: any): any | undefined;
-  // (undocumented)
-  getBuild(buildName: string): Promise<any>;
-  // (undocumented)
-  getFolder(folderName: string): Promise<CITableBuildInfo[]>;
-  // (undocumented)
-  getJob(jobName: string): Promise<any>;
-  // (undocumented)
-  getLastBuild(jobName: string): Promise<any>;
-  // (undocumented)
-  mapJenkinsBuildToCITable(
-    jenkinsResult: any,
-    jobScmInfo?: any,
-  ): CITableBuildInfo;
-  // (undocumented)
-  retry(buildName: string): Promise<any>;
+  retry(options: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "jenkinsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const jenkinsApiRef: ApiRef<JenkinsApi>;
 
+// Warning: (ae-missing-release-tag) "JenkinsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class JenkinsClient implements JenkinsApi {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  getBuild({
+    entity,
+    jobFullName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<Build>;
+  // (undocumented)
+  getProjects({
+    entity,
+    filter,
+  }: {
+    entity: EntityName;
+    filter: {
+      branch?: string;
+    };
+  }): Promise<Project[]>;
+  // (undocumented)
+  retry({
+    entity,
+    jobFullName,
+    buildNumber,
+  }: {
+    entity: EntityName;
+    jobFullName: string;
+    buildNumber: string;
+  }): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "jenkinsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 const jenkinsPlugin: BackstagePlugin<
   {
@@ -76,6 +132,8 @@ const jenkinsPlugin: BackstagePlugin<
 export { jenkinsPlugin };
 export { jenkinsPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "LatestRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const LatestRunCard: ({
   branch,
@@ -85,6 +143,14 @@ export const LatestRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "LEGACY_JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
 

@@ -25,10 +25,10 @@ import mockFs from 'mock-fs';
 import * as os from 'os';
 import { LocalPublish } from './local';
 
-const createMockEntity = (annotations = {}) => {
+const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
     apiVersion: 'version',
-    kind: 'TestKind',
+    kind: lowerCase ? 'testkind' : 'TestKind',
     metadata: {
       name: 'test-component-name',
       annotations: {
@@ -65,10 +65,41 @@ describe('local publisher', () => {
 
     const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
     const mockEntity = createMockEntity();
+    const lowerMockEntity = createMockEntity(undefined, true);
 
     await publisher.publish({ entity: mockEntity, directory: tmpDir });
 
     expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
+
+    // Lower/upper should be treated the same.
+    expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
+
+    mockFs.restore();
+  });
+
+  it('should respect legacy casing', async () => {
+    mockFs({
+      [tmpDir]: {
+        'index.html': '',
+      },
+    });
+
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
+
+    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
+    const mockEntity = createMockEntity();
+    const lowerMockEntity = createMockEntity(undefined, true);
+
+    await publisher.publish({ entity: mockEntity, directory: tmpDir });
+
+    expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
+
+    // Lower/upper should be treated differently.
+    expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(false);
 
     mockFs.restore();
   });
@@ -86,6 +117,13 @@ describe('local publisher', () => {
         [resolvedDir]: {
           'unsafe.html': '<html></html>',
           'unsafe.svg': '<svg></svg>',
+          default: {
+            testkind: {
+              testname: {
+                'index.html': 'found it',
+              },
+            },
+          },
         },
       });
     });
@@ -106,6 +144,39 @@ describe('local publisher', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should redirect case-sensitive triplet path to lower-case', async () => {
+      const response = await request(app)
+        .get('/default/TestKind/TestName/index.html')
+        .expect('Location', '/default/testkind/testname/index.html');
+      expect(response.status).toBe(301);
+    });
+
+    it('should resolve lower-case triplet path content eventually', async () => {
+      const response = await request(app)
+        .get('/default/TestKind/TestName/index.html')
+        .redirects(1);
+      expect(response.text).toEqual('found it');
+    });
+
+    it('should not redirect when legacy case setting is used', async () => {
+      const legacyConfig = new ConfigReader({
+        techdocs: {
+          legacyUseCaseSensitiveTripletPaths: true,
+        },
+      });
+      const legacyPublisher = new LocalPublish(
+        legacyConfig,
+        logger,
+        testDiscovery,
+      );
+      app = express().use(legacyPublisher.docsRouter());
+
+      const response = await request(app).get(
+        '/default/TestKind/TestName/index.html',
+      );
+      expect(response.status).toBe(404);
     });
   });
 });

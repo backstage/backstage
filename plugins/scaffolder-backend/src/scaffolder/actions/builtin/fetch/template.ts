@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -38,13 +38,21 @@ import { isBinaryFile } from 'isbinaryfile';
  */
 nunjucks.installJinjaCompat();
 
+type CookieCompatInput = {
+  copyWithoutRender?: string[];
+  cookiecutterCompat?: boolean;
+};
+
+type ExtensionInput = {
+  templateFileExtension?: string | boolean;
+};
+
 export type FetchTemplateInput = {
   url: string;
   targetPath?: string;
   values: any;
-  copyWithoutRender?: string[];
-  cookiecutterCompat?: boolean;
-};
+} & CookieCompatInput &
+  ExtensionInput;
 
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
@@ -93,6 +101,12 @@ export function createFetchTemplateAction(options: {
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
           },
+          templateFileExtension: {
+            title: 'Template File Extension',
+            description:
+              'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
+            type: ['string', 'boolean'],
+          },
         },
       },
     },
@@ -112,6 +126,26 @@ export function createFetchTemplateAction(options: {
         throw new InputError(
           'Fetch action input copyWithoutRender must be an Array',
         );
+      }
+
+      if (
+        ctx.input.templateFileExtension &&
+        (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
+      ) {
+        throw new InputError(
+          'Fetch action input extension incompatible with copyWithoutRender and cookiecutterCompat',
+        );
+      }
+
+      let extension: string | false = false;
+      if (ctx.input.templateFileExtension) {
+        extension =
+          ctx.input.templateFileExtension === true
+            ? '.njk'
+            : ctx.input.templateFileExtension;
+        if (!extension.startsWith('.')) {
+          extension = `.${extension}`;
+        }
       }
 
       await fetchContents({
@@ -190,18 +224,27 @@ export function createFetchTemplateAction(options: {
       );
 
       for (const location of allEntriesInTemplate) {
-        const shouldCopyWithoutRender = nonTemplatedEntries.has(location);
+        let renderFilename: boolean;
+        let renderContents: boolean;
 
-        const outputPath = resolvePath(
-          outputDir,
-          shouldCopyWithoutRender
-            ? location
-            : templater.renderString(location, context),
-        );
+        let localOutputPath = location;
+        if (extension) {
+          renderFilename = true;
+          renderContents = extname(localOutputPath) === extension;
+          if (renderContents) {
+            localOutputPath = localOutputPath.slice(0, -extension.length);
+          }
+        } else {
+          renderFilename = renderContents = !nonTemplatedEntries.has(location);
+        }
+        if (renderFilename) {
+          localOutputPath = templater.renderString(localOutputPath, context);
+        }
+        const outputPath = resolvePath(outputDir, localOutputPath);
 
-        if (shouldCopyWithoutRender) {
+        if (!renderContents && !extension) {
           ctx.logger.info(
-            `Copying file/directory ${location} without processing since it matches a pattern in "copyWithoutRender".`,
+            `Copying file/directory ${location} without processing.`,
           );
         }
 
@@ -219,15 +262,17 @@ export function createFetchTemplateAction(options: {
             );
             await fs.copy(inputFilePath, outputPath);
           } else {
+            const statsObj = await fs.stat(inputFilePath);
             ctx.logger.info(
-              `Writing file ${location} to template output path.`,
+              `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
             );
             const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
             await fs.outputFile(
               outputPath,
-              shouldCopyWithoutRender
-                ? inputFileContents
-                : templater.renderString(inputFileContents, context),
+              renderContents
+                ? templater.renderString(inputFileContents, context)
+                : inputFileContents,
+              { mode: statsObj.mode },
             );
           }
         }

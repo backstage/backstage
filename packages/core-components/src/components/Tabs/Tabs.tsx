@@ -58,7 +58,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Tabs = ({ tabs }: TabsProps) => {
+export function Tabs(props: TabsProps) {
+  const { tabs } = props;
   const classes = useStyles();
   const [value, setValue] = useState([0, 0]); // [selectedChunkedNavIndex, selectedIndex]
   const [navIndex, setNavIndex] = useState(0);
@@ -107,7 +108,11 @@ export const Tabs = ({ tabs }: TabsProps) => {
     <div className={classes.root}>
       <AppBar ref={wrapper} className={classes.appbar} position="static">
         <div>
-          <StyledTabs value={currentIndex} onChange={handleChange}>
+          <StyledTabs
+            value={currentIndex}
+            onChange={handleChange}
+            selectionFollowsFocus
+          >
             {navIndex !== 0 && (
               <StyledIcon
                 onClick={navigateToPrevChunk}
@@ -156,4 +161,4 @@ export const Tabs = ({ tabs }: TabsProps) => {
       )}
     </div>
   );
-};
+}

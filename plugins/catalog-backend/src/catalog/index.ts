@@ -16,4 +16,15 @@
 
 export { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 export { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
-export type { EntitiesCatalog, LocationsCatalog } from './types';
+export type {
+  EntitiesCatalog,
+  LocationsCatalog,
+  EntityUpsertRequest,
+  EntityUpsertResponse,
+  EntitiesRequest,
+  EntitiesResponse,
+  LocationResponse,
+  PageInfo,
+  LocationUpdateLogEvent,
+  LocationUpdateStatus,
+} from './types';

@@ -79,7 +79,9 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-namespace/group-a')).toBeInTheDocument();
+      expect(
+        getByText('my-namespace/group-a', { selector: 'div' }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -93,14 +95,16 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    await waitFor(() => expect(getByText('Our Teams')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByText('Our Teams', { selector: 'h2' })).toBeInTheDocument(),
+    );
   });
 
   it('renders a friendly error if it cannot collect domains', async () => {
     const catalogError = new Error('Network timeout');
     catalogApi.getEntities.mockRejectedValueOnce(catalogError);
 
-    const { getByText } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <GroupsExplorerContent />
       </Wrapper>,
@@ -108,7 +112,7 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() =>
-      expect(getByText(/Warning: Network timeout/)).toBeInTheDocument(),
+      expect(getAllByText(/Error: Network timeout/).length).not.toBe(0),
     );
   });
 });

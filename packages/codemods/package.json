@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.5",
+  "version": "0.1.13",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -31,7 +31,7 @@
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
-    "@backstage/cli-common": "0.1.2",
+    "@backstage/cli-common": "0.1.3",
     "@backstage/core-app-api": "*",
     "@backstage/core-components": "*",
     "@backstage/core-plugin-api": "*",

@@ -70,7 +70,7 @@ export const MultiSignInPage = ({
         {title && <ContentHeader title={title} textAlign={align} />}
         <Grid
           container
-          justify={align === 'center' ? align : 'flex-start'}
+          justifyContent={align === 'center' ? align : 'flex-start'}
           spacing={2}
           component="ul"
           classes={classes}
@@ -130,7 +130,9 @@ export const SingleSignInPage = ({
           userId: identity!.id,
           profile: profile!,
           getIdToken: () => {
-            return authApi.getBackstageIdentity().then(i => i!.idToken);
+            return authApi
+              .getBackstageIdentity()
+              .then(i => i!.token ?? i!.idToken);
           },
           signOut: async () => {
             await authApi.signOut();
@@ -152,7 +154,7 @@ export const SingleSignInPage = ({
       <Content>
         <Grid
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
           component="ul"
           classes={classes}
@@ -190,10 +192,10 @@ export const SingleSignInPage = ({
   );
 };
 
-export const SignInPage = (props: Props) => {
+export function SignInPage(props: Props) {
   if ('provider' in props) {
     return <SingleSignInPage {...props} />;
   }
 
   return <MultiSignInPage {...props} />;
-};
+}

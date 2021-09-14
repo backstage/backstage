@@ -1,5 +1,29 @@
 # @backstage/config
 
+## 0.1.9
+
+### Patch Changes
+
+- f88b2c7db: Documented `Config` interface and mark types as public.
+
+## 0.1.8
+
+### Patch Changes
+
+- 47113f1f1: Only warn once per key when trying to read visibility-filtered values
+
+## 0.1.7
+
+### Patch Changes
+
+- 90f25476a: Extended the `Config` interface to have an optional `subscribe` method that can be used be notified of updates to the configuration.
+
+## 0.1.6
+
+### Patch Changes
+
+- e9d3983ee: Add warning when trying to access configuration values that have been filtered out by visibility.
+
 ## 0.1.5
 
 ### Patch Changes
