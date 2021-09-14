@@ -21,6 +21,4 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger_2;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

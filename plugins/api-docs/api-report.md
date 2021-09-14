@@ -183,6 +183,4 @@ export const ProvidedApisCard: ({ variant }: Props_4) => JSX.Element;
 //
 // @public (undocumented)
 export const ProvidingComponentsCard: ({ variant }: Props_7) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

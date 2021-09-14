@@ -79,6 +79,4 @@ export function serializeError(
     includeStack?: boolean;
   },
 ): SerializedError;
-
-// (No @packageDocumentation comment for this package)
 ```

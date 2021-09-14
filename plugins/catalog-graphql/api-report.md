@@ -21,6 +21,4 @@ export interface ModuleOptions {
   // (undocumented)
   logger: Logger_2;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

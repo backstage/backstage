@@ -56,6 +56,4 @@ export class DefaultTechDocsCollator implements DocumentCollator {
 export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
-
-// (No @packageDocumentation comment for this package)
 ```

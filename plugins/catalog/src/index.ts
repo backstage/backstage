@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin for browsing the Backstage catalog
+ *
+ * @packageDocumentation
+ */
+
 export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
 export * from './components/CatalogKindHeader';

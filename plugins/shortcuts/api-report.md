@@ -62,6 +62,4 @@ export const shortcutsApiRef: ApiRef<ShortcutApi>;
 //
 // @public (undocumented)
 export const shortcutsPlugin: BackstagePlugin<{}, {}>;
-
-// (No @packageDocumentation comment for this package)
 ```

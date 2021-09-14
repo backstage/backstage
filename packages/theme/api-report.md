@@ -116,6 +116,4 @@ export type SimpleThemeOptions = {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
 };
-
-// (No @packageDocumentation comment for this package)
 ```
