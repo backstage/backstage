@@ -22,7 +22,6 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.0",
     "@backstage/cli": "^0.7.2",
-    "@backstage/core": "^0.7.14",
     "@backstage/core-api": "^0.2.23",
     "@backstage/core-components": "^0.4.1",
     "@backstage/core-plugin-api": "^0.1.3",
