@@ -63,7 +63,7 @@ export async function createRouter(
   });
 
   const migrationsDir = resolvePackagePath(
-    '@internal/plugin-bazaar-backend',
+    '@backstage/plugin-bazaar-backend',
     'migrations',
   );
 

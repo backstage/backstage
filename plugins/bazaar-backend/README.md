@@ -18,7 +18,7 @@ You'll need to add the plugin to the router in your `backend` package. You can d
 
 ```tsx
 import { PluginEnvironment } from '../types';
-import { createRouter } from '@internal/plugin-bazaar-backend';
+import { createRouter } from '@backstage/plugin-bazaar-backend';
 
 export default async function createPlugin({
   logger,
