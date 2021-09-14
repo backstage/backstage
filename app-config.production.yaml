@@ -17,7 +17,7 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: https://backstage.dfds.cloud
+  baseUrl: https://backstage-backend.dfds.cloud
   listen:
     port: 7000
   database:
@@ -264,33 +264,33 @@ catalog:
     # File locations are relative to the current working directory of the
     # backend, for example packages/backend/.
 
-    # Backstage example components
-    - type: file
-      target: ../catalog-model/examples/all-components.yaml
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
-    # Example component for TechDocs
-    - type: file
-      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Backstage example APIs
-    - type: file
-      target: ../catalog-model/examples/all-apis.yaml
-    # Backstage example resources
-    - type: file
-      target: ../catalog-model/examples/all-resources.yaml
-    # Backstage example systems
-    - type: file
-      target: ../catalog-model/examples/all-systems.yaml
-    # Backstage example domains
-    - type: file
-      target: ../catalog-model/examples/all-domains.yaml
-    # Backstage example templates
-    - type: file
-      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
-    # Backstage example groups and users
-    - type: file
-      target: ../catalog-model/examples/acme-corp.yaml
+    # # Backstage example components
+    # - type: file
+    #   target: ../catalog-model/examples/all-components.yaml
+    # # Example component for github-actions and TechDocs
+    # - type: file
+    #   target: ../../plugins/github-actions/examples/sample.yaml
+    # # Example component for TechDocs
+    # - type: file
+    #   target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # # Backstage example APIs
+    # - type: file
+    #   target: ../catalog-model/examples/all-apis.yaml
+    # # Backstage example resources
+    # - type: file
+    #   target: ../catalog-model/examples/all-resources.yaml
+    # # Backstage example systems
+    # - type: file
+    #   target: ../catalog-model/examples/all-systems.yaml
+    # # Backstage example domains
+    # - type: file
+    #   target: ../catalog-model/examples/all-domains.yaml
+    # # Backstage example templates
+    # - type: file
+    #   target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # # Backstage example groups and users
+    # - type: file
+    #   target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:

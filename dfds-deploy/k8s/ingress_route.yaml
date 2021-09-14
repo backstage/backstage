@@ -18,9 +18,9 @@ spec:
       namespace: ""
       port: 80
   - kind: Rule
-    match: Host(`backstage.dfds.cloud`) && PathPrefix(`/backend`)
+    match: Host(`backstage-backend.dfds.cloud`) && PathPrefix(`/`)
     middlewares:
-    - name: backstage.dfds.cloud-backend
+    - name: backstage-backend.dfds.cloud
       namespace: ""
     priority: 0
     services:
@@ -43,8 +43,8 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   creationTimestamp: null
-  name: backstage.dfds.cloud-backend
+  name: backstage-backend.dfds.cloud
 spec:
   stripPrefix:
     prefixes:
-    - /backend
+    - /

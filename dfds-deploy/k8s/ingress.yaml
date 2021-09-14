@@ -18,7 +18,10 @@ spec:
           serviceName: backstage
           servicePort: frontend
         path: /
+  - host: backstage-backend.dfds.cloud
+    http:
+      paths:
       - backend:
           serviceName: backstage-backend
           servicePort: backend
-        path: /backend
+        path: /
