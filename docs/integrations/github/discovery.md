@@ -22,9 +22,15 @@ catalog:
     # (since 0.13.5) Scan all repositories for a catalog-info.yaml in the root of the default branch
     - type: github-discovery
       target: https://github.com/myorg
-    # Or use a custom pattern for discovering catalog entity descriptor files
+    # Or use a custom pattern for a subset of all repositories
     - type: github-discovery
-      target: https://github.com/myorg/service-*/blob/main/your-own-format.yaml
+      target: https://github.com/myorg/service-*/blob/-/catalog-info.yaml
+    # Or use a custom file format and location
+    - type: github-discovery
+      target: https://github.com/*/blob/-/docs/your-own-format.yaml
+    # Or use a specific branch-name
+    - type: github-discovery
+      target: https://github.com/*/blob/backstage-docs/catalog-info.yaml
 ```
 
 Note the `github-discovery` type, as this is not a regular `url` processor.
