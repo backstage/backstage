@@ -3,7 +3,7 @@
 ---
 
 This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `CatalogProcessingEngine` is passed to `createRouter`.
-The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following changes are **changes are required** to your `catalog.ts`.
+The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
 
 ```diff
 -  import {
