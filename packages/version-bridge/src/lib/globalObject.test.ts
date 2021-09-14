@@ -14,32 +14,9 @@
  * limitations under the License.
  */
 
-import { getGlobalSingleton, getOrCreateGlobalSingleton } from './globalObject';
+import { getOrCreateGlobalSingleton } from './globalObject';
 
 const anyGlobal = global as any;
-
-describe('getGlobalSingleton', () => {
-  beforeEach(() => {
-    delete anyGlobal['__@backstage/my-thing__'];
-  });
-
-  it('should return an existing value', () => {
-    const myThing = {};
-    const myOtherThing = {};
-
-    anyGlobal['__@backstage/my-thing__'] = myThing;
-    expect(getGlobalSingleton('my-thing')).toBe(myThing);
-    expect(getGlobalSingleton('my-thing')).toBe(myThing);
-    anyGlobal['__@backstage/my-thing__'] = myOtherThing;
-    expect(getGlobalSingleton('my-thing')).toBe(myOtherThing);
-  });
-
-  it('should throw if the value is not set', () => {
-    expect(() => getGlobalSingleton('my-thing')).toThrow(
-      'Global my-thing is not set',
-    );
-  });
-});
 
 describe('getOrCreateGlobalSingleton', () => {
   beforeEach(() => {

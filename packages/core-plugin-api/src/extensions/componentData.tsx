@@ -15,7 +15,7 @@
  */
 
 import { ComponentType, ReactNode } from 'react';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 type DataContainer = {
   map: Map<string, unknown>;

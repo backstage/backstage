@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  useContext,
-  Context,
-} from 'react';
+import React, { PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { VersionedValue } from '../lib/versionedValues';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { useVersionedContext } from '@backstage/version-bridge';
 import {
   childDiscoverer,
   routeElementDiscoverer,
@@ -331,16 +325,13 @@ describe('discovery', () => {
 });
 
 describe('v1 consumer', () => {
-  const RoutingContext =
-    getGlobalSingleton<Context<VersionedValue<{ 1: RouteResolver }>>>(
-      'routing-context',
-    );
-
   function useMockRouteRefV1(
     routeRef: AnyRouteRef,
     location: string,
   ): RouteFunc<any> | undefined {
-    const resolver = useContext(RoutingContext)?.atVersion(1);
+    const resolver = useVersionedContext<{
+      1: RouteResolver;
+    }>('routing-context')?.atVersion(1);
     if (!resolver) {
       throw new Error('no impl');
     }

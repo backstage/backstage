@@ -31,30 +31,9 @@ const globalObject = getGlobalObject();
 const makeKey = (id: string) => `__@backstage/${id}__`;
 
 /**
- * Used to provide a global singleton value, failing if it is already set.
- */
-export function setGlobalSingleton(id: string, value: unknown): void {
-  const key = makeKey(id);
-  if (key in globalObject) {
-    throw new Error(`Global ${id} is already set`);
-  }
-  globalObject[key] = value;
-}
-
-/**
- * Used to access a global singleton value, failing if it is not already set.
- */
-export function getGlobalSingleton<T>(id: string): T {
-  const key = makeKey(id);
-  if (!(key in globalObject)) {
-    throw new Error(`Global ${id} is not set`);
-  }
-
-  return globalObject[key];
-}
-
-/**
  * Serializes access to a global singleton value, with the first caller creating the value.
+ *
+ * @public
  */
 export function getOrCreateGlobalSingleton<T>(
   id: string,

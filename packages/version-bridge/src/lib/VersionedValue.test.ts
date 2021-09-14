@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createVersionedValueMap } from './versionedValues';
+import { createVersionedValueMap } from './VersionedValue';
 
 describe('createVersionedValueMap', () => {
   it('should be empty', () => {

@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { useVersionedContext } from '@backstage/version-bridge';
-import { AppContext as AppContextV1 } from './types';
-
-export const useApp = (): AppContextV1 => {
-  const versionedContext =
-    useVersionedContext<{ 1: AppContextV1 }>('app-context');
-  if (!versionedContext) {
-    throw new Error('App context is not available');
-  }
-
-  const appContext = versionedContext.atVersion(1);
-  if (!appContext) {
-    throw new Error('AppContext v1 not available');
-  }
-  return appContext;
-};
+export * from './lib';
