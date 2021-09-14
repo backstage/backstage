@@ -62,16 +62,17 @@ providers are used.
 
 ### **Published versions**
 
-**Alpha release** ✅ - 
+**Alpha release** ✅ -
 [Milestone](https://github.com/backstage/backstage/milestone/16)
 
 - Alpha of TechDocs that you can use end to end - and contribute to.
 
-**Beta release** ✅ - 
- [Milestone](https://github.com/backstage/backstage/milestone/29)
+**Beta release** ✅ -
+[Milestone](https://github.com/backstage/backstage/milestone/29)
 
- - TechDocs' recommended setup supports most environments (CI systems, cloud storage solutions, source control systems).
- - [Instructions for upgrading from Alpha to Beta](https://github.com/backstage/backstage/blob/master/docs/features/techdocs/how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
+- TechDocs' recommended setup supports most environments (CI systems, cloud
+  storage solutions, source control systems).
+- [Instructions for upgrading from Alpha to Beta](https://github.com/backstage/backstage/blob/master/docs/features/techdocs/how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
 
 ### **Future work 🔮**
 
