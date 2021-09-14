@@ -1,6 +1,6 @@
 {
   "name": "@backstage/create-app",
-  "description": "Create app package for Backstage",
+  "description": "A CLI that helps you create your own Backstage app",
   "version": "0.3.40",
   "private": false,
   "publishConfig": {

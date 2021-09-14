@@ -1,5 +1,6 @@
 {
   "name": "@backstage/errors",
+  "description": "Common utilities for error handling within Backstage",
   "version": "0.1.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
