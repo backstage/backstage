@@ -37,6 +37,9 @@ import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
 } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import { DocTable } from '@microsoft/api-documenter/lib/nodes/DocTable';
+import { DocTableRow } from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
@@ -462,6 +465,57 @@ async function buildDocs({
       output.appendNode = () => {
         output.appendNode = oldAppendNode;
       };
+    }
+
+    _writeModelTable(output, apiModel): void {
+      const configuration = this._tsdocConfiguration;
+
+      const packagesTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      const pluginsTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      for (const apiMember of apiModel.members) {
+        const row = new DocTableRow({ configuration }, [
+          this._createTitleCell(apiMember),
+          this._createDescriptionCell(apiMember),
+        ]);
+
+        if (apiMember.kind === 'Package') {
+          this._writeApiItemPage(apiMember);
+
+          if (apiMember.name.startsWith('@backstage/plugin-')) {
+            pluginsTable.addRow(row);
+          } else {
+            packagesTable.addRow(row);
+          }
+        }
+      }
+
+      if (packagesTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Packages',
+          }),
+        );
+        output.appendNode(packagesTable);
+      }
+
+      if (pluginsTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Plugins',
+          }),
+        );
+        output.appendNode(pluginsTable);
+      }
     }
   }
 
