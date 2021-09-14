@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { TextField, Box, Tooltip } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { StatusColor } from '../styles';
 import { css, cx } from '@emotion/css';
+import { useAuthContext } from '../App/App';
+import { DataGrid } from '@mui/x-data-grid';
 
 type DenseTableProps = {
   dataSource: any[];
@@ -95,18 +97,19 @@ export const DenseTable: FC<DenseTableProps> = props => {
 };
 
 const CloudFetchComponent: FC<{}> = () => {
+  const {
+    value: { selectedCapability },
+  } = useAuthContext();
   const { value, loading, error } = useAsync(async (): Promise<any> => {
     const response = await fetch(
-      'https://private-aa6799-zaradardfds.apiary-mock.com/servicebroker/1234',
+      `https://inventa-master.hellman.oxygen.dfds.cloud/api/serviceproxy/${selectedCapability?.rootId}`,
+      {
+        method: 'GET',
+      },
     );
     const data = await response.json();
-    return data.data;
+    return data;
   }, []);
-  const [options, setOptions] = useState([value]);
-
-  useEffect(() => {
-    setOptions(value);
-  }, [value]);
 
   if (loading) {
     return <Progress />;
@@ -118,14 +121,75 @@ const CloudFetchComponent: FC<{}> = () => {
     <React.Fragment>
       <Box width="auto" mb="2rem">
         <Autocomplete
-          options={options}
-          getOptionLabel={option => option.name}
+          options={[...value?.[0].ingresses, ...value?.[0].services]}
+          getOptionLabel={option => option.metadata.name}
           renderInput={params => (
             <TextField {...params} label="Search ..." variant="outlined" />
           )}
         />
       </Box>
-      <DenseTable dataSource={value || []} />
+      <DataGrid
+        rows={[
+          ...value?.[0].ingresses.map((i: any) => ({
+            ...i,
+            id: i.metadata.uid,
+          })),
+          ...value?.[0].services.map((i: any) => ({
+            ...i,
+            id: i.metadata.uid,
+          })),
+        ]}
+        columns={[
+          {
+            field: 'name',
+            headerName: 'name',
+            flex: 2,
+            valueGetter: params => {
+              return params.row.metadata.name;
+            },
+          },
+          {
+            field: 'kind',
+            headerName: 'kind',
+            flex: 1,
+            valueGetter: params => {
+              return params.row.kind;
+            },
+          },
+          {
+            field: 'namespaceProperty',
+            headerName: 'namespace property',
+            flex: 1,
+            valueGetter: params => {
+              return params.row.metadata.namespaceProperty;
+            },
+          },
+          {
+            field: 'annotations',
+            headerName: 'annotations',
+            flex: 3,
+            valueGetter: params => {
+              return JSON.stringify(params.row.metadata.annotations, null, 2);
+            },
+          },
+          {
+            field: 'apiVersion',
+            headerName: 'api version',
+            flex: 1,
+            valueGetter: params => {
+              return params.row.apiVersion;
+            },
+          },
+          {
+            field: 'created',
+            headerName: 'created at',
+            flex: 1,
+            valueGetter: params => {
+              return params.row.metadata.creationTimestamp;
+            },
+          },
+        ]}
+      />
     </React.Fragment>
   );
 };
