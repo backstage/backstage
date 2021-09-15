@@ -23,5 +23,4 @@ Configuration Details:
 
 ## Links
 
-- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/azure-devops)
 - [The Backstage homepage](https://backstage.io)
