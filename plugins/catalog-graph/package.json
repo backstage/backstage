@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "backstage-cli plugin:build",
-    "start": "backstage-cli plugin:serve --config ../../app-config.yaml",
+    "start": "backstage-cli plugin:serve",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "diff": "backstage-cli plugin:diff",
@@ -46,7 +46,11 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
-    "@testing-library/react-hooks": "^3.4.2"
+    "@testing-library/react-hooks": "^3.4.2",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.14.32",
+    "cross-fetch": "^3.0.6",
+    "msw": "^0.29.0"
   },
   "files": [
     "dist"

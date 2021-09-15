@@ -30,6 +30,12 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 
+/**
+ * A pair of two relations that describe the opposite of each other. The first
+ * relation is considered as the primary relation.
+ *
+ * @public
+ */
 export type RelationPairs = [string, string][];
 
 // TODO: This file only contains the pairs for the build-in relations.
@@ -37,6 +43,12 @@ export type RelationPairs = [string, string][];
 //  the relations everywhere.
 //  Another option is to move this into @backstage/catalog-model
 
+/**
+ * A list of pairs of entity relations, used to define which relations are
+ * merged together and which the primary relation is.
+ *
+ * @public
+ */
 export const RELATION_PAIRS: RelationPairs = [
   [RELATION_OWNER_OF, RELATION_OWNED_BY],
   [RELATION_CONSUMES_API, RELATION_API_CONSUMED_BY],

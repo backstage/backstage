@@ -59,6 +59,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * Core building block for custom entity relations diagrams.
+ *
+ * @public
+ */
 export const EntityRelationsGraph = ({
   rootEntityNames,
   maxDepth = Number.POSITIVE_INFINITY,

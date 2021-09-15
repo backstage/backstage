@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * The catalog graph visualizes the relations between entities, like ownership,
+ * grouping or API relationships.
+ *
+ * @packageDocumentation
+ */
+
 export * from './components';
 export { CatalogGraphPage, EntityCatalogGraphCard } from './extensions';
 export { catalogGraphPlugin } from './plugin';

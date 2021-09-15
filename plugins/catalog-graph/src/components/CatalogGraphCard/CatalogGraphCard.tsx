@@ -47,19 +47,6 @@ const useStyles = makeStyles<Theme, { maxHeight: number | undefined }>({
   },
 });
 
-export type Props = {
-  variant?: InfoCardVariants;
-  relationPairs?: RelationPairs;
-  maxDepth?: number;
-  unidirectional?: boolean;
-  mergeRelations?: boolean;
-  kinds?: string[];
-  relations?: string[];
-  direction?: Direction;
-  maxHeight?: number;
-  title?: string;
-};
-
 export const CatalogGraphCard = ({
   variant = 'gridItem',
   relationPairs = RELATION_PAIRS,
@@ -71,7 +58,18 @@ export const CatalogGraphCard = ({
   direction = Direction.LEFT_RIGHT,
   maxHeight,
   title = 'Relations',
-}: Props) => {
+}: {
+  variant?: InfoCardVariants;
+  relationPairs?: RelationPairs;
+  maxDepth?: number;
+  unidirectional?: boolean;
+  mergeRelations?: boolean;
+  kinds?: string[];
+  relations?: string[];
+  direction?: Direction;
+  maxHeight?: number;
+  title?: string;
+}) => {
   const { entity } = useEntity();
   const entityName = getEntityName(entity);
   const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);

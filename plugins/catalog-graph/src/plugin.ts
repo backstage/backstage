@@ -16,6 +16,10 @@
 import { createPlugin } from '@backstage/core-plugin-api';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
 
+/**
+ * Catalog Graph Plugin instance.
+ * @public
+ */
 export const catalogGraphPlugin = createPlugin({
   id: '@internal/catalog-graph',
   routes: {

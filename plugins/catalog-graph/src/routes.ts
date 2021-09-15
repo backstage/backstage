@@ -18,11 +18,22 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
+/**
+ * Route pointing to the standalone catalog graph page.
+ *
+ * @public
+ */
 export const catalogGraphRouteRef = createRouteRef({
   path: '/catalog-graph',
   title: 'Catalog Graph',
 });
 
+/**
+ * Route pointing to the entity page.
+ * Used to navigate from the graph to an entity.
+ *
+ * @public
+ */
 export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',
   params: ['namespace', 'kind', 'name'],

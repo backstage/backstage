@@ -20,6 +20,11 @@ import {
 import { catalogGraphPlugin } from './plugin';
 import { catalogGraphRouteRef } from './routes';
 
+/**
+ * A card that displays the directly related entities to the current entity.
+ *
+ * @public
+ */
 export const EntityCatalogGraphCard = catalogGraphPlugin.provide(
   createComponentExtension({
     component: {
@@ -29,6 +34,12 @@ export const EntityCatalogGraphCard = catalogGraphPlugin.provide(
   }),
 );
 
+/**
+ * A standalone page that can be added to your application providing a viewer
+ * for your entities and their relations.
+ *
+ * @public
+ */
 export const CatalogGraphPage = catalogGraphPlugin.provide(
   createRoutableExtension({
     component: () =>
