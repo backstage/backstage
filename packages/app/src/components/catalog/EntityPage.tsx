@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useMemo, useState } from 'react';
-import BadgeIcon from '@material-ui/icons/CallToAction';
+import {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
+  EntityConsumedApisCard,
   EntityConsumingComponentsCard,
   EntityHasApisCard,
-  EntityProvidingComponentsCard,
   EntityProvidedApisCard,
-  EntityConsumedApisCard,
+  EntityProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
@@ -30,20 +39,24 @@ import {
   EntityDependsOnComponentsCard,
   EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
+  EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
-  EntitySystemDiagramCard,
-  EntitySwitch,
-  isComponentType,
-  isKind,
-  EntityHasResourcesCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
+  EntitySwitch,
+  EntitySystemDiagramCard,
   hasCatalogProcessingErrors,
+  isComponentType,
+  isKind,
   isOrphan,
 } from '@backstage/plugin-catalog';
+import {
+  Direction,
+  EntityCatalogGraphCard,
+} from '@backstage/plugin-catalog-graph';
 import {
   EntityCircleCIContent,
   isCircleCIAvailable,
@@ -52,6 +65,7 @@ import {
   EntityCloudbuildContent,
   isCloudbuildAvailable,
 } from '@backstage/plugin-cloudbuild';
+import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -87,6 +101,7 @@ import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
+import BadgeIcon from '@material-ui/icons/CallToAction';
 import {
   EntityBuildkiteContent,
   isBuildkiteAvailable,
@@ -108,8 +123,7 @@ import {
   EntityTravisCIOverviewCard,
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
-import { EmptyState } from '@backstage/core-components';
+import React, { ReactNode, useMemo, useState } from 'react';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -246,8 +260,12 @@ const errorsContent = (
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     {entityWarningContent}
-    <Grid item md={8} xs={12}>
+    <Grid item md={6} xs={12}>
       <EntityAboutCard variant="gridItem" />
+    </Grid>
+
+    <Grid item md={6} xs={12}>
+      <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
     </Grid>
 
     <EntitySwitch>
@@ -454,8 +472,11 @@ const apiPage = (
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
-        <Grid item xs={12}>
+        <Grid item md={6} xs={12}>
           <EntityAboutCard />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
         </Grid>
         <Grid item xs={12}>
           <Grid container>
@@ -523,6 +544,9 @@ const systemPage = (
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
         </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+        </Grid>
         <Grid item md={6}>
           <EntityHasComponentsCard variant="gridItem" />
         </Grid>
@@ -537,6 +561,25 @@ const systemPage = (
     <EntityLayout.Route path="/diagram" title="Diagram">
       <EntitySystemDiagramCard />
     </EntityLayout.Route>
+    <EntityLayout.Route path="/relations" title="Diagram (new)">
+      <EntityCatalogGraphCard
+        variant="gridItem"
+        direction={Direction.TOP_BOTTOM}
+        title="System Diagram"
+        maxHeight={700}
+        relations={[
+          RELATION_PART_OF,
+          RELATION_HAS_PART,
+          RELATION_API_CONSUMED_BY,
+          RELATION_API_PROVIDED_BY,
+          RELATION_CONSUMES_API,
+          RELATION_PROVIDES_API,
+          RELATION_DEPENDENCY_OF,
+          RELATION_DEPENDS_ON,
+        ]}
+        unidirectional={false}
+      />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -547,6 +590,9 @@ const domainPage = (
         {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
         </Grid>
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />
