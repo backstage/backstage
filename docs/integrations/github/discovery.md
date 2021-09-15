@@ -22,7 +22,7 @@ catalog:
     # (since 0.13.5) Scan all repositories for a catalog-info.yaml in the root of the default branch
     - type: github-discovery
       target: https://github.com/myorg
-    # Or use a custom pattern for a subset of all repositories
+    # Or use a custom pattern for a subset of all repositories with default repository
     - type: github-discovery
       target: https://github.com/myorg/service-*/blob/-/catalog-info.yaml
     # Or use a custom file format and location
@@ -44,7 +44,8 @@ When using a custom pattern, the target is composed of three parts:
 - The path within each repository to find the catalog YAML file. This will
   usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
   a similar variation for catalog files stored in the root directory of each
-  repository. You could also use a dash (`-`) for referring to the default branch.
+  repository. You could also use a dash (`-`) for referring to the default
+  branch.
 
 ## GitHub API Rate Limits
 
