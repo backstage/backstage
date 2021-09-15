@@ -22,12 +22,13 @@ Field extensions are a way to combine an ID, a `React` Component and a
 the `Scaffolder` frontend plugin in your own `App.tsx`.
 
 You can create your own Field Extension by using the
-`createScaffolderFieldExtension` `API` like below:
+[`createScaffolderFieldExtension`](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderfieldextension)
+`API` like below:
 
 ```tsx
 //packages/app/scaffolder/MyCustomExtension/MyCustomExtension.tsx
-import { FieldProps } from '@rjsf/core';
-
+import { FieldProps, FieldValidation } from '@rjsf/core';
+import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 /*
  This is the actual component that will get rendered in the form
 */
@@ -41,17 +42,12 @@ export const MyCustomExtension = ({ onChange, required }: FieldProps<string>) =>
     >
   )
 };
-```
-
-```tsx
-// packages/app/scaffolder/MyCustomExtension/validation.ts
-import { FieldValidation } from '@rjsf/core';
-import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
 /*
  This is a validation function that will run when the form is submitted.
   You will get the value from the `onChange` handler before as the value here to make sure that the types are aligned\
 */
+
 export const myCustomValidation = (
   value: string,
   validation: FieldValidation,
@@ -65,7 +61,7 @@ export const myCustomValidation = (
 ```
 
 ```tsx
-// packages/app/scaffolder/MyCustomExtension/index.ts
+// packages/app/scaffolder/MyCustomExtension/extensions.ts
 
 /* 
   This is where the magic happens and creates the custom field extension.
@@ -88,6 +84,12 @@ export const MyCustomFieldExtension = plugin.provide(
     validation: myCustomValidation,
   }),
 );
+```
+
+```tsx
+// packages/app/scaffolder/MyCustomExtension/index.ts
+
+export { MyCustomFieldExtension } from './extension';
 ```
 
 Once all these files are in place, you then need to provide your custom
