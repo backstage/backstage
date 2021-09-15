@@ -118,11 +118,11 @@ export const DocsTable: ({
   actions?:
     | (
         | Action<DocsTableRow>
+        | ((rowData: DocsTableRow) => Action<DocsTableRow>)
         | {
             action: (rowData: DocsTableRow) => Action<DocsTableRow>;
             position: string;
           }
-        | ((rowData: DocsTableRow) => Action<DocsTableRow>)
       )[]
     | undefined;
 }) => JSX.Element | null;

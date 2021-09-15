@@ -626,15 +626,10 @@ export const SidebarDivider: React_2.ComponentType<
       React_2.HTMLAttributes<HTMLHRElement>,
       HTMLHRElement
     >,
-    | 'hidden'
-    | 'dir'
+    | 'children'
     | 'slot'
     | 'style'
     | 'title'
-    | 'color'
-    | 'translate'
-    | 'prefix'
-    | 'children'
     | 'id'
     | 'defaultChecked'
     | 'defaultValue'
@@ -643,16 +638,20 @@ export const SidebarDivider: React_2.ComponentType<
     | 'accessKey'
     | 'contentEditable'
     | 'contextMenu'
+    | 'dir'
     | 'draggable'
+    | 'hidden'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
     | 'tabIndex'
+    | 'translate'
     | 'radioGroup'
     | 'role'
     | 'about'
     | 'datatype'
     | 'inlist'
+    | 'prefix'
     | 'property'
     | 'resource'
     | 'typeof'
@@ -660,6 +659,7 @@ export const SidebarDivider: React_2.ComponentType<
     | 'autoCapitalize'
     | 'autoCorrect'
     | 'autoSave'
+    | 'color'
     | 'itemProp'
     | 'itemScope'
     | 'itemType'
@@ -926,16 +926,12 @@ export const SidebarScrollWrapper: React_2.ComponentType<
       React_2.HTMLAttributes<HTMLDivElement>,
       HTMLDivElement
     >,
-    | 'hidden'
-    | 'dir'
+    | 'children'
     | 'slot'
     | 'style'
     | 'title'
-    | 'color'
-    | 'translate'
-    | 'prefix'
-    | 'children'
     | 'id'
+    | keyof React_2.ClassAttributes<HTMLDivElement>
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -943,16 +939,20 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'accessKey'
     | 'contentEditable'
     | 'contextMenu'
+    | 'dir'
     | 'draggable'
+    | 'hidden'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
     | 'tabIndex'
+    | 'translate'
     | 'radioGroup'
     | 'role'
     | 'about'
     | 'datatype'
     | 'inlist'
+    | 'prefix'
     | 'property'
     | 'resource'
     | 'typeof'
@@ -960,6 +960,7 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'autoCapitalize'
     | 'autoCorrect'
     | 'autoSave'
+    | 'color'
     | 'itemProp'
     | 'itemScope'
     | 'itemType'
@@ -1179,7 +1180,6 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'onAnimationIterationCapture'
     | 'onTransitionEnd'
     | 'onTransitionEndCapture'
-    | keyof React_2.ClassAttributes<HTMLDivElement>
   > &
     StyledComponentProps<'root'> & {
       className?: string | undefined;
@@ -1201,16 +1201,12 @@ export const SidebarSpace: React_2.ComponentType<
       React_2.HTMLAttributes<HTMLDivElement>,
       HTMLDivElement
     >,
-    | 'hidden'
-    | 'dir'
+    | 'children'
     | 'slot'
     | 'style'
     | 'title'
-    | 'color'
-    | 'translate'
-    | 'prefix'
-    | 'children'
     | 'id'
+    | keyof React_2.ClassAttributes<HTMLDivElement>
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1218,16 +1214,20 @@ export const SidebarSpace: React_2.ComponentType<
     | 'accessKey'
     | 'contentEditable'
     | 'contextMenu'
+    | 'dir'
     | 'draggable'
+    | 'hidden'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
     | 'tabIndex'
+    | 'translate'
     | 'radioGroup'
     | 'role'
     | 'about'
     | 'datatype'
     | 'inlist'
+    | 'prefix'
     | 'property'
     | 'resource'
     | 'typeof'
@@ -1235,6 +1235,7 @@ export const SidebarSpace: React_2.ComponentType<
     | 'autoCapitalize'
     | 'autoCorrect'
     | 'autoSave'
+    | 'color'
     | 'itemProp'
     | 'itemScope'
     | 'itemType'
@@ -1454,7 +1455,6 @@ export const SidebarSpace: React_2.ComponentType<
     | 'onAnimationIterationCapture'
     | 'onTransitionEnd'
     | 'onTransitionEndCapture'
-    | keyof React_2.ClassAttributes<HTMLDivElement>
   > &
     StyledComponentProps<'root'> & {
       className?: string | undefined;
@@ -1470,16 +1470,12 @@ export const SidebarSpacer: React_2.ComponentType<
       React_2.HTMLAttributes<HTMLDivElement>,
       HTMLDivElement
     >,
-    | 'hidden'
-    | 'dir'
+    | 'children'
     | 'slot'
     | 'style'
     | 'title'
-    | 'color'
-    | 'translate'
-    | 'prefix'
-    | 'children'
     | 'id'
+    | keyof React_2.ClassAttributes<HTMLDivElement>
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1487,16 +1483,20 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'accessKey'
     | 'contentEditable'
     | 'contextMenu'
+    | 'dir'
     | 'draggable'
+    | 'hidden'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
     | 'tabIndex'
+    | 'translate'
     | 'radioGroup'
     | 'role'
     | 'about'
     | 'datatype'
     | 'inlist'
+    | 'prefix'
     | 'property'
     | 'resource'
     | 'typeof'
@@ -1504,6 +1504,7 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'autoCapitalize'
     | 'autoCorrect'
     | 'autoSave'
+    | 'color'
     | 'itemProp'
     | 'itemScope'
     | 'itemType'
@@ -1723,7 +1724,6 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'onAnimationIterationCapture'
     | 'onTransitionEnd'
     | 'onTransitionEndCapture'
-    | keyof React_2.ClassAttributes<HTMLDivElement>
   > &
     StyledComponentProps<'root'> & {
       className?: string | undefined;
