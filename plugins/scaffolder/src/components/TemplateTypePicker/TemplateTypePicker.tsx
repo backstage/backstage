@@ -54,7 +54,7 @@ export const TemplateTypePicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Categories</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         multiple
         aria-label="Categories"
         options={availableTypes}

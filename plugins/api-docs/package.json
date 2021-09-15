@@ -39,7 +39,7 @@
     "@material-icons/font": "^1.0.2",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.45",
+    "@material-ui/lab": "4.0.0-alpha.57",
     "@types/react": "*",
     "graphiql": "^1.0.0-alpha.10",
     "graphql": "^15.3.0",

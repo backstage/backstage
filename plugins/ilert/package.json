@@ -29,7 +29,7 @@
     "@date-io/luxon": "2.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.45",
+    "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "humanize-duration": "^3.26.0",
     "luxon": "^2.0.2",
