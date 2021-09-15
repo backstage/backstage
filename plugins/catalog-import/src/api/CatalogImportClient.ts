@@ -71,6 +71,7 @@ export class CatalogImportClient implements CatalogImportApi {
         type: 'locations',
         locations: [
           {
+            exists: location.exists,
             target: location.location.target,
             entities: location.entities.map(e => ({
               kind: e.kind,
@@ -241,26 +242,22 @@ the component will become available.\n\nFor more information, read an \
           .map(
             i => `${url.replace(/[\/]*$/, '')}/blob/${defaultBranch}/${i.path}`,
           )
-          .map(
-            async i =>
-              ({
-                target: i,
-                entities: (
-                  await this.catalogApi.addLocation({
-                    type: 'url',
-                    target: i,
-                    dryRun: true,
-                  })
-                ).entities.map(e => ({
-                  kind: e.kind,
-                  namespace: e.metadata.namespace ?? 'default',
-                  name: e.metadata.name,
-                })),
-              } as {
-                target: string;
-                entities: EntityName[];
-              }),
-          ),
+          .map(async target => {
+            const result = await this.catalogApi.addLocation({
+              type: 'url',
+              target,
+              dryRun: true,
+            });
+            return {
+              target,
+              exists: result.exists,
+              entities: result.entities.map(e => ({
+                kind: e.kind,
+                namespace: e.metadata.namespace ?? 'default',
+                name: e.metadata.name,
+              })),
+            };
+          }),
       );
     }
 

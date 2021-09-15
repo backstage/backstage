@@ -93,4 +93,6 @@ export type AddLocationRequest = {
 export type AddLocationResponse = {
   location: Location;
   entities: Entity[];
+  // Exists is only set in DryRun mode.
+  exists?: boolean;
 };

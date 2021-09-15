@@ -29,6 +29,7 @@ export type AnalyzeResult =
       type: 'locations';
       locations: Array<{
         target: string;
+        exists?: boolean;
         entities: EntityName[];
       }>;
     }
