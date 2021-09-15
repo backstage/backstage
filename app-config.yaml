@@ -53,11 +53,15 @@ proxy:
 # and an external cloud storage when deploying TechDocs for production use-case.
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
-  builder: 'local' # Alternatives - 'external'
-  generator:
-    runIn: 'local' # Alternatives - 'local'
+  builder: 'external'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'zk-backstage-test'
+      region: us-east-2
+      credentials:
+        accessKeyId: AKIAS6GSUSLQVYE2OJFS
+        secretAccessKey: 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
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
