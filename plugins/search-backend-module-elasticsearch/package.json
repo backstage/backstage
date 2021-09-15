@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
+  "description": "A module for the search backend that implements search using ElasticSearch",
   "version": "0.0.3",
   "main": "src/index.ts",
   "types": "src/index.ts",

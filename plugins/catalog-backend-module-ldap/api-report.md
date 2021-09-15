@@ -259,6 +259,4 @@ export type UserTransformer = (
 //
 // src/ldap/vendors.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ldap/vendors.d.ts:18:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

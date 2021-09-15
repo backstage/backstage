@@ -86,6 +86,4 @@ export type TodoListResult = {
 
 // @public
 export const todoPlugin: BackstagePlugin<{}, {}>;
-
-// (No @packageDocumentation comment for this package)
 ```

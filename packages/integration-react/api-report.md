@@ -30,6 +30,4 @@ export class ScmIntegrationsApi {
 //
 // @public (undocumented)
 export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry>;
-
-// (No @packageDocumentation comment for this package)
 ```

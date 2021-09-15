@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
+  "description": "The Backstage backend plugin that provides the Backstage catalog",
   "version": "0.13.7",
   "main": "src/index.ts",
   "types": "src/index.ts",

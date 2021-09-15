@@ -27,6 +27,4 @@ export class TestDatabases {
   // (undocumented)
   supports(id: TestDatabaseId): boolean;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

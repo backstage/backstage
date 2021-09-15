@@ -69,6 +69,4 @@ export type TechDocsCollatorOptions = {
 export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
-
-// (No @packageDocumentation comment for this package)
 ```

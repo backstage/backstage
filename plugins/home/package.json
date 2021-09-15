@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-home",
+  "description": "A Backstage plugin that helps you build a home page",
   "version": "0.3.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

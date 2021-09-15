@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-gitops-profiles",
+  "description": "A Backstage plugin that helps you manage GitOps profiles",
   "version": "0.3.3",
   "main": "src/index.ts",
   "types": "src/index.ts",

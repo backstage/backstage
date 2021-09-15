@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-cloudbuild",
+  "description": "A Backstage plugin that integrates towards Google Cloud Build",
   "version": "0.2.22",
   "main": "src/index.ts",
   "types": "src/index.ts",

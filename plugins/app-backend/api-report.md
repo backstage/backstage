@@ -24,6 +24,4 @@ export interface RouterOptions {
   logger: Logger_2;
   staticFallbackHandler?: express.Handler;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

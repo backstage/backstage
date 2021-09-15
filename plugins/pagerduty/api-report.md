@@ -88,6 +88,4 @@ export function TriggerButton({
 //
 // @public (undocumented)
 export class UnauthorizedError extends Error {}
-
-// (No @packageDocumentation comment for this package)
 ```

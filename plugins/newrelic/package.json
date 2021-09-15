@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-newrelic",
+  "description": "A Backstage plugin that integrates towards New Relic",
   "version": "0.3.3",
   "main": "src/index.ts",
   "types": "src/index.ts",

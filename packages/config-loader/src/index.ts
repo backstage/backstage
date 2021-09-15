@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Config loading functionality used by Backstage backend, and CLI
+ *
+ * @packageDocumentation
+ */
+
 export { readEnvConfig, loadConfigSchema, mergeConfigSchemas } from './lib';
 export type {
   ConfigSchema,

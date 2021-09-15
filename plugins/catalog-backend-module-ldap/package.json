@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-ldap",
+  "description": "A Backstage catalog backend modules that helps integrate towards LDAP",
   "version": "0.3.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

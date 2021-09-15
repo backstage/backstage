@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
+  "description": "A Backstage plugin the helps you import entities into your catalog",
   "version": "0.5.20",
   "main": "src/index.ts",
   "types": "src/index.ts",

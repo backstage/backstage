@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-gcp-projects",
+  "description": "A Backstage plugin that helps you manage projects in GCP",
   "version": "0.3.3",
   "main": "src/index.ts",
   "types": "src/index.ts",

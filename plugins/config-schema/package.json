@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-config-schema",
+  "description": "A Backstage plugin that lets you browse the configuration schema of your app",
   "version": "0.1.6",
   "main": "src/index.ts",
   "types": "src/index.ts",

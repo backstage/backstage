@@ -140,6 +140,4 @@ export type DiscoveryApi = {
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
-
-// (No @packageDocumentation comment for this package)
 ```

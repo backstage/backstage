@@ -51,6 +51,4 @@ export const EntityGridItem: ({
 }: Omit<GridProps<'div', {}>, 'container' | 'item'> & {
   entity: Entity;
 }) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -237,6 +237,4 @@ export const StepPrepareCreatePullRequest: ({
 // Warnings were encountered during analysis:
 //
 // src/api/CatalogImportApi.d.ts:14:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

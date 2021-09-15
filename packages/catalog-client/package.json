@@ -1,5 +1,6 @@
 {
   "name": "@backstage/catalog-client",
+  "description": "An isomorphic client for the catalog backend",
   "version": "0.3.19",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -1,5 +1,6 @@
 {
   "name": "@backstage/integration-react",
+  "description": "Frontend package for managing integrations towards external systems",
   "version": "0.1.8",
   "main": "src/index.ts",
   "types": "src/index.ts",

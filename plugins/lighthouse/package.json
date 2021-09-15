@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-lighthouse",
+  "description": "A Backstage plugin that integrates towards Lighthouse",
   "version": "0.2.24",
   "main": "src/index.ts",
   "types": "src/index.ts",

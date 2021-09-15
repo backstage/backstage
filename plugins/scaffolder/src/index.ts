@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that helps you create new things
+ *
+ * @packageDocumentation
+ */
+
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type { ScaffolderApi } from './api';
 export {

@@ -321,6 +321,4 @@ export class UrlPreparer implements PreparerBase {
 // src/stages/prepare/types.d.ts:19:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/stages/prepare/types.d.ts:21:33 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // src/stages/prepare/types.d.ts:21:16 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-
-// (No @packageDocumentation comment for this package)
 ```

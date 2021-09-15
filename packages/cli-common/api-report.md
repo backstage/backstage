@@ -23,6 +23,4 @@ export type Paths = {
 
 // @public (undocumented)
 export type ResolveFunc = (...paths: string[]) => string;
-
-// (No @packageDocumentation comment for this package)
 ```

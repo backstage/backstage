@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-sentry",
+  "description": "A Backstage plugin that integrates towards Sentry",
   "version": "0.3.20",
   "main": "src/index.ts",
   "types": "src/index.ts",

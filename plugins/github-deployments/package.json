@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-github-deployments",
+  "description": "A Backstage plugin that integrates towards GitHub Deployments",
   "version": "0.1.15",
   "main": "src/index.ts",
   "types": "src/index.ts",

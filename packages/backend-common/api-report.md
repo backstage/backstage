@@ -574,6 +574,4 @@ export function useHotCleanup(
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -882,6 +882,4 @@ export const useStarredEntities: () => {
 // src/types.d.ts:16:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.d.ts:22:68 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // src/types.d.ts:22:88 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-
-// (No @packageDocumentation comment for this package)
 ```

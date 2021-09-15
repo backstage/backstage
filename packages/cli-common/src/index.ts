@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Common functionality used by cli, backend, and create-app
+ *
+ * @packageDocumentation
+ */
+
 export { findPaths } from './paths';
 export { isChildPath } from './isChildPath';
 export type { Paths, ResolveFunc } from './paths';

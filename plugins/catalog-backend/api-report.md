@@ -1466,6 +1466,4 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/ingestion/processors/types.d.ts:58:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

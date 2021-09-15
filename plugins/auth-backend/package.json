@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
+  "description": "A Backstage backend plugin that handles authentication",
   "version": "0.3.24",
   "main": "src/index.ts",
   "types": "src/index.ts",

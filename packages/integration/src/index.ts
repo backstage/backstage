@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Helpers for managing integrations towards external systems
+ *
+ * @packageDocumentation
+ */
+
 export * from './azure';
 export * from './bitbucket';
 export * from './github';
