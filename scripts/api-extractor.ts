@@ -93,14 +93,14 @@ ApiReportGenerator.generateReviewFileContent =
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const SKIPPED_PACKAGES = [
-  'packages/app',
-  'packages/backend',
-  'packages/cli',
-  'packages/codemods',
-  'packages/create-app',
-  'packages/e2e-test',
-  'packages/storybook',
-  'packages/techdocs-cli',
+  join('packages', 'app'),
+  join('packages', 'backend'),
+  join('packages', 'cli'),
+  join('packages', 'codemods'),
+  join('packages', 'create-app'),
+  join('packages', 'e2e-test'),
+  join('packages', 'storybook'),
+  join('packages', 'techdocs-cli'),
 ];
 
 async function findPackageDirs() {
@@ -110,7 +110,7 @@ async function findPackageDirs() {
   for (const packageRoot of PACKAGE_ROOTS) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
-      const fullPackageDir = resolvePath(packageRoot, dir);
+      const fullPackageDir = resolvePath(projectRoot, packageRoot, dir);
 
       const stat = await fs.stat(fullPackageDir);
       if (!stat.isDirectory()) {
