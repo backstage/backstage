@@ -1889,7 +1889,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
 // @public (undocumented)
 export type TableFilter = {
   column: string;
-  type: 'select' | 'multiple-select' | /** @deprecated */ 'checkbox-tree';
+  type: 'select' | 'multiple-select';
 };
 
 // Warning: (ae-missing-release-tag) "TableProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
