@@ -57,11 +57,11 @@ techdocs:
   publisher:
     type: 'awsS3'
     awsS3:
-      bucketName: 'zk-backstage-test'
-      region: us-east-2
+      bucketName: ${AWS_BUCKET_NAME}
+      region: ${AWS_BUCKET_REGION}
       credentials:
-        accessKeyId: AKIAS6GSUSLQVYE2OJFS
-        secretAccessKey: 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
+        accessKeyId: ${AWS_ACCESS_KEY_ID}
+        secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
