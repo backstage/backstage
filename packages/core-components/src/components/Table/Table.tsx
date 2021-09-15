@@ -56,7 +56,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
@@ -191,7 +190,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
 
 export type TableFilter = {
   column: string;
-  type: 'select' | 'multiple-select' | /** @deprecated */ 'checkbox-tree';
+  type: 'select' | 'multiple-select';
 };
 
 export type TableState = {
@@ -403,16 +402,6 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       return distinctValues;
     };
 
-    const constructCheckboxTree = (
-      filter: TableFilter,
-    ): Without<CheckboxTreeProps, 'onChange'> => ({
-      label: filter.column,
-      subCategories: [...extractDistinctValues(filter.column)].map(v => ({
-        label: v,
-        options: [],
-      })),
-    });
-
     const constructSelect = (
       filter: TableFilter,
     ): Without<SelectProps, 'onChange'> => {
@@ -429,10 +418,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
     return filterConfig.map(filter => ({
       type: filter.type,
-      element:
-        filter.type === 'checkbox-tree'
-          ? constructCheckboxTree(filter)
-          : constructSelect(filter),
+      element: constructSelect(filter),
     }));
   };
 
