@@ -34,7 +34,7 @@ import {
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import { Config, JsonObject } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
@@ -53,6 +53,8 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import { PluginEnvironment } from './types';
+import { loadConfigSchema, mergeConfigSchemas } from '@backstage/config-loader';
+import { JSONSchema7 as JSONSchema } from 'json-schema';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -80,6 +82,29 @@ async function main() {
     `You are running an example backend, which is supposed to be mainly used for contributing back to Backstage. ` +
       `Do NOT deploy this to production. Read more here https://backstage.io/docs/getting-started/`,
   );
+
+  // loadAllConfigSchema() from config-loader
+  // does similar things as backstage-cli config:schema
+  // optionally, pass schema in loadBackendConfig
+  // loadBackendConfig can optionally validate loaded config the schema
+  // loadBackendConfig tells the logger about secrets, so that it can filter out.
+
+  // get all packages
+  const schema = await loadConfigSchema({
+    dependencies: ['@backstage/integration'],
+  });
+  console.log(schema);
+  console.log('serialize');
+
+  const merged = mergeConfigSchemas(
+    (schema.serialize().schemas as JsonObject[]).map(
+      _ => _.value as JSONSchema,
+    ),
+  );
+
+  console.log(JSON.stringify(merged, null, 2));
+  // console.log('process');
+  // console.log(schema.process([]));
 
   const config = await loadBackendConfig({
     argv: process.argv,
