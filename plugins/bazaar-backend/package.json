@@ -22,7 +22,6 @@
     "@backstage/backend-common": "^0.9.2",
     "@backstage/config": "^0.1.5",
     "@types/express": "^4.17.6",
-    "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^0.95.10",
@@ -30,10 +29,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.6",
-    "@types/supertest": "^2.0.8",
-    "msw": "^0.29.0",
-    "supertest": "^4.0.2"
+    "@backstage/cli": "^0.7.6"
   },
   "files": [
     "dist",

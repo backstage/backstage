@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { IdentityApi } from '@backstage/core-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { BazaarProject, Status } from './types';
 
 export const getEntityRef = (entity: Entity) => {

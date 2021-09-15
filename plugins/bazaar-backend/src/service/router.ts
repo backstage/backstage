@@ -18,12 +18,10 @@ import {
   errorHandler,
   PluginDatabaseManager,
   resolvePackagePath,
-  useHotMemoize,
 } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import Knex from 'knex';
 import { Config } from '@backstage/config';
 
 export interface RouterOptions {
@@ -35,39 +33,17 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config } = options;
+  const { logger } = options;
   const db = await options.database?.getClient();
 
-  const connection = config
-    .getConfig('backend')
-    .getConfig('database')
-    .getConfig('connection');
-
   logger.info('Initializing Bazaar backend');
-
-  const database = useHotMemoize(module, () => {
-    const knex = Knex({
-      client: 'postgresql',
-      connection: {
-        database: 'backstage_plugin_bazaar',
-        user: connection.getString('user'),
-        password: connection.getString('password'),
-      },
-      useNullAsDefault: true,
-    });
-
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-    return knex;
-  });
 
   const migrationsDir = resolvePackagePath(
     '@backstage/plugin-bazaar-backend',
     'migrations',
   );
 
-  await database?.migrate.latest({
+  await db?.migrate.latest({
     directory: migrationsDir,
   });
 
