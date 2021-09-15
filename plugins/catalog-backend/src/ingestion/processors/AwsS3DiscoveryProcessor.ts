@@ -33,7 +33,7 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean> {
-    if (location.type !== 'awsS3-discovery') {
+    if (location.type !== 's3-discovery') {
       return false;
     }
 

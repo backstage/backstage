@@ -21,8 +21,8 @@ configuration:
 ```yaml
 catalog:
   locations:
-    - type: awsS3-discovery
+    - type: s3-discovery
       target: https://sample-bucket.s3.us-east-2.amazonaws.com/
 ```
 
-Note the `awsS3-discovery` type, as this is not a regular `url` processor.
+Note the `s3-discovery` type, as this is not a regular `url` processor.

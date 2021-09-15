@@ -60,7 +60,7 @@ const reader = UrlReaders.default({
 describe('readLocation', () => {
   const processor = new AwsS3DiscoveryProcessor(reader);
   const spec = {
-    type: 'awsS3-discovery',
+    type: 's3-discovery',
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
 
@@ -71,7 +71,7 @@ describe('readLocation', () => {
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({
       target: 'awsS3-mock-object.txt',
-      type: 'awsS3-discovery',
+      type: 's3-discovery',
     });
     expect(generated.entity).toEqual({ site_name: 'Test' });
   });
