@@ -25,19 +25,15 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 //
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
+  // @deprecated
   constructor({
     discovery,
     locationTemplate,
     logger,
     catalogClient,
     parallelismLimit,
-  }: {
-    discovery: PluginEndpointDiscovery;
-    logger: Logger_2;
-    locationTemplate?: string;
-    catalogClient?: CatalogApi;
-    parallelismLimit?: number;
-  });
+    legacyPathCasing,
+  }: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,
@@ -48,10 +44,27 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<TechDocsDocument[]>;
   // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: TechDocsCollatorOptions,
+  ): DefaultTechDocsCollator;
+  // (undocumented)
   protected locationTemplate: string;
   // (undocumented)
   readonly type: string;
 }
+
+// Warning: (ae-missing-release-tag) "TechDocsCollatorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsCollatorOptions = {
+  discovery: PluginEndpointDiscovery;
+  logger: Logger_2;
+  locationTemplate?: string;
+  catalogClient?: CatalogApi;
+  parallelismLimit?: number;
+  legacyPathCasing?: boolean;
+};
 
 export { TechDocsDocument };
 
