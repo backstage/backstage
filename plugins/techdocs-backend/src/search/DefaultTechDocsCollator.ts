@@ -31,7 +31,7 @@ interface MkSearchIndexDoc {
   location: string;
 }
 
-type TechDocsCollatorOptions = {
+export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
   locationTemplate?: string;
@@ -173,7 +173,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     return legacyPaths
       ? entityInfo
       : Object.entries(entityInfo).reduce((acc, [key, value]) => {
-          return { ...acc, [key]: value.toLowerCase() };
+          return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
         }, {} as EntityInfo);
   }
 }

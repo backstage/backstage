@@ -25,8 +25,6 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 //
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
-  // Warning: (ae-forgotten-export) The symbol "TechDocsCollatorOptions" needs to be exported by the entry point index.d.ts
-  //
   // @deprecated
   constructor({
     discovery,
@@ -55,6 +53,18 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   // (undocumented)
   readonly type: string;
 }
+
+// Warning: (ae-missing-release-tag) "TechDocsCollatorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsCollatorOptions = {
+  discovery: PluginEndpointDiscovery;
+  logger: Logger_2;
+  locationTemplate?: string;
+  catalogClient?: CatalogApi;
+  parallelismLimit?: number;
+  legacyPathCasing?: boolean;
+};
 
 export { TechDocsDocument };
 
