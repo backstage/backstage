@@ -23,7 +23,6 @@ import {
   OptionallyWrapInRouter,
   createApp,
 } from './createApp';
-import { AppThemeProvider } from './AppThemeProvider';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
