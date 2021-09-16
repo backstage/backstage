@@ -13,4 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { analyticsModuleGA } from './plugin';
+export { GoogleAnalytics } from './apis/implementations/AnalyticsApi';

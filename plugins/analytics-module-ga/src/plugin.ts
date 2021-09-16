@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  analyticsApiRef,
-  configApiRef,
-  createApiFactory,
-  createPlugin,
-} from '@backstage/core-plugin-api';
-import { GoogleAnalytics } from './apis/implementations/AnalyticsApi';
+import { createPlugin } from '@backstage/core-plugin-api';
 
 export const analyticsModuleGA = createPlugin({
   id: 'analytics-provider-ga',
-  apis: [
-    createApiFactory({
-      api: analyticsApiRef,
-      deps: { config: configApiRef },
-      factory: ({ config }) => GoogleAnalytics.fromConfig(config),
-    }),
-  ],
 });

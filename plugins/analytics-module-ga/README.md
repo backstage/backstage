@@ -4,16 +4,28 @@ This plugin provides an opinionated implementation of the Backstage Analytics
 API for Google Analytics. Once installed and configured, analytics events will
 be sent to GA as your users navigate and use your Backstage instance.
 
-This plugin contains no (and will never contain any) other functionality.
+This plugin contains no other functionality.
 
 ## Installation
 
 1. Install this plugin in your Backstage app:
    `cd packages/app && yarn add @backstage/plugin-analytics-module-ga`
-2. Register the plugin with your App. In most instances of Backstage, this is
-   as simple as adding `export { analyticsModuleGA } from '@backstage/plugin-analytics-module-ga';`
-   to your `packages/app/src/plugins.ts` file.
-3. Configure the plugin (see below).
+2. Add the API implementation to your App and configure the plugin (see below).
+
+```tsx
+// packages/app/src/apis.ts
+import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
+import { GoogleAnalytics } from '@backstage/plugin-analytics-module-ga';
+
+export const apis: AnyApiFactory[] = [
+  // Instantiate and register the GA Analytics API Implementation.
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => GoogleAnalytics.fromConfig(configApi),
+  }),
+];
+```
 
 ## Configuration
 
