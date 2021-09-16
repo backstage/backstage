@@ -68,10 +68,10 @@ export interface CatalogImportApi {
   // (undocumented)
   analyzeUrl(url: string): Promise<AnalyzeResult>;
   // (undocumented)
-  preparePullRequest?(): {
+  preparePullRequest?(): Promise<{
     title: string;
     body: string;
-  };
+  }>;
   // (undocumented)
   submitPullRequest(options: {
     repositoryUrl: string;
@@ -104,10 +104,10 @@ export class CatalogImportClient implements CatalogImportApi {
   // (undocumented)
   analyzeUrl(url: string): Promise<AnalyzeResult>;
   // (undocumented)
-  preparePullRequest(): {
+  preparePullRequest(): Promise<{
     title: string;
     body: string;
-  };
+  }>;
   // (undocumented)
   submitPullRequest({
     repositoryUrl,
@@ -244,8 +244,6 @@ export const StepPrepareCreatePullRequest: ({
   onPrepare,
   onGoBack,
   renderFormFields,
-  defaultTitle,
-  defaultBody,
 }: Props_8) => JSX.Element;
 
 // Warnings were encountered during analysis:
