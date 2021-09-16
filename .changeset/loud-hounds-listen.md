@@ -1,6 +1,5 @@
 ---
-"@backstage/plugin-scaffolder-backend": patch
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
-Change hardcoded branch `master` to $defaultBranch
-
+Change hardcoded branch `master` to $defaultBranch in GitLab provider
