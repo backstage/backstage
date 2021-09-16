@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { rootRouteRef } from './routes';
 
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
+import React from 'react';
 
-export const configSchemaPlugin = createPlugin({
-  id: 'config-schema',
-  routes: {
-    root: rootRouteRef,
-  },
-});
-
-export const ConfigSchemaPage = configSchemaPlugin.provide(
-  createRoutableExtension({
-    name: 'ConfigSchemaPage',
-    component: () => import('./components/Experiment').then(m => m.Experiment),
-    mountPoint: rootRouteRef,
-  }),
-);
+export function Experiment6() {
+  return (
+    <div>
+      <h1>Experiment 6</h1>
+      <p>This is an experiment.</p>
+    </div>
+  );
+}
