@@ -29,4 +29,5 @@ export type {
   LocationService,
   LocationStore,
   RefreshOptions,
+  RefreshService,
 } from './types';

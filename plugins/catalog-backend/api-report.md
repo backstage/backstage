@@ -271,17 +271,10 @@ export type CatalogEnvironment = {
 // @public (undocumented)
 export interface CatalogProcessingEngine {
   // (undocumented)
-  refresh(options: CatalogProcessingEngineRefreshOptions): Promise<void>;
-  // (undocumented)
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
 }
-
-// @public (undocumented)
-export type CatalogProcessingEngineRefreshOptions = {
-  entityRef: string;
-};
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1239,7 +1232,7 @@ export interface NextRouterOptions {
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
-  processingEngine?: CatalogProcessingEngine;
+  refreshService?: RefreshService;
 }
 
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1360,6 +1353,16 @@ export type RecursivePartial<T> = {
 // @public
 export type RefreshIntervalFunction = () => number;
 
+// @public
+export type RefreshOptions = {
+  entityRef: string;
+};
+
+// @public
+export interface RefreshService {
+  refresh(options: RefreshOptions): Promise<void>;
+}
+
 // Warning: (ae-missing-release-tag) "relation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1396,7 +1399,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
-  processingEngine?: CatalogProcessingEngine;
+  refreshService?: RefreshService;
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
