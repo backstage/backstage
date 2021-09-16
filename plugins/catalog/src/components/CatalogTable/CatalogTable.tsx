@@ -69,7 +69,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
       <div>
         <WarningPanel
           severity="error"
-          title="Could not fetch catalog entities."
+          title="Could not fetch catsss."
         >
           <CodeSnippet language="text" text={error.toString()} />
         </WarningPanel>

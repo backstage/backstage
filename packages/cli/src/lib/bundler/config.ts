@@ -172,8 +172,11 @@ export async function createConfig(
       hints: false, // we check the gzip size instead
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
+    devServer: {
+      hot: true,
+    },
     context: paths.targetPath,
-    entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
+    entry: [paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
@@ -196,15 +199,16 @@ export async function createConfig(
       },
       plugins: [
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        new ModuleScopePlugin(
-          [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson],
-        ),
+        // new ModuleScopePlugin(
+        //   [paths.targetSrc, paths.targetDev],
+        //   [paths.targetPackageJson],
+        // ),
       ],
-      alias: {
-        'react-dom': '@hot-loader/react-dom',
-      },
+      // alias: {
+      //   'react-dom': '@hot-loader/react-dom',
+      // },
     },
+
     module: {
       rules: loaders,
     },

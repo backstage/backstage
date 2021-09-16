@@ -17,6 +17,7 @@
 import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
@@ -30,25 +31,44 @@ type TransformOptions = {
 export const transforms = (options: TransformOptions): Transforms => {
   const { isDev } = options;
 
-  const extraTransforms = isDev ? ['react-hot-loader'] : [];
+  const extraTransforms = isDev ? [] : [];
 
   const loaders = [
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
+      loader: require.resolve('swc-loader'),
       options: {
-        transforms: ['typescript', 'jsx', ...extraTransforms],
-        production: !isDev,
+        jsc: {
+          parser: { syntax: 'typescript', tsx: true },
+          transform: {
+            react: {
+              development: true,
+              refresh: true,
+            },
+          },
+        },
       },
+      // options: {
+      //    options: { jsc: { parser: { syntax: "typescript" } } } }
+      //   transforms: ['typescript', 'jsx', ...extraTransforms],
+      //   production: !isDev,
+      // },
     },
     {
       test: /\.(jsx?|mjs)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
+      loader: require.resolve('swc-loader'),
       options: {
-        transforms: ['jsx', ...extraTransforms],
-        production: !isDev,
+        jsc: {
+          parser: { syntax: 'ecmascript', jsx: true },
+          transform: {
+            react: {
+              development: true,
+              refresh: true,
+            },
+          },
+        },
       },
     },
     {
@@ -123,7 +143,13 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new webpack.HotModuleReplacementPlugin());
+    // plugins.push(new webpack.HotModuleReplacementPlugin());
+    // plugins.push(
+    //   new ReactRefreshWebpackPlugin({
+    //     esModule: true,
+    //     overlay: { sockProtocol: 'ws' },
+    //   }),
+    // );
   } else {
     plugins.push(
       new MiniCssExtractPlugin({
