@@ -17,7 +17,7 @@
 import React from 'react';
 import { Controller, Control, FieldError } from 'react-hook-form';
 import { TextField } from '@material-ui/core';
-import { FormValues } from '../../util/types';
+import { FormValues } from '../../types';
 
 type Props = {
   inputType: string;

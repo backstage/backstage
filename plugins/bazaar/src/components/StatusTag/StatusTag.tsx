@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { StatusOK, StatusWarning } from '@backstage/core-components';
-import { Status } from '../../util/types';
+import { Status } from '../../types';
 
 interface StatusComponent {
   [key: string]: JSX.Element | undefined;

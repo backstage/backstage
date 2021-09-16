@@ -29,7 +29,7 @@ import { Button, Dialog, Typography, IconButton } from '@material-ui/core';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { InputField } from '../InputField/InputField';
 import { InputSelector } from '../InputSelector/InputSelector';
-import { FormValues } from '../../util/types';
+import { FormValues } from '../../types';
 
 const styles = (theme: Theme) =>
   createStyles({

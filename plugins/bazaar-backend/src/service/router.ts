@@ -70,7 +70,7 @@ export async function createRouter(
     }
   });
 
-  router.put('/members/add', async (request, response) => {
+  router.put('/member', async (request, response) => {
     const userId = request.headers.user_id;
     const entityRef = request.headers.entity_ref;
 
@@ -83,13 +83,29 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  router.delete('/members/remove', async (request, response) => {
+  router.delete('/member', async (request, response) => {
     const userId = request.headers.user_id;
     const entityRef = request.headers.entity_ref;
+
+    console.log('------- user id ----- ', userId, entityRef);
 
     const count = await db?.('public.members')
       .where({ entity_ref: entityRef })
       .andWhere('user_id', userId)
+      .del();
+
+    if (count) {
+      response.send({ status: 'ok' });
+    } else {
+      response.status(404).json({ message: 'Record not found' });
+    }
+  });
+
+  router.delete('/members', async (request, response) => {
+    const entityRef = request.headers.entity_ref;
+
+    const count = await db?.('public.members')
+      .where({ entity_ref: entityRef })
       .del();
 
     if (count) {

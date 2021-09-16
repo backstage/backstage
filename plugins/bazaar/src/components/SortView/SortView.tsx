@@ -27,13 +27,13 @@ import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
-import { getBazaarMembers } from '../../util/dbRequests';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
-import { BazaarProject } from '../../util/types';
+import { BazaarProject } from '../../types';
+import { bazaarApiRef } from '../../api';
 
 const useStyles = makeStyles({
   container: {
@@ -50,6 +50,7 @@ export const SortView = () => {
     new Map(),
   );
   const [bazaarProjects, setBazaarProjects] = useState<BazaarProject[]>([]);
+  const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const baseUrl = useApi(configApiRef)
     .getConfig('backend')
@@ -77,10 +78,7 @@ export const SortView = () => {
       fields: ['apiVersion', 'kind', 'metadata', 'spec'],
     });
 
-    const response = await fetch(`${baseUrl}/api/bazaar/entities`, {
-      method: 'GET',
-    }).then(resp => resp.json());
-
+    const response = await bazaarApi.getEntities(baseUrl);
     const dbProjects: BazaarProject[] = [];
     const bazaarProjectRefs: string[] = [];
 
@@ -96,7 +94,7 @@ export const SortView = () => {
       bazaarProjectRefs.push(project.entity_ref);
     });
 
-    setBazaarMembers(await getBazaarMembers(dbProjects, baseUrl));
+    setBazaarMembers(await bazaarApi.getMemberCounts(dbProjects, baseUrl));
     setBazaarProjects(dbProjects);
     setCatalogEntities(
       entities.items.filter((entity: Entity) => {

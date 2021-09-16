@@ -16,10 +16,10 @@
 
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { updateMetadata } from '../../util/dbRequests';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
-import { BazaarProject, FormValues } from '../../util/types';
+import { BazaarProject, FormValues } from '../../types';
+import { bazaarApiRef } from '../../api';
 
 type Props = {
   entity: Entity;
@@ -46,6 +46,8 @@ export const EditProjectDialog = ({
     status: bazaarProject.status,
   });
 
+  const bazaarApi = useApi(bazaarApiRef);
+
   useEffect(() => {
     setDefaultValues({
       announcement: bazaarProject.announcement,
@@ -56,12 +58,12 @@ export const EditProjectDialog = ({
   const handleSave: any = async (getValues: any, _: any) => {
     const formValues = getValues();
 
-    const updateResponse = await updateMetadata(
+    const updateResponse = await bazaarApi.updateMetadata(
+      baseUrl,
       entity!,
       entity.metadata.name,
       formValues.announcement,
       formValues.status,
-      baseUrl,
     );
 
     if (updateResponse.status === 'ok')

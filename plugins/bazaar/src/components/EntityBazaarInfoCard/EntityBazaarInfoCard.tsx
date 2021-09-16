@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ import {
   identityApiRef,
   configApiRef,
 } from '@backstage/core-plugin-api';
-import { getEntityRef } from '../../util/dbRequests';
 import { useAsync } from 'react-use';
-import { Member, BazaarProject } from '../../util/types';
+import { Member, BazaarProject } from '../../types';
+import { bazaarApiRef, getEntityRef } from '../../api';
 
 const useStyles = makeStyles({
   description: {
@@ -82,11 +82,13 @@ const sortMembers = (m1: Member, m2: Member) => {
 export const EntityBazaarInfoCard = () => {
   const { entity } = useEntity();
   const classes = useStyles();
+  const bazaarApi = useApi(bazaarApiRef);
+  const identity = useApi(identityApiRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [open, setOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const identity = useApi(identityApiRef);
+
   const [isMember, setIsMember] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [bazaarProject, setBazaarProject] = useState<BazaarProject>({
@@ -103,13 +105,7 @@ export const EntityBazaarInfoCard = () => {
     .getString('baseUrl');
 
   const getInitMemberStatus = async () => {
-    const response = await fetch(`${baseUrl}/api/bazaar/members`, {
-      method: 'GET',
-      headers: {
-        entity_ref: getEntityRef(entity),
-      },
-    }).then(resp => resp.json());
-
+    const response = await bazaarApi.getMembers(baseUrl, entity);
     const dbMembers = response.data.map((obj: any) => {
       const member: Member = {
         userId: obj.user_id,
@@ -131,16 +127,11 @@ export const EntityBazaarInfoCard = () => {
   };
 
   const getMetadata = async () => {
-    const response = await fetch(`${baseUrl}/api/bazaar/metadata`, {
-      method: 'GET',
-      headers: {
-        entity_ref: getEntityRef(entity),
-      },
-    });
+    const response = await bazaarApi.getMetadata(baseUrl, entity);
 
     if (response.status !== 404) {
       setIsBazaar(true);
-      const data = await response.json().then(resp => resp.data);
+      const data = await response.json().then((resp: any) => resp.data);
 
       setBazaarProject({
         entityRef: data[0].entityRef,
@@ -183,32 +174,20 @@ export const EntityBazaarInfoCard = () => {
       joinDate: new Date().toISOString(),
     };
 
-    const headers = {
-      user_id: newMember.userId,
-      entity_ref: newMember.entityRef,
-      join_date: newMember.joinDate,
-    };
-
     if (!isMember) {
       setMembers((prevMembers: Member[]) => {
         const newMembers: Member[] = [...prevMembers, newMember];
         newMembers.sort(sortMembers);
         return newMembers;
       });
-      await fetch(`${baseUrl}/api/bazaar/members/add`, {
-        method: 'PUT',
-        headers: headers,
-      });
+      await bazaarApi.addMember(baseUrl, entity);
     } else {
       setMembers(
         members.filter(
           (member: Member) => member.userId !== identity.getUserId(),
         ),
       );
-      await fetch(`${baseUrl}/api/bazaar/members/remove`, {
-        method: 'DELETE',
-        headers: headers,
-      });
+      await bazaarApi.deleteMember(baseUrl, entity);
     }
   };
 

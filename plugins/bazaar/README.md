@@ -50,6 +50,7 @@ Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/a
 Add a **Bazaar card** to the overview tab on the `packages/app/src/components/catalog/EntityPage.tsx` add:
 
 ```diff
++ import { EntityBazaarInfoCard } from '@backstage/plugin-bazaar';
 const overviewContent = (
 
     <Grid item md={8} xs={12}>

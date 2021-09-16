@@ -20,7 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { Controller, Control, FieldError } from 'react-hook-form';
-import { FormValues } from '../../util/types';
+import { FormValues } from '../../types';
 
 type Props = {
   options: string[];

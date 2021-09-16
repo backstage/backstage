@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
+import { rootRouteRef } from './routes';
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
-
-import { rootRouteRef } from './routes';
+import { bazaarApiRef, BazaarClient } from './api';
 
 export const bazaarPlugin = createPlugin({
   id: 'bazaar',
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: bazaarApiRef,
+      deps: {
+        identityApi: identityApiRef,
+      },
+      factory: ({ identityApi }) => new BazaarClient({ identityApi }),
+    }),
+  ],
 });
 
 export const BazaarPage = bazaarPlugin.provide(

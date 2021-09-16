@@ -19,7 +19,7 @@ import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
 import { makeStyles, Grid } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import { BazaarProject } from '../../util/types';
+import { BazaarProject } from '../../types';
 
 type Props = {
   bazaarProjects: BazaarProject[];

@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import { catalogRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { BazaarProject } from '../../util/types';
+import { BazaarProject } from '../../types';
 
 const useStyles = makeStyles({
   statusTag: {

@@ -17,11 +17,11 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { SubmitHandler } from 'react-hook-form';
-import { updateMetadata } from '../../util/dbRequests';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { ProjectSelector } from '../ProjectSelector';
-import { BazaarProject, FormValues, Status } from '../../util/types';
+import { BazaarProject, FormValues, Status } from '../../types';
+import { bazaarApiRef } from '../../api';
 
 type Props = {
   catalogEntities: Entity[];
@@ -38,6 +38,7 @@ export const AddProjectDialog = ({
   setBazaarProjects,
   setCatalogEntities,
 }: Props) => {
+  const bazaarApi = useApi(bazaarApiRef);
   const baseUrl = useApi(configApiRef)
     .getConfig('backend')
     .getString('baseUrl');
@@ -83,12 +84,12 @@ export const AddProjectDialog = ({
       return oldEntities.filter(entity => entity !== selectedEntity);
     });
 
-    await updateMetadata(
+    await bazaarApi.updateMetadata(
+      baseUrl,
       selectedEntity!,
       selectedEntity!.metadata.name,
       formValues.announcement,
       formValues.status,
-      baseUrl,
     );
 
     handleClose();
