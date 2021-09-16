@@ -65,6 +65,8 @@ A set of use-cases that the layout system attempts to cover.
 - Switching out the card wrapping component to something else than the MUI Card
   component
 - Generic handling of the header items, "kebab menu"
+- Proper handling of the support button. It's likely owned by the layout has
+  methods for overriding who the support contacts are.
 
 ## API Experiments
 
@@ -157,4 +159,54 @@ function MyPage() {
     /* ... */
   });
 }
+```
+
+### Experiment 3
+
+#### App PoV
+
+```tsx
+// If we assume that the app controls the labels and menu items and whatnot, how?
+<MyCustomLayout>
+  <Route path="/lighthouse" element={<LighthousePage />} />
+  <Route path="/api-docs" element={<ApiExplorerPage />} />
+  {/* This is stupid, we need to bring some of the labels in from the plugin */}
+  <MyOtherCustomLayout labels={{ plugin: 'gcp-project' }}>
+    <Route path="/gcp-projects" element={<GcpProjectsPage />} />
+  </MyOtherCustomLayout>
+</MyCustomLayout>
+```
+
+#### Layout PoV
+
+```tsx
+// The layout implementation could handle a lot of things and provide a nicer
+// API to the app integrators. With that any of our core layout APIs can be
+// quite bulky with a lot of power if needed.
+type Props = {
+  labels: Record<string, string>;
+};
+const MyCustomLayout = createLayout<Props>({
+  component: ({ labels, layoutApi }) => {
+    // Maybe some API provided to layouts that they use?
+    const allLabels = layoutApi.getLabels({ extraLabels: labels });
+    return; // ... the layout
+  },
+});
+```
+
+#### Plugin PoV
+
+```tsx
+// It should actually be fine to keep using `createRoutableExtension`, it's just that we
+// want to have it just provide contents instead of the entire layout in some cases.
+createRoutableExtension({
+  component: () => import('./components/MyPage').then(m => m.MyPage),
+  labels: {
+    // Providing header labels probably stop at this level, so we end up with
+    // the ones provided here + the plugin system + overrides in the app
+    // Overall this kind of pattern could be something that helps us out with the support button?
+    extraPluginLabel: 'my-label',
+  },
+});
 ```
