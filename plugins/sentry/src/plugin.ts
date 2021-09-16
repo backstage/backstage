@@ -21,6 +21,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
@@ -33,11 +34,12 @@ export const sentryPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: sentryApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ configApi, discoveryApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new ProductionSentryApi(
           discoveryApi,
           configApi.getString('sentry.organization'),
+          identityApi,
         ),
     }),
   ],
