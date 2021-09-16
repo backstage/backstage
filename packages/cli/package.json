@@ -82,7 +82,7 @@
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
     "json-schema": "^0.3.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.4.1",
     "node-libs-browser": "^2.2.1",
     "ora": "^5.3.0",
