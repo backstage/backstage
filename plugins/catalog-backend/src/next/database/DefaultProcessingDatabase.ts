@@ -569,7 +569,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
       .update({ next_update_at: tx.fn.now() });
     if (updateResult === 0) {
-      throw new ConflictError(`Failed to schedule ${entityRef} for refresh`);
+      throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
   }
 
