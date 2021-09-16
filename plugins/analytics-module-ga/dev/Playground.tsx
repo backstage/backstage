@@ -15,15 +15,12 @@
  */
 
 import React from 'react';
-import { withAnalyticsContext } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 
-const ContextlessPlayground = () => {
+export const Playground = () => {
   return (
     <>
       <Link to="#clicked">Click Here</Link>
     </>
   );
 };
-
-export const Playground = withAnalyticsContext(ContextlessPlayground, {});

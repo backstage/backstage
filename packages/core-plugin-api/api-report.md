@@ -303,7 +303,7 @@ export type BootErrorPageProps = {
 export type CommonAnalyticsContext = {
   pluginId: string;
   routeRef: string;
-  componentName: string;
+  extension: string;
 };
 
 // Warning: (ae-missing-release-tag) "ConfigApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -963,17 +963,6 @@ export function useRouteRef<Params extends AnyParams>(
 export function useRouteRefParams<Params extends AnyParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
-
-// Warning: (ae-missing-release-tag) "withAnalyticsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export function withAnalyticsContext<P>(
-  Component: React_2.ComponentType<P>,
-  values: AnalyticsContextValue,
-): {
-  (props: P): JSX.Element;
-  displayName: string;
-};
 
 // Warning: (ae-missing-release-tag) "withApis" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

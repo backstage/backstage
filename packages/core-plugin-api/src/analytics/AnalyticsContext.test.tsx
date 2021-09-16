@@ -17,11 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import {
-  AnalyticsContext,
-  useAnalyticsContext,
-  withAnalyticsContext,
-} from './AnalyticsContext';
+import { AnalyticsContext, useAnalyticsContext } from './AnalyticsContext';
 
 const AnalyticsSpy = () => {
   const context = useAnalyticsContext();
@@ -29,7 +25,7 @@ const AnalyticsSpy = () => {
     <>
       <div data-testid="route-ref">{context.routeRef}</div>
       <div data-testid="plugin-id">{context.pluginId}</div>
-      <div data-testid="component-name">{context.componentName}</div>
+      <div data-testid="extension">{context.extension}</div>
       <div data-testid="custom">{context.custom}</div>
     </>
   );
@@ -40,7 +36,7 @@ describe('AnalyticsContext', () => {
     it('returns default values', () => {
       const { result } = renderHook(() => useAnalyticsContext());
       expect(result.current).toEqual({
-        componentName: 'App',
+        extension: 'App',
         pluginId: 'root',
         routeRef: 'unknown',
       });
@@ -55,7 +51,7 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('component-name')).toHaveTextContent('App');
+      expect(result.getByTestId('extension')).toHaveTextContent('App');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('root');
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
@@ -67,7 +63,7 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('component-name')).toHaveTextContent('App');
+      expect(result.getByTestId('extension')).toHaveTextContent('App');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
@@ -75,30 +71,15 @@ describe('AnalyticsContext', () => {
     it('uses nested analytics context', () => {
       const result = render(
         <AnalyticsContext attributes={{ pluginId: 'custom' }}>
-          <AnalyticsContext attributes={{ componentName: 'AnalyticsSpy' }}>
+          <AnalyticsContext attributes={{ extension: 'AnalyticsSpy' }}>
             <AnalyticsSpy />
           </AnalyticsContext>
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('component-name')).toHaveTextContent(
-        'AnalyticsSpy',
-      );
+      expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
-    });
-  });
-
-  describe('withAnalyticsContext', () => {
-    it('wraps component with analytics context', () => {
-      const AnalyticsSpyHOC = withAnalyticsContext(AnalyticsSpy, {
-        custom: 'attr',
-      });
-      const result = render(<AnalyticsSpyHOC />);
-      expect(result.getByTestId('custom')).toHaveTextContent('attr');
-      expect(AnalyticsSpyHOC.displayName).toBe(
-        'WithAnalyticsContext(AnalyticsSpy)',
-      );
     });
   });
 });

@@ -140,7 +140,7 @@ export function createReactExtension<
               <AnalyticsContext
                 attributes={{
                   pluginId: plugin.getId(),
-                  componentName,
+                  ...(options.name ? { extension: options.name } : {}),
                   ...(data['core.mountpoint']
                     ? {
                         routeRef: (data['core.mountpoint'] as { id?: string })

@@ -13,7 +13,7 @@ analytics context, which can be useful for analyzing plugin usage:
   "action": "navigate",
   "subject": "/the-path/navigated/to?with=params#and-hashes",
   "context": {
-    "componentName": "App",
+    "extension": "App",
     "pluginId": "id-of-plugin-that-exported-the-route",
     "routeRef": "associated-route-ref-id"
   }

@@ -51,7 +51,7 @@ describe('GoogleAnalytics', () => {
 
   describe('integration', () => {
     const context = {
-      componentName: 'App',
+      extension: 'App',
       pluginId: 'some-plugin',
       releaseNum: 1337,
     };
@@ -125,7 +125,7 @@ describe('GoogleAnalytics', () => {
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'event',
-        eventCategory: context.componentName,
+        eventCategory: context.extension,
         eventAction: expectedAction,
         eventLabel: expectedLabel,
         eventValue: expectedValue,
@@ -178,7 +178,7 @@ describe('GoogleAnalytics', () => {
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'event',
-        eventCategory: context.componentName,
+        eventCategory: context.extension,
         eventAction: expectedAction,
         eventLabel: expectedLabel,
         eventValue: expectedValue,

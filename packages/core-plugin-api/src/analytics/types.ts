@@ -29,9 +29,9 @@ export type CommonAnalyticsContext = {
   routeRef: string;
 
   /**
-   * The name of the associated component.
+   * The name of the associated extension.
    */
-  componentName: string;
+  extension: string;
 };
 
 /**

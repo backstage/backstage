@@ -12,7 +12,7 @@ metadata, allowing clicks to be attributed to the plugin containing the link:
   "action": "click",
   "subject": "/value/of-the/to-prop/passed-to-the-link",
   "context": {
-    "componentName": "SomeAssociatedExtension",
+    "extension": "SomeAssociatedExtension",
     "pluginId": "plugin-in-which-link-was-clicked",
     "routeRef": "any-associated-route-ref-id"
   }

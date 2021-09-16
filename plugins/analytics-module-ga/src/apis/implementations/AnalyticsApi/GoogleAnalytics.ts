@@ -106,7 +106,7 @@ export class GoogleAnalytics implements AnalyticsApi {
   }: AnalyticsEvent) {
     const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
-    if (action === 'navigate' && context?.componentName === 'App') {
+    if (action === 'navigate' && context?.extension === 'App') {
       // Set any/all custom dimensions.
       if (Object.keys(customMetadata).length) {
         ReactGA.set(customMetadata);
@@ -117,7 +117,7 @@ export class GoogleAnalytics implements AnalyticsApi {
     }
 
     ReactGA.event({
-      category: context.componentName || 'App',
+      category: context.extension || 'App',
       action,
       label: subject,
       value,

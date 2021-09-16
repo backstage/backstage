@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { useAnalytics, withAnalyticsContext } from '@backstage/core-plugin-api';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   Link as MaterialLink,
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core';
-import React, { ElementType, MutableRefObject } from 'react';
+import React, { ElementType } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
-
-type OptionalRef = MutableRefObject<any> | ((instance: any) => void) | null;
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
@@ -41,8 +39,8 @@ declare function LinkType(props: LinkProps): JSX.Element;
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
  */
-const ActualLink = withAnalyticsContext(
-  ({ inputRef, onClick, ...props }: LinkProps & { inputRef: OptionalRef }) => {
+const ActualLink = React.forwardRef<any, LinkProps>(
+  ({ onClick, ...props }, ref) => {
     const analytics = useAnalytics();
     const to = String(props.to);
     const external = isExternalUri(to);
@@ -58,7 +56,7 @@ const ActualLink = withAnalyticsContext(
     return external ? (
       // External links
       <MaterialLink
-        ref={inputRef}
+        ref={ref}
         href={to}
         onClick={handleClick}
         {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
@@ -67,23 +65,18 @@ const ActualLink = withAnalyticsContext(
     ) : (
       // Interact with React Router for internal links
       <MaterialLink
-        ref={inputRef}
+        ref={ref}
         component={RouterLink}
         onClick={handleClick}
         {...props}
       />
     );
   },
-  { componentName: 'Link' },
 );
-
-export const WrappedLink = React.forwardRef<any, LinkProps>((props, ref) => (
-  <ActualLink {...props} inputRef={ref} />
-));
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
 //               function, which makes our API reference docs much nicer.
 //               The first type to be exported gets priority, but it will
 //               be thrown away when compiling to JS.
 // @ts-ignore
-export { LinkType as Link, WrappedLink as Link };
+export { LinkType as Link, ActualLink as Link };

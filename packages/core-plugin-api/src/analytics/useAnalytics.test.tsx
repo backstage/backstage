@@ -55,7 +55,7 @@ describe('useAnalytics', () => {
         some: 'value',
       },
       context: {
-        componentName: 'App',
+        extension: 'App',
         pluginId: 'root',
         routeRef: 'unknown',
       },

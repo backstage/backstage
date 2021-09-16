@@ -20,7 +20,7 @@ import { AnalyticsContextValue } from './types';
 const AnalyticsReactContext = createContext<AnalyticsContextValue>({
   routeRef: 'unknown',
   pluginId: 'root',
-  componentName: 'App',
+  extension: 'App',
 });
 
 /**

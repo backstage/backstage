@@ -121,7 +121,7 @@ describe('extensions', () => {
               <>
                 <div data-testid="plugin-id">{context.pluginId}</div>
                 <div data-testid="route-ref">{context.routeRef}</div>
-                <div data-testid="component-name">{context.componentName}</div>
+                <div data-testid="extension">{context.extension}</div>
               </>
             );
           },
@@ -134,8 +134,6 @@ describe('extensions', () => {
 
     expect(result.getByTestId('plugin-id')).toHaveTextContent('my-plugin');
     expect(result.getByTestId('route-ref')).toHaveTextContent('some-ref');
-    expect(result.getByTestId('component-name')).toHaveTextContent(
-      'AnalyticsSpy',
-    );
+    expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
   });
 });

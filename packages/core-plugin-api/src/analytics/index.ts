@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { AnalyticsContext, withAnalyticsContext } from './AnalyticsContext';
+export { AnalyticsContext } from './AnalyticsContext';
 export type { AnalyticsContextValue, CommonAnalyticsContext } from './types';
 export { useAnalytics } from './useAnalytics';

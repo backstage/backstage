@@ -383,7 +383,7 @@ describe('Integration Test', () => {
       action: 'navigate',
       subject: '/',
       context: {
-        componentName: 'App',
+        extension: 'App',
         pluginId: 'blob',
         routeRef: 'ref-1-2',
       },
@@ -392,7 +392,7 @@ describe('Integration Test', () => {
       action: 'navigate',
       subject: '/foo',
       context: {
-        componentName: 'App',
+        extension: 'App',
         pluginId: 'plugin2',
         routeRef: 'ref-2',
       },

@@ -67,7 +67,7 @@ const getExtensionContext = (
       if (plugin && mountPoint) {
         return {
           pluginId: plugin.getId(),
-          componentName: 'App',
+          extension: 'App',
           routeRef: mountPoint?.id || '',
         };
       }
