@@ -14,14 +14,15 @@ To add Okta authentication, you must create an Application from Okta:
 
 1. Log into Okta (generally company.okta.com)
 2. Navigate to Menu >> Applications >> Applications >> `Create App Integration`
-4. Fill out the Create a new app integration form:
+3. Fill out the Create a new app integration form:
    - `Sign-in method`: `OIDC - OpenID Connect`
    - `Application type`: `Web Application`
    - Click Next
-6. Fill out the New Web App Integration form:
+4. Fill out the New Web App Integration form:
    - `App integration name`: `Backstage` (or your custom app name)
    - `Grant type`: `Authorization Code` & `Refresh Token`
-   - `Sign-in redirect URIs`: `http://localhost:7000/api/auth/okta/handler/frame`
+   - `Sign-in redirect URIs`:
+     `http://localhost:7000/api/auth/okta/handler/frame`
    - `Sign-out redirect URIs`: `http://localhost:7000`
    - `Controlled access`: (select as appropriate)
    - Click Save
