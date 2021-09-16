@@ -367,11 +367,10 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
   // Check for deprecated checkbox-tree filter
   useEffect(() => {
-    filters?.map(filter => {
+    if (filters?.some(filter => filter.type === 'checkbox-tree')) {
       // eslint-disable-next-line no-console
-      if (filter.type === 'checkbox-tree')
-        console.warn('"checkbox-tree" filter type is deprecated');
-    });
+      console.warn('"checkbox-tree" filter type is deprecated');
+    }
   }, [filters]);
 
   const constructFilters = (
