@@ -280,7 +280,7 @@ describe('AwsS3UrlReader', () => {
       const files = await response.files();
       const body = await files[0].content();
 
-      expect(body.toString()).toBe('site_name: Test\n');
+      expect(body.toString().trim()).toBe('site_name: Test');
     });
   });
 });
