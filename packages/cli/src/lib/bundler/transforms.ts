@@ -53,6 +53,7 @@ export const transforms = (options: TransformOptions): Transforms => {
                   // swc won't enable fast refresh when development is false
                   runtime: 'automatic',
                   refresh: true,
+                  development: true,
                 },
               },
             },
@@ -80,6 +81,7 @@ export const transforms = (options: TransformOptions): Transforms => {
                   // swc won't enable fast refresh when development is false
                   runtime: 'automatic',
                   refresh: true,
+                  development: true,
                 },
               },
             },
@@ -97,10 +99,25 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('swc-loader'),
           options: {
-            transforms: ['jsx', ...extraTransforms],
-            production: !isDev,
+            jsc: {
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  // swc-loader will check whether webpack mode is 'development'
+                  // and set this automatically starting from 0.1.13. You could also set it yourself.
+                  // swc won't enable fast refresh when development is false
+                  runtime: 'automatic',
+                  refresh: true,
+                  development: true,
+                },
+              },
+            },
           },
         },
         {

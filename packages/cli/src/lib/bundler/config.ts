@@ -114,7 +114,14 @@ export async function createConfig(
       }),
     );
   }
-  plugins.push(new ReactRefreshPlugin());
+  plugins.push(
+    new ReactRefreshPlugin({
+      forceEnable: true,
+      overlay: {
+        sockIntegration: 'whm',
+      },
+    }),
+  );
   // TODO(blam): process is no longer auto polyfilled by webpack in v5.
   // we use the provide plugin to provide this polyfill, but lets look
   // to remove this eventually!
@@ -166,13 +173,13 @@ export async function createConfig(
 
   return {
     mode: isDev ? 'development' : 'production',
-    profile: false,
+    profile: true,
     optimization: optimization(options),
     bail: false,
     performance: {
       hints: false, // we check the gzip size instead
     },
-    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
+    devtool: isDev ? 'eval-nosources-cheap-source-map' : 'source-map',
     context: paths.targetPath,
     entry: paths.targetEntry,
     resolve: {
@@ -203,7 +210,7 @@ export async function createConfig(
         // ),
       ],
       alias: {
-        'react-dom': '@hot-loader/react-dom',
+        // 'react-dom': '@hot-loader/react-dom',
       },
     },
     module: {
@@ -277,7 +284,7 @@ export async function createBackendConfig(
     performance: {
       hints: false, // we check the gzip size instead
     },
-    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
+    devtool: isDev ? 'eval-nosources-cheap-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [
       'webpack/hot/poll?100',

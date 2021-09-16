@@ -42,31 +42,28 @@ export async function serveBundle(options: ServeOptions) {
   });
   const compiler = webpack(config);
 
-  const server = new WebpackDevServer(
-    compiler as any,
-    {
-      hot: !process.env.CI,
-      devMiddleware: {
-        publicPath: config.output?.publicPath as string,
-        stats: 'errors-warnings',
-      },
-      static: {
-        publicPath: config.output?.publicPath as string,
-        directory: paths.targetPublic ?? '/',
-      },
-      historyApiFallback: {
-        // Paths with dots should still use the history fallback.
-        // See https://github.com/facebookincubator/create-react-app/issues/387.
-        disableDotRule: true,
-      },
-      https: url.protocol === 'https:',
-      host,
-      port,
-      proxy: pkg.proxy,
-      // When the dev server is behind a proxy, the host and public hostname differ
-      allowedHosts: [url.hostname],
-    } as any,
-  );
+  const server = new WebpackDevServer(compiler as any, {
+    hot: !process.env.CI,
+    devMiddleware: {
+      publicPath: config.output?.publicPath as string,
+      stats: 'errors-warnings',
+    },
+    static: {
+      publicPath: config.output?.publicPath as string,
+      directory: paths.targetPublic ?? '/',
+    },
+    historyApiFallback: {
+      // Paths with dots should still use the history fallback.
+      // See https://github.com/facebookincubator/create-react-app/issues/387.
+      disableDotRule: true,
+    },
+    https: url.protocol === 'https:',
+    host,
+    port,
+    proxy: pkg.proxy,
+    // When the dev server is behind a proxy, the host and public hostname differ
+    allowedHosts: [url.hostname],
+  });
 
   await new Promise<void>((resolve, reject) => {
     server.listen(port, host, (err?: Error) => {
