@@ -51,6 +51,7 @@ Add a **Bazaar card** to the overview tab on the `packages/app/src/components/ca
 
 ```diff
 + import { EntityBazaarInfoCard } from '@backstage/plugin-bazaar';
+
 const overviewContent = (
 
     <Grid item md={8} xs={12}>
