@@ -15,31 +15,16 @@
  */
 
 import { useAnalyticsContext } from './AnalyticsContext';
-import {
-  analyticsApiRef,
-  AnalyticsTracker,
-} from '../apis/definitions/AnalyticsApi';
-import { useApi } from '../apis';
+import { analyticsApiRef, AnalyticsTracker, useApi } from '../apis';
+import { useRef } from 'react';
+import { Tracker } from './Tracker';
 
 function useTracker(): AnalyticsTracker {
   const analyticsApi = useApi(analyticsApiRef);
+  const tracker = useRef(new Tracker(analyticsApi));
   const context = useAnalyticsContext();
-  return {
-    captureEvent: (action, subject, { value, attributes } = {}) => {
-      try {
-        analyticsApi.captureEvent({
-          action,
-          subject,
-          value,
-          attributes,
-          context,
-        });
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn('Error during analytics event capture. %o', e);
-      }
-    },
-  };
+  tracker.current.setContext(context);
+  return tracker.current;
 }
 
 /**

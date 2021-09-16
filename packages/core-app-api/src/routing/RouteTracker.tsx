@@ -99,8 +99,7 @@ const TrackNavigation = ({
 
   useEffect(() => {
     analytics.captureEvent('navigate', `${pathname}${search}${hash}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, search, hash]);
+  }, [analytics, pathname, search, hash]);
 
   return null;
 };
