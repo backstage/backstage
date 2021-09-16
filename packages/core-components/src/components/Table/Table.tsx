@@ -364,14 +364,6 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
   }, [data, selectedFilters, getFieldByTitle]);
 
-  // Check for deprecated checkbox-tree filter
-  useEffect(() => {
-    if (filters?.some(filter => filter.type === 'checkbox-tree')) {
-      // eslint-disable-next-line no-console
-      console.warn('"checkbox-tree" filter type is deprecated');
-    }
-  }, [filters]);
-
   const constructFilters = (
     filterConfig: TableFilter[],
     dataValue: any[] | undefined,
