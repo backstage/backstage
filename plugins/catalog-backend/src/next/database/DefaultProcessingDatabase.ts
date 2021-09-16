@@ -566,7 +566,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const { entityRef } = options;
 
     const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef })
+      .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
       .update({ next_update_at: tx.fn.now() });
     if (updateResult === 0) {
       throw new ConflictError(`Failed to schedule ${entityRef} for refresh`);
