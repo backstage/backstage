@@ -527,14 +527,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const entityRefs = new Array<string>();
 
     let currentRef = entityRef.toLocaleLowerCase('en-US');
-    let depth = 0;
-    for (;;) {
-      if (depth++ > MAX_ANCESTOR_DEPTH) {
-        throw new Error(
-          `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
-        );
-      }
-
+    for (let depth = 1; depth <= MAX_ANCESTOR_DEPTH; depth += 1) {
       const rows = await tx<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       )
@@ -559,6 +552,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       entityRefs.push(parentRef);
       currentRef = parentRef;
     }
+    throw new Error(
+      `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
+    );
   }
 
   async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
