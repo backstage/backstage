@@ -1,5 +1,15 @@
 # @backstage/plugin-newrelic
 
+## 0.3.4
+
+### Patch Changes
+
+- 52a5a46372: Added pagination and searching to the table
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.3.3
 
 ### Patch Changes

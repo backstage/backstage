@@ -1,7 +1,7 @@
 {
   "name": "@backstage/integration",
   "description": "Helpers for managing integrations towards external systems",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -38,7 +38,7 @@
     "luxon": "^2.0.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.10",
+    "@backstage/cli": "^0.7.12",
     "@backstage/config-loader": "^0.6.7",
     "@backstage/test-utils": "^0.1.17",
     "@types/jest": "^26.0.7",
