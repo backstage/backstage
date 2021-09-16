@@ -23,7 +23,7 @@ import { Link, LinkProps } from '../Link';
 
 type Props = MaterialButtonProps & Omit<LinkProps, 'variant' | 'color'>;
 
-declare function ButtonType(props: Props): JSX.Element;
+// declare function ButtonType(props: Props): JSX.Element;
 
 /**
  * Thin wrapper on top of material-ui's Button component
@@ -38,4 +38,4 @@ const ActualButton = React.forwardRef<any, Props>((props, ref) => (
 //               The first type to be exported gets priority, but it will
 //               be thrown away when compiling to JS.
 // @ts-ignore
-export { ButtonType as Button, ActualButton as Button };
+export { ActualButton as Button };

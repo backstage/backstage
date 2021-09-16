@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@backstage/theme": "^0.2.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^6.3.4",

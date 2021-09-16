@@ -30,26 +30,62 @@ type TransformOptions = {
 export const transforms = (options: TransformOptions): Transforms => {
   const { isDev } = options;
 
-  const extraTransforms = isDev ? ['react-hot-loader'] : [];
+  const extraTransforms = isDev ? [] : [];
 
   const loaders = [
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['typescript', 'jsx', ...extraTransforms],
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: require.resolve('swc-loader'),
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'typescript',
+                tsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  // swc-loader will check whether webpack mode is 'development'
+                  // and set this automatically starting from 0.1.13. You could also set it yourself.
+                  // swc won't enable fast refresh when development is false
+                  runtime: 'automatic',
+                  refresh: true,
+                },
+              },
+            },
+          },
+        },
+      ].filter(Boolean),
     },
     {
       test: /\.(jsx?|mjs)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['jsx', ...extraTransforms],
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: require.resolve('swc-loader'),
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  // swc-loader will check whether webpack mode is 'development'
+                  // and set this automatically starting from 0.1.13. You could also set it yourself.
+                  // swc won't enable fast refresh when development is false
+                  runtime: 'automatic',
+                  refresh: true,
+                },
+              },
+            },
+          },
+        },
+      ].filter(Boolean),
     },
     {
       test: /\.m?js/,
@@ -123,7 +159,7 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new webpack.HotModuleReplacementPlugin());
+    // plugins.push(new webpack.HotModuleReplacementPlugin());
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

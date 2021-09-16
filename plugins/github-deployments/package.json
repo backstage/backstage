@@ -34,8 +34,8 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/graphql": "^4.5.8",
     "luxon": "^2.0.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-use": "^17.2.4"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 app:
-  title: Backstage Example App
+  title: Backstage Example Ap
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:

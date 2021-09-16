@@ -31,7 +31,7 @@ export type LinkProps = MaterialLinkProps &
     component?: ElementType<any>;
   };
 
-declare function LinkType(props: LinkProps): JSX.Element;
+// declare function LinkType(props: LinkProps): JSX.Element;
 
 /**
  * Thin wrapper on top of material-ui's Link component
@@ -60,4 +60,4 @@ const ActualLink = React.forwardRef<any, LinkProps>((props, ref) => {
 //               The first type to be exported gets priority, but it will
 //               be thrown away when compiling to JS.
 // @ts-ignore
-export { LinkType as Link, ActualLink as Link };
+export { ActualLink as Link };
