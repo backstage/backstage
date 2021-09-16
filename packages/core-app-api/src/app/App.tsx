@@ -23,7 +23,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { createRoutesFromChildren, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   ApiProvider,
@@ -368,7 +368,7 @@ export class PrivateAppImpl implements BackstageApp {
 
         return (
           <RouterComponent>
-            <RouteTracker objects={createRoutesFromChildren(children)} />
+            <RouteTracker tree={children} />
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />
             </Routes>
@@ -378,7 +378,7 @@ export class PrivateAppImpl implements BackstageApp {
 
       return (
         <RouterComponent>
-          <RouteTracker objects={createRoutesFromChildren(children)} />
+          <RouteTracker tree={children} />
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />

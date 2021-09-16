@@ -32,6 +32,7 @@ import {
   createPlugin,
   RouteRef,
   attachComponentData,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
@@ -98,6 +99,7 @@ function routeObj(
   refs: RouteRef[],
   children: any[] = [],
   type: 'mounted' | 'gathered' = 'mounted',
+  backstagePlugin?: BackstagePlugin,
 ) {
   return {
     path: path,
@@ -113,6 +115,7 @@ function routeObj(
       },
       ...children,
     ],
+    plugin: backstagePlugin,
   };
 }
 
@@ -186,7 +189,7 @@ describe('discovery', () => {
           routeObj('/blop', [ref5]),
         ],
       ),
-      routeObj('/divsoup', [ref4]),
+      routeObj('/divsoup', [ref4], undefined, undefined, plugin),
     ]);
   });
 

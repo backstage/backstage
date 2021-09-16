@@ -14,70 +14,51 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { matchRoutes, useLocation } from 'react-router-dom';
 import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-} from 'react-router-dom';
-import {
-  BackstagePlugin,
   useAnalytics,
-  getComponentData,
   AnalyticsContext,
   CommonAnalyticsContext,
+  RouteRef,
 } from '@backstage/core-plugin-api';
-
-type RouteObjects = ReturnType<typeof createRoutesFromChildren>;
+import { routeObjectCollector } from './collectors';
+import {
+  childDiscoverer,
+  routeElementDiscoverer,
+  traverseElementTree,
+} from '../extensions/traversal';
+import { BackstageRouteObject } from './types';
 
 /**
- * Returns an extension context given the current pathname and a RouteObject
- * that defines all registered routes in react.
- *
- * If no exact match is found, path parts are stripped away, one-by-one, until
- * a parent-level path matches a route.
+ * Returns an extension context given the current pathname and a list of
+ * Backstage route objects.
  */
 const getExtensionContext = (
   pathname: string,
-  routes: RouteObjects,
+  routes: BackstageRouteObject[],
 ): CommonAnalyticsContext | {} => {
   try {
-    const cleanPath = pathname.replace(/\/+$/, '');
     const matches = matchRoutes(routes, { pathname });
-    const RouteElement = matches
-      ?.filter(match => {
-        const pathsMatch = match.pathname.replace(/\/+$/, '') === cleanPath;
-        const hasRoutableElement = !!(match.route.element as React.ReactElement)
-          ?.props?.element;
-        return pathsMatch && hasRoutableElement;
-      })
-      .pop()?.route?.element;
-    const RoutableElement = (RouteElement as React.ReactElement)?.props
-      ?.element;
+    const routeObject = matches
+      ?.filter(
+        match => (match?.route as BackstageRouteObject).routeRefs?.size > 0,
+      )
+      .pop()?.route as BackstageRouteObject;
 
-    if (RoutableElement) {
-      const plugin: BackstagePlugin | undefined = getComponentData(
-        RoutableElement,
-        'core.plugin',
-      );
-      const mountPoint: { id?: string } | undefined = getComponentData(
-        RoutableElement,
-        'core.mountPoint',
-      );
-      if (plugin && mountPoint) {
-        return {
-          pluginId: plugin.getId(),
-          extension: 'App',
-          routeRef: mountPoint?.id || '',
-        };
-      }
+    if (!routeObject) {
+      return {};
     }
 
-    // Try again, one path-level shallower.
-    const nextLevelPath = cleanPath.split('/').slice(0, -1).join('/');
-    return nextLevelPath !== ''
-      ? getExtensionContext(nextLevelPath, routes)
-      : {};
+    const routeRef = routeObject.routeRefs.values().next().value as
+      | RouteRef
+      | undefined;
+
+    return {
+      extension: 'App',
+      pluginId: routeObject.plugin?.getId() || 'root',
+      routeRef: (routeRef as { id?: string }).id,
+    };
   } catch {
     return {};
   }
@@ -108,12 +89,20 @@ const TrackNavigation = ({
  * Logs a "navigate" event with appropriate plugin-level analytics context
  * attributes each time the user navigates to a page.
  */
-export const RouteTracker = ({ objects }: { objects: RouteObjects }) => {
+export const RouteTracker = ({ tree }: { tree: React.ReactNode }) => {
   const { pathname, search, hash } = useLocation();
-  const attributes = getExtensionContext(pathname, objects);
+  const { routeObjects } = useMemo(() => {
+    return traverseElementTree({
+      root: tree,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routeObjects: routeObjectCollector,
+      },
+    });
+  }, [tree]);
 
   return (
-    <AnalyticsContext attributes={attributes}>
+    <AnalyticsContext attributes={getExtensionContext(pathname, routeObjects)}>
       <TrackNavigation pathname={pathname} search={search} hash={hash} />
     </AnalyticsContext>
   );
