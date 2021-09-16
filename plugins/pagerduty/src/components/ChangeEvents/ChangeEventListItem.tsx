@@ -51,7 +51,7 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
   const classes = useStyles();
   const duration =
     new Date().getTime() - new Date(changeEvent.timestamp).getTime();
-  const changed_at = DateTime.local()
+  const changedAt = DateTime.local()
     .minus(Duration.fromMillis(duration))
     .toRelative({ locale: 'en' });
   let externalLinkElem = null;
@@ -80,13 +80,13 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
         }}
         secondary={
           <Typography variant="body2" color="textSecondary">
-            Triggered from {changeEvent.source} {changed_at}.
+            Triggered from {changeEvent.source} {changedAt}.
           </Typography>
         }
       />
       <ListItemSecondaryAction>
         {externalLinkElem}
-        <Tooltip title="View in Pagerduty" placement="top">
+        <Tooltip title="View in PagerDuty" placement="top">
           <IconButton
             component={Link}
             to={changeEvent.html_url}

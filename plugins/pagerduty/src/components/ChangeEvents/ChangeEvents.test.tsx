@@ -60,7 +60,7 @@ describe('Incidents', () => {
                 },
               ],
               summary: 'summary of event',
-              timestamp: '5 minutes',
+              timestamp: '2020-07-17T08:42:58.315+0000',
             },
             {
               id: 'id2',
@@ -73,7 +73,7 @@ describe('Incidents', () => {
                 },
               ],
               summary: 'sum of EVENT',
-              timestamp: '20 minutes',
+              timestamp: '2020-07-18T08:42:58.315+0000',
             },
           ] as ChangeEvent[],
       );
@@ -87,8 +87,6 @@ describe('Incidents', () => {
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('summary of event')).toBeInTheDocument();
     expect(getByText('sum of EVENT')).toBeInTheDocument();
-    expect(getByText('5 minutes')).toBeInTheDocument();
-    expect(getByText('20 minutes')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
     expect(getAllByTitle('View in PagerDuty').length).toEqual(2);
