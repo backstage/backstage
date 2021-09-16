@@ -20,6 +20,7 @@ import {
   createPlugin,
   createRoutableExtension,
   identityApiRef,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import { bazaarApiRef, BazaarClient } from './api';
 
@@ -33,8 +34,10 @@ export const bazaarPlugin = createPlugin({
       api: bazaarApiRef,
       deps: {
         identityApi: identityApiRef,
+        discoveryApi: discoveryApiRef,
       },
-      factory: ({ identityApi }) => new BazaarClient({ identityApi }),
+      factory: ({ identityApi, discoveryApi }) =>
+        new BazaarClient({ identityApi, discoveryApi }),
     }),
   ],
 });

@@ -27,7 +27,7 @@ import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { Entity, EntityRef } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
@@ -52,9 +52,6 @@ export const SortView = () => {
   const [bazaarProjects, setBazaarProjects] = useState<BazaarProject[]>([]);
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const baseUrl = useApi(configApiRef)
-    .getConfig('backend')
-    .getString('baseUrl');
 
   const compareProjectsByDate = (
     a: BazaarProject,
@@ -78,7 +75,7 @@ export const SortView = () => {
       fields: ['apiVersion', 'kind', 'metadata', 'spec'],
     });
 
-    const response = await bazaarApi.getEntities(baseUrl);
+    const response = await bazaarApi.getEntities();
     const dbProjects: BazaarProject[] = [];
     const bazaarProjectRefs: string[] = [];
 
@@ -94,7 +91,7 @@ export const SortView = () => {
       bazaarProjectRefs.push(project.entity_ref);
     });
 
-    setBazaarMembers(await bazaarApi.getMemberCounts(dbProjects, baseUrl));
+    setBazaarMembers(await bazaarApi.getMemberCounts(dbProjects));
     setBazaarProjects(dbProjects);
     setCatalogEntities(
       entities.items.filter((entity: Entity) => {

@@ -30,7 +30,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import { Entity } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { bazaarApiRef } from '../../api';
 
 const styles = (theme: Theme) =>
@@ -101,10 +101,6 @@ export const DeleteProjectDialog = ({
   handleClose,
   setIsBazaar,
 }: Props) => {
-  const baseUrl = useApi(configApiRef)
-    .getConfig('backend')
-    .getString('baseUrl');
-
   const handleCloseAndClear = () => {
     handleClose();
   };
@@ -112,7 +108,7 @@ export const DeleteProjectDialog = ({
   const bazaarApi = useApi(bazaarApiRef);
 
   const handleSubmit = async () => {
-    await bazaarApi.deleteEntity(baseUrl, entity);
+    await bazaarApi.deleteEntity(entity);
     setIsBazaar(false);
     handleCloseAndClear();
   };

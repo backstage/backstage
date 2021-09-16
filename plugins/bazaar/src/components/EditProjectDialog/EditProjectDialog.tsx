@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { BazaarProject, FormValues } from '../../types';
 import { bazaarApiRef } from '../../api';
@@ -37,10 +37,6 @@ export const EditProjectDialog = ({
   open,
   handleClose,
 }: Props) => {
-  const baseUrl = useApi(configApiRef)
-    .getConfig('backend')
-    .getString('baseUrl');
-
   const [defaultValues, setDefaultValues] = useState<FormValues>({
     announcement: bazaarProject.announcement,
     status: bazaarProject.status,
@@ -59,7 +55,6 @@ export const EditProjectDialog = ({
     const formValues = getValues();
 
     const updateResponse = await bazaarApi.updateMetadata(
-      baseUrl,
       entity!,
       entity.metadata.name,
       formValues.announcement,

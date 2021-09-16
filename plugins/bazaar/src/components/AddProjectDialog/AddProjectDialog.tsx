@@ -17,7 +17,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { SubmitHandler } from 'react-hook-form';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { ProjectSelector } from '../ProjectSelector';
 import { BazaarProject, FormValues, Status } from '../../types';
@@ -39,9 +39,6 @@ export const AddProjectDialog = ({
   setCatalogEntities,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
-  const baseUrl = useApi(configApiRef)
-    .getConfig('backend')
-    .getString('baseUrl');
   const [selectedEntity, setSelectedEntity] = useState(
     catalogEntities ? catalogEntities[0] : null,
   );
@@ -83,7 +80,6 @@ export const AddProjectDialog = ({
     });
 
     await bazaarApi.updateMetadata(
-      baseUrl,
       selectedEntity!,
       selectedEntity!.metadata.name,
       formValues.announcement,

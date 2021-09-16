@@ -47,11 +47,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { EditProjectDialog } from '../EditProjectDialog';
 import { DeleteProjectDialog } from '../DeleteProjectDialog';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import {
-  useApi,
-  identityApiRef,
-  configApiRef,
-} from '@backstage/core-plugin-api';
+import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
@@ -101,12 +97,8 @@ export const EntityBazaarInfoCard = () => {
   });
   const [isBazaar, setIsBazaar] = useState(false);
 
-  const baseUrl = useApi(configApiRef)
-    .getConfig('backend')
-    .getString('baseUrl');
-
   const getInitMemberStatus = async () => {
-    const response = await bazaarApi.getMembers(baseUrl, entity);
+    const response = await bazaarApi.getMembers(entity);
     const dbMembers = response.data.map((obj: any) => {
       const member: Member = {
         userId: obj.user_id,
@@ -128,7 +120,7 @@ export const EntityBazaarInfoCard = () => {
   };
 
   const getMetadata = async () => {
-    const response = await bazaarApi.getMetadata(baseUrl, entity);
+    const response = await bazaarApi.getMetadata(entity);
 
     if (response.status !== 404) {
       setIsBazaar(true);
@@ -181,14 +173,14 @@ export const EntityBazaarInfoCard = () => {
         newMembers.sort(sortMembers);
         return newMembers;
       });
-      await bazaarApi.addMember(baseUrl, entity);
+      await bazaarApi.addMember(entity);
     } else {
       setMembers(
         members.filter(
           (member: Member) => member.userId !== identity.getUserId(),
         ),
       );
-      await bazaarApi.deleteMember(baseUrl, entity);
+      await bazaarApi.deleteMember(entity);
     }
   };
 
