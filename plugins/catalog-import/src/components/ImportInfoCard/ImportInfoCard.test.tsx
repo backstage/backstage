@@ -66,7 +66,7 @@ describe('<ImportInfoCard />', () => {
   });
 
   it('renders section on GitHub discovery if supported', async () => {
-    catalogImportApi.preparePullRequest = () => ({ title: '', body: '' });
+    catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
     await act(async () => {
       const { getByText } = render(
@@ -82,7 +82,7 @@ describe('<ImportInfoCard />', () => {
   });
 
   it('renders section on pull requests if supported', async () => {
-    catalogImportApi.preparePullRequest = () => ({ title: '', body: '' });
+    catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
     await act(async () => {
       const { getByText } = render(

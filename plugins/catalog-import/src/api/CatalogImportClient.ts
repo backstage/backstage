@@ -118,10 +118,10 @@ export class CatalogImportClient implements CatalogImportApi {
     };
   }
 
-  preparePullRequest(): {
+  async preparePullRequest(): Promise<{
     title: string;
     body: string;
-  } {
+  }> {
     const appTitle =
       this.configApi.getOptionalString('app.title') ?? 'Backstage';
     const appBaseUrl = this.configApi.getString('app.baseUrl');

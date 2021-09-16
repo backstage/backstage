@@ -136,9 +136,6 @@ export function defaultGenerateStepper(
             return defaults.prepare(state, opts);
           }
 
-          const { title, body } =
-            opts.apis.catalogImportApi.preparePullRequest!();
-
           return {
             stepLabel: <StepLabel>Create Pull Request</StepLabel>,
             content: (
@@ -146,8 +143,6 @@ export function defaultGenerateStepper(
                 analyzeResult={state.analyzeResult}
                 onPrepare={state.onPrepare}
                 onGoBack={state.onGoBack}
-                defaultTitle={title}
-                defaultBody={body}
                 renderFormFields={({
                   values,
                   setValue,
