@@ -13,47 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReadableArrayResponse } from './ReadableArrayResponse';
-import path, { resolve as resolvePath } from 'path';
-import fs from 'fs-extra';
-import { FromReadableArrayOptions } from '../types';
 
-const arr: FromReadableArrayOptions = [];
-const arr2: FromReadableArrayOptions = [];
-const path1 = path.resolve(
-  'src',
-  'reading',
-  '__fixtures__',
-  'awsS3',
-  'awsS3-mock-object.yaml',
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
+import path, { resolve as resolvePath } from 'path';
+import { FromReadableArrayOptions } from '../types';
+import { ReadableArrayResponse } from './ReadableArrayResponse';
+
+const path1 = '/file1.yaml';
+const file1 = fs.readFileSync(
+  path.resolve(__filename, '../../__fixtures__/awsS3/awsS3-mock-object.yaml'),
 );
-const path2 = path.resolve(
-  'src',
-  'reading',
-  '__fixtures__',
-  'awsS3',
-  'awsS3-mock-object2.yaml',
+
+const path2 = '/file2.yaml';
+const file2 = fs.readFileSync(
+  path.resolve(__filename, '../../__fixtures__/awsS3/awsS3-mock-object2.yaml'),
 );
 
 describe('ReadableArrayResponse', () => {
+  beforeEach(() => {
+    mockFs({
+      [path1]: file1,
+      [path2]: file2,
+      '/tmp': mockFs.directory(),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   it('should read files', async () => {
-    const stream1 = fs.createReadStream(path1);
-    const stream2 = fs.createReadStream(path2);
-    arr.push({ data: stream1, path: path1 });
-    arr.push({ data: stream2, path: path2 });
+    const arr: FromReadableArrayOptions = [
+      { data: fs.createReadStream(path1), path: path1 },
+      { data: fs.createReadStream(path2), path: path2 },
+    ];
 
     const res = new ReadableArrayResponse(arr, '/tmp', 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
-      {
-        path: path1,
-        content: expect.any(Function),
-      },
-      {
-        path: path2,
-        content: expect.any(Function),
-      },
+      { path: path1, content: expect.any(Function) },
+      { path: path2, content: expect.any(Function) },
     ]);
     const contents = await Promise.all(files.map(f => f.content()));
     expect(contents.map(c => c.toString('utf8').trim())).toEqual([
@@ -63,19 +64,19 @@ describe('ReadableArrayResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
-    const stream1 = fs.createReadStream(path1);
-    const stream2 = fs.createReadStream(path2);
+    const arr: FromReadableArrayOptions = [
+      { data: fs.createReadStream(path1), path: path1 },
+      { data: fs.createReadStream(path2), path: path2 },
+    ];
 
-    arr2.push({ data: stream1, path: path1 });
-    arr2.push({ data: stream2, path: path2 });
-
-    const res = new ReadableArrayResponse(arr2, '/tmp', 'etag');
+    const res = new ReadableArrayResponse(arr, '/tmp', 'etag');
     const dir = await res.dir();
-    await expect(
-      fs.readFile(resolvePath(dir, 'awsS3-mock-object.yaml'), 'utf8'),
-    ).resolves.toBe('site_name: Test\n');
-    await expect(
-      fs.readFile(resolvePath(dir, 'awsS3-mock-object2.yaml'), 'utf8'),
-    ).resolves.toBe('site_name: Test2\n');
+
+    expect(fs.readFileSync(resolvePath(dir, 'file1.yaml'), 'utf8').trim()).toBe(
+      'site_name: Test',
+    );
+    expect(fs.readFileSync(resolvePath(dir, 'file2.yaml'), 'utf8').trim()).toBe(
+      'site_name: Test2',
+    );
   });
 });
