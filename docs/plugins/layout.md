@@ -210,3 +210,167 @@ createRoutableExtension({
   },
 });
 ```
+
+### Experiment 4
+
+Time to have a look at how cards and smaller pieces of content could be handled.
+
+#### App PoV
+
+Existing code:
+
+```tsx
+<Grid container spacing={3} alignItems="stretch">
+  {entityWarningContent}
+  <Grid item md={8} xs={12}>
+    <EntityAboutCard variant="gridItem" />
+  </Grid>
+
+  <EntitySwitch>
+    <EntitySwitch.Case if={isPagerDutyAvailable}>
+      <Grid item md={6}>
+        <EntityPagerDutyCard />
+      </Grid>
+    </EntitySwitch.Case>
+  </EntitySwitch>
+
+  <Grid item md={4} xs={12}>
+    <EntityLinksCard />
+  </Grid>
+
+  {cicdCard}
+</Grid>
+```
+
+Would it look any different?
+
+```tsx
+// It would probably make sense to have each layout provide their own primitives for how
+// to do layout within them? And they could ofc also just defer to MUI grid or other things.
+<EntityLayout.Grid container>
+  {entityWarningContent}
+  <EntityLayout.Grid item md={8} xs={12}>
+    {/* This should not need the variant prop */}
+    <EntityAboutCard />
+  </EntityLayout.Grid>
+
+  {/* Maybe there's an opportunity to flatten some of the APIs? */}
+  {/* We didn't really want the layout primitives to be too specific though, but worth it? */}
+  <EntityLayout.Grid item md={6} if={isPagerDutyAvailable}>
+    <EntityPagerDutyCard />
+  </EntityLayout.Grid>
+
+  <EntityLayout.Grid item md={4} xs={12}>
+    <EntityLinksCard />
+  </EntityLayout.Grid>
+
+  {cicdCard}
+</EntityLayout.Grid>
+```
+
+Maybe needs a bit of help to keep things less verbose?
+
+```tsx
+<TheAwesomeEntityLayoutOverviewPageGrid>
+  {({Item}) => (
+    <>
+      {entityWarningContent}
+      <Item md={8} xs={12}>
+        <EntityAboutCard />
+      </Item>
+
+      <Item md={6} if={isPagerDutyAvailable}>
+        <EntityPagerDutyCard />
+      </Item>
+
+      <Item md={4} xs={12}>
+        <EntityLinksCard />
+      </Item>
+
+      {/* This makes it tricky to spread out the definitions, so probably not a good idea */}
+      {cicdCard}
+    </>
+  )}
+</EntityLayout.Grid>
+```
+
+Although it could make a lot of sense to have a new card extension that is an
+item in itself?
+
+```tsx
+<GridLayout>
+  {/* What happens with other content like this? */}
+  {entityWarningContent}
+
+  {/*
+    This does create a tight coupling between the layout implementation and the cards.
+    Perhaps they shouldn't be called cards? Widget/Gadget/Slice/Item
+
+    There could also be multiple types of smaller pieces that could potentially be
+    handled by a layout, perhaps leave it completely open to extension?
+  */}
+  <EntityAboutCard />
+
+  <EntitySwitch>
+    <EntitySwitch.Case if={isPagerDutyAvailable}>
+      <EntityPagerDutyCard />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+
+  {/*
+    What about customizing the layout of the cards? It does feel a lot cleaner to separate
+    the concerns of layout and content as it's done currently, might not be worth to remove
+    that for this just slightly cleaner API.
+
+    A benefit of this API is that we might be able to have a more tighter coupling to the card
+    though, such as providing menu items and actions that the layout then gets to render.
+
+    Maybe it's possible to have some kind of fallback rendering of theses cards so that
+    if you put them in a regular MUI grid they get rendered as some default, but if you
+    put them in a card-aware layout the layout is able to do a lot more?
+
+    Still though, how do we manage the actual laying out of stuff?
+  */}
+  <EntityLinksCard />
+
+  {cicdCard}
+</GridLayout>
+```
+
+The home page plugin uses `Renderer`s for rendering cards in different ways,
+perhaps that's something that can be worked into layout items?
+
+```tsx
+<GridLayout>
+  {entityWarningContent}
+
+  <GridLayout.Card size="medium">
+    <EntityAboutCard />
+  </GridLayout.Card>
+
+  <EntitySwitch>
+    <EntitySwitch.Case if={isPagerDutyAvailable}>
+      <EntityPagerDutyCard />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+
+  {/* This could give us a way to group smaller things */}
+  <GridLayout.Accordion size="medium">
+    <EntityLinksCard />
+    <EntityInsightsCard />
+  </GridLayout.Accordion>
+
+  {/*
+    nesting? get a bit weird because some things are plain components and other ones
+    are renderers, could definitely cause some confusion.
+
+    Perhaps we pass renderers to cards after all? <EntityAboutCard renderer={GridLayout.CardRenderer} />
+  */}
+  <GridLayout.Column size="small">
+    <GridLayout.Card>
+      <EntityStuffCard />
+    </GridLayout.Card>
+    <GridLayout.Card>{cicdCard}</GridLayout.Card>
+  </GridLayout.Column>
+</GridLayout>
+```
