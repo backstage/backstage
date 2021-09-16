@@ -67,6 +67,7 @@ A set of use-cases that the layout system attempts to cover.
 - Generic handling of the header items, "kebab menu"
 - Proper handling of the support button. It's likely owned by the layout has
   methods for overriding who the support contacts are.
+- User defined layouts with drag-and-drop.
 
 ## API Experiments
 
@@ -502,3 +503,64 @@ function MyCardLayoutItem({ children, hints }) {
   );
 }
 ```
+
+### Experiment 6 - How to LayoutContract?
+
+#### Research
+
+First off some research on prior art...
+
+Some grid implementation, ideally we should be able to use any of these in the
+end, but it's interesting to see how each of these handle sizing of their items:
+
+- https://github.com/react-grid-layout/react-grid-Layout
+  - https://github.com/react-grid-layout/react-grid-layout#grid-item-props
+  - Uses "grid units", `x`, `y`, `w`, `h`, `minW`, `maxW`, `minH`, `maxH`
+- http://dsmorse.github.io/gridster.js/
+  - Similar to react-grid-layout
+- https://packery.metafizzy.co/
+  - Just CSS? not entirely sure to be honest
+- https://www.npmjs.com/package/@egjs/react-grid
+  - CSS sizing but with specific direction
+- https://mui.com/components/grid/
+  - Good old MUI Grid. Sized using responsive break point in divisions of 12
+  - Cross-axis size is left as an exercise to the reader - usually by nesting
+- Plain CSS grid or flex:
+  - Grid items sized by the grid itself along with spanning multiple cells
+  - Flex doesn't always fill all space, which is why MUI Grid sometimes looks
+    quite awkward.
+
+---
+
+Why not a tiling layout? 🤔
+
+Stuff like https://www.npmjs.com/package/react-collapse-pane, doesn't need to be
+editable by the user though. Could be a good first implementation as it's
+probably relatively simple to do - although responsiveness could be a problem.
+
+---
+
+We actually likely want to have layouts that behave a lot like image layouts
+that avoid shuffling content as images load, perhaps there's something there?
+
+... nope, all just dynamic detection which makes sense, otherwise you gotta just
+set the size.
+
+---
+
+Probably just start with assuming that we're filling up all space given to us,
+but then allow that to be limited (?) and queried in different ways.
+
+---
+
+So what could the actual parameters and constraints look like?
+
+Some utilities...
+
+- https://elementqueries.com/
+- https://github.com/joeybaker/react-element-query
+  - Only cares about width, should we too?
+- https://www.npmjs.com/package/react-measure
+- https://github.com/FezVrasta/react-resize-aware
+- https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver
+  - Browser standard! Would be easy to lean on this, let's try it!
