@@ -17,8 +17,11 @@
 import {
   Entity,
   EntityRelationSpec,
+  getEntityName,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  RELATION_EMITS,
+  RELATION_EMITTED_BY,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
@@ -58,6 +61,18 @@ export class ProcessorOutputCollector {
     };
   }
 
+  private createGenerationRelations(entity: Entity) {
+    this.relations.push({
+      source: getEntityName(this.parentEntity),
+      target: getEntityName(entity),
+      type: RELATION_EMITS,
+    });
+    this.relations.push({
+      target: getEntityName(this.parentEntity),
+      source: getEntityName(entity),
+      type: RELATION_EMITTED_BY,
+    });
+  }
   private receive(i: CatalogProcessorResult) {
     if (this.done) {
       this.logger.warn(
@@ -102,6 +117,7 @@ export class ProcessorOutputCollector {
       }
 
       this.deferredEntities.push({ entity, locationKey: location });
+      this.createGenerationRelations(entity);
     } else if (i.type === 'location') {
       const entity = locationSpecToLocationEntity(
         i.location,
@@ -109,6 +125,7 @@ export class ProcessorOutputCollector {
       );
       const locationKey = getEntityLocationRef(entity);
       this.deferredEntities.push({ entity, locationKey });
+      this.createGenerationRelations(entity);
     } else if (i.type === 'relation') {
       this.relations.push(i.relation);
     } else if (i.type === 'error') {
