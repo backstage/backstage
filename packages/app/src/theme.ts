@@ -42,7 +42,6 @@ const myTheme = createTheme({
       other: genPageTheme(['#112e51','#112e51'], shapes.plain),
       app: genPageTheme(['#112e51','#112e51'], shapes.plain),
       apis: genPageTheme(['#112e51','#112e51'], shapes.plain),
-      explore: genPageTheme(['#112e51','#112e51'], shapes.plain),
     },
   });
 
