@@ -72,7 +72,7 @@ A set of use-cases that the layout system attempts to cover.
 
 Now what might this look like x)
 
-### Experiment 1
+### Experiment 1 - What are layouts?
 
 #### App PoV
 
@@ -112,7 +112,7 @@ createPageExtension({
 });
 ```
 
-### Experiment 2
+### Experiment 2 - Localized layouts?
 
 #### App PoV
 
@@ -161,7 +161,7 @@ function MyPage() {
 }
 ```
 
-### Experiment 3
+### Experiment 3 - Who owns layout data?
 
 #### App PoV
 
@@ -211,7 +211,7 @@ createRoutableExtension({
 });
 ```
 
-### Experiment 4
+### Experiment 4 - What about cards?
 
 Time to have a look at how cards and smaller pieces of content could be handled.
 
@@ -375,7 +375,7 @@ perhaps that's something that can be worked into layout items?
 </GridLayout>
 ```
 
-### Experiment 5
+### Experiment 5 - How would we implement cards?
 
 Let's look at some possible card managing implementations, as that's likely to
 be the most complex part for now and we can let the further-up layout stuff grow
