@@ -377,22 +377,21 @@ describe('Integration Test', () => {
       </Provider>,
     );
 
-    // Capture initial and subsequent navigation events with expected domain
-    // values.
+    // Capture initial and subsequent navigation events with expected context.
     const capturedEvents = mockAnalyticsApi.getEvents();
     expect(capturedEvents[0]).toMatchObject({
-      verb: 'navigate',
-      noun: '/',
-      domain: {
+      action: 'navigate',
+      subject: '/',
+      context: {
         componentName: 'App',
         pluginId: 'blob',
         routeRef: 'ref-1-2',
       },
     });
     expect(capturedEvents[1]).toMatchObject({
-      verb: 'navigate',
-      noun: '/foo',
-      domain: {
+      action: 'navigate',
+      subject: '/foo',
+      context: {
         componentName: 'App',
         pluginId: 'plugin2',
         routeRef: 'ref-2',

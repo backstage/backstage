@@ -63,9 +63,9 @@ describe('<Link />', () => {
 
     // Analytics event should have been fired.
     expect(analyticsApi.getEvents()[0]).toMatchObject({
-      verb: 'click',
-      noun: '/test',
-      domain: { componentName: 'Link' },
+      action: 'click',
+      subject: '/test',
+      context: { componentName: 'Link' },
     });
 
     // Custom onClick handler should have still been fired too.

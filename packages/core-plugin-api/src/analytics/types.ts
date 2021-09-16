@@ -15,50 +15,35 @@
  */
 
 /**
- * Analytics domain covering routable extensions.
+ * Common analytics context attributes.
  */
-export type RoutableAnalyticsDomain = {
+export type CommonAnalyticsContext = {
   /**
-   * The plugin that exposed the route.
+   * The associated plugin.
    */
   pluginId: string;
 
   /**
-   * The ID of the route ref associated with the route.
+   * The ID of the associated route ref.
    */
   routeRef: string;
 
   /**
-   * The name of the component used to render the route.
+   * The name of the associated component.
    */
   componentName: string;
 };
 
 /**
- * Analytics domain covering component extensions.
+ * Allow arbitrary scalar values as context attributes too.
  */
-export type ComponentAnalyticsDomain = {
-  /**
-   * The plugin that exposed the component.
-   */
-  pluginId: string;
-
-  /**
-   * The name of the component.
-   */
-  componentName: string;
-};
-
-/**
- * Allow arbitrary scalar values as domain attributes too.
- */
-export type AnyAnalyticsDomain = {
+type AnyAnalyticsContext = {
   [param in string]: string | boolean | number | undefined;
 };
 
 /**
- * Common analytics domain attributes.
+ * Analytics context envelope.
  */
-export type AnalyticsDomainValue = Partial<
-  RoutableAnalyticsDomain & ComponentAnalyticsDomain & AnyAnalyticsDomain
+export type AnalyticsContextValue = Partial<
+  CommonAnalyticsContext & AnyAnalyticsContext
 >;

@@ -4,8 +4,8 @@
 
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
+import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
-import { DomainDecoratedAnalyticsEvent } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -23,14 +23,14 @@ import { StorageValueChange } from '@backstage/core-plugin-api';
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent({
-    verb,
-    noun,
+    action,
+    subject,
     value,
+    attributes,
     context,
-    domain,
-  }: DomainDecoratedAnalyticsEvent): void;
+  }: AnalyticsEvent): void;
   // (undocumented)
-  getEvents(): DomainDecoratedAnalyticsEvent[];
+  getEvents(): AnalyticsEvent[];
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

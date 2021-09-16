@@ -41,17 +41,20 @@ describe('useAnalytics', () => {
     mocked(useApi).mockReturnValue({ captureEvent });
 
     // Calling the captureEvent method of the underlying implementation should
-    // pass along the given event as well as the default domain.
+    // pass along the given event as well as the default context.
     const { result } = renderHook(() => useAnalytics());
-    result.current.captureEvent('a verb', 'a noun', 42, { some: 'value' });
-    expect(captureEvent).toHaveBeenCalledWith({
-      verb: 'a verb',
-      noun: 'a noun',
+    result.current.captureEvent('an action', 'a subject', {
       value: 42,
-      context: {
+      attributes: { some: 'value' },
+    });
+    expect(captureEvent).toHaveBeenCalledWith({
+      action: 'an action',
+      subject: 'a subject',
+      value: 42,
+      attributes: {
         some: 'value',
       },
-      domain: {
+      context: {
         componentName: 'App',
         pluginId: 'root',
         routeRef: 'unknown',

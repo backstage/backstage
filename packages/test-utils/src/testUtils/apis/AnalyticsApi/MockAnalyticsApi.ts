@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-import {
-  AnalyticsApi,
-  DomainDecoratedAnalyticsEvent,
-} from '@backstage/core-plugin-api';
+import { AnalyticsApi, AnalyticsEvent } from '@backstage/core-plugin-api';
 
 export class MockAnalyticsApi implements AnalyticsApi {
-  private events: DomainDecoratedAnalyticsEvent[] = [];
+  private events: AnalyticsEvent[] = [];
 
   captureEvent({
-    verb,
-    noun,
+    action,
+    subject,
     value,
+    attributes,
     context,
-    domain,
-  }: DomainDecoratedAnalyticsEvent) {
+  }: AnalyticsEvent) {
     this.events.push({
-      verb,
-      noun,
-      domain,
+      action,
+      subject,
+      context,
       ...(value !== undefined ? { value } : {}),
-      ...(context !== undefined ? { context } : {}),
+      ...(attributes !== undefined ? { attributes } : {}),
     });
   }
 
-  getEvents(): DomainDecoratedAnalyticsEvent[] {
+  getEvents(): AnalyticsEvent[] {
     return this.events;
   }
 }

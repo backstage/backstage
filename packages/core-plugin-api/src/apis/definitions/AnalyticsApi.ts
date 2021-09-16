@@ -15,20 +15,18 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { AnalyticsDomainValue } from '../../analytics/types';
+import { AnalyticsContextValue } from '../../analytics/types';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
  * how users of a Backstage instance are using its features.
- *
- * Note that attributes about the Backstage user or about the plugin tracking
- * the event are inferred and captured separately on the Analytics Domain and
- * do not need to be passed on the event itself.
  */
 export type AnalyticsEvent = {
   /**
    * A string that identifies the event being tracked by the type of action the
-   * event represents. Examples include:
+   * event represents. Be careful not to encode extra metadata in this string
+   * that should instead be placed in the Analytics Context or attributes.
+   * Examples include:
    *
    * - view
    * - click
@@ -37,18 +35,18 @@ export type AnalyticsEvent = {
    * - hover
    * - scroll
    */
-  verb: string;
+  action: string;
 
   /**
-   * A string that uniquely identifies the object that the verb or action is
-   * being taken on. Examples include:
+   * A string that uniquely identifies the object that the action is being
+   * taken on. Examples include:
    *
    * - The path of the page viewed
    * - The url of the link clicked
    * - The value that was filtered by
    * - The text that was searched for
    */
-  noun: string;
+  subject: string;
 
   /**
    * An optional numeric value relevant to the event that could be aggregated
@@ -57,33 +55,29 @@ export type AnalyticsEvent = {
    * - The index or position of the clicked element in an ordered list
    * - The percentage of an element that has been scrolled through
    * - The amount of time that has elapsed since a fixed point
+   * - A satisfaction score on a fixed scale
    */
   value?: number;
 
   /**
-   * Optional context with any additional dimensions or metrics that could be
-   * forwarded on to analytics systems.
+   * Optional, additional attributes (representing dimensions or metrics)
+   * specific to the event that could be forwarded on to analytics systems.
    */
-  context?: AnalyticsEventContext;
-};
+  attributes?: AnalyticsEventAttributes;
 
-/**
- * An analytics event combined with domain attributes.
- */
-export type DomainDecoratedAnalyticsEvent = AnalyticsEvent & {
   /**
-   * Domain metadata relating to where the event was captured and by whom. This
-   * could include information about the route, plugin, or component in which
-   * an event was captured.
+   * Contextual metadata relating to where the event was captured and by whom.
+   * This could include information about the route, plugin, or extension in
+   * which an event was captured.
    */
-  domain: AnalyticsDomainValue;
+  context: AnalyticsContextValue;
 };
 
 /**
  * A structure allowing other arbitrary metadata to be provided by analytics
  * event emitters.
  */
-export type AnalyticsEventContext = {
+export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
 };
 
@@ -93,10 +87,12 @@ export type AnalyticsEventContext = {
  */
 export type AnalyticsTracker = {
   captureEvent: (
-    verb: string,
-    noun: string,
-    value?: number,
-    context?: AnalyticsEventContext,
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
   ) => void;
 };
 
@@ -112,7 +108,7 @@ export type AnalyticsApi = {
    * Primary event handler responsible for compiling and forwarding events to
    * an analytics system.
    */
-  captureEvent(event: DomainDecoratedAnalyticsEvent): void;
+  captureEvent(event: AnalyticsEvent): void;
 };
 
 export const analyticsApiRef: ApiRef<AnalyticsApi> = createApiRef({

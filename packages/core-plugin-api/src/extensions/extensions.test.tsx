@@ -17,7 +17,7 @@
 import { withLogCollector } from '@backstage/test-utils-core';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { useAnalyticsDomain } from '../analytics/AnalyticsDomain';
+import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';
 import { createRouteRef } from '../routing';
@@ -109,19 +109,19 @@ describe('extensions', () => {
     expect(errors[0]).toMatch('Test error');
   });
 
-  it('should wrap extended component with analytics domain', async () => {
-    const DomainSpyExtension = plugin.provide(
+  it('should wrap extended component with analytics context', async () => {
+    const AnalyticsSpyExtension = plugin.provide(
       createReactExtension({
-        name: 'DomainSpy',
+        name: 'AnalyticsSpy',
         component: {
           sync: () => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            const domain = useAnalyticsDomain();
+            const context = useAnalyticsContext();
             return (
               <>
-                <div data-testid="plugin-id">{domain.pluginId}</div>
-                <div data-testid="route-ref">{domain.routeRef}</div>
-                <div data-testid="component-name">{domain.componentName}</div>
+                <div data-testid="plugin-id">{context.pluginId}</div>
+                <div data-testid="route-ref">{context.routeRef}</div>
+                <div data-testid="component-name">{context.componentName}</div>
               </>
             );
           },
@@ -130,10 +130,12 @@ describe('extensions', () => {
       }),
     );
 
-    const result = render(<DomainSpyExtension />);
+    const result = render(<AnalyticsSpyExtension />);
 
     expect(result.getByTestId('plugin-id')).toHaveTextContent('my-plugin');
     expect(result.getByTestId('route-ref')).toHaveTextContent('some-ref');
-    expect(result.getByTestId('component-name')).toHaveTextContent('DomainSpy');
+    expect(result.getByTestId('component-name')).toHaveTextContent(
+      'AnalyticsSpy',
+    );
   });
 });

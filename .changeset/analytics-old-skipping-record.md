@@ -9,14 +9,14 @@ Backstage is being used. The API consists of the following:
 - `useAnalytics()`, a hook to be used inside plugin components which retrieves
   an Analytics Tracker.
 - `tracker.captureEvent()`, a method on the tracker used to instrument key
-  events. The method expects a verb (the action performed), a noun (a unique
-  identifier of the object the action is being taken on), and optionally a
-  numeric metric/value.
-- `<AnalyticsDomain />`, a way to declaratively attach additional information
+  events. The method expects an action (the event name) and a subject (a unique
+  identifier of the object the action is being taken on).
+- `<AnalyticsContext />`, a way to declaratively attach additional information
   to any/all events captured in the underlying React tree. There is also a
-  `withAnalyticsDomain()` HOC utility.
-- The `tracker.captureEvent()` method also accepts a `context` object for
-  optionally providing additional run-time information about an event.
+  `withAnalyticsContext()` HOC utility.
+- The `tracker.captureEvent()` method also accepts an `attributes` option for
+  providing additional run-time information about an event, as well as a
+  `value` option for capturing a numeric/metric value.
 
 By default, captured events are not sent anywhere. In order to collect and
 redirect events to an analytics system, the `analyticsApi` will need to be

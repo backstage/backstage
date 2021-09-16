@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export { AnalyticsDomain, withAnalyticsDomain } from './AnalyticsDomain';
-export type {
-  AnalyticsDomainValue,
-  AnyAnalyticsDomain,
-  ComponentAnalyticsDomain,
-  RoutableAnalyticsDomain,
-} from './types';
+export { AnalyticsContext, withAnalyticsContext } from './AnalyticsContext';
+export type { AnalyticsContextValue, CommonAnalyticsContext } from './types';
 export { useAnalytics } from './useAnalytics';

@@ -45,7 +45,7 @@ export interface Config {
         testMode?: boolean;
 
         /**
-         * Configuration informing how Analytics Domain and Event Context
+         * Configuration informing how Analytics Context and Event Attributes
          * metadata will be captured in Google Analytics.
          */
         customDimensionsMetrics?: Array<{
@@ -67,21 +67,20 @@ export interface Config {
 
           /**
            * Specifies whether the desired value lives as an attribute on the
-           * Analytics Domain or the Event's Context.
+           * Analytics Context or the Event's Attributes.
            *
            * @visibility frontend
            */
-          source: 'domain' | 'context';
+          source: 'context' | 'attributes';
 
           /**
-           * The attribute on the domain or context that should be captured.
+           * The property of the context or attributes that should be captured.
            * e.g. to capture the Plugin ID associated with an event, the source
-           * should be set to "domain" and the attribute should be set to
-           * pluginId.
+           * should be set to "context" and the key should be set to pluginId.
            *
            * @visibility frontend
            */
-          attribute: string;
+          key: string;
         }>;
       };
     };

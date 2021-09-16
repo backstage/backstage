@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAnalytics, withAnalyticsDomain } from '@backstage/core-plugin-api';
+import { useAnalytics, withAnalyticsContext } from '@backstage/core-plugin-api';
 import {
   Link as MaterialLink,
   LinkProps as MaterialLinkProps,
@@ -41,7 +41,7 @@ declare function LinkType(props: LinkProps): JSX.Element;
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
  */
-const ActualLink = withAnalyticsDomain(
+const ActualLink = withAnalyticsContext(
   ({ inputRef, onClick, ...props }: LinkProps & { inputRef: OptionalRef }) => {
     const analytics = useAnalytics();
     const to = String(props.to);

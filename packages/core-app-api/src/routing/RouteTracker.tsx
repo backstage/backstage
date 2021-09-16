@@ -24,23 +24,23 @@ import {
   BackstagePlugin,
   useAnalytics,
   getComponentData,
-  AnalyticsDomain,
-  RoutableAnalyticsDomain,
+  AnalyticsContext,
+  CommonAnalyticsContext,
 } from '@backstage/core-plugin-api';
 
 type RouteObjects = ReturnType<typeof createRoutesFromChildren>;
 
 /**
- * Returns an extension domain given the current pathname and a RouteObject
+ * Returns an extension context given the current pathname and a RouteObject
  * that defines all registered routes in react.
  *
  * If no exact match is found, path parts are stripped away, one-by-one, until
  * a parent-level path matches a route.
  */
-const getExtensionDomain = (
+const getExtensionContext = (
   pathname: string,
   routes: RouteObjects,
-): RoutableAnalyticsDomain | {} => {
+): CommonAnalyticsContext | {} => {
   try {
     const cleanPath = pathname.replace(/\/+$/, '');
     const matches = matchRoutes(routes, { pathname });
@@ -76,7 +76,7 @@ const getExtensionDomain = (
     // Try again, one path-level shallower.
     const nextLevelPath = cleanPath.split('/').slice(0, -1).join('/');
     return nextLevelPath !== ''
-      ? getExtensionDomain(nextLevelPath, routes)
+      ? getExtensionContext(nextLevelPath, routes)
       : {};
   } catch {
     return {};
@@ -106,16 +106,16 @@ const TrackNavigation = ({
 };
 
 /**
- * Logs a "navigate" event with appropriate plugin-level analytics domain
+ * Logs a "navigate" event with appropriate plugin-level analytics context
  * attributes each time the user navigates to a page.
  */
 export const RouteTracker = ({ objects }: { objects: RouteObjects }) => {
   const { pathname, search, hash } = useLocation();
-  const attributes = getExtensionDomain(pathname, objects);
+  const attributes = getExtensionContext(pathname, objects);
 
   return (
-    <AnalyticsDomain attributes={attributes}>
+    <AnalyticsContext attributes={attributes}>
       <TrackNavigation pathname={pathname} search={search} hash={hash} />
-    </AnalyticsDomain>
+    </AnalyticsContext>
   );
 };

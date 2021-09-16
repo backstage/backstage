@@ -50,7 +50,7 @@ describe('GoogleAnalytics', () => {
   });
 
   describe('integration', () => {
-    const domain = {
+    const context = {
       componentName: 'App',
       pluginId: 'some-plugin',
       releaseNum: 1337,
@@ -65,26 +65,26 @@ describe('GoogleAnalytics', () => {
               {
                 type: 'dimension',
                 index: 1,
-                source: 'domain',
-                attribute: 'pluginId',
+                source: 'context',
+                key: 'pluginId',
               },
               {
                 type: 'dimension',
                 index: 2,
-                source: 'context',
-                attribute: 'extraDimension',
+                source: 'attributes',
+                key: 'extraDimension',
               },
               {
                 type: 'metric',
                 index: 1,
-                source: 'domain',
-                attribute: 'releaseNum',
+                source: 'context',
+                key: 'releaseNum',
               },
               {
                 type: 'metric',
                 index: 2,
-                source: 'context',
-                attribute: 'extraMetric',
+                source: 'attributes',
+                key: 'extraMetric',
               },
             ],
           },
@@ -95,9 +95,9 @@ describe('GoogleAnalytics', () => {
     it('tracks basic pageview', () => {
       const api = GoogleAnalytics.fromConfig(basicValidConfig);
       api.captureEvent({
-        verb: 'navigate',
-        noun: '/',
-        domain,
+        action: 'navigate',
+        subject: '/',
+        context,
       });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
@@ -115,17 +115,17 @@ describe('GoogleAnalytics', () => {
       const expectedLabel = 'on something';
       const expectedValue = 42;
       api.captureEvent({
-        verb: expectedAction,
-        noun: expectedLabel,
+        action: expectedAction,
+        subject: expectedLabel,
         value: expectedValue,
-        domain,
+        context,
       });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'event',
-        eventCategory: domain.componentName,
+        eventCategory: context.componentName,
         eventAction: expectedAction,
         eventLabel: expectedLabel,
         eventValue: expectedValue,
@@ -135,17 +135,17 @@ describe('GoogleAnalytics', () => {
     it('captures configured custom dimensions/metrics on pageviews', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
       api.captureEvent({
-        verb: 'navigate',
-        noun: '/a-page',
-        domain,
+        action: 'navigate',
+        subject: '/a-page',
+        context,
       });
 
       // Expect a set command first.
       const [setCommand, setData] = ReactGA.testModeAPI.calls[1];
       expect(setCommand).toBe('set');
       expect(setData).toMatchObject({
-        dimension1: domain.pluginId,
-        metric1: domain.releaseNum,
+        dimension1: context.pluginId,
+        metric1: context.releaseNum,
       });
 
       // Followed by a send command.
@@ -164,26 +164,26 @@ describe('GoogleAnalytics', () => {
       const expectedLabel = 'some query';
       const expectedValue = 5;
       api.captureEvent({
-        verb: expectedAction,
-        noun: expectedLabel,
+        action: expectedAction,
+        subject: expectedLabel,
         value: expectedValue,
-        context: {
+        attributes: {
           extraDimension: false,
           extraMetric: 0,
         },
-        domain,
+        context,
       });
 
       const [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'event',
-        eventCategory: domain.componentName,
+        eventCategory: context.componentName,
         eventAction: expectedAction,
         eventLabel: expectedLabel,
         eventValue: expectedValue,
-        dimension1: domain.pluginId,
-        metric1: domain.releaseNum,
+        dimension1: context.pluginId,
+        metric1: context.releaseNum,
         dimension2: false,
         metric2: 0,
       });
@@ -193,12 +193,12 @@ describe('GoogleAnalytics', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
 
       api.captureEvent({
-        verb: 'verb',
-        noun: 'noun',
-        context: {
+        action: 'verb',
+        subject: 'noun',
+        attributes: {
           extraMetric: 'not a number',
         },
-        domain,
+        context,
       });
 
       const [, data] = ReactGA.testModeAPI.calls[1];

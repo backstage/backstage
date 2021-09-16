@@ -15,7 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { AnalyticsDomain } from '../analytics/AnalyticsDomain';
+import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
@@ -137,7 +137,7 @@ export function createReactExtension<
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
-              <AnalyticsDomain
+              <AnalyticsContext
                 attributes={{
                   pluginId: plugin.getId(),
                   componentName,
@@ -150,7 +150,7 @@ export function createReactExtension<
                 }}
               >
                 <Component {...props} />
-              </AnalyticsDomain>
+              </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>
         );

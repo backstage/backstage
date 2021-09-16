@@ -17,17 +17,17 @@
 import ReactGA from 'react-ga';
 import {
   AnalyticsApi,
-  AnalyticsDomainValue,
-  AnalyticsEventContext,
-  DomainDecoratedAnalyticsEvent,
+  AnalyticsContextValue,
+  AnalyticsEventAttributes,
+  AnalyticsEvent,
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 
 type CDM = {
   type: 'dimension' | 'metric';
   index: number;
-  source: 'domain' | 'context';
-  attribute: string;
+  source: 'context' | 'attributes';
+  key: string;
 };
 
 /**
@@ -79,7 +79,7 @@ export class GoogleAnalytics implements AnalyticsApi {
             type: c.getString('type') as CDM['type'],
             index: c.getNumber('index'),
             source: c.getString('source') as CDM['source'],
-            attribute: c.getString('attribute'),
+            key: c.getString('key'),
           };
         }) || [];
 
@@ -98,47 +98,45 @@ export class GoogleAnalytics implements AnalyticsApi {
    * applied as they should be (set on pageview, merged object on events).
    */
   captureEvent({
-    domain,
-    verb,
-    noun,
-    value,
     context,
-  }: DomainDecoratedAnalyticsEvent) {
-    const customMetadata = this.getCustomDimensionMetrics(domain, context);
+    action,
+    subject,
+    value,
+    attributes,
+  }: AnalyticsEvent) {
+    const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
-    if (verb === 'navigate' && domain?.componentName === 'App') {
+    if (action === 'navigate' && context?.componentName === 'App') {
       // Set any/all custom dimensions.
       if (Object.keys(customMetadata).length) {
         ReactGA.set(customMetadata);
       }
 
-      ReactGA.pageview(noun);
+      ReactGA.pageview(subject);
       return;
     }
 
     ReactGA.event({
-      category: domain.componentName || 'App',
-      action: verb,
-      label: noun,
+      category: context.componentName || 'App',
+      action,
+      label: subject,
       value,
       ...customMetadata,
     });
   }
 
   /**
-   * Returns an object of dimensions/metrics given an Analytics Domain and an
+   * Returns an object of dimensions/metrics given an Analytics Context and an
    * Event Context, e.g. { dimension1: "some value", metric8: 42 }
    */
   private getCustomDimensionMetrics(
-    domain: AnalyticsDomainValue,
-    context: AnalyticsEventContext = {},
+    context: AnalyticsContextValue,
+    attributes: AnalyticsEventAttributes = {},
   ) {
     const dataArray = this.cdmConfig
       .map(cdm => {
         const value =
-          cdm.source === 'domain'
-            ? domain[cdm.attribute]
-            : context[cdm.attribute];
+          cdm.source === 'context' ? context[cdm.key] : attributes[cdm.key];
 
         // Never pass a non-numeric value on a metric.
         if (cdm.type === 'metric' && typeof value !== 'number') {

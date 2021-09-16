@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { withAnalyticsDomain } from '@backstage/core-plugin-api';
+import { withAnalyticsContext } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 
-const DomainlessPlayground = () => {
+const ContextlessPlayground = () => {
   return (
     <>
       <Link to="#clicked">Click Here</Link>
@@ -26,4 +26,4 @@ const DomainlessPlayground = () => {
   );
 };
 
-export const Playground = withAnalyticsDomain(DomainlessPlayground, {});
+export const Playground = withAnalyticsContext(ContextlessPlayground, {});

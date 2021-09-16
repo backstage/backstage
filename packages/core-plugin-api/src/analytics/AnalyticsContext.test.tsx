@@ -18,27 +18,27 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import {
-  AnalyticsDomain,
-  useAnalyticsDomain,
-  withAnalyticsDomain,
-} from './AnalyticsDomain';
+  AnalyticsContext,
+  useAnalyticsContext,
+  withAnalyticsContext,
+} from './AnalyticsContext';
 
-const DomainSpy = () => {
-  const domain = useAnalyticsDomain();
+const AnalyticsSpy = () => {
+  const context = useAnalyticsContext();
   return (
     <>
-      <div data-testid="route-ref">{domain.routeRef}</div>
-      <div data-testid="plugin-id">{domain.pluginId}</div>
-      <div data-testid="component-name">{domain.componentName}</div>
-      <div data-testid="custom">{domain.custom}</div>
+      <div data-testid="route-ref">{context.routeRef}</div>
+      <div data-testid="plugin-id">{context.pluginId}</div>
+      <div data-testid="component-name">{context.componentName}</div>
+      <div data-testid="custom">{context.custom}</div>
     </>
   );
 };
 
-describe('AnalyticsDomain', () => {
-  describe('useAnalyticsDomain', () => {
+describe('AnalyticsContext', () => {
+  describe('useAnalyticsContext', () => {
     it('returns default values', () => {
-      const { result } = renderHook(() => useAnalyticsDomain());
+      const { result } = renderHook(() => useAnalyticsContext());
       expect(result.current).toEqual({
         componentName: 'App',
         pluginId: 'root',
@@ -47,12 +47,12 @@ describe('AnalyticsDomain', () => {
     });
   });
 
-  describe('AnalyticsDomain', () => {
-    it('uses default analytics domain', () => {
+  describe('AnalyticsContext', () => {
+    it('uses default analytics context', () => {
       const result = render(
-        <AnalyticsDomain attributes={{}}>
-          <DomainSpy />
-        </AnalyticsDomain>,
+        <AnalyticsContext attributes={{}}>
+          <AnalyticsSpy />
+        </AnalyticsContext>,
       );
 
       expect(result.getByTestId('component-name')).toHaveTextContent('App');
@@ -60,11 +60,11 @@ describe('AnalyticsDomain', () => {
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
 
-    it('uses provided analytics domain', () => {
+    it('uses provided analytics context', () => {
       const result = render(
-        <AnalyticsDomain attributes={{ pluginId: 'custom' }}>
-          <DomainSpy />
-        </AnalyticsDomain>,
+        <AnalyticsContext attributes={{ pluginId: 'custom' }}>
+          <AnalyticsSpy />
+        </AnalyticsContext>,
       );
 
       expect(result.getByTestId('component-name')).toHaveTextContent('App');
@@ -72,29 +72,33 @@ describe('AnalyticsDomain', () => {
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
 
-    it('uses nested analytics domain', () => {
+    it('uses nested analytics context', () => {
       const result = render(
-        <AnalyticsDomain attributes={{ pluginId: 'custom' }}>
-          <AnalyticsDomain attributes={{ componentName: 'DomainSpy' }}>
-            <DomainSpy />
-          </AnalyticsDomain>
-        </AnalyticsDomain>,
+        <AnalyticsContext attributes={{ pluginId: 'custom' }}>
+          <AnalyticsContext attributes={{ componentName: 'AnalyticsSpy' }}>
+            <AnalyticsSpy />
+          </AnalyticsContext>
+        </AnalyticsContext>,
       );
 
       expect(result.getByTestId('component-name')).toHaveTextContent(
-        'DomainSpy',
+        'AnalyticsSpy',
       );
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
   });
 
-  describe('withAnalyticsDomain', () => {
-    it('wraps component with analytics domain', () => {
-      const DomainSpyHOC = withAnalyticsDomain(DomainSpy, { custom: 'attr' });
-      const result = render(<DomainSpyHOC />);
+  describe('withAnalyticsContext', () => {
+    it('wraps component with analytics context', () => {
+      const AnalyticsSpyHOC = withAnalyticsContext(AnalyticsSpy, {
+        custom: 'attr',
+      });
+      const result = render(<AnalyticsSpyHOC />);
       expect(result.getByTestId('custom')).toHaveTextContent('attr');
-      expect(DomainSpyHOC.displayName).toBe('WithAnalyticsDomain(DomainSpy)');
+      expect(AnalyticsSpyHOC.displayName).toBe(
+        'WithAnalyticsContext(AnalyticsSpy)',
+      );
     });
   });
 });

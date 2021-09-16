@@ -17,40 +17,45 @@
 import { MockAnalyticsApi } from './MockAnalyticsApi';
 
 describe('MockAnalyticsApi', () => {
-  const domain = {
+  const context = {
     pluginId: 'some-plugin',
   };
 
   it('should collect events', () => {
     const api = new MockAnalyticsApi();
 
-    api.captureEvent({ verb: 'verb-1', noun: 'noun-1', domain });
-    api.captureEvent({ verb: 'verb-2', noun: 'noun-2', value: 42, domain });
+    api.captureEvent({ action: 'action-1', subject: 'subject-1', context });
     api.captureEvent({
-      verb: 'verb-3',
-      noun: 'noun-3',
+      action: 'action-2',
+      subject: 'subject-2',
+      value: 42,
+      context,
+    });
+    api.captureEvent({
+      action: 'action-3',
+      subject: 'subject-3',
       value: 1337,
-      context: { some: 'context' },
-      domain,
+      attributes: { some: 'context' },
+      context,
     });
 
     expect(api.getEvents()[0]).toMatchObject({
-      noun: 'noun-1',
-      verb: 'verb-1',
-      domain,
+      subject: 'subject-1',
+      action: 'action-1',
+      context,
     });
     expect(api.getEvents()[1]).toMatchObject({
-      noun: 'noun-2',
-      verb: 'verb-2',
+      subject: 'subject-2',
+      action: 'action-2',
       value: 42,
-      domain,
+      context,
     });
     expect(api.getEvents()[2]).toMatchObject({
-      noun: 'noun-3',
-      verb: 'verb-3',
+      subject: 'subject-3',
+      action: 'action-3',
       value: 1337,
-      domain,
-      context: {
+      context,
+      attributes: {
         some: 'context',
       },
     });

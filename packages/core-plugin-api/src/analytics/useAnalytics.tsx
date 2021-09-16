@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAnalyticsDomain } from './AnalyticsDomain';
+import { useAnalyticsContext } from './AnalyticsContext';
 import {
   analyticsApiRef,
   AnalyticsTracker,
@@ -23,16 +23,16 @@ import { useApi } from '../apis';
 
 function useTracker(): AnalyticsTracker {
   const analyticsApi = useApi(analyticsApiRef);
-  const domain = useAnalyticsDomain();
+  const context = useAnalyticsContext();
   return {
-    captureEvent: (verb, noun, value, context) => {
+    captureEvent: (action, subject, { value, attributes } = {}) => {
       try {
         analyticsApi.captureEvent({
-          verb,
-          noun,
+          action,
+          subject,
           value,
+          attributes,
           context,
-          domain,
         });
       } catch (e) {
         // eslint-disable-next-line no-console

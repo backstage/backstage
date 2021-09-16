@@ -52,8 +52,8 @@ app:
       customDimensionsMetrics:
         - type: dimension
           index: 1
-          source: domain
-          attribute: pluginId
+          source: context
+          key: pluginId
 ```
 
 You can configure additional custom dimension and metric collection by adding
@@ -66,16 +66,16 @@ app:
       customDimensionsMetrics:
         - type: dimension
           index: 1
-          source: domain
-          attribute: pluginId
+          source: context
+          key: pluginId
         - type: dimension
           index: 2
-          source: domain
-          attribute: routeRef
+          source: context
+          key: routeRef
         - type: metric
           index: 1
-          source: context
-          attribute: someEventContextAttr
+          source: attributes
+          key: someEventContextAttr
 ```
 
 ### Debugging and Testing
@@ -125,8 +125,8 @@ app:
       customDimensionsMetrics:
         - type: dimension
           index: 1
-          source: domain
-          attribute: pluginId
+          source: context
+          key: pluginId
 ```
 
 [configure-custom-dimension]: https://support.google.com/analytics/answer/2709828?hl=en#configuration

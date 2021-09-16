@@ -9,15 +9,12 @@ metadata, allowing clicks to be attributed to the plugin containing the link:
 
 ```json
 {
-  "verb": "click",
-  "noun": "/value/of-the/to-prop/passed-to-the-link",
-  "domain": {
-    "componentName": "Link",
+  "action": "click",
+  "subject": "/value/of-the/to-prop/passed-to-the-link",
+  "context": {
+    "componentName": "SomeAssociatedExtension",
     "pluginId": "plugin-in-which-link-was-clicked",
     "routeRef": "any-associated-route-ref-id"
   }
 }
 ```
-
-These events can be identified and handled by checking for the verb `click`
-and the componentName `Link`.
