@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 import { createTheme, lightTheme, genPageTheme, shapes } from '@backstage/theme';
+import { createThemeOverrides } from '@backstage/theme';
 
-/*const myTheme = createTheme({
-  palette: {
-    ...lightTheme.palette,
-    navigation: {
-      background: '#293e40',
-      indicator: '#0071bb',
-      color: '#FFFFFF',
-      selectedColor: '#FFFFFF',
-    },
-  },
-  fontFamily:
-    'Source Sans Pro,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif',
-  defaultPageTheme: 'home',
-});*/
+const overrideStyle = {
+  MuiCardHeader: {
+      root: {
+        // Reduce padding between header and content
+        paddingBottom: 0,
+        background: 'red',
+        fontSize: '30px',
+      },
+  }
+}
 
-const myTheme = createTheme({
+const VAtheme = createTheme({
+
     palette: {
       ...lightTheme.palette,
       navigation: {
@@ -42,18 +40,9 @@ const myTheme = createTheme({
     },
     fontFamily: 'Source Sans Pro,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif',
     defaultPageTheme: 'home',
-    /* below drives the header colors */
-    pageTheme: {
-      home: genPageTheme(['#112e51','#112e51'], shapes.wave),
-      documentation: genPageTheme(['#123456','#123456'], shapes.wave2),
-      tool: genPageTheme(['#123456','#123456'], shapes.round),
-      service: genPageTheme(['#123456','#123456'], shapes.wave),
-      website: genPageTheme(['#123456','#123456'], shapes.wave),
-      library: genPageTheme(['#123456','#123456'], shapes.wave),
-      other: genPageTheme(['#123456','#123456'], shapes.wave),
-      app: genPageTheme(['#123456','#123456'], shapes.wave),
-      apis: genPageTheme(['#123456','#123456'], shapes.wave),
-    },
   });
+  const overrides = createThemeOverrides(VAtheme);
+  const newTheme = { ...VAtheme, overrides }; 
+  
 
-export default myTheme;
+export default newTheme;
