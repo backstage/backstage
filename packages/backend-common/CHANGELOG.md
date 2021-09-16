@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.9.3
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- f7ad3a8925: Fix Azure `readTree` and `search` handling to properly support paths.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/integration@0.6.4
+
 ## 0.9.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/core-plugin-api
 
+## 0.1.8
+
+### Patch Changes
+
+- 671015f132: Switch to using utilities from `@backstage/version-bridge'.
+
 ## 0.1.7
 
 ### Patch Changes

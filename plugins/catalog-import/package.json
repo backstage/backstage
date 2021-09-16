@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-import",
   "description": "A Backstage plugin the helps you import entities into your catalog",
-  "version": "0.5.20",
+  "version": "0.5.21",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -33,11 +33,11 @@
   "dependencies": {
     "@backstage/catalog-client": "^0.3.18",
     "@backstage/catalog-model": "^0.9.1",
-    "@backstage/core-components": "^0.4.1",
-    "@backstage/core-plugin-api": "^0.1.7",
-    "@backstage/integration": "^0.6.3",
-    "@backstage/integration-react": "^0.1.8",
-    "@backstage/plugin-catalog-react": "^0.4.5",
+    "@backstage/core-components": "^0.4.2",
+    "@backstage/core-plugin-api": "^0.1.8",
+    "@backstage/integration": "^0.6.4",
+    "@backstage/integration-react": "^0.1.9",
+    "@backstage/plugin-catalog-react": "^0.4.6",
     "@backstage/theme": "^0.2.10",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -55,8 +55,8 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.11",
-    "@backstage/core-app-api": "^0.1.12",
+    "@backstage/cli": "^0.7.12",
+    "@backstage/core-app-api": "^0.1.13",
     "@backstage/dev-utils": "^0.2.9",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
