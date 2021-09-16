@@ -33,6 +33,8 @@ export class DefaultRefreshService implements RefreshService {
         ref.startsWith('location:'),
       );
 
+      // TODO: Refreshes are currently scheduled(as soon as possible) for execution and will therefore happen in the future.
+      // There's room for improvements here where the refresh could potentially hang or return an ID so that the user can check progress.
       if (locationAncestor) {
         await this.database.refresh(tx, {
           entityRef: locationAncestor,
