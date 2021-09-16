@@ -36,7 +36,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-  CatalogProcessingEngineRefreshOptions,
 } from './types';
 
 class Connection implements EntityProviderConnection {
@@ -238,21 +237,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       this.stopFunc();
       this.stopFunc = undefined;
     }
-  }
-
-  async refresh(options: CatalogProcessingEngineRefreshOptions) {
-    await this.processingDatabase.transaction(async tx => {
-      const { entityRefs } = await this.processingDatabase.listAncestors(tx, {
-        entityRef: options.entityRef,
-      });
-      const locationAncestor = entityRefs.find(ref =>
-        ref.startsWith('location:'),
-      );
-
-      await this.processingDatabase.refresh(tx, {
-        entityRef: locationAncestor ?? options.entityRef,
-      });
-    });
   }
 }
 

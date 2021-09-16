@@ -77,6 +77,7 @@ import {
 } from './refresh';
 import { CatalogEnvironment } from '../service/CatalogBuilder';
 import { createNextRouter } from './NextRouter';
+import { DefaultRefreshService } from './DefaultRefreshService';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -335,12 +336,14 @@ export class NextCatalogBuilder {
       locationStore,
       orchestrator,
     );
-
+    const refreshService = new DefaultRefreshService({
+      database: processingDatabase,
+    });
     const router = await createNextRouter({
       entitiesCatalog,
       locationAnalyzer,
       locationService,
-      processingEngine,
+      refreshService,
       logger,
       config,
     });

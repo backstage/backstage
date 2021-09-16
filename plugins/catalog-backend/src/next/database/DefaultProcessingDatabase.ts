@@ -550,7 +550,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         );
       }
 
-      const parentRef = rows[0].source_entity_ref;
+      const parentRef = rows.find(r => r.source_entity_ref)?.source_entity_ref;
       if (!parentRef) {
         // We've reached the top of the tree which is the entityProvider.
         // In this case we refresh the entity itself.

@@ -28,5 +28,5 @@ export type {
   CatalogProcessingEngine,
   LocationService,
   LocationStore,
-  CatalogProcessingEngineRefreshOptions,
+  RefreshOptions,
 } from './types';

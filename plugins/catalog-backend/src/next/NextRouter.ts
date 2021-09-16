@@ -34,17 +34,13 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import {
-  CatalogProcessingEngine,
-  LocationService,
-  CatalogProcessingEngineRefreshOptions,
-} from './types';
+import { RefreshService, RefreshOptions, LocationService } from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
-  processingEngine?: CatalogProcessingEngine;
+  refreshService?: RefreshService;
   logger: Logger;
   config: Config;
 }
@@ -56,7 +52,7 @@ export async function createNextRouter(
     entitiesCatalog,
     locationAnalyzer,
     locationService,
-    processingEngine,
+    refreshService,
     config,
     logger,
   } = options;
@@ -70,10 +66,10 @@ export async function createNextRouter(
     logger.info('Catalog is running in readonly mode');
   }
 
-  if (processingEngine) {
+  if (refreshService) {
     router.post('/refresh', async (req, res) => {
-      const refreshOptions: CatalogProcessingEngineRefreshOptions = req.body;
-      await processingEngine.refresh(refreshOptions);
+      const refreshOptions: RefreshOptions = req.body;
+      await refreshService.refresh(refreshOptions);
       res.status(200).send();
     });
   }

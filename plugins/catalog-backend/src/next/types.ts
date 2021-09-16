@@ -37,11 +37,29 @@ export interface LocationStore {
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
-  refresh(options: CatalogProcessingEngineRefreshOptions): Promise<void>;
 }
 
-/** @public */
-export type CatalogProcessingEngineRefreshOptions = { entityRef: string };
+/**
+ * Options for requesting a refresh of entities in the catalog.
+ *
+ * @public
+ */
+export type RefreshOptions = {
+  /** The reference to a single entity that should be refreshed */
+  entityRef: string;
+};
+
+/**
+ * A service that manages refreshes of entities in the catalog.
+ *
+ * @public
+ */
+export interface RefreshService {
+  /**
+   * Request a refresh of entities in the catalog.
+   */
+  refresh(options: RefreshOptions): Promise<void>;
+}
 
 export type EntityProviderMutation =
   | { type: 'full'; entities: DeferredEntity[] }
