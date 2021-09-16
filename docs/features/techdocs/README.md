@@ -72,7 +72,7 @@ providers are used.
 
 - TechDocs' recommended setup supports most environments (CI systems, cloud
   storage solutions, source control systems).
-- [Instructions for upgrading from Alpha to Beta](https://github.com/backstage/backstage/blob/master/docs/features/techdocs/how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
+- [Instructions for upgrading from Alpha to Beta](how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
 
 ### **Future work 🔮**
 
