@@ -526,7 +526,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const { entityRef } = options;
     const entityRefs = new Array<string>();
 
-    let currentRef = entityRef;
+    let currentRef = entityRef.toLocaleLowerCase('en-US');
     let depth = 0;
     for (;;) {
       if (depth++ > MAX_ANCESTOR_DEPTH) {
