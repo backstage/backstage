@@ -88,7 +88,7 @@ const themeOptions = createThemeOptions({
       main: '#123456',
     },
     error: {
-      main: '#123456'
+      main: '#123456',
     },
     warning: {
       main: '#123456',
@@ -105,17 +105,17 @@ const themeOptions = createThemeOptions({
     },
     banner: {
       info: '#123456',
-      error: '#123456'
-      text: '#123456'
+      error: '#123456',
+      text: '#123456',
       link: '#123456',
     },
-    errorBackground: '#123456'
-    warningBackground: '#123456'
-    infoBackground: '#123456'
+    errorBackground: '#123456',
+    warningBackground: '#123456',
+    infoBackground: '#123456',
     navigation: {
       background: '#123456',
-      indicator: '#123456'
-      color: '#123456'
+      indicator: '#123456',
+      color: '#123456',
       selectedColor: '#123456',
     },
   },
@@ -123,15 +123,15 @@ const themeOptions = createThemeOptions({
   fontFamily: 'Comic Sans',
   /* below drives the header colors */
   pageTheme: {
-    home: genPageTheme(['#123456','#123456'], shapes.wave),
-    documentation: genPageTheme(['#123456','#123456'], shapes.wave2),
-    tool: genPageTheme(['#123456','#123456'], shapes.round),
-    service: genPageTheme(['#123456','#123456'], shapes.wave),
-    website: genPageTheme(['#123456','#123456'], shapes.wave),
-    library: genPageTheme(['#123456','#123456'], shapes.wave),
-    other: genPageTheme(['#123456','#123456'], shapes.wave),
-    app: genPageTheme(['#123456','#123456'], shapes.wave),
-    apis: genPageTheme(['#123456','#123456'], shapes.wave),
+    home: genPageTheme(['#123456', '#123456'], shapes.wave),
+    documentation: genPageTheme(['#123456', '#123456'], shapes.wave2),
+    tool: genPageTheme(['#123456', '#123456'], shapes.round),
+    service: genPageTheme(['#123456', '#123456'], shapes.wave),
+    website: genPageTheme(['#123456', '#123456'], shapes.wave),
+    library: genPageTheme(['#123456', '#123456'], shapes.wave),
+    other: genPageTheme(['#123456', '#123456'], shapes.wave),
+    app: genPageTheme(['#123456', '#123456'], shapes.wave),
+    apis: genPageTheme(['#123456', '#123456'], shapes.wave),
   },
 });
 ```
