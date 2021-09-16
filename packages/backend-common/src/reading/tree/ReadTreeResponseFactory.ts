@@ -20,9 +20,11 @@ import {
   ReadTreeResponse,
   ReadTreeResponseFactoryOptions,
   ReadTreeResponseFactory,
+  FromReadableArrayOptions,
 } from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
+import { ReadableArrayResponse } from './ReadableArrayResponse';
 
 export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   static create(options: { config: Config }): DefaultReadTreeResponseFactory {
@@ -56,5 +58,11 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
       options.etag,
       options.filter,
     );
+  }
+
+  async fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse> {
+    return new ReadableArrayResponse(options, this.workDir, '');
   }
 }

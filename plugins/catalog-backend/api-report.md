@@ -158,6 +158,20 @@ export type AwsOrganizationProviderConfig = {
   roleArn?: string;
 };
 
+// Warning: (ae-missing-release-tag) "AwsS3DiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3DiscoveryProcessor implements CatalogProcessor {
+  constructor(reader: UrlReader);
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
+  ): Promise<boolean>;
+}
+
 // Warning: (ae-missing-release-tag) "BitbucketDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

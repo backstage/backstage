@@ -26,14 +26,16 @@ import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
 
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
+
 describe('AwsS3UrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
       config: new ConfigReader(config),
       logger: getVoidLogger(),
-      treeResponseFactory: DefaultReadTreeResponseFactory.create({
-        config: new ConfigReader({}),
-      }),
+      treeResponseFactory,
     });
   };
 
@@ -137,6 +139,7 @@ describe('AwsS3UrlReader', () => {
             'src',
             'reading',
             '__fixtures__',
+            'awsS3',
             'awsS3-mock-object.yaml',
           ),
         ),
@@ -153,7 +156,7 @@ describe('AwsS3UrlReader', () => {
           }),
         ),
       ),
-      s3,
+      { s3, treeResponseFactory },
     );
 
     it('returns contents of an object in a bucket', async () => {
@@ -188,6 +191,7 @@ describe('AwsS3UrlReader', () => {
             'src',
             'reading',
             '__fixtures__',
+            'awsS3',
             'awsS3-mock-object.yaml',
           ),
         ),
@@ -206,7 +210,7 @@ describe('AwsS3UrlReader', () => {
           }),
         ),
       ),
-      s3,
+      { s3, treeResponseFactory },
     );
 
     it('returns contents of an object in a bucket', async () => {
@@ -227,6 +231,56 @@ describe('AwsS3UrlReader', () => {
           `Could not retrieve file from S3: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
+    });
+  });
+  describe('readTree', () => {
+    const object: aws.S3.Types.Object = {
+      Key: 'awsS3-mock-object.yaml',
+    };
+    const objectList: aws.S3.ObjectList = [object];
+    const output: aws.S3.Types.ListObjectsV2Output = {
+      Contents: objectList,
+    };
+    AWSMock.setSDKInstance(aws);
+    AWSMock.mock('S3', 'listObjectsV2', output);
+
+    AWSMock.mock(
+      'S3',
+      'getObject',
+      Buffer.from(
+        require('fs').readFileSync(
+          path.resolve(
+            'src',
+            'reading',
+            '__fixtures__',
+            'awsS3',
+            'awsS3-mock-object.yaml',
+          ),
+        ),
+      ),
+    );
+
+    const s3 = new aws.S3();
+    const awsS3UrlReader = new AwsS3UrlReader(
+      new AwsS3Integration(
+        readAwsS3IntegrationConfig(
+          new ConfigReader({
+            host: '.amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          }),
+        ),
+      ),
+      { s3, treeResponseFactory },
+    );
+    it('returns contents of an object in a bucket', async () => {
+      const response = await awsS3UrlReader.readTree(
+        'https://test.s3.us-east-2.amazonaws.com',
+      );
+      const files = await response.files();
+      const body = await files[0].content();
+
+      expect(body.toString()).toBe('site_name: Test\n');
     });
   });
 });

@@ -109,7 +109,10 @@
       {
         "type": "subcategory",
         "label": "AWS S3",
-        "ids": ["integrations/aws-s3/locations"]
+        "ids": [
+          "integrations/aws-s3/locations",
+          "integrations/aws-s3/discovery"
+        ]
       },
       {
         "type": "subcategory",

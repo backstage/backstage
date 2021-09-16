@@ -73,6 +73,7 @@
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.29.8",
+    "aws-sdk-mock": "^5.2.1",
     "msw": "^0.29.0",
     "sqlite3": "^5.0.1",
     "supertest": "^6.1.3",
