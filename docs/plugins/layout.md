@@ -374,3 +374,131 @@ perhaps that's something that can be worked into layout items?
   </GridLayout.Column>
 </GridLayout>
 ```
+
+### Experiment 5
+
+Let's look at some possible card managing implementations, as that's likely to
+be the most complex part for now and we can let the further-up layout stuff grow
+from it.
+
+#### Core PoV
+
+```tsx
+function createCardExtension(options) {
+  // very much pseudo code, but this would be similar to the home page plugin
+  const { content, actions, settings } = await options.card;
+
+  // Perhaps we pass in parameters for laying out the content? Probably a set
+  // of minimum constraints or something like that, perhaps different types?
+  const { params: layoutParams } = options.layout;
+
+  // type?
+  if (layoutParams.type === 'page') {
+    throw new Error("A card can't be a page!");
+  }
+
+  // What contract are we actually trying to create here and how open can we keep it?
+  // does the core need to know about all possible layout parameters? - probably.
+  // The layout parameters would be produced by the implementer of a card and consumed
+  // by the layout in order to give the correct space to a card.
+  //
+  // What do they actually need to contain and what established stuff can we lean on?
+  // Maybe we can select a subset of DOM styles?
+  //
+  // Either way we want them to be evolvable over time
+
+  // Prolly just a placeholder component that is consumed by the layout using element traversal
+  const Extension = () => null;
+
+  // Attach whatever we need, may want to wrap this up a bit with types and whatnot
+  attachComponentData(Extension, 'core.layout', {
+    params: layoutParams,
+    content,
+    actions,
+    settings,
+  });
+}
+```
+
+#### Layout PoV
+
+```tsx
+function MyLayout({ children }) {
+  return (
+    <Main>
+      <Header />
+      <Content>{children}</Content>
+    </Main>
+  );
+}
+
+function MyTabbedLayout({ children }) {
+  const { routes, content } = useLayoutRoutes(children);
+  return (
+    <Main>
+      <Header />
+      <RoutedTabs routes={routes} />
+      <Content>{content}</Content>
+    </Main>
+  );
+}
+
+function MyCardLayout({ children }) {
+  const cardLayouts = useElementFilter(children, collection =>
+    collection
+      .selectByComponentData({ key: 'core.layout', strictError: 'not a card' })
+      .findComponentData({ key: 'core.layout' }),
+  );
+  // what now? it's be a pain to reconstruct things at this point, needs a different approach
+
+  // Maybe this is just more of a context provider instead?
+  return (
+    <MyCardLayoutContext.Provider value={/* ... */}>
+      {/* Could serve as the layout base too */}
+      <Grid container spacing={3}>
+        {/*
+          Then the children could be grid items, but really this is up to each layout
+          to implement in any way they want. The important contract is really between
+          the layout and the content.
+        */}
+        {children}
+      </Grid>
+    </MyCardLayoutContext.Provider>
+  );
+}
+
+function MyCardLayoutItem({ children, hints }) {
+  // Pick out the card extension and make sure it's sane
+  const layouts = useElementFilter(children, c =>
+    c.findComponentData({ key: 'core.layout' }),
+  );
+  if (layouts.length !== 1) {
+    throw new Error('only one card!');
+  }
+  const [layout] = layouts;
+  if (layout.params.type !== 'card') {
+    throw new Error('gotta be a card!');
+  }
+
+  // Then the bit where we actually wire things up for display
+  return (
+    <Grid item>
+      <InfoCard actions={layout.actions} settings={layout.settings}>
+        {/*
+          Maybe something like this?
+
+          It could also be providing a context for cards to be able to
+          query about their space options etc.
+
+          This is most likely a very good point to continue further work
+          and getting more concrete. Nailing a layout contract component
+          could likely shed light on what paths we have forward.
+        */}
+        <LayoutContract constraints={layout.params} hints={hints}>
+          {layout.content}
+        </LayoutContract>
+      </InfoCard>
+    </Grid>
+  );
+}
+```
