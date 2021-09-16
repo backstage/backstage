@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { SubmitHandler } from 'react-hook-form';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
@@ -67,9 +67,7 @@ export const AddProjectDialog = ({
     const formValues = getValues();
 
     const bazaarProject: BazaarProject = {
-      entityRef: `${selectedEntity!.metadata.namespace}/${
-        selectedEntity!.kind
-      }/${selectedEntity!.metadata.name}`,
+      entityRef: stringifyEntityRef(selectedEntity!),
       name: selectedEntity!.metadata.name,
       announcement: formValues.announcement,
       status: formValues.status,

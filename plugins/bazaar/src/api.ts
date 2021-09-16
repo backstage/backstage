@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { createApiRef, IdentityApi } from '@backstage/core-plugin-api';
 import { BazaarProject, Status } from './types';
-
-export const getEntityRef = (entity: Entity) => {
-  return `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-};
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -41,7 +41,7 @@ export interface BazaarApi {
   getMemberCounts(
     bazaarProjects: BazaarProject[],
     baseUrl: string,
-  ): Promise<Map<string, number>>;
+  ): Promise<Map<EntityRef, number>>;
 
   getMembers(baseUrl: string, entity: Entity): Promise<any>;
 
@@ -73,7 +73,7 @@ export class BazaarClient implements BazaarApi {
     return await fetch(`${baseUrl}/api/bazaar/metadata`, {
       method: 'PUT',
       headers: {
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -89,7 +89,7 @@ export class BazaarClient implements BazaarApi {
     return await fetch(`${baseUrl}/api/bazaar/metadata`, {
       method: 'GET',
       headers: {
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
   }
@@ -97,13 +97,13 @@ export class BazaarClient implements BazaarApi {
   async getMemberCounts(
     bazaarProjects: BazaarProject[],
     baseUrl: string,
-  ): Promise<Map<string, number>> {
-    const members = new Map<string, number>();
+  ): Promise<Map<EntityRef, number>> {
+    const members = new Map<EntityRef, number>();
     for (const project of bazaarProjects) {
       const response = await fetch(`${baseUrl}/api/bazaar/members`, {
         method: 'GET',
         headers: {
-          entity_ref: project.entityRef,
+          entity_ref: project.entityRef as string,
         },
       });
 
@@ -118,7 +118,7 @@ export class BazaarClient implements BazaarApi {
     return await fetch(`${baseUrl}/api/bazaar/members`, {
       method: 'GET',
       headers: {
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     }).then(resp => resp.json());
   }
@@ -128,7 +128,7 @@ export class BazaarClient implements BazaarApi {
       method: 'PUT',
       headers: {
         user_id: this.identityApi.getUserId(),
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
   }
@@ -138,7 +138,7 @@ export class BazaarClient implements BazaarApi {
       method: 'DELETE',
       headers: {
         user_id: this.identityApi.getUserId(),
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
   }
@@ -147,7 +147,7 @@ export class BazaarClient implements BazaarApi {
     await fetch(`${baseUrl}/api/bazaar/members`, {
       method: 'DELETE',
       headers: {
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
   }
@@ -162,7 +162,7 @@ export class BazaarClient implements BazaarApi {
     await fetch(`${baseUrl}/api/bazaar/metadata`, {
       method: 'DELETE',
       headers: {
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
 
@@ -170,7 +170,7 @@ export class BazaarClient implements BazaarApi {
       method: 'DELETE',
       headers: {
         user_id: this.identityApi.getUserId(),
-        entity_ref: getEntityRef(entity),
+        entity_ref: stringifyEntityRef(entity),
       },
     });
   }

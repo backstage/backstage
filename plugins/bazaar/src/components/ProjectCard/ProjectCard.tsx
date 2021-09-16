@@ -29,6 +29,7 @@ import moment from 'moment';
 import { catalogRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BazaarProject } from '../../types';
+import { parseEntityName } from '@backstage/catalog-model';
 
 const useStyles = makeStyles({
   statusTag: {
@@ -57,9 +58,10 @@ export const ProjectCard = ({ bazaarProject, memberCount }: Props) => {
   const classes = useStyles();
   const { entityRef, name, status, updatedAt, announcement } = bazaarProject;
   const catalogLink = useRouteRef(catalogRouteRef);
+  const { namespace, kind } = parseEntityName(entityRef);
 
   return (
-    <Card key={entityRef}>
+    <Card key={entityRef as string}>
       <CardActionArea
         style={{
           height: '100%',
@@ -67,7 +69,7 @@ export const ProjectCard = ({ bazaarProject, memberCount }: Props) => {
           width: '100%',
         }}
         component={RouterLink}
-        to={`${catalogLink()}/${entityRef}`}
+        to={`${catalogLink()}/${namespace}/${kind}/${name}`}
       >
         <ItemCardHeader
           title={name}

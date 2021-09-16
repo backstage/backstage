@@ -54,7 +54,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Member, BazaarProject } from '../../types';
-import { bazaarApiRef, getEntityRef } from '../../api';
+import { bazaarApiRef } from '../../api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles({
   description: {
@@ -170,7 +171,7 @@ export const EntityBazaarInfoCard = () => {
 
     const newMember: Member = {
       userId: identity.getUserId(),
-      entityRef: getEntityRef(entity),
+      entityRef: stringifyEntityRef(entity),
       joinDate: new Date().toISOString(),
     };
 

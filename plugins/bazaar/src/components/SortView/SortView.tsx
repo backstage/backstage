@@ -26,7 +26,7 @@ import { AlertBanner } from '../AlertBanner';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
 import { useAsync } from 'react-use';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityRef } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -46,7 +46,7 @@ export const SortView = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openNoProjects, setOpenNoProjects] = useState(false);
   const [catalogEntities, setCatalogEntities] = useState<Entity[]>([]);
-  const [bazaarMembers, setBazaarMembers] = useState<Map<string, number>>(
+  const [bazaarMembers, setBazaarMembers] = useState<Map<EntityRef, number>>(
     new Map(),
   );
   const [bazaarProjects, setBazaarProjects] = useState<BazaarProject[]>([]);

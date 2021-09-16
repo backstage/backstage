@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { EntityRef } from '@backstage/catalog-model';
+
 export type Member = {
-  entityRef: string;
+  entityRef: EntityRef;
   userId: string;
   joinDate: string;
 };
@@ -23,7 +26,7 @@ export type Status = 'ongoing' | 'proposed';
 
 export type BazaarProject = {
   name: string;
-  entityRef: string;
+  entityRef: EntityRef;
   status: Status;
   announcement: string;
   updatedAt: string;

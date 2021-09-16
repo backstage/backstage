@@ -20,11 +20,12 @@ import { ProjectCard } from '../ProjectCard/ProjectCard';
 import { makeStyles, Grid } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { BazaarProject } from '../../types';
+import { EntityRef } from '@backstage/catalog-model';
 
 type Props = {
   bazaarProjects: BazaarProject[];
   sortingMethod: (arg0: BazaarProject, arg1: BazaarProject) => number;
-  bazaarMembers: Map<string, number>;
+  bazaarMembers: Map<EntityRef, number>;
 };
 
 const useStyles = makeStyles({
@@ -82,7 +83,12 @@ export const ProjectPreview = ({
             const entityRef = bazaarProject.entityRef;
 
             return (
-              <Grid key={entityRef || ''} className={classes.item} item xs={3}>
+              <Grid
+                key={(entityRef as string) || ''}
+                className={classes.item}
+                item
+                xs={3}
+              >
                 <ProjectCard
                   bazaarProject={bazaarProject}
                   key={Math.random()}
