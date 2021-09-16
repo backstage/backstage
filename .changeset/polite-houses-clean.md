@@ -15,7 +15,7 @@
 '@backstage/plugin-config-schema': patch
 '@backstage/plugin-cost-insights': patch
 '@backstage/plugin-explore': patch
-'@backstage/plugin-firehyrant': patch
+'@backstage/plugin-firehydrant': patch
 '@backstage/plugin-fossa': patch
 '@backstage/plugin-gcp-projects': patch
 '@backstage/plugin-git-release-manager': patch
