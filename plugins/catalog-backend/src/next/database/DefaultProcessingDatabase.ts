@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { ConflictError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -36,8 +36,11 @@ import {
   GetProcessableEntitiesResult,
   ProcessingDatabase,
   RefreshStateItem,
+  RefreshOptions,
   ReplaceUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
+  ListAncestorsOptions,
+  ListAncestorsResult,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -45,6 +48,7 @@ import {
 // errors in the underlying engine due to exceeding query limits, but large
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
+const MAX_ANCESTOR_DEPTH = 32;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
@@ -100,8 +104,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       entities: deferredEntities,
       sourceEntityRef: stringifyEntityRef(processedEntity),
     });
-
-    // Update fragments
 
     // Delete old relations
     await tx<DbRelationsRow>('relations')
@@ -327,6 +329,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
+  /**
+   * Add a set of deferred entities for processing.
+   * The entities will be added at the front of the processing queue.
+   */
   async addUnprocessedEntities(
     txOpaque: Transaction,
     options: AddUnprocessedEntitiesOptions,
@@ -350,6 +356,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           unprocessed_entity: serializedEntity,
           location_key: locationKey,
           last_discovery_at: tx.fn.now(),
+          // We only get to this point if a processed entity actually had any changes, or
+          // if an entity provider requested this mutation, meaning that we can safely
+          // bump the deferred entities to the front of the queue for immediate processing.
+          next_update_at: tx.fn.now(),
         })
         .where('entity_ref', entityRef)
         .andWhere(inner => {
@@ -506,6 +516,57 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           } as RefreshStateItem),
       ),
     };
+  }
+
+  async listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult> {
+    const tx = txOpaque as Knex.Transaction;
+    const { entityRef } = options;
+    const entityRefs = new Array<string>();
+
+    let currentRef = entityRef.toLocaleLowerCase('en-US');
+    for (let depth = 1; depth <= MAX_ANCESTOR_DEPTH; depth += 1) {
+      const rows = await tx<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        .where({ target_entity_ref: currentRef })
+        .select();
+
+      if (rows.length === 0) {
+        if (depth === 1) {
+          throw new NotFoundError(`Entity ${currentRef} not found`);
+        }
+        throw new NotFoundError(
+          `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
+        );
+      }
+
+      const parentRef = rows.find(r => r.source_entity_ref)?.source_entity_ref;
+      if (!parentRef) {
+        // We've reached the top of the tree which is the entityProvider.
+        // In this case we refresh the entity itself.
+        return { entityRefs };
+      }
+      entityRefs.push(parentRef);
+      currentRef = parentRef;
+    }
+    throw new Error(
+      `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
+    );
+  }
+
+  async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { entityRef } = options;
+
+    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+      .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
+      .update({ next_update_at: tx.fn.now() });
+    if (updateResult === 0) {
+      throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
+    }
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

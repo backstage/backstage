@@ -43,8 +43,8 @@ class Connection implements EntityProviderConnection {
 
   constructor(
     private readonly config: {
-      processingDatabase: ProcessingDatabase;
       id: string;
+      processingDatabase: ProcessingDatabase;
     },
   ) {}
 
@@ -60,19 +60,18 @@ class Connection implements EntityProviderConnection {
           items: mutation.entities,
         });
       });
-      return;
-    }
-
-    this.check(mutation.added.map(e => e.entity));
-    this.check(mutation.removed.map(e => e.entity));
-    await db.transaction(async tx => {
-      await db.replaceUnprocessedEntities(tx, {
-        sourceKey: this.config.id,
-        type: 'delta',
-        added: mutation.added,
-        removed: mutation.removed,
+    } else if (mutation.type === 'delta') {
+      this.check(mutation.added.map(e => e.entity));
+      this.check(mutation.removed.map(e => e.entity));
+      await db.transaction(async tx => {
+        await db.replaceUnprocessedEntities(tx, {
+          sourceKey: this.config.id,
+          type: 'delta',
+          added: mutation.added,
+          removed: mutation.removed,
+        });
       });
-    });
+    }
   }
 
   private check(entities: Entity[]) {
@@ -97,6 +96,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
+    private readonly pollingIntervalMs: number = 1000,
   ) {}
 
   async start() {
@@ -107,8 +107,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     for (const provider of this.entityProviders) {
       await provider.connect(
         new Connection({
-          processingDatabase: this.processingDatabase,
           id: provider.getProviderName(),
+          processingDatabase: this.processingDatabase,
         }),
       );
     }
@@ -116,6 +116,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     this.stopFunc = startTaskPipeline<RefreshStateItem>({
       lowWatermark: 5,
       highWatermark: 10,
+      pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
           const { items } = await this.processingDatabase.transaction(
