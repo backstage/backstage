@@ -109,3 +109,52 @@ createPageExtension({
   labels: myLabels,
 });
 ```
+
+### Experiment 2
+
+#### App PoV
+
+```tsx
+// It probably makes more sense to have the layout implemented as a provider to
+// make it easier to apply different layouts to various parts of the app.
+<MyCustomLayout>
+  <Route path="/lighthouse" element={<LighthousePage />} />
+  <Route path="/api-docs" element={<ApiExplorerPage />} />
+  {/* We could also do <LayoutProvider layout={MyCustomLayout}>, maybe this is neater? */}
+  <MyOtherCustomLayout>
+    <Route path="/gcp-projects" element={<GcpProjectsPage />} />
+  </MyOtherCustomLayout>
+</MyCustomLayout>
+```
+
+#### Layout PoV
+
+```tsx
+// If the layout components themselves need to be part of the app element tree we need to
+// wrap them up a bit. That's probably fine though as it gives us a nice place for docs
+// and type inference too. Could be either a standalone thing or an extension (or both?)
+const MyCustomLayout = createLayout({
+  component: () =>
+    import('./experiment1/MyCustomLayout').then(m => m.MyCustomLayout),
+});
+```
+
+#### Plugin PoV
+
+```tsx
+// If the layout is provided through context, should that be consumed by plugins?
+function MyPage() {
+  // what would this even be?
+  const layout = useLayout();
+
+  // Could get some resolved size information?
+  if (layout.size > 2) {
+    /// ...
+  }
+
+  // Eh, this would probably be messy af, but could maybe have potential
+  layout.provideMenuItem({
+    /* ... */
+  });
+}
+```
