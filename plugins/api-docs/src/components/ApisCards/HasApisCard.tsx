@@ -39,8 +39,8 @@ type Props = {
 const columns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
   EntityTable.columns.createOwnerColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
   createSpecApiTypeColumn(),
+  EntityTable.columns.createSpecLifecycleColumn(),
   EntityTable.columns.createMetadataDescriptionColumn(),
 ];
 

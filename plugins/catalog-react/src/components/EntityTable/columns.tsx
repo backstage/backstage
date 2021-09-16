@@ -143,6 +143,7 @@ export function createMetadataDescriptionColumn<
       <OverflowTooltip
         text={entity.metadata.description}
         placement="bottom-start"
+        line={2}
       />
     ),
     width: 'auto',
