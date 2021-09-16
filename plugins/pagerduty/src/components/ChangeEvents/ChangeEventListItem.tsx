@@ -28,6 +28,7 @@ import { DateTime, Duration } from 'luxon';
 import { ChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles<BackstageTheme>({
   denseListIcon: {
@@ -59,9 +60,8 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
     externalLinkElem = (
       <Tooltip title={text} placement="top">
         <IconButton
-          href={changeEvent.links[0].href}
-          target="_blank"
-          rel="noopener noreferrer"
+          component={Link}
+          to={changeEvent.links[0].href}
           color="primary"
         >
           <OpenInBrowserIcon />
@@ -88,9 +88,8 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
         {externalLinkElem}
         <Tooltip title="View in Pagerduty" placement="top">
           <IconButton
-            href={changeEvent.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
+            component={Link}
+            to={changeEvent.html_url}
             color="primary"
           >
             <OpenInBrowserIcon />
