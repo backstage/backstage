@@ -191,7 +191,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
 
 export type TableFilter = {
   column: string;
-  type: 'select' | 'multiple-select' | 'checkbox-tree';
+  type: 'select' | 'multiple-select' | /** @deprecated */ 'checkbox-tree';
 };
 
 export type TableState = {
@@ -419,12 +419,22 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       };
     };
 
+    const constructFilterElement = (
+      filter: TableFilter,
+    ):
+      | Without<CheckboxTreeProps, 'onChange'>
+      | Without<SelectProps, 'onChange'> => {
+      if (filter.type === 'checkbox-tree') {
+        // eslint-disable-next-line no-console
+        console.warn('"checkbox-tree" filter type is deprecated');
+        return constructCheckboxTree(filter);
+      }
+      return constructSelect(filter);
+    };
+
     return filterConfig.map(filter => ({
       type: filter.type,
-      element:
-        filter.type === 'checkbox-tree'
-          ? constructCheckboxTree(filter)
-          : constructSelect(filter),
+      element: constructFilterElement(filter),
     }));
   };
 
