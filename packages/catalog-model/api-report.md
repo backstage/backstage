@@ -430,6 +430,12 @@ export const RELATION_DEPENDENCY_OF = 'dependencyOf';
 export const RELATION_DEPENDS_ON = 'dependsOn';
 
 // @public (undocumented)
+export const RELATION_GENERATED_BY = 'generatedBy';
+
+// @public
+export const RELATION_GENERATES = 'generates';
+
+// @public (undocumented)
 export const RELATION_HAS_MEMBER = 'hasMember';
 
 // @public (undocumented)
