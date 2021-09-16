@@ -65,3 +65,47 @@ A set of use-cases that the layout system attempts to cover.
 - Switching out the card wrapping component to something else than the MUI Card
   component
 - Generic handling of the header items, "kebab menu"
+
+## API Experiments
+
+Now what might this look like x)
+
+### Experiment 1
+
+#### App PoV
+
+```tsx
+// Maybe it's possible to register a default layout in the app?
+createApp({
+  components: {
+    DefaultLayout: MyCustomLayout,
+  },
+});
+```
+
+#### Layout PoV
+
+```tsx
+// The layout being a single component might be tricky though, could need to be an extension?
+// Either way one way to implement one could be to pass in various pieces that we want to render
+function MyCustomLayout({labels, menuItems, content}) {
+  return (
+    <Layout>
+      <Header labels={labels} menuItems={menuItems}>
+      {content}
+    </Layout>
+  )
+}
+```
+
+#### Plugin PoV
+
+```tsx
+// It may be that these different layout elements call for a new extension type?
+createPageExtension({
+  component: () => import('./components/MyPage').then(m => m.MyPage),
+  // Tbh these should probably always be controlled by the app
+  menuItems: myMenuItems,
+  labels: myLabels,
+});
+```
