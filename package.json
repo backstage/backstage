@@ -21,7 +21,8 @@
     "lint:all": "lerna run lint --",
     "prettier:check": "prettier --check .",
     "create-plugin": "backstage-cli create-plugin --scope internal --no-private",
-    "remove-plugin": "backstage-cli remove-plugin"
+    "remove-plugin": "backstage-cli remove-plugin",
+    "docker-local": "sh ./scripts/start_local.sh"
   },
   "resolutions": {
     "graphql-language-service-interface": "2.8.2",
