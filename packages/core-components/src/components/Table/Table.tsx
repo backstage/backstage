@@ -365,6 +365,15 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
   }, [data, selectedFilters, getFieldByTitle]);
 
+  // Check for deprecated checkbox-tree filter
+  useEffect(() => {
+    filters?.map(filter => {
+      // eslint-disable-next-line no-console
+      if (filter.type === 'checkbox-tree')
+        console.warn('"checkbox-tree" filter type is deprecated');
+    });
+  }, [filters]);
+
   const constructFilters = (
     filterConfig: TableFilter[],
     dataValue: any[] | undefined,
@@ -419,22 +428,12 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       };
     };
 
-    const constructFilterElement = (
-      filter: TableFilter,
-    ):
-      | Without<CheckboxTreeProps, 'onChange'>
-      | Without<SelectProps, 'onChange'> => {
-      if (filter.type === 'checkbox-tree') {
-        // eslint-disable-next-line no-console
-        console.warn('"checkbox-tree" filter type is deprecated');
-        return constructCheckboxTree(filter);
-      }
-      return constructSelect(filter);
-    };
-
     return filterConfig.map(filter => ({
       type: filter.type,
-      element: constructFilterElement(filter),
+      element:
+        filter.type === 'checkbox-tree'
+          ? constructCheckboxTree(filter)
+          : constructSelect(filter),
     }));
   };
 
