@@ -20,8 +20,8 @@ import {
   getEntityName,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
-  RELATION_EMITS,
-  RELATION_EMITTED_BY,
+  RELATION_GENERATES,
+  RELATION_GENERATED_BY,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
@@ -65,12 +65,12 @@ export class ProcessorOutputCollector {
     this.relations.push({
       source: getEntityName(this.parentEntity),
       target: getEntityName(entity),
-      type: RELATION_EMITS,
+      type: RELATION_GENERATES,
     });
     this.relations.push({
       target: getEntityName(this.parentEntity),
       source: getEntityName(entity),
-      type: RELATION_EMITTED_BY,
+      type: RELATION_GENERATED_BY,
     });
   }
   private receive(i: CatalogProcessorResult) {
