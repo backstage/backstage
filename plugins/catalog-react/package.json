@@ -38,7 +38,7 @@
     "@backstage/version-bridge": "^0.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.45",
+    "@material-ui/lab": "4.0.0-alpha.57",
     "@types/react": "*",
     "jwt-decode": "^3.1.0",
     "lodash": "^4.17.15",
