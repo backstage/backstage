@@ -31,7 +31,7 @@ Creating the plugin...
 ### Reading entities from within your plugin
 
 You can access the currently selected entity using the backstage api
-`useEntity`. For example,
+[`useEntity`](../reference/plugin-catalog-react.useentity.md). For example,
 
 ```tsx
 import { useEntity } from '@backstage/plugin-catalog-react';
