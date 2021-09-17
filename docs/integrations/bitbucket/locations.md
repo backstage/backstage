@@ -31,7 +31,7 @@ a structure with up to four elements:
 - `host`: The host of the Bitbucket instance, e.g. `bitbucket.company.com`.
 - `token` (optional): An personal access token as expected by Bitbucket. Either
   an access token **or** a username + appPassword may be supplied.
-- `username`: The Bitbucket username to use in API requests. If neither a
+- `username` (optional): The Bitbucket username to use in API requests. If neither a
   username nor token are supplied, anonymous access will be used.
 - `appPassword` (optional): The password for the Bitbucket user. Only needed
   when using `username` instead of `token`.
