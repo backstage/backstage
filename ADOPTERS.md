@@ -46,3 +46,4 @@
 | [2U](https://2u.com)                                                     | [Andrew Thal](https://github.com/athal7)      | Development team home-base, promoting service discoverability, resource dependencies, and tech radar |
 | [Taxfix](https://taxfix.de/)                                                     | [Sami Ur Rehman](https://github.com/samiurrehman92)      | Developer's portal with software catalog at it's core. Hosts API Specs, Tech Docs, Tech Radar and some custom plugins.  |
 | [Busuu](https://busuu.com/)                                                     | [Adam Tester](https://github.com/adamtester)      | Developer portal with service catalog, API docs, Event docs, service templating, and cost insights.  |
+| [Loadsmart](https://loadsmart.com/)                                                     | [Loadsmart](https://github.com/loadsmart)      | Improve services visibility and operations for service owners and developers.  |
