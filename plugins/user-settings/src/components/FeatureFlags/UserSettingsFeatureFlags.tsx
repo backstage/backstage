@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { List } from '@material-ui/core';
+import { List, TextField, ListItem } from '@material-ui/core';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 
@@ -35,6 +35,7 @@ export const UserSettingsFeatureFlags = () => {
   );
 
   const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const toggleFlag = useCallback(
     (flagName: string) => {
@@ -62,16 +63,25 @@ export const UserSettingsFeatureFlags = () => {
   return (
     <InfoCard title="Feature Flags">
       <List dense>
-        {featureFlags.map(featureFlag => {
+        <ListItem>
+          <TextField
+            label="Search"
+            onChange={e => setSearchInput(e.target.value)}
+            value={searchInput}
+          />
+        </ListItem>
+        {featureFlags.map((featureFlag, index) => {
           const enabled = Boolean(state[featureFlag.name]);
 
           return (
-            <FlagItem
-              key={featureFlag.name}
-              flag={featureFlag}
-              enabled={enabled}
-              toggleHandler={toggleFlag}
-            />
+            featureFlag.name.includes(searchInput) && (
+              <FlagItem
+                key={index + 1}
+                flag={featureFlag}
+                enabled={enabled}
+                toggleHandler={toggleFlag}
+              />
+            )
           );
         })}
       </List>
