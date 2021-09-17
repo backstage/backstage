@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-cookiecutter",
+  "description": "A module for the scaffolder backend that lets you template projects using cookiecutter",
   "version": "0.1.2",
   "main": "src/index.ts",
   "types": "src/index.ts",

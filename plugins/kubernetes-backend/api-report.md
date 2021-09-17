@@ -163,6 +163,4 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 //
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
-
-// (No @packageDocumentation comment for this package)
 ```

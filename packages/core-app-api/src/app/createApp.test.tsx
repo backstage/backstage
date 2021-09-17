@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
-import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { renderWithEffects } from '@backstage/test-utils';
+import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { defaultConfigLoader, OptionallyWrapInRouter } from './createApp';
+import {
+  defaultConfigLoader,
+  OptionallyWrapInRouter,
+  createApp,
+} from './createApp';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
@@ -113,5 +118,26 @@ describe('OptionallyWrapInRouter', () => {
     );
 
     expect(getByText('Test')).toBeInTheDocument();
+  });
+});
+
+describe('Optional ThemeProvider', () => {
+  it('should render app with user-provided ThemeProvider', async () => {
+    const components = {
+      NotFoundErrorPage: () => null,
+      BootErrorPage: () => null,
+      Progress: () => null,
+      Router: MemoryRouter,
+      ErrorBoundaryFallback: () => null,
+      ThemeProvider: ({ children }: PropsWithChildren<{}>) => (
+        <main role="main">{children}</main>
+      ),
+    };
+
+    const App = createApp({ components }).getProvider();
+
+    await renderWithEffects(<App />);
+
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 });

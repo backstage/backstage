@@ -165,6 +165,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -187,10 +188,9 @@ export type AppContext = {
 // @public (undocumented)
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
-  icons?: Partial<AppIcons> &
-    {
-      [key in string]: IconComponent;
-    };
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
   plugins?: BackstagePluginWithAnyOutput[];
   components?: Partial<AppComponents>;
   themes?: AppTheme[];
@@ -641,8 +641,6 @@ export class WebStorage implements StorageApi {
 // Warnings were encountered during analysis:
 //
 // src/apis/system/ApiProvider.d.ts:9:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:88:5 - (ae-forgotten-export) The symbol "UnknownPluginOutput" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:99:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// src/app/types.d.ts:89:5 - (ae-forgotten-export) The symbol "UnknownPluginOutput" needs to be exported by the entry point index.d.ts
+// src/app/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```

@@ -60,6 +60,20 @@ providers are used.
 
 ## Project roadmap
 
+### **Published versions**
+
+**Alpha release** ✅ -
+[Milestone](https://github.com/backstage/backstage/milestone/16)
+
+- Alpha of TechDocs that you can use end to end - and contribute to.
+
+**Beta release** ✅ -
+[Milestone](https://github.com/backstage/backstage/milestone/29)
+
+- TechDocs' recommended setup supports most environments (CI systems, cloud
+  storage solutions, source control systems).
+- [Instructions for upgrading from Alpha to Beta](how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
+
 ### **Future work 🔮**
 
 **General Availability (GA) release** -

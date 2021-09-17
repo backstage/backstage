@@ -30,7 +30,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",

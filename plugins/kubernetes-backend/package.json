@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
+  "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "version": "0.3.15",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -46,7 +47,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "9.1.0",
     "helmet": "^4.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",

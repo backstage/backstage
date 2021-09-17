@@ -33,6 +33,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
+import { AppThemeProvider } from './AppThemeProvider';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
@@ -160,6 +161,7 @@ describe('Integration Test', () => {
     Progress: () => null,
     Router: BrowserRouter,
     ErrorBoundaryFallback: () => null,
+    ThemeProvider: AppThemeProvider,
   };
 
   it('runs happy paths', async () => {

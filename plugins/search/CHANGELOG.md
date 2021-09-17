@@ -1,5 +1,15 @@
 # @backstage/plugin-search
 
+## 0.4.11
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.4.10
 
 ### Patch Changes

@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
@@ -26,9 +27,35 @@ import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { S3 } from 'aws-sdk';
 import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
+
+// Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3UrlReader implements UrlReader {
+  constructor(
+    integration: AwsS3Integration,
+    deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
 
 // @public (undocumented)
 export class AzureUrlReader implements UrlReader {
@@ -399,6 +426,12 @@ export type ReadTreeResponseDirOptions = {
 
 // @public (undocumented)
 export interface ReadTreeResponseFactory {
+  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse>;
   // (undocumented)
   fromTarArchive(
     options: ReadTreeResponseFactoryOptions,
@@ -574,6 +607,4 @@ export function useHotCleanup(
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
-
-// (No @packageDocumentation comment for this package)
 ```

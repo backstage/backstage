@@ -34,12 +34,13 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { LocationService } from './types';
+import { RefreshService, RefreshOptions, LocationService } from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
+  refreshService?: RefreshService;
   logger: Logger;
   config: Config;
 }
@@ -47,8 +48,14 @@ export interface NextRouterOptions {
 export async function createNextRouter(
   options: NextRouterOptions,
 ): Promise<express.Router> {
-  const { entitiesCatalog, locationAnalyzer, locationService, config, logger } =
-    options;
+  const {
+    entitiesCatalog,
+    locationAnalyzer,
+    locationService,
+    refreshService,
+    config,
+    logger,
+  } = options;
 
   const router = Router();
   router.use(express.json());
@@ -57,6 +64,14 @@ export async function createNextRouter(
     config.getOptionalBoolean('catalog.readonly') || false;
   if (readonlyEnabled) {
     logger.info('Catalog is running in readonly mode');
+  }
+
+  if (refreshService) {
+    router.post('/refresh', async (req, res) => {
+      const refreshOptions: RefreshOptions = req.body;
+      await refreshService.refresh(refreshOptions);
+      res.status(200).send();
+    });
   }
 
   if (entitiesCatalog) {

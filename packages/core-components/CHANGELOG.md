@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.4.2
+
+### Patch Changes
+
+- 60c03f69a7: Change the styling of the `<DependencyGraph>` to have more contrast in light
+  mode. Nodes now have a design similar to material UI buttons.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- d9f2ff12bb: Deprecated CheckboxTree component. Deprecated the filter type `'checkbox-tree'` from the `TableFilter` types.
+- 61e9fcf406: Improve UX for Login pop-up
+- 005510dabe: remove hard coded min height in page header
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.4.1
 
 ### Patch Changes

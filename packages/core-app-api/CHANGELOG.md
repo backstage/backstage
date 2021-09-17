@@ -1,5 +1,15 @@
 # @backstage/core-app-api
 
+## 0.1.13
+
+### Patch Changes
+
+- 671015f132: Switch to using utilities from `@backstage/version-bridge'.
+- bd1981d609: Allow users to specify their own AppThemeProvider
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.1.12
 
 ### Patch Changes

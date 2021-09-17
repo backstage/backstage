@@ -164,6 +164,4 @@ export interface ServiceFetchResponse {
   // (undocumented)
   type: 'services';
 }
-
-// (No @packageDocumentation comment for this package)
 ```

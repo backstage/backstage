@@ -1,5 +1,29 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 19f45179a5: Bump `passport-saml` to version 3. This is a breaking change, in that it [now requires](https://github.com/node-saml/passport-saml/pull/548) the `auth.saml.cert` parameter to be set. If you are not using SAML auth, you can ignore this.
+
+  To update your settings, add something similar to the following to your app-config:
+
+  ```yaml
+  auth:
+    saml:
+      # ... other settings ...
+      cert: 'MIICizCCAfQCCQCY8tKaMc0BMjANBgkqh ... W=='
+  ```
+
+  For more information, see the [library README](https://github.com/node-saml/passport-saml#security-and-signatures).
+
+### Patch Changes
+
+- 560d6810f0: Fix a bug preventing an access token to be refreshed a second time with the GitLab provider.
+- de5717872d: Use a more informative error message if the configured OIDC identity provider does not provide a `userinfo_endpoint` in its metadata.
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+
 ## 0.3.24
 
 ### Patch Changes

@@ -27,6 +27,7 @@ import { Organizations } from 'aws-sdk';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
+import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -157,6 +158,20 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 export type AwsOrganizationProviderConfig = {
   roleArn?: string;
 };
+
+// Warning: (ae-missing-release-tag) "AwsS3DiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsS3DiscoveryProcessor implements CatalogProcessor {
+  constructor(reader: UrlReader);
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
+  ): Promise<boolean>;
+}
 
 // Warning: (ae-missing-release-tag) "BitbucketDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1194,6 +1209,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    router: Router;
   }>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
@@ -1229,6 +1245,8 @@ export interface NextRouterOptions {
   locationService: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  refreshService?: RefreshService;
 }
 
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1349,6 +1367,16 @@ export type RecursivePartial<T> = {
 // @public
 export type RefreshIntervalFunction = () => number;
 
+// @public
+export type RefreshOptions = {
+  entityRef: string;
+};
+
+// @public
+export interface RefreshService {
+  refresh(options: RefreshOptions): Promise<void>;
+}
+
 // Warning: (ae-missing-release-tag) "relation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1384,6 +1412,8 @@ export interface RouterOptions {
   locationService?: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  refreshService?: RefreshService;
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -1466,6 +1496,4 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/ingestion/processors/types.d.ts:58:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

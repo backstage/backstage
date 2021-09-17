@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.11",
+  "version": "0.7.12",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -82,7 +82,7 @@
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
     "json-schema": "^0.3.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.4.1",
     "node-libs-browser": "^2.2.1",
     "ora": "^5.3.0",
@@ -117,11 +117,11 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.9.2",
+    "@backstage/backend-common": "^0.9.3",
     "@backstage/config": "^0.1.9",
-    "@backstage/core-components": "^0.4.1",
-    "@backstage/core-plugin-api": "^0.1.7",
-    "@backstage/core-app-api": "^0.1.12",
+    "@backstage/core-components": "^0.4.2",
+    "@backstage/core-plugin-api": "^0.1.8",
+    "@backstage/core-app-api": "^0.1.13",
     "@backstage/dev-utils": "^0.2.9",
     "@backstage/test-utils": "^0.1.17",
     "@backstage/theme": "^0.2.10",

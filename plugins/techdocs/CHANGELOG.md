@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 0.11.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog@0.6.15
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/plugin-search@0.4.11
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.11.1
 
 ### Patch Changes

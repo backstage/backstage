@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
+  "description": "A module for the search backend that implements search using PostgreSQL",
   "version": "0.2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -22,7 +23,7 @@
     "@backstage/backend-common": "^0.9.1",
     "@backstage/search-common": "^0.2.0",
     "@backstage/plugin-search-backend-node": "^0.4.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "knex": "^0.95.1"
   },
   "devDependencies": {

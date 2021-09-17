@@ -32,6 +32,4 @@ export const fossaPlugin: BackstagePlugin<
   },
   {}
 >;
-
-// (No @packageDocumentation comment for this package)
 ```

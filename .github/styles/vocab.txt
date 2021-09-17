@@ -97,6 +97,7 @@ GraphQL
 graphviz
 Hackathons
 haproxy
+hardcoded
 Helidon
 Heroku
 hoc

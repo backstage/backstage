@@ -90,6 +90,4 @@ export type JsonPrimitive = number | string | boolean | null;
 
 // @public
 export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
-
-// (No @packageDocumentation comment for this package)
 ```

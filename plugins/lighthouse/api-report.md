@@ -241,6 +241,4 @@ export interface Website {
 //
 // @public (undocumented)
 export type WebsiteListResponse = LASListResponse<Website>;
-
-// (No @packageDocumentation comment for this package)
 ```
