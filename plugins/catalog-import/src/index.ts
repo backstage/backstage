@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin the helps you import entities into your catalog
+ *
+ * @packageDocumentation
+ */
+
 export {
   catalogImportPlugin,
   catalogImportPlugin as plugin,

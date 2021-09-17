@@ -253,6 +253,4 @@ export const TextValuePicker: ({
   idSchema,
   placeholder,
 }: FieldProps<string>) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

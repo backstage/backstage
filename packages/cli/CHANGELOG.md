@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.7.12
+
+### Patch Changes
+
+- d835d112fe: replace the deprecated file-loader for fonts with assets module
+- 15e324ce60: Set the default TZ (Timezone) env for the test command to be UTC so any date related tests are consistent across timezones.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+
 ## 0.7.11
 
 ### Patch Changes

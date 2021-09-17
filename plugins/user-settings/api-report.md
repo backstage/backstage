@@ -119,6 +119,4 @@ export const useUserProfile: () => {
   profile: ProfileInfo;
   displayName: string;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

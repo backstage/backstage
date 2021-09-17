@@ -46,6 +46,10 @@ export class PagerDutyClient implements PagerDutyApi {
     configApi: ConfigApi,
     discoveryApi: DiscoveryApi,
   ): PagerDutyClient;
+  // Warning: (ae-forgotten-export) The symbol "ChangeEvent" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]>;
   // Warning: (ae-forgotten-export) The symbol "Incident" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -88,6 +92,4 @@ export function TriggerButton({
 //
 // @public (undocumented)
 export class UnauthorizedError extends Error {}
-
-// (No @packageDocumentation comment for this package)
 ```

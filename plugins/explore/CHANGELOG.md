@@ -1,5 +1,17 @@
 # @backstage/plugin-explore
 
+## 0.3.16
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- db6d2789e7: Make styling of groups tab in the explore page use the Backstage theme instead
+  of hard coded colors. Change the layout to be full screen.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.3.15
 
 ### Patch Changes

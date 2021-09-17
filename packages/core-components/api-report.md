@@ -1889,7 +1889,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
 // @public (undocumented)
 export type TableFilter = {
   column: string;
-  type: 'select' | 'multiple-select' | 'checkbox-tree';
+  type: 'select' | 'multiple-select' | /** @deprecated */ 'checkbox-tree';
 };
 
 // Warning: (ae-missing-release-tag) "TableProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1983,6 +1983,4 @@ export function WarningPanel(props: WarningProps): JSX.Element;
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:15:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:7:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

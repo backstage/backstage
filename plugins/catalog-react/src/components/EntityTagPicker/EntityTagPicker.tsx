@@ -67,7 +67,7 @@ export const EntityTagPicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Tags</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         multiple
         aria-label="Tags"
         options={availableTags}

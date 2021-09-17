@@ -29,6 +29,4 @@ export interface ExploreToolsConfig {
 //
 // @public (undocumented)
 export const exploreToolsConfigRef: ApiRef<ExploreToolsConfig>;
-
-// (No @packageDocumentation comment for this package)
 ```

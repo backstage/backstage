@@ -112,6 +112,4 @@ export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: SyncLogCollector,
 ): CollectedLogs<T>;
-
-// (No @packageDocumentation comment for this package)
 ```

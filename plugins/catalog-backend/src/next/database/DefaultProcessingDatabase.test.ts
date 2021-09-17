@@ -30,6 +30,7 @@ import {
   DbRelationsRow,
 } from './tables';
 import { createRandomRefreshInterval } from '../refresh';
+import { timestampToDateTime } from './conversion';
 
 describe('Default Processing Database', () => {
   const defaultLogger = getVoidLogger();
@@ -64,21 +65,6 @@ describe('Default Processing Database', () => {
 
   const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
-  };
-
-  const parseDate = (date: string | Date): DateTime => {
-    const parsedDate =
-      typeof date === 'string'
-        ? DateTime.fromSQL(date, { zone: 'UTC' })
-        : DateTime.fromJSDate(date);
-
-    if (!parsedDate.isValid) {
-      throw new Error(
-        `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
-      );
-    }
-
-    return parsedDate;
   };
 
   describe('addUprocessedEntities', () => {
@@ -1010,7 +996,7 @@ describe('Default Processing Database', () => {
         const result = await knex<DbRefreshStateRow>('refresh_state')
           .where('entity_ref', 'location:default/new-root')
           .select();
-        const nextUpdate = parseDate(result[0].next_update_at);
+        const nextUpdate = timestampToDateTime(result[0].next_update_at);
         const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
         expect(nextUpdateDiff.seconds).toBeGreaterThanOrEqual(90);
       },

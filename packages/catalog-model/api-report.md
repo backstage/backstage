@@ -278,10 +278,9 @@ export { GroupEntityV1alpha1 };
 export const groupEntityV1alpha1Validator: KindValidator;
 
 // @public (undocumented)
-export type JSONSchema = JSONSchema7 &
-  {
-    [key in string]?: JsonValue;
-  };
+export type JSONSchema = JSONSchema7 & {
+  [key in string]?: JsonValue;
+};
 
 // @public
 export type KindValidator = {
@@ -613,6 +612,4 @@ export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
 // Warnings were encountered during analysis:
 //
 // src/entity/Entity.d.ts:38:5 - (ae-incompatible-release-tags) The symbol "status" is marked as @public, but its signature references "UNSTABLE_EntityStatus" which is marked as @alpha
-
-// (No @packageDocumentation comment for this package)
 ```

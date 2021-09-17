@@ -16,11 +16,11 @@
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
+  CircularProgress,
   Grid,
   IconButton,
   InputAdornment,
   TextField,
-  CircularProgress,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
@@ -28,13 +28,15 @@ import { DocsResultListItem } from '../../components/DocsResultListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import { useDebounce } from 'react-use';
 import { useNavigate } from 'react-router';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
+type EntityId = {
+  name: string;
+  namespace: string;
+  kind: string;
+};
 type TechDocsSearchProps = {
-  entityId: {
-    name: string;
-    namespace: string;
-    kind: string;
-  };
+  entityId: EntityId;
   debounceTime?: number;
 };
 
@@ -50,6 +52,17 @@ type TechDocsDoc = {
 type TechDocsSearchResult = {
   type: string;
   document: TechDocsDoc;
+};
+
+export const buildInitialFilters = (
+  legacyPaths: boolean,
+  entityId: EntityId,
+) => {
+  return legacyPaths
+    ? entityId
+    : Object.entries(entityId).reduce((acc, [key, value]) => {
+        return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
+      }, {});
 };
 
 const TechDocsSearchBar = ({
@@ -161,12 +174,17 @@ const TechDocsSearchBar = ({
     </Grid>
   );
 };
+
 const TechDocsSearch = (props: TechDocsSearchProps) => {
+  const configApi = useApi(configApiRef);
+  const legacyPaths = configApi.getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  );
   const initialState = {
     term: '',
     types: ['techdocs'],
     pageCursor: '',
-    filters: props.entityId,
+    filters: buildInitialFilters(legacyPaths || false, props.entityId),
   };
   return (
     <SearchContextProvider initialState={initialState}>

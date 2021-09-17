@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin
+ *
+ * @packageDocumentation
+ */
+
 export * from './types';

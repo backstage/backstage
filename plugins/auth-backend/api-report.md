@@ -473,6 +473,4 @@ export type WebMessageResponse =
 // src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
-
-// (No @packageDocumentation comment for this package)
 ```

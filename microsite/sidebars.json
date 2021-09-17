@@ -70,6 +70,7 @@
           "features/software-templates/writing-templates",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
+          "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/template-legacy",
           "features/software-templates/migrating-from-v1alpha1-to-v1beta2"
         ]
@@ -108,7 +109,10 @@
       {
         "type": "subcategory",
         "label": "AWS S3",
-        "ids": ["integrations/aws-s3/locations"]
+        "ids": [
+          "integrations/aws-s3/locations",
+          "integrations/aws-s3/discovery"
+        ]
       },
       {
         "type": "subcategory",

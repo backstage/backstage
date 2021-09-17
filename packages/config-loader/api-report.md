@@ -73,6 +73,4 @@ export type TransformFunc<T extends number | string | boolean> = (
     visibility: ConfigVisibility;
   },
 ) => T | undefined;
-
-// (No @packageDocumentation comment for this package)
 ```

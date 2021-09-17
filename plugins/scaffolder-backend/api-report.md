@@ -270,6 +270,4 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

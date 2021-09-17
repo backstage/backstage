@@ -49,6 +49,4 @@ export class StaticSchemaLoader implements ConfigSchemaApi {
   // (undocumented)
   schema$(): Observable<ConfigSchemaResult>;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

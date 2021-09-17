@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import React, { ReactNode } from 'react';
-import { EntityContext } from '../../hooks';
 
-type EntityProviderProps = {
-  entity: Entity;
-  children: ReactNode;
+import React from 'react';
+import { Grid, Typography } from '@material-ui/core';
+import EmptyStateImage from '../../assets/emptystate.svg';
+
+export const ChangeEventEmptyState = () => {
+  return (
+    <Grid container justify="center" direction="column" alignItems="center">
+      <Grid item xs={12}>
+        <Typography variant="h5">No change events to display yet.</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <img
+          src={EmptyStateImage}
+          alt="EmptyState"
+          data-testid="emptyStateImg"
+        />
+      </Grid>
+    </Grid>
+  );
 };
-
-export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
-  <EntityContext.Provider
-    value={{
-      entity,
-      loading: !Boolean(entity),
-      error: undefined,
-    }}
-  >
-    {children}
-  </EntityContext.Provider>
-);

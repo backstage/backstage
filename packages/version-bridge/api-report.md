@@ -45,6 +45,4 @@ export type VersionedValue<
     version: Version,
   ): Versions[Version] | undefined;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

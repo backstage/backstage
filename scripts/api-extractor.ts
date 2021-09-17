@@ -37,6 +37,9 @@ import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
 } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import { DocTable } from '@microsoft/api-documenter/lib/nodes/DocTable';
+import { DocTableRow } from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
@@ -90,14 +93,14 @@ ApiReportGenerator.generateReviewFileContent =
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const SKIPPED_PACKAGES = [
-  'packages/app',
-  'packages/backend',
-  'packages/cli',
-  'packages/codemods',
-  'packages/create-app',
-  'packages/e2e-test',
-  'packages/storybook',
-  'packages/techdocs-cli',
+  join('packages', 'app'),
+  join('packages', 'backend'),
+  join('packages', 'cli'),
+  join('packages', 'codemods'),
+  join('packages', 'create-app'),
+  join('packages', 'e2e-test'),
+  join('packages', 'storybook'),
+  join('packages', 'techdocs-cli'),
 ];
 
 async function findPackageDirs() {
@@ -107,7 +110,7 @@ async function findPackageDirs() {
   for (const packageRoot of PACKAGE_ROOTS) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
-      const fullPackageDir = resolvePath(packageRoot, dir);
+      const fullPackageDir = resolvePath(projectRoot, packageRoot, dir);
 
       const stat = await fs.stat(fullPackageDir);
       if (!stat.isDirectory()) {
@@ -349,21 +352,15 @@ async function buildDocs({
   class DocFrontMatter extends DocNode {
     static kind = 'DocFrontMatter';
 
-    public readonly id: string;
-    public readonly title: string;
-    public readonly description: string;
+    public readonly values: { [name: string]: unknown };
 
     public constructor(
       parameters: IDocNodeContainerParameters & {
-        id: string;
-        title: string;
-        description: string;
+        values: { [name: string]: unknown };
       },
     ) {
       super(parameters);
-      this.id = parameters.id;
-      this.title = parameters.title;
-      this.description = parameters.description;
+      this.values = parameters.values;
     }
 
     /** @override */
@@ -385,9 +382,11 @@ async function buildDocs({
         case DocFrontMatter.kind: {
           const node = docNode as DocFrontMatter;
           context.writer.writeLine('---');
-          context.writer.writeLine(`id: ${node.id}`);
-          context.writer.writeLine(`title: ${node.title}`);
-          context.writer.writeLine(`description: ${node.description}`);
+          for (const [name, value] of Object.entries(node.values)) {
+            if (value) {
+              context.writer.writeLine(`${name}: ${value}`);
+            }
+          }
           context.writer.writeLine('---');
           context.writer.writeLine();
           break;
@@ -447,9 +446,11 @@ async function buildDocs({
       output.appendNodeInParagraph(
         new DocFrontMatter({
           configuration: this._tsdocConfiguration,
-          id: this._getFilenameForApiItem(apiItem).slice(0, -3),
-          title,
-          description,
+          values: {
+            id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+            title,
+            description,
+          },
         }),
       );
 
@@ -462,6 +463,57 @@ async function buildDocs({
       output.appendNode = () => {
         output.appendNode = oldAppendNode;
       };
+    }
+
+    _writeModelTable(output, apiModel): void {
+      const configuration = this._tsdocConfiguration;
+
+      const packagesTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      const pluginsTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      for (const apiMember of apiModel.members) {
+        const row = new DocTableRow({ configuration }, [
+          this._createTitleCell(apiMember),
+          this._createDescriptionCell(apiMember),
+        ]);
+
+        if (apiMember.kind === 'Package') {
+          this._writeApiItemPage(apiMember);
+
+          if (apiMember.name.startsWith('@backstage/plugin-')) {
+            pluginsTable.addRow(row);
+          } else {
+            packagesTable.addRow(row);
+          }
+        }
+      }
+
+      if (packagesTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Packages',
+          }),
+        );
+        output.appendNode(packagesTable);
+      }
+
+      if (pluginsTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Plugins',
+          }),
+        );
+        output.appendNode(pluginsTable);
+      }
     }
   }
 

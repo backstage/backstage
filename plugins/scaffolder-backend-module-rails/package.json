@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-rails",
+  "description": "A module for the scaffolder backend that lets you template projects using Rails",
   "version": "0.1.5",
   "main": "src/index.ts",
   "types": "src/index.ts",

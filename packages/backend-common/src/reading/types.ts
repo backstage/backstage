@@ -183,6 +183,13 @@ export type ReadTreeResponseFactoryOptions = {
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string, info?: { size: number }) => boolean;
 };
+/** @public */
+export type FromReadableArrayOptions = Array<{
+  // Data in the form of a readable
+  data: Readable;
+  // A string containing the filepath of the data
+  path: string;
+}>;
 
 /** @public */
 export interface ReadTreeResponseFactory {
@@ -191,6 +198,9 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+  fromReadableArray(
+    options: FromReadableArrayOptions,
   ): Promise<ReadTreeResponse>;
 }
 

@@ -1,5 +1,43 @@
 # @backstage/plugin-home
 
+## 0.4.0
+
+### Minor Changes
+
+- bcf312fa52: The homepage `<Header />` is now part of the composable canvas (allowing you to add the <HomepageTimer />, for example).
+
+  You will need to wrap your existing composed `<HomePage />` component in `<Page />`, `<Header />`, and `<Content />` components, like this:
+
+  ```diff
+  // app/src/components/home/HomePage.tsx
+
+  + import { Content, Header, Page, HomePageTimer } from '@backstage/core-components';
+
+  export const HomePage = () => (
+  +  <Page themeId="home">
+  +    <Header title="Home">
+  +      <HomepageTimer />
+  +    </Header>
+  +    <Content>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <HomePageSearchBar />
+      </Grid>
+      // ...
+  +    </Content>
+  +  </Page>
+  );
+  ```
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 1da51fec2b: Adjust dependencies to `@types/react` and `react-router` to follow the pattern
+  used by all other Backstage packages.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.3.0
 
 ### Minor Changes

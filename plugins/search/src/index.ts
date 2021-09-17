@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that provides your backstage app with search
+ *
+ * @packageDocumentation
+ */
+
 export { searchApiRef } from './apis';
 export {
   Filters,

@@ -122,12 +122,12 @@ sometimes desired because Docker in Docker is not available in the build
 environment, or due to other requirements.
 
 The build is split into three different stages, where the first stage finds all
-of the `package.json`s that are relevant for the initial install step enabling
-us to cache the initial `yarn install` that installs all dependencies. The
-second stage executes the build itself, and is similar to the steps we execute
-on the host in the host build. The third and final stage then packages it all
-together into the final image, and is similar to the `Dockerfile` of the host
-build.
+of the `package.json` files that are relevant for the initial install step
+enabling us to cache the initial `yarn install` that installs all dependencies.
+The second stage executes the build itself, and is similar to the steps we
+execute on the host in the host build. The third and final stage then packages
+it all together into the final image, and is similar to the `Dockerfile` of the
+host build.
 
 The following `Dockerfile` executes the multi-stage build and should be added to
 the repo root:

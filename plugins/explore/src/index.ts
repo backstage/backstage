@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin for building an exploration page of your software ecosystem
+ *
+ * @packageDocumentation
+ */
+
 export { ExploreLayout } from './components';
 export * from './extensions';
 export { explorePlugin, explorePlugin as plugin } from './plugin';

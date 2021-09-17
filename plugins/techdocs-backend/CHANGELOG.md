@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+  - @backstage/techdocs-common@0.10.1
+
 ## 0.10.1
 
 ### Patch Changes

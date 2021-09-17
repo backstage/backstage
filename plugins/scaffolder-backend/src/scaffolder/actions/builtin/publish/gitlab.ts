@@ -127,7 +127,7 @@ export function createPublishGitlabAction(options: {
       });
 
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
-      const repoContentsUrl = `${remoteUrl}/-/blob/master`;
+      const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
         name: config.getOptionalString('scaffolder.defaultAuthor.name'),

@@ -48,6 +48,4 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     pageCursor,
   }: SearchQuery): ConcreteElasticSearchQuery;
 }
-
-// (No @packageDocumentation comment for this package)
 ```
