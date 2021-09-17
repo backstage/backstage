@@ -15,6 +15,7 @@
  */
 
 import { YarnInfoInspectData } from '../../lib/versioning';
+import { JsonObject } from '@backstage/config';
 
 /**
  * TODO: possible types
@@ -29,36 +30,40 @@ import { YarnInfoInspectData } from '../../lib/versioning';
  * frontend-api: Add a custom API
  */
 
-export type StepAppRoute = {
-  type: 'app-route';
-  path: string;
-  element: string;
-  packageName: string;
-};
-
-export type StepMessage = {
-  type: 'message';
-  message: string | string[];
-};
-
-export type StepDependencies = {
-  type: 'dependencies';
-  dependencies: Array<{
-    target: string;
-    type: 'dependencies';
-    name: string;
-    query: string;
-  }>;
-};
-
-export type Step = StepAppRoute | StepMessage | StepDependencies;
+/** A serialized install step as it appears in JSON */
+export type SerializedStep = {
+  type: string;
+} & unknown;
 
 export type InstallationRecipe = {
   type?: 'frontend' | 'backend';
-  steps: Step[];
+  steps: SerializedStep[];
 };
 
+/** package.json data */
 export type PackageWithInstallRecipe = YarnInfoInspectData & {
   version: string;
   installationRecipe?: InstallationRecipe;
 };
+
+export interface Step {
+  run(): Promise<void>;
+}
+
+export interface StepDefinition<Options> {
+  /** The string identifying this type of step */
+  type: string;
+
+  /** Deserializes and validate a JSON description of the step data */
+  deserialize(obj: JsonObject, pkg: PackageWithInstallRecipe): Step;
+
+  /** Creates a step using known parameters */
+  create(options: Options): Step;
+}
+
+/** Creates a new step definition. Only used as a helper for type inference */
+export function createStepDefinition<T>(
+  config: StepDefinition<T>,
+): StepDefinition<T> {
+  return config;
+}
