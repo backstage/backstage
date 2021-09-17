@@ -57,6 +57,11 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
@@ -101,6 +106,11 @@ export class CatalogClient implements CatalogApi {
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
   // (undocumented)
   removeEntityByUid(
     uid: string,
