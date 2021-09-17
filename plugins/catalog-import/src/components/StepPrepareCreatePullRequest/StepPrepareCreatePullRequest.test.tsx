@@ -15,12 +15,12 @@
  */
 
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { errorApiRef } from '../../../../../packages/core-plugin-api/src';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { asInputRef } from '../helpers';
 import {
