@@ -37,7 +37,7 @@
     "@types/mock-fs": "^4.13.0",
     "@types/jest": "^26.0.7",
     "@types/command-exists": "^1.2.0",
-    "mock-fs": "^4.13.0",
+    "mock-fs": "^5.1.0",
     "msw": "^0.29.0"
   },
   "files": [
