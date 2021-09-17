@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
-import { StepperProviderOpts } from './ImportStepper/defaults';
+import { useOutlet } from 'react-router';
+import { DefaultImportPage } from '../DefaultImportPage';
 
-export const Router = (opts: StepperProviderOpts) => (
-  <Routes>
-    <Route element={<ImportComponentPage {...opts} />} />
-  </Routes>
-);
+export const ImportPage = () => {
+  const outlet = useOutlet();
+
+  return outlet || <DefaultImportPage />;
+};

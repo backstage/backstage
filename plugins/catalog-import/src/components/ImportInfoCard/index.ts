@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin the helps you import entities into your catalog
- *
- * @packageDocumentation
- */
-
-export {
-  catalogImportPlugin,
-  catalogImportPlugin as plugin,
-  CatalogImportPage,
-} from './plugin';
-export * from './components';
-export * from './api';
+export { ImportInfoCard } from './ImportInfoCard';

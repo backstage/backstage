@@ -15,8 +15,8 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { PartialEntity } from '../types';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { PartialEntity } from '../types';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
   id: 'plugin.catalog-import.service',
@@ -42,6 +42,10 @@ export type AnalyzeResult =
 export interface CatalogImportApi {
   analyzeUrl(url: string): Promise<AnalyzeResult>;
 
+  preparePullRequest?(): Promise<{
+    title: string;
+    body: string;
+  }>;
   submitPullRequest(options: {
     repositoryUrl: string;
     fileContent: string;
