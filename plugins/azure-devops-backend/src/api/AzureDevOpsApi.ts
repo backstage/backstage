@@ -17,10 +17,6 @@
 import { Logger } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
 import { RepoBuild } from './types';
-import {
-  BuildResult,
-  BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
 export class AzureDevOpsApi {
   constructor(
@@ -90,12 +86,12 @@ export class AzureDevOpsApi {
 
     const repoBuilds = buildList.map(build => {
       const repoBuild: RepoBuild = {
-        id: build.id as number,
+        id: build.id,
         title: `${build.definition?.name} - ${build.buildNumber}`,
         link: build._links?.web.href,
-        status: BuildStatus[build.status as BuildStatus],
-        result: BuildResult[build.result as BuildResult],
-        queueTime: build.queueTime as Date,
+        status: build.status,
+        result: build.result,
+        queueTime: build.queueTime,
         source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
       };
       return repoBuild;
