@@ -70,6 +70,7 @@
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/lodash": "^4.14.151",
+    "@types/luxon": "^2.0.4",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.29.8",
