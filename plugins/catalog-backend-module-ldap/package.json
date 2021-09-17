@@ -34,7 +34,7 @@
     "@backstage/plugin-catalog-backend": "^0.13.3",
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "winston": "^3.2.1"
   },
   "devDependencies": {

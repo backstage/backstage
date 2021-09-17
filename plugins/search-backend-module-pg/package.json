@@ -23,7 +23,7 @@
     "@backstage/backend-common": "^0.9.1",
     "@backstage/search-common": "^0.2.0",
     "@backstage/plugin-search-backend-node": "^0.4.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "knex": "^0.95.1"
   },
   "devDependencies": {
