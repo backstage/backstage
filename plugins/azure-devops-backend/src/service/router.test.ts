@@ -149,8 +149,8 @@ describe('createRouter', () => {
         id: 1,
         title: 'My Build Definition - Build 1',
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-        status: 'completed',
-        result: 'partiallySucceeded',
+        status: BuildStatus.Completed,
+        result: BuildResult.PartiallySucceeded,
         queueTime: '2020-09-12T06:10:23.9325232Z' as unknown as Date,
         source: 'refs/heads/develop (f4f78b31)',
       };
@@ -159,8 +159,8 @@ describe('createRouter', () => {
         id: 2,
         title: 'My Build Definition - Build 2',
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=2',
-        status: 'inProgress',
-        result: 'none',
+        status: BuildStatus.InProgress,
+        result: BuildResult.None,
         queueTime: '2020-09-12T06:20:23.9325232Z' as unknown as Date,
         source: 'refs/heads/develop (13c988d4)',
       };
@@ -169,8 +169,8 @@ describe('createRouter', () => {
         id: 3,
         title: 'My Build Definition - Build 3',
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=3',
-        status: 'completed',
-        result: 'succeeded',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
         queueTime: '2020-09-12T06:30:23.9325232Z' as unknown as Date,
         source: 'refs/heads/develop (9bedf678)',
       };

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import {
+  BuildResult,
+  BuildStatus,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+
 export type RepoBuild = {
-  id: number;
+  id?: number;
   title: string;
   link: string;
-  status: string;
-  result: string;
-  queueTime: Date;
+  status?: BuildStatus;
+  result?: BuildResult;
+  queueTime?: Date;
   source: string;
 };
