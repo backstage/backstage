@@ -1433,7 +1433,7 @@ export interface RouterOptions {
   // (undocumented)
   refreshService?: RefreshService;
   // (undocumented)
-  refreshStateStore?: DefaultRefreshStateStore;
+  refreshStateStore?: RefreshStateStore;
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
