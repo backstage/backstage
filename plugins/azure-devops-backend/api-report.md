@@ -4,23 +4,60 @@
 
 ```ts
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { BuildResult } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { BuildStatus } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { Logger as Logger_2 } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
 
+// Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AzureDevOpsApi {
+  constructor(logger: Logger_2, webApi: WebApi);
+  // (undocumented)
+  getBuildList(
+    projectName: string,
+    repoId: string,
+    top: string,
+  ): Promise<Build[]>;
+  // (undocumented)
+  getGitRepository(
+    projectName: string,
+    repoName: string,
+  ): Promise<GitRepository>;
+  // (undocumented)
+  getRepoBuilds(
+    projectName: string,
+    repoName: string,
+    top: string,
+  ): Promise<RepoBuild[]>;
+}
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "RepoBuild" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RepoBuild = {
+  id?: number;
+  title: string;
+  link: string;
+  status?: BuildStatus;
+  result?: BuildResult;
+  queueTime?: Date;
+  source: string;
+};
+
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface RouterOptions {
-  // Warning: (ae-forgotten-export) The symbol "AzureDevOpsApi" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   azureDevOpsApi?: AzureDevOpsApi;
   // (undocumented)

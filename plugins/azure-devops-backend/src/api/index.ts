@@ -15,3 +15,4 @@
  */
 
 export { AzureDevOpsApi } from './AzureDevOpsApi';
+export type { RepoBuild } from './types';
