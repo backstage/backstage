@@ -41,6 +41,7 @@ import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 // import { SidebarSearch } from '@backstage/plugin-search';
 // import VisibilityIcon from '@material-ui/icons/Visibility';
 // import { Shortcuts } from '@backstage/plugin-shortcuts';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -97,6 +98,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       {/* <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" /> */}
       <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+      <SidebarItem
+        icon={PermIdentityIcon}
+        to="dfds-iam-selfservice-plugin"
+        text="Identity and Access Management"
+      />
 
       <SidebarDivider />
       {/* <Shortcuts /> */}

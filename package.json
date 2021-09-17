@@ -6,7 +6,7 @@
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
-    "start": "yarn workspace example-app start",
+    "start": "dotenv -e /dfds-deploy/.env yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
     "docker-compose:start": "docker-compose -f dfds-deploy/docker-compose.base.yaml -f dfds-deploy/docker-compose.dev.yaml up",
     "docker-compose:start-rebuild": "docker-compose -f dfds-deploy/docker-compose.base.yaml -f dfds-deploy/docker-compose.dev.yaml up --build",

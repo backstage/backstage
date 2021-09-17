@@ -39,6 +39,7 @@ import { AsyncState } from 'react-use/lib/useAsync';
 import { DataGrid } from '@mui/x-data-grid';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { Box, TextField } from '@material-ui/core';
+import { UIAM } from './../UIAM';
 
 const AuthContext = React.createContext<AsyncState<any> | undefined>(undefined);
 
@@ -66,7 +67,7 @@ const Kafka = () => {
         },
       );
       const cluster: any = await fetch(
-        `${baseUrl}/api/proxy/dfds-api/capkafkasvc/kafka/${selectedCapability?.id}/cluster`,
+        `${baseUrl}/api/proxy/dfds-api/capsvc/kafka/cluster`,
         {
           method: 'GET',
           headers: {
@@ -75,9 +76,11 @@ const Kafka = () => {
         },
       );
       const data = await response.json();
+      const a = await cluster.json();
+
       return {
         ...data,
-        cluster: cluster.reduce((acc: any, curr: { id: any }) => {
+        cluster: a.reduce((acc: any, curr: { id: any }) => {
           return { ...acc, [curr.id]: curr };
         }, {}),
       };
@@ -89,6 +92,7 @@ const Kafka = () => {
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
+
   return (
     <div>
       <Box width="auto" mb="2rem">
@@ -120,18 +124,24 @@ const Kafka = () => {
             flex: 1,
           },
           {
+            field: 'kafkaClusterName',
+            headerName: 'kafkaClusterName',
+            flex: 1,
+            valueGetter: params => {
+              return value.cluster[params.row.kafkaClusterId].name;
+            },
+          },
+          {
             field: 'kafkaClusterId',
             headerName: 'kafkaClusterId',
             flex: 1,
-            valueGetter: params => {
-              return value.cluster[params.id].name;
-            },
           },
         ]}
       />
     </div>
   );
 };
+
 const tabs = [
   {
     label: 'Overview',
@@ -149,6 +159,10 @@ const tabs = [
     label: 'Kubernetes',
     content: <KubernetesPage />,
   },
+  // {
+  //   label: 'UIAM',
+  //   content: <UIAM />,
+  // },
   {
     label: 'CI/CD',
     content: <CICDPage />,

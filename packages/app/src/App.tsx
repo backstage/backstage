@@ -54,6 +54,10 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 import { DfdsCapabilityOverviewPage } from '@backstage/plugin-dfds-capability-overview';
 import { DfdsCapabilityManagementPage } from '@backstage/plugin-dfds-capability-management';
+import {
+  DfdsIamSelfservicePluginPage,
+  DfdsIamSelfservicePluginOverviewPage,
+} from '@backstage/plugin-dfds-iam-selfservice-plugin';
 
 const app = createApp({
   apis,
@@ -138,6 +142,14 @@ const routes = (
     <Route
       path="/dfds-capability-management"
       element={<DfdsCapabilityManagementPage />}
+    />
+    <Route
+      path="/dfds-iam-selfservice-plugin"
+      element={<DfdsIamSelfservicePluginPage />}
+    />
+    <Route
+      path="/dfds-iam-selfservice-plugin-test"
+      element={<DfdsIamSelfservicePluginOverviewPage />}
     />
   </FlatRoutes>
 );

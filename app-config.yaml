@@ -107,6 +107,11 @@ proxy:
     allowedMethods: ['GET', 'POST', 'PUT']
     allowedHeaders: ['Authorization']
 
+  '/dfds-api/iam':
+    target: ${DFDS_API_IAM_ENDPOINT}
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+
   '/dfds-api/inventa':
     target: ${DFDS_API_INVENTA_ENDPOINT}
     allowedMethods: ['GET', 'POST', 'PUT']

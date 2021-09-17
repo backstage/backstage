@@ -19,6 +19,8 @@
 /plugins/cost-insights                   @backstage/silver-lining
 /plugins/dfds-capability-backend         @DFDS
 /plugins/dfds-capability-backend-backend @DFDS
+/plugins/dfds-iam-selfservice-plugin     @dfds
+/plugins/iam-backend                     @dfds
 /plugins/ilert                           @yacut
 /plugins/search                          @backstage/techdocs-core
 /plugins/search-*                        @backstage/techdocs-core

@@ -10,8 +10,6 @@
     "@backstage/integration-react": "^0.1.2",
     "@backstage/plugin-api-docs": "^0.4.15",
     "@backstage/plugin-badges": "^0.2.2",
-    "@backstage/plugin-dfds-capability-overview": "^0.1.1",
-    "@backstage/plugin-dfds-capability-management": "^0.1.1",
     "@backstage/plugin-catalog": "^0.6.1",
     "@backstage/plugin-catalog-import": "^0.5.8",
     "@backstage/plugin-catalog-react": "^0.2.1",
@@ -19,6 +17,9 @@
     "@backstage/plugin-cloudbuild": "^0.2.16",
     "@backstage/plugin-code-coverage": "^0.1.4",
     "@backstage/plugin-cost-insights": "^0.10.1",
+    "@backstage/plugin-dfds-capability-management": "^0.1.1",
+    "@backstage/plugin-dfds-capability-overview": "^0.1.1",
+    "@backstage/plugin-dfds-iam-selfservice-plugin": "^0.1.1",
     "@backstage/plugin-explore": "^0.3.6",
     "@backstage/plugin-gcp-projects": "^0.2.6",
     "@backstage/plugin-github-actions": "^0.4.8",
@@ -82,7 +83,8 @@
     "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
     "lint": "backstage-cli lint",
     "cy:dev": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "test1": "node -r dotenv/config src/test.ts dotenv_config_path=./.env.test"
   },
   "browserslist": {
     "production": [

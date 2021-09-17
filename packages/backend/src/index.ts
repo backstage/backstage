@@ -51,6 +51,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import { PluginEnvironment } from './types';
+import iam from './plugins/iam';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -94,8 +95,10 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
+  const iamEnv = useHotMemoize(module, () => createEnv('iam'));
 
   const apiRouter = Router();
+  apiRouter.use('/iam', await iam(iamEnv));
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
