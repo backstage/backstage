@@ -312,7 +312,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     );
 
     await act(async () => {
-      userEvent.type(
+      await userEvent.type(
         getByRole('textbox', { name: /Repository/i }),
         'https://my-repository-2',
       );
@@ -356,7 +356,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     );
 
     await act(async () => {
-      userEvent.type(
+      await userEvent.type(
         getByRole('textbox', { name: /Repository/i }),
         'https://my-repository-2',
       );
