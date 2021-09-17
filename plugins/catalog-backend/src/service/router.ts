@@ -28,7 +28,12 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
-import { RefreshService, LocationService, RefreshOptions } from '../next/types';
+import {
+  RefreshService,
+  LocationService,
+  RefreshOptions,
+  RefreshStateStore,
+} from '../next/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -47,6 +52,7 @@ export interface RouterOptions {
   higherOrderOperation?: HigherOrderOperation;
   locationAnalyzer?: LocationAnalyzer;
   locationService?: LocationService;
+  refreshStateStore?: RefreshStateStore;
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
@@ -61,6 +67,7 @@ export async function createRouter(
     higherOrderOperation,
     locationAnalyzer,
     locationService,
+    refreshStateStore,
     refreshService,
     config,
     logger,
@@ -238,6 +245,12 @@ export async function createRouter(
       const input = await validateRequestBody(req, analyzeLocationSchema);
       const output = await locationAnalyzer.analyzeLocation(input);
       res.status(200).json(output);
+    });
+  }
+
+  if (refreshStateStore) {
+    router.get('/refresh-state', async (_req, res) => {
+      res.status(200).json(await refreshStateStore.getRefreshState());
     });
   }
 

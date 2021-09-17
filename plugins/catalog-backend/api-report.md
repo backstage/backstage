@@ -10,6 +10,7 @@ import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { DocumentCollator } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
@@ -756,6 +757,20 @@ export class DefaultCatalogProcessingOrchestrator
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "RefreshStateStore" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "DefaultRefreshStateStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class DefaultRefreshStateStore implements RefreshStateStore {
+  constructor(db: Knex);
+  // (undocumented)
+  readonly db: Knex;
+  // Warning: (ae-forgotten-export) The symbol "RefreshStateItem" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  getRefreshState(): Promise<RefreshStateItem[]>;
+}
+
 // Warning: (ae-missing-release-tag) "DeferredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1209,6 +1224,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    refreshStateStore: RefreshStateStore;
     router: Router;
   }>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -1247,6 +1263,8 @@ export interface NextRouterOptions {
   logger: Logger_2;
   // (undocumented)
   refreshService?: RefreshService;
+  // (undocumented)
+  refreshStateStore?: RefreshStateStore;
 }
 
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1414,6 +1432,8 @@ export interface RouterOptions {
   logger: Logger_2;
   // (undocumented)
   refreshService?: RefreshService;
+  // (undocumented)
+  refreshStateStore?: DefaultRefreshStateStore;
 }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

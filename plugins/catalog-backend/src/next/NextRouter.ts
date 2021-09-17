@@ -34,13 +34,19 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { RefreshService, RefreshOptions, LocationService } from './types';
+import {
+  RefreshService,
+  RefreshOptions,
+  LocationService,
+  RefreshStateStore,
+} from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
   refreshService?: RefreshService;
+  refreshStateStore?: RefreshStateStore;
   logger: Logger;
   config: Config;
 }
@@ -53,6 +59,7 @@ export async function createNextRouter(
     locationAnalyzer,
     locationService,
     refreshService,
+    refreshStateStore,
     config,
     logger,
   } = options;
@@ -166,6 +173,12 @@ export async function createNextRouter(
       const input = await validateRequestBody(req, analyzeLocationSchema);
       const output = await locationAnalyzer.analyzeLocation(input);
       res.status(200).json(output);
+    });
+  }
+
+  if (refreshStateStore) {
+    router.get('/refresh-state', async (_req, res) => {
+      res.status(200).json(await refreshStateStore.getRefreshState());
     });
   }
 

@@ -62,6 +62,7 @@ import {
   CatalogProcessingEngine,
   EntityProvider,
   LocationService,
+  RefreshStateStore,
 } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
@@ -76,6 +77,7 @@ import {
   RefreshIntervalFunction,
 } from './refresh';
 import { CatalogEnvironment } from '../service/CatalogBuilder';
+import { DefaultRefreshStateStore } from './DefaultRefreshStateStore';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 
@@ -280,6 +282,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    refreshStateStore: RefreshStateStore;
     router: Router;
   }> {
     const { config, database, logger } = this.env;
@@ -329,7 +332,7 @@ export class NextCatalogBuilder {
       stitcher,
       () => createHash('sha1'),
     );
-
+    const refreshStateStore = new DefaultRefreshStateStore(dbClient);
     const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer = new RepoLocationAnalyzer(logger, integrations);
     const locationService = new DefaultLocationService(
@@ -344,6 +347,7 @@ export class NextCatalogBuilder {
       locationAnalyzer,
       locationService,
       refreshService,
+      refreshStateStore,
       logger,
       config,
     });
@@ -354,6 +358,7 @@ export class NextCatalogBuilder {
       locationAnalyzer,
       processingEngine,
       locationService,
+      refreshStateStore,
       router,
     };
   }

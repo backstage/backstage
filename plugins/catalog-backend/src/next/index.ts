@@ -16,6 +16,7 @@
 
 export { NextCatalogBuilder } from './NextCatalogBuilder';
 export { createNextRouter } from './NextRouter';
+export { DefaultRefreshStateStore } from './DefaultRefreshStateStore';
 export type { NextRouterOptions } from './NextRouter';
 export * from './processing';
 export { createRandomRefreshInterval } from './refresh';

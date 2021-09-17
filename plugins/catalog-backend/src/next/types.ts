@@ -16,6 +16,7 @@
 
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { DeferredEntity } from './processing/types';
+import { RefreshStateItem } from './database/types';
 
 export interface LocationService {
   createLocation(
@@ -37,6 +38,10 @@ export interface LocationStore {
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
+}
+
+export interface RefreshStateStore {
+  getRefreshState(): Promise<RefreshStateItem[]>;
 }
 
 /**
