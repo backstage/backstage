@@ -30,9 +30,5 @@ export interface Config {
      * The organization of the given Azure instance
      */
     organization: string;
-    /**
-     * The max number of items to return - applies to builds
-     */
-    top: number;
   };
 }

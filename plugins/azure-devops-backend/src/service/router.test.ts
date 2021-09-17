@@ -93,7 +93,7 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /builds/:projectName/:repoId', () => {
+  describe('GET /builds/:projectName/:repoId/:top', () => {
     it('fetches a list of builds', async () => {
       const firstBuild: Build = {
         id: 1,
@@ -130,19 +130,20 @@ describe('createRouter', () => {
       azureDevOpsApi.getBuildList.mockResolvedValueOnce(builds);
 
       const response = await request(app).get(
-        '/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998',
+        '/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998/50',
       );
 
       expect(azureDevOpsApi.getBuildList.mock.calls[0]).toEqual([
         'myProject',
         'af4ae3af-e747-4129-9bbc-d1329f6b0998',
+        '50',
       ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(builds);
     });
   });
 
-  describe('GET /repo-builds/:projectName/:repoName', () => {
+  describe('GET /repo-builds/:projectName/:repoName/:top', () => {
     it('fetches a list of repo builds', async () => {
       const firstRepoBuild: RepoBuild = {
         id: 1,
@@ -182,11 +183,14 @@ describe('createRouter', () => {
 
       azureDevOpsApi.getRepoBuilds.mockResolvedValueOnce(repoBuilds);
 
-      const response = await request(app).get('/repo-builds/myProject/myRepo');
+      const response = await request(app).get(
+        '/repo-builds/myProject/myRepo/50',
+      );
 
       expect(azureDevOpsApi.getRepoBuilds.mock.calls[0]).toEqual([
         'myProject',
         'myRepo',
+        '50',
       ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);

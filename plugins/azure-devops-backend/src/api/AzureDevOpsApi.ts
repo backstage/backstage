@@ -26,12 +26,11 @@ export class AzureDevOpsApi {
   constructor(
     private readonly logger: Logger,
     private readonly webApi: WebApi,
-    private readonly top: number,
   ) {}
 
   async getGitRepository(projectName: string, repoName: string) {
     if (this.logger) {
-      this.logger.info(
+      this.logger.debug(
         `Calling Azure DevOps REST API, getting Repository ${repoName} for Project ${projectName}`,
       );
     }
@@ -40,10 +39,12 @@ export class AzureDevOpsApi {
     return client.getRepository(repoName, projectName);
   }
 
-  async getBuildList(projectName: string, repoId: string) {
+  async getBuildList(projectName: string, repoId: string, top: string) {
+    const topBuilds: number = +top || 10;
+
     if (this.logger) {
-      this.logger.info(
-        `Calling Azure DevOps REST API, getting up to ${this.top} Builds for Repository Id ${repoId} for Project ${projectName}`,
+      this.logger.debug(
+        `Calling Azure DevOps REST API, getting up to ${topBuilds} Builds for Repository Id ${repoId} for Project ${projectName}`,
       );
     }
 
@@ -61,7 +62,7 @@ export class AzureDevOpsApi {
       undefined,
       undefined,
       undefined,
-      this.top,
+      topBuilds,
       undefined,
       undefined,
       undefined,
@@ -73,10 +74,10 @@ export class AzureDevOpsApi {
     );
   }
 
-  async getRepoBuilds(projectName: string, repoName: string) {
+  async getRepoBuilds(projectName: string, repoName: string, top: string) {
     if (this.logger) {
-      this.logger.info(
-        `Calling Azure DevOps REST API, getting up to ${this.top} Builds for Repository ${repoName} for Project ${projectName}`,
+      this.logger.debug(
+        `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository ${repoName} for Project ${projectName}`,
       );
     }
 
@@ -84,6 +85,7 @@ export class AzureDevOpsApi {
     const buildList = await this.getBuildList(
       projectName,
       gitRepository.id as string,
+      top,
     );
 
     const repoBuilds = buildList.map(build => {

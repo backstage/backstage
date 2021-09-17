@@ -405,4 +405,3 @@ azureDevOps:
   host: dev.azure.com
   token: ${AZURE_TOKEN}
   organization: my-company
-  top: 50

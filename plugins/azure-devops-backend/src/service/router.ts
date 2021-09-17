@@ -37,13 +37,12 @@ export async function createRouter(
   const token: string = config.getString('token');
   const host: string = config.getString('host');
   const organization: string = config.getString('organization');
-  const top: number = config.getOptionalNumber('top') || 10;
 
   const authHandler = getPersonalAccessTokenHandler(token);
   const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi, top);
+    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi);
 
   const router = Router();
   router.use(express.json());
@@ -89,17 +88,22 @@ export async function createRouter(
     res.status(200).json(gitRepository);
   });
 
-  router.get('/builds/:projectName/:repoId', async (req, res) => {
-    const { projectName, repoId } = req.params;
-    const buildList = await azureDevOpsApi.getBuildList(projectName, repoId);
+  router.get('/builds/:projectName/:repoId/:top', async (req, res) => {
+    const { projectName, repoId, top } = req.params;
+    const buildList = await azureDevOpsApi.getBuildList(
+      projectName,
+      repoId,
+      top,
+    );
     res.status(200).json(buildList);
   });
 
-  router.get('/repo-builds/:projectName/:repoName', async (req, res) => {
-    const { projectName, repoName } = req.params;
+  router.get('/repo-builds/:projectName/:repoName/:top', async (req, res) => {
+    const { projectName, repoName, top } = req.params;
     const gitRepository = await azureDevOpsApi.getRepoBuilds(
       projectName,
       repoName,
+      top,
     );
     res.status(200).json(gitRepository);
   });
