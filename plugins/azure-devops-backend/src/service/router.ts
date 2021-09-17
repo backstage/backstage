@@ -77,8 +77,7 @@ export async function createRouter(
       details = 'Organization is missing';
     }
 
-    logger.info('PONG!');
-    response.status(code).send({ status: status, details: details });
+    response.status(code).json({ status: status, details: details });
   });
 
   router.get('/repository/:projectName/:repoName', async (req, res) => {
@@ -87,13 +86,13 @@ export async function createRouter(
       projectName,
       repoName,
     );
-    res.status(200).send(gitRepository);
+    res.status(200).json(gitRepository);
   });
 
   router.get('/builds/:projectName/:repoId', async (req, res) => {
     const { projectName, repoId } = req.params;
     const buildList = await azureDevOpsApi.getBuildList(projectName, repoId);
-    res.status(200).send(buildList);
+    res.status(200).json(buildList);
   });
 
   router.get('/repo-builds/:projectName/:repoName', async (req, res) => {
@@ -102,7 +101,7 @@ export async function createRouter(
       projectName,
       repoName,
     );
-    res.status(200).send(gitRepository);
+    res.status(200).json(gitRepository);
   });
 
   router.use(errorHandler());

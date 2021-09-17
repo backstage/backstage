@@ -83,7 +83,7 @@ describe('createRouter', () => {
       azureDevOpsApi.getGitRepository.mockResolvedValueOnce(gitRepository);
 
       const response = await request(app).get(
-        `/repository/${'myProject'}/${'myRepo'}`,
+        '/repository/myProject/myRepo',
       );
 
       expect(response.status).toEqual(200);
@@ -128,7 +128,7 @@ describe('createRouter', () => {
       azureDevOpsApi.getBuildList.mockResolvedValueOnce(builds);
 
       const response = await request(app).get(
-        `/builds/${'myProject'}/${'af4ae3af-e747-4129-9bbc-d1329f6b0998'}`,
+        '/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998',
       );
 
       expect(response.status).toEqual(200);
@@ -177,7 +177,7 @@ describe('createRouter', () => {
       azureDevOpsApi.getRepoBuilds.mockResolvedValueOnce(repoBuilds);
 
       const response = await request(app).get(
-        `/repo-builds/${'myProject'}/${'myRepo'}`,
+        '/repo-builds/myProject/myRepo',
       );
 
       expect(response.status).toEqual(200);
