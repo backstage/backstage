@@ -65,7 +65,7 @@ export const SelectedRelationsFilter = ({
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Relations</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         className={classes.formControl}
         multiple
         limitTags={4}

@@ -81,7 +81,7 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Kinds</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         className={classes.formControl}
         multiple
         limitTags={4}
