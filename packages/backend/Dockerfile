@@ -13,6 +13,7 @@ FROM container-registry.dev8.bip.va.gov/ironbank/opensource/nodejs/nodejs14:14.1
 
 WORKDIR /app
 
+RUN whoami
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
