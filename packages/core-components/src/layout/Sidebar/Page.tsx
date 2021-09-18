@@ -1,3 +1,4 @@
+import { BackstageTheme } from '@backstage/theme';
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -18,25 +19,35 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, {
   createContext,
   PropsWithChildren,
+  useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
+
 import { sidebarConfig } from './config';
-import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
+const useStyles = makeStyles<BackstageTheme, { isPinned?: boolean }>(
   {
     root: {
       width: '100%',
       minHeight: '100%',
       transition: 'padding-left 0.1s ease-out',
+      isolation: 'isolate',
       paddingLeft: ({ isPinned }) =>
         isPinned
           ? sidebarConfig.drawerWidthOpen
           : sidebarConfig.drawerWidthClosed,
+    },
+    content: {
+      zIndex: 0,
+      isolation: 'isolate',
+      '&:focus': {
+        outline: 0,
+      },
     },
   },
   { name: 'BackstageSidebarPage' },
@@ -47,12 +58,18 @@ export type SidebarPinStateContextType = {
   toggleSidebarPinState: () => any;
 };
 
+export type SidebarPageContextType = {
+  contentRef?: React.MutableRefObject<HTMLDivElement | null>;
+};
+
 export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   {
     isPinned: false,
     toggleSidebarPinState: () => {},
   },
 );
+
+export const SidebarPageContext = createContext<SidebarPageContextType>({});
 
 export function SidebarPage(props: PropsWithChildren<{}>) {
   const [isPinned, setIsPinned] = useState(() =>
@@ -66,6 +83,7 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
   const classes = useStyles({ isPinned });
+  const contentRef = useRef(null);
   return (
     <SidebarPinStateContext.Provider
       value={{
@@ -73,7 +91,20 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
         toggleSidebarPinState,
       }}
     >
-      <div className={classes.root}>{props.children}</div>
+      <SidebarPageContext.Provider value={{ contentRef }}>
+        <div className={classes.root}>{props.children}</div>
+      </SidebarPageContext.Provider>
     </SidebarPinStateContext.Provider>
+  );
+}
+
+export function SideBarPageContent(props: PropsWithChildren<{}>) {
+  const { contentRef } = useContext(SidebarPageContext);
+  const classes = useStyles({});
+
+  return (
+    <div ref={contentRef} tabIndex={-1} className={classes.content}>
+      {props.children}
+    </div>
   );
 }

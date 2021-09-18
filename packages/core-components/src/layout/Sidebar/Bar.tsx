@@ -1,3 +1,4 @@
+import { BackstageTheme } from '@backstage/theme';
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -16,10 +17,12 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import React, { useRef, useState, useContext, PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
+
+import { SidebarPageContext } from '.';
 import { sidebarConfig, SidebarContext } from './config';
-import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 
 export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
@@ -27,7 +30,7 @@ export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     root: {
-      zIndex: 1000,
+      zIndex: 1,
       position: 'relative',
       overflow: 'visible',
       width: theme.spacing(7) + 1,
@@ -65,6 +68,15 @@ const useStyles = makeStyles<BackstageTheme>(
         duration: theme.transitions.duration.shorter,
       }),
     },
+    visuallyHidden: {
+      top: 0,
+      position: 'absolute',
+      zIndex: 2,
+      transform: 'translateY(-200%)',
+      '&:focus': {
+        transform: 'translateY(5px)',
+      },
+    },
   }),
   { name: 'BackstageSidebar' },
 );
@@ -93,6 +105,11 @@ export function Sidebar(props: PropsWithChildren<Props>) {
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
   const { isPinned } = useContext(SidebarPinStateContext);
+  const { contentRef } = useContext(SidebarPageContext);
+
+  const focusContent = () => {
+    contentRef?.current?.focus();
+  };
 
   const handleOpen = () => {
     if (isPinned) {
@@ -116,6 +133,7 @@ export function Sidebar(props: PropsWithChildren<Props>) {
     if (isPinned) {
       return;
     }
+    focusContent();
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
@@ -133,27 +151,36 @@ export function Sidebar(props: PropsWithChildren<Props>) {
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   return (
-    <div
-      className={classes.root}
-      onMouseEnter={handleOpen}
-      onFocus={handleOpen}
-      onMouseLeave={handleClose}
-      onBlur={handleClose}
-      data-testid="sidebar-root"
-    >
-      <SidebarContext.Provider
-        value={{
-          isOpen,
-        }}
+    <div style={{}}>
+      <Button
+        onClick={focusContent}
+        variant="contained"
+        className={clsx(classes.visuallyHidden)}
       >
-        <div
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: isOpen,
-          })}
+        Skip to content
+      </Button>
+      <div
+        className={classes.root}
+        onMouseEnter={handleOpen}
+        onFocus={handleOpen}
+        onMouseLeave={handleClose}
+        onBlur={handleClose}
+        data-testid="sidebar-root"
+      >
+        <SidebarContext.Provider
+          value={{
+            isOpen,
+          }}
         >
-          {children}
-        </div>
-      </SidebarContext.Provider>
+          <div
+            className={clsx(classes.drawer, {
+              [classes.drawerOpen]: isOpen,
+            })}
+          >
+            {children}
+          </div>
+        </SidebarContext.Provider>
+      </div>
     </div>
   );
 }
