@@ -565,4 +565,29 @@ Some utilities...
 - https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver
   - Browser standard! Would be easy to lean on this, let's try it!
 
+#### Implementation
+
 [Off we go!](../../plugins/welcome/src/components/Experiment/Experiment1.tsx)
+
+#### Learnings
+
+A layout provider + card extension seems pretty smooth.
+
+The internal layout contract seem sane as well and is likely something we can
+use anywhere where content is supposed to be supplied.
+
+The sizing and size parameters don't quite work out though. Getting the size
+from the layout contract could be a nice utility, but one could also just have a
+resize hook to use when it's actually needed.
+
+Supplying layout parameters and whatnot doesn't work at all in this experiment,
+as the laying out of cards is completely separate from the card wrapping.
+Perhaps just drop that entire part of this and leave that to be completely open?
+
+We probably want to continue in the direction of investigating just
+LayoutContract + Layout providers of various kinds. We can figure out the exact
+interface for the provider(s) at some point, but next experiment should probably
+be around what one of these single layout items might looks like, probably a
+card. There's also some naming that needs to be figured out. After that
+experiment we could potentially then have a look at how to make it easy to
+create custom layouts that work well with all parts of Backstage.
