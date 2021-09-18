@@ -32,4 +32,6 @@ RUN chown -hR node /app
 
 USER node
 
+EXPOSE 80
+
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
