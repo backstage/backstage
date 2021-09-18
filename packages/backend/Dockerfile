@@ -11,9 +11,9 @@
 
 FROM container-registry.dev8.bip.va.gov/ironbank/opensource/nodejs/nodejs14:14.17.6
 
-WORKDIR /app
+USER root
 
-RUN whoami
+WORKDIR /app
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -27,5 +27,7 @@ RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+USER node
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
