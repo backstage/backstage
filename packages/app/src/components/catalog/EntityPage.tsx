@@ -40,8 +40,7 @@ import {
   isKind,
   EntityHasResourcesCard,
   EntityOrphanWarning,
-  EntityProcessingErrorsPanel,
-  hasCatalogProcessingErrors,
+  TreeProcessingErrorsPanel,
   isOrphan,
 } from '@backstage/plugin-catalog';
 import {
@@ -221,13 +220,9 @@ const entityWarningContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    <EntitySwitch>
-      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
-        <Grid item xs={12}>
-          <EntityProcessingErrorsPanel />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
+    <Grid item xs={12}>
+      <TreeProcessingErrorsPanel />
+    </Grid>
   </>
 );
 

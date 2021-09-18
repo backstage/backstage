@@ -17,4 +17,5 @@
 export {
   EntityProcessingErrorsPanel,
   hasCatalogProcessingErrors,
+  TreeProcessingErrorsPanel,
 } from './EntityProcessingErrorsPanel';

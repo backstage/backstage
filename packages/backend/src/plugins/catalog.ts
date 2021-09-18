@@ -24,7 +24,10 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
+  const builder = await (
+    await CatalogBuilder.create(env)
+  ).setRefreshIntervalSeconds(10);
+
   const {
     entitiesCatalog,
     locationAnalyzer,
