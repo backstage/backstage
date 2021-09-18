@@ -15,21 +15,19 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { act, render } from '@testing-library/react';
-import React from 'react';
-import { catalogImportApiRef, CatalogImportClient } from '../api';
-import { ImportComponentPage } from './ImportComponentPage';
-
 import {
   ApiProvider,
   ApiRegistry,
   ConfigReader,
 } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
+import { catalogImportApiRef, CatalogImportClient } from '../../api';
+import { DefaultImportPage } from './DefaultImportPage';
 
-describe('<ImportComponentPage />', () => {
+describe('<DefaultImportPage />', () => {
   const identityApi = {
     getUserId: () => {
       return 'user';
@@ -63,23 +61,20 @@ describe('<ImportComponentPage />', () => {
           identityApi,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
+          configApi: {} as any,
         }),
       );
   });
 
   it('renders without exploding', async () => {
-    await act(async () => {
-      const { getByText } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <ImportComponentPage />
-          </ApiProvider>,
-        ),
-      );
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <DefaultImportPage />
+      </ApiProvider>,
+    );
 
-      expect(
-        await getByText('Start tracking your component in Backstage'),
-      ).toBeInTheDocument();
-    });
+    expect(
+      getByText('Start tracking your component in Backstage'),
+    ).toBeInTheDocument();
   });
 });

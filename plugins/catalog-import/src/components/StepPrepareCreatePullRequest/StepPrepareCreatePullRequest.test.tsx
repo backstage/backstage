@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import { act, render, screen } from '@testing-library/react';
@@ -25,12 +27,12 @@ import {
   generateEntities,
   StepPrepareCreatePullRequest,
 } from './StepPrepareCreatePullRequest';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
     analyzeUrl: jest.fn(),
     submitPullRequest: jest.fn(),
+    preparePullRequest: jest.fn(),
   };
 
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
@@ -44,12 +46,16 @@ describe('<StepPrepareCreatePullRequest />', () => {
     removeEntityByUid: jest.fn(),
   };
 
+  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
+    error$: jest.fn(),
+    post: jest.fn(),
+  };
+
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ApiProvider
-      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi).with(
-        catalogApiRef,
-        catalogApi,
-      )}
+      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi)
+        .with(catalogApiRef, catalogApi)
+        .with(errorApiRef, errorApi)}
     >
       {children}
     </ApiProvider>
@@ -77,16 +83,19 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    (catalogImportApi.preparePullRequest! as jest.Mock).mockResolvedValue({
+      title: 'My title',
+      body: 'My **body**',
+    });
   });
 
   it('renders without exploding', async () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
     await act(async () => {
-      const { getByText } = render(
+      const { findByText } = render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
@@ -105,8 +114,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      const title = getByText('My title');
-      const description = getByText('body', { selector: 'strong' });
+      const title = await findByText('My title');
+      const description = await findByText('body', { selector: 'strong' });
       expect(title).toBeInTheDocument();
       expect(title).toBeVisible();
       expect(description).toBeInTheDocument();
@@ -124,10 +133,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
@@ -154,11 +161,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      await userEvent.type(await screen.getByLabelText('name'), '-changed');
-      await userEvent.type(await screen.getByLabelText('owner'), '-changed');
-      await userEvent.click(
-        await screen.getByRole('button', { name: /Create PR/i }),
-      );
+      userEvent.type(await screen.findByLabelText('name'), '-changed');
+      userEvent.type(await screen.findByLabelText('owner'), '-changed');
+      userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
     });
 
     expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
@@ -212,10 +217,8 @@ spec:
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
@@ -234,8 +237,8 @@ spec:
         },
       );
 
-      await userEvent.click(
-        await screen.getByRole('button', { name: /Create PR/i }),
+      userEvent.click(
+        await screen.findByRole('button', { name: /Create PR/i }),
       );
     });
 
@@ -261,10 +264,8 @@ spec:
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={renderFormFieldsFn}

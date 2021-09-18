@@ -25,6 +25,5 @@ export {
   catalogImportPlugin as plugin,
   CatalogImportPage,
 } from './plugin';
-export { Router } from './components/Router';
 export * from './components';
 export * from './api';
