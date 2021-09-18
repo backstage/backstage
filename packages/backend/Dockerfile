@@ -11,7 +11,7 @@
 
 FROM container-registry.dev8.bip.va.gov/ironbank/opensource/nodejs/nodejs14:14.17.6
 
-WORKDIR /appexit
+WORKDIR /app
 
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
