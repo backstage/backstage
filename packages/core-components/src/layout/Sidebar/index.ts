@@ -15,8 +15,16 @@
  */
 
 export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
+export {
+  SidebarPage,
+  SidebarPinStateContext,
+  SideBarPageContent,
+  SidebarPageContext,
+} from './Page';
+export type {
+  SidebarPinStateContextType,
+  SidebarPageContextType,
+} from './Page';
 export {
   SidebarDivider,
   SidebarItem,
