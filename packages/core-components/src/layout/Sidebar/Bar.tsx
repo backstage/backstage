@@ -17,11 +17,17 @@
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, { useState, useContext, useRef } from 'react';
+
+import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
+import Button from '@material-ui/core/Button';
+
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 import { MobileSidebar } from './MobileSidebar';
+import DoubleArrowRight from './icons/DoubleArrowRight';
+import DoubleArrowLeft from './icons/DoubleArrowLeft';
+import { useLayoutContent } from '../LayoutProvider/LayoutProvider';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
@@ -59,6 +65,15 @@ const useStyles = makeStyles<BackstageTheme>(
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.shorter,
       }),
+    },
+    visuallyHidden: {
+      top: 0,
+      position: 'absolute',
+      zIndex: 2,
+      transform: 'translateY(-200%)',
+      '&:focus': {
+        transform: 'translateY(5px)',
+      },
     },
   }),
   { name: 'BackstageSidebar' },
@@ -105,6 +120,7 @@ const DesktopSidebar = (props: SidebarProps) => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );
+  const { focusContent } = useLayoutContent();
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -128,6 +144,7 @@ const DesktopSidebar = (props: SidebarProps) => {
     if (isPinned || disableExpandOnHover) {
       return;
     }
+    focusContent();
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
@@ -158,25 +175,42 @@ const DesktopSidebar = (props: SidebarProps) => {
   };
 
   return (
-    <SidebarContext.Provider
-      value={{
-        isOpen,
-        setOpen,
-      }}
-    >
-      <div
-        onMouseEnter={handleOpen}
-        onFocus={handleOpen}
-        onMouseLeave={handleClose}
-        onBlur={handleClose}
-        data-testid="sidebar-root"
-        className={classnames(classes.drawer, {
-          [classes.drawerOpen]: isOpen,
-        })}
+    <div style={{}}>
+      <Button
+        onClick={focusContent}
+        variant="contained"
+        className={classnames(classes.visuallyHidden)}
       >
-        {children}
-      </div>
-    </SidebarContext.Provider>
+        Skip to content
+      </Button>
+      <SidebarContext.Provider
+        value={{
+          isOpen,
+          setOpen,
+        }}
+      >
+        <div
+          className={classes.root}
+          data-testid="sidebar-root"
+          onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
+          onFocus={
+            disableExpandOnHover ? () => {} : ignoreChildEvent(handleOpen)
+          }
+          onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
+          onBlur={
+            disableExpandOnHover ? () => {} : ignoreChildEvent(handleClose)
+          }
+        >
+          <div
+            className={classnames(classes.drawer, {
+              [classes.drawerOpen]: isOpen,
+            })}
+          >
+            {children}
+          </div>
+        </div>
+      </SidebarContext.Provider>
+    </div>
   );
 };
 
@@ -201,3 +235,12 @@ export const Sidebar = (props: SidebarProps) => {
     </DesktopSidebar>
   );
 };
+function ignoreChildEvent(handlerFn: (e?: any) => void) {
+  // TODO type the event
+  return (event: any) => {
+    const currentTarget = event?.currentTarget as HTMLElement;
+    if (!currentTarget?.contains(event.relatedTarget as HTMLElement)) {
+      handlerFn(event);
+    }
+  };
+}

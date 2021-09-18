@@ -15,7 +15,14 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, { createContext, useEffect, useState } from 'react';
+
+import React, {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
+
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
@@ -28,6 +35,7 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
     root: {
       width: '100%',
       transition: 'padding-left 0.1s ease-out',
+      isolation: 'isolate',
       [theme.breakpoints.up('sm')]: {
         paddingLeft: ({ isPinned }) =>
           isPinned
@@ -36,6 +44,13 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
       },
       [theme.breakpoints.down('xs')]: {
         paddingBottom: sidebarConfig.mobileSidebarHeight,
+      },
+    },
+    content: {
+      zIndex: 0,
+      isolation: 'isolate',
+      '&:focus': {
+        outline: 0,
       },
     },
   }),

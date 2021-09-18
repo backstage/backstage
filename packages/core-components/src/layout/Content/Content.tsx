@@ -17,6 +17,7 @@
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
+import { useLayoutContent } from '../LayoutProvider/LayoutProvider';
 
 /** @public */
 export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';
@@ -62,9 +63,14 @@ type Props = {
 
 export function Content(props: PropsWithChildren<Props>) {
   const { className, stretch, noPadding, children, ...restProps } = props;
+
+  const { contentRef } = useLayoutContent();
+
   const classes = useStyles();
   return (
     <article
+      ref={contentRef}
+      tabIndex={-1}
       {...restProps}
       className={classNames(classes.root, className, {
         [classes.stretch]: stretch,
