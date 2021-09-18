@@ -39,6 +39,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
       },
     },
@@ -48,6 +49,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
       },
     },
@@ -64,6 +66,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('@sucrase/webpack-loader'),
           options: {
             transforms: ['jsx', ...extraTransforms],
+            disableESTransforms: true,
             production: !isDev,
           },
         },
