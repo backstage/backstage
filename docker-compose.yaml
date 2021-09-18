@@ -13,7 +13,7 @@ services:
   backstage:
     build:
       context: .
-      dockerfile: packages/backend/Dockerfile
+      dockerfile: packages/backend/Dockerfile-local
     env_file:
       - .env
     ports:
