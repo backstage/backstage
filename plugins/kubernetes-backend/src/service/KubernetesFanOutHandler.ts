@@ -28,6 +28,7 @@ import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator
 
 export const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
   'pods',
+  'podmetrics',
   'services',
   'configmaps',
   'deployments',

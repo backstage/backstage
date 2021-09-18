@@ -54,6 +54,7 @@ export interface FetchResponseWrapper {
 
 export type KubernetesObjectTypes =
   | 'pods'
+  | 'podmetrics'
   | 'services'
   | 'configmaps'
   | 'deployments'

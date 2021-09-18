@@ -33,7 +33,6 @@ export class KubernetesClientProvider {
       skipTLSVerify: clusterDetails.skipTLSVerify,
     };
 
-    // TODO configure
     const user = {
       name: 'backstage',
       token: clusterDetails.serviceAccountToken,
@@ -83,5 +82,9 @@ export class KubernetesClientProvider {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(CustomObjectsApi);
+  }
+
+  getRawClient(clusterDetails: ClusterDetails) {
+    return this.getKubeConfig(clusterDetails);
   }
 }

@@ -19,6 +19,7 @@ import {
   AutoscalingV1Api,
   CoreV1Api,
   ExtensionsV1beta1Ingress,
+  KubeConfig,
   NetworkingV1beta1Api,
   V1ConfigMap,
   V1Deployment,
@@ -42,19 +43,23 @@ import {
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  PodMetric,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
+import {KubernetesMetricsClient} from './KubernetesMetricsClient';
 
 export interface Clients {
   core: CoreV1Api;
   apps: AppsV1Api;
   autoscaling: AutoscalingV1Api;
   networkingBeta1: NetworkingV1beta1Api;
+  rawClient: KubeConfig
 }
 
 export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
   logger: Logger;
+  kubernetesMetricsClient: KubernetesMetricsClient;
 }
 
 type FetchResult = FetchResponse | KubernetesFetchError;
@@ -102,13 +107,16 @@ const captureKubernetesErrorsRethrowOthers = (e: any): KubernetesFetchError => {
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly kubernetesClientProvider: KubernetesClientProvider;
   private readonly logger: Logger;
+  private readonly kubernetesMetricsClient: KubernetesMetricsClient;
 
   constructor({
     kubernetesClientProvider,
     logger,
+    kubernetesMetricsClient,
   }: KubernetesClientBasedFetcherOptions) {
     this.kubernetesClientProvider = kubernetesClientProvider;
     this.logger = logger;
+    this.kubernetesMetricsClient = kubernetesMetricsClient;
   }
 
   fetchObjectsForService(
@@ -146,6 +154,13 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     switch (type) {
       case 'pods':
         return this.fetchPodsForService(clusterDetails, labelSelector).then(
+          r => ({
+            type: type,
+            resources: r,
+          }),
+        );
+      case 'podmetrics':
+        return this.fetchPodMetricsForService(clusterDetails, labelSelector).then(
           r => ({
             type: type,
             resources: r,
@@ -229,9 +244,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       );
     const networkingBeta1 =
       this.kubernetesClientProvider.getNetworkingBeta1Client(clusterDetails);
+    const rawClient =
+      this.kubernetesClientProvider.getRawClient(clusterDetails);
 
     this.logger.debug(`calling cluster=${clusterDetails.name}`);
-    return fn({ core, apps, autoscaling, networkingBeta1 }).then(({ body }) => {
+    return fn({ core, apps, autoscaling, networkingBeta1, rawClient }).then(({ body }) => {
       return body.items;
     });
   }
@@ -251,6 +268,15 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   ): Promise<Array<V1Pod>> {
     return this.singleClusterFetch<V1Pod>(clusterDetails, ({ core }) =>
       core.listPodForAllNamespaces(false, '', '', labelSelector),
+    );
+  }
+
+  private fetchPodMetricsForService(
+    clusterDetails: ClusterDetails,
+    labelSelector: string,
+  ): Promise<Array<PodMetric>> {
+    return this.singleClusterFetch<PodMetric>(clusterDetails, ({ rawClient }) =>
+        this.kubernetesMetricsClient.getClustermetricsByConfig(rawClient),
     );
   }
 

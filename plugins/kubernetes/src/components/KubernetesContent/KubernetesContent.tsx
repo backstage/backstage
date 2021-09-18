@@ -38,6 +38,7 @@ import EmptyStateImage from '../../assets/emptystate.svg';
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
+  PodNamesWithMetricsContext,
   useKubernetesObjects,
 } from '../../hooks';
 
@@ -118,9 +119,15 @@ type ClusterProps = {
 
 const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
+
+  let podsToMetrics = new Map();
+  groupedResponses.podMetrics.forEach(podMetric => {
+    podsToMetrics.set(podMetric.podName, podMetric)
+  })
   return (
     <GroupedResponsesContext.Provider value={groupedResponses}>
       <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+      <PodNamesWithMetricsContext.Provider value={podsToMetrics}>
         <Accordion TransitionProps={{ unmountOnExit: true }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ClusterSummary
@@ -146,6 +153,7 @@ const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
             </Grid>
           </AccordionDetails>
         </Accordion>
+        </PodNamesWithMetricsContext.Provider>
       </PodNamesWithErrorsContext.Provider>
     </GroupedResponsesContext.Provider>
   );
