@@ -82,6 +82,7 @@
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
     "json-schema": "^0.3.0",
+    "jest-transform-yaml": "^0.1.1",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.4.1",
     "node-libs-browser": "^2.2.1",
@@ -112,7 +113,6 @@
     "webpack-dev-server": "4.0.0-rc.0",
     "webpack-node-externals": "^3.0.0",
     "yaml": "^1.10.0",
-    "yaml-jest": "^1.0.5",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
   },
@@ -141,7 +141,7 @@
     "@types/webpack-dev-server": "^3.11.5",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "del": "^6.0.0",
-    "mock-fs": "^4.13.0",
+    "mock-fs": "^5.1.0",
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
   },

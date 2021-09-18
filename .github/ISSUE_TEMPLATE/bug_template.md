@@ -38,6 +38,6 @@ labels: bug
 
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 
-- NodeJS Version (v12):
+- NodeJS Version (v14):
 - Operating System and Version (e.g. Ubuntu 14.04):
 - Browser Information:

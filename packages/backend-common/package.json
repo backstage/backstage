@@ -97,7 +97,7 @@
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
-    "mock-fs": "^4.13.0",
+    "mock-fs": "^5.1.0",
     "msw": "^0.29.0",
     "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",

@@ -48,7 +48,7 @@
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^14.14.32",
     "@types/yup": "^0.29.8",
-    "mock-fs": "^4.13.0"
+    "mock-fs": "^5.1.0"
   },
   "files": [
     "dist"
