@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * A library for Backstage backend plugins that want to interact with the search backend plugin
- *
- * @packageDocumentation
- */
-
-export { IndexBuilder } from './IndexBuilder';
-export { Scheduler } from './Scheduler';
-export { LunrSearchEngine } from './engines';
-export { BatchSearchEngineIndexer } from './indexing';
-
-/**
- * @deprecated Import from @backstage/search-common instead
- */
-export type { SearchEngine } from '@backstage/search-common';
+export { BatchSearchEngineIndexer } from './BatchSearchEngineIndexer';
