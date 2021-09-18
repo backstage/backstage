@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginEndpointDiscovery, TokenManager } from '@backstage/backend-common';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
@@ -23,6 +23,7 @@ import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 
 type FactoryOptions = {
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
   filter?: CatalogEntitiesRequest['filter'];
 };
 
