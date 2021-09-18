@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
+export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
 
 export type { TechDocsCollatorOptions } from './DefaultTechDocsCollator';
 
