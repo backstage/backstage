@@ -63,7 +63,7 @@ If you've been waiting for the beta to give TechDocs a shot, good news! You'll g
 
 If you're upgrading from a prior, alpha version of TechDocs, be aware that there are some breaking changes that you will need to account for. Most importantly:
 
-- Be sure your app's instance of TechDocs is wired up to use the composability API. [See full migration instructions here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+- Be sure your app's instance of TechDocs is wired up to use the composability API. [See full routing instructions here](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#0338).
 - If you've configured TechDocs to publish generated content to a remote storage solution provider like AWS S3, Google Cloud Storage, or Azure Blob Storage, you will need to use the TechDocs CLI to migrate the contents of your storage bucket. [See full migration instructions here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
 - In order to take advantage of the stale file deletion functionality, you may need to add some permissions to the account or role used by your TechDocs backend to publish contents to your storage provider. [See "Using Cloud Storage docs"](https://backstage.io/docs/features/techdocs/using-cloud-storage) for updated permissions recommendations.
 
