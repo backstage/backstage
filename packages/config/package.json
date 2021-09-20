@@ -32,10 +32,7 @@
   "dependencies": {
     "lodash": "^4.17.21"
   },
-  "devDependencies": {
-    "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32"
-  },
+  "devDependencies": {},
   "files": [
     "dist"
   ]
