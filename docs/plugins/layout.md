@@ -567,7 +567,7 @@ Some utilities...
 
 #### Implementation
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment1.tsx)
+[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment6.tsx)
 
 #### Learnings
 
@@ -591,3 +591,85 @@ be around what one of these single layout items might looks like, probably a
 card. There's also some naming that needs to be figured out. After that
 experiment we could potentially then have a look at how to make it easy to
 create custom layouts that work well with all parts of Backstage.
+
+### Experiment 7 - What's in the Box?
+
+Let's poke around the project and figure out what kind of properties of the
+`InfoCard` people are using at the moment, and then make an attempt at some kind
+of interface for describing that in a generic way.
+
+#### Research - `InfoCard` usage
+
+- `DocsCardGrid`
+  - uses `ItemCardGrid` (?????)
+- `EntitySplunkOnCallCard`
+  - `Card` + `CardHeader` with `title`, `subheader` + Divider + `CardContent`
+- `SonarQubeCard`
+  - `title`, `deepLink`, `variant`, `headerProps` ..., `className` ...
+- `EntitySentryCard`
+  - `title`, `variant`
+- `EntityPagerDutyCard`
+  - `Card` + `CardHeader` with `title`, `subheader` + Divider + `CardContent`
+- `EntityGroupProfileCard`
+  - `title` (`CardTitle`), `subheader`, `variant`, `action`
+- `EntityMembersListCard`
+  - `Grid item` ???, then `InfoCard` with `title`, `subheader`, `action`
+- `EntityOwnershipCard`
+  - `title`, `variant`
+- `EntityUserProfileCard`
+  - `title` (`CardTitle`), `variant`
+- `EntityLatestJenkinsRunCard`
+  - `title`, `variant`
+- `EntityILertCard`
+  - Uses `Card`..., `CardHeader` with `title`, `subheader`, `action` + Divider +
+    `CardContent
+- `GitReleaseManagerPage`
+  - `Box maxWith={999}` + `ContentHeader title='...'` + `InfoCardPlus`...
+- `EntityFossaCard`
+  - `title`, `deepLink`, `variant`, `className`
+- `FirehydrantCard`
+  - Plain `<InfoCard>`
+- `EntityLatestCloudbuildRunCard`
+  - `title`
+- `EntityLatestCloudbuildsForBranchCard`
+  - `title`
+- `EntityAboutCard`
+  - `Card` + `CardHeader` with `title`, `action` + `Divider` + `CardContent`
+- `EntityLinksCard`
+  - `title`, `variant`
+- `EntityHasSystemsCard`
+  - `RelatedEntitiesCard` -> `EntityTable` -> `Table` with `title`
+- `EntityHasComponentsCard`
+  - ''
+- `EntityHasSubcomponentsCard`
+  - ''
+- `EntityHasResourcesCard`
+  - ''
+- `EntityDependsOnComponentsCard`
+  - ''
+- `EntityDependencyOfComponentsCard`
+  - ''
+- `EntityDependsOnResourcesCard`
+  - ''
+- `EntitySystemDiagramCard`
+  - `title`
+
+#### Plan
+
+Looks like there's about as many different ways to do card extensions as there
+are card extensions. The main pattern however seems to be an `InfoCard` with
+`title`, `subheader`, `action`, and `deepLink`. The `variant` and `className`
+usages are things we want to get rid of and standardize as part of the
+`LayoutContract`. There are a couple of deconstructed `InfoCard` where `Card`
+with `CardHeader` and `CardContent` is used instead, and these will need a
+deeper look once we approach some kind of API, just to figure out why and if
+it's something we need to support.
+
+For the actual implementation of this experiment we'll want to look at a
+concrete implementation that supports the basic `InfoCard` usage, but also
+provides a way for the base card rendering to be replaced with something
+completely different.
+
+#### Implementation
+
+[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment7.tsx)
