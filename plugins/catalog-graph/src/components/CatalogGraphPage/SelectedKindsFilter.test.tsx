@@ -23,21 +23,29 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 jest.mock('@backstage/core-plugin-api');
 jest.mock('@backstage/plugin-catalog-react');
 
-const useApi = useApiMocked as jest.Mock;
-const useEntityKinds = useEntityKindsMocked as jest.Mock;
+const useApi = useApiMocked as jest.Mock<ReturnType<typeof useApiMocked>>;
+const useEntityKinds = useEntityKindsMocked as jest.Mock<
+  ReturnType<typeof useEntityKindsMocked>
+>;
 
 describe('<SelectedKindsFilter/>', () => {
   beforeEach(() => {
     useApi.mockReturnValue({});
     useEntityKinds.mockReturnValue({
+      loading: false,
       kinds: ['API', 'Component', 'System', 'Domain', 'Resource'],
+      error: undefined,
     });
   });
 
   afterEach(() => jest.resetAllMocks());
 
   test('should not explode while loading', () => {
-    useEntityKinds.mockReturnValue({});
+    useEntityKinds.mockReturnValue({
+      loading: true,
+      kinds: undefined,
+      error: undefined,
+    });
     const { baseElement } = render(
       <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />,
     );

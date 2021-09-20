@@ -40,7 +40,7 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   beforeEach(() => {
-    const entities: { [key: string]: Entity } = {
+    const entities: { [ref: string]: Entity } = {
       'b:d/c': {
         apiVersion: 'a',
         kind: 'b',
@@ -155,6 +155,7 @@ describe('<EntityRelationsGraph/>', () => {
       getLocationByEntity: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
+      refreshEntity: jest.fn(),
     };
     const apis = ApiRegistry.with(catalogApiRef, catalog);
 

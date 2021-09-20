@@ -24,7 +24,7 @@ import classNames from 'classnames';
 import React, { MouseEvent, useEffect, useMemo } from 'react';
 import { CustomLabel } from './CustomLabel';
 import { CustomNode } from './CustomNode';
-import { RelationPairs, RELATION_PAIRS } from './relations';
+import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { Direction, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
@@ -73,7 +73,7 @@ export const EntityRelationsGraph = ({
   relations,
   direction = Direction.LEFT_RIGHT,
   onNodeClick,
-  relationPairs = RELATION_PAIRS,
+  relationPairs = ALL_RELATION_PAIRS,
   className,
 }: {
   rootEntityNames: EntityName | EntityName[];
@@ -83,7 +83,7 @@ export const EntityRelationsGraph = ({
   kinds?: string[];
   relations?: string[];
   direction?: Direction;
-  onNodeClick?: (value: EntityNode, event: MouseEvent<SVGElement>) => void;
+  onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
   className?: string;
 }) => {

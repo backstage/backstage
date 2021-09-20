@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi as useApiMocked } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useEntityStore } from './useEntityStore';
 
 jest.mock('@backstage/core-plugin-api');
+
+const useApi = useApiMocked as jest.Mocked<any>;
 
 describe('useEntityStore', () => {
   let catalogApi: jest.Mocked<CatalogApi>;
@@ -34,9 +36,10 @@ describe('useEntityStore', () => {
       getLocationByEntity: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
+      refreshEntity: jest.fn(),
     };
 
-    (useApi as jest.Mock<any>).mockReturnValue(catalogApi);
+    useApi.mockReturnValue(catalogApi);
   });
 
   afterEach(() => jest.resetAllMocks());

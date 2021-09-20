@@ -35,7 +35,7 @@ import {
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
-  RELATION_PAIRS,
+  ALL_RELATION_PAIRS,
 } from '../EntityRelationsGraph';
 import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
@@ -97,7 +97,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const CatalogGraphPage = ({
-  relationPairs = RELATION_PAIRS,
+  relationPairs = ALL_RELATION_PAIRS,
   initialState,
 }: {
   relationPairs?: RelationPairs;
@@ -134,13 +134,13 @@ export const CatalogGraphPage = ({
     toggleShowFilters,
   } = useCatalogGraphPage({ initialState });
   const onNodeClick = useCallback(
-    (node: EntityNode, event: MouseEvent) => {
+    (node: EntityNode, event: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
 
       if (event.shiftKey) {
         const path = catalogEntityRoute({
-          kind: nodeEntityName.kind.toLowerCase(),
-          namespace: nodeEntityName.namespace.toLowerCase(),
+          kind: nodeEntityName.kind.toLocaleLowerCase('en-US'),
+          namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
           name: nodeEntityName.name,
         });
         navigate(path);

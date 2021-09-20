@@ -26,7 +26,9 @@ import { useEntityStore as useEntityStoreMocked } from './useEntityStore';
 
 jest.mock('./useEntityStore');
 
-const useEntityStore = useEntityStoreMocked as jest.Mock;
+const useEntityStore = useEntityStoreMocked as jest.Mock<
+  ReturnType<typeof useEntityStoreMocked>
+>;
 
 describe('useEntityRelationGraph', () => {
   const requestEntities = jest.fn();

@@ -33,7 +33,7 @@ export function useEntityRelationGraph({
     kinds?: string[];
   };
 }): {
-  entities?: { [key: string]: Entity };
+  entities?: { [ref: string]: Entity };
   loading: boolean;
   error?: Error;
 } {
@@ -63,7 +63,8 @@ export function useEntityRelationGraph({
           for (const rel of entity.relations) {
             if (
               (!relations || relations.includes(rel.type)) &&
-              (!kinds || kinds.includes(rel.target.kind.toLowerCase()))
+              (!kinds ||
+                kinds.includes(rel.target.kind.toLocaleLowerCase('en-US')))
             ) {
               const relationEntityRef = stringifyEntityRef(rel.target);
 

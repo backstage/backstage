@@ -47,7 +47,6 @@ import {
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
   EntitySwitch,
-  EntitySystemDiagramCard,
   hasCatalogProcessingErrors,
   isComponentType,
   isKind,
@@ -265,7 +264,7 @@ const overviewContent = (
     </Grid>
 
     <Grid item md={6} xs={12}>
-      <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+      <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
 
     <EntitySwitch>
@@ -476,7 +475,7 @@ const apiPage = (
           <EntityAboutCard />
         </Grid>
         <Grid item md={6} xs={12}>
-          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item xs={12}>
           <Grid container>
@@ -545,7 +544,7 @@ const systemPage = (
           <EntityAboutCard variant="gridItem" />
         </Grid>
         <Grid item md={6} xs={12}>
-          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item md={6}>
           <EntityHasComponentsCard variant="gridItem" />
@@ -559,14 +558,11 @@ const systemPage = (
       </Grid>
     </EntityLayout.Route>
     <EntityLayout.Route path="/diagram" title="Diagram">
-      <EntitySystemDiagramCard />
-    </EntityLayout.Route>
-    <EntityLayout.Route path="/relations" title="Diagram (new)">
       <EntityCatalogGraphCard
         variant="gridItem"
         direction={Direction.TOP_BOTTOM}
         title="System Diagram"
-        maxHeight={700}
+        height={700}
         relations={[
           RELATION_PART_OF,
           RELATION_HAS_PART,
@@ -592,7 +588,7 @@ const domainPage = (
           <EntityAboutCard variant="gridItem" />
         </Grid>
         <Grid item md={6} xs={12}>
-          <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />

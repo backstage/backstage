@@ -15,6 +15,9 @@ import { MouseEventHandler } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
+export const ALL_RELATION_PAIRS: RelationPairs;
+
+// @public
 export const CatalogGraphPage: ({
   relationPairs,
   initialState,
@@ -72,7 +75,7 @@ export const EntityCatalogGraphCard: ({
   kinds,
   relations,
   direction,
-  maxHeight,
+  height,
   title,
 }: {
   variant?: InfoCardVariants | undefined;
@@ -83,7 +86,7 @@ export const EntityCatalogGraphCard: ({
   kinds?: string[] | undefined;
   relations?: string[] | undefined;
   direction?: Direction | undefined;
-  maxHeight?: number | undefined;
+  height?: number | undefined;
   title?: string | undefined;
 }) => JSX.Element;
 
@@ -101,7 +104,7 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<{
   namespace: string;
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
-  onClick?: MouseEventHandler<SVGGElement>;
+  onClick?: MouseEventHandler<unknown>;
 }>;
 
 // @public
@@ -125,14 +128,11 @@ export const EntityRelationsGraph: ({
   relations?: string[] | undefined;
   direction?: Direction | undefined;
   onNodeClick?:
-    | ((value: EntityNode, event: MouseEvent_2<SVGElement>) => void)
+    | ((value: EntityNode, event: MouseEvent_2<unknown>) => void)
     | undefined;
   relationPairs?: RelationPairs | undefined;
   className?: string | undefined;
 }) => JSX.Element;
-
-// @public
-export const RELATION_PAIRS: RelationPairs;
 
 // @public
 export type RelationPairs = [string, string][];

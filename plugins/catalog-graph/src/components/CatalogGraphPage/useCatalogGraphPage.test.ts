@@ -26,14 +26,24 @@ jest.mock('react-router', () => ({
 jest.spyOn(window.history, 'replaceState');
 jest.spyOn(window.history, 'pushState');
 
-const useLocation = useLocationMocked as jest.Mock;
-const windowHistoryReplaceState = window.history.replaceState as jest.Mock;
-const windowHistoryPushState = window.history.replaceState as jest.Mock;
+const useLocation = useLocationMocked as jest.Mock<
+  ReturnType<typeof useLocationMocked>
+>;
+const windowHistoryReplaceState = window.history.replaceState as jest.Mock<
+  ReturnType<typeof window.history.replaceState>
+>;
+const windowHistoryPushState = window.history.pushState as jest.Mock<
+  ReturnType<typeof window.history.pushState>
+>;
 
 describe('useCatalogGraphPage', () => {
   beforeEach(() => {
     useLocation.mockReturnValue({
       search: '?',
+      state: {},
+      key: '',
+      pathname: '',
+      hash: '',
     });
   });
 
@@ -71,6 +81,10 @@ describe('useCatalogGraphPage', () => {
     useLocation.mockReturnValueOnce({
       search:
         '?rootEntityRefs[]=b:d/c&maxDepth=2&direction=RL&mergeRelations=false&unidirectional=false&showFilters=false&selectedKinds[]=api&selectedRelations[]=memberOf',
+      state: {},
+      key: '',
+      pathname: '',
+      hash: '',
     });
 
     const { result } = renderHook(() => useCatalogGraphPage({}));

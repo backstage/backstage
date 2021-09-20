@@ -23,11 +23,13 @@ import { useAsyncFn } from 'react-use';
 // TODO: This is a good use case for a graphql API, once it is available in the
 // future.
 
+const limiter = limiterFactory(10);
+
 /**
  * Ensures that a set of requested entities is loaded.
  */
 export function useEntityStore(): {
-  entities: { [key: string]: Entity };
+  entities: { [ref: string]: Entity };
   loading: boolean;
   error?: Error;
   requestEntities: Dispatch<string[]>;
@@ -39,12 +41,12 @@ export function useEntityStore(): {
     cachedEntities: new Map<string, Entity>(),
   });
   const [entities, setEntities] = useState<{
-    [key: string]: Entity;
+    [ref: string]: Entity;
   }>({});
 
   const updateEntities = useCallback(() => {
     const { cachedEntities, requestedEntities } = state.current;
-    const filteredEntities: { [key: string]: Entity } = {};
+    const filteredEntities: { [ref: string]: Entity } = {};
     requestedEntities.forEach(entityRef => {
       const entity = cachedEntities.get(entityRef);
 
@@ -56,7 +58,6 @@ export function useEntityStore(): {
   }, [state, setEntities]);
 
   const [asyncState, fetch] = useAsyncFn(async () => {
-    const limiter = limiterFactory(10);
     const { requestedEntities, outstandingEntities, cachedEntities } =
       state.current;
 

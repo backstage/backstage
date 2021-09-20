@@ -49,7 +49,7 @@ export type RelationPairs = [string, string][];
  *
  * @public
  */
-export const RELATION_PAIRS: RelationPairs = [
+export const ALL_RELATION_PAIRS: RelationPairs = [
   [RELATION_OWNER_OF, RELATION_OWNED_BY],
   [RELATION_CONSUMES_API, RELATION_API_CONSUMED_BY],
   [RELATION_API_PROVIDED_BY, RELATION_PROVIDES_API],

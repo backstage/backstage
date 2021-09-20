@@ -67,7 +67,7 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<{
   /**
    * Optional click handler.
    */
-  onClick?: MouseEventHandler<SVGGElement>;
+  onClick?: MouseEventHandler<unknown>;
 }>;
 
 export type GraphEdge = DependencyGraphTypes.GraphEdge<EntityEdge>;

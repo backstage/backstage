@@ -19,7 +19,7 @@ import {
 } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
 import { useDebounce } from 'react-use';
-import { RelationPairs, RELATION_PAIRS } from './relations';
+import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
 
@@ -34,7 +34,7 @@ export function useEntityRelationNodesAndEdges({
   kinds,
   relations,
   onNodeClick,
-  relationPairs = RELATION_PAIRS,
+  relationPairs = ALL_RELATION_PAIRS,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -42,7 +42,7 @@ export function useEntityRelationNodesAndEdges({
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
-  onNodeClick?: (value: EntityNode, event: MouseEvent<SVGElement>) => void;
+  onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
 }): {
   loading: boolean;
@@ -112,7 +112,10 @@ export function useEntityRelationNodesAndEdges({
               return;
             }
 
-            if (kinds && !kinds.includes(rel.target.kind.toLowerCase())) {
+            if (
+              kinds &&
+              !kinds.includes(rel.target.kind.toLocaleLowerCase('en-US'))
+            ) {
               return;
             }
 

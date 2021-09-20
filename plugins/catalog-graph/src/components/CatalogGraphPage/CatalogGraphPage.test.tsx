@@ -86,6 +86,7 @@ describe('<CatalogGraphPage/>', () => {
       getLocationByEntity: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
+      refreshEntity: jest.fn(),
     };
     const apis = ApiRegistry.with(catalogApiRef, catalog);
 

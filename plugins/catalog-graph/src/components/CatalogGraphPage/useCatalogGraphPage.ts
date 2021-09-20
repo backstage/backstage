@@ -104,7 +104,7 @@ export function useCatalogGraphPage({
     (Array.isArray(query.selectedKinds)
       ? query.selectedKinds
       : initialState?.selectedKinds
-    )?.map(k => k.toLowerCase()),
+    )?.map(k => k.toLocaleLowerCase('en-US')),
   );
   const [unidirectional, setUnidirectional] = useState<boolean>(() =>
     typeof query.unidirectional === 'string'

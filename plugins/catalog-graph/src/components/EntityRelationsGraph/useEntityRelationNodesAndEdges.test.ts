@@ -28,11 +28,13 @@ import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges
 
 jest.mock('./useEntityRelationGraph');
 
-const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock;
+const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock<
+  ReturnType<typeof useEntityRelationGraphMocked>
+>;
 
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
-    const entities: { [key: string]: Entity } = {
+    const entities: { [ref: string]: Entity } = {
       'b:d/c': {
         apiVersion: 'a',
         kind: 'b',

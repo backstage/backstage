@@ -21,14 +21,14 @@ import {
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { RELATION_PAIRS } from '../EntityRelationsGraph';
+import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 
 describe('<SelectedRelationsFilter/>', () => {
   test('should render current value', () => {
     const { getByText } = render(
       <SelectedRelationsFilter
-        relationPairs={RELATION_PAIRS}
+        relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
         onChange={() => {}}
       />,
@@ -42,7 +42,7 @@ describe('<SelectedRelationsFilter/>', () => {
     const onChange = jest.fn();
     const { getByText, getByLabelText } = render(
       <SelectedRelationsFilter
-        relationPairs={RELATION_PAIRS}
+        relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
         onChange={onChange}
       />,
@@ -69,8 +69,8 @@ describe('<SelectedRelationsFilter/>', () => {
     const onChange = jest.fn();
     const { getByText, getByLabelText } = render(
       <SelectedRelationsFilter
-        relationPairs={RELATION_PAIRS}
-        value={RELATION_PAIRS.flatMap(p => p).filter(
+        relationPairs={ALL_RELATION_PAIRS}
+        value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
           r => r !== RELATION_HAS_MEMBER,
         )}
         onChange={onChange}
@@ -94,7 +94,7 @@ describe('<SelectedRelationsFilter/>', () => {
     const onChange = jest.fn();
     const { getByRole } = render(
       <SelectedRelationsFilter
-        relationPairs={RELATION_PAIRS}
+        relationPairs={ALL_RELATION_PAIRS}
         value={[]}
         onChange={onChange}
       />,

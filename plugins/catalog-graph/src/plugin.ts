@@ -21,7 +21,7 @@ import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
  * @public
  */
 export const catalogGraphPlugin = createPlugin({
-  id: '@internal/catalog-graph',
+  id: 'catalog-graph',
   routes: {
     catalogGraph: catalogGraphRouteRef,
   },

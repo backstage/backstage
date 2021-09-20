@@ -46,10 +46,7 @@ export const SelectedRelationsFilter = ({
   onChange,
 }: Props) => {
   const classes = useStyles();
-  const relations = useMemo(
-    () => relationPairs.flatMap(r => r),
-    [relationPairs],
-  );
+  const relations = useMemo(() => relationPairs.flat(), [relationPairs]);
 
   const handleChange = useCallback(
     (_: unknown, v: string[]) => {

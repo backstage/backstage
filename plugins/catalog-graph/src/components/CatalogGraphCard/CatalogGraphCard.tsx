@@ -31,15 +31,15 @@ import {
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
-  RELATION_PAIRS,
+  ALL_RELATION_PAIRS,
 } from '../EntityRelationsGraph';
 
-const useStyles = makeStyles<Theme, { maxHeight: number | undefined }>({
-  card: ({ maxHeight }) => ({
+const useStyles = makeStyles<Theme, { height: number | undefined }>({
+  card: ({ height }) => ({
     display: 'flex',
     flexDirection: 'column',
-    maxHeight,
-    minHeight: 0,
+    maxHeight: height,
+    minHeight: height,
   }),
   graph: {
     flex: 1,
@@ -49,14 +49,14 @@ const useStyles = makeStyles<Theme, { maxHeight: number | undefined }>({
 
 export const CatalogGraphCard = ({
   variant = 'gridItem',
-  relationPairs = RELATION_PAIRS,
+  relationPairs = ALL_RELATION_PAIRS,
   maxDepth = 1,
   unidirectional = true,
   mergeRelations = true,
   kinds,
   relations,
   direction = Direction.LEFT_RIGHT,
-  maxHeight,
+  height,
   title = 'Relations',
 }: {
   variant?: InfoCardVariants;
@@ -67,7 +67,7 @@ export const CatalogGraphCard = ({
   kinds?: string[];
   relations?: string[];
   direction?: Direction;
-  maxHeight?: number;
+  height?: number;
   title?: string;
 }) => {
   const { entity } = useEntity();
@@ -75,14 +75,14 @@ export const CatalogGraphCard = ({
   const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();
-  const classes = useStyles({ maxHeight });
+  const classes = useStyles({ height });
 
   const onNodeClick = useCallback(
-    (node: EntityNode, _: MouseEvent) => {
+    (node: EntityNode, _: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
       const path = catalogEntityRoute({
-        kind: nodeEntityName.kind.toLowerCase(),
-        namespace: nodeEntityName.namespace.toLowerCase(),
+        kind: nodeEntityName.kind.toLocaleLowerCase('en-US'),
+        namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
         name: nodeEntityName.name,
       });
       navigate(path);
