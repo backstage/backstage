@@ -39,6 +39,7 @@ export const EditProjectDialog = ({
 }: Props) => {
   const [defaultValues, setDefaultValues] = useState<FormValues>({
     announcement: bazaarProject.announcement,
+    community: bazaarProject.community,
     status: bazaarProject.status,
   });
 
@@ -47,6 +48,7 @@ export const EditProjectDialog = ({
   useEffect(() => {
     setDefaultValues({
       announcement: bazaarProject.announcement,
+      community: bazaarProject.community,
       status: bazaarProject.status,
     });
   }, [bazaarProject]);
@@ -57,6 +59,7 @@ export const EditProjectDialog = ({
     const updateResponse = await bazaarApi.updateMetadata(
       entity!,
       entity.metadata.name,
+      formValues.community,
       formValues.announcement,
       formValues.status,
     );
@@ -65,6 +68,7 @@ export const EditProjectDialog = ({
       setBazaarProject((oldProject: BazaarProject) => {
         return {
           ...oldProject,
+          community: formValues.community,
           announcement: formValues.announcement,
           status: formValues.status,
         };

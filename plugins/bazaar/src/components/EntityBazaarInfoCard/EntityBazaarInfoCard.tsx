@@ -91,6 +91,7 @@ export const EntityBazaarInfoCard = () => {
   const [bazaarProject, setBazaarProject] = useState<BazaarProject>({
     entityRef: '',
     name: '',
+    community: '',
     announcement: '',
     status: 'proposed',
     updatedAt: '',
@@ -129,6 +130,7 @@ export const EntityBazaarInfoCard = () => {
       setBazaarProject({
         entityRef: data[0].entityRef,
         name: data[0].name,
+        community: data[0].community,
         announcement: data[0].announcement,
         status: data[0].status,
         updatedAt: data[0].updatedAt,
@@ -188,6 +190,8 @@ export const EntityBazaarInfoCard = () => {
     {
       label: 'Community',
       icon: <ChatIcon />,
+      href: bazaarProject.community,
+      disabled: bazaarProject.community === '',
     },
     {
       label: isMember ? 'Leave' : 'Join',

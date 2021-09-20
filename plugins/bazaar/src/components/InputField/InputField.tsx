@@ -20,30 +20,30 @@ import { TextField } from '@material-ui/core';
 import { FormValues } from '../../types';
 
 type Props = {
-  inputType: string;
-  error: FieldError | undefined;
+  inputType: 'announcement' | 'community';
+  error?: FieldError | undefined;
   control: Control<FormValues, object>;
-  name: 'announcement' | 'status';
-  helperText: string;
+  helperText?: string;
   placeholder?: string;
+  required: boolean;
 };
 
 export const InputField = ({
   inputType,
   error,
   control,
-  name,
   helperText,
   placeholder,
+  required,
 }: Props) => {
   const label = inputType.charAt(0).toUpperCase() + inputType.slice(1);
 
   return (
     <Controller
-      name={name}
+      name={inputType}
       control={control}
       rules={{
-        required: true,
+        required: required,
       }}
       render={({ field }) => (
         <TextField

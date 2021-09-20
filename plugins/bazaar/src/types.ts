@@ -27,6 +27,7 @@ export type Status = 'ongoing' | 'proposed';
 export type BazaarProject = {
   name: string;
   entityRef: EntityRef;
+  community: string;
   status: Status;
   announcement: string;
   updatedAt: string;
@@ -34,5 +35,6 @@ export type BazaarProject = {
 
 export type FormValues = {
   announcement: string;
+  community: string;
   status: string;
 };

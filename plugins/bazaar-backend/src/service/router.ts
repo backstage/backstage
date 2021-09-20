@@ -138,12 +138,13 @@ export async function createRouter(
 
   router.put('/metadata', async (request, response) => {
     const entityRef = request.headers.entity_ref;
-    const { name, announcement, status } = request.body;
+    const { name, announcement, status, community } = request.body;
 
     const count = await db?.('public.metadata')
       .where({ entity_ref: entityRef })
       .update({
         announcement: announcement,
+        community: community,
         status: status,
       });
 
@@ -154,6 +155,7 @@ export async function createRouter(
         ?.insert({
           name: name,
           entity_ref: entityRef,
+          community: community,
           announcement: announcement,
           status: status,
         })

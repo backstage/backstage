@@ -35,6 +35,7 @@ export interface BazaarApi {
   updateMetadata(
     entity: Entity,
     name: string,
+    community: string,
     announcement: string,
     status: Status,
   ): Promise<any>;
@@ -73,6 +74,7 @@ export class BazaarClient implements BazaarApi {
   async updateMetadata(
     entity: Entity,
     name: string,
+    community: string,
     announcement: string,
     status: Status,
   ): Promise<any> {
@@ -88,6 +90,7 @@ export class BazaarClient implements BazaarApi {
       body: JSON.stringify({
         name: name,
         announcement: announcement,
+        community: community,
         status: status,
       }),
     }).then(resp => resp.json());

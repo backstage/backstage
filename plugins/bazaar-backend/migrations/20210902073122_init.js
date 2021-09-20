@@ -20,14 +20,17 @@ exports.up = async function setUpTables(knex) {
     table.text('name').notNullable().comment('The name of the entity');
     table.text('entity_ref').notNullable().comment('The ref of the entity');
     table
+      .text('community')
+      .comment('Link to where the community can discuss ideas');
+    table
       .text('announcement')
       .notNullable()
-      .comment('The announcement of the bazaar project');
+      .comment('The announcement of the Bazaar project');
     table
       .text('status')
       .defaultTo('proposed')
       .notNullable()
-      .comment('The status of the bazaar project');
+      .comment('The status of the Bazaar project');
     table
       .dateTime('updated_at')
       .defaultTo(knex.fn.now())

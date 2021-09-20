@@ -144,10 +144,17 @@ export const ProjectDialog = ({
           <InputField
             error={errors.announcement}
             control={control}
+            required
             inputType="announcement"
             helperText="please enter an announcement"
             placeholder="Describe who you are and what skills you are looking for"
-            name="announcement"
+          />
+
+          <InputField
+            control={control}
+            required={false}
+            inputType="community"
+            placeholder="Community link to e.g. Teams or Discord"
           />
 
           <InputSelector

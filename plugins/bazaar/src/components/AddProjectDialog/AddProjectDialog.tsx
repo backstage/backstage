@@ -49,6 +49,7 @@ export const AddProjectDialog = ({
 
   const defaultValues = {
     title: 'Add project',
+    community: '',
     announcement: '',
     status: 'proposed' as Status,
   };
@@ -66,6 +67,7 @@ export const AddProjectDialog = ({
     const bazaarProject: BazaarProject = {
       entityRef: stringifyEntityRef(selectedEntity!),
       name: selectedEntity!.metadata.name,
+      community: formValues.community,
       announcement: formValues.announcement,
       status: formValues.status,
       updatedAt: new Date().toISOString(),
@@ -82,6 +84,7 @@ export const AddProjectDialog = ({
     await bazaarApi.updateMetadata(
       selectedEntity!,
       selectedEntity!.metadata.name,
+      formValues.community,
       formValues.announcement,
       formValues.status,
     );

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Content,
   ContentHeader,
@@ -26,7 +26,11 @@ import { AlertBanner } from '../AlertBanner';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
 import { useAsync } from 'react-use';
-import { Entity, EntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -85,6 +89,7 @@ export const SortView = () => {
         name: project.name,
         status: project.status,
         announcement: project.announcement,
+        community: project.community,
         updatedAt: project.updated_at,
       });
 
@@ -95,9 +100,7 @@ export const SortView = () => {
     setBazaarProjects(dbProjects);
     setCatalogEntities(
       entities.items.filter((entity: Entity) => {
-        const catalogEntityRef = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-
-        return !bazaarProjectRefs.includes(catalogEntityRef);
+        return !bazaarProjectRefs.includes(stringifyEntityRef(entity));
       }),
     );
   });
