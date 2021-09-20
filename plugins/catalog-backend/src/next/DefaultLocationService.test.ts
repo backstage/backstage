@@ -39,7 +39,7 @@ describe('DefaultLocationServiceTest', () => {
       store.listLocations.mockResolvedValueOnce([]);
       orchestrator.process.mockResolvedValueOnce({
         ok: true,
-        state: new Map(),
+        state: {},
         completedEntity: {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Location',
@@ -65,7 +65,7 @@ describe('DefaultLocationServiceTest', () => {
 
       orchestrator.process.mockResolvedValueOnce({
         ok: true,
-        state: new Map(),
+        state: {},
         completedEntity: {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',

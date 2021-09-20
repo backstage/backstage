@@ -15,7 +15,6 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
@@ -80,7 +79,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         processed_entity: JSON.stringify(processedEntity),
         result_hash: resultHash,
-        cache: JSON.stringify(Object.fromEntries(state || [])),
+        cache: JSON.stringify(state),
         errors,
         location_key: locationKey,
       })
@@ -508,9 +507,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             resultHash: i.result_hash || '',
             nextUpdateAt: timestampToDateTime(i.next_update_at),
             lastDiscoveryAt: timestampToDateTime(i.last_discovery_at),
-            state: i.cache
-              ? JSON.parse(i.cache)
-              : new Map<string, JsonObject>(),
+            state: i.cache ? JSON.parse(i.cache) : undefined,
             errors: i.errors,
             locationKey: i.location_key,
           } as RefreshStateItem),

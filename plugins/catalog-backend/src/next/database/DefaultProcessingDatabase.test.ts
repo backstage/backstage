@@ -17,7 +17,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -213,7 +212,7 @@ describe('Default Processing Database', () => {
               id,
               processedEntity,
               resultHash: '',
-              state: new Map<string, JsonObject>(),
+              state: {},
               relations: [],
               deferredEntities: [],
             }),
@@ -232,7 +231,7 @@ describe('Default Processing Database', () => {
           id,
           processedEntity,
           resultHash: '',
-          state: new Map<string, JsonObject>(),
+          state: {},
           relations: [],
           deferredEntities: [],
           locationKey: 'key',
@@ -285,8 +284,7 @@ describe('Default Processing Database', () => {
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
-        const state = new Map<string, JsonObject>();
-        state.set('hello', { t: 'something' });
+        const state = { hello: { t: 'something' } };
 
         await db.transaction(tx =>
           db.updateProcessedEntity(tx, {
@@ -308,9 +306,7 @@ describe('Default Processing Database', () => {
         expect(entities[0].processed_entity).toEqual(
           JSON.stringify(processedEntity),
         );
-        expect(entities[0].cache).toEqual(
-          JSON.stringify(Object.fromEntries(state)),
-        );
+        expect(entities[0].cache).toEqual(JSON.stringify(state));
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
       },
@@ -352,7 +348,7 @@ describe('Default Processing Database', () => {
             id,
             processedEntity,
             resultHash: '',
-            state: new Map<string, JsonObject>(),
+            state: {},
             relations: relations,
             deferredEntities: [],
           }),
@@ -404,7 +400,7 @@ describe('Default Processing Database', () => {
             id,
             processedEntity,
             resultHash: '',
-            state: new Map<string, JsonObject>(),
+            state: {},
             relations: [],
             deferredEntities,
           }),

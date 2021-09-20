@@ -55,7 +55,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -84,7 +84,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: new Map(),
+            state: {},
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -117,7 +117,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -147,7 +147,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: new Map(),
+            state: {},
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -181,7 +181,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       entityRef: '',
       unprocessedEntity: entity,
       resultHash: 'the matching hash',
-      state: new Map(),
+      state: {},
       nextUpdateAt: DateTime.now(),
       lastDiscoveryAt: DateTime.now(),
     };
@@ -194,7 +194,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
 
     const engine = new DefaultCatalogProcessingEngine(

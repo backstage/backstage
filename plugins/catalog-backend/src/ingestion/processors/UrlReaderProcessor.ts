@@ -44,6 +44,10 @@ type CacheItem = {
 export class UrlReaderProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
+  getProcessorName() {
+    return 'url-reader';
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -74,13 +78,11 @@ export class UrlReaderProcessor implements CatalogProcessor {
         }
       }
 
-      const isOnlyEntities = parseResults.every(
-        (r): r is CatalogProcessorEntityResult => r.type === 'entity',
-      );
+      const isOnlyEntities = parseResults.every(r => r.type === 'entity');
       if (newEtag && isOnlyEntities) {
         await cache.set<CacheItem>(CACHE_KEY, {
           etag: newEtag,
-          value: parseResults,
+          value: parseResults as CatalogProcessorEntityResult[],
         });
       }
     } catch (error) {
@@ -121,7 +123,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
     // Otherwise do a plain read, prioritizing readUrl if available
     if (this.options.reader.readUrl) {
-      const data = await this.options.reader.readUrl(location);
+      const data = await this.options.reader.readUrl(location, { etag });
       return [[{ url: location, data: await data.buffer() }], data.etag];
     }
 
