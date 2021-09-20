@@ -21,7 +21,7 @@ import {
   WithStyles,
 } from '@material-ui/core';
 import React from 'react';
-import { BackstageTheme } from '../../../../theme/src';
+import { BackstageTheme } from '@backstage/theme';
 
 const styles = (theme: BackstageTheme) =>
   createStyles({
