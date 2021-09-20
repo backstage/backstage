@@ -22,13 +22,23 @@ import { Logger } from 'winston';
 import * as result from './results';
 import {
   CatalogProcessor,
+  CatalogProcessorCache,
   CatalogProcessorEmit,
+  CatalogProcessorEntityResult,
   CatalogProcessorParser,
+  CatalogProcessorResult,
 } from './types';
+
+const CACHE_KEY = 'v1';
 
 type Options = {
   reader: UrlReader;
   logger: Logger;
+};
+
+type CacheItem = {
+  etag: string;
+  value: CatalogProcessorEntityResult[];
 };
 
 export class UrlReaderProcessor implements CatalogProcessor {
@@ -39,25 +49,48 @@ export class UrlReaderProcessor implements CatalogProcessor {
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
+    cache: CatalogProcessorCache,
   ): Promise<boolean> {
     if (location.type !== 'url') {
       return false;
     }
 
+    const cacheItem = await cache.get<CacheItem>(CACHE_KEY);
+
     try {
-      const output = await this.doRead(location.target);
+      const [output, newEtag] = await this.doRead(
+        location.target,
+        cacheItem?.etag,
+      );
+
+      const parseResults: CatalogProcessorResult[] = [];
       for (const item of output) {
         for await (const parseResult of parser({
           data: item.data,
           location: { type: location.type, target: item.url },
         })) {
+          parseResults.push(parseResult);
           emit(parseResult);
         }
       }
+
+      const isOnlyEntities = parseResults.every(
+        (r): r is CatalogProcessorEntityResult => r.type === 'entity',
+      );
+      if (newEtag && isOnlyEntities) {
+        await cache.set<CacheItem>(CACHE_KEY, {
+          etag: newEtag,
+          value: parseResults,
+        });
+      }
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
-
-      if (error.name === 'NotFoundError') {
+      if (error.name === 'NotModifiedError' && cacheItem) {
+        for (const parseResult of cacheItem.value) {
+          emit(parseResult);
+        }
+        cache.set<CacheItem>(CACHE_KEY, cacheItem);
+      } else if (error.name === 'NotFoundError') {
         if (!optional) {
           emit(result.notFoundError(location, message));
         }
@@ -71,27 +104,28 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
   private async doRead(
     location: string,
-  ): Promise<{ data: Buffer; url: string }[]> {
+    etag?: string,
+  ): Promise<[response: { data: Buffer; url: string }[], etag?: string]> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
     const { filepath } = parseGitUrl(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
-      const response = await this.options.reader.search(location);
+      const response = await this.options.reader.search(location, { etag });
       const output = response.files.map(async file => ({
         url: file.url,
         data: await limiter(file.content),
       }));
-      return Promise.all(output);
+      return [await Promise.all(output), response.etag];
     }
 
     // Otherwise do a plain read, prioritizing readUrl if available
     if (this.options.reader.readUrl) {
       const data = await this.options.reader.readUrl(location);
-      return [{ url: location, data: await data.buffer() }];
+      return [[{ url: location, data: await data.buffer() }], data.etag];
     }
 
     const data = await this.options.reader.read(location);
-    return [{ url: location, data }];
+    return [[{ url: location, data }]];
   }
 }
