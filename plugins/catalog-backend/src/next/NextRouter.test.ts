@@ -21,8 +21,9 @@ import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
-import { createNextRouter, LocationService, RefreshService } from '../next';
+import { LocationService, RefreshService } from './types';
 import { basicEntityFilter } from '../service/request';
+import { createNextRouter } from './NextRouter';
 
 describe('createNextRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
