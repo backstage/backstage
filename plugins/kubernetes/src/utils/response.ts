@@ -30,6 +30,9 @@ export const groupResponses = (
         case 'pods':
           prev.pods.push(...next.resources);
           break;
+        case 'podmetrics':
+          prev.podMetrics.push(...next.resources);
+          break;
         case 'replicasets':
           prev.replicaSets.push(...next.resources);
           break;
@@ -54,6 +57,7 @@ export const groupResponses = (
     },
     {
       pods: [],
+      podMetrics: [],
       replicaSets: [],
       deployments: [],
       services: [],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
 import {
@@ -22,34 +22,10 @@ import {
   containerStatuses,
   totalRestarts,
 } from '../../utils/pod';
+import {
+  PodNamesWithMetricsContext,
+} from '../../hooks';
 import { Table, TableColumn } from '@backstage/core-components';
-
-const columns: TableColumn<V1Pod>[] = [
-  {
-    title: 'name',
-    highlight: true,
-    render: (pod: V1Pod) => <PodDrawer pod={pod} />,
-  },
-  {
-    title: 'phase',
-    render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
-  },
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
-  {
-    title: 'status',
-    render: containerStatuses,
-  },
-];
 
 type DeploymentTablesProps = {
   pods: V1Pod[];
@@ -61,6 +37,59 @@ export const PodsTable = ({ pods }: DeploymentTablesProps) => {
     minWidth: '0',
     width: '100%',
   };
+
+  const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
+
+  const columns: TableColumn<V1Pod>[] = [
+    {
+      title: 'name',
+      highlight: true,
+      render: (pod: V1Pod) => <PodDrawer pod={pod} />,
+    },
+    {
+      title: 'phase',
+      render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
+    },
+    {
+      title: 'containers ready',
+      align: 'center',
+      render: containersReady,
+    },
+    {
+      title: 'total restarts',
+      align: 'center',
+      render: totalRestarts,
+      type: 'numeric',
+    },
+    {
+      title: 'status',
+      render: containerStatuses,
+    },
+    {
+      title: 'cpu usage',
+      render: (pod: V1Pod) => {
+        const podName = pod.metadata?.name
+
+        if(podName){
+          return podNamesWithMetrics.get(podName)?.containerMetrics.map(cm => cm.cpuUsage).join(", ") ?? 'unknown'
+        }
+
+        return 'unknown'
+      },
+    },
+    {
+      title: 'memory usage',
+      render: (pod: V1Pod) => {
+        const podName = pod.metadata?.name
+
+        if(podName){
+          return podNamesWithMetrics.get(podName)?.containerMetrics.map(cm => cm.memoryUsage).join(", ") ?? 'unknown'
+        }
+
+        return 'unknown'
+      },
+    }
+  ];
 
   return (
     <div style={tableStyle}>

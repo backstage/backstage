@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { GroupedResponses } from '../types/types';
+import { PodMetric } from '../../../kubernetes-common/src';
 
-export const GroupedResponsesContext = React.createContext<GroupedResponses>({
-  pods: [],
-  podMetrics: [],
-  replicaSets: [],
-  deployments: [],
-  services: [],
-  configMaps: [],
-  horizontalPodAutoscalers: [],
-  ingresses: [],
-  customResources: [],
-});
+export const PodNamesWithMetricsContext = React.createContext<Map<string, PodMetric>>(
+  new Map<string, PodMetric>(),
+);

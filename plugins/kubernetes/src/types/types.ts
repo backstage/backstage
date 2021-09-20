@@ -23,9 +23,11 @@ import {
   V1ConfigMap,
   ExtensionsV1beta1Ingress,
 } from '@kubernetes/client-node';
+import { PodMetric } from '../../../kubernetes-common/src';
 
 export interface DeploymentResources {
   pods: V1Pod[];
+  podMetrics: PodMetric[];
   replicaSets: V1ReplicaSet[];
   deployments: V1Deployment[];
   horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];

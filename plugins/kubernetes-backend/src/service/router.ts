@@ -32,6 +32,7 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import {KubernetesMetricsClient} from './KubernetesMetricsClient';
 
 export interface RouterOptions {
   logger: Logger;
@@ -117,6 +118,7 @@ export async function createRouter(
 
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
+    kubernetesMetricsClient: new KubernetesMetricsClient(logger),
     logger,
   });
 

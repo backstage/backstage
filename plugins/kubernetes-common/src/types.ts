@@ -44,8 +44,22 @@ export interface ObjectsByEntityResponse {
 
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 
+
+export interface ContainerMetric {
+  containerName: string;
+  cpuUsage: string;
+  memoryUsage: string;
+}
+
+
+export interface PodMetric {
+  podName: string;
+  containerMetrics: ContainerMetric[];
+}
+
 export type FetchResponse =
   | PodFetchResponse
+  | PodMetricsFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
@@ -57,6 +71,11 @@ export type FetchResponse =
 export interface PodFetchResponse {
   type: 'pods';
   resources: Array<V1Pod>;
+}
+
+export interface PodMetricsFetchResponse {
+  type: 'podmetrics';
+  resources: Array<PodMetric>;
 }
 
 export interface ServiceFetchResponse {
