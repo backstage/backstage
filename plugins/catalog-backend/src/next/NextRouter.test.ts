@@ -17,20 +17,17 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import type { Entity, LocationSpec } from '@backstage/catalog-model';
+import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { LocationResponse } from '../catalog/types';
-import { HigherOrderOperation } from '../ingestion/types';
-import { createRouter } from './router';
-import { basicEntityFilter } from './request';
-import { RefreshService } from '../next';
+import { EntitiesCatalog } from '../catalog';
+import { LocationService, RefreshService } from './types';
+import { basicEntityFilter } from '../service/request';
+import { createNextRouter } from './NextRouter';
 
-describe('createRouter readonly disabled', () => {
+describe('createNextRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationsCatalog: jest.Mocked<LocationsCatalog>;
-  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
+  let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
   let refreshService: RefreshService;
 
@@ -40,24 +37,16 @@ describe('createRouter readonly disabled', () => {
       removeEntityByUid: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
-    locationsCatalog = {
-      addLocation: jest.fn(),
-      removeLocation: jest.fn(),
-      locations: jest.fn(),
-      location: jest.fn(),
-      locationHistory: jest.fn(),
-      logUpdateSuccess: jest.fn(),
-      logUpdateFailure: jest.fn(),
-    };
-    higherOrderOperation = {
-      addLocation: jest.fn(),
-      refreshAllLocations: jest.fn(),
+    locationService = {
+      getLocation: jest.fn(),
+      createLocation: jest.fn(),
+      listLocations: jest.fn(),
+      deleteLocation: jest.fn(),
     };
     refreshService = { refresh: jest.fn() };
-    const router = await createRouter({
+    const router = await createNextRouter({
       entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
+      locationService,
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
@@ -216,54 +205,6 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
-  describe('POST /entities', () => {
-    it('requires a body', async () => {
-      const response = await request(app)
-        .post('/entities')
-        .set('Content-Type', 'application/json')
-        .send();
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
-      expect(response.status).toEqual(400);
-      expect(response.text).toMatch(/body/);
-    });
-
-    it('passes the body down', async () => {
-      const entity: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-      };
-
-      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
-        { entityId: 'u' },
-      ]);
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
-        pageInfo: { hasNextPage: false },
-      });
-
-      const response = await request(app)
-        .post('/entities')
-        .send(entity)
-        .set('Content-Type', 'application/json');
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith([
-        { entity, relations: [] },
-      ]);
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({ 'metadata.uid': 'u' }),
-      });
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(entity);
-    });
-  });
-
   describe('DELETE /entities/by-uid/:uid', () => {
     it('can remove', async () => {
       entitiesCatalog.removeEntityByUid.mockResolvedValue(undefined);
@@ -290,18 +231,17 @@ describe('createRouter readonly disabled', () => {
 
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
-      const locations: LocationResponse[] = [
-        {
-          currentStatus: { timestamp: '', status: '', message: '' },
-          data: { id: 'a', type: 'b', target: 'c' },
-        },
+      const locations: Location[] = [
+        { id: 'foo', type: 'url', target: 'example.com' },
       ];
-      locationsCatalog.locations.mockResolvedValueOnce(locations);
+      locationService.listLocations.mockResolvedValueOnce(locations);
 
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(locations);
+      expect(response.body).toEqual([
+        { data: { id: 'foo', target: 'example.com', type: 'url' } },
+      ]);
     });
   });
 
@@ -314,7 +254,7 @@ describe('createRouter readonly disabled', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
     });
 
@@ -324,17 +264,15 @@ describe('createRouter readonly disabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: false,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, false);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -349,7 +287,7 @@ describe('createRouter readonly disabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
@@ -358,10 +296,8 @@ describe('createRouter readonly disabled', () => {
         .post('/locations?dryRun=true')
         .send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: true,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -372,11 +308,10 @@ describe('createRouter readonly disabled', () => {
   });
 });
 
-describe('createRouter readonly enabled', () => {
+describe('createNextRouter readonly enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationsCatalog: jest.Mocked<LocationsCatalog>;
-  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
   let app: express.Express;
+  let locationService: jest.Mocked<LocationService>;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -384,23 +319,15 @@ describe('createRouter readonly enabled', () => {
       removeEntityByUid: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
-    locationsCatalog = {
-      addLocation: jest.fn(),
-      removeLocation: jest.fn(),
-      locations: jest.fn(),
-      location: jest.fn(),
-      locationHistory: jest.fn(),
-      logUpdateSuccess: jest.fn(),
-      logUpdateFailure: jest.fn(),
+    locationService = {
+      getLocation: jest.fn(),
+      createLocation: jest.fn(),
+      listLocations: jest.fn(),
+      deleteLocation: jest.fn(),
     };
-    higherOrderOperation = {
-      addLocation: jest.fn(),
-      refreshAllLocations: jest.fn(),
-    };
-    const router = await createRouter({
+    const router = await createNextRouter({
       entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
+      locationService,
       logger: getVoidLogger(),
       config: new ConfigReader({
         catalog: {
@@ -433,28 +360,6 @@ describe('createRouter readonly enabled', () => {
     });
   });
 
-  describe('POST /entities', () => {
-    it('is not allowed', async () => {
-      const entity: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-      };
-
-      const response = await request(app)
-        .post('/entities')
-        .set('Content-Type', 'application/json')
-        .send(entity);
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
-      expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/not allowed in readonly/);
-    });
-  });
-
   describe('DELETE /entities/by-uid/:uid', () => {
     // this delete is allowed as there is no other way to remove entities
     it('is allowed', async () => {
@@ -468,18 +373,17 @@ describe('createRouter readonly enabled', () => {
 
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
-      const locations: LocationResponse[] = [
-        {
-          currentStatus: { timestamp: '', status: '', message: '' },
-          data: { id: 'a', type: 'b', target: 'c' },
-        },
+      const locations: Location[] = [
+        { id: 'foo', type: 'url', target: 'example.com' },
       ];
-      locationsCatalog.locations.mockResolvedValueOnce(locations);
+      locationService.listLocations.mockResolvedValueOnce(locations);
 
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(locations);
+      expect(response.body).toEqual([
+        { data: { id: 'foo', target: 'example.com', type: 'url' } },
+      ]);
     });
   });
 
@@ -492,7 +396,7 @@ describe('createRouter readonly enabled', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
       expect(response.text).toMatch(/not allowed in readonly/);
     });
@@ -503,7 +407,7 @@ describe('createRouter readonly enabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
@@ -512,10 +416,8 @@ describe('createRouter readonly enabled', () => {
         .post('/locations?dryRun=true')
         .send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: true,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
