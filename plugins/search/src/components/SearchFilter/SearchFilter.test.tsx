@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { SearchFilter } from './SearchFilter';
-
-import { SearchContextProvider } from '../SearchContext';
 import { useApi } from '@backstage/core-plugin-api';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { SearchContextProvider } from '../SearchContext';
+import { SearchFilter } from './SearchFilter';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -363,6 +362,222 @@ describe('SearchFilter', () => {
       });
 
       userEvent.click(screen.getByRole('option', { name: 'All' }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({ filters }),
+        );
+      });
+    });
+  });
+
+  describe('SelectMultiple', () => {
+    it('Renders field name and values when provided as props', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.SelectMultiple name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole('option', { name: values[0] }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).toBeInTheDocument();
+    });
+
+    it('Renders correctly based on filter state', async () => {
+      render(
+        <SearchContextProvider
+          initialState={{
+            ...initialState,
+            filters: {
+              [name]: values.slice(0, 1),
+            },
+          }}
+        >
+          <SearchFilter.SelectMultiple name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole('option', { name: values[0] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).not.toHaveAttribute('aria-selected');
+    });
+
+    it('Renders correctly based on defaultValue', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.SelectMultiple
+            name={name}
+            values={values}
+            defaultValue={values[0]}
+          />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole('option', { name: values[0] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).not.toHaveAttribute('aria-selected');
+    });
+
+    it('Renders correctly based on multiple defaultValue', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.SelectMultiple
+            name={name}
+            values={values}
+            defaultValue={values}
+          />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole('option', { name: values[0] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(screen.getByRole('option', { name: values[1] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    });
+
+    it('Selecting a value sets filter state', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.SelectMultiple name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      const button = screen.getByRole('button');
+
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('option', { name: values[0] }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            filters: { [name]: [values[0]] },
+          }),
+        );
+      });
+
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('option', { name: values[0] }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            filters: {},
+          }),
+        );
+      });
+    });
+
+    it('Selecting a value maintains unrelated filter state', async () => {
+      render(
+        <SearchContextProvider
+          initialState={{
+            ...initialState,
+            filters,
+          }}
+        >
+          <SearchFilter.SelectMultiple name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(name)).toBeInTheDocument();
+      });
+
+      const button = screen.getByRole('button');
+
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('option', { name: values[0] }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            filters: { ...filters, [name]: [values[0]] },
+          }),
+        );
+      });
+
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(

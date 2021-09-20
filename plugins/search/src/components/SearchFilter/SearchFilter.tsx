@@ -207,9 +207,11 @@ const SelectMultipleFilter = ({
       target: { value },
     } = e;
 
+    const v = value as string[];
+
     setFilters(prevFilters => {
       const { [name]: filter, ...others } = prevFilters;
-      return value ? { ...others, [name]: value as string[] } : others;
+      return v.length ? { ...others, [name]: v } : others;
     });
   };
 
