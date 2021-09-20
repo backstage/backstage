@@ -5,8 +5,8 @@
     "node": "12 || 14"
   },
   "scripts": {
-    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
-    "start": "yarn workspace example-app start",
+    "dev": "concurrently \"yarn start\" \"yarn start-backend\" --inspect",
+    "start": "yarn workspace example-app start ",
     "start-backend": "yarn workspace example-backend start",
     "build": "lerna run build",
     "build:api-reports": "yarn tsc:full && yarn build:api-reports:only",

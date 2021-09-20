@@ -20,7 +20,7 @@
   "scripts": {
     "build": "backstage-cli backend:bundle",
     "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
-    "start": "backstage-cli backend:dev",
+    "start": "backstage-cli backend:dev --inspect",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",

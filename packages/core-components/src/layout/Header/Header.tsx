@@ -21,6 +21,7 @@ import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
+import { UserSettingsMenu } from '../../../../../plugins/user-settings/src';
 
 const minHeaderHeight = 118;
 
@@ -210,6 +211,7 @@ export const Header = ({
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
         </Box>
+        <UserSettingsMenu />
         <Grid container className={classes.rightItemsBox} spacing={4}>
           {children}
         </Grid>
