@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export { readEnvConfig } from './env';
-export { readDatabaseConfig } from './database';
-export * from './transform';
-export * from './schema';
+export async function up(knex) {
+  return knex.schema.createTable('config', table => {
+    table.comment(
+      'App configuration stored in the database, combined with config files and env',
+    );
+    table
+      .string('key')
+      .primary()
+      .notNullable()
+      .comment('Configuration key, dot-delimited');
+    table.string('value').notNullable();
+  });
+}
+
+export async function down(knex) {
+  return knex.schema.dropTable('config');
+}

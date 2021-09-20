@@ -21,6 +21,7 @@ import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
 import { AppConfig } from '@backstage/config';
 import {
   applyConfigTransforms,
+  readDatabaseConfig,
   readEnvConfig,
   createIncludeTransform,
   createSubstitutionTransform,
@@ -120,6 +121,7 @@ export async function loadConfig(
   }
 
   const envConfigs = await readEnvConfig(process.env);
+  const dbConfigs = await readDatabaseConfig([...fileConfigs, ...envConfigs]);
 
   // Set up config file watching if requested by the caller
   if (watch) {
@@ -138,7 +140,7 @@ export async function loadConfig(
         }
         currentSerializedConfig = newSerializedConfig;
 
-        watch.onChange([...newConfigs, ...envConfigs]);
+        watch.onChange([...newConfigs, ...dbConfigs, ...envConfigs]);
       } catch (error) {
         console.error(`Failed to reload configuration files, ${error}`);
       }
