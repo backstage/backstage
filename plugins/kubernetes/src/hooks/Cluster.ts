@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 
-/**
- * A Backstage plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+export const ClusterContext = React.createContext<ClusterAttributes>({
+  name: '',
+});

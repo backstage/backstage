@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-/**
- * A Backstage plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+export function openshiftFormatter(
+  _options: ClusterLinksFormatterOptions,
+): URL {
+  throw new Error(
+    'OpenShift formatter is not yet implemented. Please, contribute!',
+  );
+}

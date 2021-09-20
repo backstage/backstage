@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClusterLinksFormatter } from '../../../types/types';
+import { standardFormatter } from './standard';
+import { rancherFormatter } from './rancher';
+import { openshiftFormatter } from './openshift';
+import { aksFormatter } from './aks';
+import { eksFormatter } from './eks';
+import { gkeFormatter } from './gke';
 
-/**
- * A Backstage plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+export const clusterLinksFormatters: Record<string, ClusterLinksFormatter> = {
+  standard: standardFormatter,
+  rancher: rancherFormatter,
+  openshift: openshiftFormatter,
+  aks: aksFormatter,
+  eks: eksFormatter,
+  gke: gkeFormatter,
+};
+export const defaultFormatterName = 'standard';

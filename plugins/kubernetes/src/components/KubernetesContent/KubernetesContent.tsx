@@ -36,6 +36,7 @@ import { ServicesAccordions } from '../ServicesAccordions';
 import { CustomResources } from '../CustomResources';
 import EmptyStateImage from '../../assets/emptystate.svg';
 import {
+  ClusterContext,
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
   useKubernetesObjects,
@@ -119,35 +120,37 @@ type ClusterProps = {
 const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   return (
-    <GroupedResponsesContext.Provider value={groupedResponses}>
-      <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
-        <Accordion TransitionProps={{ unmountOnExit: true }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <ClusterSummary
-              clusterName={clusterObjects.cluster.name}
-              totalNumberOfPods={groupedResponses.pods.length}
-              numberOfPodsWithErrors={podsWithErrors.size}
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid container direction="column">
-              <Grid item>
-                <CustomResources />
+    <ClusterContext.Provider value={clusterObjects.cluster}>
+      <GroupedResponsesContext.Provider value={groupedResponses}>
+        <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+          <Accordion TransitionProps={{ unmountOnExit: true }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <ClusterSummary
+                clusterName={clusterObjects.cluster.name}
+                totalNumberOfPods={groupedResponses.pods.length}
+                numberOfPodsWithErrors={podsWithErrors.size}
+              />
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container direction="column">
+                <Grid item>
+                  <CustomResources />
+                </Grid>
+                <Grid item>
+                  <DeploymentsAccordions />
+                </Grid>
+                <Grid item>
+                  <IngressesAccordions />
+                </Grid>
+                <Grid item>
+                  <ServicesAccordions />
+                </Grid>
               </Grid>
-              <Grid item>
-                <DeploymentsAccordions />
-              </Grid>
-              <Grid item>
-                <IngressesAccordions />
-              </Grid>
-              <Grid item>
-                <ServicesAccordions />
-              </Grid>
-            </Grid>
-          </AccordionDetails>
-        </Accordion>
-      </PodNamesWithErrorsContext.Provider>
-    </GroupedResponsesContext.Provider>
+            </AccordionDetails>
+          </Accordion>
+        </PodNamesWithErrorsContext.Provider>
+      </GroupedResponsesContext.Provider>
+    </ClusterContext.Provider>
   );
 };
 

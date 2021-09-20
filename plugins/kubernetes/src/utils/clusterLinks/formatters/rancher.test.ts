@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { rancherFormatter } from './rancher';
 
-/**
- * A Backstage plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+describe('clusterLinks - Rancher formatter', () => {
+  it('should return an url on the workloads when there is a namespace only', () => {
+    expect(() =>
+      rancherFormatter({
+        dashboardUrl: new URL('https://k8s.foo.com'),
+        object: {
+          metadata: {
+            name: 'foobar',
+            namespace: 'bar',
+          },
+        },
+        kind: 'Deployment',
+      }),
+    ).toThrowError(
+      'Rancher formatter is not yet implemented. Please, contribute!',
+    );
+  });
+});

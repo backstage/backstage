@@ -14,17 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export {
-  kubernetesPlugin,
-  kubernetesPlugin as plugin,
-  EntityKubernetesContent,
-} from './plugin';
-export { Router } from './Router';
-export * from './kubernetes-auth-provider';
-export * from './utils/clusterLinks';
+export { formatClusterLink } from './formatClusterLink';
+export { clusterLinksFormatters } from './formatters';
