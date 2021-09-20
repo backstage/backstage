@@ -67,3 +67,23 @@ export const SelectFilter = () => {
     </MemoryRouter>
   );
 };
+
+export const SelectMultipleFilter = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={4}>
+            <Paper style={{ padding: 10 }}>
+              <SearchFilter.SelectMultiple
+                name="Search Select Filter"
+                values={['value1', 'value2']}
+              />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};

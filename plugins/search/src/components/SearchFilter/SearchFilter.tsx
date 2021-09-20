@@ -14,25 +14,34 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent, useEffect } from 'react';
 import {
-  makeStyles,
+  Checkbox,
+  Chip,
   FormControl,
   FormControlLabel,
-  InputLabel,
-  Checkbox,
-  Select,
-  MenuItem,
   FormLabel,
+  InputLabel,
+  ListItemText,
+  makeStyles,
+  MenuItem,
+  Select,
 } from '@material-ui/core';
-
+import React, { ChangeEvent, ReactElement, useEffect } from 'react';
 import { useSearch } from '../SearchContext';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   label: {
     textTransform: 'capitalize',
   },
-});
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: theme.spacing(1),
+  },
+  chip: {
+    margin: 2,
+  },
+}));
 
 export type Component = {
   className?: string;
@@ -164,16 +173,100 @@ const SelectFilter = ({
   );
 };
 
+const SelectMultipleFilter = ({
+  className,
+  name,
+  defaultValue,
+  values = [],
+}: Component) => {
+  const classes = useStyles();
+  const { filters, setFilters } = useSearch();
+
+  const currentFilter = (filters[name] as string[]) ?? [];
+
+  useEffect(() => {
+    let value: string[] | undefined;
+
+    if (Array.isArray(defaultValue)) {
+      value = defaultValue;
+    } else if (typeof defaultValue === 'string') {
+      value = [defaultValue];
+    }
+
+    if (value) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [name]: value,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
+    const {
+      target: { value },
+    } = e;
+
+    setFilters(prevFilters => {
+      const { [name]: filter, ...others } = prevFilters;
+      return value ? { ...others, [name]: value as string[] } : others;
+    });
+  };
+
+  return (
+    <FormControl
+      className={className}
+      variant="filled"
+      fullWidth
+      data-testid="search-selectmultiplefilter-next"
+    >
+      <InputLabel className={classes.label} margin="dense">
+        {name}
+      </InputLabel>
+      <Select
+        multiple
+        variant="outlined"
+        value={currentFilter}
+        placeholder="All"
+        renderValue={selected => (
+          <div className={classes.chips}>
+            {(selected as string[]).map(value => (
+              <Chip
+                key={value}
+                label={value}
+                className={classes.chip}
+                size="small"
+              />
+            ))}
+          </div>
+        )}
+        onChange={handleChange}
+      >
+        {values.map((value: string) => (
+          <MenuItem key={value} value={value}>
+            <Checkbox checked={currentFilter.indexOf(value) > -1} />
+            <ListItemText primary={value} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
+
 const SearchFilter = ({ component: Element, ...props }: Props) => (
   <Element {...props} />
 );
 
-SearchFilter.Checkbox = (props: Omit<Props, 'component'> & Component) => (
+SearchFilter.Checkbox = (props: Omit<Props, 'component'>) => (
   <SearchFilter {...props} component={CheckboxFilter} />
 );
 
-SearchFilter.Select = (props: Omit<Props, 'component'> & Component) => (
+SearchFilter.Select = (props: Omit<Props, 'component'>) => (
   <SearchFilter {...props} component={SelectFilter} />
+);
+
+SearchFilter.SelectMultiple = (props: Omit<Props, 'component'>) => (
+  <SearchFilter {...props} component={SelectMultipleFilter} />
 );
 
 /**
