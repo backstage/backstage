@@ -88,6 +88,11 @@ export class CatalogClientWrapper implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,

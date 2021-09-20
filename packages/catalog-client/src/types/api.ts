@@ -53,6 +53,10 @@ export interface CatalogApi {
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
 
   // Locations
   getLocationById(

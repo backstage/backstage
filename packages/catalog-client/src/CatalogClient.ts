@@ -136,6 +136,24 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
+    const response = await fetch(
+      `${await this.discoveryApi.getBaseUrl('catalog')}/refresh`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        },
+        method: 'POST',
+        body: JSON.stringify({ entityRef }),
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(await response.text());
+    }
+  }
+
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,

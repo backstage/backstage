@@ -44,6 +44,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     getLocationById: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
   };
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
