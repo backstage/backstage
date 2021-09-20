@@ -147,7 +147,7 @@ integrations:
     #   token: ${GHE_TOKEN}
   gitlab:
     - host: gitlab.com
-      token: fB_RTdqWsCB2YjG_B_Hi
+      token: gibberish
   bitbucket:
     - host: bitbucket.org
       username: ${BITBUCKET_USERNAME}
