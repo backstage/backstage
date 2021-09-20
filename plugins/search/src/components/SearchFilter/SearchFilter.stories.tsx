@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Grid, Paper } from '@material-ui/core';
-import { SearchFilter, SearchContext } from '../index';
+import React, { useState } from 'react';
 import { MemoryRouter } from 'react-router';
+import { SearchContext, SearchFilter } from '../index';
 
 export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
 };
 
-const defaultValue = {
-  filters: {},
-};
-
 export const CheckBoxFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
   return (
     <MemoryRouter>
       {/* @ts-ignore (defaultValue requires more than what is used here) */}
@@ -49,6 +51,12 @@ export const CheckBoxFilter = () => {
 };
 
 export const SelectFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
   return (
     <MemoryRouter>
       {/* @ts-ignore (defaultValue requires more than what is used here) */}
@@ -69,6 +77,12 @@ export const SelectFilter = () => {
 };
 
 export const SelectMultipleFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
   return (
     <MemoryRouter>
       {/* @ts-ignore (defaultValue requires more than what is used here) */}
