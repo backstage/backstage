@@ -19,6 +19,7 @@ export type AddLocationRequest = {
 export type AddLocationResponse = {
   location: Location_2;
   entities: Entity[];
+  exists?: boolean;
 };
 
 // @public (undocumented)
