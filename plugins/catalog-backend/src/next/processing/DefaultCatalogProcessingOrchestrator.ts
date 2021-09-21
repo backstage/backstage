@@ -24,7 +24,7 @@ import {
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotAllowedError } from '@backstage/errors';
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
@@ -33,7 +33,6 @@ import {
   CatalogProcessorParser,
 } from '../../ingestion/processors';
 import * as results from '../../ingestion/processors/results';
-import { CatalogProcessorCache } from '../../ingestion/processors/types';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -47,77 +46,18 @@ import {
   toAbsoluteUrl,
   validateEntity,
   validateEntityEnvelope,
+  isObject,
 } from './util';
 import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 type Context = {
   entityRef: string;
   location: LocationSpec;
   originLocation: LocationSpec;
   collector: ProcessorOutputCollector;
-  cache: ProcessorCache;
+  cache: ProcessorCacheManager;
 };
-
-function isObject(value: JsonValue | undefined): value is JsonObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-class DefaultCatalogProcessorCache implements CatalogProcessorCache {
-  private newState?: JsonObject;
-  constructor(private readonly existingState: JsonObject) {}
-
-  async get<ItemType extends JsonValue>(
-    key: string,
-  ): Promise<ItemType | undefined> {
-    return this.existingState[key] as ItemType | undefined;
-  }
-
-  async set<ItemType extends JsonValue>(
-    key: string,
-    value: ItemType,
-  ): Promise<void> {
-    if (!this.newState) {
-      this.newState = {};
-    }
-
-    this.newState[key] = value;
-  }
-
-  collect(): JsonObject | undefined {
-    return this.newState;
-  }
-}
-
-class ProcessorCache {
-  private caches = new Map<string, DefaultCatalogProcessorCache>();
-
-  constructor(private readonly existingState: JsonObject) {}
-  forProcessor(processor: CatalogProcessor): CatalogProcessorCache {
-    // constructor name will be deprecated in the future when we make `getProcessorName` required in the implementation
-    const name = processor.getProcessorName?.() ?? processor.constructor.name;
-    const cache = this.caches.get(name);
-    if (cache) {
-      return cache;
-    }
-
-    const existing = this.existingState[name];
-
-    const newCache = new DefaultCatalogProcessorCache(
-      isObject(existing) ? existing : {},
-    );
-    this.caches.set(name, newCache);
-    return newCache;
-  }
-
-  collect(): JsonObject {
-    const result: JsonObject = {};
-    for (const [key, value] of this.caches.entries()) {
-      result[key] = value.collect();
-    }
-
-    return result;
-  }
-}
 
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
@@ -149,7 +89,7 @@ export class DefaultCatalogProcessingOrchestrator
     );
 
     // Cache that is scoped to the entity and processor
-    const cache = new ProcessorCache(
+    const cache = new ProcessorCacheManager(
       isObject(state) && isObject(state.cache) ? state.cache : {},
     );
 
