@@ -17,7 +17,6 @@ import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import { IndexableDocument } from '@backstage/search-common';
-import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
 import { Location as Location_2 } from '@backstage/catalog-model';
@@ -302,23 +301,27 @@ export interface CatalogProcessingOrchestrator {
 //
 // @public (undocumented)
 export type CatalogProcessor = {
+  getProcessorName?(): string;
   readLocation?(
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
+    cache: CatalogProcessorCache,
   ): Promise<boolean>;
   preProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,
     originLocation: LocationSpec,
+    cache: CatalogProcessorCache,
   ): Promise<Entity>;
   validateEntityKind?(entity: Entity): Promise<boolean>;
   postProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,
+    cache: CatalogProcessorCache,
   ): Promise<Entity>;
   handleError?(
     error: Error,
@@ -326,6 +329,12 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
   ): Promise<void>;
 };
+
+// @public
+export interface CatalogProcessorCache {
+  get<ItemType extends JsonValue>(key: string): Promise<ItemType | undefined>;
+  set<ItemType extends JsonValue>(key: string, value: ItemType): Promise<void>;
+}
 
 // Warning: (ae-missing-release-tag) "CatalogProcessorEmit" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -868,7 +877,7 @@ export type EntityPagination = {
 // @public (undocumented)
 export type EntityProcessingRequest = {
   entity: Entity;
-  state: Map<string, JsonObject>;
+  state?: JsonValue;
 };
 
 // Warning: (ae-missing-release-tag) "EntityProcessingResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -877,7 +886,7 @@ export type EntityProcessingRequest = {
 export type EntityProcessingResult =
   | {
       ok: true;
-      state: Map<string, JsonObject>;
+      state: JsonValue;
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];
@@ -1478,11 +1487,14 @@ export class UrlReaderProcessor implements CatalogProcessor {
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options_3);
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
+    cache: CatalogProcessorCache,
   ): Promise<boolean>;
 }
 
@@ -1505,21 +1517,6 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/database/types.d.ts:164:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:165:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
-// src/ingestion/processors/types.d.ts:7:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:9:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:10:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:23:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:24:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:25:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:26:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:36:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:47:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:48:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:49:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:56:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:57:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ingestion/processors/types.d.ts:58:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 ```
