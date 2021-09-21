@@ -209,22 +209,20 @@ export function Header(props: PropsWithChildren<Props>) {
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
       <header style={style} className={classes.header}>
-        <div style={{ border: '2px solid green' }}>
-          <Box className={classes.leftItemsBox}>
-            <TypeFragment
-              classes={classes}
-              type={type}
-              typeLink={typeLink}
-              pageTitle={pageTitle}
-            />
-            <TitleFragment
-              classes={classes}
-              pageTitle={pageTitle}
-              tooltip={tooltip}
-            />
-            <SubtitleFragment classes={classes} subtitle={subtitle} />
-          </Box>
-        </div>
+        <Box className={classes.leftItemsBox}>
+          <TypeFragment
+            classes={classes}
+            type={type}
+            typeLink={typeLink}
+            pageTitle={pageTitle}
+          />
+          <TitleFragment
+            classes={classes}
+            pageTitle={pageTitle}
+            tooltip={tooltip}
+          />
+          <SubtitleFragment classes={classes} subtitle={subtitle} />
+        </Box>
         <Grid container className={classes.rightItemsBox} spacing={4}>
           {children}
         </Grid>
