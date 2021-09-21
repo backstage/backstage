@@ -673,3 +673,26 @@ completely different.
 #### Implementation
 
 [Off we go!](../../plugins/welcome/src/components/Experiment/Experiment7.tsx)
+
+#### Learnings
+
+The current solution for the home page cards puts a bit too much burden on the
+consumer of the API. I'd really like to have an API where you give full
+ownership of the layout to the provider, but full and simple control of all the
+content to the consumer.
+
+The inverted solutions like `useCardAction` do provide this, but the API surface
+is quite large and the flow of information is pretty awkward. It's also a
+non-standard pattern that has the risk of causing bugs like render loops.
+
+The plain component solution using `LayoutCard` (or `render()`, but why?) use
+standard things, but leave perhaps a little bit too much flexibility to the
+consumer. Arguably that could be a good thing, but it can also make it tricky
+for us to provide more utility around the management and implementation of cards
+and layout components as a whole.
+
+The non-standard object rendering solution is pretty nice, but has the drawback
+of being non-standard. I'd argue that it's not very magic, as in the end it's
+really just the fact that you can call React hooks that makes it different from
+any regular function. I think this and the plain component solution are worth
+exploring further, but will ditch the rest.
