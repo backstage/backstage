@@ -13,6 +13,7 @@
     "@backstage/plugin-api-docs": "^0.6.8",
     "@backstage/plugin-badges": "^0.2.9",
     "@backstage/plugin-catalog": "^0.6.15",
+    "@backstage/plugin-catalog-graph": "^0.1.0",
     "@backstage/plugin-catalog-import": "^0.5.21",
     "@backstage/plugin-catalog-react": "^0.4.6",
     "@backstage/plugin-circleci": "^0.2.23",
