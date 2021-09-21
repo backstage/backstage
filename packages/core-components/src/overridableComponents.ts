@@ -18,7 +18,7 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 
 import {
   AvatarClassKey,
-  //   ChecboxTreeClassKey
+  CheckboxTreeClassKey,
   DependencyGraphDefaultLabelClassKey,
   DependencyGraphDefaultNodeClassKey,
   DependencyGraphEdgeClassKey,
@@ -57,17 +57,17 @@ import {
   TableFiltersClassKey,
   SubvalueCellClassKey,
   TableHeaderClassKey,
-  //   TableToolbarClassKey,
+  TableToolbarClassKey,
   FiltersContainerClassKey,
   TableClassKey,
   TabBarClassKey,
   TabIconClassKey,
   TabsClassKey,
   WarningPanelClassKey,
-  //   BottomLinkClassKey,
 } from './components';
 
 import {
+  BottomLinkClassKey,
   BreadcrumbsClickableTextClassKey,
   BreadcrumbsStyledBoxClassKey,
   BackstageContentClassKey,
@@ -93,9 +93,9 @@ import {
   CardTabClassKey,
 } from './layout';
 
-export type BackstageComponentsNameToClassKey = {
+type BackstageComponentsNameToClassKey = {
   BackstageAvatar: AvatarClassKey;
-  //   BackstageCheckboxTree: CheckboxTreeClassKey;
+  BackstageCheckboxTree: CheckboxTreeClassKey;
   BackstageDependencyGraphDefaultLabel: DependencyGraphDefaultLabelClassKey;
   BackstageDependencyGraphDefaultNode: DependencyGraphDefaultNodeClassKey;
   BackstageDependencyGraphEdge: DependencyGraphEdgeClassKey;
@@ -134,14 +134,14 @@ export type BackstageComponentsNameToClassKey = {
   BackstageTableFilters: TableFiltersClassKey;
   BackstageSubvalueCell: SubvalueCellClassKey;
   BackstageTableHeader: TableHeaderClassKey;
-  //   BackstageTableToolbar: TableToolbarClassKey;
+  BackstageTableToolbar: TableToolbarClassKey;
   BackstageTableFiltersContainer: FiltersContainerClassKey;
   BackstageTable: TableClassKey;
   BackstageTabBar: TabBarClassKey;
   BackstageTabIcon: TabIconClassKey;
   BackstageTabs: TabsClassKey;
   BackstageWarningPanel: WarningPanelClassKey;
-  //   BackstageBottomLink: BottomLinkClassKey;
+  BackstageBottomLink: BottomLinkClassKey;
   BackstageBreadcrumbsClickableText: BreadcrumbsClickableTextClassKey;
   BackstageBreadcrumbsStyledBox: BreadcrumbsStyledBoxClassKey;
   BackstageContent: BackstageContentClassKey;
