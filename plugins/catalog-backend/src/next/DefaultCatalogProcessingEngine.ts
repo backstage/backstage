@@ -167,7 +167,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             hashBuilder = hashBuilder
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
-              .update(stableStringify([...result.relations]));
+              .update(stableStringify([...result.relations]))
+              .update(stableStringify(result.state));
           }
 
           const resultHash = hashBuilder.digest('hex');
