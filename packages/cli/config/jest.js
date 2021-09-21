@@ -82,7 +82,7 @@ async function getConfig() {
       '\\.(js|jsx|ts|tsx)$': require.resolve('@sucrase/jest-plugin'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
-      '\\.(yaml)$': require.resolve('yaml-jest'),
+      '\\.(yaml)$': require.resolve('jest-transform-yaml'),
     },
 
     // A bit more opinionated

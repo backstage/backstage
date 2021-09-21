@@ -1148,6 +1148,7 @@ export interface LocationService {
   ): Promise<{
     location: Location_2;
     entities: Entity[];
+    exists?: boolean;
   }>;
   // (undocumented)
   deleteLocation(id: string): Promise<void>;

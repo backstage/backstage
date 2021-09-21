@@ -24,13 +24,28 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityProvider,
+  CatalogApi,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutCard } from './AboutCard';
 
 describe('<AboutCard />', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntities: jest.fn(),
+    addLocation: jest.fn(),
+    getLocationByEntity: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+  } as any;
+
   it('renders info', async () => {
     const entity = {
       apiVersion: 'v1',
@@ -62,7 +77,7 @@ describe('<AboutCard />', () => {
           integrations: {},
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -109,7 +124,7 @@ describe('<AboutCard />', () => {
           },
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -155,7 +170,7 @@ describe('<AboutCard />', () => {
           },
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByTitle } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -188,7 +203,7 @@ describe('<AboutCard />', () => {
     const apis = ApiRegistry.with(
       scmIntegrationsApiRef,
       ScmIntegrationsApi.fromConfig(new ConfigReader({})),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -198,6 +213,43 @@ describe('<AboutCard />', () => {
       </ApiProvider>,
     );
     expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
+  });
+
+  it('triggers a refresh', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+    ).with(catalogApiRef, catalogApi);
+
+    const { getByTitle } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(catalogApi.refreshEntity).not.toHaveBeenCalledWith(
+      'component:default/software',
+    );
+
+    userEvent.click(getByTitle('Schedule entity refresh'));
+
+    expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
+      'component:default/software',
+    );
   });
 
   it('renders techdocs link', async () => {
@@ -230,7 +282,7 @@ describe('<AboutCard />', () => {
           },
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -278,7 +330,7 @@ describe('<AboutCard />', () => {
           },
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -321,7 +373,7 @@ describe('<AboutCard />', () => {
           },
         }),
       ),
-    );
+    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>

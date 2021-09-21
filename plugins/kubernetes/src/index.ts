@@ -27,3 +27,4 @@ export {
 } from './plugin';
 export { Router } from './Router';
 export * from './kubernetes-auth-provider';
+export * from './utils/clusterLinks';

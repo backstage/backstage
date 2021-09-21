@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": "12 || 14"
+    "node": "14 || 16"
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
@@ -62,7 +62,7 @@
     "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
     "@octokit/openapi-types": "^2.2.0",
-    "@spotify/prettier-config": "^10.0.0",
+    "@spotify/prettier-config": "^11.0.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
     "eslint-plugin-notice": "^0.9.10",

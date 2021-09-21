@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageTheme } from '@backstage/theme';
 import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core';
 import { CardHeaderProps } from '@material-ui/core';
@@ -25,7 +26,6 @@ import { LinkProps as LinkProps_2 } from '@material-ui/core';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
-import { Palette } from '@material-ui/core/styles/createPalette';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';

@@ -195,6 +195,23 @@ cache store better suited for production deployment. The right cache store for
 your Backstage instance will depend on your own run-time constraints and those
 required of the plugins you're running.
 
+### Use memory for cache
+
+```yaml
+backend:
+  cache:
+    store: memory
+```
+
+### Use memcache for cache
+
+```yaml
+backend:
+  cache:
+    store: memcache
+    connection: user:pass@cache.example.com:11211
+```
+
 Contributions supporting other cache stores are welcome!
 
 ## Containerization

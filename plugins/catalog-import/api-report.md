@@ -34,6 +34,7 @@ export type AnalyzeResult =
       type: 'locations';
       locations: Array<{
         target: string;
+        exists?: boolean;
         entities: EntityName[];
       }>;
     }
@@ -248,5 +249,5 @@ export const StepPrepareCreatePullRequest: ({
 
 // Warnings were encountered during analysis:
 //
-// src/api/CatalogImportApi.d.ts:14:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
+// src/api/CatalogImportApi.d.ts:15:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
 ```
