@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { Experiment6 as Experiment } from './Experiment6';
+export { Experiment7 as Experiment } from './Experiment7';
