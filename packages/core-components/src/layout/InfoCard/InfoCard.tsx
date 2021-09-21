@@ -29,34 +29,51 @@ import classNames from 'classnames';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 
-const useStyles = makeStyles(theme => ({
-  noPadding: {
-    padding: 0,
-    '&:last-child': {
-      paddingBottom: 0,
-    },
-  },
-  header: {
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  headerTitle: {
-    fontWeight: 700,
-  },
-  headerSubheader: {
-    paddingTop: theme.spacing(1),
-  },
-  headerAvatar: {},
-  headerAction: {},
-  headerContent: {},
-}));
+export type InfoCardClassKey =
+  | 'noPadding'
+  | 'header'
+  | 'headerTitle'
+  | 'headerSubheader'
+  | 'headerAvatar'
+  | 'headerAction'
+  | 'headerContent';
 
-const CardActionsTopRight = withStyles(theme => ({
-  root: {
-    display: 'inline-block',
-    padding: theme.spacing(8, 8, 0, 0),
-    float: 'right',
-  },
-}))(CardActions);
+const useStyles = makeStyles(
+  theme => ({
+    noPadding: {
+      padding: 0,
+      '&:last-child': {
+        paddingBottom: 0,
+      },
+    },
+    header: {
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    headerTitle: {
+      fontWeight: 700,
+    },
+    headerSubheader: {
+      paddingTop: theme.spacing(1),
+    },
+    headerAvatar: {},
+    headerAction: {},
+    headerContent: {},
+  }),
+  { name: 'BackstageInfoCard' },
+);
+
+export type CardActionsTopRightClassKey = 'root';
+
+const CardActionsTopRight = withStyles(
+  theme => ({
+    root: {
+      display: 'inline-block',
+      padding: theme.spacing(8, 8, 0, 0),
+      float: 'right',
+    },
+  }),
+  { name: 'BackstageInfoCardCardActionsTopRight' },
+)(CardActions);
 
 const VARIANT_STYLES = {
   card: {

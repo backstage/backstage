@@ -21,47 +21,52 @@ import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    zIndex: 1000,
-    position: 'relative',
-    overflow: 'visible',
-    width: theme.spacing(7) + 1,
-  },
-  drawer: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    alignItems: 'flex-start',
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    padding: 0,
-    background: theme.palette.navigation.background,
-    overflowX: 'hidden',
-    msOverflowStyle: 'none',
-    scrollbarWidth: 'none',
-    width: sidebarConfig.drawerWidthClosed,
-    borderRight: `1px solid #383838`,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.shortest,
-    }),
-    '& > *': {
-      flexShrink: 0,
+export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      zIndex: 1000,
+      position: 'relative',
+      overflow: 'visible',
+      width: theme.spacing(7) + 1,
     },
-    '&::-webkit-scrollbar': {
-      display: 'none',
+    drawer: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      padding: 0,
+      background: theme.palette.navigation.background,
+      overflowX: 'hidden',
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+      width: sidebarConfig.drawerWidthClosed,
+      borderRight: `1px solid #383838`,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest,
+      }),
+      '& > *': {
+        flexShrink: 0,
+      },
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
     },
-  },
-  drawerOpen: {
-    width: sidebarConfig.drawerWidthOpen,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.shorter,
-    }),
-  },
-}));
+    drawerOpen: {
+      width: sidebarConfig.drawerWidthOpen,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shorter,
+      }),
+    },
+  }),
+  { name: 'BackstageSidebar' },
+);
 
 enum State {
   Closed,

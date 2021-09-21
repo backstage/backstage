@@ -27,19 +27,29 @@ import React, { ComponentProps, Fragment } from 'react';
 
 type Props = ComponentProps<typeof MaterialBreadcrumbs>;
 
-const ClickableText = withStyles({
-  root: {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
-})(Typography);
+export type BreadcrumbsClickableTextClassKey = 'root';
 
-const StyledBox = withStyles({
-  root: {
-    textDecoration: 'underline',
-    color: 'inherit',
+const ClickableText = withStyles(
+  {
+    root: {
+      textDecoration: 'underline',
+      cursor: 'pointer',
+    },
   },
-})(Box);
+  { name: 'BackstageBreadcrumbsClickableText' },
+)(Typography);
+
+export type BreadcrumbsStyledBoxClassKey = 'root';
+
+const StyledBox = withStyles(
+  {
+    root: {
+      textDecoration: 'underline',
+      color: 'inherit',
+    },
+  },
+  { name: 'BackstageBreadcrumbsStyledBox' },
+)(Box);
 
 export function Breadcrumbs(props: Props) {
   const { children, ...restProps } = props;
