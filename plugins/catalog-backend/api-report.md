@@ -751,6 +751,7 @@ export class DefaultCatalogProcessingOrchestrator
     logger: Logger_2;
     parser: CatalogProcessorParser;
     policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
   });
   // (undocumented)
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
@@ -1497,4 +1498,5 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/ingestion/processors/types.d.ts:58:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/ingestion/types.d.ts:41:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/next/processing/DefaultCatalogProcessingOrchestrator.d.ts:15:9 - (ae-forgotten-export) The symbol "CatalogRulesEnforcer" needs to be exported by the entry point index.d.ts
 ```

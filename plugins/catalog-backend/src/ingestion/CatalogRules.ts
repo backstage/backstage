@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { LocationSpec, Entity } from '@backstage/catalog-model';
+import path from 'path';
 
 /**
  * A structure for matching entities to a given rule.
@@ -104,7 +105,7 @@ export class CatalogRulesEnforcer {
             return [];
           }
           const type = locConf.getString('type');
-          const target = locConf.getString('target');
+          const target = resolveTarget(type, locConf.getString('target'));
 
           return locConf.getConfigArray('rules').map(ruleConf => ({
             allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
@@ -174,4 +175,12 @@ export class CatalogRulesEnforcer {
 
     return false;
   }
+}
+
+function resolveTarget(type: string, target: string): string {
+  if (type !== 'file') {
+    return target;
+  }
+
+  return path.resolve(target);
 }
