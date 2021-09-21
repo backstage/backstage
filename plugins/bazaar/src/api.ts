@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   createApiRef,
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { BazaarProject, Status } from './types';
+import { Status } from './types';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -41,10 +37,6 @@ export interface BazaarApi {
   ): Promise<any>;
 
   getMetadata(entity: Entity): Promise<any>;
-
-  getMemberCounts(
-    bazaarProjects: BazaarProject[],
-  ): Promise<Map<EntityRef, number>>;
 
   getMembers(entity: Entity): Promise<any>;
 
@@ -105,27 +97,6 @@ export class BazaarClient implements BazaarApi {
         entity_ref: stringifyEntityRef(entity),
       },
     });
-  }
-
-  async getMemberCounts(
-    bazaarProjects: BazaarProject[],
-  ): Promise<Map<EntityRef, number>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
-
-    const members = new Map<EntityRef, number>();
-    for (const project of bazaarProjects) {
-      const response = await fetch(`${baseUrl}/members`, {
-        method: 'GET',
-        headers: {
-          entity_ref: project.entityRef as string,
-        },
-      });
-
-      const json = await response.json();
-      const nbrOfMembers = await json.data.length;
-      members.set(project.entityRef, nbrOfMembers);
-    }
-    return members;
   }
 
   async getMembers(entity: Entity): Promise<any> {

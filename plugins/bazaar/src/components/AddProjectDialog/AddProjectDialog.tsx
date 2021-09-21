@@ -71,6 +71,7 @@ export const AddProjectDialog = ({
       announcement: formValues.announcement,
       status: formValues.status,
       updatedAt: new Date().toISOString(),
+      membersCount: 0,
     };
 
     setBazaarProjects((oldProjects: BazaarProject[]) => {

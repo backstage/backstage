@@ -47,11 +47,16 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { EditProjectDialog } from '../EditProjectDialog';
 import { DeleteProjectDialog } from '../DeleteProjectDialog';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  identityApiRef,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles({
   description: {
@@ -73,7 +78,7 @@ const useStyles = makeStyles({
 });
 
 const sortMembers = (m1: Member, m2: Member) => {
-  return new Date(m2.joinDate).getTime() - new Date(m1.joinDate).getTime();
+  return new Date(m2.joinDate!).getTime() - new Date(m1.joinDate!).getTime();
 };
 
 export const EntityBazaarInfoCard = () => {
@@ -95,8 +100,10 @@ export const EntityBazaarInfoCard = () => {
     announcement: '',
     status: 'proposed',
     updatedAt: '',
+    membersCount: 0,
   });
   const [isBazaar, setIsBazaar] = useState(false);
+  const routeRef = useRouteRef(rootRouteRef);
 
   const getInitMemberStatus = async () => {
     const response = await bazaarApi.getMembers(entity);
@@ -134,6 +141,7 @@ export const EntityBazaarInfoCard = () => {
         announcement: data[0].announcement,
         status: data[0].status,
         updatedAt: data[0].updatedAt,
+        membersCount: data[0].membersCount,
       });
     }
   };
@@ -166,12 +174,12 @@ export const EntityBazaarInfoCard = () => {
     const newMember: Member = {
       userId: identity.getUserId(),
       entityRef: stringifyEntityRef(entity),
-      joinDate: new Date().toISOString(),
     };
 
     if (!isMember) {
       setMembers((prevMembers: Member[]) => {
-        const newMembers: Member[] = [...prevMembers, newMember];
+        const newMembers: Member[] = [newMember, ...prevMembers];
+
         newMembers.sort(sortMembers);
         return newMembers;
       });
@@ -213,11 +221,11 @@ export const EntityBazaarInfoCard = () => {
         <CardContent>
           <Typography variant="body1">
             This project is not in the Bazaar. Go to the{' '}
-            <Link className={classes.link} to="/bazaar">
+            <Link className={classes.link} to={`/${routeRef()}`}>
               Bazaar
             </Link>{' '}
             to add the project or to{' '}
-            <Link className={classes.link} to="/bazaar/about">
+            <Link className={classes.link} to={`/${routeRef()}/about`}>
               read more
             </Link>
             .
@@ -287,16 +295,18 @@ export const EntityBazaarInfoCard = () => {
           <Grid item xs={12}>
             <AboutField label="Announcement">
               {bazaarProject.announcement
-                ? bazaarProject.announcement.split('\n').map((str: string) => (
-                    <Typography
-                      key={Math.floor(Math.random() * 1000)}
-                      variant="body2"
-                      paragraph
-                      className={classes.description}
-                    >
-                      {str}
-                    </Typography>
-                  ))
+                ? bazaarProject.announcement
+                    .split('\n')
+                    .map((str: string, i: number) => (
+                      <Typography
+                        key={i}
+                        variant="body2"
+                        paragraph
+                        className={classes.description}
+                      >
+                        {str}
+                      </Typography>
+                    ))
                 : 'No announcement'}
             </AboutField>
           </Grid>

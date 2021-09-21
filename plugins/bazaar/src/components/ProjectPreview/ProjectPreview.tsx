@@ -20,12 +20,10 @@ import { ProjectCard } from '../ProjectCard/ProjectCard';
 import { makeStyles, Grid } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { BazaarProject } from '../../types';
-import { EntityRef } from '@backstage/catalog-model';
 
 type Props = {
   bazaarProjects: BazaarProject[];
   sortingMethod: (arg0: BazaarProject, arg1: BazaarProject) => number;
-  bazaarMembers: Map<EntityRef, number>;
 };
 
 const useStyles = makeStyles({
@@ -42,11 +40,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const ProjectPreview = ({
-  bazaarProjects,
-  sortingMethod,
-  bazaarMembers,
-}: Props) => {
+export const ProjectPreview = ({ bazaarProjects, sortingMethod }: Props) => {
   const classes = useStyles();
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -92,7 +86,6 @@ export const ProjectPreview = ({
                 <ProjectCard
                   bazaarProject={bazaarProject}
                   key={Math.random()}
-                  memberCount={bazaarMembers.get(entityRef) || 0}
                 />
               </Grid>
             );

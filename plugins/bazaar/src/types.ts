@@ -19,7 +19,7 @@ import { EntityRef } from '@backstage/catalog-model';
 export type Member = {
   entityRef: EntityRef;
   userId: string;
-  joinDate: string;
+  joinDate?: string;
 };
 
 export type Status = 'ongoing' | 'proposed';
@@ -30,7 +30,8 @@ export type BazaarProject = {
   community: string;
   status: Status;
   announcement: string;
-  updatedAt: string;
+  updatedAt?: string;
+  membersCount: number;
 };
 
 export type FormValues = {

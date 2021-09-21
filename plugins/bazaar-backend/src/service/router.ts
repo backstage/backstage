@@ -50,11 +50,6 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
-  });
-
   router.get('/members', async (request, response) => {
     const entityRef = request.headers.entity_ref;
 
@@ -64,9 +59,9 @@ export async function createRouter(
       .where({ entity_ref: entityRef });
 
     if (data?.length) {
-      response.send({ status: 'ok', data: data });
+      response.json({ status: 'ok', data: data });
     } else {
-      response.send({ status: 'ok', data: [] });
+      response.json({ status: 'ok', data: [] });
     }
   });
 
@@ -80,14 +75,12 @@ export async function createRouter(
         user_id: userId,
       })
       .into('public.members');
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.delete('/member', async (request, response) => {
     const userId = request.headers.user_id;
     const entityRef = request.headers.entity_ref;
-
-    console.log('------- user id ----- ', userId, entityRef);
 
     const count = await db?.('public.members')
       .where({ entity_ref: entityRef })
@@ -95,7 +88,7 @@ export async function createRouter(
       .del();
 
     if (count) {
-      response.send({ status: 'ok' });
+      response.json({ status: 'ok' });
     } else {
       response.status(404).json({ message: 'Record not found' });
     }
@@ -109,7 +102,7 @@ export async function createRouter(
       .del();
 
     if (count) {
-      response.send({ status: 'ok' });
+      response.json({ status: 'ok' });
     } else {
       response.status(404).json({ message: 'Record not found' });
     }
@@ -124,16 +117,32 @@ export async function createRouter(
       .where({ entity_ref: entityRef });
 
     if (data?.length) {
-      response.send({ status: 'ok', data: data });
+      response.json({ status: 'ok', data: data });
     } else {
       response.status(404).json({ message: 'Record not found' });
     }
   });
 
   router.get('/entities', async (_, response) => {
-    const data = await db?.select('*').from('public.metadata');
+    const columns = [
+      'members.entity_ref',
+      'metadata.name',
+      'metadata.announcement',
+      'metadata.status',
+      'metadata.updated_at',
+    ];
+    const data = await db?.('public.members as members')
+      .select(columns)
+      .count('members.entity_ref as members_count')
+      .groupBy(columns)
+      .join(
+        'public.metadata as metadata',
+        'metadata.entity_ref',
+        '=',
+        'members.entity_ref',
+      );
 
-    response.send({ status: 'ok', data: data });
+    response.json({ status: 'ok', data: data });
   });
 
   router.put('/metadata', async (request, response) => {
@@ -149,7 +158,7 @@ export async function createRouter(
       });
 
     if (count) {
-      response.send({ status: 'ok' });
+      response.json({ status: 'ok' });
     } else {
       await db
         ?.insert({
@@ -160,7 +169,7 @@ export async function createRouter(
           status: status,
         })
         .into('public.metadata');
-      response.send({ status: 'ok' });
+      response.json({ status: 'ok' });
     }
   });
 
@@ -172,7 +181,7 @@ export async function createRouter(
       .del();
 
     if (count) {
-      response.send({ status: 'ok' });
+      response.json({ status: 'ok' });
     } else {
       response.status(404).json({ message: 'Record not found' });
     }

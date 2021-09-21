@@ -25,11 +25,11 @@ import {
 } from '@material-ui/core';
 import { StatusTag } from '../StatusTag/StatusTag';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
 import { catalogRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BazaarProject } from '../../types';
 import { parseEntityName } from '@backstage/catalog-model';
+import { DateTime } from 'luxon';
 
 const useStyles = makeStyles({
   statusTag: {
@@ -51,12 +51,12 @@ const useStyles = makeStyles({
 
 type Props = {
   bazaarProject: BazaarProject;
-  memberCount: number;
 };
 
-export const ProjectCard = ({ bazaarProject, memberCount }: Props) => {
+export const ProjectCard = ({ bazaarProject }: Props) => {
   const classes = useStyles();
-  const { entityRef, name, status, updatedAt, announcement } = bazaarProject;
+  const { entityRef, name, status, updatedAt, announcement, membersCount } =
+    bazaarProject;
   const catalogLink = useRouteRef(catalogRouteRef);
   const { namespace, kind } = parseEntityName(entityRef);
 
@@ -73,14 +73,16 @@ export const ProjectCard = ({ bazaarProject, memberCount }: Props) => {
       >
         <ItemCardHeader
           title={name}
-          subtitle={`updated ${moment(updatedAt).fromNow()}`}
+          subtitle={`updated ${DateTime.fromISO(updatedAt!).toRelative({
+            base: DateTime.now(),
+          })}`}
         />
         <CardContent style={{ height: '12rem' }}>
           <StatusTag styles={classes.statusTag} status={status} />
           <Typography variant="body2" className={classes.memberCount}>
-            {memberCount === 1
-              ? `${memberCount} member`
-              : `${memberCount} members`}
+            {membersCount === 1
+              ? `${membersCount} member`
+              : `${membersCount} members`}
           </Typography>
           <div style={{ minHeight: '6.5rem', maxHeight: '6.5rem' }}>
             <Typography variant="body2" className={classes.announcement}>

@@ -26,16 +26,9 @@ import { AlertBanner } from '../AlertBanner';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
 import { useAsync } from 'react-use';
-import {
-  Entity,
-  EntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  CATALOG_FILTER_EXISTS,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 
@@ -50,9 +43,6 @@ export const SortView = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openNoProjects, setOpenNoProjects] = useState(false);
   const [catalogEntities, setCatalogEntities] = useState<Entity[]>([]);
-  const [bazaarMembers, setBazaarMembers] = useState<Map<EntityRef, number>>(
-    new Map(),
-  );
   const [bazaarProjects, setBazaarProjects] = useState<BazaarProject[]>([]);
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -61,8 +51,8 @@ export const SortView = () => {
     a: BazaarProject,
     b: BazaarProject,
   ): number => {
-    const dateA = new Date(a.updatedAt).getTime();
-    const dateB = new Date(b.updatedAt).getTime();
+    const dateA = new Date(a.updatedAt!).getTime();
+    const dateB = new Date(b.updatedAt!).getTime();
     return dateB - dateA;
   };
 
@@ -73,10 +63,9 @@ export const SortView = () => {
   const { loading } = useAsync(async () => {
     const entities = await catalogApi.getEntities({
       filter: {
-        kind: 'Component',
-        'metadata.annotations.backstage.io/edit-url': CATALOG_FILTER_EXISTS,
+        kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
       },
-      fields: ['apiVersion', 'kind', 'metadata', 'spec'],
+      fields: ['kind', 'metadata.name', 'metadata.namespace'],
     });
 
     const response = await bazaarApi.getEntities();
@@ -91,12 +80,12 @@ export const SortView = () => {
         announcement: project.announcement,
         community: project.community,
         updatedAt: project.updated_at,
+        membersCount: project.members_count,
       });
 
       bazaarProjectRefs.push(project.entity_ref);
     });
 
-    setBazaarMembers(await bazaarApi.getMemberCounts(dbProjects));
     setBazaarProjects(dbProjects);
     setCatalogEntities(
       entities.items.filter((entity: Entity) => {
@@ -155,7 +144,6 @@ export const SortView = () => {
       <ProjectPreview
         bazaarProjects={bazaarProjects || []}
         sortingMethod={compareProjectsByDate}
-        bazaarMembers={bazaarMembers}
       />
       <Content noPadding className={classes.container} />
     </Content>
