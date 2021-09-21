@@ -31,7 +31,7 @@ import { Base64 } from 'js-base64';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
-import trimEnd from 'lodash/trimend';
+import { trimEnd } from 'lodash';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
