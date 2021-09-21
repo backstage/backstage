@@ -162,9 +162,9 @@ export function Sidebar(props: PropsWithChildren<Props>) {
       <div
         className={classes.root}
         onMouseEnter={handleOpen}
-        onFocus={handleOpen}
+        onFocus={ignoreChildEvent(handleOpen)}
         onMouseLeave={handleClose}
-        onBlur={handleClose}
+        onBlur={ignoreChildEvent(handleClose)}
         data-testid="sidebar-root"
       >
         <SidebarContext.Provider
@@ -183,4 +183,14 @@ export function Sidebar(props: PropsWithChildren<Props>) {
       </div>
     </div>
   );
+}
+
+function ignoreChildEvent(handlerFn: (e?: any) => void) {
+  // TODO type the event
+  return (event: any) => {
+    const currentTarget = event?.currentTarget as HTMLElement;
+    if (!currentTarget?.contains(event.relatedTarget as HTMLElement)) {
+      handlerFn(event);
+    }
+  };
 }
