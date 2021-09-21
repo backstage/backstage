@@ -16,21 +16,186 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import {
+  Entity,
+  EntityPolicies,
   EntityPolicy,
   LocationEntity,
+  LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import {
   CatalogProcessor,
+  CatalogProcessorCache,
+  CatalogProcessorEmit,
   CatalogProcessorParser,
   results,
 } from '../../ingestion';
 import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
+import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
+import { ConfigReader } from '@backstage/config';
+
+class FooBarProcessor implements CatalogProcessor {
+  getProcessorName = () => 'foo-bar';
+
+  async validateEntityKind(entity: Entity) {
+    return entity.kind.toLocaleLowerCase('en-US') === 'foobar';
+  }
+
+  async postProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    emit: CatalogProcessorEmit,
+    cache: CatalogProcessorCache,
+  ) {
+    if (await cache.get('emit')) {
+      emit(
+        results.entity(
+          { type: 'url', target: './new-place' },
+          {
+            apiVersion: 'my-api/v1',
+            kind: 'FooBar',
+            metadata: {
+              name: 'my-new-foo-bar',
+            },
+          },
+        ),
+      );
+      emit(
+        results.relation({
+          type: 'my-type',
+          source: { kind: 'foobar', name: 'my-source', namespace: 'default' },
+          target: { kind: 'foobar', name: 'my-target', namespace: 'default' },
+        }),
+      );
+    }
+    return entity;
+  }
+}
 
 describe('DefaultCatalogProcessingOrchestrator', () => {
+  describe('2', () => {
+    const entity = {
+      apiVersion: 'my-api/v1',
+      kind: 'FooBar',
+      metadata: {
+        name: 'my-foo-bar',
+        annotations: {
+          [LOCATION_ANNOTATION]: 'url:./here',
+          [ORIGIN_LOCATION_ANNOTATION]: 'url:./there',
+        },
+      },
+    };
+
+    const rulesEnforcer: CatalogRulesEnforcer = {
+      isAllowed: () => true,
+    };
+
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
+      processors: [new FooBarProcessor()],
+      integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+      logger: getVoidLogger(),
+      parser: defaultEntityDataParser,
+      policy: EntityPolicies.allOf([]),
+      rulesEnforcer,
+    });
+
+    it('runs a minimal processing', async () => {
+      await expect(orchestrator.process({ entity })).resolves.toEqual({
+        ok: true,
+        completedEntity: entity,
+        deferredEntities: [],
+        errors: [],
+        relations: [],
+        state: {
+          cache: {},
+        },
+      });
+    });
+
+    it('emits some things', async () => {
+      await expect(
+        orchestrator.process({
+          entity,
+          state: { cache: { 'foo-bar': { emit: true } } },
+        }),
+      ).resolves.toEqual({
+        ok: true,
+        completedEntity: entity,
+        deferredEntities: [
+          {
+            locationKey: 'url:./new-place',
+            entity: {
+              apiVersion: 'my-api/v1',
+              kind: 'FooBar',
+              metadata: {
+                name: 'my-new-foo-bar',
+                annotations: {
+                  [LOCATION_ANNOTATION]: 'url:./new-place',
+                  [ORIGIN_LOCATION_ANNOTATION]: 'url:./there',
+                },
+              },
+            },
+          },
+        ],
+        errors: [],
+        relations: [
+          {
+            type: 'my-type',
+            source: { kind: 'foobar', name: 'my-source', namespace: 'default' },
+            target: { kind: 'foobar', name: 'my-target', namespace: 'default' },
+          },
+        ],
+        state: {
+          cache: { 'foo-bar': { emit: true } },
+        },
+      });
+    });
+
+    it('accepts any state input', async () => {
+      await expect(
+        orchestrator.process({ entity, state: null as any }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: [] as any }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: Symbol() as any }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: undefined }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: 3 as any }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: '}{' as any }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(
+        orchestrator.process({ entity, state: { cache: null } }),
+      ).resolves.toMatchObject({
+        ok: true,
+      });
+    });
+  });
+
   it('enforces catalog rules', async () => {
     const entity: LocationEntity = {
       apiVersion: 'backstage.io/v1beta1',
@@ -48,6 +213,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       },
     };
 
+    const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
     const processor: jest.Mocked<CatalogProcessor> = {
       validateEntityKind: jest.fn(async () => true),
       readLocation: jest.fn(async (_l, _o, emit) => {
@@ -55,11 +221,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         return true;
       }),
     };
-    const integrations: jest.Mocked<ScmIntegrationRegistry> = {} as any;
     const parser: CatalogProcessorParser = jest.fn();
-    const policy: jest.Mocked<EntityPolicy> = {
-      enforce: jest.fn(async x => x),
-    };
     const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
       isAllowed: jest.fn(),
     };
@@ -69,18 +231,18 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       integrations,
       logger: getVoidLogger(),
       parser,
-      policy,
+      policy: EntityPolicies.allOf([]),
       rulesEnforcer,
     });
 
     rulesEnforcer.isAllowed.mockReturnValueOnce(true);
-    await expect(
-      orchestrator.process({ entity, state: new Map() }),
-    ).resolves.toEqual(expect.objectContaining({ ok: true }));
+    await expect(orchestrator.process({ entity, state: {} })).resolves.toEqual(
+      expect.objectContaining({ ok: true }),
+    );
 
     rulesEnforcer.isAllowed.mockReturnValueOnce(false);
-    await expect(
-      orchestrator.process({ entity, state: new Map() }),
-    ).resolves.toEqual(expect.objectContaining({ ok: false }));
+    await expect(orchestrator.process({ entity, state: {} })).resolves.toEqual(
+      expect.objectContaining({ ok: false }),
+    );
   });
 });

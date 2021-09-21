@@ -84,7 +84,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: {},
+            state: [],
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -100,7 +100,7 @@ describe('DefaultCatalogProcessingEngine', () => {
           kind: 'Location',
           metadata: { name: 'test' },
         },
-        state: expect.anything(),
+        state: [], // State is forwarded as is, even if it's a bad format
       });
     });
     await engine.stop();
@@ -147,7 +147,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: {},
+            state: { cache: { myProcessor: { myKey: 'myValue' } } },
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -163,7 +163,7 @@ describe('DefaultCatalogProcessingEngine', () => {
           kind: 'Location',
           metadata: { name: 'test' },
         },
-        state: expect.anything(),
+        state: { cache: { myProcessor: { myKey: 'myValue' } } },
       });
     });
     await engine.stop();
