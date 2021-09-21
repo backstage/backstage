@@ -31,6 +31,7 @@ import { Base64 } from 'js-base64';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
+import trimEnd from 'lodash/trimend';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -239,9 +240,7 @@ the component will become available.\n\nFor more information, read an \
 
       return await Promise.all(
         searchResult.data.items
-          .map(
-            i => `${url.replace(/[\/]*$/, '')}/blob/${defaultBranch}/${i.path}`,
-          )
+          .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
           .map(async target => {
             const result = await this.catalogApi.addLocation({
               type: 'url',
