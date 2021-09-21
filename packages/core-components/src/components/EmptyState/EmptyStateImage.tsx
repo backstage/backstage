@@ -25,16 +25,21 @@ type Props = {
   missing: 'field' | 'info' | 'content' | 'data';
 };
 
-const useStyles = makeStyles({
-  generalImg: {
-    width: '95%',
-    zIndex: 2,
-    position: 'relative',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, 15%)',
+export type EmptyStateImageClassKey = 'generalImg';
+
+const useStyles = makeStyles(
+  {
+    generalImg: {
+      width: '95%',
+      zIndex: 2,
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, 15%)',
+    },
   },
-});
+  { name: 'BackstageEmptyStateImage' },
+);
 
 export const EmptyStateImage = ({ missing }: Props) => {
   const classes = useStyles();

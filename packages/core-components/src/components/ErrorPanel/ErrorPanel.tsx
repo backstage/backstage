@@ -19,17 +19,22 @@ import React, { PropsWithChildren } from 'react';
 import { CopyTextButton } from '../CopyTextButton';
 import { WarningPanel } from '../WarningPanel';
 
-const useStyles = makeStyles(theme => ({
-  text: {
-    fontFamily: 'monospace',
-    whiteSpace: 'pre',
-    overflowX: 'auto',
-    marginRight: theme.spacing(2),
-  },
-  divider: {
-    margin: theme.spacing(2),
-  },
-}));
+export type ErrorPanelClassKey = 'text' | 'divider';
+
+const useStyles = makeStyles(
+  theme => ({
+    text: {
+      fontFamily: 'monospace',
+      whiteSpace: 'pre',
+      overflowX: 'auto',
+      marginRight: theme.spacing(2),
+    },
+    divider: {
+      margin: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageErrorPanel' },
+);
 
 type ErrorListProps = {
   error: string;

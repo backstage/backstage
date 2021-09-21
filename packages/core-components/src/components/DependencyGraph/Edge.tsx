@@ -28,17 +28,22 @@ import {
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  path: {
-    strokeWidth: 2,
-    stroke: theme.palette.textSubtle,
-    fill: 'none',
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-  label: {
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-}));
+export type DependencyGraphEdgeClassKey = 'path' | 'label';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    path: {
+      strokeWidth: 2,
+      stroke: theme.palette.textSubtle,
+      fill: 'none',
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+    label: {
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+  }),
+  { name: 'BackstageDependencyGraphEdge' },
+);
 
 type EdgePoint = dagre.GraphEdge['points'][0];
 

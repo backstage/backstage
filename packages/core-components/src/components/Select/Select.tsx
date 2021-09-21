@@ -34,59 +34,73 @@ import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
-const BootstrapInput = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      'label + &': {
-        marginTop: theme.spacing(3),
+export type SelectInputBaseClassKey = 'root' | 'input';
+
+const BootstrapInput = withStyles(
+  (theme: Theme) =>
+    createStyles({
+      root: {
+        'label + &': {
+          marginTop: theme.spacing(3),
+        },
       },
-    },
-    input: {
-      borderRadius: 4,
-      position: 'relative',
-      backgroundColor: theme.palette.background.paper,
-      border: '1px solid #ced4da',
-      fontSize: 16,
-      padding: '10px 26px 10px 12px',
-      transition: theme.transitions.create(['border-color', 'box-shadow']),
-      fontFamily: 'Helvetica Neue',
-      '&:focus': {
-        background: theme.palette.background.paper,
+      input: {
         borderRadius: 4,
+        position: 'relative',
+        backgroundColor: theme.palette.background.paper,
+        border: '1px solid #ced4da',
+        fontSize: 16,
+        padding: '10px 26px 10px 12px',
+        transition: theme.transitions.create(['border-color', 'box-shadow']),
+        fontFamily: 'Helvetica Neue',
+        '&:focus': {
+          background: theme.palette.background.paper,
+          borderRadius: 4,
+        },
       },
-    },
-  }),
+    }),
+  { name: 'BackstageSelectInputBase' },
 )(InputBase);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: `${theme.spacing(1)} 0px`,
-      maxWidth: 300,
-    },
-    label: {
-      transform: 'initial',
-      fontWeight: 'bold',
-      fontSize: 14,
-      fontFamily: theme.typography.fontFamily,
-      color: theme.palette.text.primary,
-      '&.Mui-focused': {
-        color: theme.palette.text.primary,
+export type SelectClassKey =
+  | 'formControl'
+  | 'label'
+  | 'chips'
+  | 'chip'
+  | 'checkbox'
+  | 'root';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      formControl: {
+        margin: `${theme.spacing(1)} 0px`,
+        maxWidth: 300,
       },
-    },
-    chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    chip: {
-      margin: 2,
-    },
-    checkbox: {},
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-  }),
+      label: {
+        transform: 'initial',
+        fontWeight: 'bold',
+        fontSize: 14,
+        fontFamily: theme.typography.fontFamily,
+        color: theme.palette.text.primary,
+        '&.Mui-focused': {
+          color: theme.palette.text.primary,
+        },
+      },
+      chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
+      },
+      chip: {
+        margin: 2,
+      },
+      checkbox: {},
+      root: {
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    }),
+  { name: 'BackstageSelect' },
 );
 
 type Item = {

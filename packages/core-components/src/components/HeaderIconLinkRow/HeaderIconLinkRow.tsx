@@ -17,15 +17,20 @@ import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 import { makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-  links: {
-    margin: theme.spacing(2, 0),
-    display: 'grid',
-    gridAutoFlow: 'column',
-    gridAutoColumns: 'min-content',
-    gridGap: theme.spacing(3),
-  },
-}));
+export type HeaderIconLinkRowClassKey = 'links';
+
+const useStyles = makeStyles(
+  theme => ({
+    links: {
+      margin: theme.spacing(2, 0),
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridAutoColumns: 'min-content',
+      gridGap: theme.spacing(3),
+    },
+  }),
+  { name: 'BackstageHeaderIconLinkRow' },
+);
 
 type Props = {
   links: IconLinkVerticalProps[];

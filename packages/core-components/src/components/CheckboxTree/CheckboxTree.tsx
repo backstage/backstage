@@ -35,43 +35,52 @@ type IndexedObject<T> = {
   [key: string]: T;
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      minWidth: 10,
-      maxWidth: 360,
-      backgroundColor: 'transparent',
-      '&:hover': {
+export type CheckboxTreeClassKey =
+  | 'root'
+  | 'nested'
+  | 'listItemIcon'
+  | 'listItem'
+  | 'text';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      root: {
+        width: '100%',
+        minWidth: 10,
+        maxWidth: 360,
         backgroundColor: 'transparent',
+        '&:hover': {
+          backgroundColor: 'transparent',
+        },
+        '&:active': {
+          animation: 'none',
+          transform: 'none',
+        },
       },
-      '&:active': {
-        animation: 'none',
-        transform: 'none',
+      nested: {
+        paddingLeft: theme.spacing(5),
+        height: '32px',
+        '&:hover': {
+          backgroundColor: 'transparent',
+        },
       },
-    },
-    nested: {
-      paddingLeft: theme.spacing(5),
-      height: '32px',
-      '&:hover': {
-        backgroundColor: 'transparent',
+      listItemIcon: {
+        minWidth: 10,
       },
-    },
-    listItemIcon: {
-      minWidth: 10,
-    },
-    listItem: {
-      '&:hover': {
-        backgroundColor: 'transparent',
+      listItem: {
+        '&:hover': {
+          backgroundColor: 'transparent',
+        },
       },
-    },
-    text: {
-      '& span, & svg': {
-        fontWeight: 'normal',
-        fontSize: 14,
+      text: {
+        '& span, & svg': {
+          fontWeight: 'normal',
+          fontSize: 14,
+        },
       },
-    },
-  }),
+    }),
+  { name: 'BackstageCheckboxTree' },
 );
 
 /* SUB_CATEGORY */

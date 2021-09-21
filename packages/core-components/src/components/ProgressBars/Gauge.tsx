@@ -19,26 +19,31 @@ import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    position: 'relative',
-    lineHeight: 0,
-  },
-  overlay: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -60%)',
-    fontSize: 45,
-    fontWeight: 'bold',
-    color: theme.palette.textContrast,
-  },
-  circle: {
-    width: '80%',
-    transform: 'translate(10%, 0)',
-  },
-  colorUnknown: {},
-}));
+export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      position: 'relative',
+      lineHeight: 0,
+    },
+    overlay: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -60%)',
+      fontSize: 45,
+      fontWeight: 'bold',
+      color: theme.palette.textContrast,
+    },
+    circle: {
+      width: '80%',
+      transform: 'translate(10%, 0)',
+    },
+    colorUnknown: {},
+  }),
+  { name: 'BackstageGauge' },
+);
 
 type Props = {
   value: number;

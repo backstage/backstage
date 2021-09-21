@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { WarningPanel } from './WarningPanel';
+export type { WarningPanelClassKey } from './WarningPanel';

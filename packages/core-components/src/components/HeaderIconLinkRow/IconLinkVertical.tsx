@@ -29,30 +29,40 @@ export type IconLinkVerticalProps = {
   title?: string;
 };
 
-const useIconStyles = makeStyles(theme => ({
-  link: {
-    display: 'grid',
-    justifyItems: 'center',
-    gridGap: 4,
-    textAlign: 'center',
-  },
-  disabled: {
-    color: 'gray',
-    cursor: 'default',
-  },
-  primary: {
-    color: theme.palette.primary.main,
-  },
-  secondary: {
-    color: theme.palette.secondary.main,
-  },
-  label: {
-    fontSize: '0.7rem',
-    textTransform: 'uppercase',
-    fontWeight: 600,
-    letterSpacing: 1.2,
-  },
-}));
+export type IconLinkVerticalClassKey =
+  | 'link'
+  | 'disabled'
+  | 'primary'
+  | 'secondary'
+  | 'label';
+
+const useIconStyles = makeStyles(
+  theme => ({
+    link: {
+      display: 'grid',
+      justifyItems: 'center',
+      gridGap: 4,
+      textAlign: 'center',
+    },
+    disabled: {
+      color: 'gray',
+      cursor: 'default',
+    },
+    primary: {
+      color: theme.palette.primary.main,
+    },
+    secondary: {
+      color: theme.palette.secondary.main,
+    },
+    label: {
+      fontSize: '0.7rem',
+      textTransform: 'uppercase',
+      fontWeight: 600,
+      letterSpacing: 1.2,
+    },
+  }),
+  { name: 'BackstageIconLinkVertical' },
+);
 
 export function IconLinkVertical({
   color = 'primary',

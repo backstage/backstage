@@ -15,3 +15,4 @@
  */
 
 export { DismissableBanner } from './DismissableBanner';
+export type { DismissbleBannerClassKey } from './DismissableBanner';

@@ -26,11 +26,16 @@ import {
 import React, { useState } from 'react';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 
-const useItemStyles = makeStyles<Theme>(theme => ({
-  root: {
-    paddingLeft: theme.spacing(3),
-  },
-}));
+export type LoginRequestListItemClassKey = 'root';
+
+const useItemStyles = makeStyles<Theme>(
+  theme => ({
+    root: {
+      paddingLeft: theme.spacing(3),
+    },
+  }),
+  { name: 'BackstageLoginRequestListItem' },
+);
 
 type RowProps = {
   request: PendingAuthRequest;

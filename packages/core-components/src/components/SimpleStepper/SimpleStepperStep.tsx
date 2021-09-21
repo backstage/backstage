@@ -24,11 +24,16 @@ import {
 import { SimpleStepperFooter } from './SimpleStepperFooter';
 import { StepProps } from './types';
 
-const useStyles = makeStyles(theme => ({
-  end: {
-    padding: theme.spacing(3),
-  },
-}));
+export type SimpleStepperStepClassKey = 'end';
+
+const useStyles = makeStyles(
+  theme => ({
+    end: {
+      padding: theme.spacing(3),
+    },
+  }),
+  { name: 'SimpleStepperStep' },
+);
 
 export function SimpleStepperStep(props: PropsWithChildren<StepProps>) {
   const { title, children, end, actions, ...muiProps } = props;
