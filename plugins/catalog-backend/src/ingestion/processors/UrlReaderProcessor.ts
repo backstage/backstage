@@ -62,13 +62,13 @@ export class UrlReaderProcessor implements CatalogProcessor {
     const cacheItem = await cache.get<CacheItem>(CACHE_KEY);
 
     try {
-      const [output, newEtag] = await this.doRead(
+      const { response, etag: newEtag } = await this.doRead(
         location.target,
         cacheItem?.etag,
       );
 
       const parseResults: CatalogProcessorResult[] = [];
-      for (const item of output) {
+      for (const item of response) {
         for await (const parseResult of parser({
           data: item.data,
           location: { type: location.type, target: item.url },
@@ -91,7 +91,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
         for (const parseResult of cacheItem.value) {
           emit(parseResult);
         }
-        cache.set<CacheItem>(CACHE_KEY, cacheItem);
+        await cache.set<CacheItem>(CACHE_KEY, cacheItem);
       } else if (error.name === 'NotFoundError') {
         if (!optional) {
           emit(result.notFoundError(location, message));
@@ -107,7 +107,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
   private async doRead(
     location: string,
     etag?: string,
-  ): Promise<[response: { data: Buffer; url: string }[], etag?: string]> {
+  ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
     const { filepath } = parseGitUrl(location);
@@ -118,16 +118,19 @@ export class UrlReaderProcessor implements CatalogProcessor {
         url: file.url,
         data: await limiter(file.content),
       }));
-      return [await Promise.all(output), response.etag];
+      return { response: await Promise.all(output), etag: response.etag };
     }
 
     // Otherwise do a plain read, prioritizing readUrl if available
     if (this.options.reader.readUrl) {
       const data = await this.options.reader.readUrl(location, { etag });
-      return [[{ url: location, data: await data.buffer() }], data.etag];
+      return {
+        response: [{ url: location, data: await data.buffer() }],
+        etag: data.etag,
+      };
     }
 
     const data = await this.options.reader.read(location);
-    return [[{ url: location, data }]];
+    return { response: [{ url: location, data }] };
   }
 }
