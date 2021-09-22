@@ -75,3 +75,44 @@ describe('ProcessorCacheManager', () => {
     ).resolves.toBe('my-new-value');
   });
 });
+
+describe('ScopedProcessorCache', () => {
+  const myProcessor = new MyProcessor();
+
+  it('should forward existing state and collect new state', async () => {
+    const cache = new ProcessorCacheManager({
+      'my-processor': { 'scope-1': { 'my-key': 'my-value' } },
+    });
+
+    const scopedCache1 = cache.forProcessor(myProcessor, 'scope-1');
+    const scopedCache2 = cache.forProcessor(myProcessor, 'scope-2');
+
+    // Should be empty to begin with
+    expect(cache.collect()).toEqual({
+      'my-processor': { 'scope-1': { 'my-key': 'my-value' } },
+    });
+
+    await scopedCache2.set('my-new-key-2', 'my-new-value-2');
+
+    expect(cache.collect()).toEqual({
+      'my-processor': {
+        'scope-1': { 'my-key': 'my-value' },
+        'scope-2': { 'my-new-key-2': 'my-new-value-2' },
+      },
+    });
+
+    await scopedCache1.set('my-new-key', 'my-new-value');
+
+    await expect(scopedCache1.get<string>('my-key')).resolves.toBe('my-value');
+    await expect(
+      scopedCache1.get<string>('my-new-key'),
+    ).resolves.toBeUndefined();
+
+    expect(cache.collect()).toEqual({
+      'my-processor': {
+        'scope-1': { 'my-new-key': 'my-new-value' },
+        'scope-2': { 'my-new-key-2': 'my-new-value-2' },
+      },
+    });
+  });
+});

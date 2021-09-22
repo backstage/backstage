@@ -318,7 +318,7 @@ export class DefaultCatalogProcessingOrchestrator
               false,
               context.collector.onEmit,
               this.options.parser,
-              context.cache.forProcessor(processor),
+              context.cache.forProcessor(processor, target),
             );
             if (read) {
               didRead = true;
