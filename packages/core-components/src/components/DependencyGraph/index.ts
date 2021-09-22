@@ -17,4 +17,5 @@
 import * as DependencyGraphTypes from './types';
 
 export { DependencyGraph } from './DependencyGraph';
+export type { DependencyGraphProps } from './DependencyGraph';
 export { DependencyGraphTypes };

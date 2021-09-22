@@ -231,6 +231,7 @@ export const CatalogGraphPage = ({
                 direction={direction}
                 relationPairs={relationPairs}
                 className={classes.graph}
+                zoom="enabled"
               />
             </Paper>
           </Grid>
