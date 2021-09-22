@@ -212,7 +212,6 @@ describe('Default Processing Database', () => {
               id,
               processedEntity,
               resultHash: '',
-              state: {},
               relations: [],
               deferredEntities: [],
             }),
@@ -231,7 +230,6 @@ describe('Default Processing Database', () => {
           id,
           processedEntity,
           resultHash: '',
-          state: {},
           relations: [],
           deferredEntities: [],
           locationKey: 'key',
@@ -284,14 +282,11 @@ describe('Default Processing Database', () => {
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
-        const state = { hello: { t: 'something' } };
-
         await db.transaction(tx =>
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
             resultHash: '',
-            state,
             relations: [],
             deferredEntities: [],
             locationKey: 'key',
@@ -306,7 +301,6 @@ describe('Default Processing Database', () => {
         expect(entities[0].processed_entity).toEqual(
           JSON.stringify(processedEntity),
         );
-        expect(entities[0].cache).toEqual(JSON.stringify(state));
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
       },
@@ -348,7 +342,6 @@ describe('Default Processing Database', () => {
             id,
             processedEntity,
             resultHash: '',
-            state: {},
             relations: relations,
             deferredEntities: [],
           }),
@@ -400,7 +393,6 @@ describe('Default Processing Database', () => {
             id,
             processedEntity,
             resultHash: '',
-            state: {},
             relations: [],
             deferredEntities,
           }),
@@ -413,6 +405,54 @@ describe('Default Processing Database', () => {
           .select();
 
         expect(refreshStateEntries).toHaveLength(1);
+      },
+      60_000,
+    );
+  });
+
+  describe('updateEntityCache', () => {
+    it.each(databases.eachSupportedId())(
+      'updates the entityCache, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+        const id = '123';
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/fakelocation',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const state = { hello: { t: 'something' } };
+
+        await db.transaction(tx =>
+          db.updateEntityCache(tx, {
+            id,
+            state,
+          }),
+        );
+
+        const entities = await knex<DbRefreshStateRow>(
+          'refresh_state',
+        ).select();
+        expect(entities.length).toBe(1);
+        expect(entities[0].cache).toEqual(JSON.stringify(state));
+
+        await db.transaction(tx =>
+          db.updateEntityCache(tx, {
+            id,
+            state: undefined,
+          }),
+        );
+
+        const entities2 = await knex<DbRefreshStateRow>(
+          'refresh_state',
+        ).select();
+        expect(entities2.length).toBe(1);
+        expect(entities2[0].cache).toEqual('{}');
       },
       60_000,
     );

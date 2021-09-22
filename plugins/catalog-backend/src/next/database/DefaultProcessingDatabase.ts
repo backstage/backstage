@@ -40,6 +40,7 @@ import {
   UpdateProcessedEntityOptions,
   ListAncestorsOptions,
   ListAncestorsResult,
+  UpdateEntityCacheOptions,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -69,7 +70,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       id,
       processedEntity,
       resultHash,
-      state,
       errors,
       relations,
       deferredEntities,
@@ -79,7 +79,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         processed_entity: JSON.stringify(processedEntity),
         result_hash: resultHash,
-        cache: JSON.stringify(state),
         errors,
         location_key: locationKey,
       })
@@ -137,6 +136,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         errors,
         result_hash: resultHash,
       })
+      .where('entity_id', id);
+  }
+
+  async updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { id, state } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .update({ cache: JSON.stringify(state ?? {}) })
       .where('entity_id', id);
   }
 

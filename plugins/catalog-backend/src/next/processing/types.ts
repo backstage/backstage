@@ -15,17 +15,17 @@
  */
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/config';
 
 export type EntityProcessingRequest = {
   entity: Entity;
-  state?: JsonValue; // Versions for multiple deployments etc
+  state?: JsonObject; // Versions for multiple deployments etc
 };
 
 export type EntityProcessingResult =
   | {
       ok: true;
-      state: JsonValue;
+      state: JsonObject;
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];

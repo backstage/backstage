@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Transaction } from '../../database/types';
 import { DeferredEntity } from '../processing/types';
@@ -36,11 +36,15 @@ export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
   resultHash: string;
-  state?: JsonValue;
   errors?: string;
   relations: EntityRelationSpec[];
   deferredEntities: DeferredEntity[];
   locationKey?: string;
+};
+
+export type UpdateEntityCacheOptions = {
+  id: string;
+  state?: JsonObject;
 };
 
 export type UpdateProcessedEntityErrorsOptions = {
@@ -57,7 +61,7 @@ export type RefreshStateItem = {
   resultHash: string;
   nextUpdateAt: DateTime;
   lastDiscoveryAt: DateTime; // remove?
-  state?: JsonValue;
+  state?: JsonObject;
   errors?: string;
   locationKey?: string;
 };
@@ -116,6 +120,14 @@ export interface ProcessingDatabase {
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
+  ): Promise<void>;
+
+  /**
+   * Updates the cache associated with an entity.
+   */
+  updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
   ): Promise<void>;
 
   /**

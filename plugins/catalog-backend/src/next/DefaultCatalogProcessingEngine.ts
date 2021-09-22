@@ -38,6 +38,8 @@ import {
   EntityProviderMutation,
 } from './types';
 
+const CACHE_TTL = 5;
+
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
 
@@ -151,6 +153,29 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           track.markProcessorsCompleted(result);
 
+          if (result.ok) {
+            if (stableStringify(state) !== stableStringify(result.state)) {
+              await this.processingDatabase.transaction(async tx => {
+                await this.processingDatabase.updateEntityCache(tx, {
+                  id,
+                  state: {
+                    ttl: CACHE_TTL,
+                    ...result.state,
+                  },
+                });
+              });
+            }
+          } else {
+            const maybeTtl = state?.ttl;
+            const ttl = Number.isInteger(maybeTtl) ? (maybeTtl as number) : 0;
+            await this.processingDatabase.transaction(async tx => {
+              await this.processingDatabase.updateEntityCache(tx, {
+                id,
+                state: ttl > 0 ? { ...state, ttl: ttl - 1 } : {},
+              });
+            });
+          }
+
           for (const error of result.errors) {
             // TODO(freben): Try to extract the location out of the unprocessed
             // entity and add as meta to the log lines
@@ -167,8 +192,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             hashBuilder = hashBuilder
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
-              .update(stableStringify([...result.relations]))
-              .update(stableStringify(result.state));
+              .update(stableStringify([...result.relations]));
           }
 
           const resultHash = hashBuilder.digest('hex');
@@ -208,7 +232,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               id,
               processedEntity: result.completedEntity,
               resultHash,
-              state: result.state,
               errors: errorsString,
               relations: result.relations,
               deferredEntities: result.deferredEntities,
