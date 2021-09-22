@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
@@ -36,9 +36,14 @@ type Options = {
   logger: Logger;
 };
 
+// WARNING: If you change this type, you likely need to bump the CACHE_KEY as well
 type CacheItem = {
   etag: string;
-  value: CatalogProcessorEntityResult[];
+  value: {
+    type: 'entity';
+    entity: Entity;
+    location: LocationSpec;
+  }[];
 };
 
 export class UrlReaderProcessor implements CatalogProcessor {
