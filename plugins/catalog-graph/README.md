@@ -9,11 +9,13 @@ The plugin comes with these features:
   A card that displays the directly related entities to the current entity.
   This card is for use on the entity page.
   The card can be customized, for example filtering for specific relations.
+  <video src='https://user-images.githubusercontent.com/648527/133401912-aaedc36a-b70b-437e-8e5f-2a14b21962f0.mov'  width=640>
 
 - `CatalogGraphPage`:
   A standalone page that can be added to your application providing a viewer for your entities and their relations.
   The viewer can be used to navigate through the entities and filter for specific relations.
   You can access it from the `EntityCatalogGraphCard`.
+  <video src='https://user-images.githubusercontent.com/648527/133403059-6584e469-23ab-41d2-a9e6-fd691a4e2737.mov' width=640>
 
 - `EntityRelationsGraph`:
   A react component that can be used to build own customized entity relation graphs.
@@ -78,6 +80,6 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
 
    ```typescript
    <Grid item md={6} xs={12}>
-     <EntityCatalogGraphCard variant="gridItem" maxHeight={400} />
+     <EntityCatalogGraphCard variant="gridItem" height={400} />
    </Grid>
    ```
