@@ -37,7 +37,7 @@ export class BitbucketClient {
     options?: ListOptions20,
   ): Promise<PagedResponse20<BitbucketRepository20>> {
     return this.pagedRequest20<BitbucketRepository20>(
-      `${this.config.apiBaseUrl}/repositories/${workspace}`,
+      `${this.config.apiBaseUrl}/repositories/${encodeURIComponent(workspace)}`,
       options,
     );
   }
@@ -47,7 +47,9 @@ export class BitbucketClient {
     options?: ListOptions,
   ): Promise<PagedResponse<any>> {
     return this.pagedRequest(
-      `${this.config.apiBaseUrl}/projects/${projectKey}/repos`,
+      `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
+        projectKey,
+      )}/repos`,
       options,
     );
   }
@@ -74,9 +76,7 @@ export class BitbucketClient {
         } - ${response.statusText}`,
       );
     }
-    return response.json().then(repositories => {
-      return repositories as PagedResponse<any>;
-    });
+    return response.json() as Promise<PagedResponse<any>>;
   }
 
   private async pagedRequest20<T = any>(
@@ -101,9 +101,7 @@ export class BitbucketClient {
         } - ${response.statusText}`,
       );
     }
-    return response.json().then(repositories => {
-      return repositories as PagedResponse20<T>;
-    });
+    return response.json() as Promise<PagedResponse20<T>>;
   }
 }
 

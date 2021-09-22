@@ -99,8 +99,8 @@ function setupBitbucketCloudStubs(
   server.use(
     rest.get(
       `https://api.bitbucket.org/2.0/repositories/${workspace}`,
-      (_, res, ctx) => {
-        stubCallerFn(_);
+      (req, res, ctx) => {
+        stubCallerFn(req);
         return res(
           ctx.json(
             pagedResponse(

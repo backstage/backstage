@@ -246,8 +246,7 @@ function parseUrl(urlString: string): {
 
 function readPathParameters(pathParts: string[]): Map<string, string> {
   const vals: Record<string, any> = {};
-  for (let i = 0; i < pathParts.length; i += 2) {
-    if (i + 1 >= pathParts.length) continue;
+  for (let i = 0; i + 1 < pathParts.length; i += 2) {
     vals[pathParts[i]] = decodeURIComponent(pathParts[i + 1]);
   }
   return new Map<string, string>(Object.entries(vals));
