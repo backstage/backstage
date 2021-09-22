@@ -20739,9 +20739,9 @@ openapi-sampler@^1.0.0-beta.15:
     json-pointer "^0.6.0"
 
 openid-client@^4.1.1, openid-client@^4.2.1:
-  version "4.7.3"
-  resolved "https://registry.npmjs.org/openid-client/-/openid-client-4.7.3.tgz#ea4f6f9ff6203dfbbe3d9bb4415d5dce751b0a70"
-  integrity sha512-YLwZQLSjo3gdSVxw/G25ddoRp9oCpXkREZXssmenlejZQPsnTq+yQtFUcBmC7u3VVkx+gwqXZF7X0CtAAJrRRg==
+  version "4.9.0"
+  resolved "https://registry.npmjs.org/openid-client/-/openid-client-4.9.0.tgz#bdfc9194435316df419f759ce177635146b43074"
+  integrity sha512-ThBbvRUUZwxUKBVK2UpDNIZ3eJkvtqWI8s5Dm+naV+gJdL+yRhT+8ywqct1gy5uL+xVS5+A/nhFcpJIisH2x6Q==
   dependencies:
     aggregate-error "^3.1.0"
     got "^11.8.0"
