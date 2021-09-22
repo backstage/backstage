@@ -52,6 +52,8 @@ export type {
 } from './SystemEntityV1alpha1';
 export { templateEntityV1beta2Validator } from './TemplateEntityV1beta2';
 export type { TemplateEntityV1beta2 } from './TemplateEntityV1beta2';
+export { templateEntityV1beta3Validator } from './TemplateEntityV1beta3';
+export type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';
 export type { KindValidator } from './types';
 export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
 export type {

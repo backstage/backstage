@@ -48,6 +48,8 @@ import {
   systemEntityV1alpha1Validator,
   TemplateEntityV1beta2,
   templateEntityV1beta2Validator,
+  TemplateEntityV1beta3,
+  templateEntityV1beta3Validator,
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
@@ -61,6 +63,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     resourceEntityV1alpha1Validator,
     groupEntityV1alpha1Validator,
     locationEntityV1alpha1Validator,
+    templateEntityV1beta3Validator,
+
+    // TODO: remove once beta3 is stable
     templateEntityV1beta2Validator,
     userEntityV1alpha1Validator,
     systemEntityV1alpha1Validator,
@@ -134,7 +139,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
      * Emit relations for the Template kind
      */
     if (entity.kind === 'Template') {
-      const template = entity as TemplateEntityV1beta2;
+      const template = entity as TemplateEntityV1beta2 | TemplateEntityV1beta3;
       doEmit(
         template.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
