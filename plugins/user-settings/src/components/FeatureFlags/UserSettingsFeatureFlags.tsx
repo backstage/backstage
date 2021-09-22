@@ -15,7 +15,13 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { List, TextField, ListItem } from '@material-ui/core';
+import {
+  List,
+  TextField,
+  IconButton,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 
@@ -25,6 +31,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
+import ClearIcon from '@material-ui/icons/Clear';
 
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
@@ -35,7 +42,8 @@ export const UserSettingsFeatureFlags = () => {
   );
 
   const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
-  const [searchInput, setSearchInput] = useState<string>('');
+  const [filterInput, setFilterInput] = useState<string>('');
+  const inputRef = React.useRef<HTMLElement>();
 
   const toggleFlag = useCallback(
     (flagName: string) => {
@@ -60,28 +68,69 @@ export const UserSettingsFeatureFlags = () => {
     return <EmptyFlags />;
   }
 
-  return (
-    <InfoCard title="Feature Flags">
-      <List dense>
-        <ListItem>
+  const clearFilterInput = () => {
+    setFilterInput('');
+    inputRef?.current?.focus();
+  };
+
+  let filteredFeatureFlags = Array.from(featureFlags);
+
+  const filterInputParts = filterInput
+    .split(/\s/)
+    .map(part => part.trim().toLowerCase());
+
+  filterInputParts.forEach(
+    part =>
+      (filteredFeatureFlags = filteredFeatureFlags.filter(featureFlag =>
+        featureFlag.name.toLowerCase().includes(part),
+      )),
+  );
+
+  const Header = () => (
+    <Grid container style={{ justifyContent: 'space-between' }}>
+      <Grid item xs={6} md={8}>
+        <Typography variant="h5">Feature Flags</Typography>
+      </Grid>
+      {featureFlags.length >= 10 && (
+        <Grid item xs={6} md={4}>
           <TextField
-            label="Search"
-            onChange={e => setSearchInput(e.target.value)}
-            value={searchInput}
+            label="Filter"
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
+            inputRef={ref => ref && ref.focus()}
+            InputProps={{
+              ...(filterInput.length && {
+                endAdornment: (
+                  <IconButton
+                    aria-label="Clear filter"
+                    onClick={clearFilterInput}
+                    edge="end"
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                ),
+              }),
+            }}
+            onChange={e => setFilterInput(e.target.value)}
+            value={filterInput}
           />
-        </ListItem>
-        {featureFlags.map((featureFlag, index) => {
+        </Grid>
+      )}
+    </Grid>
+  );
+
+  return (
+    <InfoCard title={<Header />}>
+      <List dense>
+        {filteredFeatureFlags.map(featureFlag => {
           const enabled = Boolean(state[featureFlag.name]);
 
           return (
-            featureFlag.name.includes(searchInput) && (
-              <FlagItem
-                key={index + 1}
-                flag={featureFlag}
-                enabled={enabled}
-                toggleHandler={toggleFlag}
-              />
-            )
+            <FlagItem
+              key={featureFlag.name}
+              flag={featureFlag}
+              enabled={enabled}
+              toggleHandler={toggleFlag}
+            />
           );
         })}
       </List>
