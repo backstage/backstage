@@ -78,6 +78,10 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
             expectation =
               'a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total';
             break;
+          case 'isValidTag':
+            expectation =
+              'a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total';
+            break;
           case 'isValidAnnotationValue':
             expectation = 'a string';
             break;
