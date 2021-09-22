@@ -137,8 +137,8 @@ export type CatalogProcessorParser = (options: {
  * values from processing runs for other entities.
  *
  * Values that are set during a processing run will only be visible in the directly
- * following run. The cache will be overwritten every run, meaning existing values
- * are removed and need to be set again for them to remain in the cache.
+ * following run. The cache will be overwritten every run unless no new cache items
+ * are written, in which case the existing values remain in the cache.
  *
  * @public
  */

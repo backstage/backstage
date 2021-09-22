@@ -21,12 +21,13 @@ import { isObject } from './util';
 
 class SingleProcessorCache implements CatalogProcessorCache {
   private newState?: JsonObject;
-  constructor(private readonly existingState: JsonObject) {}
+
+  constructor(private readonly existingState?: JsonObject) {}
 
   async get<ItemType extends JsonValue>(
     key: string,
   ): Promise<ItemType | undefined> {
-    return this.existingState[key] as ItemType | undefined;
+    return this.existingState?.[key] as ItemType | undefined;
   }
 
   async set<ItemType extends JsonValue>(
@@ -41,7 +42,7 @@ class SingleProcessorCache implements CatalogProcessorCache {
   }
 
   collect(): JsonObject | undefined {
-    return this.newState;
+    return this.newState ?? this.existingState;
   }
 }
 
@@ -61,7 +62,7 @@ export class ProcessorCacheManager {
     const existing = this.existingState[name];
 
     const newCache = new SingleProcessorCache(
-      isObject(existing) ? existing : {},
+      isObject(existing) ? existing : undefined,
     );
     this.caches.set(name, newCache);
     return newCache;

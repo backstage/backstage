@@ -61,23 +61,30 @@ describe('UrlReaderProcessor', () => {
 
     server.use(
       rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.json({ mock: 'entity' })),
+        res(ctx.set({ ETag: 'my-etag' }), ctx.json({ mock: 'entity' })),
       ),
     );
 
-    const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(
-        spec,
-        false,
-        emit,
-        defaultEntityDataParser,
-        mockCache,
-      ),
-    )) as CatalogProcessorEntityResult;
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.readLocation(
+      spec,
+      false,
+      result => emitted.push(result),
+      defaultEntityDataParser,
+      mockCache,
+    );
 
-    expect(generated.type).toBe('entity');
-    expect(generated.location).toEqual(spec);
-    expect(generated.entity).toEqual({ mock: 'entity' });
+    expect(emitted.length).toBe(1);
+    expect(emitted[0]).toEqual({
+      type: 'entity',
+      location: spec,
+      entity: { mock: 'entity' },
+    });
+    expect(mockCache.set).toBeCalledWith('v1', {
+      etag: 'my-etag',
+      value: [{ type: 'entity', location: spec, entity: { mock: 'entity' } }],
+    });
+    expect(mockCache.set).toBeCalledTimes(1);
   });
 
   it('should use cached data when available', async () => {
@@ -119,8 +126,7 @@ describe('UrlReaderProcessor', () => {
     expect(generated.entity).toEqual({ mock: 'entity' });
     expect(mockCache.get).toBeCalledWith('v1');
     expect(mockCache.get).toBeCalledTimes(1);
-    expect(mockCache.set).toBeCalledWith('v1', cacheItem);
-    expect(mockCache.set).toBeCalledTimes(1);
+    expect(mockCache.set).toBeCalledTimes(0);
   });
 
   it('should fail load from url with error', async () => {

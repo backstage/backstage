@@ -43,10 +43,25 @@ describe('ProcessorCacheManager', () => {
     await expect(processorCache.get<string>('my-key')).resolves.toBe(
       'my-value',
     );
-    processorCache.set('my-key', 'my-new-value');
+
+    // If set hasn't been called yet we should get the existing data
+    expect(cache.collect()).toEqual({
+      'my-processor': { 'my-key': 'my-value' },
+    });
+
+    processorCache.set('my-new-key', 'my-new-value');
+    // Once set has been called the old values should disappear
+    expect(cache.collect()).toEqual({
+      'my-processor': { 'my-new-key': 'my-new-value' },
+    });
+
+    // Getting the cache should return the initial state value
     await expect(processorCache.get<string>('my-key')).resolves.toBe(
       'my-value',
     );
+    await expect(
+      processorCache.get<string>('my-new-key'),
+    ).resolves.toBeUndefined();
 
     // There should be isolation between processors
     await expect(
@@ -56,7 +71,7 @@ describe('ProcessorCacheManager', () => {
     // Collecting the state and passing it to a new manager should make the new values visible
     const newCache = new ProcessorCacheManager(cache.collect());
     await expect(
-      newCache.forProcessor(myProcessor).get<string>('my-key'),
+      newCache.forProcessor(myProcessor).get<string>('my-new-key'),
     ).resolves.toBe('my-new-value');
   });
 });
