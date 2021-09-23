@@ -5,8 +5,8 @@ sidebar_label: GitHub
 description: Adding GitHub OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a GitHub authentication provider
-that can authenticate users using GitHub or GitHub Enterprise OAuth.
+The Backstage `core-plugin-api` package comes with a GitHub authentication
+provider that can authenticate users using GitHub or GitHub Enterprise OAuth.
 
 ## Create an OAuth App on GitHub
 
