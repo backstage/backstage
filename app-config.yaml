@@ -1,6 +1,6 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
@@ -32,7 +32,7 @@ backend:
   cache:
     store: memory
   cors:
-    origin: http://localhost:7000
+    origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]
     credentials: true
   csp:
