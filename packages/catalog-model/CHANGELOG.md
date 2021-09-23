@@ -1,5 +1,14 @@
 # @backstage/catalog-model
 
+## 0.9.3
+
+### Patch Changes
+
+- d42566c5c9: Loosen constraints on what's a valid catalog entity tag name (include + and #)
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
 ## 0.9.2
 
 ### Patch Changes

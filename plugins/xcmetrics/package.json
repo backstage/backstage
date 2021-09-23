@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-xcmetrics",
   "description": "A Backstage plugin that shows XCode build metrics for your components",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.4.2",
+    "@backstage/core-components": "^0.5.0",
     "@backstage/core-plugin-api": "^0.1.8",
     "@backstage/errors": "^0.1.1",
     "@backstage/theme": "^0.2.10",
@@ -35,9 +35,9 @@
     "recharts": "^1.8.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.12",
-    "@backstage/core-app-api": "^0.1.13",
-    "@backstage/dev-utils": "^0.2.9",
+    "@backstage/cli": "^0.7.13",
+    "@backstage/core-app-api": "^0.1.14",
+    "@backstage/dev-utils": "^0.2.10",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

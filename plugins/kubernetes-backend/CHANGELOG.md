@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.16
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
 ## 0.3.15
 
 ### Patch Changes
