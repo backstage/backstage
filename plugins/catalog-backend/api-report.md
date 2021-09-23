@@ -385,6 +385,22 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;
 
+// @public
+export type CatalogRule = {
+  allow: Array<{
+    kind: string;
+  }>;
+  locations?: Array<{
+    target?: string;
+    type: string;
+  }>;
+};
+
+// @public
+export type CatalogRulesEnforcer = {
+  isAllowed(entity: Entity, location: LocationSpec): boolean;
+};
+
 // Warning: (ae-missing-release-tag) "CodeOwnersProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -751,9 +767,18 @@ export class DefaultCatalogProcessingOrchestrator
     logger: Logger_2;
     parser: CatalogProcessorParser;
     policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
   });
   // (undocumented)
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
+}
+
+// @public
+export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
+  constructor(rules: CatalogRule[]);
+  static readonly defaultRules: CatalogRule[];
+  static fromConfig(config: Config): DefaultCatalogRulesEnforcer;
+  isAllowed(entity: Entity, location: LocationSpec): boolean;
 }
 
 // Warning: (ae-missing-release-tag) "DeferredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

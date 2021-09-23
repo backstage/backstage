@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
+export { DefaultCatalogRulesEnforcer } from './CatalogRules';
 export { HigherOrderOperations } from './HigherOrderOperations';
 export { LocationReaders } from './LocationReaders';
 export type {
