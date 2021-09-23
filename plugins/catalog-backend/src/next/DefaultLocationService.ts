@@ -87,7 +87,6 @@ export class DefaultLocationService implements LocationService {
       { entity, locationKey: `${spec.type}:${spec.target}` },
     ];
     const entities: Entity[] = [];
-    const state = new Map(); // ignored
     while (unprocessedEntities.length) {
       const currentEntity = unprocessedEntities.pop();
       if (!currentEntity) {
@@ -95,7 +94,7 @@ export class DefaultLocationService implements LocationService {
       }
       const processed = await this.orchestrator.process({
         entity: currentEntity.entity,
-        state,
+        state: {}, // we process without the existing cache
       });
 
       if (processed.ok) {

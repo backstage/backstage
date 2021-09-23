@@ -36,11 +36,15 @@ export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
   resultHash: string;
-  state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
   deferredEntities: DeferredEntity[];
   locationKey?: string;
+};
+
+export type UpdateEntityCacheOptions = {
+  id: string;
+  state?: JsonObject;
 };
 
 export type UpdateProcessedEntityErrorsOptions = {
@@ -57,7 +61,7 @@ export type RefreshStateItem = {
   resultHash: string;
   nextUpdateAt: DateTime;
   lastDiscoveryAt: DateTime; // remove?
-  state: Map<string, JsonObject>;
+  state?: JsonObject;
   errors?: string;
   locationKey?: string;
 };
@@ -116,6 +120,14 @@ export interface ProcessingDatabase {
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
+  ): Promise<void>;
+
+  /**
+   * Updates the cache associated with an entity.
+   */
+  updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
   ): Promise<void>;
 
   /**

@@ -138,7 +138,7 @@ describe('Refresh integration', () => {
             relations: [],
             errors: [],
             deferredEntities,
-            state: new Map(),
+            state: {},
           };
         },
       },

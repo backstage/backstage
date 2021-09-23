@@ -52,6 +52,13 @@ type Options = {
   policy: EntityPolicy;
 };
 
+const noopCache = {
+  async get() {
+    return undefined;
+  },
+  async set() {},
+};
+
 /**
  * Implements the reading of a location through a series of processor tasks.
  */
@@ -167,6 +174,7 @@ export class LocationReaders implements LocationReader {
               item.optional,
               validatedEmit,
               this.options.parser,
+              noopCache,
             )
           ) {
             return;
@@ -215,6 +223,7 @@ export class LocationReaders implements LocationReader {
             item.location,
             emit,
             originLocation,
+            noopCache,
           );
         } catch (e) {
           const message = `Processor ${
@@ -285,6 +294,7 @@ export class LocationReaders implements LocationReader {
             current,
             item.location,
             emit,
+            noopCache,
           );
         } catch (e) {
           const message = `Processor ${
