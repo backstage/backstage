@@ -5,7 +5,7 @@
 '@backstage/plugin-user-settings': patch
 ---
 
-Bitbucket Cloud authentication - based on the existing github authentication + changes around BB apis and updated scope.
+Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
 
 - BitbucketAuth added to core-app-api.
 - Bitbucket provider added to plugin-auth-backend.
