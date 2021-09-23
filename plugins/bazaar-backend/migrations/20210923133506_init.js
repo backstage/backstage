@@ -31,12 +31,16 @@ exports.up = async function setUpTables(knex) {
       .defaultTo('proposed')
       .notNullable()
       .comment('The status of the Bazaar project');
-    table
-      .dateTime('updated_at')
-      .defaultTo(knex.fn.now())
-      .notNullable()
-      .comment('The timestamp when this entry was updated');
+    table.timestamps(true, true);
   });
+
+  await knex.raw(`
+    CREATE TRIGGER update_timestamp
+    BEFORE UPDATE
+    ON metadata
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_timestamp();
+  `);
 
   await knex.schema.createTable('members', table => {
     table.comment('The table of Bazaar members');
