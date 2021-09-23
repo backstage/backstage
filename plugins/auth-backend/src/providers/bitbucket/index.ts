@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './auth0';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
+export { createBitbucketProvider } from './provider';
+export type { BitbucketProviderOptions } from './provider';

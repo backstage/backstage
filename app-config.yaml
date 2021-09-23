@@ -1,6 +1,6 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7000
   googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
@@ -32,7 +32,7 @@ backend:
   cache:
     store: memory
   cors:
-    origin: http://localhost:3000
+    origin: http://localhost:7000
     methods: [GET, POST, PUT, DELETE]
     credentials: true
   csp:
@@ -358,6 +358,10 @@ auth:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}
         clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
         issuer: ${AUTH_ONELOGIN_ISSUER}
+    bitbucket:
+      development:
+        clientId: ${AUTH_BITBUCKET_CLIENT_ID}
+        clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
 costInsights:
   engineerCost: 200000
   products:

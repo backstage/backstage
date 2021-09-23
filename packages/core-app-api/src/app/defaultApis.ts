@@ -25,6 +25,7 @@ import {
   GitlabAuth,
   Auth0Auth,
   MicrosoftAuth,
+  BitbucketAuth,
   OAuthRequestManager,
   WebStorage,
   UrlPatternDiscovery,
@@ -51,6 +52,7 @@ import {
   samlAuthApiRef,
   oneloginAuthApiRef,
   oidcAuthApiRef,
+  bitbucketAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
@@ -221,6 +223,21 @@ export const defaultApis = [
           title: 'Your Identity Provider',
           icon: OAuth2Icon,
         },
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: bitbucketAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      BitbucketAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        defaultScopes: ['team'],
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),

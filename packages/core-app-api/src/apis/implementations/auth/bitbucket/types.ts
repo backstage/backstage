@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './auth0';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
+import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
+
+export type BitbucketSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};
