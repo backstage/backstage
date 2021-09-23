@@ -5085,19 +5085,19 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-2.0.0.tgz#1108b9ea661ca6c81e4a8bfa63a09eb27d5bc2db"
   integrity sha512-35cfQ4YWlnZnmZKmIxlGPUPLtbkF8lr/A/1Sk1eC0ddLMwQN06dOuLc+dI3YLQS+T+MoNt3DIQ0NynwgKPilig==
 
-"@octokit/webhooks-types@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.4.0.tgz#0985964b72d577221574cca614770e0743fe0830"
-  integrity sha512-gK9L2pWLZ1CWWlf9zwzFBQeA3dgyWdRe6gqAedR5T7adFZpoHg4De6GeXIFySV796ooQtKhW4eFfQLFQF5ydAA==
+"@octokit/webhooks-types@4.7.0":
+  version "4.7.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.7.0.tgz#0d86cb32a6502da41d2a33b243102f96012bddbb"
+  integrity sha512-LWTPedtJtcdA1+k+iERtCr7UnO/d+Cr00/vRPhjASTHz2G/ZtSAnDNjDv5c7X2R7OJsPE6eFUMT7frwjjuAbZA==
 
 "@octokit/webhooks@^9.14.1":
-  version "9.14.1"
-  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.14.1.tgz#d1b8fcc4c1c18ee46ec30cef9e84043b57c8d2dd"
-  integrity sha512-INsqtHKQJys5NbuE71kq6uR8BMSSkZ2L9dLanAc1jylGroQ80SW1TYXLuJlcYNakNrHCCe4c5qvNKfR/KJXrJA==
+  version "9.15.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.15.0.tgz#ed43660c1911755747b5c1b2847081eb96d8e0a0"
+  integrity sha512-IFHXmTT4rVz8TbH5oH8qmJkM9UJLo75mmaMydKdn0j/ffLuTQ/+j6+Jl5dyboUo6AtUwaklFacszViVCKHME6A==
   dependencies:
     "@octokit/request-error" "^2.0.2"
     "@octokit/webhooks-methods" "^2.0.0"
-    "@octokit/webhooks-types" "4.4.0"
+    "@octokit/webhooks-types" "4.7.0"
     aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":
@@ -7403,9 +7403,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.9":
-  version "16.14.8"
-  resolved "https://registry.npmjs.org/@types/react/-/react-16.14.8.tgz#4aee3ab004cb98451917c9b7ada3c7d7e52db3fe"
-  integrity sha512-QN0/Qhmx+l4moe7WJuTxNiTsjBwlBGHqKGvInSQCBdo7Qio0VtOqwsC0Wq7q3PbJlB0cR4Y4CVo1OOe6BOsOmA==
+  version "16.14.15"
+  resolved "https://registry.npmjs.org/@types/react/-/react-16.14.15.tgz#95d8fa3148050e94bcdc5751447921adbe19f9e6"
+  integrity sha512-jOxlBV9RGZhphdeqJTCv35VZOkjY+XIEY2owwSk84BNDdDv2xS6Csj6fhi+B/q30SR9Tz8lDNt/F2Z5RF3TrRg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
