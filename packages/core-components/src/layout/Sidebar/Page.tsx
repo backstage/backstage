@@ -25,17 +25,19 @@ import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>({
+const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => ({
   root: {
     width: '100%',
     minHeight: '100%',
     transition: 'padding-left 0.1s ease-out',
-    paddingLeft: ({ isPinned }) =>
-      isPinned
-        ? sidebarConfig.drawerWidthOpen
-        : sidebarConfig.drawerWidthClosed,
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: ({ isPinned }) =>
+        isPinned
+          ? sidebarConfig.drawerWidthOpen
+          : sidebarConfig.drawerWidthClosed,
+    },
   },
-});
+}));
 
 export type SidebarPinStateContextType = {
   isPinned: boolean;

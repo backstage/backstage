@@ -25,8 +25,16 @@ import {
   SearchType,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import {
+  Grid,
+  List,
+  makeStyles,
+  Paper,
+  Theme,
+  useMediaQuery,
+} from '@material-ui/core';
 import React from 'react';
+import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -44,9 +52,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const SearchPage = () => {
   const classes = useStyles();
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
+
   return (
     <Page themeId="home">
-      <Header title="Search" subtitle={<Lifecycle alpha />} />
+      {!isMobileScreen && (
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+      )}
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
@@ -54,26 +68,28 @@ const SearchPage = () => {
               <SearchBar debounceTime={100} />
             </Paper>
           </Grid>
-          <Grid item xs={3}>
-            <Paper className={classes.filters}>
-              <SearchType
-                values={['techdocs', 'software-catalog']}
-                name="type"
-                defaultValue="software-catalog"
-              />
-              <SearchFilter.Select
-                className={classes.filter}
-                name="kind"
-                values={['Component', 'Template']}
-              />
-              <SearchFilter.Checkbox
-                className={classes.filter}
-                name="lifecycle"
-                values={['experimental', 'production']}
-              />
-            </Paper>
-          </Grid>
-          <Grid item xs={9}>
+          {!isMobileScreen && (
+            <Grid item xs={3}>
+              <Paper className={classes.filters}>
+                <SearchType
+                  values={['techdocs', 'software-catalog']}
+                  name="type"
+                  defaultValue="software-catalog"
+                />
+                <SearchFilter.Select
+                  className={classes.filter}
+                  name="kind"
+                  values={['Component', 'Template']}
+                />
+                <SearchFilter.Checkbox
+                  className={classes.filter}
+                  name="lifecycle"
+                  values={['experimental', 'production']}
+                />
+              </Paper>
+            </Grid>
+          )}
+          <Grid item xs>
             <SearchResult>
               {({ results }) => (
                 <List>

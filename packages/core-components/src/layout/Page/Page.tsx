@@ -17,15 +17,21 @@
 import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { sidebarConfig } from '../Sidebar';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     display: 'grid',
     gridTemplateAreas:
       "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
     gridTemplateRows: 'max-content auto 1fr',
     gridTemplateColumns: 'auto 1fr auto',
-    height: '100vh',
+    [theme.breakpoints.up('sm')]: {
+      height: '100vh',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: `calc(100vh - ${sidebarConfig.mobileSidebarHeight}px)`,
+    },
     overflowY: 'auto',
   },
 }));

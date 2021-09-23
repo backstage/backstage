@@ -15,6 +15,8 @@
  */
 
 export { Sidebar } from './Bar';
+export { MobileSidebar } from './MobileSidebar';
+export { SidebarGroup } from './SidebarGroup';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType } from './Page';
 export {

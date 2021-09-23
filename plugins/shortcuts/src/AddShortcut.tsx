@@ -31,7 +31,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   card: {
-    width: 400,
+    maxWidth: 400,
   },
   header: {
     marginBottom: theme.spacing(1),
