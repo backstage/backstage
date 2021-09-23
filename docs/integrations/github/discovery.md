@@ -54,12 +54,12 @@ const builder = await CatalogBuilder.create(env);
 builder.setRefreshIntervalSeconds(300);
 ```
 
-Alternatively, or additionally, you can use the [github-apps plugin] which
-carries a much higher rate limit at GitHub.
+Alternatively, or additionally, you can configure [github-apps] authentication
+which carries a much higher rate limit at GitHub.
 
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.
 
 [rate limits]:
   https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
-[github-apps plugin]: ../../plugins/github-apps.md
+[github-apps]: ../../plugins/github-apps.md
