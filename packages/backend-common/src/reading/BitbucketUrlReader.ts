@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketIntegration,
   getBitbucketDefaultBranch,
@@ -26,18 +27,16 @@ import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
-  ReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchOptions,
   SearchResponse,
   UrlReader,
-  ReadUrlResponse,
-  ReadUrlOptions,
 } from './types';
 
 /**
@@ -154,7 +153,7 @@ export class BitbucketUrlReader implements UrlReader {
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      filter: path => matcher.match(path),
     });
     const files = await tree.files();
 
