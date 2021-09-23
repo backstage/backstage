@@ -92,6 +92,15 @@ export class TaskWorker {
         };
       } = { parameters: task.spec.values, steps: {} };
 
+      const { output } =
+        task.spec.apiVersion === 'backstage.io/v1beta3'
+          ? await TemplateWorkflowRunner.execute(task)
+          : await LegacyWorkflowRunner.execute(task);
+      if (task.spec.apiVersion === 'backstage.io/v1beta3') {
+        const { output } = await TemplateWorkflowRunnger.execute(task);
+      } else {
+      }
+
       for (const step of task.spec.steps) {
         const metadata = { stepId: step.id };
         try {

@@ -34,7 +34,11 @@ import {
 } from '@backstage/backend-common';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1beta2,
+  Entity,
+  TemplateEntityV1beta3,
+} from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
@@ -50,10 +54,13 @@ export interface RouterOptions {
   containerRunner: ContainerRunner;
 }
 
-function isBeta2Template(
-  entity: TemplateEntityV1beta2,
-): entity is TemplateEntityV1beta2 {
-  return entity.apiVersion === 'backstage.io/v1beta2';
+function isSupportedTemplate(
+  entity: TemplateEntityV1beta2 | TemplateEntityV1beta3,
+) {
+  return (
+    entity.apiVersion === 'backstage.io/v1beta2' ||
+    entity.apiVersion === 'backstage.io/v1beta3'
+  );
 }
 
 export async function createRouter(
@@ -128,7 +135,7 @@ export async function createRouter(
         const template = await entityClient.findTemplate(name, {
           token: getBearerToken(req.headers.authorization),
         });
-        if (isBeta2Template(template)) {
+        if (isSupportedTemplate(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
@@ -166,7 +173,7 @@ export async function createRouter(
 
       let taskSpec;
 
-      if (isBeta2Template(template)) {
+      if (isSupportedTemplate(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
 
@@ -179,6 +186,7 @@ export async function createRouter(
         const baseUrl = getEntityBaseUrl(template);
 
         taskSpec = {
+          apiVersion: template.apiVersion,
           baseUrl,
           values,
           steps: template.spec.steps.map((step, index) => ({
