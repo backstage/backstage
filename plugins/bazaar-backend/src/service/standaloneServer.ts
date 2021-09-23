@@ -16,18 +16,18 @@
 
 import {
   createServiceBuilder,
-  PluginDatabaseManager,
   loadBackendConfig,
+  useHotMemoize,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import knexFactory from 'knex';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
-  database?: PluginDatabaseManager;
 }
 
 export async function startStandaloneServer(
@@ -36,9 +36,23 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'bazaar-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
+  const db = useHotMemoize(module, () => {
+    const knex = knexFactory({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+
+    return knex;
+  });
+
   const router = await createRouter({
     logger,
-    database: options.database,
+    database: { getClient: async () => db },
     config: config,
   });
 

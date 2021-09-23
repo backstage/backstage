@@ -26,7 +26,7 @@ import { Config } from '@backstage/config';
 
 export interface RouterOptions {
   logger: Logger;
-  database?: PluginDatabaseManager;
+  database: PluginDatabaseManager;
   config: Config;
 }
 
@@ -34,7 +34,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger } = options;
-  const db = await options.database?.getClient();
+  const db = await options.database.getClient();
 
   logger.info('Initializing Bazaar backend');
 
@@ -43,7 +43,7 @@ export async function createRouter(
     'migrations',
   );
 
-  await db?.migrate.latest({
+  await db.migrate.latest({
     directory: migrationsDir,
   });
 
@@ -54,7 +54,7 @@ export async function createRouter(
     const entityRef = request.headers.entity_ref;
 
     const data = await db
-      ?.select('*')
+      .select('*')
       .from('public.members')
       .where({ entity_ref: entityRef });
 
@@ -70,7 +70,7 @@ export async function createRouter(
     const entityRef = request.headers.entity_ref;
 
     await db
-      ?.insert({
+      .insert({
         entity_ref: entityRef,
         user_id: userId,
       })
@@ -82,7 +82,7 @@ export async function createRouter(
     const userId = request.headers.user_id;
     const entityRef = request.headers.entity_ref;
 
-    const count = await db?.('public.members')
+    const count = await db('public.members')
       .where({ entity_ref: entityRef })
       .andWhere('user_id', userId)
       .del();
@@ -97,7 +97,7 @@ export async function createRouter(
   router.delete('/members', async (request, response) => {
     const entityRef = request.headers.entity_ref;
 
-    const count = await db?.('public.members')
+    const count = await db('public.members')
       .where({ entity_ref: entityRef })
       .del();
 
@@ -112,7 +112,7 @@ export async function createRouter(
     const entityRef = request.headers.entity_ref;
 
     const data = await db
-      ?.select('*')
+      .select('*')
       .from('public.metadata')
       .where({ entity_ref: entityRef });
 
@@ -124,18 +124,23 @@ export async function createRouter(
   });
 
   router.get('/entities', async (_, response) => {
+    const coalesce = db.raw(
+      'coalesce(count(members.entity_ref), 0) as members_count',
+    );
+
     const columns = [
       'members.entity_ref',
+      'metadata.entity_ref',
       'metadata.name',
       'metadata.announcement',
       'metadata.status',
       'metadata.updated_at',
     ];
-    const data = await db?.('public.members as members')
-      .select(columns)
-      .count('members.entity_ref as members_count')
+
+    const data = await db('public.members as members')
+      .select([...columns, coalesce])
       .groupBy(columns)
-      .join(
+      .rightJoin(
         'public.metadata as metadata',
         'metadata.entity_ref',
         '=',
@@ -149,7 +154,7 @@ export async function createRouter(
     const entityRef = request.headers.entity_ref;
     const { name, announcement, status, community } = request.body;
 
-    const count = await db?.('public.metadata')
+    const count = await db('public.metadata')
       .where({ entity_ref: entityRef })
       .update({
         announcement: announcement,
@@ -161,7 +166,7 @@ export async function createRouter(
       response.json({ status: 'ok' });
     } else {
       await db
-        ?.insert({
+        .insert({
           name: name,
           entity_ref: entityRef,
           community: community,
@@ -176,7 +181,7 @@ export async function createRouter(
   router.delete('/metadata', async (request, response) => {
     const entityRef = request.headers.entity_ref;
 
-    const count = await db?.('public.metadata')
+    const count = await db('public.metadata')
       .where({ entity_ref: entityRef })
       .del();
 
