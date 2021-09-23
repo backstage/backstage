@@ -1,10 +1,10 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: artist-lookup
-  description: Artist Lookup
+  name: Jira
+  description: Agile Work
   tags:
-    - java
+    - google
     - data
   links:
     - url: https://example.com/user
@@ -30,7 +30,7 @@ metadata:
       icon: alert
 spec:
   type: service
-  lifecycle: experimental
-  owner: team-a
+  lifecycle: Work-FLow
+  owner: Xoho Tech
   system: artist-engagement-portal
   dependsOn: ['resource:artists-db']
