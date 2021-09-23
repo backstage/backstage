@@ -1,5 +1,66 @@
 # @backstage/create-app
 
+## 0.3.42
+
+### Patch Changes
+
+- 89fd81a1ab: This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+  The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
+
+  ```diff
+  -  import {
+  -    CatalogBuilder,
+  -    createRouter,
+  -  } from '@backstage/plugin-catalog-backend';
+  +  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+      const builder = await CatalogBuilder.create(env);
+  -    const {
+  -      entitiesCatalog,
+  -      locationAnalyzer,
+  -      processingEngine,
+  -      locationService,
+  -    } = await builder.build();
+  +   const { processingEngine, router } = await builder.build();
+      await processingEngine.start();
+
+  -   return await createRouter({
+  -     entitiesCatalog,
+  -     locationAnalyzer,
+  -     locationService,
+  -     logger: env.logger,
+  -     config: env.config,
+  -   });
+  +   return router;
+    }
+  ```
+
+- d0a47c8605: Switched required engine from Node.js 12 or 14, to 14 or 16.
+
+  To apply these changes to an existing app, switch out the following in the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "12 || 14"
+  +    "node": "14 || 16"
+     },
+  ```
+
+  Also get rid of the entire `engines` object in `packages/backend/package.json`, as it is redundant:
+
+  ```diff
+  -  "engines": {
+  -    "node": "12 || 14"
+  -  },
+  ```
+
+- df95665e4b: Bumped the default `@spotify/prettier-config` dependency to `^11.0.0`.
+
+  This is an optional upgrade, but you may be interested in doing the same, to get the most modern lint rules out there.
+
 ## 0.3.41
 
 ## 0.3.40

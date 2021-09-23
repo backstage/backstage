@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.1
+
+### Patch Changes
+
+- 8b016ce67b: Alters LDAP processor to handle one SearchEntry at a time
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.14.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+
 ## 0.3.0
 
 ### Minor Changes

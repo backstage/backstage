@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs
 
+## 0.11.3
+
+### Patch Changes
+
+- be13dfe61a: Make techdocs context search bar width adjust on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/plugin-catalog@0.6.16
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+  - @backstage/plugin-search@0.4.12
+
 ## 0.11.2
 
 ### Patch Changes
