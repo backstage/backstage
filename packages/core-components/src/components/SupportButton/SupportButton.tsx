@@ -54,9 +54,7 @@ const SupportIcon = ({ icon }: { icon: string | undefined }) => {
 };
 
 const SupportLink = ({ link }: { link: SupportItemLink }) => (
-  <Link to={link.url} target="_blank" rel="noreferrer noopener">
-    {link.title ?? link.url}
-  </Link>
+  <Link to={link.url}>{link.title ?? link.url}</Link>
 );
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
