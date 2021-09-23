@@ -360,6 +360,20 @@ describe('BitbucketUrlReader', () => {
       );
     });
 
+    it('works in nested folders', async () => {
+      const result = await bitbucketProcessor.search(
+        'https://bitbucket.org/backstage/mock/src/master/docs/index.*',
+      );
+      expect(result.etag).toBe('12ab34cd56ef');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.org/backstage/mock/src/master/docs/index.md',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    });
+
     it('throws NotModifiedError when same etag', async () => {
       await expect(
         bitbucketProcessor.search(
@@ -411,6 +425,20 @@ describe('BitbucketUrlReader', () => {
     it('works for the naive case', async () => {
       const result = await hostedBitbucketProcessor.search(
         'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/**/index.*?at=master',
+      );
+      expect(result.etag).toBe('12ab34cd56ef');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    });
+
+    it('works in nested folders', async () => {
+      const result = await hostedBitbucketProcessor.search(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.*?at=master',
       );
       expect(result.etag).toBe('12ab34cd56ef');
       expect(result.files.length).toBe(1);
