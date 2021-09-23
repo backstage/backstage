@@ -102,6 +102,18 @@ Signed-off-by: Jane Smith <jane.smith@example.com>
 
 Note: If you have already pushed you branch to a remote, you might have to force push: `git push -f` after the rebase.
 
+### Using GitHub Desktop?
+
+If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
+
+```
+Awesome description (commit message)
+
+Signed-off-by: Jane Smith <jane.smith@example.com>
+```
+
+In case you forgot to add the line to your most recent commit, you can amend the commit message from the History tab before pushing your branch (GitHub Desktop 2.9 or later).
+
 ## Creating Changesets
 
 We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. They help us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy, it helps when contributors include changesets with their pull requests.
