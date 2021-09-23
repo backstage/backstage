@@ -36,7 +36,7 @@ export const readState = (stateString: string): OAuthState => {
 
 export const encodeState = (state: OAuthState): string => {
   const stateString = new URLSearchParams(
-    pickBy(state, value => value !== undefined),
+    pickBy<string>(state, value => value !== undefined),
   ).toString();
 
   return Buffer.from(stateString, 'utf-8').toString('hex');
