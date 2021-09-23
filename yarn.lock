@@ -2193,14 +2193,6 @@
     core-js-pure "^3.16.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime-corejs3@^7.9.6":
-  version "7.15.4"
-  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.15.4.tgz#403139af262b9a6e8f9ba04a6fdcebf8de692bf1"
-  integrity sha512-lWcAqKeB624/twtTc3w6w/2o9RqJPaNBhPGK6DKLSiwuVWC7WFkypWyNg+CpZoyJH0jVzv1uMtXZ/5/lQOLtCg==
-  dependencies:
-    core-js-pure "^3.16.0"
-    regenerator-runtime "^0.13.4"
-
 "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.0", "@babel/runtime@^7.10.1", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.10.5", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.0", "@babel/runtime@^7.14.8", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.14.8"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.14.8.tgz#7119a56f421018852694290b9f9148097391b446"
@@ -5014,19 +5006,19 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-2.0.0.tgz#1108b9ea661ca6c81e4a8bfa63a09eb27d5bc2db"
   integrity sha512-35cfQ4YWlnZnmZKmIxlGPUPLtbkF8lr/A/1Sk1eC0ddLMwQN06dOuLc+dI3YLQS+T+MoNt3DIQ0NynwgKPilig==
 
-"@octokit/webhooks-types@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.4.0.tgz#0985964b72d577221574cca614770e0743fe0830"
-  integrity sha512-gK9L2pWLZ1CWWlf9zwzFBQeA3dgyWdRe6gqAedR5T7adFZpoHg4De6GeXIFySV796ooQtKhW4eFfQLFQF5ydAA==
+"@octokit/webhooks-types@4.7.0":
+  version "4.7.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.7.0.tgz#0d86cb32a6502da41d2a33b243102f96012bddbb"
+  integrity sha512-LWTPedtJtcdA1+k+iERtCr7UnO/d+Cr00/vRPhjASTHz2G/ZtSAnDNjDv5c7X2R7OJsPE6eFUMT7frwjjuAbZA==
 
 "@octokit/webhooks@^9.14.1":
-  version "9.14.1"
-  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.14.1.tgz#d1b8fcc4c1c18ee46ec30cef9e84043b57c8d2dd"
-  integrity sha512-INsqtHKQJys5NbuE71kq6uR8BMSSkZ2L9dLanAc1jylGroQ80SW1TYXLuJlcYNakNrHCCe4c5qvNKfR/KJXrJA==
+  version "9.15.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.15.0.tgz#ed43660c1911755747b5c1b2847081eb96d8e0a0"
+  integrity sha512-IFHXmTT4rVz8TbH5oH8qmJkM9UJLo75mmaMydKdn0j/ffLuTQ/+j6+Jl5dyboUo6AtUwaklFacszViVCKHME6A==
   dependencies:
     "@octokit/request-error" "^2.0.2"
     "@octokit/webhooks-methods" "^2.0.0"
-    "@octokit/webhooks-types" "4.4.0"
+    "@octokit/webhooks-types" "4.7.0"
     aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":
@@ -7331,7 +7323,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.9":
+"@types/react@*":
   version "16.14.8"
   resolved "https://registry.npmjs.org/@types/react/-/react-16.14.8.tgz#4aee3ab004cb98451917c9b7ada3c7d7e52db3fe"
   integrity sha512-QN0/Qhmx+l4moe7WJuTxNiTsjBwlBGHqKGvInSQCBdo7Qio0VtOqwsC0Wq7q3PbJlB0cR4Y4CVo1OOe6BOsOmA==
@@ -7346,6 +7338,15 @@
   integrity sha512-9LDZdhsuKSc+DjY65SjBkA958oBWcTWSVWAd2cD9XqKBjhGw1KzAkRhWRw2eIsXvaIE/TOTjjKMFVC+JA1iU4g==
   dependencies:
     csstype "^2.2.0"
+
+"@types/react@^16.9":
+  version "16.14.15"
+  resolved "https://registry.npmjs.org/@types/react/-/react-16.14.15.tgz#95d8fa3148050e94bcdc5751447921adbe19f9e6"
+  integrity sha512-jOxlBV9RGZhphdeqJTCv35VZOkjY+XIEY2owwSk84BNDdDv2xS6Csj6fhi+B/q30SR9Tz8lDNt/F2Z5RF3TrRg==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
 
 "@types/recharts@^1.8.14", "@types/recharts@^1.8.15":
   version "1.8.19"
@@ -10211,13 +10212,15 @@ canvas@^2.6.1:
     simple-get "^3.0.3"
 
 canvg@^3.0.6:
-  version "3.0.7"
-  resolved "https://registry.npmjs.org/canvg/-/canvg-3.0.7.tgz#e45b87a64116af906917f7cad57d370ea372d682"
-  integrity sha512-4sq6iL5Q4VOXS3PL1BapiXIZItpxYyANVzsAKpTPS5oq4u3SKbGfUcbZh2gdLCQ3jWpG/y5wRkMlBBAJhXeiZA==
+  version "3.0.8"
+  resolved "https://registry.npmjs.org/canvg/-/canvg-3.0.8.tgz#9125a4b7033d2f237402241b192587385f4589e6"
+  integrity sha512-9De5heHfVRgCkln3CGEeSJMviN5U2RyxL4uutYoe8HxI60BjH2XnT2ZUHIp+ZaAZNTUd5Asqfut8WEEdANqfAg==
   dependencies:
-    "@babel/runtime-corejs3" "^7.9.6"
+    "@babel/runtime" "^7.12.5"
     "@types/raf" "^3.4.0"
+    core-js "^3.8.3"
     raf "^3.4.1"
+    regenerator-runtime "^0.13.7"
     rgbcolor "^1.0.1"
     stackblur-canvas "^2.0.0"
     svg-pathdata "^5.0.5"
@@ -11263,10 +11266,10 @@ core-js@^3.0.4, core-js@^3.6.5, core-js@^3.8.2:
   resolved "https://registry.npmjs.org/core-js/-/core-js-3.15.0.tgz#db9554ebce0b6fd90dc9b1f2465c841d2d055044"
   integrity sha512-GUbtPllXMYRzIgHNZ4dTYTcUemls2cni83Q4Q/TrFONHfhcg9oEGOtaGHfb0cpzec60P96UKPvMkjX1jET8rUw==
 
-core-js@^3.6.0:
-  version "3.17.3"
-  resolved "https://registry.npmjs.org/core-js/-/core-js-3.17.3.tgz#8e8bd20e91df9951e903cabe91f9af4a0895bc1e"
-  integrity sha512-lyvajs+wd8N1hXfzob1LdOCCHFU4bGMbqqmLn1Q4QlCpDqWPpGf+p0nj+LNrvDDG33j0hZXw2nsvvVpHysxyNw==
+core-js@^3.6.0, core-js@^3.8.3:
+  version "3.18.0"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-3.18.0.tgz#9af3f4a6df9ba3428a3fb1b171f1503b3f40cc49"
+  integrity sha512-WJeQqq6jOYgVgg4NrXKL0KLQhi0CT4ZOCvFL+3CQ5o7I6J8HkT5wd53EadMfqTDp1so/MT1J+w2ujhWcCJtN7w==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -12626,7 +12629,12 @@ domhandler@^4.0.0:
   dependencies:
     domelementtype "^2.1.0"
 
-dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.9:
+dompurify@^2.0.12:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.3.3.tgz#c1af3eb88be47324432964d8abc75cf4b98d634c"
+  integrity sha512-dqnqRkPMAjOZE0FogZ+ceJNM2dZ3V/yNOuFB7+39qpO93hHhfRpHw3heYQC7DPK9FqbQTfBKUJhiSfz4MvXYwg==
+
+dompurify@^2.1.1, dompurify@^2.2.9:
   version "2.3.1"
   resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.3.1.tgz#a47059ca21fd1212d3c8f71fdea6943b8bfbdf6a"
   integrity sha512-xGWt+NHAQS+4tpgbOAI08yxW0Pr256Gu/FNE2frZVTbgrBUn8M7tz7/ktS/LZ2MHeGqz6topj0/xY+y8R5FBFw==
