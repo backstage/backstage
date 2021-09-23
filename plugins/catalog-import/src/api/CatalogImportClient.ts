@@ -20,12 +20,12 @@ import {
   ConfigApi,
   DiscoveryApi,
   IdentityApi,
-  OAuthApi,
 } from '@backstage/core-plugin-api';
 import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 import { PartialEntity } from '../types';
@@ -36,21 +36,21 @@ import { trimEnd } from 'lodash';
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
-  private readonly githubAuthApi: OAuthApi;
+  private readonly scmAuthApi: ScmAuthApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
   private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
+    scmAuthApi: ScmAuthApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
     configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.githubAuthApi = options.githubAuthApi;
+    this.scmAuthApi = options.scmAuthApi;
     this.identityApi = options.identityApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
@@ -157,6 +157,7 @@ the component will become available.\n\nFor more information, read an \
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
+        repositoryUrl,
         fileContent,
         title,
         body,
@@ -215,7 +216,7 @@ the component will become available.\n\nFor more information, read an \
       entities: EntityName[];
     }>
   > {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({ url });
     const octo = new Octokit({
       auth: token,
       baseUrl: githubIntegrationConfig.apiBaseUrl,
@@ -270,6 +271,7 @@ the component will become available.\n\nFor more information, read an \
     title,
     body,
     fileContent,
+    repositoryUrl,
     githubIntegrationConfig,
   }: {
     owner: string;
@@ -277,9 +279,15 @@ the component will become available.\n\nFor more information, read an \
     title: string;
     body: string;
     fileContent: string;
+    repositoryUrl: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({
+      url: repositoryUrl,
+      additionalScope: {
+        repoWrite: true,
+      },
+    });
 
     const octo = new Octokit({
       auth: token,
