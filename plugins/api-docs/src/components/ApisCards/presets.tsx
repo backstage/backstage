@@ -36,7 +36,7 @@ export const apiEntityColumns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
   EntityTable.columns.createSystemColumn(),
   EntityTable.columns.createOwnerColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
   createSpecApiTypeColumn(),
+  EntityTable.columns.createSpecLifecycleColumn(),
   EntityTable.columns.createMetadataDescriptionColumn(),
 ];

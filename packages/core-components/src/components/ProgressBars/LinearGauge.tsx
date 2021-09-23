@@ -28,7 +28,8 @@ type Props = {
   value: number;
 };
 
-export const LinearGauge = ({ value }: Props) => {
+export function LinearGauge(props: Props) {
+  const { value } = props;
   const theme = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;
@@ -50,4 +51,4 @@ export const LinearGauge = ({ value }: Props) => {
       </span>
     </Tooltip>
   );
-};
+}

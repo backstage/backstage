@@ -19,6 +19,8 @@ import { Knex } from 'knex';
 
 /**
  * The PluginDatabaseManager manages access to databases that Plugins get.
+ *
+ * @public
  */
 export interface PluginDatabaseManager {
   /**

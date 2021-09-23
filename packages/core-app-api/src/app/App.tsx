@@ -66,7 +66,6 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
-import { AppThemeProvider } from './AppThemeProvider';
 import {
   AppComponents,
   AppConfigLoader,
@@ -151,12 +150,14 @@ function useConfigLoader(
     noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
   }
 
+  const { ThemeProvider } = components;
+
   // Before the config is loaded we can't use a router, so exit early
   if (noConfigNode) {
     return {
       node: (
         <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
-          <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+          <ThemeProvider>{noConfigNode}</ThemeProvider>
         </ApiProvider>
       ),
     };
@@ -303,10 +304,12 @@ export class PrivateAppImpl implements BackstageApp {
         return loadedConfig.node;
       }
 
+      const { ThemeProvider } = this.components;
+
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
-            <AppThemeProvider>
+            <ThemeProvider>
               <RoutingProvider
                 routePaths={routePaths}
                 routeParents={routeParents}
@@ -316,7 +319,7 @@ export class PrivateAppImpl implements BackstageApp {
               >
                 {children}
               </RoutingProvider>
-            </AppThemeProvider>
+            </ThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );

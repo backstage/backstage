@@ -16,7 +16,7 @@
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {
   splunkOnCallApiRef,
@@ -71,35 +71,27 @@ const apis = ApiRegistry.from([
   ],
 ]);
 
-const mockEntityData = {
-  loading: false,
-  error: undefined,
-  entity: {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'splunkoncall-test',
-      annotations: {
-        'splunk.com/on-call-team': 'test',
-      },
+const mockEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {
+      'splunk.com/on-call-team': 'test',
     },
-  } as Entity,
-};
+  },
+} as Entity;
 
-const mockEntityDataNoIncidents = {
-  loading: false,
-  error: undefined,
-  entity: {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'splunkoncall-test',
-      annotations: {
-        'splunk.com/on-call-team': 'test-noincidents',
-      },
+const mockEntityNoIncidents = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {
+      'splunk.com/on-call-team': 'test-noincidents',
     },
-  } as Entity,
-};
+  },
+} as Entity;
 
 describe('SplunkOnCallCard', () => {
   it('Render splunkoncall', async () => {
@@ -113,9 +105,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityDataNoIncidents}>
+          <EntityProvider entity={mockEntityNoIncidents}>
             <EntitySplunkOnCallCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -136,9 +128,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityData}>
+          <EntityProvider entity={mockEntity}>
             <EntitySplunkOnCallCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -155,9 +147,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityData}>
+          <EntityProvider entity={mockEntity}>
             <EntitySplunkOnCallCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -181,9 +173,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityData}>
+          <EntityProvider entity={mockEntity}>
             <EntitySplunkOnCallCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -204,9 +196,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityData}>
+          <EntityProvider entity={mockEntity}>
             <EntitySplunkOnCallCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </ApiProvider>,
       ),
     );

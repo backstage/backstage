@@ -39,9 +39,12 @@ const useStyles = makeStyles<Theme>(theme => ({
   contentList: {
     padding: 0,
   },
+  actionButtons: {
+    padding: theme.spacing(2, 0),
+  },
 }));
 
-export const OAuthRequestDialog = () => {
+export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
@@ -65,7 +68,7 @@ export const OAuthRequestDialog = () => {
         Login Required
       </DialogTitle>
 
-      <DialogContent classes={{ root: classes.contentList }}>
+      <DialogContent dividers classes={{ root: classes.contentList }}>
         <List>
           {requests.map(request => (
             <LoginRequestListItem
@@ -78,9 +81,9 @@ export const OAuthRequestDialog = () => {
         </List>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions classes={{ root: classes.actionButtons }}>
         <Button onClick={handleRejectAll}>Reject All</Button>
       </DialogActions>
     </Dialog>
   );
-};
+}

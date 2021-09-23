@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Validators = {
   isValidApiVersion(value: unknown): boolean;
   isValidKind(value: unknown): boolean;

@@ -1,5 +1,35 @@
 # @backstage/plugin-org
 
+## 0.3.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
+## 0.3.23
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.3.22
+
+### Patch Changes
+
+- 6ad8fe1a0: Make ownership card style customizable via custom `theme.getPageTheme()`.
+- 70718686f: Use correct `Link` in ownership card to avoid a full reload of the app while navigating.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.3.21
 
 ### Patch Changes

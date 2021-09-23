@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that lets you browse TODO comments in your source code
+ *
+ * @packageDocumentation
+ */
+
 export { todoApiRef, TodoClient } from './api';
 export type {
   TodoApi,

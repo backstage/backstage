@@ -1,5 +1,14 @@
 # @backstage/techdocs-common
 
+## 0.10.1
+
+### Patch Changes
+
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
 ## 0.10.0
 
 ### Minor Changes

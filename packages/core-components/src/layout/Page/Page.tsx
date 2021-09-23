@@ -40,7 +40,8 @@ type Props = {
   themeId: string;
 };
 
-export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
+export function Page(props: PropsWithChildren<Props>) {
+  const { themeId, children } = props;
   const classes = useStyles();
   return (
     <ThemeProvider
@@ -52,4 +53,4 @@ export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
       <div className={classes.root}>{children}</div>
     </ThemeProvider>
   );
-};
+}

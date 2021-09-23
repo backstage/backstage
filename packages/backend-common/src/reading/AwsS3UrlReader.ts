@@ -19,6 +19,7 @@ import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
   ReadUrlOptions,
   ReadUrlResponse,
   SearchResponse,
@@ -26,6 +27,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
   url: string,
@@ -61,7 +63,7 @@ const parseURL = (
 };
 
 export class AwsS3UrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
@@ -70,7 +72,10 @@ export class AwsS3UrlReader implements UrlReader {
         apiVersion: '2006-03-01',
         credentials: creds,
       });
-      const reader = new AwsS3UrlReader(integration, s3);
+      const reader = new AwsS3UrlReader(integration, {
+        s3,
+        treeResponseFactory,
+      });
       const predicate = (url: URL) =>
         url.host.endsWith(integration.config.host);
       return { reader, predicate };
@@ -79,7 +84,10 @@ export class AwsS3UrlReader implements UrlReader {
 
   constructor(
     private readonly integration: AwsS3Integration,
-    private readonly s3: S3,
+    private readonly deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
   ) {}
 
   /**
@@ -145,7 +153,7 @@ export class AwsS3UrlReader implements UrlReader {
         };
       }
 
-      const response = this.s3.getObject(params);
+      const response = this.deps.s3.getObject(params);
       const buffer = await getRawBody(response.createReadStream());
       const etag = (await response.promise()).ETag;
 
@@ -158,8 +166,45 @@ export class AwsS3UrlReader implements UrlReader {
     }
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
-    throw new Error('AwsS3Reader does not implement readTree');
+  async readTree(url: string): Promise<ReadTreeResponse> {
+    try {
+      const { path, bucket, region } = parseURL(url);
+      const allObjects: ObjectList = [];
+      const responses = [];
+      let continuationToken: string | undefined;
+      let output: ListObjectsV2Output;
+      do {
+        aws.config.update({ region: region });
+        output = await this.deps.s3
+          .listObjectsV2({
+            Bucket: bucket,
+            ContinuationToken: continuationToken,
+            Prefix: path,
+          })
+          .promise();
+        if (output.Contents) {
+          output.Contents.forEach(contents => {
+            allObjects.push(contents);
+          });
+        }
+        continuationToken = output.NextContinuationToken;
+      } while (continuationToken);
+
+      for (let i = 0; i < allObjects.length; i++) {
+        const object = this.deps.s3.getObject({
+          Bucket: bucket,
+          Key: String(allObjects[i].Key),
+        });
+        responses.push({
+          data: object.createReadStream(),
+          path: String(allObjects[i].Key),
+        });
+      }
+
+      return await this.deps.treeResponseFactory.fromReadableArray(responses);
+    } catch (e) {
+      throw new Error(`Could not retrieve file tree from S3: ${e.message}`);
+    }
   }
 
   async search(): Promise<SearchResponse> {

@@ -97,6 +97,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       throw new Error('No elastic search config found');
     }
 
+    const clientOptionsConfig = config.getOptionalConfig('clientOptions');
+    const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
+
     if (config.getOptionalString('provider') === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
       const authConfig = config.getConfig('auth');
@@ -108,6 +111,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           username: authConfig.getString('username'),
           password: authConfig.getString('password'),
         },
+        ...(sslConfig
+          ? {
+              ssl: {
+                rejectUnauthorized:
+                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+              },
+            }
+          : {}),
       });
     }
     if (config.getOptionalString('provider') === 'aws') {
@@ -117,6 +128,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       return new Client({
         node: config.getString('node'),
         ...AWSConnection,
+        ...(sslConfig
+          ? {
+              ssl: {
+                rejectUnauthorized:
+                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+              },
+            }
+          : {}),
       });
     }
     logger.info('Initializing ElasticSearch search engine.');
@@ -134,6 +153,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return new Client({
       node: config.getString('node'),
       auth,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
     });
   }
 

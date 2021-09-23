@@ -21,8 +21,9 @@ import {
   LocationSpec,
   parseLocationReference,
   stringifyEntityRef,
+  stringifyLocationReference,
 } from '@backstage/catalog-model';
-import { ConflictError, InputError } from '@backstage/errors';
+import { ConflictError, InputError, NotAllowedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
@@ -45,6 +46,7 @@ import {
   validateEntity,
   validateEntityEnvelope,
 } from './util';
+import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
 
 type Context = {
   entityRef: string;
@@ -63,6 +65,7 @@ export class DefaultCatalogProcessingOrchestrator
       logger: Logger;
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
+      rulesEnforcer: CatalogRulesEnforcer;
     },
   ) {}
 
@@ -117,8 +120,30 @@ export class DefaultCatalogProcessingOrchestrator
       }
       entity = await this.runPostProcessStep(entity, context);
 
+      // Check that any emitted entities are permitted to originate from that
+      // particular location according to the catalog rules
+      const collectorResults = context.collector.results();
+      for (const deferredEntity of collectorResults.deferredEntities) {
+        if (
+          !this.options.rulesEnforcer.isAllowed(
+            deferredEntity.entity,
+            context.originLocation,
+          )
+        ) {
+          throw new NotAllowedError(
+            `Entity ${stringifyEntityRef(
+              deferredEntity.entity,
+            )} at ${stringifyLocationReference(
+              context.location,
+            )}, originated at ${stringifyLocationReference(
+              context.originLocation,
+            )}, is not of an allowed kind for that location`,
+          );
+        }
+      }
+
       return {
-        ...context.collector.results(),
+        ...collectorResults,
         completedEntity: entity,
         state: new Map(),
         ok: true,

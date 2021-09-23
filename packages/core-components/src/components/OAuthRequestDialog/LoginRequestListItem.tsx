@@ -21,6 +21,7 @@ import {
   makeStyles,
   Typography,
   Theme,
+  Button,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
@@ -55,12 +56,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const IconComponent = request.provider.icon;
 
   return (
-    <ListItem
-      button
-      disabled={busy}
-      onClick={handleContinue}
-      classes={{ root: classes.root }}
-    >
+    <ListItem button disabled={busy} classes={{ root: classes.root }}>
       <ListItemAvatar>
         <IconComponent fontSize="large" />
       </ListItemAvatar>
@@ -74,6 +70,9 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
           )
         }
       />
+      <Button color="primary" variant="contained" onClick={handleContinue}>
+        Log in
+      </Button>
     </ListItem>
   );
 };

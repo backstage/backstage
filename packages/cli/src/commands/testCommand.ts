@@ -63,6 +63,13 @@ export default async (cmd: Command) => {
     (process.env as any).NODE_ENV = 'test';
   }
 
+  // This is to have a consistent timezone for when running tests that involve checking
+  // the formatting of date/times.
+  // https://stackoverflow.com/questions/56261381/how-do-i-set-a-timezone-in-my-jest-config
+  if (!process.env.TZ) {
+    process.env.TZ = 'UTC';
+  }
+
   // eslint-disable-next-line jest/no-jest-import
   await require('jest').run(args);
 };

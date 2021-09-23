@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
+  Link,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
@@ -29,34 +30,22 @@ import {
   isOwnerOf,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, genPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Typography,
 } from '@material-ui/core';
 import qs from 'qs';
 import React from 'react';
-import { generatePath } from 'react-router';
 import { useAsync } from 'react-use';
 
 type EntityTypeProps = {
   kind: string;
   type: string;
   count: number;
-};
-
-const createPageTheme = (
-  theme: BackstageTheme,
-  shapeKey: string,
-  colorsKey: string,
-) => {
-  const { colors } = theme.getPageTheme({ themeId: colorsKey });
-  const { shape } = theme.getPageTheme({ themeId: shapeKey });
-  return genPageTheme(colors, shape).backgroundImage;
 };
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
@@ -77,7 +66,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     },
     entityTypeBox: {
       background: (props: { type: string }) =>
-        createPageTheme(theme, props.type, props.type),
+        theme.getPageTheme({ themeId: props.type }).backgroundImage,
     },
   }),
 );
@@ -96,7 +85,7 @@ const EntityCountTile = ({
   const classes = useStyles({ type });
 
   return (
-    <Link href={url} variant="body2">
+    <Link to={url} variant="body2">
       <Box
         className={`${classes.card} ${classes.entityTypeBox}`}
         display="flex"
@@ -218,7 +207,7 @@ export const OwnershipCard = ({
               counter={c.counter}
               type={c.type}
               name={c.name}
-              url={generatePath(`${catalogLink()}/?${c.queryParams}`)}
+              url={`${catalogLink()}/?${c.queryParams}`}
             />
           </Grid>
         ))}

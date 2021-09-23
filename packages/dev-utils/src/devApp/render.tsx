@@ -41,10 +41,10 @@ import {
   attachComponentData,
   configApiRef,
   createApiFactory,
-  createPlugin,
   createRouteRef,
   IconComponent,
   RouteRef,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
 
 import { createApp, FlatRoutes } from '@backstage/core-app-api';
@@ -57,7 +57,8 @@ const GatheringRoute: (props: {
 
 attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
 
-type RegisterPageOptions = {
+/** @public */
+export type DevAppPageOptions = {
   path?: string;
   element: JSX.Element;
   children?: JSX.Element;
@@ -65,14 +66,13 @@ type RegisterPageOptions = {
   icon?: IconComponent;
 };
 
-// TODO(rugvip): export proper plugin type from core that isn't the plugin class
-type BackstagePlugin = ReturnType<typeof createPlugin>;
-
 /**
  * DevApp builder that is similar to the App builder API, but creates an App
  * with the purpose of developing one or more plugins inside it.
+ *
+ * @public
  */
-class DevAppBuilder {
+export class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly apis = new Array<AnyApiFactory>();
   private readonly rootChildren = new Array<ReactNode>();
@@ -118,7 +118,7 @@ class DevAppBuilder {
    * If no path is provided one will be generated.
    * If no title is provided, no sidebar item will be created.
    */
-  addPage(opts: RegisterPageOptions): DevAppBuilder {
+  addPage(opts: DevAppPageOptions): DevAppBuilder {
     const path = opts.path ?? `/page-${this.routes.length + 1}`;
 
     if (!this.defaultPage || path === '/') {
@@ -244,6 +244,8 @@ class DevAppBuilder {
 
 /**
  * Creates a dev app for rendering one or more plugins and exposing the touch points of the plugin.
+ *
+ * @public
  */
 export function createDevApp() {
   return new DevAppBuilder();

@@ -112,6 +112,7 @@ export const MultistepJsonForm = ({
   widgets,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [disableButtons, setDisableButtons] = useState(false);
 
   const handleReset = () => {
     setActiveStep(0);
@@ -121,6 +122,10 @@ export const MultistepJsonForm = ({
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+  const handleCreate = () => {
+    setDisableButtons(true);
+    onFinish();
+  };
 
   return (
     <>
@@ -172,9 +177,18 @@ export const MultistepJsonForm = ({
               metadata={getReviewData(formData, steps)}
             />
             <Box mb={4} />
-            <Button onClick={handleBack}>Back</Button>
-            <Button onClick={handleReset}>Reset</Button>
-            <Button variant="contained" color="primary" onClick={onFinish}>
+            <Button onClick={handleBack} disabled={disableButtons}>
+              Back
+            </Button>
+            <Button onClick={handleReset} disabled={disableButtons}>
+              Reset
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreate}
+              disabled={disableButtons}
+            >
               Create
             </Button>
           </Paper>

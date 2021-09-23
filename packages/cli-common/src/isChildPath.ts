@@ -18,6 +18,8 @@ import { relative, isAbsolute } from 'path';
 
 /**
  * Checks if path is the same as or a child path of base.
+ *
+ * @public
  */
 export function isChildPath(base: string, path: string): boolean {
   const relativePath = relative(base, path);

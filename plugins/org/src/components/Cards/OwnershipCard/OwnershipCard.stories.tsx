@@ -20,7 +20,7 @@ import {
   CatalogApi,
   catalogApiRef,
   catalogRouteRef,
-  EntityContext,
+  EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {
@@ -91,13 +91,13 @@ const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
 export const Default = () =>
   wrapInTestApp(
     <ApiProvider apis={apiRegistry}>
-      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+      <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <OwnershipCard />
           </Grid>
         </Grid>
-      </EntityContext.Provider>
+      </EntityProvider>
     </ApiProvider>,
     {
       mountedRoutes: { '/catalog': catalogRouteRef },
@@ -124,15 +124,13 @@ export const Themed = () =>
   wrapInTestApp(
     <ThemeProvider theme={monochromeTheme}>
       <ApiProvider apis={apiRegistry}>
-        <EntityContext.Provider
-          value={{ entity: defaultEntity, loading: false }}
-        >
+        <EntityProvider entity={defaultEntity}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
               <OwnershipCard />
             </Grid>
           </Grid>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>
     </ThemeProvider>,
     {

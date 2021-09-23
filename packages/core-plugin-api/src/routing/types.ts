@@ -15,7 +15,7 @@
  */
 
 import { OldIconComponent } from '../icons/types';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never

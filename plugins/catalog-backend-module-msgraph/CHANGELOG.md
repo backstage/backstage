@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.14.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+
 ## 0.2.3
 
 ### Patch Changes

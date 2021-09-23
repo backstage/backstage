@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { BitbucketClient, paginated } from './client';
+export { BitbucketClient, paginated, paginated20 } from './client';
 export { defaultRepositoryParser } from './BitbucketRepositoryParser';
-export type { PagedResponse } from './client';
-export type { BitbucketRepository } from './types';
+export type { PagedResponse, PagedResponse20 } from './client';
+export type { BitbucketRepository, BitbucketRepository20 } from './types';
 export type { BitbucketRepositoryParser } from './BitbucketRepositoryParser';

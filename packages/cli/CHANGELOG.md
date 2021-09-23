@@ -1,5 +1,35 @@
 # @backstage/cli
 
+## 0.7.13
+
+### Patch Changes
+
+- c0c51c9710: Disabled ECMAScript transforms in app and backend builds in order to reduce bundle size and runtime performance. For the rationale and a full list of syntax that is no longer transformed, see https://github.com/alangpierce/sucrase#transforms. This also enables TypeScripts `useDefineForClassFields` flag by default, which in rare occasions could cause build failures. For instructions on how to mitigate issues due to the flag, see the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
+- e9f332a51c: Restrict imports on the form `../../plugins/x/src`
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 050797c5b3: Switched the Jest YAML transform from `yaml-jest` to `jest-transform-yaml`, which works with newer versions of Node.js.
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.7.12
+
+### Patch Changes
+
+- d835d112fe: replace the deprecated file-loader for fonts with assets module
+- 15e324ce60: Set the default TZ (Timezone) env for the test command to be UTC so any date related tests are consistent across timezones.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+
+## 0.7.11
+
+### Patch Changes
+
+- 13895db37: Support importing font files in tests.
+  This fixes remaining issues from [#7019](https://github.com/backstage/backstage/pull/7019).
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/config@0.1.9
+
 ## 0.7.10
 
 ### Patch Changes

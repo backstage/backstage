@@ -100,6 +100,4 @@ export function wrapInTestApp(
 ): ReactElement;
 
 export * from '@backstage/test-utils-core';
-
-// (No @packageDocumentation comment for this package)
 ```

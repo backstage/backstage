@@ -47,7 +47,7 @@ const defaultProps = {
   tooltipText: 'Text copied to clipboard',
 };
 
-export const CopyTextButton = (props: Props) => {
+export function CopyTextButton(props: Props) {
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
     ...props,
@@ -84,7 +84,7 @@ export const CopyTextButton = (props: Props) => {
       </Tooltip>
     </>
   );
-};
+}
 
 // Type check for the JS files using this core component
 CopyTextButton.propTypes = {

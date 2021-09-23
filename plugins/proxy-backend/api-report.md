@@ -13,6 +13,4 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 //
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
-
-// (No @packageDocumentation comment for this package)
 ```

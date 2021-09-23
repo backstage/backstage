@@ -22,52 +22,68 @@ import {
   ComponentTabs,
   ComponentTab,
 } from '@backstage/plugin-home';
+import {
+  Content,
+  Header,
+  Page,
+  HomepageTimer,
+} from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 
 export const HomePage = () => (
-  <Grid container spacing={3}>
-    <Grid item xs={12}>
-      <HomePageSearchBar />
-    </Grid>
-    <Grid item xs={12} md={4}>
-      <HomePageRandomJoke />
-    </Grid>
-    <Grid item xs={12} md={4}>
-      <HomePageRandomJoke defaultCategory="any" Renderer={ComponentAccordion} />
-      <HomePageRandomJoke
-        title="Another Random Joke"
-        Renderer={ComponentAccordion}
-      />
-      <HomePageRandomJoke
-        title="One More Random Joke"
-        defaultCategory="programming"
-        Renderer={ComponentAccordion}
-      />
-    </Grid>
-    <Grid item xs={12} md={4}>
-      <ComponentTabs
-        title="Random Jokes"
-        tabs={[
-          {
-            label: 'Programming',
-            Component: () => (
-              <HomePageRandomJoke
-                defaultCategory="programming"
-                Renderer={ComponentTab}
-              />
-            ),
-          },
-          {
-            label: 'Any',
-            Component: () => (
-              <HomePageRandomJoke
-                defaultCategory="any"
-                Renderer={ComponentTab}
-              />
-            ),
-          },
-        ]}
-      />
-    </Grid>
-  </Grid>
+  <Page themeId="home">
+    <Header title="Home">
+      <HomepageTimer />
+    </Header>
+    <Content>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <HomePageSearchBar />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageRandomJoke />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageRandomJoke
+            defaultCategory="any"
+            Renderer={ComponentAccordion}
+          />
+          <HomePageRandomJoke
+            title="Another Random Joke"
+            Renderer={ComponentAccordion}
+          />
+          <HomePageRandomJoke
+            title="One More Random Joke"
+            defaultCategory="programming"
+            Renderer={ComponentAccordion}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <ComponentTabs
+            title="Random Jokes"
+            tabs={[
+              {
+                label: 'Programming',
+                Component: () => (
+                  <HomePageRandomJoke
+                    defaultCategory="programming"
+                    Renderer={ComponentTab}
+                  />
+                ),
+              },
+              {
+                label: 'Any',
+                Component: () => (
+                  <HomePageRandomJoke
+                    defaultCategory="any"
+                    Renderer={ComponentTab}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
 );

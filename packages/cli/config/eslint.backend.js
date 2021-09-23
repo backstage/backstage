@@ -62,7 +62,10 @@ module.exports = {
       { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
     // Avoid cross-package imports
-    'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
+    'no-restricted-imports': [
+      2,
+      { patterns: ['**/../../**/*/src/**', '**/../../**/*/src'] },
+    ],
     // Avoid default import from winston as it breaks at runtime
     'no-restricted-syntax': [
       'error',

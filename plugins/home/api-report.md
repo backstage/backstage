@@ -125,6 +125,4 @@ export const SettingsModal: ({
 // Warnings were encountered during analysis:
 //
 // src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

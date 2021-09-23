@@ -52,11 +52,12 @@ class AnyEntityPolicy implements EntityPolicy {
   }
 }
 
+/** @public */
 export const EntityPolicies = {
-  allOf(policies: EntityPolicy[]) {
+  allOf(policies: EntityPolicy[]): EntityPolicy {
     return new AllEntityPolicies(policies);
   },
-  oneOf(policies: EntityPolicy[]) {
+  oneOf(policies: EntityPolicy[]): EntityPolicy {
     return new AnyEntityPolicy(policies);
   },
 };

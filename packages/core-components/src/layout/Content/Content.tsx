@@ -47,17 +47,12 @@ type Props = {
   className?: string;
 };
 
-export const Content = ({
-  className,
-  stretch,
-  noPadding,
-  children,
-  ...props
-}: PropsWithChildren<Props>) => {
+export function Content(props: PropsWithChildren<Props>) {
+  const { className, stretch, noPadding, children, ...restProps } = props;
   const classes = useStyles();
   return (
     <article
-      {...props}
+      {...restProps}
       className={classNames(classes.root, className, {
         [classes.stretch]: stretch,
         [classes.noPadding]: noPadding,
@@ -66,4 +61,4 @@ export const Content = ({
       {children}
     </article>
   );
-};
+}

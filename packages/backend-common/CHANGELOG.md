@@ -1,5 +1,35 @@
 # @backstage/backend-common
 
+## 0.9.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/config@0.1.10
+
+## 0.9.3
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- f7ad3a8925: Fix Azure `readTree` and `search` handling to properly support paths.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/integration@0.6.4
+
+## 0.9.2
+
+### Patch Changes
+
+- 9e5ed27ec: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
 ## 0.9.1
 
 ### Patch Changes

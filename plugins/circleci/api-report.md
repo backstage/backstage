@@ -103,6 +103,4 @@ export { isCircleCIAvailable as isPluginApplicableToEntity };
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -66,7 +66,8 @@ export type HeaderActionMenuProps = {
   actionItems: ActionItemProps[];
 };
 
-export const HeaderActionMenu = ({ actionItems }: HeaderActionMenuProps) => {
+export function HeaderActionMenu(props: HeaderActionMenuProps) {
+  const { actionItems } = props;
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
 
@@ -103,4 +104,4 @@ export const HeaderActionMenu = ({ actionItems }: HeaderActionMenuProps) => {
       </Popover>
     </Fragment>
   );
-};
+}

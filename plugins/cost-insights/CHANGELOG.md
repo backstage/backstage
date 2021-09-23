@@ -1,5 +1,22 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/config@0.1.10
+
+## 0.11.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.11.5
 
 ### Patch Changes

@@ -22,7 +22,7 @@ import { compileAjvSchema, throwAjvError } from './ajv';
 /**
  * Creates a validation function that takes some arbitrary data, and either
  * returns that data cast to an {@link Entity} (or the given subtype) if it
- * matches that schema, or throws a {@link TypeError} describing the errors.
+ * matches that schema, or throws a {@link globals#TypeError} describing the errors.
  *
  * Note that this validator is only meant for applying the base schema checks;
  * it does not take custom policies or additional processor based validation
@@ -37,6 +37,7 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * - EntityMeta
  * - common#<id>
  *
+ * @public
  * @see https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema
  */
 export function entitySchemaValidator<T extends Entity = Entity>(

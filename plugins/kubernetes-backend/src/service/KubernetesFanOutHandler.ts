@@ -22,7 +22,10 @@ import {
   KubernetesObjectTypes,
   KubernetesServiceLocator,
 } from '../types/types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import {
+  ClusterObjects,
+  KubernetesRequestBody,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
@@ -111,13 +114,20 @@ export class KubernetesFanOutHandler {
             customResources: this.customResources,
           })
           .then(result => {
-            return {
+            const objects: ClusterObjects = {
               cluster: {
                 name: clusterDetailsItem.name,
               },
               resources: result.responses,
               errors: result.errors,
             };
+            if (clusterDetailsItem.dashboardUrl) {
+              objects.cluster.dashboardUrl = clusterDetailsItem.dashboardUrl;
+            }
+            if (clusterDetailsItem.dashboardApp) {
+              objects.cluster.dashboardApp = clusterDetailsItem.dashboardApp;
+            }
+            return objects;
           });
       }),
     ).then(r => ({

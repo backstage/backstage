@@ -99,7 +99,7 @@ export type AnalyzeLocationResponse = {
 // read and emitted like this so that the frontend can inform the user that it
 // located them and can make sure to register them as well if they weren't
 // already
-type AnalyzeLocationExistingEntity = {
+export type AnalyzeLocationExistingEntity = {
   location: LocationSpec;
   isRegistered: boolean;
   entity: Entity;
@@ -110,7 +110,7 @@ type AnalyzeLocationExistingEntity = {
 // the frontend. It'll probably contain a (possibly incomplete) entity, plus
 // enough info for the frontend to know what form data to show to the user
 // for overriding/completing the info.
-type AnalyzeLocationGenerateEntity = {
+export type AnalyzeLocationGenerateEntity = {
   // Some form of partial representation of the entity
   entity: RecursivePartial<Entity>;
   // Lists the suggestions that the user may want to override
@@ -120,7 +120,7 @@ type AnalyzeLocationGenerateEntity = {
 // This is where I get really vague. Something like this perhaps? Or it could be
 // something like a json-schema that contains enough info for the frontend to
 // be able to present a form and explanations
-type AnalyzeLocationEntityField = {
+export type AnalyzeLocationEntityField = {
   // e.g. "spec.owner"? The frontend needs to know how to "inject" the field into the
   // entity again if the user wants to change it
   field: string;

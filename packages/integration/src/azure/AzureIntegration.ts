@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
 import { basicIntegrations, isValidUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
+import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
 export class AzureIntegration implements ScmIntegration {
@@ -61,29 +61,27 @@ export class AzureIntegration implements ScmIntegration {
       return url;
     }
 
-    const parsed = parseGitUrl(base);
-    const { organization, owner, name, filepath } = parsed;
+    try {
+      const azureUrl = AzureUrl.fromRepoUrl(base);
+      const newUrl = new URL(base);
 
-    // If not an actual file path within a repo, treat the URL as raw
-    if (!organization || !owner || !name) {
+      // We lean on the URL path resolution logic to resolve the path param
+      const mockBaseUrl = new URL(`https://a.com${azureUrl.getPath() ?? ''}`);
+      const updatedPath = new URL(url, mockBaseUrl).pathname;
+      newUrl.searchParams.set('path', updatedPath);
+
+      if (options.lineNumber) {
+        newUrl.searchParams.set('line', String(options.lineNumber));
+        newUrl.searchParams.set('lineEnd', String(options.lineNumber + 1));
+        newUrl.searchParams.set('lineStartColumn', '1');
+        newUrl.searchParams.set('lineEndColumn', '1');
+      }
+
+      return newUrl.toString();
+    } catch {
+      // If not an actual file path within a repo, treat the URL as raw
       return new URL(url, base).toString();
     }
-
-    const path = filepath?.replace(/^\//, '') || '';
-    const mockBaseUrl = new URL(`https://a.com/${path}`);
-    const updatedPath = new URL(url, mockBaseUrl).pathname;
-
-    const newUrl = new URL(base);
-    newUrl.searchParams.set('path', updatedPath);
-
-    if (options.lineNumber) {
-      newUrl.searchParams.set('line', String(options.lineNumber));
-      newUrl.searchParams.set('lineEnd', String(options.lineNumber + 1));
-      newUrl.searchParams.set('lineStartColumn', '1');
-      newUrl.searchParams.set('lineEndColumn', '1');
-    }
-
-    return newUrl.toString();
   }
 
   resolveEditUrl(url: string): string {

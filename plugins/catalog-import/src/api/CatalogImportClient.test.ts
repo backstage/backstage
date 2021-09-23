@@ -104,6 +104,7 @@ describe('CatalogImportClient', () => {
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;
@@ -115,6 +116,11 @@ describe('CatalogImportClient', () => {
       scmIntegrationsApi,
       identityApi,
       catalogApi,
+      configApi: new ConfigReader({
+        app: {
+          baseUrl: 'https://demo.backstage.io/',
+        },
+      }),
     });
   });
 
@@ -440,6 +446,15 @@ describe('CatalogImportClient', () => {
         head: 'backstage-integration',
         body: 'A body',
         base: 'main',
+      });
+    });
+  });
+
+  describe('preparePullRequest', () => {
+    test('should prepare pull request details', async () => {
+      await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
+        title: 'Add catalog-info.yaml config file',
+        body: expect.any(String),
       });
     });
   });

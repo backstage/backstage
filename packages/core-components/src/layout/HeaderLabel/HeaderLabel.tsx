@@ -51,7 +51,8 @@ type HeaderLabelProps = {
   url?: string;
 };
 
-export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
+export function HeaderLabel(props: HeaderLabelProps) {
+  const { label, value, url } = props;
   const classes = useStyles();
   const content = (
     <HeaderLabelContent
@@ -67,4 +68,4 @@ export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
       </span>
     </Grid>
   );
-};
+}

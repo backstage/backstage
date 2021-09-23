@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
+  "description": "The Backstage backend plugin that provides your backstage app with search",
   "version": "0.2.6",
   "main": "src/index.ts",
   "types": "src/index.ts",

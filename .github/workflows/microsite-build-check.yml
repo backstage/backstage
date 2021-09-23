@@ -27,9 +27,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: verify doc links
-        run: node scripts/verify-links.js
-
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: yarn install

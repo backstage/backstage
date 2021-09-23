@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Core API used by Backstage plugins
+ *
+ * @packageDocumentation
+ */
+
 export * from './apis';
 export * from './app';
 export * from './extensions';

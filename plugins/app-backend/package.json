@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-app-backend",
+  "description": "A Backstage backend plugin that serves the Backstage frontend app",
   "version": "0.3.16",
   "main": "src/index.ts",
   "types": "src/index.ts",

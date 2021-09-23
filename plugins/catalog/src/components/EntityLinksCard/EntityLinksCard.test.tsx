@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityLink } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { EntityLinksCard } from './EntityLinksCard';
@@ -40,17 +40,12 @@ describe('EntityLinksCard', () => {
 
   it('should render a link', async () => {
     const links: EntityLink[] = [createLink()];
-    const entityContextValue = {
-      entity: createEntity(links),
-      loading: false,
-      error: undefined,
-    };
 
     const { queryByText } = await renderWithEffects(
       wrapInTestApp(
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={createEntity(links)}>
           <EntityLinksCard />
-        </EntityContext.Provider>,
+        </EntityProvider>,
       ),
     );
 
@@ -59,17 +54,11 @@ describe('EntityLinksCard', () => {
   });
 
   it('should show empty state', async () => {
-    const entityContextValue = {
-      entity: createEntity([]),
-      loading: false,
-      error: undefined,
-    };
-
     const { queryByText } = await renderWithEffects(
       wrapInTestApp(
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={createEntity([])}>
           <EntityLinksCard />
-        </EntityContext.Provider>,
+        </EntityProvider>,
       ),
     );
 

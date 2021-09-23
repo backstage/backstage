@@ -48,6 +48,7 @@ const parseURL = (
   };
 };
 
+/** @public */
 export class GoogleGcsUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, logger }) => {
     if (!config.has('integrations.googleGcs')) {

@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
+  "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "version": "0.2.12",
   "main": "src/index.ts",
   "types": "src/index.ts",

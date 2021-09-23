@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Utilities to test Backstage plugins and apps.
+ *
+ * @packageDocumentation
+ */
+
 export * from './testUtils';
 export * from '@backstage/test-utils-core';

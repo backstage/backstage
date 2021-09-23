@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A collection of codemods for Backstage projects
+ *
+ * @packageDocumentation
+ */
+
 import program from 'commander';
 import chalk from 'chalk';
 import { codemods } from './codemods';

@@ -21,14 +21,17 @@ import { coloredFormat } from './formats';
 
 let rootLogger: winston.Logger;
 
+/** @public */
 export function getRootLogger(): winston.Logger {
   return rootLogger;
 }
 
+/** @public */
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
 
+/** @public */
 export function createRootLogger(
   options: winston.LoggerOptions = {},
   env = process.env,

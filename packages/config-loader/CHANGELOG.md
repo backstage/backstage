@@ -1,5 +1,14 @@
 # @backstage/config-loader
 
+## 0.6.8
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config@0.1.9
+
 ## 0.6.7
 
 ### Patch Changes

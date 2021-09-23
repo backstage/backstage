@@ -88,6 +88,11 @@ export class CatalogClientWrapper implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
@@ -401,7 +406,7 @@ export const isOrphan: (entity: Entity) => boolean;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const Router: ({
   EntityPage,
 }: {
@@ -416,6 +421,4 @@ export const Router: ({
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/EntityPageLayout/EntityPageLayout.d.ts:17:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
 // src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

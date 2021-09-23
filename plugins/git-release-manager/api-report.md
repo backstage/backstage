@@ -649,10 +649,8 @@ const VERSIONING_STRATEGIES: {
 // src/helpers/getBumpedTag.d.ts:14:5 - (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
 // src/helpers/getBumpedTag.d.ts:19:5 - (ae-forgotten-export) The symbol "CalverTagParts" needs to be exported by the entry point index.d.ts
 // src/helpers/getBumpedTag.d.ts:31:5 - (ae-forgotten-export) The symbol "AlertError" needs to be exported by the entry point index.d.ts
-// src/index.d.ts:4:5 - (ae-forgotten-export) The symbol "components" needs to be exported by the entry point index.d.ts
-// src/index.d.ts:5:5 - (ae-forgotten-export) The symbol "constants" needs to be exported by the entry point index.d.ts
-// src/index.d.ts:6:5 - (ae-forgotten-export) The symbol "helpers" needs to be exported by the entry point index.d.ts
-// src/index.d.ts:7:5 - (ae-forgotten-export) The symbol "testHelpers" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// src/index.d.ts:9:5 - (ae-forgotten-export) The symbol "components" needs to be exported by the entry point index.d.ts
+// src/index.d.ts:10:5 - (ae-forgotten-export) The symbol "constants" needs to be exported by the entry point index.d.ts
+// src/index.d.ts:11:5 - (ae-forgotten-export) The symbol "helpers" needs to be exported by the entry point index.d.ts
+// src/index.d.ts:12:5 - (ae-forgotten-export) The symbol "testHelpers" needs to be exported by the entry point index.d.ts
 ```

@@ -82,13 +82,14 @@ type ContentHeaderProps = {
   textAlign?: 'left' | 'right' | 'center';
 };
 
-export const ContentHeader = ({
-  description,
-  title,
-  titleComponent: TitleComponent = undefined,
-  children,
-  textAlign = 'left',
-}: PropsWithChildren<ContentHeaderProps>) => {
+export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
+  const {
+    description,
+    title,
+    titleComponent: TitleComponent = undefined,
+    children,
+    textAlign = 'left',
+  } = props;
   const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
@@ -112,4 +113,4 @@ export const ContentHeader = ({
       </div>
     </>
   );
-};
+}

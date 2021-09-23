@@ -104,6 +104,4 @@ export class UnauthorizedError extends Error {}
 // Warnings were encountered during analysis:
 //
 // src/plugin.d.ts:7:5 - (ae-forgotten-export) The symbol "SplunkOnCallPageProps" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

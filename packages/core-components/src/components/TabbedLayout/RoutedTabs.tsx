@@ -47,7 +47,8 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
   };
 }
 
-export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
+export function RoutedTabs(props: { routes: SubRoute[] }) {
+  const { routes } = props;
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
@@ -80,4 +81,4 @@ export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
       </Content>
     </>
   );
-};
+}

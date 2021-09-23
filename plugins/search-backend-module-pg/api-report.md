@@ -123,6 +123,4 @@ export interface RawDocumentRow {
   // (undocumented)
   type: string;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

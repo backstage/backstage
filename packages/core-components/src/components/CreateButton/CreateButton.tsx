@@ -24,7 +24,8 @@ type CreateButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps, 'to'>>;
 
-export const CreateButton = ({ title, to }: CreateButtonProps) => {
+export function CreateButton(props: CreateButtonProps) {
+  const { title, to } = props;
   const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
   );
@@ -48,4 +49,4 @@ export const CreateButton = ({ title, to }: CreateButtonProps) => {
       {title}
     </Button>
   );
-};
+}

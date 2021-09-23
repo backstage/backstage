@@ -31,6 +31,7 @@ const coloredTemplate = (info: TransformableInfo) => {
   return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
 };
 
+/** @public */
 export const coloredFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.colorize({

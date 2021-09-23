@@ -195,6 +195,4 @@ export type UserTransformer = (
 // Warnings were encountered during analysis:
 //
 // src/microsoftGraph/config.d.ts:28:8 - (tsdoc-undefined-tag) The TSDoc tag "@visibility" is not defined in this configuration
-
-// (No @packageDocumentation comment for this package)
 ```

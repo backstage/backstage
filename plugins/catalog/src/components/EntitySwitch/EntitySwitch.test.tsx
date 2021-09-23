@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { isKind } from './conditions';
@@ -46,15 +46,9 @@ describe('EntitySwitch', () => {
 
     const rendered = render(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'component' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'component' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -64,15 +58,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'template' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'template' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -82,15 +70,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'derp' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'derp' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -100,20 +82,16 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch child when filters switch', () => {
-    const entityContextValue = {
-      entity: { kind: 'component' } as Entity,
-      loading: false,
-      error: undefined,
-    };
+    const entity = { kind: 'component' } as Entity;
 
     const rendered = render(
       <Wrapper>
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={entity}>
           <EntitySwitch>
             <EntitySwitch.Case if={isKind('component')} children="A" />
             <EntitySwitch.Case children="B" />
           </EntitySwitch>
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -122,12 +100,12 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={entity}>
           <EntitySwitch>
             <EntitySwitch.Case if={isKind('template')} children="A" />
             <EntitySwitch.Case children="B" />
           </EntitySwitch>
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 

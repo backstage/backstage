@@ -25,40 +25,60 @@ Naming rules for relations in priority order:
 /**
  * An ownership relation where the owner is usually an organizational
  * entity (user or group), and the other entity can be anything.
+ *
+ * @public
  */
 export const RELATION_OWNED_BY = 'ownedBy';
+/** @public */
 export const RELATION_OWNER_OF = 'ownerOf';
 
 /**
  * A relation with an API entity, typically from a component
+ *
+ * @public
  */
 export const RELATION_CONSUMES_API = 'consumesApi';
+/** @public */
 export const RELATION_API_CONSUMED_BY = 'apiConsumedBy';
+/** @public */
 export const RELATION_PROVIDES_API = 'providesApi';
+/** @public */
 export const RELATION_API_PROVIDED_BY = 'apiProvidedBy';
 
 /**
  * A relation denoting a dependency on another entity.
+ *
+ * @public
  */
 export const RELATION_DEPENDS_ON = 'dependsOn';
+/** @public */
 export const RELATION_DEPENDENCY_OF = 'dependencyOf';
 
 /**
  * A parent/child relation to build up a tree, used for example to describe
  * the organizational structure between groups.
+ *
+ * @public
  */
 export const RELATION_PARENT_OF = 'parentOf';
+/** @public */
 export const RELATION_CHILD_OF = 'childOf';
 
 /**
  * A membership relation, typically for users in a group.
+ *
+ * @public
  */
 export const RELATION_MEMBER_OF = 'memberOf';
+/** @public */
 export const RELATION_HAS_MEMBER = 'hasMember';
 
 /**
  * A part/whole relation, typically for components in a system and systems
  * in a domain.
+ *
+ * @public
  */
 export const RELATION_PART_OF = 'partOf';
+/** @public */
 export const RELATION_HAS_PART = 'hasPart';

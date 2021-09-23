@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Utilities to test Backstage core
+ *
+ * @packageDocumentation
+ */
+
 export * from './testUtils';

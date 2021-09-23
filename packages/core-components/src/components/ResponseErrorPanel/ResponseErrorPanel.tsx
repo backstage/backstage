@@ -39,11 +39,8 @@ const useStyles = makeStyles(theme => ({
  * Has special treatment for ResponseError errors, to display rich
  * server-provided information about what happened.
  */
-export const ResponseErrorPanel = ({
-  title,
-  error,
-  defaultExpanded,
-}: ErrorPanelProps) => {
+export function ResponseErrorPanel(props: ErrorPanelProps) {
+  const { title, error, defaultExpanded } = props;
   const classes = useStyles();
 
   if (error.name !== 'ResponseError') {
@@ -93,4 +90,4 @@ export const ResponseErrorPanel = ({
       </>
     </ErrorPanel>
   );
-};
+}

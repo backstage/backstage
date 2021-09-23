@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import { lighthouseApiRef, WebsiteListResponse } from '../api';
@@ -61,9 +61,7 @@ describe('useWebsiteForEntity', () => {
           mockLighthouseApi,
         )}
       >
-        <EntityContext.Provider value={{ entity: entity, loading: false }}>
-          {children}
-        </EntityContext.Provider>
+        <EntityProvider entity={entity}>{children}</EntityProvider>
       </ApiProvider>
     );
   };

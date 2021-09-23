@@ -28,15 +28,18 @@ try {
 }
 
 const errors = [];
-const ids = Object.keys(metadata);
-for (let id of ids) {
+
+// reference/index is generated, so make sure this goes through even if it's not there
+const knownIds = new Set([...Object.keys(metadata), 'reference/index']);
+
+for (const id in metadata) {
   const { next, previous } = metadata[id];
 
-  if (next && !ids.includes(next)) {
+  if (next && !knownIds.has(next)) {
     errors.push(`Next ${next} does not exist in ${id}.`);
   }
 
-  if (previous && !ids.includes(previous)) {
+  if (previous && !knownIds.has(previous)) {
     errors.push(`Previous ${previous} does not exist in ${id}.`);
   }
 }

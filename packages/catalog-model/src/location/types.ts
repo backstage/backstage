@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type LocationSpec = {
   type: string;
   target: string;
@@ -23,6 +24,7 @@ export type LocationSpec = {
   presence?: 'optional' | 'required';
 };
 
+/** @public */
 export type Location = {
   id: string;
 } & LocationSpec;

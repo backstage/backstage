@@ -16,7 +16,7 @@
 
 import { Button, Grid } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { ChangeEvent, ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAsync, useLocalStorage } from 'react-use';
 import { lighthouseApiRef } from '../../api';
@@ -78,7 +78,7 @@ const AuditList = () => {
           <Pagination
             page={page}
             count={pageCount}
-            onChange={(_event: Event, newPage: number) => {
+            onChange={(_event: ChangeEvent<unknown>, newPage: number) => {
               navigate(`?page=${newPage}`);
             }}
           />

@@ -24,6 +24,10 @@ import {
   LdapVendor,
 } from './vendors';
 
+export interface SearchCallback {
+  (entry: SearchEntry): void;
+}
+
 /**
  * Basic wrapper for the ldapjs library.
  *
@@ -114,6 +118,53 @@ export class LdapClient {
 
       return await search.finally(() => {
         clearInterval(logInterval);
+      });
+    } catch (e) {
+      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+    }
+  }
+
+  /**
+   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
+   *
+   * @param dn The fully qualified base DN to search within
+   * @param options The search options
+   * @param f The callback to call on each search entry
+   */
+  async searchStreaming(
+    dn: string,
+    options: SearchOptions,
+    f: SearchCallback,
+  ): Promise<void> {
+    try {
+      return await new Promise<void>((resolve, reject) => {
+        this.client.search(dn, options, (err, res) => {
+          if (err) {
+            reject(new Error(errorString(err)));
+          }
+
+          res.on('searchReference', () => {
+            reject(new Error('Unable to handle referral'));
+          });
+
+          res.on('searchEntry', entry => {
+            f(entry);
+          });
+
+          res.on('error', e => {
+            reject(new Error(errorString(e)));
+          });
+
+          res.on('end', r => {
+            if (!r) {
+              throw new Error('Null response');
+            } else if (r.status !== 0) {
+              throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+            } else {
+              resolve();
+            }
+          });
+        });
       });
     } catch (e) {
       throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);

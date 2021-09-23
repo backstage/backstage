@@ -55,11 +55,8 @@ type HeaderTabsProps = {
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };
-export const HeaderTabs = ({
-  tabs,
-  onChange,
-  selectedIndex,
-}: HeaderTabsProps) => {
+export function HeaderTabs(props: HeaderTabsProps) {
+  const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
   const styles = useStyles();
 
@@ -101,4 +98,4 @@ export const HeaderTabs = ({
       </Tabs>
     </div>
   );
-};
+}

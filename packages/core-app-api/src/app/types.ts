@@ -72,6 +72,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider: ComponentType<{}>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.

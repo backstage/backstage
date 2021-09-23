@@ -46,13 +46,14 @@ function findAllAncestors(_module: NodeModule): NodeModule[] {
  *
  * Useful for cleaning intervals, timers, requests etc
  *
+ * @public
  * @example
  * ```ts
  * const intervalId = setInterval(doStuff, 1000);
  * useHotCleanup(module, () => clearInterval(intervalId));
  * ```
- * @param _module Reference to the current module where you invoke the fn
- * @param cancelEffect Fn that cleans up the ongoing effects
+ * @param _module - Reference to the current module where you invoke the fn
+ * @param cancelEffect - Fn that cleans up the ongoing effects
  */
 export function useHotCleanup(_module: NodeModule, cancelEffect: () => void) {
   if (_module.hot) {
@@ -78,16 +79,17 @@ const CURRENT_HOT_MEMOIZE_INDEX_KEY = 'backstage.io/hmr-memoize-key';
  * Memoizes a generated value across hot-module reloads. This is useful for
  * stateful parts of the backend, e.g. to retain a database.
  *
+ * @public
  * @example
  * ```ts
  * const db = useHotMemoize(module, () => createDB(dbParams));
  * ```
  *
- * @warning Don't use inside conditionals or loops,
+ * **NOTE:** Do not use inside conditionals or loops,
  * same rules as for hooks apply (https://reactjs.org/docs/hooks-rules.html)
  *
- * @param _module Reference to the current module where you invoke the fn
- * @param valueFactory Fn that returns the value you want to memoize
+ * @param _module - Reference to the current module where you invoke the fn
+ * @param valueFactory - Fn that returns the value you want to memoize
  */
 export function useHotMemoize<T>(
   _module: NodeModule,

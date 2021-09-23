@@ -191,7 +191,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
 
 export type TableFilter = {
   column: string;
-  type: 'select' | 'multiple-select' | 'checkbox-tree';
+  type: 'select' | 'multiple-select' | /** @deprecated */ 'checkbox-tree';
 };
 
 export type TableState = {
@@ -263,20 +263,20 @@ export function TableToolbar(toolbarProps: {
   );
 }
 
-export function Table<T extends object = {}>({
-  columns,
-  options,
-  title,
-  subtitle,
-  filters,
-  initialState,
-  emptyContent,
-  onStateChange,
-  ...props
-}: TableProps<T>) {
+export function Table<T extends object = {}>(props: TableProps<T>) {
+  const {
+    data,
+    columns,
+    options,
+    title,
+    subtitle,
+    filters,
+    initialState,
+    emptyContent,
+    onStateChange,
+    ...restProps
+  } = props;
   const tableClasses = useTableStyles();
-
-  const { data, ...propsWithoutData } = props;
 
   const theme = useTheme<BackstageTheme>();
 
@@ -364,6 +364,14 @@ export function Table<T extends object = {}>({
     }
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
   }, [data, selectedFilters, getFieldByTitle]);
+
+  // Check for deprecated checkbox-tree filter
+  useEffect(() => {
+    if (filters?.some(filter => filter.type === 'checkbox-tree')) {
+      // eslint-disable-next-line no-console
+      console.warn('"checkbox-tree" filter type is deprecated');
+    }
+  }, [filters]);
 
   const constructFilters = (
     filterConfig: TableFilter[],
@@ -495,7 +503,7 @@ export function Table<T extends object = {}>({
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
-        {...propsWithoutData}
+        {...restProps}
       />
     </div>
   );

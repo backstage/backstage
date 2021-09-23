@@ -41,7 +41,8 @@ export type BottomLinkProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
+export function BottomLink(props: BottomLinkProps) {
+  const { link, title, onClick } = props;
   const classes = useStyles();
 
   return (
@@ -49,14 +50,14 @@ export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
         <Box display="flex" alignItems="center" className={classes.root}>
-          <Typography>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-              {title}
-            </Box>
-          </Typography>
+          <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+            <Typography>
+              <strong>{title}</strong>
+            </Typography>
+          </Box>
           <ArrowIcon className={classes.arrow} />
         </Box>
       </Link>
     </div>
   );
-};
+}

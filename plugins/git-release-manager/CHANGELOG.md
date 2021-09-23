@@ -1,5 +1,24 @@
 # @backstage/plugin-git-release-manager
 
+## 0.2.7
+
+### Patch Changes
+
+- 023350f910: Remove 'refresh' icon from success dialog's OK-CTA. User feedback deemed it confusing.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+
+## 0.2.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/core-plugin-api@0.1.8
+
 ## 0.2.5
 
 ### Patch Changes

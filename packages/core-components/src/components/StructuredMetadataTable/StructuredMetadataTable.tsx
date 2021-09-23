@@ -153,11 +153,8 @@ type Props = {
   options?: any;
 };
 
-export const StructuredMetadataTable = ({
-  metadata,
-  dense = true,
-  options,
-}: Props) => {
+export function StructuredMetadataTable(props: Props) {
+  const { metadata, dense = true, options } = props;
   const metadataItems = mapToItems(metadata, options || {});
   return <MetadataTable dense={dense}>{metadataItems}</MetadataTable>;
-};
+}

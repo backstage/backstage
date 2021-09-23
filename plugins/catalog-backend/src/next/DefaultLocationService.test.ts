@@ -36,6 +36,7 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('createLocation', () => {
     it('should support dry run', async () => {
+      store.listLocations.mockResolvedValueOnce([]);
       orchestrator.process.mockResolvedValueOnce({
         ok: true,
         state: new Map(),
@@ -114,6 +115,63 @@ describe('DefaultLocationServiceTest', () => {
       });
       expect(orchestrator.process).toBeCalledTimes(2);
       expect(store.createLocation).not.toBeCalled();
+    });
+
+    it('should check for location existence when running in dry run', async () => {
+      const locationSpec = {
+        type: 'url',
+        target: 'https://backstage.io/catalog-info.yaml',
+      };
+      orchestrator.process.mockResolvedValueOnce({
+        ok: true,
+        state: new Map(),
+        completedEntity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'bar',
+          },
+        },
+        deferredEntities: [],
+        relations: [],
+        errors: [],
+      });
+
+      store.listLocations.mockResolvedValueOnce([
+        { id: '137', ...locationSpec },
+      ]);
+      const result = await locationService.createLocation(
+        { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
+        true,
+      );
+
+      expect(result.exists).toBe(true);
+    });
+
+    it('should return exists false when the location does not exist beforehand', async () => {
+      orchestrator.process.mockResolvedValueOnce({
+        ok: true,
+        state: new Map(),
+        completedEntity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'bar',
+          },
+        },
+        deferredEntities: [],
+        relations: [],
+        errors: [],
+      });
+
+      store.listLocations.mockResolvedValueOnce([
+        { id: '987', type: 'url', target: 'https://example.com' },
+      ]);
+      const result = await locationService.createLocation(
+        { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
+        true,
+      );
+      expect(result.exists).toBe(false);
     });
 
     it('should create location', async () => {

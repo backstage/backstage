@@ -27,6 +27,7 @@ import {
   useInRouterContext,
 } from 'react-router-dom';
 import { PrivateAppImpl } from './App';
+import { AppThemeProvider } from './AppThemeProvider';
 import { defaultApis } from './defaultApis';
 import { defaultAppIcons } from './icons';
 import {
@@ -149,6 +150,7 @@ export function createApp(options?: AppOptions) {
     Progress: Progress,
     Router: BrowserRouter,
     ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
+    ThemeProvider: AppThemeProvider,
     ...options?.components,
   };
   const themes = options?.themes ?? [

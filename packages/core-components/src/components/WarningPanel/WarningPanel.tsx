@@ -137,13 +137,14 @@ const capitalize = (s: string) => {
  * @param {Object} [children] Objects to provide context, such as a stack trace or detailed error reporting.
  * Will be available inside an unfolded accordion.
  */
-export const WarningPanel = ({
-  severity = 'warning',
-  title,
-  message,
-  children,
-  defaultExpanded,
-}: WarningProps) => {
+export function WarningPanel(props: WarningProps) {
+  const {
+    severity = 'warning',
+    title,
+    message,
+    children,
+    defaultExpanded,
+  } = props;
   const classes = useStyles({ severity });
 
   // If no severity or title provided, the heading will read simply "Warning"
@@ -184,4 +185,4 @@ export const WarningPanel = ({
       )}
     </Accordion>
   );
-};
+}

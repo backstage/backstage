@@ -81,6 +81,4 @@ export interface SearchResultSet {
   // (undocumented)
   results: SearchResult[];
 }
-
-// (No @packageDocumentation comment for this package)
 ```

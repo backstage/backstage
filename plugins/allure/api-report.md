@@ -22,6 +22,4 @@ export const allurePlugin: BackstagePlugin<
 //
 // @public (undocumented)
 export const EntityAllureReportContent: () => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -537,6 +537,4 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
 // src/github/config.d.ts:41:5 - (ae-forgotten-export) The symbol "GithubAppConfig" needs to be exported by the entry point index.d.ts
 // src/gitlab/config.d.ts:27:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // src/gitlab/config.d.ts:27:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-
-// (No @packageDocumentation comment for this package)
 ```

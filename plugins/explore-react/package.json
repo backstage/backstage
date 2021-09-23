@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-explore-react",
+  "description": "A frontend library for Backstage plugins that want to interact with the explore plugin",
   "version": "0.0.6",
   "main": "src/index.ts",
   "types": "src/index.ts",

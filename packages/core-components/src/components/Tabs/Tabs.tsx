@@ -58,7 +58,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Tabs = ({ tabs }: TabsProps) => {
+export function Tabs(props: TabsProps) {
+  const { tabs } = props;
   const classes = useStyles();
   const [value, setValue] = useState([0, 0]); // [selectedChunkedNavIndex, selectedIndex]
   const [navIndex, setNavIndex] = useState(0);
@@ -160,4 +161,4 @@ export const Tabs = ({ tabs }: TabsProps) => {
       )}
     </div>
   );
-};
+}

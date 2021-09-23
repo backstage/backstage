@@ -54,7 +54,7 @@ export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
   return (
     <Table
       title="Application Performance Monitoring"
-      options={{ search: false, paging: false }}
+      options={{ search: true, paging: true }}
       columns={columns}
       data={data}
     />

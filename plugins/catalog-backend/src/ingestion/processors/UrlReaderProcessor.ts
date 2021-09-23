@@ -26,16 +26,6 @@ import {
   CatalogProcessorParser,
 } from './types';
 
-// TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
-// can be removed in a bit
-const deprecatedTypes = [
-  'github',
-  'github/api',
-  'bitbucket/api',
-  'gitlab/api',
-  'azure/api',
-];
-
 type Options = {
   reader: UrlReader;
   logger: Logger;
@@ -50,13 +40,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean> {
-    if (deprecatedTypes.includes(location.type)) {
-      // TODO(Rugvip): Remove this warning a month or two into 2021, and remove support for the deprecated types.
-      this.options.logger.warn(
-        `Location '${location.target}' uses deprecated location type '${location.type}', use 'url' instead. ` +
-          'Use "scripts/migrate-location-types.js" in the Backstage repo to migrate existing locations.',
-      );
-    } else if (location.type !== 'url') {
+    if (location.type !== 'url') {
       return false;
     }
 

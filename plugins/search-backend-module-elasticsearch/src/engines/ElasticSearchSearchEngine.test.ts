@@ -24,6 +24,7 @@ import {
   ElasticSearchSearchEngine,
   encodePageCursor,
 } from './ElasticSearchSearchEngine';
+import { ConfigReader } from '@backstage/config';
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
@@ -556,6 +557,55 @@ describe('ElasticSearchSearchEngine', () => {
       expect(indexSpy).toHaveBeenCalledWith('test-index', [
         { title: 'testTerm', text: 'testText', location: 'test/location' },
       ]);
+    });
+  });
+
+  describe('ElasticSearchSearchEngine.fromConfig', () => {
+    it('accesses the clientOptions config', async () => {
+      const esOptions = {
+        clientOptions: {
+          ssl: {
+            rejectUnauthorized: true,
+          },
+        },
+        node: 'http://test-node',
+        auth: {
+          apiKey: 'key',
+        },
+      };
+
+      const config = new ConfigReader({});
+      const esConfig = new ConfigReader(esOptions);
+      jest.spyOn(config, 'getConfig').mockImplementation(() => esConfig);
+      const getOptionalConfig = jest.spyOn(esConfig, 'getOptionalConfig');
+
+      await ElasticSearchSearchEngine.fromConfig({
+        logger: getVoidLogger(),
+        config,
+      });
+
+      expect(getOptionalConfig.mock.calls[0][0]).toEqual('clientOptions');
+    });
+
+    it('does not require the clientOptions config', async () => {
+      const config = new ConfigReader({
+        search: {
+          elasticsearch: {
+            node: 'http://test-node',
+            auth: {
+              apiKey: 'test-key',
+            },
+          },
+        },
+      });
+
+      expect(
+        async () =>
+          await ElasticSearchSearchEngine.fromConfig({
+            logger: getVoidLogger(),
+            config,
+          }),
+      ).not.toThrowError();
     });
   });
 });

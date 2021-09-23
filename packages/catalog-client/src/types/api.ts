@@ -16,8 +16,10 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
+/** @public */
 export const CATALOG_FILTER_EXISTS = Symbol('CATALOG_FILTER_EXISTS');
 
+/** @public */
 export type CatalogEntitiesRequest = {
   filter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -26,14 +28,17 @@ export type CatalogEntitiesRequest = {
   fields?: string[] | undefined;
 };
 
+/** @public */
 export type CatalogListResponse<T> = {
   items: T[];
 };
 
+/** @public */
 export type CatalogRequestOptions = {
   token?: string;
 };
 
+/** @public */
 export interface CatalogApi {
   // Entities
   getEntities(
@@ -46,6 +51,10 @@ export interface CatalogApi {
   ): Promise<Entity | undefined>;
   removeEntityByUid(
     uid: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
+  refreshEntity(
+    entityRef: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 
@@ -72,6 +81,7 @@ export interface CatalogApi {
   ): Promise<void>;
 }
 
+/** @public */
 export type AddLocationRequest = {
   type?: string;
   target: string;
@@ -79,7 +89,10 @@ export type AddLocationRequest = {
   presence?: 'optional' | 'required';
 };
 
+/** @public */
 export type AddLocationResponse = {
   location: Location;
   entities: Entity[];
+  // Exists is only set in DryRun mode.
+  exists?: boolean;
 };

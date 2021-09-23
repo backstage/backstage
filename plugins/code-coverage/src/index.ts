@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that helps you keep track of your code coverage
+ *
+ * @packageDocumentation
+ */
+
 export { codeCoveragePlugin, EntityCodeCoverageContent } from './plugin';
 export {
   Router,

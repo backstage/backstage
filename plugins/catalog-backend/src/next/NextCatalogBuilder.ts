@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -29,11 +25,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
+import { Router } from 'express';
 import lodash from 'lodash';
-import { Logger } from 'winston';
 import {
   DatabaseLocationsCatalog,
   EntitiesCatalog,
@@ -80,13 +75,10 @@ import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from './refresh';
-
-export type CatalogEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-};
+import { CatalogEnvironment } from '../service/CatalogBuilder';
+import { createNextRouter } from './NextRouter';
+import { DefaultRefreshService } from './DefaultRefreshService';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -289,6 +281,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    router: Router;
   }> {
     const { config, database, logger } = this.env;
 
@@ -312,9 +305,11 @@ export class NextCatalogBuilder {
       refreshInterval: this.refreshInterval,
     });
     const integrations = ScmIntegrations.fromConfig(config);
+    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
       integrations,
+      rulesEnforcer,
       logger,
       parser,
       policy,
@@ -344,6 +339,17 @@ export class NextCatalogBuilder {
       locationStore,
       orchestrator,
     );
+    const refreshService = new DefaultRefreshService({
+      database: processingDatabase,
+    });
+    const router = await createNextRouter({
+      entitiesCatalog,
+      locationAnalyzer,
+      locationService,
+      refreshService,
+      logger,
+      config,
+    });
 
     return {
       entitiesCatalog,
@@ -351,6 +357,7 @@ export class NextCatalogBuilder {
       locationAnalyzer,
       processingEngine,
       locationService,
+      router,
     };
   }
 
@@ -385,7 +392,11 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new PlaceholderProcessor({
+        resolvers: placeholderResolvers,
+        reader,
+        integrations,
+      }),
       new BuiltinKindsEntityProcessor(),
     ];
 

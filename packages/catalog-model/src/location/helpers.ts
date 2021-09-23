@@ -23,8 +23,9 @@ import { LOCATION_ANNOTATION, SOURCE_LOCATION_ANNOTATION } from './annotation';
  * Note that the return type is not `LocationSpec`, because we do not want to
  * conflate the string form with the additional properties of that type.
  *
- * @param ref A string-form location reference, e.g. 'url:https://host'
- * @returns A location reference, e.g. { type: 'url', target: 'https://host' }
+ * @public
+ * @param ref - A string-form location reference, e.g. `'url:https://host'`
+ * @returns A location reference, e.g. `{ type: 'url', target: 'https://host' }`
  */
 export function parseLocationReference(ref: string): {
   type: string;
@@ -67,8 +68,9 @@ export function parseLocationReference(ref: string): {
  * Note that the input type is not `LocationSpec`, because we do not want to
  * conflate the string form with the additional properties of that type.
  *
- * @param ref A location reference, e.g. { type: 'url', target: 'https://host' }
- * @returns A string-form location reference, e.g. 'url:https://host'
+ * @public
+ * @param ref - A location reference, e.g. `{ type: 'url', target: 'https://host' }`
+ * @returns A string-form location reference, e.g. `'url:https://host'`
  */
 export function stringifyLocationReference(ref: {
   type: string;
@@ -89,8 +91,10 @@ export function stringifyLocationReference(ref: {
  * Returns the source code location of the Entity, to the extent that one exists.
  *
  * If the returned location type is of type 'url', the target should be readable at least
- * using the UrlReader from @backstage/backend-common. If it is not of type 'url', the caller
+ * using the UrlReader from `@backstage/backend-common`. If it is not of type 'url', the caller
  * needs to have explicit handling of each location type or signal that it is not supported.
+ *
+ * @public
  */
 export function getEntitySourceLocation(entity: Entity): {
   type: string;

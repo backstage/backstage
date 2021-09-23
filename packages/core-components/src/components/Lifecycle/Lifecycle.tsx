@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Lifecycle = (props: Props) => {
+export function Lifecycle(props: Props) {
   const classes = useStyles(props);
   const { shorthand, alpha } = props;
   return shorthand ? (
@@ -53,4 +53,4 @@ export const Lifecycle = (props: Props) => {
       {alpha ? 'Alpha' : 'Beta'}
     </span>
   );
-};
+}

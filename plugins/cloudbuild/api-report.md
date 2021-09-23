@@ -361,6 +361,4 @@ export interface Volume {
   // (undocumented)
   path: string;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

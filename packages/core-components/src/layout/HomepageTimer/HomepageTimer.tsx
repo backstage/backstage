@@ -67,7 +67,7 @@ function getTimes(configApi: ConfigApi) {
   return clocks;
 }
 
-export const HomepageTimer = () => {
+export function HomepageTimer(_props: {}) {
   const configApi = useApi(configApiRef);
 
   const defaultTimes: TimeObj[] = [];
@@ -99,4 +99,4 @@ export const HomepageTimer = () => {
     );
   }
   return null;
-};
+}

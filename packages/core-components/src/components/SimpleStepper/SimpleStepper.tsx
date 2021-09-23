@@ -47,12 +47,8 @@ export interface StepperProps {
   activeStep?: number;
 }
 
-export const SimpleStepper = ({
-  children,
-  elevated,
-  onStepChange,
-  activeStep = 0,
-}: PropsWithChildren<StepperProps>) => {
+export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
+  const { children, elevated, onStepChange, activeStep = 0 } = props;
   const [stepIndex, setStepIndex] = useState<number>(activeStep);
   const [stepHistory, setStepHistory] = useState<number[]>([0]);
 
@@ -95,4 +91,4 @@ export const SimpleStepper = ({
       {stepIndex >= Children.count(children) - 1 && endStep}
     </>
   );
-};
+}

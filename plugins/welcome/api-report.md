@@ -18,6 +18,4 @@ export const WelcomePage: () => JSX.Element;
 const welcomePlugin: BackstagePlugin<{}, {}>;
 export { welcomePlugin as plugin };
 export { welcomePlugin };
-
-// (No @packageDocumentation comment for this package)
 ```

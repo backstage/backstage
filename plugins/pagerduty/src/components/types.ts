@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+export type ChangeEvent = {
+  id: string;
+  integration: [
+    {
+      service: Service;
+    },
+  ];
+  source: string;
+  html_url: string;
+  links: [
+    {
+      href: string;
+      text: string;
+    },
+  ];
+  summary: string;
+  timestamp: string;
+};
+
 export type Incident = {
   id: string;
   title: string;
@@ -36,6 +55,7 @@ export type Service = {
   escalation_policy: {
     id: string;
     user: User;
+    html_url: string;
   };
 };
 

@@ -40,8 +40,9 @@ const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
 /**
  * Creates a knex database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @public
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createDatabaseClient(
   dbConfig: Config,
@@ -57,12 +58,16 @@ export function createDatabaseClient(
 
 /**
  * Alias for createDatabaseClient
+ *
+ * @public
  * @deprecated Use createDatabaseClient instead
  */
 export const createDatabase = createDatabaseClient;
 
 /**
  * Ensures that the given databases all exist, creating them if they do not.
+ *
+ * @public
  */
 export async function ensureDatabaseExists(
   dbConfig: Config,

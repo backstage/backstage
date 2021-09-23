@@ -17,7 +17,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { createVersionedContextForTesting } from '../lib/versionedValues';
+import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
 

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps represent API entities in the frontend
+ *
+ * @packageDocumentation
+ */
+
 export * from './components';
 export { apiDocsConfigRef } from './config';
 export {

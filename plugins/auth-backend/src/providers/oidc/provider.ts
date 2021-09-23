@@ -157,6 +157,11 @@ export class OidcAuthProvider implements OAuthHandlers {
         userinfo: UserinfoResponse,
         done: PassportDoneCallback<AuthResult, PrivateInfo>,
       ) => {
+        if (typeof done !== 'function') {
+          throw new Error(
+            'OIDC IdP must provide a userinfo_endpoint in the metadata response',
+          );
+        }
         done(
           undefined,
           { tokenset, userinfo },

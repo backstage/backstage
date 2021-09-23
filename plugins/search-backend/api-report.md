@@ -15,6 +15,4 @@ export function createRouter({
   engine,
   logger,
 }: RouterOptions): Promise<express.Router>;
-
-// (No @packageDocumentation comment for this package)
 ```

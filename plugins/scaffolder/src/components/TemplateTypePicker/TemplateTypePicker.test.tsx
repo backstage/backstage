@@ -94,6 +94,7 @@ describe('<TemplateTypePicker/>', () => {
       </ApiProvider>,
     );
     expect(rendered.getByText('Categories')).toBeInTheDocument();
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
 
     entities.forEach(entity => {
       expect(
@@ -116,22 +117,27 @@ describe('<TemplateTypePicker/>', () => {
       </ApiProvider>,
     );
 
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Service'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Website'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).toBeChecked();
     expect(rendered.getByLabelText('Website')).toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Service'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Website'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
   });

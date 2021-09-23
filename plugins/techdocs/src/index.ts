@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that renders technical documentation for your components
+ *
+ * @packageDocumentation
+ */
+
 export * from './api';
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { TechDocsApi, TechDocsStorageApi } from './api';

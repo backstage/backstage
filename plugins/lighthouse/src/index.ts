@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Lighthouse
+ *
+ * @packageDocumentation
+ */
+
 export {
   lighthousePlugin,
   lighthousePlugin as plugin,

@@ -43,6 +43,4 @@ export interface RouterOptions {
   // (undocumented)
   urlReader: UrlReader;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

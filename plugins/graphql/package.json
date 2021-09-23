@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-graphql-backend",
+  "description": "An experimental Backstage backend plugin for GraphQL",
   "version": "0.1.9",
   "main": "src/index.ts",
   "types": "src/index.ts",

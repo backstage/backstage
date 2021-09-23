@@ -16,11 +16,15 @@
 
 /**
  * The namespace that entities without an explicit namespace fall into.
+ *
+ * @public
  */
 export const ENTITY_DEFAULT_NAMESPACE = 'default';
 
 /**
  * The keys of EntityMeta that are auto-generated.
+ *
+ * @public
  */
 export const ENTITY_META_GENERATED_FIELDS = [
   'uid',
@@ -30,6 +34,9 @@ export const ENTITY_META_GENERATED_FIELDS = [
 
 /**
  * Annotations for linking to entity from catalog pages.
+ *
+ * @public
  */
 export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
+/** @public */
 export const EDIT_URL_ANNOTATION = 'backstage.io/edit-url';

@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * An old Backstage plugin that provides a welcome page
+ *
+ * @packageDocumentation
+ */
+
 export { welcomePlugin, welcomePlugin as plugin, WelcomePage } from './plugin';

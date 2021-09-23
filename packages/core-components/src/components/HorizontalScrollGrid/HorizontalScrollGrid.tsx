@@ -181,7 +181,7 @@ function useSmoothScroll(
   return setScrollTarget;
 }
 
-export const HorizontalScrollGrid = (props: PropsWithChildren<Props>) => {
+export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
   const {
     scrollStep = 100,
     scrollSpeed = 50,
@@ -244,4 +244,4 @@ export const HorizontalScrollGrid = (props: PropsWithChildren<Props>) => {
       )}
     </div>
   );
-};
+}

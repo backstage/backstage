@@ -17,10 +17,13 @@
 import { JsonValue } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 
+/** @public */
 export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
 
 /**
  * A complete entity name, with the full kind-namespace-name triplet.
+ *
+ * @public
  */
 export type EntityName = {
   kind: string;
@@ -36,6 +39,8 @@ export type EntityName = {
  *
  * Left-out parts of the reference need to be handled by the application,
  * either by rejecting the reference or by falling back to default values.
+ *
+ * @public
  */
 export type EntityRef =
   | string

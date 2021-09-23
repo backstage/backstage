@@ -16,6 +16,4 @@ export function createFetchRailsAction(options: {
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
 }): TemplateAction<any>;
-
-// (No @packageDocumentation comment for this package)
 ```

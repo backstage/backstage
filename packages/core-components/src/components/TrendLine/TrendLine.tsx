@@ -32,10 +32,10 @@ function color(data: number[], theme: BackstageTheme): string | undefined {
   return theme.palette.status.error;
 }
 
-export const TrendLine = (
+export function TrendLine(
   props: SparklinesProps &
     Pick<SparklinesLineProps, 'color'> & { title?: string },
-) => {
+) {
   const theme = useTheme<BackstageTheme>();
 
   if (!props.data) return null;
@@ -45,4 +45,4 @@ export const TrendLine = (
       <SparklinesLine color={props.color ?? color(props.data, theme)} />
     </Sparklines>
   );
-};
+}

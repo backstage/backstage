@@ -64,6 +64,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     marginLeft: '20rem',
     maxWidth: 'calc(100% - 20rem * 2 - 3rem)',
     marginTop: theme.spacing(1),
+    '@media screen and (max-width: 76.1875em)': {
+      marginLeft: '10rem',
+      maxWidth: 'calc(100% - 10rem)',
+    },
   },
 }));
 

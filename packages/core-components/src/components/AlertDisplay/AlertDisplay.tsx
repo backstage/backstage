@@ -22,7 +22,7 @@ import { AlertMessage, useApi, alertApiRef } from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
 
 // TODO: improve on this and promote to a shared component for use by all apps.
-export const AlertDisplay = () => {
+export function AlertDisplay(_props: {}) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
@@ -73,4 +73,4 @@ export const AlertDisplay = () => {
       </Alert>
     </Snackbar>
   );
-};
+}

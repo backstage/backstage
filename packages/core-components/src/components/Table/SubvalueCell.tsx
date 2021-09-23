@@ -33,7 +33,8 @@ type SubvalueCellProps = {
   subvalue: React.ReactNode;
 };
 
-export const SubvalueCell = ({ value, subvalue }: SubvalueCellProps) => {
+export function SubvalueCell(props: SubvalueCellProps) {
+  const { value, subvalue } = props;
   const classes = useSubvalueCellStyles();
 
   return (
@@ -42,4 +43,4 @@ export const SubvalueCell = ({ value, subvalue }: SubvalueCellProps) => {
       <div className={classes.subvalue}>{subvalue}</div>
     </>
   );
-};
+}

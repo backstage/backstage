@@ -109,4 +109,13 @@ export class CatalogClientWrapper implements CatalogApi {
       token: options?.token ?? (await this.identityApi.getIdToken()),
     });
   }
+
+  async refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    return await this.client.refreshEntity(entityRef, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
 }

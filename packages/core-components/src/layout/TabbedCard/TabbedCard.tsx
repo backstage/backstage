@@ -62,15 +62,16 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
-const TabbedCard = ({
-  slackChannel,
-  errorBoundaryProps,
-  children,
-  title,
-  deepLink,
-  value,
-  onChange,
-}: PropsWithChildren<Props>) => {
+export function TabbedCard(props: PropsWithChildren<Props>) {
+  const {
+    slackChannel,
+    errorBoundaryProps,
+    children,
+    title,
+    deepLink,
+    value,
+    onChange,
+  } = props;
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
@@ -111,7 +112,7 @@ const TabbedCard = ({
       </ErrorBoundary>
     </Card>
   );
-};
+}
 
 const useCardTabStyles = makeStyles(theme => ({
   root: {
@@ -135,10 +136,9 @@ type CardTabProps = TabProps & {
   children: ReactNode;
 };
 
-const CardTab = ({ children, ...props }: PropsWithChildren<CardTabProps>) => {
+export function CardTab(props: PropsWithChildren<CardTabProps>) {
+  const { children, ...restProps } = props;
   const classes = useCardTabStyles();
 
-  return <Tab disableRipple classes={classes} {...props} />;
-};
-
-export { TabbedCard, CardTab };
+  return <Tab disableRipple classes={classes} {...restProps} />;
+}

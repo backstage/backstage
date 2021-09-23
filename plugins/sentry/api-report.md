@@ -124,6 +124,4 @@ export { sentryPlugin };
 // src/api/sentry-issue.d.ts:21:9 - (ae-forgotten-export) The symbol "EventPoint" needs to be exported by the entry point index.d.ts
 // src/api/sentry-issue.d.ts:31:5 - (ae-forgotten-export) The symbol "SentryIssueMetadata" needs to be exported by the entry point index.d.ts
 // src/api/sentry-issue.d.ts:44:5 - (ae-forgotten-export) The symbol "SentryProject" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

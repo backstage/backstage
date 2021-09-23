@@ -75,7 +75,7 @@ export const EntityOwnerPicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Owner</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         multiple
         aria-label="Owner"
         options={availableOwners}

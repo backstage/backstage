@@ -306,7 +306,15 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-techdocs-icon-1.gif`}
               />
 
-              <Block.Subtitle>Backstage TechDocs</Block.Subtitle>
+              <Block.Subtitle>
+                Backstage TechDocs{' '}
+                <a
+                  title="Submit feedback for this feature. Click to learn more about this release."
+                  href="https://backstage.io/blog/2021/09/16/the-techdocs-beta-has-landed"
+                >
+                  (beta)
+                </a>
+              </Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
             <Breakpoint

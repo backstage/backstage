@@ -151,6 +151,4 @@ export { techRadarPlugin };
 // Warnings were encountered during analysis:
 //
 // src/components/RadarPage.d.ts:9:5 - (ae-forgotten-export) The symbol "TechRadarPageProps" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

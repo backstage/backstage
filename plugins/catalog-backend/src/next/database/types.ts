@@ -79,20 +79,39 @@ export type ReplaceUnprocessedEntitiesOptions =
       type: 'delta';
     };
 
+export type RefreshOptions = {
+  entityRef: string;
+};
+
+export type ListAncestorsOptions = {
+  entityRef: string;
+};
+
+export type ListAncestorsResult = {
+  entityRefs: string[];
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
+  /**
+   * Add unprocessed entities to the front of the processing queue using a mutation.
+   */
   replaceUnprocessedEntities(
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void>;
+
   getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult>;
 
   /**
-   * Updates a processed entity
+   * Updates a processed entity.
+   *
+   * Any deferred entities are added at the front of the processing queue for
+   * immediate processing, meaning this should only be called when the entity has changes.
    */
   updateProcessedEntity(
     txOpaque: Transaction,
@@ -106,4 +125,19 @@ export interface ProcessingDatabase {
     txOpaque: Transaction,
     options: UpdateProcessedEntityErrorsOptions,
   ): Promise<void>;
+
+  /**
+   * Schedules a refresh of a given entityRef.
+   */
+  refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
+
+  /**
+   * Lists all ancestors of a given entityRef.
+   *
+   * The returned list is ordered from the most immediate ancestor to the most distant one.
+   */
+  listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult>;
 }

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you build a home page
+ *
+ * @packageDocumentation
+ */
+
 export {
   homePlugin,
   HomepageCompositionRoot,

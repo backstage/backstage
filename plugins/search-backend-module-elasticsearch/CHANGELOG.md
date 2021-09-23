@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.4
+
+### Patch Changes
+
+- f0c2c81676: Added rejectUnauthorized config option
+
 ## 0.0.3
 
 ### Patch Changes

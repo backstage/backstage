@@ -27,6 +27,7 @@ import {
 } from './lib';
 import { EnvFunc } from './lib/transform/types';
 
+/** @public */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
   configRoot: string;
@@ -60,6 +61,11 @@ export type LoadConfigOptions = {
   };
 };
 
+/**
+ * Load configuration data.
+ *
+ * @public
+ */
 export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {

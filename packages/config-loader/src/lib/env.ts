@@ -38,6 +38,8 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
  * For example, to set the config app.title to "My Title", use the following:
  *
  * APP_CONFIG_app_title='"My Title"'
+ *
+ * @public
  */
 export function readEnvConfig(env: {
   [name: string]: string | undefined;

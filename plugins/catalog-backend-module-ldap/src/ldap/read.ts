@@ -107,13 +107,11 @@ export async function readLdapUsers(
 
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  const entries = await client.search(dn, options);
-
-  for (const user of entries) {
+  await client.searchStreaming(dn, options, async user => {
     const entity = await transformer(vendor, config, user);
 
     if (!entity) {
-      continue;
+      return;
     }
 
     mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
@@ -121,7 +119,7 @@ export async function readLdapUsers(
     });
 
     entities.push(entity);
-  }
+  });
 
   return { users: entities, userMemberOf };
 }
@@ -210,24 +208,26 @@ export async function readLdapGroups(
 
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  const entries = await client.search(dn, options);
-
-  for (const group of entries) {
-    const entity = await transformer(vendor, config, group);
-
-    if (!entity) {
-      continue;
+  await client.searchStreaming(dn, options, async entry => {
+    if (!entry) {
+      return;
     }
 
-    mapReferencesAttr(group, vendor, map.memberOf, (myDn, vs) => {
+    const entity = await transformer(vendor, config, entry);
+
+    if (!entity) {
+      return;
+    }
+
+    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(groupMemberOf, myDn, vs);
     });
-    mapReferencesAttr(group, vendor, map.members, (myDn, vs) => {
+    mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
       ensureItems(groupMember, myDn, vs);
     });
 
     groups.push(entity);
-  }
+  });
 
   return {
     groups,

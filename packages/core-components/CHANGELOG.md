@@ -1,5 +1,53 @@
 # @backstage/core-components
 
+## 0.5.0
+
+### Minor Changes
+
+- 537bd04005: Fixed a popup-blocking bug affecting iOS Safari in SignInPage.tsx by ensuring that the popup occurs in the same tick as the tap/click
+
+### Patch Changes
+
+- c0eb1fb9df: Allow to configure zooming for `<DependencyGraph>`. `zoom` can either be
+  `enabled`, `disabled`, or `enable-on-click`. The latter requires the user to
+  click into the diagram to enable zooming.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.4.2
+
+### Patch Changes
+
+- 60c03f69a7: Change the styling of the `<DependencyGraph>` to have more contrast in light
+  mode. Nodes now have a design similar to material UI buttons.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- d9f2ff12bb: Deprecated CheckboxTree component. Deprecated the filter type `'checkbox-tree'` from the `TableFilter` types.
+- 61e9fcf406: Improve UX for Login pop-up
+- 005510dabe: remove hard coded min height in page header
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.1
+
+### Patch Changes
+
+- 06e275705: Fix warning produced by BottomLink component
+
+  During development, we noticed warnings such as:
+
+  ```
+  react_devtools_backend.js:2842 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  ```
+
+  The BottomLink component renders a Box component within a Typography component which leads to a div tag within a p tag.
+  This change inverts that ordering without changing the visual appearance.
+
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.4.0
 
 ### Minor Changes

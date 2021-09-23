@@ -22,7 +22,8 @@ type CacheClientArgs = {
   client: Keyv;
 };
 
-type CacheSetOptions = {
+/** @public */
+export type CacheClientSetOptions = {
   /**
    * Optional TTL in milliseconds. Defaults to the TTL provided when the client
    * was set up (or no TTL if none are provided).
@@ -33,6 +34,8 @@ type CacheSetOptions = {
 /**
  * A pre-configured, storage agnostic cache client suitable for use by
  * Backstage plugins.
+ *
+ * @public
  */
 export interface CacheClient {
   /**
@@ -46,7 +49,11 @@ export interface CacheClient {
    * optional TTL may also be provided, otherwise it defaults to the TTL that
    * was provided when the client was instantiated.
    */
-  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<void>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheClientSetOptions,
+  ): Promise<void>;
 
   /**
    * Removes the given key from the cache store.
@@ -73,7 +80,7 @@ export class DefaultCacheClient implements CacheClient {
   async set(
     key: string,
     value: JsonValue,
-    opts: CacheSetOptions = {},
+    opts: CacheClientSetOptions = {},
   ): Promise<void> {
     const k = this.getNormalizedKey(key);
     await this.client.set(k, value, opts.ttl);

@@ -81,14 +81,14 @@ describe('AzureUrlReader', () => {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
         }),
       },
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
         }),
       },
       {
@@ -125,14 +125,12 @@ describe('AzureUrlReader', () => {
       {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
-        error:
-          'Incorrect URL: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
+        error: 'Azure URL must point to a git repository',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
-        error:
-          'Incorrect URL: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
       },
       {
         url: '',

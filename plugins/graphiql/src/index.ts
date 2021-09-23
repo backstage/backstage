@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Backstage plugin for browsing GraphQL APIs
+ *
+ * @packageDocumentation
+ */
+
 import GraphiQLIconComponent from './assets/graphiql.icon.svg';
 import { IconComponent } from '@backstage/core-plugin-api';
 

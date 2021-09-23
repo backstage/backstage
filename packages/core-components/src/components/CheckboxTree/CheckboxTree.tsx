@@ -225,13 +225,12 @@ const indexer = (
     };
   }, {});
 
-export const CheckboxTree = ({
-  subCategories,
-  label,
-  selected,
-  onChange,
-  triggerReset,
-}: CheckboxTreeProps) => {
+/**
+ *
+ * @deprecated CheckboxTree is no longer used in Table filters
+ */
+export function CheckboxTree(props: CheckboxTreeProps) {
+  const { subCategories, label, selected, onChange, triggerReset } = props;
   const classes = useStyles();
 
   const [state, dispatch] = useReducer(reducer, indexer(subCategories));
@@ -355,4 +354,4 @@ export const CheckboxTree = ({
       </List>
     </div>
   );
-};
+}

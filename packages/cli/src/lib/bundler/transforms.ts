@@ -39,6 +39,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
       },
     },
@@ -48,6 +49,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
       },
     },
@@ -64,6 +66,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('@sucrase/webpack-loader'),
           options: {
             transforms: ['jsx', ...extraTransforms],
+            disableESTransforms: true,
             production: !isDev,
           },
         },
@@ -83,22 +86,17 @@ export const transforms = (options: TransformOptions): Transforms => {
         { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
         /\.xml/,
       ],
-      loader: require.resolve('url-loader'),
-      options: {
-        limit: 10000,
-        name: 'static/[name].[hash:8].[ext]',
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8].[ext]',
       },
     },
     {
-      test: /\.(eot|woff|woff2|ttf)$/,
-      use: [
-        {
-          loader: require.resolve('file-loader'),
-          options: {
-            name: 'static/[name].[hash:8].[ext]',
-          },
-        },
-      ],
+      test: /\.(eot|woff|woff2|ttf)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
     },
     {
       test: /\.ya?ml$/,
@@ -106,7 +104,10 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       include: /\.(md)$/,
-      use: require.resolve('raw-loader'),
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
     },
     {
       test: /\.css$/i,

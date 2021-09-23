@@ -15,5 +15,6 @@
  */
 
 export { CatalogBuilder } from './CatalogBuilder';
+export type { CatalogEnvironment } from './CatalogBuilder';
 export { createRouter } from './router';
 export type { RouterOptions } from './router';

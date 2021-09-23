@@ -18,6 +18,7 @@ import { SerializedError } from '@backstage/errors';
 
 /**
  * The current status of the entity, as claimed by various sources.
+ *
  * @alpha
  */
 export type UNSTABLE_EntityStatus = {

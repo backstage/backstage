@@ -51,6 +51,8 @@ export type GhBlobResponse =
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
+ *
+ * @public
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

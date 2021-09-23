@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
-import { useVersionedContext } from '../lib/versionedValues';
+import { useVersionedContext } from '@backstage/version-bridge';
 import {
   AnyParams,
   ExternalRouteRef,
@@ -50,6 +50,10 @@ export function useRouteRef<Params extends AnyParams>(
   const sourceLocation = useLocation();
   const versionedContext =
     useVersionedContext<{ 1: RouteResolver }>('routing-context');
+  if (!versionedContext) {
+    throw new Error('Routing context is not available');
+  }
+
   const resolver = versionedContext.atVersion(1);
   const routeFunc = useMemo(
     () => resolver && resolver.resolve(routeRef, sourceLocation),

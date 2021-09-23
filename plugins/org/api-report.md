@@ -89,6 +89,4 @@ export const UserProfileCard: ({
   entity?: UserEntity | undefined;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

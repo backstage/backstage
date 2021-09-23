@@ -22,6 +22,8 @@ import {
 
 /**
  * The serialized form of an Error.
+ *
+ * @public
  */
 export type SerializedError = JsonObject & {
   /** The name of the exception that was thrown */
@@ -37,12 +39,16 @@ export type SerializedError = JsonObject & {
 /**
  * Serializes an error object to a JSON friendly form.
  *
- * @param error The error
- * @param options.includeStackTraces: Include stack trace in the output (default false)
+ * @public
+ * @param error - The error.
+ * @param options - Optional serialization options.
  */
 export function serializeError(
   error: Error,
-  options?: { includeStack?: boolean },
+  options?: {
+    /** Include stack trace in the output (default false) */
+    includeStack?: boolean;
+  },
 ): SerializedError {
   const serialized = serializeErrorInternal(error);
   const result: SerializedError = {
@@ -60,6 +66,8 @@ export function serializeError(
 
 /**
  * Deserializes a serialized error object back to an Error.
+ *
+ * @public
  */
 export function deserializeError<T extends Error = Error>(
   data: SerializedError,

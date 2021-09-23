@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Jenkins
+ *
+ * @packageDocumentation
+ */
+
 export {
   jenkinsPlugin,
   jenkinsPlugin as plugin,

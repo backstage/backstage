@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A CLI that helps you create your own Backstage app
+ *
+ * @packageDocumentation
+ */
+
 import program from 'commander';
 import { exitWithError } from './lib/errors';
 import { version } from '../package.json';

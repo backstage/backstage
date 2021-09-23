@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage catalog backend modules that helps integrate towards LDAP
+ *
+ * @packageDocumentation
+ */
+
 export * from './processors';
 export * from './ldap';

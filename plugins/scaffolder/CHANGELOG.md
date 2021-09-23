@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+
+## 0.11.4
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 70fdfbf36a: Change the Categories filter to a dropdown component
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.3
+
+### Patch Changes
+
+- c299e90a2: Disable all buttons in the final step when 'Create' button is clicked in template.
+- 3acf5988f: Fix display error when it fails to load a template (/create) page
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
 ## 0.11.2
 
 ### Patch Changes

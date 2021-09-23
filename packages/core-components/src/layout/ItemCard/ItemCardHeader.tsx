@@ -21,7 +21,7 @@ import {
   WithStyles,
 } from '@material-ui/core';
 import React from 'react';
-import { BackstageTheme } from '../../../../theme/src';
+import { BackstageTheme } from '@backstage/theme';
 
 const styles = (theme: BackstageTheme) =>
   createStyles({
@@ -72,7 +72,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  *   <ItemCardHeader title="Hello" classes={{ root: myClassName }} />
  * </code>
  */
-export const ItemCardHeader = (props: ItemCardHeaderProps) => {
+export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
   const classes = useStyles(props);
   return (
@@ -90,4 +90,4 @@ export const ItemCardHeader = (props: ItemCardHeaderProps) => {
       {children}
     </div>
   );
-};
+}

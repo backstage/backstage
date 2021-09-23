@@ -15,7 +15,11 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityProvider,
+  AsyncEntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
@@ -26,16 +30,12 @@ import { EntityLayout } from './EntityLayout';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
-const mockEntityData = {
-  loading: false,
-  error: undefined,
-  entity: {
-    kind: 'MyKind',
-    metadata: {
-      name: 'my-entity',
-    },
-  } as Entity,
-};
+const mockEntity = {
+  kind: 'MyKind',
+  metadata: {
+    name: 'my-entity',
+  },
+} as Entity;
 
 const mockApis = ApiRegistry.with(catalogApiRef, {} as CatalogApi).with(
   alertApiRef,
@@ -46,13 +46,13 @@ describe('EntityLayout', () => {
   it('renders simplest case', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={mockEntityData}>
+        <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>,
     );
 
@@ -61,21 +61,42 @@ describe('EntityLayout', () => {
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
-  it('renders error message when entity is not found', async () => {
-    const noEntityData = {
-      ...mockEntityData,
-      entity: undefined,
-    };
+  it('renders the entity title if defined', async () => {
+    const mockEntityWithTitle = {
+      kind: 'MyKind',
+      metadata: {
+        name: 'my-entity',
+        title: 'My Entity',
+      },
+    } as Entity;
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={noEntityData}>
+        <EntityProvider entity={mockEntityWithTitle}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('My Entity')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+  });
+
+  it('renders error message when entity is not found', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <AsyncEntityProvider loading={false}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </AsyncEntityProvider>
       </ApiProvider>,
     );
 
@@ -92,7 +113,7 @@ describe('EntityLayout', () => {
           path="/*"
           element={
             <ApiProvider apis={mockApis}>
-              <EntityContext.Provider value={mockEntityData}>
+              <EntityProvider entity={mockEntity}>
                 <EntityLayout>
                   <EntityLayout.Route path="/" title="tabbed-test-title">
                     <div>tabbed-test-content</div>
@@ -104,7 +125,7 @@ describe('EntityLayout', () => {
                     <div>tabbed-test-content-2</div>
                   </EntityLayout.Route>
                 </EntityLayout>
-              </EntityContext.Provider>
+              </EntityProvider>
             </ApiProvider>
           }
         />
@@ -129,7 +150,7 @@ describe('EntityLayout', () => {
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={mockEntityData}>
+        <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
@@ -149,7 +170,7 @@ describe('EntityLayout', () => {
               <div>tabbed-test-content-3</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>,
     );
 

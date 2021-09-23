@@ -15,14 +15,14 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
@@ -58,9 +58,6 @@ type Props = {
     opts?: { notRepeatable?: boolean },
   ) => void;
   onGoBack?: () => void;
-
-  defaultTitle: string;
-  defaultBody: string;
 
   renderFormFields: (
     props: Pick<
@@ -99,15 +96,29 @@ export const StepPrepareCreatePullRequest = ({
   onPrepare,
   onGoBack,
   renderFormFields,
-  defaultTitle,
-  defaultBody,
 }: Props) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
-  const catalogInfoApi = useApi(catalogImportApiRef);
+  const catalogImportApi = useApi(catalogImportApiRef);
+  const errorApi = useApi(errorApiRef);
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
+
+  const {
+    loading: prDefaultsLoading,
+    value: prDefaults,
+    error: prDefaultsError,
+  } = useAsync(
+    () => catalogImportApi.preparePullRequest!(),
+    [catalogImportApi.preparePullRequest],
+  );
+
+  useEffect(() => {
+    if (prDefaultsError) {
+      errorApi.post(prDefaultsError);
+    }
+  }, [prDefaultsError, errorApi]);
 
   const { loading: groupsLoading, value: groups } = useAsync(async () => {
     const groupEntities = await catalogApi.getEntities({
@@ -124,7 +135,7 @@ export const StepPrepareCreatePullRequest = ({
       setSubmitted(true);
 
       try {
-        const pr = await catalogInfoApi.submitPullRequest({
+        const pr = await catalogImportApi.submitPullRequest({
           repositoryUrl: analyzeResult.url,
           title: data.title,
           body: data.body,
@@ -171,7 +182,7 @@ export const StepPrepareCreatePullRequest = ({
       analyzeResult.generatedEntities,
       analyzeResult.integrationType,
       analyzeResult.url,
-      catalogInfoApi,
+      catalogImportApi,
       onPrepare,
     ],
   );
@@ -184,79 +195,81 @@ export const StepPrepareCreatePullRequest = ({
         a Pull Request that creates one.
       </Typography>
 
-      <PreparePullRequestForm<FormData>
-        onSubmit={handleResult}
-        defaultValues={{
-          title: defaultTitle,
-          body: defaultBody,
-          owner:
-            (analyzeResult.generatedEntities[0]?.spec?.owner as string) || '',
-          componentName:
-            analyzeResult.generatedEntities[0]?.metadata?.name || '',
-          useCodeowners: false,
-        }}
-        render={({ values, formState, register, setValue }) => (
-          <>
-            {renderFormFields({
-              values,
-              formState,
-              register,
-              setValue,
-              groups: groups ?? [],
-              groupsLoading,
-            })}
+      {!prDefaultsLoading && (
+        <PreparePullRequestForm<FormData>
+          onSubmit={handleResult}
+          defaultValues={{
+            title: prDefaults?.title ?? '',
+            body: prDefaults?.body ?? '',
+            owner:
+              (analyzeResult.generatedEntities[0]?.spec?.owner as string) || '',
+            componentName:
+              analyzeResult.generatedEntities[0]?.metadata?.name || '',
+            useCodeowners: false,
+          }}
+          render={({ values, formState, register, setValue }) => (
+            <>
+              {renderFormFields({
+                values,
+                formState,
+                register,
+                setValue,
+                groups: groups ?? [],
+                groupsLoading,
+              })}
 
-            <Box marginTop={2}>
-              <Typography variant="h6">Preview Pull Request</Typography>
-            </Box>
+              <Box marginTop={2}>
+                <Typography variant="h6">Preview Pull Request</Typography>
+              </Box>
 
-            <PreviewPullRequestComponent
-              title={values.title}
-              description={values.body}
-              classes={{
-                card: classes.previewCard,
-                cardContent: classes.previewCardContent,
-              }}
-            />
+              <PreviewPullRequestComponent
+                title={values.title}
+                description={values.body}
+                classes={{
+                  card: classes.previewCard,
+                  cardContent: classes.previewCardContent,
+                }}
+              />
 
-            <Box marginTop={2} marginBottom={1}>
-              <Typography variant="h6">Preview Entities</Typography>
-            </Box>
+              <Box marginTop={2} marginBottom={1}>
+                <Typography variant="h6">Preview Entities</Typography>
+              </Box>
 
-            <PreviewCatalogInfoComponent
-              entities={generateEntities(
-                analyzeResult.generatedEntities,
-                values.componentName,
-                values.owner,
-              )}
-              repositoryUrl={analyzeResult.url}
-              classes={{
-                card: classes.previewCard,
-                cardContent: classes.previewCardContent,
-              }}
-            />
-
-            {error && <FormHelperText error>{error}</FormHelperText>}
-
-            <Grid container spacing={0}>
-              {onGoBack && (
-                <BackButton onClick={onGoBack} disabled={submitted} />
-              )}
-              <NextButton
-                type="submit"
-                disabled={Boolean(
-                  formState.errors.title ||
-                    formState.errors.body ||
-                    formState.errors.owner,
+              <PreviewCatalogInfoComponent
+                entities={generateEntities(
+                  analyzeResult.generatedEntities,
+                  values.componentName,
+                  values.owner,
                 )}
-                loading={submitted}
-              >
-                Create PR
-              </NextButton>
-            </Grid>
-          </>
-        )}
-      />
+                repositoryUrl={analyzeResult.url}
+                classes={{
+                  card: classes.previewCard,
+                  cardContent: classes.previewCardContent,
+                }}
+              />
+
+              {error && <FormHelperText error>{error}</FormHelperText>}
+
+              <Grid container spacing={0}>
+                {onGoBack && (
+                  <BackButton onClick={onGoBack} disabled={submitted} />
+                )}
+                <NextButton
+                  type="submit"
+                  disabled={Boolean(
+                    formState.errors.title ||
+                      formState.errors.body ||
+                      formState.errors.owner,
+                  )}
+                  loading={submitted}
+                >
+                  Create PR
+                </NextButton>
+              </Grid>
+            </>
+          )}
+        />
+      )}
     </>
   );
 };
