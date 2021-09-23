@@ -34,7 +34,7 @@ describe('templatingTask', () => {
     // Files content
     const testFileContent = 'testing';
     const testVersionFileContent =
-      "version: {{pluginVersion}} {{version 'mock-pkg'}}";
+      "version: {{pluginVersion}} {{versionQuery 'mock-pkg'}}";
 
     mockFs({
       [tmplDir]: {
@@ -52,7 +52,7 @@ describe('templatingTask', () => {
       {
         pluginVersion: '0.0.0',
       },
-      { 'mock-pkg': '0.1.2' },
+      () => '^0.1.2',
     );
 
     await expect(
@@ -60,6 +60,6 @@ describe('templatingTask', () => {
     ).resolves.toBe(testFileContent);
     await expect(
       fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
-    ).resolves.toBe('version: 0.0.0 0.1.2');
+    ).resolves.toBe('version: 0.0.0 ^0.1.2');
   });
 });

@@ -69,7 +69,7 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
-  versions: { [name: string]: string },
+  versionProvider: (name: string, versionHint?: string) => string,
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -90,11 +90,11 @@ export async function templatingTask(
           { name: basename(destination), ...context },
           {
             helpers: {
-              version(name: string) {
-                if (versions[name]) {
-                  return versions[name];
-                }
-                throw new Error(`No version available for package ${name}`);
+              versionQuery(name: string, versionHint: string | unknown) {
+                return versionProvider(
+                  name,
+                  typeof versionHint === 'string' ? versionHint : undefined,
+                );
               },
             },
           },
