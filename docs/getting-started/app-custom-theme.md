@@ -245,7 +245,7 @@ export const CustomTheme: AppTheme = {
 };
 ```
 
-_Aplying your custom theme with overrides_
+_Applying your custom theme with overrides_
 
 ```ts
 import { createApp } from '@backstage/core-app-api';
