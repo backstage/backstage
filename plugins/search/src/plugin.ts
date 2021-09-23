@@ -122,6 +122,18 @@ export const SearchResultNext = searchPlugin.provide(
   }),
 );
 
+export const SidebarSearchModal = searchPlugin.provide(
+  createComponentExtension({
+    name: 'SidebarSearchModal',
+    component: {
+      lazy: () =>
+        import('./components/SidebarSearchModal').then(
+          m => m.SidebarSearchModal,
+        ),
+    },
+  }),
+);
+
 export const DefaultResultListItem = searchPlugin.provide(
   createComponentExtension({
     name: 'DefaultResultListItem',
