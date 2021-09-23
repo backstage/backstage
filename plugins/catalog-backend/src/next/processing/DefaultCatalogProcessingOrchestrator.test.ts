@@ -62,7 +62,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
     };
     const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
       isAllowed: jest.fn(),
-    } as any;
+    };
 
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors: [processor],

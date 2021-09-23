@@ -2,6 +2,8 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
+#### Enforcing catalog rules
+
 Apply the catalog rules enforcer, based on origin location.
 
 This is a breaking change, in the sense that this was not properly checked in earlier versions of the new catalog engine. You may see ingestion of certain entities start to be rejected after this update, if the following conditions apply to you:
@@ -41,3 +43,7 @@ catalog:
 If you are not using any of those `rules` section, you should not be affected by this change.
 
 If you do use any of those `rules` sections, make sure that they are complete and list all of the kinds that are in active use in your Backstage installation.
+
+#### Other
+
+Also, the class `CatalogRulesEnforcer` was renamed to `DefaultCatalogRulesEnforcer`, implementing the type `CatalogRulesEnforcer`.

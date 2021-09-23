@@ -78,7 +78,7 @@ import {
 import { CatalogEnvironment } from '../service/CatalogBuilder';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
-import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -305,7 +305,7 @@ export class NextCatalogBuilder {
       refreshInterval: this.refreshInterval,
     });
     const integrations = ScmIntegrations.fromConfig(config);
-    const rulesEnforcer = CatalogRulesEnforcer.fromConfig(config);
+    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
       integrations,

@@ -19,31 +19,39 @@ import { LocationSpec, Entity } from '@backstage/catalog-model';
 import path from 'path';
 
 /**
- * A structure for matching entities to a given rule.
- */
-type EntityMatcher = {
-  kind: string;
-};
-
-/**
- * A structure for matching locations to a given rule.
- */
-type LocationMatcher = {
-  target?: string;
-  type: string;
-};
-
-/**
- * Rules to apply to catalog entities
+ * Rules to apply to catalog entities.
  *
- * An undefined list of matchers means match all, an empty list of matchers means match none
+ * An undefined list of matchers means match all, an empty list of matchers means match none.
+ *
+ * @public
  */
-type CatalogRule = {
-  allow: EntityMatcher[];
-  locations?: LocationMatcher[];
+export type CatalogRule = {
+  allow: Array<{
+    kind: string;
+  }>;
+  locations?: Array<{
+    target?: string;
+    type: string;
+  }>;
 };
 
-export class CatalogRulesEnforcer {
+/**
+ * Decides whether an entity from a given location is allowed to enter the
+ * catalog, according to some rule set.
+ *
+ * @public
+ */
+export type CatalogRulesEnforcer = {
+  isAllowed(entity: Entity, location: LocationSpec): boolean;
+};
+
+/**
+ * Implements the default catalog rule set, consuming the config keys
+ * `catalog.rules` and `catalog.locations.[].rules`.
+ *
+ * @public
+ */
+export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   /**
    * Default rules used by the catalog.
    *
@@ -94,7 +102,7 @@ export class CatalogRulesEnforcer {
       }));
       rules.push(...globalRules);
     } else {
-      rules.push(...CatalogRulesEnforcer.defaultRules);
+      rules.push(...DefaultCatalogRulesEnforcer.defaultRules);
     }
 
     if (config.has('catalog.locations')) {
@@ -116,7 +124,7 @@ export class CatalogRulesEnforcer {
       rules.push(...locationRules);
     }
 
-    return new CatalogRulesEnforcer(rules);
+    return new DefaultCatalogRulesEnforcer(rules);
   }
 
   constructor(private readonly rules: CatalogRule[]) {}
@@ -141,7 +149,7 @@ export class CatalogRulesEnforcer {
 
   private matchLocation(
     location: LocationSpec,
-    matchers?: LocationMatcher[],
+    matchers?: { target?: string; type: string }[],
   ): boolean {
     if (!matchers) {
       return true;
@@ -160,7 +168,7 @@ export class CatalogRulesEnforcer {
     return false;
   }
 
-  private matchEntity(entity: Entity, matchers?: EntityMatcher[]): boolean {
+  private matchEntity(entity: Entity, matchers?: { kind: string }[]): boolean {
     if (!matchers) {
       return true;
     }
