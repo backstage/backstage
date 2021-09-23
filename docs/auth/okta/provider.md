@@ -5,8 +5,8 @@ sidebar_label: Okta
 description: Adding Okta OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Okta authentication provider that
-can authenticate users using Okta OpenID Connect.
+The Backstage `core-plugin-api` package comes with a Okta authentication
+provider that can authenticate users using Okta OpenID Connect.
 
 ## Create an Application on Okta
 
