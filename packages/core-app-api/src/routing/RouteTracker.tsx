@@ -39,25 +39,33 @@ const getExtensionContext = (
   routes: BackstageRouteObject[],
 ): CommonAnalyticsContext | {} => {
   try {
+    // Find matching routes for the given path name.
     const matches = matchRoutes(routes, { pathname });
+
+    // Of the matching routes, get the last (e.g. most specific) instance of
+    // the BackstageRouteObject.
     const routeObject = matches
       ?.filter(
         match => (match?.route as BackstageRouteObject).routeRefs?.size > 0,
       )
       .pop()?.route as BackstageRouteObject;
 
+    // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {
       return {};
     }
 
-    const routeRef = routeObject.routeRefs.values().next().value as
-      | RouteRef
-      | undefined;
+    // If there is a single route ref, return it.
+    // todo: get routeRef of rendered gathered mount point(?)
+    let routeRef: RouteRef | undefined;
+    if (routeObject.routeRefs.size === 1) {
+      routeRef = routeObject.routeRefs.values().next().value;
+    }
 
     return {
       extension: 'App',
       pluginId: routeObject.plugin?.getId() || 'root',
-      routeRef: (routeRef as { id?: string }).id,
+      ...(routeRef ? { routeRef: (routeRef as { id?: string }).id } : {}),
     };
   } catch {
     return {};

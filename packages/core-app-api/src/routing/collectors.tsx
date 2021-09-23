@@ -171,6 +171,7 @@ export const routeObjectCollector = createCollector(
         element: 'gathered',
         routeRefs: new Set(),
         children: [MATCH_ALL_ROUTE],
+        plugin: parentObj?.plugin,
       };
       parentChildren.push(newObject);
       return newObject;
