@@ -20,16 +20,6 @@ import { DateTime } from 'luxon';
 import { Transaction } from '../../database/types';
 import { DeferredEntity } from '../processing/types';
 
-export type AddUnprocessedEntitiesOptions =
-  | {
-      sourceEntityRef: string;
-      entities: DeferredEntity[];
-    }
-  | {
-      sourceKey: string;
-      entities: DeferredEntity[];
-    };
-
 export type AddUnprocessedEntitiesResult = {};
 
 export type UpdateProcessedEntityOptions = {
