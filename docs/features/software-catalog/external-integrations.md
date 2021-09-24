@@ -204,7 +204,7 @@ const CACHE_KEY = 'v1';
 // as well as the processing result used when the Etag matches.
 // Bump the CACHE_KEY version if you make any changes to this type.
 type CacheItem = {
-  etag: string;
+  etag?: string;
   entity: Entity;
 };
 
@@ -250,7 +250,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
       // Update the cache with the new ETag and entity used for the next run.
       await cache.set<CacheItem>(CACHE_KEY, {
-        etag: response.etag ? response.etag : '',
+        etag: response.etag,
         entity,
       });
     } catch (error) {
