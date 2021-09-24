@@ -284,7 +284,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           }
 
           if (ok) {
-            await tx('refresh_state_references').insert<any>({
+            await tx<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+            ).insert({
               source_key: options.sourceKey,
               target_entity_ref: entityRef,
             });
@@ -439,9 +441,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
   /**
    * Attempts to update an existing refresh state row, returning true if it was
-   * updated and false if there was no with a matching entity ref and location key.
+   * updated and false if there was no entity with a matching ref and location key.
    *
-   * Updating the entity will also caused it to be scheduled for immediate processing.
+   * Updating the entity will also cause it to be scheduled for immediate processing.
    */
   private async updateUnprocessedEntity(
     tx: Knex.Transaction,
@@ -451,8 +453,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const entityRef = stringifyEntityRef(entity);
     const serializedEntity = JSON.stringify(entity);
 
-    // We optimistically try to update any existing refresh state first, as this is by far
-    // the most common case.
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         unprocessed_entity: serializedEntity,
@@ -488,9 +488,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const entityRef = stringifyEntityRef(entity);
     const serializedEntity = JSON.stringify(entity);
 
-    // In the event that we can't update an existing refresh state, we first try to insert a new row
     try {
-      let query = tx('refresh_state').insert<any>({
+      let query = tx<DbRefreshStateRow>('refresh_state').insert({
         entity_id: uuid(),
         entity_ref: entityRef,
         unprocessed_entity: serializedEntity,
@@ -505,11 +504,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
       // break the ongoing transaction.
       if (tx.client.config.client !== 'sqlite3') {
-        query = query.onConflict('entity_ref').ignore();
+        query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
       }
 
-      const result: { /* postgres */ rowCount?: number; length?: number } =
-        await query;
+      // Postgres gives as an object with rowCount, SQLite gives us an array
+      const result: { rowCount?: number; length?: number } = await query;
       return result.rowCount === 1 || result.length === 1;
     } catch (error) {
       // SQLite reached this rather than the rowCount check above
