@@ -227,8 +227,8 @@ and
 [TechDocsApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L49),
 which is responsible for talking to techdocs-backend.
 
-There may be occasions where you need to implement these two apis yourself, to
-customize it to your own needs. The purpose of this guide is to walk you through
+There may be occasions where you need to implement these two APIs yourself, to
+customize them to your own needs. The purpose of this guide is to walk you through
 how to do that in two steps.
 
 1. Implement the `TechDocsStorageApi` and `TechDocsApi` interfaces according to
