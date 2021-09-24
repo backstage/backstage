@@ -391,7 +391,7 @@ export class PrivateAppImpl implements BackstageApp {
   private getApiHolder(): ApiHolder {
     if (this.apiHolder) {
       // Register additional plugins if they have been added.
-      // Routes and other config options are updated above when children change
+      // Routes paths, objects and others are already updated in the provider when children of it change
       for (const plugin of this.plugins) {
         for (const factory of plugin.getApis()) {
           if (!this.apiFactoryRegistry.get(factory.api)) {
