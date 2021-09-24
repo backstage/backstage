@@ -65,7 +65,8 @@ export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string) => {
-    const targetVersion = versionHint || packageVersions[name];
+    const packageVersion = packageVersions[name];
+    const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       throw new Error(`No version available for package ${name}`);
     }
@@ -81,6 +82,16 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
       semver.satisfies(targetVersion, entry.range),
     );
     const highestRange = validRanges?.slice(-1)[0];
-    return highestRange?.range ?? `^${targetVersion}`;
+
+    if (highestRange?.range) {
+      return highestRange?.range;
+    }
+    if (packageVersion) {
+      return `^${packageVersion}`;
+    }
+    if (semver.parse(versionHint)?.prerelease.length) {
+      return versionHint!;
+    }
+    return `^${versionHint}`;
   };
 }

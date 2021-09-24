@@ -60,6 +60,7 @@ describe('createPackageVersionProvider', () => {
     expect(provider('c', '0.1.6')).toBe('^0.1.4');
     expect(provider('c', '0.2.0')).toBe('^0.2.0');
     expect(provider('c', '0.2.6')).toBe('^0.2.4');
+    expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
     expect(provider('c', '0.3.0')).toBe('^0.3.0');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');
     expect(provider('@backstage/cli')).toBe('*');
