@@ -220,7 +220,7 @@ https://github.com/backstage/backstage/issues/new?assignees=&labels=bug&template
 
 ## How to implement your own TechDocs APIs
 
-The TechDocs plugin provides implementations of two primary apis by default, the
+The TechDocs plugin provides implementations of two primary apis by default: the
 [TechDocsStorageApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L33),
 which is responsible for talking to TechDocs storage to fetch files to render,
 and
