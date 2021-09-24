@@ -244,7 +244,7 @@ export class TechDocsCustomApiClient implements TechDocsApi {
 }
 ```
 
-2. Override the api refs `techdocsStorageApiRef` and `techdocsApiRef` with your
+2. Override the API refs `techdocsStorageApiRef` and `techdocsApiRef` with your
    new implemented APIs in the `App.tsx` using `ApiFactories`.
    [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
 
