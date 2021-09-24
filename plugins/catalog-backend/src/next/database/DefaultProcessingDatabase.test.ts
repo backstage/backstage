@@ -395,15 +395,24 @@ describe('Default Processing Database', () => {
               expect(mockLogger.warn).not.toHaveBeenCalled();
             }
 
-            const [, unprocessed] = await knexTx<DbRefreshStateRow>(
+            const states = await knexTx<DbRefreshStateRow>(
               'refresh_state',
             ).select();
-            expect(unprocessed).toEqual(
-              expect.objectContaining({
-                entity_ref: 'component:default/1',
-                location_key: step.expectedLocationKey,
-              }),
+            expect(states).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  entity_ref: 'component:default/1',
+                  location_key: step.expectedLocationKey,
+                }),
+                expect.objectContaining({
+                  entity_ref: 'location:default/fakelocation',
+                  location_key: null,
+                }),
+              ]),
             );
+            const unprocessed = states.find(
+              state => state.entity_ref === 'component:default/1',
+            )!;
             const entity = JSON.parse(unprocessed.unprocessed_entity) as Entity;
             expect(entity.spec?.type).toEqual(step.expectedTestKey);
 
