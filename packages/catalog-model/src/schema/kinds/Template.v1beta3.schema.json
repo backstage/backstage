@@ -14,9 +14,8 @@
       },
       "spec": {
         "owner": "artist-relations-team",
-        "type": "website",
         "parameters": {
-          "required": ["name", "description"],
+          "required": ["name", "description", "repoUrl"],
           "properties": {
             "name": {
               "title": "Name",
@@ -27,6 +26,11 @@
               "title": "Description",
               "type": "string",
               "description": "Description of the component"
+            },
+            "repoUrl": {
+              "title": "Pick a repository",
+              "type": "string",
+              "ui:field": "RepoUrlPicker"
             }
           }
         },
@@ -44,13 +48,13 @@
             "name": "Publish to GitHub",
             "action": "publish:github",
             "parameters": {
-              "repoUrl": "{{ parameters.repoUrl }}"
+              "repoUrl": "${{ parameters.repoUrl }}"
             },
-            "if": "{{ parameters.repoUrl }}"
+            "if": "${{ parameters.repoUrl }}"
           }
         ],
         "output": {
-          "catalogInfoUrl": "{{ steps.publish.output.catalogInfoUrl }}"
+          "catalogInfoUrl": "${{ steps.publish.output.catalogInfoUrl }}"
         }
       }
     }

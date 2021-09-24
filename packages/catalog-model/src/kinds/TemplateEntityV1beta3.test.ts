@@ -30,6 +30,7 @@ describe('templateEntityV1beta3Validator', () => {
         name: 'test',
       },
       spec: {
+        type: 'website',
         parameters: {
           required: ['storePath', 'owner'],
           properties: {
@@ -37,11 +38,6 @@ describe('templateEntityV1beta3Validator', () => {
               type: 'string',
               title: 'Owner',
               description: 'Who is going to own this component',
-            },
-            storePath: {
-              type: 'string',
-              title: 'Store path',
-              description: 'GitHub store path in org/repo format',
             },
           },
         },

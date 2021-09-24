@@ -44,6 +44,7 @@ export type DbTaskEventRow = {
 };
 
 export type TaskSpec = {
+  apiVersion: 'backstage.io/v1beta2' | 'backstage.io/v1beta3';
   baseUrl?: string;
   values: JsonObject;
   steps: Array<{
@@ -121,4 +122,9 @@ export interface TaskStore {
     taskId,
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
+}
+
+export type WorkflowResponse = { output: { [name: string]: JsonValue } };
+export interface WorkflowRunner {
+  execute(task: Task): Promise<WorkflowResponse>;
 }
