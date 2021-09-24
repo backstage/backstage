@@ -228,8 +228,8 @@ and
 which is responsible for talking to techdocs-backend.
 
 There may be occasions where you need to implement these two APIs yourself, to
-customize them to your own needs. The purpose of this guide is to walk you through
-how to do that in two steps.
+customize them to your own needs. The purpose of this guide is to walk you
+through how to do that in two steps.
 
 1. Implement the `TechDocsStorageApi` and `TechDocsApi` interfaces according to
    your needs.
