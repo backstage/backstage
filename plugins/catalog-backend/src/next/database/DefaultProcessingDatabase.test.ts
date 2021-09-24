@@ -747,6 +747,14 @@ describe('Default Processing Database', () => {
       'should add new locations using the delta options, %p',
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
+
+        // Existing state and references should stay
+        await createLocations(knex, ['location:default/existing']);
+        await insertRefRow(knex, {
+          source_key: 'lols',
+          target_entity_ref: 'location:default/existing',
+        });
+
         await db.transaction(async tx => {
           await db.replaceUnprocessedEntities(tx, {
             type: 'delta',
@@ -786,6 +794,20 @@ describe('Default Processing Database', () => {
             t =>
               t.source_key === 'lols' &&
               t.target_entity_ref === 'location:default/new-root',
+          ),
+        ).toBeTruthy();
+
+        expect(
+          currentRefreshState.some(
+            t => t.entity_ref === 'location:default/existing',
+          ),
+        ).toBeTruthy();
+
+        expect(
+          currentRefRowState.some(
+            t =>
+              t.source_key === 'lols' &&
+              t.target_entity_ref === 'location:default/existing',
           ),
         ).toBeTruthy();
       },
