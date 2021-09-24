@@ -136,6 +136,24 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
+    const response = await fetch(
+      `${await this.discoveryApi.getBaseUrl('catalog')}/refresh`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        },
+        method: 'POST',
+        body: JSON.stringify({ entityRef }),
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(await response.text());
+    }
+  }
+
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -158,7 +176,7 @@ export class CatalogClient implements CatalogApi {
       throw new Error(await response.text());
     }
 
-    const { location, entities } = await response.json();
+    const { location, entities, exists } = await response.json();
 
     if (!location) {
       throw new Error(`Location wasn't added: ${target}`);
@@ -167,6 +185,7 @@ export class CatalogClient implements CatalogApi {
     return {
       location,
       entities,
+      exists,
     };
   }
 

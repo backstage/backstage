@@ -21,7 +21,7 @@ export interface LocationService {
   createLocation(
     spec: LocationSpec,
     dryRun: boolean,
-  ): Promise<{ location: Location; entities: Entity[] }>;
+  ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;

@@ -50,6 +50,7 @@ export class CommonValidatorFunctions {
     isValidSuffix: (value: string) => boolean,
   ): boolean;
   static isValidString(value: unknown): boolean;
+  static isValidTag(value: unknown): boolean;
   static isValidUrl(value: unknown): boolean;
 }
 

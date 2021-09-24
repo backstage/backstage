@@ -19,13 +19,13 @@ import { JsonObject } from '@backstage/config';
 
 export type EntityProcessingRequest = {
   entity: Entity;
-  state: Map<string, JsonObject>; // Versions for multiple deployments etc
+  state?: JsonObject; // Versions for multiple deployments etc
 };
 
 export type EntityProcessingResult =
   | {
       ok: true;
-      state: Map<string, JsonObject>;
+      state: JsonObject;
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];

@@ -24,6 +24,7 @@ import {
   ORIGIN_LOCATION_ANNOTATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { JsonObject, JsonValue } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
@@ -74,6 +75,10 @@ export function toAbsoluteUrl(
   } catch (e) {
     return target;
   }
+}
+
+export function isObject(value: JsonValue | undefined): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 export const validateEntity = entitySchemaValidator();

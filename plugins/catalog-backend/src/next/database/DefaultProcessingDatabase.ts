@@ -15,7 +15,6 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
@@ -41,6 +40,7 @@ import {
   UpdateProcessedEntityOptions,
   ListAncestorsOptions,
   ListAncestorsResult,
+  UpdateEntityCacheOptions,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -70,7 +70,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       id,
       processedEntity,
       resultHash,
-      state,
       errors,
       relations,
       deferredEntities,
@@ -80,7 +79,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         processed_entity: JSON.stringify(processedEntity),
         result_hash: resultHash,
-        cache: JSON.stringify(Object.fromEntries(state || [])),
         errors,
         location_key: locationKey,
       })
@@ -138,6 +136,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         errors,
         result_hash: resultHash,
       })
+      .where('entity_id', id);
+  }
+
+  async updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { id, state } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .update({ cache: JSON.stringify(state ?? {}) })
       .where('entity_id', id);
   }
 
@@ -508,9 +518,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             resultHash: i.result_hash || '',
             nextUpdateAt: timestampToDateTime(i.next_update_at),
             lastDiscoveryAt: timestampToDateTime(i.last_discovery_at),
-            state: i.cache
-              ? JSON.parse(i.cache)
-              : new Map<string, JsonObject>(),
+            state: i.cache ? JSON.parse(i.cache) : undefined,
             errors: i.errors,
             locationKey: i.location_key,
           } as RefreshStateItem),

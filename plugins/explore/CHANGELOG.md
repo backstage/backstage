@@ -1,5 +1,15 @@
 # @backstage/plugin-explore
 
+## 0.3.17
+
+### Patch Changes
+
+- 5cd6c73ff5: Export the `DomainCard` to be able to customize the explorer page.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
 ## 0.3.16
 
 ### Patch Changes

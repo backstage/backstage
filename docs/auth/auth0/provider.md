@@ -5,8 +5,8 @@ sidebar_label: Auth0
 description: Adding Auth0 as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with an Auth0 authentication provider
-that can authenticate users using OAuth.
+The Backstage `core-plugin-api` package comes with an Auth0 authentication
+provider that can authenticate users using OAuth.
 
 ## Create an Auth0 Application
 

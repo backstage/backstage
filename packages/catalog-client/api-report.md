@@ -19,6 +19,7 @@ export type AddLocationRequest = {
 export type AddLocationResponse = {
   location: Location_2;
   entities: Entity[];
+  exists?: boolean;
 };
 
 // @public (undocumented)
@@ -56,6 +57,11 @@ export interface CatalogApi {
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
   // (undocumented)
   removeEntityByUid(
     uid: string,
@@ -101,6 +107,11 @@ export class CatalogClient implements CatalogApi {
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
   // (undocumented)
   removeEntityByUid(
     uid: string,

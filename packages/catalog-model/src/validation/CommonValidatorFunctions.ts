@@ -96,6 +96,20 @@ export class CommonValidatorFunctions {
   }
 
   /**
+   * Checks that the value is a valid tag.
+   *
+   * @param value - The value to check
+   */
+  static isValidTag(value: unknown): boolean {
+    return (
+      typeof value === 'string' &&
+      value.length >= 1 &&
+      value.length <= 63 &&
+      /^[a-z0-9+#]+(\-[a-z0-9+#]+)*$/.test(value)
+    );
+  }
+
+  /**
    * Checks that the value is a valid URL.
    *
    * @param value - The value to check

@@ -24,6 +24,7 @@ import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
+  CatalogProcessorCache,
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
@@ -33,9 +34,16 @@ import { defaultEntityDataParser } from './util/parse';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
-
+  const mockCache: jest.Mocked<CatalogProcessorCache> = {
+    get: jest.fn(),
+    set: jest.fn(),
+  };
   const server = setupServer();
   msw.setupDefaultHandlers(server);
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('should load from url', async () => {
     const logger = getVoidLogger();
@@ -53,17 +61,72 @@ describe('UrlReaderProcessor', () => {
 
     server.use(
       rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.json({ mock: 'entity' })),
+        res(ctx.set({ ETag: 'my-etag' }), ctx.json({ mock: 'entity' })),
       ),
     );
 
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.readLocation(
+      spec,
+      false,
+      result => emitted.push(result),
+      defaultEntityDataParser,
+      mockCache,
+    );
+
+    expect(emitted.length).toBe(1);
+    expect(emitted[0]).toEqual({
+      type: 'entity',
+      location: spec,
+      entity: { mock: 'entity' },
+    });
+    expect(mockCache.set).toBeCalledWith('v1', {
+      etag: 'my-etag',
+      value: [{ type: 'entity', location: spec, entity: { mock: 'entity' } }],
+    });
+    expect(mockCache.set).toBeCalledTimes(1);
+  });
+
+  it('should use cached data when available', async () => {
+    const logger = getVoidLogger();
+    const reader = UrlReaders.default({
+      logger,
+      config: new ConfigReader({
+        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      }),
+    });
+    server.use(
+      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
+        res(ctx.status(304)),
+      ),
+    );
+    const spec = {
+      type: 'url',
+      target: `${mockApiOrigin}/component.yaml`,
+    };
+    const cacheItem = {
+      etag: 'my-etag',
+      value: [{ type: 'entity', location: spec, entity: { mock: 'entity' } }],
+    };
+    mockCache.get.mockResolvedValue(cacheItem);
+    const processor = new UrlReaderProcessor({ reader, logger });
+
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit, defaultEntityDataParser),
+      processor.readLocation(
+        spec,
+        false,
+        emit,
+        defaultEntityDataParser,
+        mockCache,
+      ),
     )) as CatalogProcessorEntityResult;
 
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual(spec);
     expect(generated.entity).toEqual({ mock: 'entity' });
+    expect(mockCache.get).toBeCalledWith('v1');
+    expect(mockCache.get).toBeCalledTimes(1);
+    expect(mockCache.set).toBeCalledTimes(0);
   });
 
   it('should fail load from url with error', async () => {
@@ -87,7 +150,13 @@ describe('UrlReaderProcessor', () => {
     );
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit, defaultEntityDataParser),
+      processor.readLocation(
+        spec,
+        false,
+        emit,
+        defaultEntityDataParser,
+        mockCache,
+      ),
     )) as CatalogProcessorErrorResult;
 
     expect(generated.type).toBe('error');
@@ -116,6 +185,7 @@ describe('UrlReaderProcessor', () => {
       false,
       emit,
       defaultEntityDataParser,
+      mockCache,
     );
 
     expect(reader.search).toBeCalledTimes(1);

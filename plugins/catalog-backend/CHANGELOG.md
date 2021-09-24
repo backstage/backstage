@@ -1,5 +1,71 @@
 # @backstage/plugin-catalog-backend
 
+## 0.14.0
+
+### Minor Changes
+
+- d6f90e934d: #### Enforcing catalog rules
+
+  Apply the catalog rules enforcer, based on origin location.
+
+  This is a breaking change, in the sense that this was not properly checked in earlier versions of the new catalog engine. You may see ingestion of certain entities start to be rejected after this update, if the following conditions apply to you:
+
+  - You are using the configuration key `catalog.rules.[].allow`, and
+  - Your registered locations point (directly or transitively) to entities whose kinds are not listed in `catalog.rules.[].allow`
+
+  and/or
+
+  - You are using the configuration key `catalog.locations.[].rules.[].allow`
+  - The config locations point (directly or transitively) to entities whose kinds are not listed neither `catalog.rules.[].allow`, nor in the corresponding `.rules.[].allow` of that config location
+
+  This is an example of what the configuration might look like:
+
+  ```yaml
+  catalog:
+    # These do not list Template as a valid kind; users are therefore unable to
+    # manually register entities of the Template kind
+    rules:
+      - allow:
+          - Component
+          - API
+          - Resource
+          - Group
+          - User
+          - System
+          - Domain
+          - Location
+    locations:
+      # This lists Template as valid only for that specific config location
+      - type: file
+        target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+        rules:
+          - allow: [Template]
+  ```
+
+  If you are not using any of those `rules` section, you should not be affected by this change.
+
+  If you do use any of those `rules` sections, make sure that they are complete and list all of the kinds that are in active use in your Backstage installation.
+
+  #### Other
+
+  Also, the class `CatalogRulesEnforcer` was renamed to `DefaultCatalogRulesEnforcer`, implementing the type `CatalogRulesEnforcer`.
+
+- 501ce92f9c: Bitbucket Cloud Discovery support
+- 89fd81a1ab: Add API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+
+  The new method is used to trigger a refresh of an entity in an as localized was as possible, usually by refreshing the parent location.
+
+### Patch Changes
+
+- 9ef2987a83: Update `createLocation` to optionally return `exists` to signal that the location already exists, this is only returned for dry runs.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
 ## 0.13.8
 
 ### Patch Changes

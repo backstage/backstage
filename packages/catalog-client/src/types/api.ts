@@ -53,6 +53,10 @@ export interface CatalogApi {
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
 
   // Locations
   getLocationById(
@@ -89,4 +93,6 @@ export type AddLocationRequest = {
 export type AddLocationResponse = {
   location: Location;
   entities: Entity[];
+  // Exists is only set in DryRun mode.
+  exists?: boolean;
 };

@@ -1,5 +1,29 @@
 # example-backend
 
+## 0.2.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.14.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kafka-backend@0.2.10
+  - @backstage/plugin-kubernetes-backend@0.3.16
+  - @backstage/plugin-rollbar-backend@0.1.15
+  - @backstage/plugin-search-backend-module-pg@0.2.1
+  - example-app@0.2.47
+  - @backstage/plugin-auth-backend@0.4.1
+  - @backstage/plugin-badges-backend@0.1.10
+  - @backstage/plugin-code-coverage-backend@0.1.11
+  - @backstage/plugin-jenkins-backend@0.1.5
+  - @backstage/plugin-scaffolder-backend@0.15.6
+  - @backstage/plugin-techdocs-backend@0.10.3
+  - @backstage/plugin-todo-backend@0.1.12
+
 ## 0.2.46
 
 ### Patch Changes

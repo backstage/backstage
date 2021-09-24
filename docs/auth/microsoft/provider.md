@@ -5,8 +5,8 @@ sidebar_label: Azure
 description: Adding Microsoft Azure as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Microsoft authentication provider
-that can authenticate users using Azure OAuth.
+The Backstage `core-plugin-api` package comes with a Microsoft authentication
+provider that can authenticate users using Azure OAuth.
 
 ## Create an App Registration on Azure
 

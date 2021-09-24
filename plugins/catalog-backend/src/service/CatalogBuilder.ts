@@ -56,7 +56,7 @@ import {
   StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
-import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
@@ -240,7 +240,7 @@ export class CatalogBuilder {
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
-    const rulesEnforcer = CatalogRulesEnforcer.fromConfig(config);
+    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const parser = this.parser || defaultEntityDataParser;
 
     const locationReader = new LocationReaders({

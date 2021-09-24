@@ -83,7 +83,7 @@ module.exports = {
           ...require('module').builtinModules,
         ],
         // Avoid cross-package imports
-        patterns: ['**/../../**/*/src/**'],
+        patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
       },
     ],
   },

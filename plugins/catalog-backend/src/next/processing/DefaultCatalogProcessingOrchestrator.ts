@@ -21,8 +21,10 @@ import {
   LocationSpec,
   parseLocationReference,
   stringifyEntityRef,
+  stringifyLocationReference,
 } from '@backstage/catalog-model';
-import { ConflictError, InputError } from '@backstage/errors';
+import { ConflictError, InputError, NotAllowedError } from '@backstage/errors';
+import { JsonValue } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
@@ -44,13 +46,17 @@ import {
   toAbsoluteUrl,
   validateEntity,
   validateEntityEnvelope,
+  isObject,
 } from './util';
+import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 type Context = {
   entityRef: string;
   location: LocationSpec;
   originLocation: LocationSpec;
   collector: ProcessorOutputCollector;
+  cache: ProcessorCacheManager;
 };
 
 export class DefaultCatalogProcessingOrchestrator
@@ -63,21 +69,28 @@ export class DefaultCatalogProcessingOrchestrator
       logger: Logger;
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
+      rulesEnforcer: CatalogRulesEnforcer;
     },
   ) {}
 
   async process(
     request: EntityProcessingRequest,
   ): Promise<EntityProcessingResult> {
-    return this.processSingleEntity(request.entity);
+    return this.processSingleEntity(request.entity, request.state);
   }
 
   private async processSingleEntity(
     unprocessedEntity: Entity,
+    state: JsonValue | undefined,
   ): Promise<EntityProcessingResult> {
     const collector = new ProcessorOutputCollector(
       this.options.logger,
       unprocessedEntity,
+    );
+
+    // Cache that is scoped to the entity and processor
+    const cache = new ProcessorCacheManager(
+      isObject(state) && isObject(state.cache) ? state.cache : {},
     );
 
     try {
@@ -105,6 +118,7 @@ export class DefaultCatalogProcessingOrchestrator
         originLocation: parseLocationReference(
           getEntityOriginLocationRef(entity),
         ),
+        cache,
         collector,
       };
 
@@ -117,10 +131,32 @@ export class DefaultCatalogProcessingOrchestrator
       }
       entity = await this.runPostProcessStep(entity, context);
 
+      // Check that any emitted entities are permitted to originate from that
+      // particular location according to the catalog rules
+      const collectorResults = context.collector.results();
+      for (const deferredEntity of collectorResults.deferredEntities) {
+        if (
+          !this.options.rulesEnforcer.isAllowed(
+            deferredEntity.entity,
+            context.originLocation,
+          )
+        ) {
+          throw new NotAllowedError(
+            `Entity ${stringifyEntityRef(
+              deferredEntity.entity,
+            )} at ${stringifyLocationReference(
+              context.location,
+            )}, originated at ${stringifyLocationReference(
+              context.originLocation,
+            )}, is not of an allowed kind for that location`,
+          );
+        }
+      }
+
       return {
-        ...context.collector.results(),
+        ...collectorResults,
         completedEntity: entity,
-        state: new Map(),
+        state: { cache: cache.collect() },
         ok: true,
       };
     } catch (error) {
@@ -148,6 +184,7 @@ export class DefaultCatalogProcessingOrchestrator
             context.location,
             context.collector.onEmit,
             context.originLocation,
+            context.cache.forProcessor(processor),
           );
         } catch (e) {
           throw new InputError(
@@ -281,6 +318,7 @@ export class DefaultCatalogProcessingOrchestrator
               false,
               context.collector.onEmit,
               this.options.parser,
+              context.cache.forProcessor(processor, target),
             );
             if (read) {
               didRead = true;
@@ -318,6 +356,7 @@ export class DefaultCatalogProcessingOrchestrator
             result,
             context.location,
             context.collector.onEmit,
+            context.cache.forProcessor(processor),
           );
         } catch (e) {
           throw new InputError(

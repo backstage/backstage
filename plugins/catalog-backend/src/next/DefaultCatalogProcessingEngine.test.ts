@@ -28,6 +28,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     transaction: jest.fn(),
     getProcessableEntities: jest.fn(),
     updateProcessedEntity: jest.fn(),
+    updateEntityCache: jest.fn(),
   } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
@@ -55,7 +56,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -84,7 +85,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: new Map(),
+            state: [] as any,
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -100,7 +101,7 @@ describe('DefaultCatalogProcessingEngine', () => {
           kind: 'Location',
           metadata: { name: 'test' },
         },
-        state: expect.anything(),
+        state: [], // State is forwarded as is, even if it's a bad format
       });
     });
     await engine.stop();
@@ -117,7 +118,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -147,7 +148,7 @@ describe('DefaultCatalogProcessingEngine', () => {
               metadata: { name: 'test' },
             },
             resultHash: '',
-            state: new Map(),
+            state: { cache: { myProcessor: { myKey: 'myValue' } } },
             nextUpdateAt: DateTime.now(),
             lastDiscoveryAt: DateTime.now(),
           },
@@ -163,7 +164,7 @@ describe('DefaultCatalogProcessingEngine', () => {
           kind: 'Location',
           metadata: { name: 'test' },
         },
-        state: expect.anything(),
+        state: { cache: { myProcessor: { myKey: 'myValue' } } },
       });
     });
     await engine.stop();
@@ -181,7 +182,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       entityRef: '',
       unprocessedEntity: entity,
       resultHash: 'the matching hash',
-      state: new Map(),
+      state: {},
       nextUpdateAt: DateTime.now(),
       lastDiscoveryAt: DateTime.now(),
     };
@@ -194,7 +195,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       relations: [],
       errors: [],
       deferredEntities: [],
-      state: new Map(),
+      state: {},
     });
 
     const engine = new DefaultCatalogProcessingEngine(
@@ -221,16 +222,100 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect(hash.digest).toBeCalledTimes(1);
       expect(db.updateProcessedEntity).toBeCalledTimes(1);
     });
+    expect(db.updateEntityCache).not.toHaveBeenCalled();
 
     db.getProcessableEntities
       .mockReset()
-      .mockResolvedValueOnce({ items: [refreshState] })
+      .mockResolvedValueOnce({
+        items: [{ ...refreshState, state: { something: 'different' } }],
+      })
       .mockResolvedValue({ items: [] });
 
     await waitForExpect(() => {
       expect(orchestrator.process).toBeCalledTimes(2);
       expect(hash.digest).toBeCalledTimes(2);
       expect(db.updateProcessedEntity).toBeCalledTimes(1);
+      expect(db.updateEntityCache).toBeCalledTimes(1);
+    });
+    expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
+      id: '',
+      state: { ttl: 5 },
+    });
+    await engine.stop();
+  });
+
+  it('should decrease the state ttl if there are errors', async () => {
+    const entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'test' },
+    };
+
+    const refreshState = {
+      id: '',
+      entityRef: '',
+      unprocessedEntity: entity,
+      resultHash: 'the matching hash',
+      state: { some: 'value', ttl: 1 },
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
+    };
+
+    hash.digest.mockReturnValue('the matching hash');
+
+    orchestrator.process.mockResolvedValue({
+      ok: false,
+      errors: [],
+    });
+
+    const engine = new DefaultCatalogProcessingEngine(
+      getVoidLogger(),
+      [],
+      db,
+      orchestrator,
+      stitcher,
+      () => hash,
+    );
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    await engine.start();
+
+    db.getProcessableEntities
+      .mockResolvedValueOnce({
+        items: [refreshState],
+      })
+      .mockResolvedValue({ items: [] });
+
+    await waitForExpect(() => {
+      expect(db.updateEntityCache).toBeCalledTimes(1);
+    });
+
+    expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
+      id: '',
+      state: { some: 'value', ttl: 0 },
+    });
+
+    // Second run, the TTL should now reach 0 and the cache should be cleared
+    db.getProcessableEntities
+      .mockResolvedValueOnce({
+        items: [
+          {
+            ...refreshState,
+            state: db.updateEntityCache.mock.calls[0][1].state,
+          },
+        ],
+      })
+      .mockResolvedValue({ items: [] });
+
+    db.updateEntityCache.mockReset();
+    await waitForExpect(() => {
+      expect(db.updateEntityCache).toBeCalledTimes(1);
+    });
+
+    expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
+      id: '',
+      state: {},
     });
 
     await engine.stop();

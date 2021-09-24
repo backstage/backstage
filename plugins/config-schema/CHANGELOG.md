@@ -1,5 +1,13 @@
 # @backstage/plugin-config-schema
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/config@0.1.10
+
 ## 0.1.7
 
 ### Patch Changes

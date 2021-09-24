@@ -32,6 +32,7 @@ describe('<GroupsExplorerContent />', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
+    refreshEntity: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (

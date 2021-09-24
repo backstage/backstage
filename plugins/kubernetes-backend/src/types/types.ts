@@ -75,11 +75,39 @@ export interface KubernetesServiceLocator {
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 
 export interface ClusterDetails {
+  /**
+   * Specifies the name of the Kubernetes cluster.
+   */
   name: string;
   url: string;
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  /**
+   * Specifies the link to the Kubernetes dashboard managing this cluster.
+   * @remarks
+   * Note that you should specify the app used for the dashboard
+   * using the dashboardApp property, in order to properly format
+   * links to kubernetes resources,  otherwise it will assume that you're running the standard one.
+   * @see dashboardApp
+   */
+  dashboardUrl?: string;
+  /**
+   * Specifies the app that provides the Kubernetes dashboard.
+   * This will be used for formatting links to kubernetes objects inside the dashboard.
+   * @remarks
+   * The existing apps are: standard, rancher, openshift, gke, aks, eks
+   * Note that it will default to the regular dashboard provided by the Kubernetes project (standard).
+   * Note that you can add your own formatter by registering it to the clusterLinksFormatters dictionary.
+   * @defaultValue standard
+   * @see dashboardUrl
+   * @example
+   * ```ts
+   * import { clusterLinksFormatters } from '@backstage/plugin-kubernetes';
+   * clusterLinksFormatters.myDashboard = (options) => ...;
+   * ```
+   */
+  dashboardApp?: string;
 }
 
 export interface GKEClusterDetails extends ClusterDetails {}

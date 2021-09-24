@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 0.6.16
+
+### Patch Changes
+
+- dbcaa6387a: Updates the `AboutCard` with a refresh button that allows the entity to be scheduled for refresh.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/integration-react@0.1.10
+
 ## 0.6.15
 
 ### Patch Changes

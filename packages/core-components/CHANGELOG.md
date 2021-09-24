@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.5.0
+
+### Minor Changes
+
+- 537bd04005: Fixed a popup-blocking bug affecting iOS Safari in SignInPage.tsx by ensuring that the popup occurs in the same tick as the tap/click
+
+### Patch Changes
+
+- c0eb1fb9df: Allow to configure zooming for `<DependencyGraph>`. `zoom` can either be
+  `enabled`, `disabled`, or `enable-on-click`. The latter requires the user to
+  click into the diagram to enable zooming.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
 ## 0.4.2
 
 ### Patch Changes

@@ -30,13 +30,21 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
         const authProvider = c.getString('authProvider');
-        const clusterDetails = {
+        const clusterDetails: ClusterDetails = {
           name: c.getString('name'),
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
           authProvider: authProvider,
         };
+        const dashboardUrl = c.getOptionalString('dashboardUrl');
+        if (dashboardUrl) {
+          clusterDetails.dashboardUrl = dashboardUrl;
+        }
+        const dashboardApp = c.getOptionalString('dashboardApp');
+        if (dashboardApp) {
+          clusterDetails.dashboardApp = dashboardApp;
+        }
 
         switch (authProvider) {
           case 'google': {

@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings
 
+## 0.3.6
+
+### Patch Changes
+
+- 038b9763d1: Add search to FeatureFlags
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
 ## 0.3.5
 
 ### Patch Changes

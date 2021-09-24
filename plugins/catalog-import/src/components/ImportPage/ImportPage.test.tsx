@@ -61,10 +61,8 @@ describe('<ImportPage />', () => {
         catalogImportApiRef,
         new CatalogImportClient({
           discoveryApi: {} as any,
-          githubAuthApi: {
-            getAccessToken: async () => 'token',
-          },
           identityApi,
+          scmAuthApi: {} as any,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
           configApi: new ConfigReader({}),

@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 0.6.5
+
+### Patch Changes
+
+- 8113ba5ebb: Allow file extension `.yml` to be ingested in GitLab processor
+- Updated dependencies
+  - @backstage/config@0.1.10
+
 ## 0.6.4
 
 ### Patch Changes

@@ -33,6 +33,7 @@ export type PrepareResult =
   | {
       type: 'locations';
       locations: Array<{
+        exists?: boolean;
         target: string;
         entities: EntityName[];
       }>;
@@ -58,6 +59,7 @@ export type ReviewResult =
         target: string;
         entities: Entity[];
       }>;
+      refreshed: Array<{ target: string }>;
     }
   | {
       type: 'repository';

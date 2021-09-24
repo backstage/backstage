@@ -5,8 +5,8 @@ sidebar_label: OneLogin
 description: Adding OneLogin OIDC as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a OneLogin authentication provider
-that can authenticate users using OpenID Connect.
+The Backstage `core-plugin-api` package comes with a OneLogin authentication
+provider that can authenticate users using OpenID Connect.
 
 ## Create an Application on OneLogin
 

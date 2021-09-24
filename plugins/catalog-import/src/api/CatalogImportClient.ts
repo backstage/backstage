@@ -20,36 +20,37 @@ import {
   ConfigApi,
   DiscoveryApi,
   IdentityApi,
-  OAuthApi,
 } from '@backstage/core-plugin-api';
 import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
+import { trimEnd } from 'lodash';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
-  private readonly githubAuthApi: OAuthApi;
+  private readonly scmAuthApi: ScmAuthApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
   private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
+    scmAuthApi: ScmAuthApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
     configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.githubAuthApi = options.githubAuthApi;
+    this.scmAuthApi = options.scmAuthApi;
     this.identityApi = options.identityApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
@@ -71,6 +72,7 @@ export class CatalogImportClient implements CatalogImportApi {
         type: 'locations',
         locations: [
           {
+            exists: location.exists,
             target: location.location.target,
             entities: location.entities.map(e => ({
               kind: e.kind,
@@ -155,6 +157,7 @@ the component will become available.\n\nFor more information, read an \
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
+        repositoryUrl,
         fileContent,
         title,
         body,
@@ -213,7 +216,7 @@ the component will become available.\n\nFor more information, read an \
       entities: EntityName[];
     }>
   > {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({ url });
     const octo = new Octokit({
       auth: token,
       baseUrl: githubIntegrationConfig.apiBaseUrl,
@@ -238,29 +241,23 @@ the component will become available.\n\nFor more information, read an \
 
       return await Promise.all(
         searchResult.data.items
-          .map(
-            i => `${url.replace(/[\/]*$/, '')}/blob/${defaultBranch}/${i.path}`,
-          )
-          .map(
-            async i =>
-              ({
-                target: i,
-                entities: (
-                  await this.catalogApi.addLocation({
-                    type: 'url',
-                    target: i,
-                    dryRun: true,
-                  })
-                ).entities.map(e => ({
-                  kind: e.kind,
-                  namespace: e.metadata.namespace ?? 'default',
-                  name: e.metadata.name,
-                })),
-              } as {
-                target: string;
-                entities: EntityName[];
-              }),
-          ),
+          .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
+          .map(async target => {
+            const result = await this.catalogApi.addLocation({
+              type: 'url',
+              target,
+              dryRun: true,
+            });
+            return {
+              target,
+              exists: result.exists,
+              entities: result.entities.map(e => ({
+                kind: e.kind,
+                namespace: e.metadata.namespace ?? 'default',
+                name: e.metadata.name,
+              })),
+            };
+          }),
       );
     }
 
@@ -274,6 +271,7 @@ the component will become available.\n\nFor more information, read an \
     title,
     body,
     fileContent,
+    repositoryUrl,
     githubIntegrationConfig,
   }: {
     owner: string;
@@ -281,9 +279,15 @@ the component will become available.\n\nFor more information, read an \
     title: string;
     body: string;
     fileContent: string;
+    repositoryUrl: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({
+      url: repositoryUrl,
+      additionalScope: {
+        repoWrite: true,
+      },
+    });
 
     const octo = new Octokit({
       auth: token,
