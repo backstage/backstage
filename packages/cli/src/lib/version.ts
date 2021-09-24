@@ -15,7 +15,9 @@
  */
 
 import fs from 'fs-extra';
+import semver from 'semver';
 import { paths } from './paths';
+import { Lockfile } from './versioning';
 
 /* eslint-disable import/no-extraneous-dependencies,monorepo/no-internal-import */
 /*
@@ -41,7 +43,7 @@ import { version as devUtils } from '@backstage/dev-utils/package.json';
 import { version as testUtils } from '@backstage/test-utils/package.json';
 import { version as theme } from '@backstage/theme/package.json';
 
-export const packageVersions = {
+export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
   '@backstage/cli': cli,
   '@backstage/config': config,
@@ -60,3 +62,36 @@ export function findVersion() {
 
 export const version = findVersion();
 export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
+
+export function createPackageVersionProvider(lockfile?: Lockfile) {
+  return (name: string, versionHint?: string) => {
+    const packageVersion = packageVersions[name];
+    const targetVersion = versionHint || packageVersion;
+    if (!targetVersion) {
+      throw new Error(`No version available for package ${name}`);
+    }
+
+    const lockfileEntries = lockfile?.get(name);
+    if (
+      name.startsWith('@types/') &&
+      lockfileEntries?.some(entry => entry.range === '*')
+    ) {
+      return '*';
+    }
+    const validRanges = lockfileEntries?.filter(entry =>
+      semver.satisfies(targetVersion, entry.range),
+    );
+    const highestRange = validRanges?.slice(-1)[0];
+
+    if (highestRange?.range) {
+      return highestRange?.range;
+    }
+    if (packageVersion) {
+      return `^${packageVersion}`;
+    }
+    if (semver.parse(versionHint)?.prerelease.length) {
+      return versionHint!;
+    }
+    return `^${versionHint}`;
+  };
+}
