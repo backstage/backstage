@@ -269,6 +269,51 @@ export type BackstagePluginWithAnyOutput = Omit<
   output(): (PluginOutput | UnknownPluginOutput)[];
 };
 
+// Warning: (ae-missing-release-tag) "BitbucketAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class BitbucketAuth implements OAuthApi, SessionApi {
+  // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
+  constructor(sessionManager: SessionManager<BitbucketSession>);
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+    defaultScopes,
+  }: OAuthApiCreateOptions): BitbucketAuth;
+  // (undocumented)
+  getAccessToken(scope?: string, options?: AuthRequestOptions): Promise<string>;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentity | undefined>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  static normalizeScope(scope?: string): Set<string>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "BitbucketSession" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};
+
 // Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -359,7 +404,6 @@ export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 //
 // @public (undocumented)
 export class GithubAuth implements OAuthApi, SessionApi {
-  // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
   constructor(sessionManager: SessionManager<GithubSession>);
   // (undocumented)
   static create({
