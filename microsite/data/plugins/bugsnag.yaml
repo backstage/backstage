@@ -1,0 +1,9 @@
+---
+title: Bugsnag
+author: roadie.io
+authorUrl: https://sda.se/
+category: Monitoring
+description: View and monitor Bugsnag errors.
+documentation: https://roadie.io/backstage/plugins/bugsnag/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=bugsnag
+iconUrl: https://roadie.io/images/logos/bugsnag.png
+npmPackageName: '@roadiehq/backstage-plugin-bugsnag'
