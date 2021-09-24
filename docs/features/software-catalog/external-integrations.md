@@ -196,12 +196,13 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorParser } from '.';
 
-// Change this key to if the processor has undergone major changes
-// and the existing cache data is no longer compatible.
+// It's recommended to always bump the CACHE_KEY version if you make
+// changes to the processor implementation or CacheItem.
 const CACHE_KEY = 'v1';
 
 // CacheItem is our cache containing ETag used in the upstream request
 // as well as the processing result used when the Etag matches.
+// Bump the CACHE_KEY version if you make any changes to this type.
 type CacheItem = {
   etag: string;
   entity: Entity;
