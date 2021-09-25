@@ -36,12 +36,10 @@ export class AzureDevOpsApi {
     return client.getRepository(repoName, projectName);
   }
 
-  async getBuildList(projectName: string, repoId: string, top: string) {
-    const topBuilds: number = +top || 10;
-
+  async getBuildList(projectName: string, repoId: string, top: number) {
     if (this.logger) {
       this.logger.debug(
-        `Calling Azure DevOps REST API, getting up to ${topBuilds} Builds for Repository Id ${repoId} for Project ${projectName}`,
+        `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
       );
     }
 
@@ -59,7 +57,7 @@ export class AzureDevOpsApi {
       undefined,
       undefined,
       undefined,
-      topBuilds,
+      top,
       undefined,
       undefined,
       undefined,
@@ -71,7 +69,7 @@ export class AzureDevOpsApi {
     );
   }
 
-  async getRepoBuilds(projectName: string, repoName: string, top: string) {
+  async getRepoBuilds(projectName: string, repoName: string, top: number) {
     if (this.logger) {
       this.logger.debug(
         `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository ${repoName} for Project ${projectName}`,

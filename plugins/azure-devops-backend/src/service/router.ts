@@ -22,6 +22,8 @@ import { Config } from '@backstage/config';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { AzureDevOpsApi } from '../api';
 
+const DEFAULT_TOP: number = 10;
+
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
   logger: Logger;
@@ -88,8 +90,9 @@ export async function createRouter(
     res.status(200).json(gitRepository);
   });
 
-  router.get('/builds/:projectName/:repoId/:top', async (req, res) => {
-    const { projectName, repoId, top } = req.params;
+  router.get('/builds/:projectName/:repoId', async (req, res) => {
+    const { projectName, repoId } = req.params;
+    const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
     const buildList = await azureDevOpsApi.getBuildList(
       projectName,
       repoId,
@@ -98,8 +101,9 @@ export async function createRouter(
     res.status(200).json(buildList);
   });
 
-  router.get('/repo-builds/:projectName/:repoName/:top', async (req, res) => {
-    const { projectName, repoName, top } = req.params;
+  router.get('/repo-builds/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
     const gitRepository = await azureDevOpsApi.getRepoBuilds(
       projectName,
       repoName,

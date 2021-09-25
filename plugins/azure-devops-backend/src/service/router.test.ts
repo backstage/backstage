@@ -93,14 +93,14 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /builds/:projectName/:repoId/:top', () => {
+  describe('GET /builds/:projectName/:repoId', () => {
     it('fetches a list of builds', async () => {
       const firstBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: '2020-09-12T06:10:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         sourceBranch: 'refs/heads/develop',
         sourceVersion: '9bedf67800b2923982bdf60c89c57ce6fd2d9a1c',
       };
@@ -110,7 +110,7 @@ describe('createRouter', () => {
         buildNumber: 'Build-2',
         status: BuildStatus.InProgress,
         result: BuildResult.None,
-        queueTime: '2020-09-12T06:20:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         sourceBranch: 'refs/heads/develop',
         sourceVersion: '13c988d4f15e06bcdd0b0af290086a3079cdadb0',
       };
@@ -120,7 +120,7 @@ describe('createRouter', () => {
         buildNumber: 'Build-3',
         status: BuildStatus.Completed,
         result: BuildResult.PartiallySucceeded,
-        queueTime: '2020-09-12T06:30:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b319c308600eab015a5d6529add21660dc1',
       };
@@ -129,21 +129,21 @@ describe('createRouter', () => {
 
       azureDevOpsApi.getBuildList.mockResolvedValueOnce(builds);
 
-      const response = await request(app).get(
-        '/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998/50',
-      );
+      const response = await request(app)
+        .get('/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998')
+        .query({ top: '40' });
 
       expect(azureDevOpsApi.getBuildList).toHaveBeenCalledWith(
         'myProject',
         'af4ae3af-e747-4129-9bbc-d1329f6b0998',
-        '50',
+        40,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(builds);
     });
   });
 
-  describe('GET /repo-builds/:projectName/:repoName/:top', () => {
+  describe('GET /repo-builds/:projectName/:repoName', () => {
     it('fetches a list of repo builds', async () => {
       const firstRepoBuild: RepoBuild = {
         id: 1,
@@ -151,7 +151,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.Completed,
         result: BuildResult.PartiallySucceeded,
-        queueTime: '2020-09-12T06:10:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         source: 'refs/heads/develop (f4f78b31)',
       };
 
@@ -161,7 +161,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=2',
         status: BuildStatus.InProgress,
         result: BuildResult.None,
-        queueTime: '2020-09-12T06:20:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         source: 'refs/heads/develop (13c988d4)',
       };
 
@@ -171,7 +171,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=3',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: '2020-09-12T06:30:23.9325232Z' as unknown as Date,
+        queueTime: undefined,
         source: 'refs/heads/develop (9bedf678)',
       };
 
@@ -183,14 +183,14 @@ describe('createRouter', () => {
 
       azureDevOpsApi.getRepoBuilds.mockResolvedValueOnce(repoBuilds);
 
-      const response = await request(app).get(
-        '/repo-builds/myProject/myRepo/50',
-      );
+      const response = await request(app)
+        .get('/repo-builds/myProject/myRepo')
+        .query({ top: '50' });
 
       expect(azureDevOpsApi.getRepoBuilds).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
-        '50',
+        50,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);
