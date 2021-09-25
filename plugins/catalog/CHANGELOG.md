@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog
 
+## 0.6.17
+
+### Patch Changes
+
+- dd52fa1c5c: Update AboutCard to only render refresh button if the entity is managed by an url location.
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-components@0.5.1
+  - @backstage/integration-react@0.1.11
+
 ## 0.6.16
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.5.1
+
+### Patch Changes
+
+- 9c3cb8d4e2: Stop forcing `target="_blank"` in the `SupportButton` but instead use the default logic of the `Link` component, that opens external targets in a new window and relative targets in the same window.
+
 ## 0.5.0
 
 ### Minor Changes
