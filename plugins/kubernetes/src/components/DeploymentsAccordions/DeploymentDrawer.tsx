@@ -18,7 +18,7 @@ import React from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid, Chip } from '@material-ui/core';
 
 export const DeploymentDrawer = ({
   deployment,
@@ -65,6 +65,12 @@ export const DeploymentDrawer = ({
           <Typography color="textSecondary" variant="body1">
             Deployment
           </Typography>
+        </Grid>
+        <Grid item>
+          <Chip
+            size="small"
+            label={`namespace: ${deployment.metadata?.namespace}` ?? 'default'}
+          />
         </Grid>
       </Grid>
     </KubernetesDrawer>
