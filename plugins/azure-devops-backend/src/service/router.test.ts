@@ -84,10 +84,10 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/repository/myProject/myRepo');
 
-      expect(azureDevOpsApi.getGitRepository.mock.calls[0]).toEqual([
+      expect(azureDevOpsApi.getGitRepository).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
-      ]);
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(gitRepository);
     });
@@ -133,11 +133,11 @@ describe('createRouter', () => {
         '/builds/myProject/af4ae3af-e747-4129-9bbc-d1329f6b0998/50',
       );
 
-      expect(azureDevOpsApi.getBuildList.mock.calls[0]).toEqual([
+      expect(azureDevOpsApi.getBuildList).toHaveBeenCalledWith(
         'myProject',
         'af4ae3af-e747-4129-9bbc-d1329f6b0998',
         '50',
-      ]);
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(builds);
     });
@@ -187,11 +187,11 @@ describe('createRouter', () => {
         '/repo-builds/myProject/myRepo/50',
       );
 
-      expect(azureDevOpsApi.getRepoBuilds.mock.calls[0]).toEqual([
+      expect(azureDevOpsApi.getRepoBuilds).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
         '50',
-      ]);
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);
     });
