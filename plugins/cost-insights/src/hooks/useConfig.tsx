@@ -24,12 +24,12 @@ import React, {
 import { Config as BackstageConfig } from '@backstage/config';
 import { Currency, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
-import { validateMetrics } from '../utils/config';
+import { validateCurrencies, validateMetrics } from '../utils/config';
 import { defaultCurrencies } from '../utils/currency';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /*
- * Config schema 2020-10-15
+ * Config schema 2021-08-05
  *
  * costInsights:
  *   engineerCost: 200000
@@ -46,6 +46,16 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       default: true
  *     metricB:
  *       name: Metric B
+ *   currencies:
+ *     currencyA:
+ *       label: Currency A
+ *       unit: Unit A
+ *     currencyB:
+ *       label: Currency B
+ *       kind: CURRENCY_B
+ *       unit: Unit B
+ *       prefix: B
+ *       rate: 3.5
  */
 
 export type ConfigContextProps = {
@@ -96,6 +106,21 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return [];
     }
 
+    function getCurrencies(): Currency[] {
+      const currencies = c.getOptionalConfig('costInsights.currencies');
+      if (currencies) {
+        return currencies.keys().map(key => ({
+          label: currencies.getString(`${key}.label`),
+          unit: currencies.getString(`${key}.unit`),
+          kind: currencies.getOptionalString(`${key}.kind`) || null,
+          prefix: currencies.getOptionalString(`${key}.prefix`),
+          rate: currencies.getOptionalNumber(`${key}.rate`),
+        }));
+      }
+
+      return defaultCurrencies;
+    }
+
     function getIcons(): Icon[] {
       const products = c.getConfig('costInsights.products');
       const keys = products.keys();
@@ -115,8 +140,10 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
       const icons = getIcons();
+      const currencies = getCurrencies();
 
       validateMetrics(metrics);
+      validateCurrencies(currencies);
 
       setConfig(prevState => ({
         ...prevState,
@@ -124,6 +151,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         icons,
+        currencies,
       }));
 
       setLoading(false);
