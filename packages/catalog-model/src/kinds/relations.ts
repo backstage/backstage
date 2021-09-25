@@ -82,3 +82,11 @@ export const RELATION_HAS_MEMBER = 'hasMember';
 export const RELATION_PART_OF = 'partOf';
 /** @public */
 export const RELATION_HAS_PART = 'hasPart';
+
+/**
+ * A relation denoting entities that are emitted from processing another relation.
+ * @public
+ */
+export const RELATION_GENERATES = 'generates';
+/** @public */
+export const RELATION_GENERATED_BY = 'generatedBy';
