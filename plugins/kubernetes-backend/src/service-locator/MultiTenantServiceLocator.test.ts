@@ -16,10 +16,12 @@
 
 import '@backstage/backend-common';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
+import { ConfigClusterLocator } from '../cluster-locator/ConfigClusterLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([]);
+    const clusterLocator = new ConfigClusterLocator([]);
+    const sut = new MultiTenantServiceLocator(clusterLocator);
 
     const result = await sut.getClustersByServiceId('ignored');
 
@@ -27,7 +29,7 @@ describe('MultiTenantConfigClusterLocator', () => {
   });
 
   it('one clusters returns one cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([
+    const clusterLocator = new ConfigClusterLocator([
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
@@ -35,6 +37,7 @@ describe('MultiTenantConfigClusterLocator', () => {
         serviceAccountToken: '12345',
       },
     ]);
+    const sut = new MultiTenantServiceLocator(clusterLocator);
 
     const result = await sut.getClustersByServiceId('ignored');
 
@@ -49,7 +52,7 @@ describe('MultiTenantConfigClusterLocator', () => {
   });
 
   it('two clusters returns two cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([
+    const clusterLocator = new ConfigClusterLocator([
       {
         name: 'cluster1',
         serviceAccountToken: 'token',
@@ -62,6 +65,7 @@ describe('MultiTenantConfigClusterLocator', () => {
         authProvider: 'google',
       },
     ]);
+    const sut = new MultiTenantServiceLocator(clusterLocator);
 
     const result = await sut.getClustersByServiceId('ignored');
 
