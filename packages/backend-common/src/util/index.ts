@@ -16,3 +16,4 @@
 
 export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
 export { DockerContainerRunner } from './DockerContainerRunner';
+export { URL } from './URL';

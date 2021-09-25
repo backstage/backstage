@@ -28,7 +28,7 @@ import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
-import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
+import { BackendBundlingOptions, BundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';

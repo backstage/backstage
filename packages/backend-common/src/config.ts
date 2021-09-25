@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
 import { Config, ConfigReader, JsonValue } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
+import { URL } from './util';
 
 class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -54,48 +55,63 @@ class ObservableConfigProxy implements Config {
   has(key: string): boolean {
     return this.config.has(key);
   }
+
   keys(): string[] {
     return this.config.keys();
   }
+
   get<T = JsonValue>(key?: string): T {
     return this.config.get(key);
   }
+
   getOptional<T = JsonValue>(key?: string): T | undefined {
     return this.config.getOptional(key);
   }
+
   getConfig(key: string): Config {
     return this.config.getConfig(key);
   }
+
   getOptionalConfig(key: string): Config | undefined {
     return this.config.getOptionalConfig(key);
   }
+
   getConfigArray(key: string): Config[] {
     return this.config.getConfigArray(key);
   }
+
   getOptionalConfigArray(key: string): Config[] | undefined {
     return this.config.getOptionalConfigArray(key);
   }
+
   getNumber(key: string): number {
     return this.config.getNumber(key);
   }
+
   getOptionalNumber(key: string): number | undefined {
     return this.config.getOptionalNumber(key);
   }
+
   getBoolean(key: string): boolean {
     return this.config.getBoolean(key);
   }
+
   getOptionalBoolean(key: string): boolean | undefined {
     return this.config.getOptionalBoolean(key);
   }
+
   getString(key: string): string {
     return this.config.getString(key);
   }
+
   getOptionalString(key: string): string | undefined {
     return this.config.getOptionalString(key);
   }
+
   getStringArray(key: string): string[] {
     return this.config.getStringArray(key);
   }
+
   getOptionalStringArray(key: string): string[] | undefined {
     return this.config.getOptionalStringArray(key);
   }
@@ -117,7 +133,9 @@ export async function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configPaths: string[] = [args.config ?? []].flat();
+  const configPaths: string[] = [args.config ?? []]
+    .flat()
+    .map(arg => (new URL(arg).isValidUrl() ? arg : resolvePath(arg)));
 
   const config = new ObservableConfigProxy(options.logger);
 
@@ -126,7 +144,7 @@ export async function loadBackendConfig(options: {
 
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configPaths.map(opt => resolvePath(opt)),
+    configPaths: configPaths,
     watch: {
       onChange(newConfigs) {
         options.logger.info(
