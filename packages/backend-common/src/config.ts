@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
 import { Config, ConfigReader, JsonValue } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
+import { URL } from './util';
 
 class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -117,7 +118,9 @@ export async function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configPaths: string[] = [args.config ?? []].flat();
+  const configPaths: string[] = [args.config ?? []]
+    .flat()
+    .map(arg => (new URL(arg).isValidUrl() ? arg : resolvePath(arg)));
 
   const config = new ObservableConfigProxy(options.logger);
 
@@ -126,7 +129,7 @@ export async function loadBackendConfig(options: {
 
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configPaths.map(opt => resolvePath(opt)),
+    configPaths: configPaths,
     watch: {
       onChange(newConfigs) {
         options.logger.info(

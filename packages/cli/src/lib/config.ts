@@ -17,6 +17,7 @@
 import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
+import { URL } from '@backstage/backend-common';
 
 type Options = {
   args: string[];
@@ -26,7 +27,9 @@ type Options = {
 };
 
 export async function loadCliConfig(options: Options) {
-  const configPaths = options.args.map(arg => paths.resolveTarget(arg));
+  const configPaths = options.args.map(arg =>
+    new URL(arg).isValidUrl() ? arg : paths.resolveTarget(arg),
+  );
 
   // Consider all packages in the monorepo when loading in config
   const { Project } = require('@lerna/project');
