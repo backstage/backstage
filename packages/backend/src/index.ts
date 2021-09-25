@@ -26,17 +26,17 @@ import Router from 'express-promise-router';
 import {
   CacheManager,
   createServiceBuilder,
+  DatabaseManager,
   getRootLogger,
   loadBackendConfig,
   notFoundHandler,
-  DatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import {Config} from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
-import { metricsInit, metricsHandler } from './metrics';
+import {metricsHandler, metricsInit} from './metrics';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
@@ -52,7 +52,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
-import { PluginEnvironment } from './types';
+import {PluginEnvironment} from './types';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();

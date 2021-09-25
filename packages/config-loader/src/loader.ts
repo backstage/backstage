@@ -17,15 +17,16 @@
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import chokidar from 'chokidar';
-import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
-import { AppConfig } from '@backstage/config';
+import {basename, dirname, isAbsolute, resolve as resolvePath} from 'path';
+import {AppConfig} from '@backstage/config';
 import {
   applyConfigTransforms,
-  readEnvConfig,
   createIncludeTransform,
   createSubstitutionTransform,
+  readEnvConfig,
 } from './lib';
-import { EnvFunc } from './lib/transform/types';
+import {EnvFunc} from './lib/transform/types';
+import fetch from "cross-fetch";
 
 /** @public */
 export type LoadConfigOptions = {
@@ -44,6 +45,11 @@ export type LoadConfigOptions = {
    * @experimental This API is not stable and may change at any point
    */
   experimentalEnvFunc?: EnvFunc;
+
+  /**
+   * An optional remote config reloading period, in seconds
+   */
+  remoteReloadingSeconds?: number;
 
   /**
    * An optional configuration that enables watching of config files.
@@ -69,12 +75,18 @@ export type LoadConfigOptions = {
 export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
-  const { configRoot, experimentalEnvFunc: envFunc, watch } = options;
-  const configPaths = options.configPaths.slice();
+  const {configRoot, experimentalEnvFunc: envFunc, watch, remoteReloadingSeconds = 60} = options;
+
+  function isUrl(path: string) {
+    return path.indexOf("http:") !== -1 || path.indexOf("https:") !== -1;
+  }
+
+  const configPaths = options.configPaths.slice().filter(path => isAbsolute(path));
+  const configUrls = options.configPaths.slice().filter(path => isUrl(path));
 
   // If no paths are provided, we default to reading
   // `app-config.yaml` and, if it exists, `app-config.local.yaml`
-  if (configPaths.length === 0) {
+  if (configPaths.length === 0 && configUrls.length === 0) {
     configPaths.push(resolvePath(configRoot, 'app-config.yaml'));
 
     const localConfig = resolvePath(configRoot, 'app-config.local.yaml');
@@ -104,13 +116,56 @@ export async function loadConfig(
         substitutionTransform,
       ]);
 
-      configs.push({ data, context: basename(configPath) });
+      configs.push({data, context: basename(configPath)});
     }
 
     return configs;
   };
 
-  let fileConfigs;
+  const loadRemoteConfigFiles = async () => {
+    const downloadConfig = async (configUrl: string, path: string) => {
+      let synthesizedUrl;
+      try {
+
+        synthesizedUrl = configUrl.toString();
+        // .replace('https:/', 'https://')
+        // .replace('http:/', 'http://');
+
+        const response = await fetch(synthesizedUrl);
+        fs.writeFileSync(path, await response.text())
+      } catch (e) {
+        console.log(`Could not download config file at ${synthesizedUrl}`)
+      }
+    };
+
+    const configs = [];
+
+    for (const configUrl of configUrls) {
+      if (!isUrl(configUrl)) {
+        throw new Error(`Config load path is not absolute: '${configUrl}'`);
+      }
+
+      const configPath = resolvePath(configRoot, 'remote-app-config.yaml')
+
+      await downloadConfig(configUrl, configPath);
+
+      const dir = dirname(configPath);
+      const readFile = (path: string) =>
+        fs.readFile(resolvePath(dir, path), 'utf8');
+
+      const input = yaml.parse(await readFile(configPath));
+      const substitutionTransform = createSubstitutionTransform(env);
+      const data = await applyConfigTransforms(dir, input, [
+        createIncludeTransform(env, readFile, substitutionTransform),
+        substitutionTransform,
+      ]);
+
+      configs.push({data, context: basename(configPath)});
+    }
+    return configs;
+  };
+
+  let fileConfigs: AppConfig[];
   try {
     fileConfigs = await loadConfigFiles();
   } catch (error) {
@@ -119,10 +174,21 @@ export async function loadConfig(
     );
   }
 
+  let remoteConfigs: AppConfig[];
+  try {
+    remoteConfigs = await loadRemoteConfigFiles();
+  } catch (error) {
+    throw new Error(
+      `Failed to read remote configuration file, ${error.message}`,
+    );
+  }
+
   const envConfigs = await readEnvConfig(process.env);
 
-  // Set up config file watching if requested by the caller
-  if (watch) {
+  function watchConfigFile() {
+    if (watch === undefined) {
+      return;
+    }
     let currentSerializedConfig = JSON.stringify(fileConfigs);
 
     const watcher = chokidar.watch(configPaths, {
@@ -138,7 +204,7 @@ export async function loadConfig(
         }
         currentSerializedConfig = newSerializedConfig;
 
-        watch.onChange([...newConfigs, ...envConfigs]);
+        watch.onChange([...newConfigs, ...remoteConfigs, ...envConfigs]);
       } catch (error) {
         console.error(`Failed to reload configuration files, ${error}`);
       }
@@ -151,5 +217,51 @@ export async function loadConfig(
     }
   }
 
-  return [...fileConfigs, ...envConfigs];
+  function watchRemoteConfig() {
+    if (watch === undefined) {
+      return;
+    }
+
+    let oldETag: string;
+    let reloadConfigRequired: boolean;
+    let handle: NodeJS.Timeout | undefined
+    try {
+      handle = setInterval(async () => {
+        for (const configPath of configUrls) {
+          const {headers} = await fetch(configPath, {method: 'HEAD'});
+          const newETag = headers.get("ETag");
+          if (oldETag !== undefined && oldETag !== newETag && newETag !== null) {
+            reloadConfigRequired = true;
+            oldETag = newETag;
+            break;
+          }
+        }
+        if (reloadConfigRequired) {
+          const newRemoteConfigs = await loadRemoteConfigFiles();
+          watch.onChange([...newRemoteConfigs, ...fileConfigs, ...envConfigs]);
+        }
+      }, remoteReloadingSeconds * 1000);
+    } catch (error) {
+      console.error(`Failed to reload configuration files, ${error}`);
+      if (handle !== undefined) {
+        clearInterval(handle);
+      }
+    }
+
+    if (watch.stopSignal) {
+      watch.stopSignal.then(() => {
+        if (handle !== undefined) {
+          clearInterval(handle);
+        }
+      });
+    }
+  }
+
+// Set up config file watching if requested by the caller
+  if (watch) {
+    watchConfigFile();
+    watchRemoteConfig();
+  }
+
+  return [...fileConfigs, ...remoteConfigs, ...envConfigs];
 }
