@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { Experiment8 as Experiment } from './Experiment8';
+import React from 'react';
+
+export function Experiment8() {
+  return (
+    <div>
+      <h1>Experiment 8</h1>
+    </div>
+  );
+}

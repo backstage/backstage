@@ -696,3 +696,67 @@ of being non-standard. I'd argue that it's not very magic, as in the end it's
 really just the fact that you can call React hooks that makes it different from
 any regular function. I think this and the plain component solution are worth
 exploring further, but will ditch the rest.
+
+### Experiment 8 - What about creating layouts?
+
+It's pretty complex to replicate the `EntityLayout` as it is already. If we also
+bring a layout provider with components into the mix, it'll be a whole new level
+of fun. The assumption is that it's worth creating an API that helps with the
+creation of new layouts, either as one big surface, or a collection of utilities
+that are pieced together. In the end it should be possible to create a new
+layout by mostly just providing the visual components and perhaps
+implementations of navigation features like tabs.
+
+Let's start with an overview of what the `Page` and `EntityPage` layout
+implementations look like.
+
+```tsx
+// Typical usage of Page, Header, and Content
+// The implementation of these is pretty boring
+<Page themeId={...}>
+  <Header title={...} />
+  <Content>
+    {...}
+  </Content>
+</Page>
+
+// Typical usage of EntityLayout
+<EntityLayout>
+  <EntityLayout.Route path='/api' title='API'>
+    {/*
+      Here we either have Grid container + items and entity cards,
+      or content from a plugin. Compared to the page layout the ownership
+      is a bit cleaner here, with content being just pure content.
+    */}
+  </EntityLayout.Route>
+</EntityLayout>
+
+// EntityLayout implementation pieces
+function EntityLayout(props) {
+  const routes = useElementFilter(...)
+
+  return (
+    <Page>
+      <Header {...headerProps(props)}>
+        {headerItems(props)}
+      </Header>
+
+      {loading && ...}
+      {error && ...}
+      {entity && <RoutedTabs routes={routes}/>}
+      {else && 404}
+
+      <UnregisterEntityDialog />
+    </Page>
+  )
+}
+```
+
+The entity layout is in itself a layer on top of the plain layout, how could we
+accommodate this kind of layering? Let's explore how we could create some form
+of API that lets us create base layouts that support layout contexts, but that
+can also be built upon to create specialized layouts like the `EntityLayout`.
+
+#### Implementation
+
+[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment8.tsx)
