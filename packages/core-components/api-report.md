@@ -928,6 +928,23 @@ export const SidebarItem: React_2.ForwardRefExoticComponent<
 // @public (undocumented)
 export function SidebarPage(props: PropsWithChildren<{}>): JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SideBarPageContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function SideBarPageContent(props: PropsWithChildren<{}>): JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarPageContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SidebarPageContext: React_2.Context<SidebarPageContextType>;
+
+// Warning: (ae-missing-release-tag) "SidebarPageContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarPageContextType = {
+  contentRef?: React_2.MutableRefObject<HTMLDivElement | null>;
+};
+
 // Warning: (ae-missing-release-tag) "SidebarPinStateContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
