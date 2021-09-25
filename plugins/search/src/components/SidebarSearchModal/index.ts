@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './DefaultResultListItem';
-export * from './Filters';
-export * from './SearchBar';
-export * from './SearchContext';
-export * from './SearchFilter';
-export * from './SearchModal';
-export * from './SearchPage';
-export * from './SearchResult';
-export * from './SearchResultPager';
-export * from './SearchType';
-export * from './SidebarSearch';
-export * from './SidebarSearchModal';
+export { SidebarSearchModal } from './SidebarSearchModal';
