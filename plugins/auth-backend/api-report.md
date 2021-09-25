@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JSONWebKey } from 'jose';
+import { JWKS } from 'jose';
 import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -212,11 +213,25 @@ export type GoogleProviderOptions = {
 //
 // @public
 export class IdentityClient {
-  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
+  // Warning: (ae-forgotten-export) The symbol "TokenFactory" needs to be exported by the entry point index.d.ts
+  constructor(
+    issuer: string,
+    tokenFactory: TokenFactory,
+    publicKeyStore: JWKS.KeyStore,
+    publicKeyStoreUpdated: number,
+  );
   authenticate(token: string | undefined): Promise<BackstageIdentity>;
+  // (undocumented)
+  static create(options: {
+    database: PluginDatabaseManager;
+    discovery: PluginEndpointDiscovery;
+    logger: Logger_2;
+  }): Promise<IdentityClient>;
   static getBearerToken(
     authorizationHeader: string | undefined,
   ): string | undefined;
+  // Warning: (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+  issueToken(params: TokenParams): Promise<string>;
   listPublicKeys(): Promise<{
     keys: JSONWebKey[];
   }>;
@@ -251,7 +266,7 @@ export type OAuth2ProviderOptions = {
 //
 // @public (undocumented)
 export class OAuthAdapter implements AuthProviderRouteHandlers {
-  constructor(handlers: OAuthHandlers, options: Options);
+  constructor(handlers: OAuthHandlers, options: Options_2);
   // (undocumented)
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
@@ -261,7 +276,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
     options: Pick<
-      Options,
+      Options_2,
       'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
     >,
   ): OAuthAdapter;
@@ -466,7 +481,6 @@ export type WebMessageResponse =
 
 // Warnings were encountered during analysis:
 //
-// src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:50:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:58:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
