@@ -198,6 +198,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly bindRoutes: AppOptions['bindRoutes'];
 
   private readonly identityApi = new AppIdentity();
+  private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
@@ -208,6 +209,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.configLoader = options.configLoader;
     this.defaultApis = options.defaultApis;
     this.bindRoutes = options.bindRoutes;
+    this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
@@ -388,17 +390,27 @@ export class PrivateAppImpl implements BackstageApp {
 
   private getApiHolder(): ApiHolder {
     if (this.apiHolder) {
+      // Register additional plugins if they have been added.
+      // Routes paths, objects and others are already updated in the provider when children of it change
+      for (const plugin of this.plugins) {
+        for (const factory of plugin.getApis()) {
+          if (!this.apiFactoryRegistry.get(factory.api)) {
+            this.apiFactoryRegistry.register('default', factory);
+          }
+        }
+      }
+      ApiResolver.validateFactories(
+        this.apiFactoryRegistry,
+        this.apiFactoryRegistry.getAllApis(),
+      );
       return this.apiHolder;
     }
-
-    const registry = new ApiFactoryRegistry();
-
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: appThemeApiRef,
       deps: {},
       factory: () => AppThemeSelector.createWithStorage(this.themes),
     });
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: configApiRef,
       deps: {},
       factory: () => {
@@ -410,7 +422,7 @@ export class PrivateAppImpl implements BackstageApp {
         return this.configApi;
       },
     });
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: identityApiRef,
       deps: {},
       factory: () => this.identityApi,
@@ -418,18 +430,18 @@ export class PrivateAppImpl implements BackstageApp {
 
     // It's possible to replace the feature flag API, but since we must have at least
     // one implementation we add it here directly instead of through the defaultApis.
-    registry.register('default', {
+    this.apiFactoryRegistry.register('default', {
       api: featureFlagsApiRef,
       deps: {},
       factory: () => new LocalStorageFeatureFlags(),
     });
     for (const factory of this.defaultApis) {
-      registry.register('default', factory);
+      this.apiFactoryRegistry.register('default', factory);
     }
 
     for (const plugin of this.plugins) {
       for (const factory of plugin.getApis()) {
-        if (!registry.register('default', factory)) {
+        if (!this.apiFactoryRegistry.register('default', factory)) {
           throw new Error(
             `Plugin ${plugin.getId()} tried to register duplicate or forbidden API factory for ${
               factory.api
@@ -440,17 +452,19 @@ export class PrivateAppImpl implements BackstageApp {
     }
 
     for (const factory of this.apis) {
-      if (!registry.register('app', factory)) {
+      if (!this.apiFactoryRegistry.register('app', factory)) {
         throw new Error(
           `Duplicate or forbidden API factory for ${factory.api} in app`,
         );
       }
     }
 
-    ApiResolver.validateFactories(registry, registry.getAllApis());
+    ApiResolver.validateFactories(
+      this.apiFactoryRegistry,
+      this.apiFactoryRegistry.getAllApis(),
+    );
 
-    this.apiHolder = new ApiResolver(registry);
-
+    this.apiHolder = new ApiResolver(this.apiFactoryRegistry);
     return this.apiHolder;
   }
 
