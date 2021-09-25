@@ -15,7 +15,11 @@
  */
 
 import { isValidElement, ReactElement, ReactNode } from 'react';
-import { RouteRef, getComponentData } from '@backstage/core-plugin-api';
+import {
+  RouteRef,
+  getComponentData,
+  BackstagePlugin,
+} from '@backstage/core-plugin-api';
 import { BackstageRouteObject } from './types';
 import { createCollector } from '../extensions/traversal';
 import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
@@ -141,6 +145,10 @@ export const routeObjectCollector = createCollector(
           element: 'mounted',
           routeRefs: new Set([routeRef]),
           children: [MATCH_ALL_ROUTE],
+          plugin: getComponentData<BackstagePlugin>(
+            node.props.element,
+            'core.plugin',
+          ),
         };
         parentChildren.push(newObject);
         return newObject;
@@ -163,6 +171,7 @@ export const routeObjectCollector = createCollector(
         element: 'gathered',
         routeRefs: new Set(),
         children: [MATCH_ALL_ROUTE],
+        plugin: parentObj?.plugin,
       };
       parentChildren.push(newObject);
       return newObject;

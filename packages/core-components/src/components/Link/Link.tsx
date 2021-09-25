@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   Link as MaterialLink,
   LinkProps as MaterialLinkProps,
@@ -34,26 +35,44 @@ export type LinkProps = MaterialLinkProps &
 declare function LinkType(props: LinkProps): JSX.Element;
 
 /**
- * Thin wrapper on top of material-ui's Link component
- * Makes the Link to utilise react-router
+ * Thin wrapper on top of material-ui's Link component, which...
+ * - Makes the Link use react-router
+ * - Captures Link clicks as analytics events.
  */
-const ActualLink = React.forwardRef<any, LinkProps>((props, ref) => {
-  const to = String(props.to);
-  const external = isExternalUri(to);
-  const newWindow = external && !!/^https?:/.exec(to);
-  return external ? (
-    // External links
-    <MaterialLink
-      ref={ref}
-      href={to}
-      {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-      {...props}
-    />
-  ) : (
-    // Interact with React Router for internal links
-    <MaterialLink ref={ref} component={RouterLink} {...props} />
-  );
-});
+const ActualLink = React.forwardRef<any, LinkProps>(
+  ({ onClick, ...props }, ref) => {
+    const analytics = useAnalytics();
+    const to = String(props.to);
+    const external = isExternalUri(to);
+    const newWindow = external && !!/^https?:/.exec(to);
+
+    const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
+      if (onClick !== undefined) {
+        onClick(event);
+      }
+      analytics.captureEvent('click', to);
+    };
+
+    return external ? (
+      // External links
+      <MaterialLink
+        ref={ref}
+        href={to}
+        onClick={handleClick}
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
+      />
+    ) : (
+      // Interact with React Router for internal links
+      <MaterialLink
+        ref={ref}
+        component={RouterLink}
+        onClick={handleClick}
+        {...props}
+      />
+    );
+  },
+);
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
 //               function, which makes our API reference docs much nicer.

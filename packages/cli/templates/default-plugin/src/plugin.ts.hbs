@@ -11,6 +11,7 @@ export const {{ pluginVar }} = createPlugin({
 
 export const {{ extensionName }} = {{ pluginVar }}.provide(
   createRoutableExtension({
+    name: '{{ extensionName }}',
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),
     mountPoint: rootRouteRef,
