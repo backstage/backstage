@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, TextField } from '@material-ui/core';
 import RadarComponent from '../components/RadarComponent';
 import { TechRadarComponentProps } from '../api';
 import {
@@ -45,11 +45,27 @@ export const RadarPage = ({
   ...props
 }: TechRadarPageProps): JSX.Element => {
   const classes = useStyles();
+  const [searchText, setSearchText] = React.useState('');
+
+  const searchInput = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setSearchText(event.target.value);
+  };
+
   return (
     <Page themeId="tool">
       <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
+          <TextField
+            id="standard-search"
+            label="Search field"
+            type="search"
+            onChange={e => {
+              searchInput(e);
+            }}
+          />
           <SupportButton>
             This is used for visualizing the official guidelines of different
             areas of software development such as languages, frameworks,
@@ -58,7 +74,7 @@ export const RadarPage = ({
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent {...props} />
+            <RadarComponent searchText={searchText} {...props} />
           </Grid>
         </Grid>
       </Content>

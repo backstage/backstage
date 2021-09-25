@@ -81,4 +81,5 @@ export interface TechRadarComponentProps {
   width: number;
   height: number;
   svgProps?: object;
+  searchText?: string;
 }
