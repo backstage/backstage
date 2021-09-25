@@ -28,6 +28,7 @@ import {
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
+      packagePaths?: string[];
     }
   | {
       serialized: JsonObject;
@@ -44,7 +45,10 @@ export async function loadConfigSchema(
   let schemas: ConfigSchemaPackageEntry[];
 
   if ('dependencies' in options) {
-    schemas = await collectConfigSchemas(options.dependencies);
+    schemas = await collectConfigSchemas(
+      options.dependencies,
+      options.packagePaths ?? [],
+    );
   } else {
     const { serialized } = options;
     if (serialized?.backstageConfigSchemaVersion !== 1) {

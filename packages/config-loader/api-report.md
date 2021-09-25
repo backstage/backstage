@@ -53,6 +53,7 @@ export function loadConfigSchema(
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
+      packagePaths?: string[];
     }
   | {
       serialized: JsonObject;
