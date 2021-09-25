@@ -239,7 +239,8 @@ export async function loadConfig(
           }
         }
         if (reloadConfigRequired) {
-          await loadRemoteConfigFiles();
+          const newRemoteConfigs = await loadRemoteConfigFiles();
+          watch.onChange([...newRemoteConfigs, ...envConfigs]);
         }
       }, remoteReloadingSeconds * 1000);
     } catch (error) {
