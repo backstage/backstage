@@ -14,6 +14,7 @@ import { CardHeaderProps } from '@material-ui/core';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
@@ -62,6 +63,42 @@ enum Alignment {
   UP_LEFT = 'UL',
   // (undocumented)
   UP_RIGHT = 'UR',
+}
+
+// Warning: (ae-missing-release-tag) "AsyncBoundaryProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AsyncBoundaryProps<T> {
+  // (undocumented)
+  asyncValue: AsyncState<T>;
+  // (undocumented)
+  error?: ComponentType<{
+    error: Error;
+  }>;
+  // (undocumented)
+  progress?: React_2.ReactNode;
+}
+
+// Warning: (ae-missing-release-tag) "AsyncBoundaryResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AsyncBoundaryResult<T> {
+  // (undocumented)
+  AsyncBoundary: ComponentType<PropsWithChildren<AsyncBoundaryProps<T>>>;
+  // (undocumented)
+  useAsyncValue: () => T;
+}
+
+// Warning: (ae-missing-release-tag) "AsyncState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AsyncState<T> {
+  // (undocumented)
+  error: Error | undefined;
+  // (undocumented)
+  loading: boolean;
+  // (undocumented)
+  value: T | undefined;
 }
 
 // Warning: (ae-forgotten-export) The symbol "AvatarProps" needs to be exported by the entry point index.d.ts
@@ -140,6 +177,11 @@ export namespace CopyTextButton {
       tooltipText: PropTypes.Requireable<string>;
     };
 }
+
+// Warning: (ae-missing-release-tag) "createAsyncBoundary" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function createAsyncBoundary<T>(): AsyncBoundaryResult<T>;
 
 // Warning: (ae-forgotten-export) The symbol "CreateButtonProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CreateButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
