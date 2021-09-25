@@ -15,8 +15,22 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export function rancherFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error(
-    'Rancher formatter is not yet implemented. Please, contribute!',
-  );
+const kindMappings: Record<string, string> = {
+  deployment: 'apps.deployment',
+  ingress: 'networking.k8s.io.ingress',
+  service: 'service',
+  horizontalpodautoscaler: 'autoscaling.horizontalpodautoscaler',
+};
+
+export function rancherFormatter(options: ClusterLinksFormatterOptions): URL {
+  const result = new URL(options.dashboardUrl.href);
+  const name = options.object.metadata?.name;
+  const namespace = options.object.metadata?.namespace;
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  if (validKind && name && namespace) {
+    result.pathname = `explorer/${validKind}/${namespace}/${name}`;
+  } else if (namespace) {
+    result.pathname = 'explorer/workload';
+  }
+  return result;
 }
