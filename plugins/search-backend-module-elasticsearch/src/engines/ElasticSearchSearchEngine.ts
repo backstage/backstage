@@ -29,6 +29,7 @@ import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { Logger } from 'winston';
+import { ElasticSearchEngineIndexer } from './ElasticSearchEngineIndexer';
 
 export type ConcreteElasticSearchQuery = {
   documentTypes?: string[];
@@ -215,67 +216,54 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    this.logger.info(
-      `Started indexing ${documents.length} documents for index ${type}`,
-    );
-    const startTimestamp = process.hrtime();
+  async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
     const index = this.constructIndexName(type, `${Date.now()}`);
-    try {
-      const aliases = await this.elasticSearchClient.cat.aliases({
-        format: 'json',
-        name: alias,
-      });
-      const removableIndices = aliases.body.map(
-        (r: Record<string, any>) => r.index,
-      );
+    const indexer = new ElasticSearchEngineIndexer({
+      type,
+      index,
+      alias,
+      elasticSearchClient: this.elasticSearchClient,
+      logger: this.logger,
+    });
 
-      await this.elasticSearchClient.indices.create({
-        index,
-      });
-      const result = await this.elasticSearchClient.helpers.bulk({
-        datasource: documents,
-        onDocument() {
-          return {
-            index: { _index: index },
-          };
-        },
-        refreshOnCompletion: index,
-      });
-
-      this.logger.info(
-        `Indexing completed for index ${type} in ${duration(startTimestamp)}`,
-        result,
-      );
-      await this.elasticSearchClient.indices.updateAliases({
-        body: {
-          actions: [
-            { remove: { index: this.constructIndexName(type, '*'), alias } },
-            { add: { index, alias } },
-          ],
-        },
-      });
-
-      this.logger.info('Removing stale search indices', removableIndices);
-      if (removableIndices.length) {
-        await this.elasticSearchClient.indices.delete({
-          index: removableIndices,
+    // Rotate aliases upon completion.
+    indexer.on('close', async () => {
+      this.logger.info(`Indexing completed for index ${type}`);
+      try {
+        await this.elasticSearchClient.indices.updateAliases({
+          body: {
+            actions: [
+              { remove: { index: this.constructIndexName(type, '*'), alias } },
+              { add: { index, alias } },
+            ],
+          },
         });
+      } catch (e) {
+        this.logger.error(`Unable to rotate indices: ${e}`);
       }
-    } catch (e) {
+    });
+
+    // Attempt cleanup upon failure.
+    indexer.on('error', async e => {
       this.logger.error(`Failed to index documents for type ${type}`, e);
-      const response = await this.elasticSearchClient.indices.exists({
-        index,
-      });
-      const indexCreated = response.body;
-      if (indexCreated) {
-        this.logger.info(`Removing created index ${index}`);
-        await this.elasticSearchClient.indices.delete({
+      try {
+        const response = await this.elasticSearchClient.indices.exists({
           index,
         });
+        const indexCreated = response.body;
+        if (indexCreated) {
+          this.logger.info(`Removing created index ${index}`);
+          await this.elasticSearchClient.indices.delete({
+            index,
+          });
+        }
+      } catch (error) {
+        this.logger.error(`Unable to clean up elastic index: ${error}`);
       }
-    }
+    });
+
+    return indexer;
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {

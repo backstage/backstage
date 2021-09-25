@@ -16,7 +16,6 @@
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { DocumentCollator } from '@backstage/search-common';
 import fetch from 'cross-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
@@ -46,7 +45,7 @@ type EntityInfo = {
   kind: string;
 };
 
-export class DefaultTechDocsCollator implements DocumentCollator {
+export class DefaultTechDocsCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
   private readonly logger: Logger;
@@ -84,7 +83,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     return new DefaultTechDocsCollator({ ...options, legacyPathCasing });
   }
 
-  async execute() {
+  async *execute() {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
     const entities = await this.catalogClient.getEntities({
@@ -145,7 +144,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
           }
         }),
       );
-    return (await Promise.all(docPromises)).flat();
+    yield* (await Promise.all(docPromises)).flat();
   }
 
   protected applyArgsToFormat(

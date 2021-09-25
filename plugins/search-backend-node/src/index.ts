@@ -23,6 +23,7 @@
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export { LunrSearchEngine } from './engines';
+export { BatchSearchEngineIndexer } from './indexing';
 
 /**
  * @deprecated Import from @backstage/search-common instead

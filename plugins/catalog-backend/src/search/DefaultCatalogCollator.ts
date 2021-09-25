@@ -15,8 +15,7 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
   CatalogApi,
@@ -32,7 +31,7 @@ export interface CatalogEntityDocument extends IndexableDocument {
   owner: string;
 }
 
-export class DefaultCatalogCollator implements DocumentCollator {
+export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
   protected filter?: CatalogEntitiesRequest['filter'];
@@ -81,12 +80,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return formatted.toLowerCase();
   }
 
-  async execute() {
-    const response = await this.catalogClient.getEntities({
-      filter: this.filter,
-    });
-    return response.items.map((entity: Entity): CatalogEntityDocument => {
-      return {
+  async *execute() {
+    const entities = (
+      await this.catalogClient.getEntities({
+        filter: this.filter,
+      })
+    ).items;
+    for (const entity of entities) {
+      yield {
         title: entity.metadata.name,
         location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
@@ -100,6 +101,6 @@ export class DefaultCatalogCollator implements DocumentCollator {
         lifecycle: (entity.spec?.lifecycle as string) || '',
         owner: (entity.spec?.owner as string) || '',
       };
-    });
+    }
   }
 }

@@ -18,7 +18,7 @@ import {
   useHotCleanup,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
@@ -27,7 +27,7 @@ import {
   LunrSearchEngine,
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 import { Logger } from 'winston';
 import { PluginEnvironment } from '../types';
 
@@ -68,12 +68,12 @@ export default async function createPlugin({
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+    factory: DefaultCatalogCollatorFactory.fromConfig(config, { discovery }),
   });
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultTechDocsCollator.fromConfig(config, {
+    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
       discovery,
       logger,
     }),

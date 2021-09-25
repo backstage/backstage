@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
+import {
+  DocumentCollatorFactory,
+  DocumentDecoratorFactory,
+} from '@backstage/search-common';
 
 /**
  * Parameters required to register a collator.
@@ -26,9 +29,9 @@ export interface RegisterCollatorParameters {
   defaultRefreshIntervalSeconds: number;
 
   /**
-   * The collator class responsible for returning all documents of the given type.
+   * The class responsible for returning the document collator of the given type.
    */
-  collator: DocumentCollator;
+  factory: DocumentCollatorFactory;
 }
 
 /**
@@ -36,7 +39,7 @@ export interface RegisterCollatorParameters {
  */
 export interface RegisterDecoratorParameters {
   /**
-   * The decorator class responsible for appending or modifying documents of the given type(s).
+   * The class responsible for returning the decorator which appends, modifies, or filters documents.
    */
-  decorator: DocumentDecorator;
+  factory: DocumentDecoratorFactory;
 }

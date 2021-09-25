@@ -15,17 +15,13 @@
  */
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import {
-  IndexableDocument,
-  SearchQuery,
-  SearchResultSet,
-} from '@backstage/search-common';
-import { chunk } from 'lodash';
+import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import {
   DatabaseDocumentStore,
   DatabaseStore,
   PgSearchQuery,
 } from '../database';
+import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
@@ -79,16 +75,11 @@ export class PgSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    await this.databaseStore.transaction(async tx => {
-      await this.databaseStore.prepareInsert(tx);
-
-      const batchSize = 100;
-      for (const documentBatch of chunk(documents, batchSize)) {
-        await this.databaseStore.insertDocuments(tx, type, documentBatch);
-      }
-
-      await this.databaseStore.completeInsert(tx, type);
+  async getIndexer(type: string) {
+    return new PgSearchEngineIndexer({
+      batchSize: 100,
+      type,
+      databaseStore: this.databaseStore,
     });
   }
 
