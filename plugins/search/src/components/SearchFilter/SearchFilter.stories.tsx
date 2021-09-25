@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Grid, Paper } from '@material-ui/core';
-import { SearchFilter, SearchContext } from '../index';
+import React, { useState } from 'react';
 import { MemoryRouter } from 'react-router';
+import { SearchContext, SearchFilter } from '../index';
 
 export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
 };
 
-const defaultValue = {
-  filters: {},
-};
-
 export const CheckBoxFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
   return (
     <MemoryRouter>
       {/* @ts-ignore (defaultValue requires more than what is used here) */}
@@ -49,6 +51,12 @@ export const CheckBoxFilter = () => {
 };
 
 export const SelectFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
   return (
     <MemoryRouter>
       {/* @ts-ignore (defaultValue requires more than what is used here) */}
@@ -57,6 +65,32 @@ export const SelectFilter = () => {
           <Grid item xs={4}>
             <Paper style={{ padding: 10 }}>
               <SearchFilter.Select
+                name="Search Select Filter"
+                values={['value1', 'value2']}
+              />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+export const SelectMultipleFilter = () => {
+  const [filters, setFilters] = useState({});
+  const defaultValue = {
+    filters,
+    setFilters,
+  };
+
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={4}>
+            <Paper style={{ padding: 10 }}>
+              <SearchFilter.SelectMultiple
                 name="Search Select Filter"
                 values={['value1', 'value2']}
               />

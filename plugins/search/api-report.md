@@ -107,8 +107,9 @@ export const SearchContextProvider: ({
 // @public (undocumented)
 export const SearchFilter: {
   ({ component: Element, ...props }: Props_2): JSX.Element;
-  Checkbox(props: Omit<Props_2, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
+  Checkbox(props: Omit<Props_2, 'component'>): JSX.Element;
+  Select(props: Omit<Props_2, 'component'>): JSX.Element;
+  SelectMultiple(props: Omit<Props_2, 'component'>): JSX.Element;
 };
 
 // Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -116,8 +117,9 @@ export const SearchFilter: {
 // @public @deprecated (undocumented)
 export const SearchFilterNext: {
   ({ component: Element, ...props }: Props_2): JSX.Element;
-  Checkbox(props: Omit<Props_2, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
+  Checkbox(props: Omit<Props_2, 'component'>): JSX.Element;
+  Select(props: Omit<Props_2, 'component'>): JSX.Element;
+  SelectMultiple(props: Omit<Props_2, 'component'>): JSX.Element;
 };
 
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -183,5 +185,4 @@ export const useSearch: () => SearchContextValue;
 //
 // src/components/SearchContext/SearchContext.d.ts:21:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 ```
