@@ -14,12 +14,16 @@ import { CardHeaderProps } from '@material-ui/core';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { default as dagre_2 } from 'dagre';
+import { DetailedHTMLProps } from 'react';
+import { DrawerProps } from '@material-ui/core';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import { HTMLAttributes } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core';
 import { LinkProps as LinkProps_2 } from '@material-ui/core';
@@ -110,6 +114,16 @@ export function ChatIcon(props: IconComponentProps): JSX.Element;
 // @public (undocumented)
 export const CodeSnippet: (props: Props_2) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "ConstructedDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ConstructedDrawer<T> {
+  // (undocumented)
+  Provider: ComponentType<PropsWithChildren<DrawerProviderProps>>;
+  // (undocumented)
+  useDrawer: () => DrawerHook<T>;
+}
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Content" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -146,6 +160,14 @@ export namespace CopyTextButton {
 //
 // @public (undocumented)
 export function CreateButton(props: CreateButtonProps): JSX.Element | null;
+
+// Warning: (ae-missing-release-tag) "createDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createDrawer<T>(
+  Component: ComponentType<DrawerComponentProps<T>>,
+  wrapperProps?: DrawerWrapperProps,
+): ConstructedDrawer<T>;
 
 // Warning: (ae-missing-release-tag) "DashboardIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -242,6 +264,39 @@ export const DismissableBanner: (props: Props_4) => JSX.Element;
 //
 // @public (undocumented)
 export function DocsIcon(props: IconComponentProps): JSX.Element;
+
+// Warning: (ae-missing-release-tag) "DrawerComponentProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DrawerComponentProps<T> {
+  // (undocumented)
+  close: () => void;
+  // (undocumented)
+  value: T;
+}
+
+// Warning: (ae-missing-release-tag) "DrawerHook" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DrawerHook<T> {
+  // (undocumented)
+  closeDrawer: () => void;
+  // (undocumented)
+  openDrawer: (value: T) => void;
+}
+
+// Warning: (ae-missing-release-tag) "DrawerProviderProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DrawerProviderProps = Omit<DrawerProps, 'open' | 'onClose'>;
+
+// Warning: (ae-missing-release-tag) "DrawerWrapperProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DrawerWrapperProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+>;
 
 // Warning: (ae-missing-release-tag) "EdgeProperties" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
