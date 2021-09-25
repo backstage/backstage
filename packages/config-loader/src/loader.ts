@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import yaml from 'yaml';
 import chokidar from 'chokidar';
 import {basename, dirname, isAbsolute, resolve as resolvePath} from 'path';
-import {AppConfig, JsonObject} from '@backstage/config';
+import {AppConfig} from '@backstage/config';
 import {
   applyConfigTransforms,
   createIncludeTransform,
@@ -167,7 +167,7 @@ export async function loadConfig(
     return configs;
   };
 
-  let fileConfigs: { data: JsonObject; context: string; }[];
+  let fileConfigs: AppConfig[];
   try {
     fileConfigs = await loadConfigFiles();
   } catch (error) {
@@ -176,7 +176,7 @@ export async function loadConfig(
     );
   }
 
-  let remoteConfigs;
+  let remoteConfigs: AppConfig[];
   try {
     remoteConfigs = await loadRemoteConfigFiles();
   } catch (error) {
@@ -206,7 +206,7 @@ export async function loadConfig(
         }
         currentSerializedConfig = newSerializedConfig;
 
-        watch.onChange([...newConfigs, ...envConfigs]);
+        watch.onChange([...newConfigs, ...remoteConfigs, ...envConfigs]);
       } catch (error) {
         console.error(`Failed to reload configuration files, ${error}`);
       }
@@ -240,7 +240,7 @@ export async function loadConfig(
         }
         if (reloadConfigRequired) {
           const newRemoteConfigs = await loadRemoteConfigFiles();
-          watch.onChange([...newRemoteConfigs, ...envConfigs]);
+          watch.onChange([...newRemoteConfigs, ...fileConfigs, ...envConfigs]);
         }
       }, remoteReloadingSeconds * 1000);
     } catch (error) {
