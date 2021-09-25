@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import {resolve as resolvePath} from 'path';
 import parseArgs from 'minimist';
-import { Logger } from 'winston';
-import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader, JsonValue } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
+import {Logger} from 'winston';
+import {findPaths} from '@backstage/cli-common';
+import {Config, ConfigReader, JsonValue} from '@backstage/config';
+import {loadConfig} from '@backstage/config-loader';
 
 class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -117,7 +117,14 @@ export async function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configPaths: string[] = [args.config ?? []].flat();
+  const configPaths: string[] = [args.config ?? []].flat()
+  .map(arg => {
+    const isUrl = (arg.indexOf("http:") !== -1 || arg.indexOf("https:") !== -1);
+    if (!isUrl) {
+      return resolvePath(arg);
+    }
+    return arg;
+  });
 
   const config = new ObservableConfigProxy(options.logger);
 
@@ -126,7 +133,7 @@ export async function loadBackendConfig(options: {
 
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configPaths.map(opt => resolvePath(opt)),
+    configPaths: configPaths,
     watch: {
       onChange(newConfigs) {
         options.logger.info(
