@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.7.14
+
+### Patch Changes
+
+- 2a6c393c06: The `create-plugin` command now prefers dependency versions ranges that are already in the lockfile.
+- 12e074a6e4: Fix duplication checks to stop looking for the old core packages, and to allow some explicitly
+
 ## 0.7.13
 
 ### Patch Changes

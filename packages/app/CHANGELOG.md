@@ -1,5 +1,16 @@
 # example-app
 
+## 0.2.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-import@0.7.0
+  - @backstage/cli@0.7.14
+  - @backstage/core-components@0.5.1
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog@0.6.17
+
 ## 0.2.47
 
 ### Patch Changes
