@@ -24,6 +24,7 @@ import {
   oauth2ApiRef,
   oktaAuthApiRef,
   microsoftAuthApiRef,
+  bitbucketAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -77,6 +78,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="Okta"
         description="Provides authentication towards Okta APIs"
         apiRef={oktaAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('bitbucket') && (
+      <ProviderSettingsItem
+        title="Bitbucket"
+        description="Provides authentication towards Bitbucket APIs"
+        apiRef={bitbucketAuthApiRef}
         icon={Star}
       />
     )}

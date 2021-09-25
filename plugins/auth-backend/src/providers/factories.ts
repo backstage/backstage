@@ -26,6 +26,7 @@ import { createMicrosoftProvider } from './microsoft';
 import { createOneLoginProvider } from './onelogin';
 import { AuthProviderFactory } from './types';
 import { createAwsAlbProvider } from './aws-alb';
+import { createBitbucketProvider } from './bitbucket';
 
 export const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider(),
@@ -39,4 +40,5 @@ export const factories: { [providerId: string]: AuthProviderFactory } = {
   oidc: createOidcProvider(),
   onelogin: createOneLoginProvider(),
   awsalb: createAwsAlbProvider(),
+  bitbucket: createBitbucketProvider(),
 };

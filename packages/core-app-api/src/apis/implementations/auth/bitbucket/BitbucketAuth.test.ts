@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './auth0';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
+import BitbucketAuth from './BitbucketAuth';
+
+describe('BitbucketAuth', () => {
+  it('should get access token', async () => {
+    const getSession = jest
+      .fn()
+      .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
+    const githubAuth = new BitbucketAuth({ getSession } as any);
+
+    expect(await githubAuth.getAccessToken()).toBe('access-token');
+    expect(getSession).toBeCalledTimes(1);
+  });
+});
