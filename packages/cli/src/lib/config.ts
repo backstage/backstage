@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from './paths';
+import {loadConfig, loadConfigSchema} from '@backstage/config-loader';
+import {ConfigReader} from '@backstage/config';
+import {paths} from './paths';
 
 type Options = {
   args: string[];
@@ -26,10 +26,24 @@ type Options = {
 };
 
 export async function loadCliConfig(options: Options) {
-  const configPaths = options.args.map(arg => paths.resolveTarget(arg));
+  const configPaths = options.args.map(arg => {
+    const isUrl = (arg.indexOf("http:") !== -1 || arg.indexOf("https:") !== -1);
+    if (!isUrl) {
+      return paths.resolveTarget(arg);
+    }
+    return "";
+  });
+
+  const configUrls = options.args.map(arg => {
+    const isUrl = (arg.indexOf("http:") !== -1 || arg.indexOf("https:") !== -1);
+    if (isUrl) {
+      return arg;
+    }
+    return "";
+  });
 
   // Consider all packages in the monorepo when loading in config
-  const { Project } = require('@lerna/project');
+  const {Project} = require('@lerna/project');
   const project = new Project(paths.targetDir);
   const packages = await project.getPackages();
 
@@ -47,6 +61,7 @@ export async function loadCliConfig(options: Options) {
       : undefined,
     configRoot: paths.targetRoot,
     configPaths,
+    configUrls
   });
 
   // printing to stderr to not clobber stdout in case the cli command
@@ -79,7 +94,7 @@ export async function loadCliConfig(options: Options) {
 }
 
 function findPackages(packages: any[], fromPackage: string): string[] {
-  const { PackageGraph } = require('@lerna/package-graph');
+  const {PackageGraph} = require('@lerna/package-graph');
 
   const graph = new PackageGraph(packages);
 

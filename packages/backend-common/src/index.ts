@@ -22,6 +22,7 @@
 
 export * from './cache';
 export * from './config';
+export * from './remoteConfig';
 export * from './database';
 export * from './discovery';
 export * from './hot';
