@@ -18,18 +18,23 @@ import React from 'react';
 import { makeStyles, Typography, Grid } from '@material-ui/core';
 import { EmptyStateImage } from './EmptyStateImage';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(2, 0, 0, 0),
-  },
-  action: {
-    marginTop: theme.spacing(2),
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-}));
+export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      backgroundColor: theme.palette.background.default,
+      padding: theme.spacing(2, 0, 0, 0),
+    },
+    action: {
+      marginTop: theme.spacing(2),
+    },
+    imageContainer: {
+      position: 'relative',
+    },
+  }),
+  { name: 'BackstageEmptyState' },
+);
 
 type Props = {
   title: string;

@@ -21,17 +21,22 @@ import { CodeSnippet } from '../CodeSnippet';
 import { CopyTextButton } from '../CopyTextButton';
 import { ErrorPanel, ErrorPanelProps } from '../ErrorPanel';
 
-const useStyles = makeStyles(theme => ({
-  text: {
-    fontFamily: 'monospace',
-    whiteSpace: 'pre',
-    overflowX: 'auto',
-    marginRight: theme.spacing(2),
-  },
-  divider: {
-    margin: theme.spacing(2),
-  },
-}));
+export type ResponseErrorPanelClassKey = 'text' | 'divider';
+
+const useStyles = makeStyles(
+  theme => ({
+    text: {
+      fontFamily: 'monospace',
+      whiteSpace: 'pre',
+      overflowX: 'auto',
+      marginRight: theme.spacing(2),
+    },
+    divider: {
+      margin: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageResponseErrorPanel' },
+);
 
 /**
  * Renders a warning panel as the effect of a failed server request.

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export type { Tab } from './HeaderTabs';
+export type { Tab, HeaderTabsClassKey } from './HeaderTabs';
 export { HeaderTabs } from './HeaderTabs';

@@ -15,3 +15,4 @@
  */
 
 export { CheckboxTree } from './CheckboxTree';
+export type { CheckboxTreeClassKey } from './CheckboxTree';

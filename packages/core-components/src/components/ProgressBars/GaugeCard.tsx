@@ -30,12 +30,17 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
-const useStyles = makeStyles({
-  root: {
-    height: '100%',
-    width: 250,
+export type GaugeCardClassKey = 'root';
+
+const useStyles = makeStyles(
+  {
+    root: {
+      height: '100%',
+      width: 250,
+    },
   },
-});
+  { name: 'BackstageGaugeCard' },
+);
 
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);
