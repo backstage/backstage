@@ -62,7 +62,10 @@ describe('<Link />', () => {
     await waitFor(() => {
       expect(analyticsApi.getEvents()[0]).toMatchObject({
         action: 'click',
-        subject: '/test',
+        subject: linkText,
+        attributes: {
+          to: '/test',
+        },
       });
 
       // Custom onClick handler should have still been fired too.

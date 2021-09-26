@@ -35,6 +35,29 @@ export type LinkProps = MaterialLinkProps &
 declare function LinkType(props: LinkProps): JSX.Element;
 
 /**
+ * Given a react node, try to retrieve its text content.
+ */
+const getNodeText = (node: React.ReactNode): string => {
+  // If the node is an array of children, recurse and join.
+  if (node instanceof Array) {
+    return node.map(getNodeText).join(' ').trim();
+  }
+
+  // If the node is a react element, recurse on its children.
+  if (typeof node === 'object' && node) {
+    return getNodeText((node as React.ReactElement)?.props?.children);
+  }
+
+  // Base case: the node is just text. Return it.
+  if (['string', 'number'].includes(typeof node)) {
+    return String(node);
+  }
+
+  // Base case: just return an empty string.
+  return '';
+};
+
+/**
  * Thin wrapper on top of material-ui's Link component, which...
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
@@ -43,12 +66,13 @@ const ActualLink = React.forwardRef<any, LinkProps>(
   ({ onClick, ...props }, ref) => {
     const analytics = useAnalytics();
     const to = String(props.to);
+    const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
 
     const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
       onClick?.(event);
-      analytics.captureEvent('click', to);
+      analytics.captureEvent('click', linkText, { attributes: { to } });
     };
 
     return external ? (

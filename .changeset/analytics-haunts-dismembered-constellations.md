@@ -4,17 +4,22 @@
 
 The `<Link />` component now automatically instruments all link clicks using
 the new Analytics API. Each click triggers a `click` event, containing the
-location the user clicked to. In addition, these events inherit plugin-level
-metadata, allowing clicks to be attributed to the plugin containing the link:
+text of the link the user clicked on, as well as the location to which the user
+clicked. In addition, these events inherit plugin/extension-level metadata,
+allowing clicks to be attributed to the plugin/extension/route containing the
+link:
 
 ```json
 {
   "action": "click",
-  "subject": "/value/of-the/to-prop/passed-to-the-link",
+  "subject": "Text content of the link that was clicked",
+  "attributes": {
+    "to": "/value/of-the/to-prop/passed-to-the-link"
+  },
   "context": {
-    "extension": "SomeAssociatedExtension",
+    "extension": "ExtensionInWhichTheLinkWasClicked",
     "pluginId": "plugin-in-which-link-was-clicked",
-    "routeRef": "any-associated-route-ref-id"
+    "routeRef": "route-ref-in-which-the-link-was-clicked"
   }
 }
 ```
