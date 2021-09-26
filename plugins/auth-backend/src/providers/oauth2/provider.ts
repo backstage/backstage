@@ -166,6 +166,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         accessToken: result.accessToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
+        refreshToken: result.refreshToken,
       },
       profile,
     };
