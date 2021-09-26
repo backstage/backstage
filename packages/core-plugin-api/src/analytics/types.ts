@@ -19,17 +19,17 @@
  */
 export type CommonAnalyticsContext = {
   /**
-   * The associated plugin.
+   * The nearest known parent plugin where the event was captured.
    */
   pluginId: string;
 
   /**
-   * The ID of the associated route ref.
+   * The ID of the routeRef that was active when the event was captured.
    */
   routeRef: string;
 
   /**
-   * The name of the associated extension.
+   * The nearest known parent extension where the event was captured.
    */
   extension: string;
 };
@@ -37,13 +37,12 @@ export type CommonAnalyticsContext = {
 /**
  * Allow arbitrary scalar values as context attributes too.
  */
-type AnyAnalyticsContext = {
+export type AnyAnalyticsContext = {
   [param in string]: string | boolean | number | undefined;
 };
 
 /**
  * Analytics context envelope.
  */
-export type AnalyticsContextValue = Partial<
-  CommonAnalyticsContext & AnyAnalyticsContext
->;
+export type AnalyticsContextValue = CommonAnalyticsContext &
+  AnyAnalyticsContext;

@@ -19,6 +19,8 @@ import { MockAnalyticsApi } from './MockAnalyticsApi';
 describe('MockAnalyticsApi', () => {
   const context = {
     pluginId: 'some-plugin',
+    routeRef: 'some-route-ref',
+    extension: 'some-extension',
   };
 
   it('should collect events', () => {

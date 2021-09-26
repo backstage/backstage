@@ -23,7 +23,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 
-type CDM = {
+type CustomDimensionOrMetricConfig = {
   type: 'dimension' | 'metric';
   index: number;
   source: 'context' | 'attributes';
@@ -31,17 +31,10 @@ type CDM = {
 };
 
 /**
- * Type guard for emptiness check in array filter.
- */
-function notEmpty<T>(value: T | undefined): value is T {
-  return value !== undefined;
-}
-
-/**
  * Google Analytics API provider for the Backstage Analytics API.
  */
 export class GoogleAnalytics implements AnalyticsApi {
-  private readonly cdmConfig: CDM[];
+  private readonly cdmConfig: CustomDimensionOrMetricConfig[];
 
   /**
    * Instantiate the implementation and initialize ReactGA.
@@ -52,7 +45,7 @@ export class GoogleAnalytics implements AnalyticsApi {
     testMode,
     debug,
   }: {
-    cdmConfig: CDM[];
+    cdmConfig: CustomDimensionOrMetricConfig[];
     trackingId: string;
     testMode: boolean;
     debug: boolean;
@@ -69,19 +62,22 @@ export class GoogleAnalytics implements AnalyticsApi {
   static fromConfig(config: Config) {
     // Get all necessary configuration.
     const trackingId = config.getString('app.analytics.ga.trackingId');
-    const debug = !!config.getOptionalBoolean('app.analytics.ga.debug');
-    const testMode = !!config.getOptionalBoolean('app.analytics.ga.testMode');
+    const debug = config.getOptionalBoolean('app.analytics.ga.debug') ?? false;
+    const testMode =
+      config.getOptionalBoolean('app.analytics.ga.testMode') ?? false;
     const cdmConfig =
       config
         .getOptionalConfigArray('app.analytics.ga.customDimensionsMetrics')
         ?.map(c => {
           return {
-            type: c.getString('type') as CDM['type'],
+            type: c.getString('type') as CustomDimensionOrMetricConfig['type'],
             index: c.getNumber('index'),
-            source: c.getString('source') as CDM['source'],
+            source: c.getString(
+              'source',
+            ) as CustomDimensionOrMetricConfig['source'],
             key: c.getString('key'),
           };
-        }) || [];
+        }) ?? [];
 
     // Return an implementation instance.
     return new GoogleAnalytics({
@@ -106,7 +102,7 @@ export class GoogleAnalytics implements AnalyticsApi {
   }: AnalyticsEvent) {
     const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
-    if (action === 'navigate' && context?.extension === 'App') {
+    if (action === 'navigate' && context.extension === 'App') {
       // Set any/all custom dimensions.
       if (Object.keys(customMetadata).length) {
         ReactGA.set(customMetadata);
@@ -127,34 +123,32 @@ export class GoogleAnalytics implements AnalyticsApi {
 
   /**
    * Returns an object of dimensions/metrics given an Analytics Context and an
-   * Event Context, e.g. { dimension1: "some value", metric8: 42 }
+   * Event Attributes, e.g. { dimension1: "some value", metric8: 42 }
    */
   private getCustomDimensionMetrics(
     context: AnalyticsContextValue,
     attributes: AnalyticsEventAttributes = {},
   ) {
-    const dataArray = this.cdmConfig
-      .map(cdm => {
-        const value =
-          cdm.source === 'context' ? context[cdm.key] : attributes[cdm.key];
+    const customDimensionsMetrics: { [x: string]: string | number | boolean } =
+      {};
 
-        // Never pass a non-numeric value on a metric.
-        if (cdm.type === 'metric' && typeof value !== 'number') {
-          return undefined;
-        }
+    this.cdmConfig.forEach(config => {
+      const value =
+        config.source === 'context'
+          ? context[config.key]
+          : attributes[config.key];
 
-        return value !== undefined
-          ? {
-              [`${cdm.type}${cdm.index}`]: value,
-            }
-          : undefined;
-      })
-      .filter(notEmpty);
+      // Never pass a non-numeric value on a metric.
+      if (config.type === 'metric' && typeof value !== 'number') {
+        return;
+      }
 
-    return dataArray.length
-      ? dataArray.reduce((result, cd) => {
-          return Object.assign(result, cd);
-        })
-      : {};
+      // Only set defined values.
+      if (value !== undefined) {
+        customDimensionsMetrics[`${config.type}${config.index}`] = value;
+      }
+    });
+
+    return customDimensionsMetrics;
   }
 }

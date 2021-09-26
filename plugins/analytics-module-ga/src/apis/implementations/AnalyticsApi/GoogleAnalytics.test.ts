@@ -53,6 +53,7 @@ describe('GoogleAnalytics', () => {
     const context = {
       extension: 'App',
       pluginId: 'some-plugin',
+      routeRef: 'unknown',
       releaseNum: 1337,
     };
     const advancedConfig = new ConfigReader({

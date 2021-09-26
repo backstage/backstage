@@ -53,17 +53,15 @@ export const AnalyticsContext: ({
   attributes,
   children,
 }: {
-  attributes: AnalyticsContextValue;
+  attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "AnyAnalyticsContext" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AnalyticsContextValue" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type AnalyticsContextValue = Partial<
-  CommonAnalyticsContext & AnyAnalyticsContext
->;
+export type AnalyticsContextValue = CommonAnalyticsContext &
+  AnyAnalyticsContext;
 
 // Warning: (ae-missing-release-tag) "AnalyticsEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -95,6 +93,13 @@ export type AnalyticsTracker = {
       attributes?: AnalyticsEventAttributes;
     },
   ) => void;
+};
+
+// Warning: (ae-missing-release-tag) "AnyAnalyticsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnyAnalyticsContext = {
+  [param in string]: string | boolean | number | undefined;
 };
 
 // Warning: (ae-missing-release-tag) "AnyApiFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

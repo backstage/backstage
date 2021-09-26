@@ -126,7 +126,7 @@ describe('extensions', () => {
             );
           },
         },
-        data: { 'core.mountpoint': { id: 'some-ref' } },
+        data: { 'core.mountPoint': { id: 'some-ref' } },
       }),
     );
 

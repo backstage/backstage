@@ -20,11 +20,21 @@ import { useRef } from 'react';
 import { Tracker } from './Tracker';
 
 function useTracker(): AnalyticsTracker {
+  const trackerRef = useRef<Tracker | null>(null);
   const analyticsApi = useApi(analyticsApiRef);
-  const tracker = useRef(new Tracker(analyticsApi));
   const context = useAnalyticsContext();
-  tracker.current.setContext(context);
-  return tracker.current;
+
+  function getTracker(): Tracker {
+    if (trackerRef.current === null) {
+      trackerRef.current = new Tracker(analyticsApi);
+    }
+    return trackerRef.current;
+  }
+
+  const tracker = getTracker();
+  tracker.setContext(context);
+
+  return tracker;
 }
 
 /**

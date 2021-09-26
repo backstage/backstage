@@ -133,6 +133,9 @@ export function createReactExtension<
       const Result: any = (props: any) => {
         const app = useApp();
         const { Progress } = app.getComponents();
+        const mountPoint = data?.['core.mountPoint'] as
+          | { id?: string }
+          | undefined;
 
         return (
           <Suspense fallback={<Progress />}>
@@ -140,13 +143,8 @@ export function createReactExtension<
               <AnalyticsContext
                 attributes={{
                   pluginId: plugin.getId(),
-                  ...(options.name ? { extension: options.name } : {}),
-                  ...(data['core.mountpoint']
-                    ? {
-                        routeRef: (data['core.mountpoint'] as { id?: string })
-                          .id,
-                      }
-                    : {}),
+                  ...(options.name && { extension: options.name }),
+                  ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
                 <Component {...props} />

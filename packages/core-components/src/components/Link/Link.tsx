@@ -47,9 +47,7 @@ const ActualLink = React.forwardRef<any, LinkProps>(
     const newWindow = external && !!/^https?:/.exec(to);
 
     const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
-      if (onClick !== undefined) {
-        onClick(event);
-      }
+      onClick?.(event);
       analytics.captureEvent('click', to);
     };
 

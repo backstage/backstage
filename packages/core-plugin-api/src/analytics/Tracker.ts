@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { AnalyticsApi, AnalyticsEventAttributes } from '../apis';
+import {
+  AnalyticsApi,
+  AnalyticsEventAttributes,
+  AnalyticsTracker,
+} from '../apis';
 import { AnalyticsContextValue } from './';
 
-export class Tracker {
+export class Tracker implements AnalyticsTracker {
   constructor(
     private readonly analyticsApi: AnalyticsApi,
-    private context: AnalyticsContextValue = {},
+    private context: AnalyticsContextValue = {
+      routeRef: 'unknown',
+      pluginId: 'root',
+      extension: 'App',
+    },
   ) {}
 
   setContext(context: AnalyticsContextValue) {

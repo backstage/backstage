@@ -40,15 +40,15 @@ const getExtensionContext = (
 ): CommonAnalyticsContext | {} => {
   try {
     // Find matching routes for the given path name.
-    const matches = matchRoutes(routes, { pathname });
+    const matches = matchRoutes(routes, { pathname }) as
+      | { route: BackstageRouteObject }[]
+      | null;
 
     // Of the matching routes, get the last (e.g. most specific) instance of
     // the BackstageRouteObject.
     const routeObject = matches
-      ?.filter(
-        match => (match?.route as BackstageRouteObject).routeRefs?.size > 0,
-      )
-      .pop()?.route as BackstageRouteObject;
+      ?.filter(match => match?.route.routeRefs?.size > 0)
+      .pop()?.route;
 
     // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {

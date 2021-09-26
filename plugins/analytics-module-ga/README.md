@@ -8,9 +8,9 @@ This plugin contains no other functionality.
 
 ## Installation
 
-1. Install this plugin in your Backstage app:
+1. Install the plugin package in your Backstage app:
    `cd packages/app && yarn add @backstage/plugin-analytics-module-ga`
-2. Add the API implementation to your App and configure the plugin (see below).
+2. Wire up the API implementation to your App:
 
 ```tsx
 // packages/app/src/apis.ts
@@ -27,7 +27,7 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-## Configuration
+3. Configure the plugin in your `app-config.yaml`:
 
 The following is the minimum configuration required to start sending analytics
 events to GA. All that's needed is your Universal Analytics tracking ID:
@@ -41,11 +41,11 @@ app:
       trackingId: UA-0000000-0
 ```
 
-### Plugin Analytics
+## Configuration
 
 In order to be able to analyze usage of your Backstage instance _by plugin_, we
-strongly recommend configuring at least one custom dimension to capture Plugin
-IDs associated with events, including page views.
+strongly recommend configuring at least one [custom dimension][what-is-a-custom-dimension]
+to capture Plugin IDs associated with events, including page views.
 
 1. First, [configure the custom dimension in GA][configure-custom-dimension].
    Be sure to set the Scope to `hit`, and name it something like `Plugin`. Note
@@ -84,6 +84,10 @@ app:
           index: 2
           source: context
           key: routeRef
+        - type: dimension
+          index: 3
+          source: context
+          key: extension
         - type: metric
           index: 1
           source: attributes
@@ -103,6 +107,9 @@ app:
       testMode: true # Prevents data being sent to GA
       debug: true # Logs analytics event to the web console
 ```
+
+You might commonly set the above in an `app-config.local.yaml` file, which is
+normally `gitignore`'d but loaded and merged in when Backstage is bootstrapped.
 
 ## Development
 
@@ -141,4 +148,5 @@ app:
           key: pluginId
 ```
 
-[configure-custom-dimension]: https://support.google.com/analytics/answer/2709828?hl=en#configuration
+[what-is-a-custom-dimension]: https://support.google.com/analytics/answer/2709828
+[configure-custom-dimension]: https://support.google.com/analytics/answer/2709828#configuration

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { AnalyticsContextValue } from './types';
 
 const AnalyticsReactContext = createContext<AnalyticsContextValue>({
@@ -43,14 +43,17 @@ export const AnalyticsContext = ({
   attributes,
   children,
 }: {
-  attributes: AnalyticsContextValue;
+  attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => {
   const parentValues = useAnalyticsContext();
-  const combinedValue = {
-    ...parentValues,
-    ...attributes,
-  };
+  const combinedValue = useMemo(
+    () => ({
+      ...parentValues,
+      ...attributes,
+    }),
+    [parentValues, attributes],
+  );
 
   return (
     <AnalyticsReactContext.Provider value={combinedValue}>
