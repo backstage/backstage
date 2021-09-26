@@ -10,8 +10,22 @@ link below for more details.
 ## Entity badges
 
 To get markdown code for the entity badges, access the `Badges` context menu
-(three dots in the upper right corner) of an entity page, which will popup a
-badges dialog showing all available badges for that entity.
+(three dots in the upper right corner) of an entity page like this:
+
+![Badges Context Menu](./doc/badges-context-menu.png)
+
+This will popup a badges dialog showing all available badges for that entity like this:
+
+![Badges Dialog](./doc/badges-dialog.png)
+
+## Sample Badges
+
+Here are some samples of badges for the `artists-lookup` service in the Demo Backstage site:
+
+- Component: [![Link to artist-lookup in Backstage Demo, Component: artist-lookup](https://demo.backstage.io/api/badges/entity/default/component/artist-lookup/badge/pingback 'Link to artist-lookup in Backstage Demo')](https://demo.backstage.io/catalog/default/component/artist-lookup)
+- Lifecycle: [![Entity lifecycle badge, lifecycle: experimental](https://demo.backstage.io/api/badges/entity/default/component/artist-lookup/badge/lifecycle 'Entity lifecycle badge')](https://demo.backstage.io/catalog/default/component/artist-lookup)
+- Owner: [![Entity owner badge, owner: team-a](https://demo.backstage.io/api/badges/entity/default/component/artist-lookup/badge/owner 'Entity owner badge')](https://demo.backstage.io/catalog/default/component/artist-lookup)
+- Docs: [![Entity docs badge, docs: artist-lookup](https://demo.backstage.io/api/badges/entity/default/component/artist-lookup/badge/docs 'Entity docs badge')](https://demo.backstage.io/catalog/default/component/artist-lookup/docs)
 
 ## Usage
 
