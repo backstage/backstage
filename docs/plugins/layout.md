@@ -757,6 +757,105 @@ accommodate this kind of layering? Let's explore how we could create some form
 of API that lets us create base layouts that support layout contexts, but that
 can also be built upon to create specialized layouts like the `EntityLayout`.
 
+#### Brainstorm
+
+What would the API for creating a layout look like?
+
+It's probably split into a concrete and a context part, let's look at some more
+ideas for consuming the layouts first.
+
+```tsx
+// It probably makes more sense to have the layout implemented as a provider to
+// make it easier to apply different layouts to various parts of the app.
+
+// Let's assume something similar to experiment 1 where we can add layout at various
+// points to override which one is used.
+<MyCustomLayout>
+  <Route path="/lighthouse" element={<LighthousePage />} />
+</MyCustomLayout>;
+
+// The LighthousePage would then use either of the outputs from experiment 7, let's
+// assume the simpler component method for now.
+function LighthousePage(props) {
+  // This method does make it a bit annoying to merge options though
+  return (
+    <PageLayout {...props}>
+      {/*
+        2 levels for this one? to leave space for other things. Maybe keep
+        it simple and add any new pieces of content to props instead.
+      */}
+      <PageLayout.Content>
+        {/* Here we render our actual plugin content, inside a LayoutContract */}
+      </PageLayout.Content>
+    </PageLayout>
+  );
+}
+
+// So that's all fine, but how would be implement entity pages on top of this?
+
+function EntityLayout(props) {
+  const { entity, loading, error } = useEntity();
+  // Probably provide useEntityLayoutRoutes as it's a bit complex and might need to evolve
+  const routes = useEntityLayoutRoutes(children, { entity });
+  return (
+    <PageLayout {...props}>
+      {/* skipping error and loading, but they would go here */}
+
+      {/*
+        It would probably be a waste to add an API surface for the customization
+        of what the tabs look like, and instead just make it really simple to create
+        a custom entity layout.
+      */}
+      {entity && <RoutedTabs routes={routes} />}
+
+      {/*
+        This dialog needs to be opened from the context menu, perhaps we could have
+        some kind of context or element discovery that adds the item to the menu?
+
+        It's probably a lot better to do it the other way around though, that way
+        we get some control over the ordering of the items? Probably worth exploring
+        how we could manage menu items and general header customization.
+      */}
+      {entity && <UnregisterEntityDialog />}
+    </PageLayout>
+  );
+}
+
+// What would it look like to manually add the entity unregister menu item?
+// What we're really looking to customize here is the rendering of the <PageLayout>
+// We can control that either through context or props that we pass in.
+// Would it simply be done by passing the items to each `<EntityLayout /
+
+<EntityLayout menu={{items: [...]}}>
+  {...}
+</EntityLayout>
+
+// Bit of a hassle to do that for every single entity page ._.
+// You can't really create an intermediate component either as that'll prevent
+// element discovery of the items, which means we need to manually register the
+// plugins and possibly lead to other problems in the future.
+
+// What if header customization is always done through context, or at least via both
+// context and props?
+
+<PageLayoutProvider menu={{additionalItems: [<CustomMenuItem />]}}>
+</PageLayoutProvider>
+
+// Now the menu items are at least in the element tree, and we just need to make
+// sure we have some custom traversal that discovers them.
+
+// This could be a general pattern that we use? Perhaps call it overrides instead?
+<PageLayoutOverride labels={{'my-label': 'my-value'}}>
+  <Route path="/lighthouse" element={<LighthousePage />} />
+</PageLayoutOverride>;
+
+// Could be a general LayoutOverrides, or more specific to each type of layout, TBD
+// This feels a lot nicer because there's no special handling of entity pages, just
+// need to figure out how it's all wired up.
+
+// Let's play around with what the context would look like and how overrides would happen.
+```
+
 #### Implementation
 
 [Off we go!](../../plugins/welcome/src/components/Experiment/Experiment8.tsx)
