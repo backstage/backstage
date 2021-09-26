@@ -21,7 +21,7 @@ export class AzureDevOpsApi {
   getBuildList(
     projectName: string,
     repoId: string,
-    top: string,
+    top: number,
   ): Promise<Build[]>;
   // (undocumented)
   getGitRepository(
@@ -32,7 +32,7 @@ export class AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
-    top: string,
+    top: number,
   ): Promise<RepoBuild[]>;
 }
 
