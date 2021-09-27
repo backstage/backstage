@@ -6,7 +6,7 @@ sidebar_label: Overview
 description: TechDocs is Spotify’s homegrown docs-like-code solution built directly into Backstage
 ---
 
-## What is it?
+## WHAT IS THIS?
 
 <!-- Intro, backstory, etc.: -->
 
