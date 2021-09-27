@@ -29,9 +29,9 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { bazaarApiRef } from '../../api';
+import { BazaarProject } from '../../types';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -89,14 +89,14 @@ const DialogActions = withStyles((theme: Theme) => ({
 }))(MuiDialogActions);
 
 type Props = {
-  entity: Entity;
+  bazaarProject: BazaarProject;
   openDelete: boolean;
   handleClose: () => void;
   setIsBazaar: Dispatch<SetStateAction<boolean>>;
 };
 
 export const DeleteProjectDialog = ({
-  entity,
+  bazaarProject,
   openDelete,
   handleClose,
   setIsBazaar,
@@ -108,7 +108,7 @@ export const DeleteProjectDialog = ({
   const bazaarApi = useApi(bazaarApiRef);
 
   const handleSubmit = async () => {
-    await bazaarApi.deleteEntity(entity);
+    await bazaarApi.deleteEntity(bazaarProject);
     setIsBazaar(false);
     handleCloseAndClear();
   };

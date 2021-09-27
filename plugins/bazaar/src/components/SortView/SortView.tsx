@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -25,12 +25,13 @@ import { AddProjectDialog } from '../AddProjectDialog';
 import { AlertBanner } from '../AlertBanner';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles, Link } from '@material-ui/core';
-import { useAsync } from 'react-use';
+import { useAsyncFn } from 'react-use';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   container: {
@@ -38,14 +39,27 @@ const useStyles = makeStyles({
   },
 });
 
+const filterCatalogEntities = (bazaarProjects: any, catalogEntities: any) => {
+  const bazaarProjectRefs = bazaarProjects?.value?.map(
+    (project: BazaarProject) => project.entityRef,
+  );
+
+  const filtered = catalogEntities?.value?.filter((entity: Entity) => {
+    return !bazaarProjectRefs?.includes(stringifyEntityRef(entity));
+  });
+
+  // setFilteredCatalogEntities(filtered);
+  return filtered;
+};
+
 export const SortView = () => {
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
   const [openNoProjects, setOpenNoProjects] = useState(false);
-  const [catalogEntities, setCatalogEntities] = useState<Entity[]>([]);
-  const [bazaarProjects, setBazaarProjects] = useState<BazaarProject[]>([]);
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const [filteredCatalogEntites, setFilteredCatalogEntities] =
+    useState<Entity[]>();
 
   const compareProjectsByDate = (
     a: BazaarProject,
@@ -60,17 +74,20 @@ export const SortView = () => {
     setOpenNoProjects(false);
   };
 
-  const { loading } = useAsync(async () => {
+  const [catalogEntities, fetchCatalogEntities] = useAsyncFn(async () => {
     const entities = await catalogApi.getEntities({
       filter: {
-        kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
+        kind: ['Component', 'Resource'],
       },
       fields: ['kind', 'metadata.name', 'metadata.namespace'],
     });
 
+    return entities.items;
+  });
+
+  const [bazaarProjects, fetchBazaarProjects] = useAsyncFn(async () => {
     const response = await bazaarApi.getEntities();
     const dbProjects: BazaarProject[] = [];
-    const bazaarProjectRefs: string[] = [];
 
     response.data.forEach((project: any) => {
       dbProjects.push({
@@ -82,21 +99,34 @@ export const SortView = () => {
         updatedAt: project.updated_at,
         membersCount: project.members_count,
       });
-
-      bazaarProjectRefs.push(project.entity_ref);
     });
 
-    setBazaarProjects(dbProjects);
-    setCatalogEntities(
-      entities.items.filter((entity: Entity) => {
-        return !bazaarProjectRefs.includes(stringifyEntityRef(entity));
-      }),
-    );
+    return dbProjects;
   });
 
-  if (loading) {
-    return <Progress />;
-  }
+  useEffect(() => {
+    fetchCatalogEntities();
+    fetchBazaarProjects();
+  }, [fetchBazaarProjects, fetchCatalogEntities]);
+
+  useEffect(() => {
+    const filteredCatalogEntities = filterCatalogEntities(
+      bazaarProjects,
+      catalogEntities,
+    );
+
+    if (filteredCatalogEntities) {
+      setFilteredCatalogEntities(filteredCatalogEntities);
+    }
+  }, [bazaarProjects, catalogEntities]);
+
+  if (catalogEntities.loading || bazaarProjects.loading) return <Progress />;
+
+  if (catalogEntities.error)
+    return <Alert severity="error">{catalogEntities.error.message}</Alert>;
+
+  if (bazaarProjects.error)
+    return <Alert severity="error">{bazaarProjects.error.message}</Alert>;
 
   return (
     <Content noPadding>
@@ -121,7 +151,7 @@ export const SortView = () => {
           variant="contained"
           color="primary"
           onClick={() => {
-            if (catalogEntities.length !== 0) {
+            if (filteredCatalogEntites?.length !== 0) {
               setOpenAdd(true);
             } else {
               setOpenNoProjects(true);
@@ -131,18 +161,18 @@ export const SortView = () => {
           Add project
         </Button>
         <AddProjectDialog
-          catalogEntities={catalogEntities}
+          catalogEntities={filteredCatalogEntites || []}
           handleClose={() => {
             setOpenAdd(false);
           }}
           open={openAdd}
-          setBazaarProjects={setBazaarProjects}
-          setCatalogEntities={setCatalogEntities}
+          fetchBazaarProjects={fetchBazaarProjects}
+          fetchCatalogEntities={fetchCatalogEntities}
         />
         <SupportButton />
       </ContentHeader>
       <ProjectPreview
-        bazaarProjects={bazaarProjects || []}
+        bazaarProjects={bazaarProjects.value || []}
         sortingMethod={compareProjectsByDate}
       />
       <Content noPadding className={classes.container} />

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import React, { useState, useEffect } from 'react';
+import { Entity } from '@backstage/catalog-model';
 import { SubmitHandler } from 'react-hook-form';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
@@ -27,16 +27,16 @@ type Props = {
   catalogEntities: Entity[];
   open: boolean;
   handleClose: () => void;
-  setBazaarProjects: Dispatch<SetStateAction<BazaarProject[]>>;
-  setCatalogEntities: Dispatch<SetStateAction<Entity[]>>;
+  fetchBazaarProjects: () => Promise<BazaarProject[]>;
+  fetchCatalogEntities: () => Promise<Entity[]>;
 };
 
 export const AddProjectDialog = ({
   catalogEntities,
   open,
   handleClose,
-  setBazaarProjects,
-  setCatalogEntities,
+  fetchBazaarProjects,
+  fetchCatalogEntities,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
   const [selectedEntity, setSelectedEntity] = useState(
@@ -64,24 +64,6 @@ export const AddProjectDialog = ({
   ) => {
     const formValues = getValues();
 
-    const bazaarProject: BazaarProject = {
-      entityRef: stringifyEntityRef(selectedEntity!),
-      name: selectedEntity!.metadata.name,
-      community: formValues.community,
-      announcement: formValues.announcement,
-      status: formValues.status,
-      updatedAt: new Date().toISOString(),
-      membersCount: 0,
-    };
-
-    setBazaarProjects((oldProjects: BazaarProject[]) => {
-      return [...oldProjects, bazaarProject];
-    });
-
-    setCatalogEntities((oldEntities: Entity[]) => {
-      return oldEntities.filter(entity => entity !== selectedEntity);
-    });
-
     await bazaarApi.updateMetadata(
       selectedEntity!,
       selectedEntity!.metadata.name,
@@ -89,6 +71,9 @@ export const AddProjectDialog = ({
       formValues.announcement,
       formValues.status,
     );
+
+    fetchBazaarProjects();
+    fetchCatalogEntities();
 
     handleClose();
     reset(defaultValues);

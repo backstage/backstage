@@ -57,6 +57,7 @@ import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { rootRouteRef } from '../../routes';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   description: {
@@ -135,18 +136,18 @@ export const EntityBazaarInfoCard = () => {
       const data = await response.json().then((resp: any) => resp.data);
 
       setBazaarProject({
-        entityRef: data[0].entityRef,
+        entityRef: data[0].entity_ref,
         name: data[0].name,
         community: data[0].community,
         announcement: data[0].announcement,
         status: data[0].status,
-        updatedAt: data[0].updatedAt,
-        membersCount: data[0].membersCount,
+        updatedAt: data[0].updated_at,
+        membersCount: data[0].members_count,
       });
     }
   };
 
-  const { loading } = useAsync(async () => {
+  const { loading, error } = useAsync(async () => {
     await getInitMemberStatus();
     await getMetadata();
   });
@@ -213,6 +214,8 @@ export const EntityBazaarInfoCard = () => {
 
   if (loading) {
     return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
   } else if (!isBazaar) {
     return (
       <Card>
@@ -246,7 +249,7 @@ export const EntityBazaarInfoCard = () => {
       />
 
       <DeleteProjectDialog
-        entity={entity}
+        bazaarProject={bazaarProject}
         openDelete={openDelete}
         handleClose={closeDelete}
         setIsBazaar={setIsBazaar}
@@ -277,7 +280,7 @@ export const EntityBazaarInfoCard = () => {
               }}
             >
               <EditIcon className={classes.icon} />
-              <ListItemText primary="Suggest changes" />
+              <ListItemText primary="Edit project" />
             </MenuItem>
             <Divider />
             <MenuItem

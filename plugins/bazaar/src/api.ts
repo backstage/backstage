@@ -20,7 +20,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { Status } from './types';
+import { BazaarProject, Status } from './types';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -48,7 +48,7 @@ export interface BazaarApi {
 
   getEntities(): Promise<any>;
 
-  deleteEntity(entity: Entity): Promise<void>;
+  deleteEntity(bazaarProject: BazaarProject): Promise<void>;
 }
 
 export class BazaarClient implements BazaarApi {
@@ -153,22 +153,24 @@ export class BazaarClient implements BazaarApi {
     }).then(resp => resp.json());
   }
 
-  async deleteEntity(entity: Entity): Promise<void> {
+  async deleteEntity(bazaarProject: BazaarProject): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
     await fetch(`${baseUrl}/metadata`, {
       method: 'DELETE',
       headers: {
-        entity_ref: stringifyEntityRef(entity),
+        entity_ref: bazaarProject.entityRef as string,
       },
     });
 
-    await fetch(`${baseUrl}/members`, {
-      method: 'DELETE',
-      headers: {
-        user_id: this.identityApi.getUserId(),
-        entity_ref: stringifyEntityRef(entity),
-      },
-    });
+    if (bazaarProject.membersCount > 0) {
+      await fetch(`${baseUrl}/members`, {
+        method: 'DELETE',
+        headers: {
+          user_id: this.identityApi.getUserId(),
+          entity_ref: bazaarProject.entityRef as string,
+        },
+      });
+    }
   }
 }
