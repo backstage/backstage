@@ -18,11 +18,32 @@ import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
 import mockFs from 'mock-fs';
 import fs from 'fs-extra';
+import { v4 as uuidv4 } from 'uuid';
+
+const fetchMock = require('fetch-mock').sandbox();
+const nodeFetch = require('node-fetch');
+
+nodeFetch.default = fetchMock;
 
 describe('loadConfig', () => {
   beforeEach(() => {
     process.env.MY_SECRET = 'is-secret';
     process.env.SUBSTITUTE_ME = 'substituted';
+
+    fetchMock.mock(
+      {
+        url: 'https://some.domain.io/app-config.yaml',
+        method: 'GET',
+      },
+      {
+        body: `app:
+          title: Remote Example App
+          sessionKey: 'abc123'
+          escaped: \$\${Escaped}
+        `,
+        headers: { ETag: uuidv4().toString() },
+      },
+    );
 
     mockFs({
       '/root/app-config.yaml': `
@@ -66,6 +87,7 @@ describe('loadConfig', () => {
   });
 
   afterEach(() => {
+    fetchMock.restore();
     mockFs.restore();
   });
 
@@ -73,7 +95,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: [],
+        configTargets: [],
         env: 'production',
       }),
     ).resolves.toEqual([
@@ -90,11 +112,37 @@ describe('loadConfig', () => {
     ]);
   });
 
+  it('load config from remote path', async () => {
+    const configUrl = 'https://some.domain.io/app-config.yaml';
+
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configTargets: [{ url: configUrl }],
+        env: 'production',
+        remote: {
+          reloadIntervalSeconds: 30,
+        },
+      }),
+    ).resolves.toEqual([
+      {
+        context: configUrl,
+        data: {
+          app: {
+            title: 'Remote Example App',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+    ]);
+  });
+
   it('loads config with secrets', async () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: ['/root/app-config.yaml'],
+        configTargets: [{ path: '/root/app-config.yaml' }],
         env: 'production',
       }),
     ).resolves.toEqual([
@@ -115,9 +163,9 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: [
-          '/root/app-config.yaml',
-          '/root/app-config.development.yaml',
+        configTargets: [
+          { path: '/root/app-config.yaml' },
+          { path: '/root/app-config.development.yaml' },
         ],
         env: 'development',
       }),
@@ -155,7 +203,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: ['/root/app-config.substitute.yaml'],
+        configTargets: [{ path: '/root/app-config.substitute.yaml' }],
         env: 'development',
       }),
     ).resolves.toEqual([
@@ -180,7 +228,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: [],
+        configTargets: [],
         watch: {
           onChange: onChange.resolve,
           stopSignal: stopSignal.promise,
@@ -218,12 +266,73 @@ describe('loadConfig', () => {
     stopSignal.resolve();
   });
 
+  it('watches remote config urls', async () => {
+    const onChange = defer<AppConfig[]>();
+    const stopSignal = defer<void>();
+
+    const configUrl = 'https://some.domain.io/app-config.yaml';
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configTargets: [{ url: configUrl }],
+        watch: {
+          onChange: onChange.resolve,
+          stopSignal: stopSignal.promise,
+        },
+        remote: {
+          reloadIntervalSeconds: 1,
+        },
+      }),
+    ).resolves.toEqual([
+      {
+        context: configUrl,
+        data: {
+          app: {
+            title: 'Remote Example App',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+    ]);
+
+    fetchMock.mock(
+      {
+        url: 'https://some.domain.io/app-config.yaml',
+      },
+      {
+        body: `app:
+          title: NEW ReMOTe ExaMPLe App
+          sessionKey: 'abc123'
+          escaped: \$\${Escaped}
+        `,
+        headers: { ETag: uuidv4().toString() },
+      },
+      { overwriteRoutes: true },
+    );
+
+    await expect(onChange.promise).resolves.toEqual([
+      {
+        context: configUrl,
+        data: {
+          app: {
+            title: 'NEW ReMOTe ExaMPLe App',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+    ]);
+
+    stopSignal.resolve();
+  });
+
   it('stops watching config files', async () => {
     const stopSignal = defer<void>();
 
     await loadConfig({
       configRoot: '/root',
-      configPaths: [],
+      configTargets: [],
       watch: {
         onChange: () => {
           expect('not').toBe('called');

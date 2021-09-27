@@ -30,4 +30,4 @@ export type {
   TransformFunc,
 } from './lib';
 export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+export type { ConfigTarget, LoadConfigOptions, Watch, Remote } from './loader';
