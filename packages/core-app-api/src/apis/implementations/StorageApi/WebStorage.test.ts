@@ -56,6 +56,24 @@ describe('WebStorage Storage API', () => {
     expect(storage.get('myfakekey')).toEqual(mockData);
   });
 
+  it('should allow setting via a function', async () => {
+    const storage = createWebStorage();
+
+    await storage.set('myfakekey', 'hello');
+    await storage.set('myfakekey', (old: string = '') => `${old}iamastring`);
+
+    expect(storage.get('myfakekey')).toEqual('helloiamastring');
+  });
+
+  it('should ignore old value when json can not be parsed in local storage if setting via a function', async () => {
+    const storage = createWebStorage();
+
+    localStorage.setItem('/myfakekey', '{smd: asdouindA}');
+    await storage.set('myfakekey', (old: string = '') => `${old}iamastring`);
+
+    expect(storage.get('myfakekey')).toEqual('iamastring');
+  });
+
   it('should subscribe to key changes when setting a new value', async () => {
     const storage = createWebStorage();
 
@@ -74,6 +92,34 @@ describe('WebStorage Storage API', () => {
       storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
 
       storage.set('correctKey', mockData);
+    });
+
+    expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+    expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+    expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+      key: 'correctKey',
+      newValue: mockData,
+    });
+  });
+
+  it('should subscribe to key changes when setting a new value via function', async () => {
+    const storage = createWebStorage();
+
+    const wrongKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = jest.fn();
+    const mockData = { hello: 'im a great new value' };
+
+    await new Promise<void>(resolve => {
+      storage.observe$<String>('correctKey').subscribe({
+        next: (...args) => {
+          selectedKeyNextHandler(...args);
+          resolve();
+        },
+      });
+
+      storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
+
+      storage.set('correctKey', () => mockData);
     });
 
     expect(wrongKeyNextHandler).not.toHaveBeenCalled();
@@ -129,7 +175,7 @@ describe('WebStorage Storage API', () => {
     expect(secondStorage.get(keyName)).toBe('deerp');
   });
 
-  it('should not clash with other namesapces when creating buckets', async () => {
+  it('should not clash with other namespaces when creating buckets', async () => {
     const rootStorage = createWebStorage();
 
     // when getting key test2 it will translate to /profile/something/deep/test2

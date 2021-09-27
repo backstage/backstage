@@ -48,15 +48,20 @@ export const useStarredEntities = () => {
   const toggleStarredEntity = useCallback(
     (entity: Entity) => {
       const entityKey = buildEntityKey(entity);
-      if (starredEntities.has(entityKey)) {
-        starredEntities.delete(entityKey);
-      } else {
-        starredEntities.add(entityKey);
-      }
 
-      settingsStore.set('starredEntities', Array.from(starredEntities));
+      settingsStore.set<string[]>('starredEntities', oldStarredEntities => {
+        const starredSet = new Set(oldStarredEntities);
+
+        if (starredSet.has(entityKey)) {
+          starredSet.delete(entityKey);
+        } else {
+          starredSet.add(entityKey);
+        }
+
+        return Array.from(starredSet);
+      });
     },
-    [starredEntities, settingsStore],
+    [settingsStore],
   );
 
   const isStarredEntity = useCallback(

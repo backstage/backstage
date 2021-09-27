@@ -49,8 +49,9 @@ export interface StorageApi {
    * Save persistent data, and emit messages to anyone that is using observe$ for this key
    *
    * @param {String} key Unique key associated with the data.
+   * @param data new data, or a function to construct new data from old data.
    */
-  set(key: string, data: any): Promise<void>;
+  set<T>(key: string, data: T | ((old: T | undefined) => any)): Promise<void>;
 
   /**
    * Observe changes on a particular key in the bucket

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  StorageApi,
-  StorageValueChange,
   ErrorApi,
   Observable,
+  StorageApi,
+  StorageValueChange,
 } from '@backstage/core-plugin-api';
+import { isFunction } from 'lodash';
 import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();
@@ -59,9 +61,20 @@ export class WebStorage implements StorageApi {
     return buckets.get(bucketPath)!;
   }
 
-  async set<T>(key: string, data: T): Promise<void> {
-    localStorage.setItem(this.getKeyName(key), JSON.stringify(data, null, 2));
-    this.notifyChanges({ key, newValue: data });
+  async set<T>(
+    key: string,
+    data: T | ((old: T | undefined) => T),
+  ): Promise<void> {
+    let newValue: T;
+
+    if (isFunction(data)) {
+      newValue = data(this.get<T>(key));
+    } else {
+      newValue = data;
+    }
+
+    localStorage.setItem(this.getKeyName(key), JSON.stringify(newValue));
+    this.notifyChanges({ key, newValue });
   }
 
   async remove(key: string): Promise<void> {

@@ -635,7 +635,7 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
-  set<T>(key: string, data: T): Promise<void>;
+  set<T>(key: string, data: T | ((old: T | undefined) => T)): Promise<void>;
 }
 
 // Warnings were encountered during analysis:

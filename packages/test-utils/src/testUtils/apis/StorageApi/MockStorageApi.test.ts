@@ -51,6 +51,15 @@ describe('WebStorage Storage API', () => {
     expect(storage.get('myfakekey')).toEqual(mockData);
   });
 
+  it('should allow setting via a function', async () => {
+    const storage = createMockStorage();
+
+    await storage.set('myfakekey', 'hello');
+    await storage.set('myfakekey', (old: string = '') => `${old}iamastring`);
+
+    expect(storage.get('myfakekey')).toEqual('helloiamastring');
+  });
+
   it('should subscribe to key changes when setting a new value', async () => {
     const storage = createMockStorage();
 

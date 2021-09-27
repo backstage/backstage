@@ -19,6 +19,7 @@ import {
   StorageApi,
   StorageValueChange,
 } from '@backstage/core-plugin-api';
+import { isFunction } from 'lodash';
 import ObservableImpl from 'zen-observable';
 
 export type MockStorageBucket = { [key: string]: any };
@@ -60,9 +61,19 @@ export class MockStorageApi implements StorageApi {
     return this.data[this.getKeyName(key)];
   }
 
-  async set<T>(key: string, data: T): Promise<void> {
-    this.data[this.getKeyName(key)] = data;
-    this.notifyChanges({ key, newValue: data });
+  async set<T>(
+    key: string,
+    data: T | ((old: T | undefined) => T),
+  ): Promise<void> {
+    let newData: T;
+    if (isFunction(data)) {
+      newData = data(this.get(key));
+    } else {
+      newData = data;
+    }
+
+    this.data[this.getKeyName(key)] = newData;
+    this.notifyChanges({ key, newValue: newData });
   }
 
   async remove(key: string): Promise<void> {

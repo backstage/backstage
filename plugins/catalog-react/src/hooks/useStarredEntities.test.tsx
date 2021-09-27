@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
-import { useStarredEntities } from './useStarredEntities';
-import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
-import { MockErrorApi } from '@backstage/test-utils';
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry, WebStorage } from '@backstage/core-app-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { StorageApi, storageApiRef } from '@backstage/core-plugin-api';
+import { MockStorageApi } from '@backstage/test-utils';
+import { act, renderHook } from '@testing-library/react-hooks';
+import React, { PropsWithChildren } from 'react';
+import { useStarredEntities } from './useStarredEntities';
 
 describe('useStarredEntities', () => {
   let mockStorage: StorageApi | undefined;
+  let wrapper: React.ComponentType;
 
   const mockEntity: Entity = {
     apiVersion: '1',
@@ -42,24 +43,21 @@ describe('useStarredEntities', () => {
     },
   };
 
-  const wrapper = ({ children }: PropsWithChildren<{}>) => {
-    return (
+  beforeEach(() => {
+    mockStorage = MockStorageApi.create();
+    wrapper = ({ children }: PropsWithChildren<{}>) => (
       <ApiProvider apis={ApiRegistry.with(storageApiRef, mockStorage)}>
         {children}
       </ApiProvider>
     );
-  };
-
-  beforeEach(() => {
-    mockStorage = new WebStorage('@backstage', new MockErrorApi()).forBucket(
-      Date.now().toString(), // TODO(blam): need something that changes every test run for now until the MockStorage is implemented
-    );
   });
+
   it('should return an empty set for when there is no items in storage', async () => {
     const { result } = renderHook(() => useStarredEntities(), { wrapper });
 
     expect(result.current.starredEntities.size).toBe(0);
   });
+
   it('should return a set with the current items when there are items in storage', async () => {
     const expectedIds = ['i', 'am', 'some', 'test', 'ids'];
     const store = mockStorage?.forBucket('settings');
@@ -71,6 +69,7 @@ describe('useStarredEntities', () => {
       expect(result.current.starredEntities.has(item)).toBeTruthy();
     }
   });
+
   it('should listen to changes when the storage is set elsewhere', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useStarredEntities(),

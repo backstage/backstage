@@ -61,7 +61,7 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
-  set<T>(key: string, data: T): Promise<void>;
+  set<T>(key: string, data: T | ((old: T | undefined) => T)): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "MockStorageBucket" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -94,7 +94,10 @@ export const DismissableBanner = (props: Props) => {
   }, [observedItems?.newValue]);
 
   const handleClick = () => {
-    notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
+    notificationsStore.set<string[]>(
+      'dismissedBanners',
+      (oldDismissedBanners = []) => [...oldDismissedBanners, id],
+    );
   };
 
   return (

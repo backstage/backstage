@@ -791,7 +791,8 @@ export interface StorageApi {
   remove(key: string): Promise<void>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  set(key: string, data: any): Promise<void>;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  set<T>(key: string, data: T | ((old: T | undefined) => any)): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "storageApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

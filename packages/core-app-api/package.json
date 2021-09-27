@@ -38,6 +38,7 @@
     "@material-ui/icons": "^4.9.1",
     "@types/react": "*",
     "@types/prop-types": "^15.7.3",
+    "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-router-dom": "6.0.0-beta.0",
