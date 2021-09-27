@@ -30,6 +30,7 @@ import {
 } from './tables';
 import { createRandomRefreshInterval } from '../refresh';
 import { timestampToDateTime } from './conversion';
+import { generateStableHash } from './util';
 
 describe('Default Processing Database', () => {
   const defaultLogger = getVoidLogger();
@@ -309,6 +310,7 @@ describe('Default Processing Database', () => {
           entity_id: id,
           entity_ref: 'location:default/fakelocation',
           unprocessed_entity: '{}',
+          unprocessed_hash: generateStableHash({} as any),
           processed_entity: '{}',
           errors: '[]',
           next_update_at: '2021-04-01 13:37:00',
