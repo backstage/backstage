@@ -27,6 +27,12 @@ const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
   'backstage.io/kubernetes-label-selector';
 
+export const isKubernetesAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||
+  Boolean(
+    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
+  );
+
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;

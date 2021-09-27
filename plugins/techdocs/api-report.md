@@ -167,6 +167,11 @@ export const EntityTechdocsContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isTechDocsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const isTechDocsAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-missing-release-tag) "PanelType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
