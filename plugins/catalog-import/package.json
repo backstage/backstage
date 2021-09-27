@@ -62,6 +62,7 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^3.3.0",
     "@testing-library/user-event": "^13.1.8",
+    "@types/jest": "^26.0.7",
     "cross-fetch": "^3.0.6",
     "msw": "^0.29.0"
   },
