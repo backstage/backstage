@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
@@ -24,7 +24,7 @@ import { bazaarApiRef } from '../../api';
 type Props = {
   entity: Entity;
   bazaarProject: BazaarProject;
-  setBazaarProject: Dispatch<SetStateAction<BazaarProject>>;
+  fetchBazaarProject: () => Promise<BazaarProject>;
   open: boolean;
   handleClose: () => void;
   isAddForm: boolean;
@@ -33,7 +33,7 @@ type Props = {
 export const EditProjectDialog = ({
   entity,
   bazaarProject,
-  setBazaarProject,
+  fetchBazaarProject,
   open,
   handleClose,
 }: Props) => {
@@ -64,15 +64,7 @@ export const EditProjectDialog = ({
       formValues.status,
     );
 
-    if (updateResponse.status === 'ok')
-      setBazaarProject((oldProject: BazaarProject) => {
-        return {
-          ...oldProject,
-          community: formValues.community,
-          announcement: formValues.announcement,
-          status: formValues.status,
-        };
-      });
+    if (updateResponse.status === 'ok') fetchBazaarProject();
     handleClose();
   };
 

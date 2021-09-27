@@ -48,7 +48,6 @@ const filterCatalogEntities = (bazaarProjects: any, catalogEntities: any) => {
     return !bazaarProjectRefs?.includes(stringifyEntityRef(entity));
   });
 
-  // setFilteredCatalogEntities(filtered);
   return filtered;
 };
 

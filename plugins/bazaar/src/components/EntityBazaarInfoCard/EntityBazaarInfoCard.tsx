@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   makeStyles,
@@ -52,12 +52,11 @@ import {
   identityApiRef,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 import { rootRouteRef } from '../../routes';
 import { Alert } from '@material-ui/lab';
+import { useAsyncFn } from 'react-use';
 
 const useStyles = makeStyles({
   description: {
@@ -91,22 +90,10 @@ export const EntityBazaarInfoCard = () => {
   const [open, setOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-
   const [isMember, setIsMember] = useState(false);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [bazaarProject, setBazaarProject] = useState<BazaarProject>({
-    entityRef: '',
-    name: '',
-    community: '',
-    announcement: '',
-    status: 'proposed',
-    updatedAt: '',
-    membersCount: 0,
-  });
   const [isBazaar, setIsBazaar] = useState(false);
   const routeRef = useRouteRef(rootRouteRef);
-
-  const getInitMemberStatus = async () => {
+  const [members, fetchMembers] = useAsyncFn(async () => {
     const response = await bazaarApi.getMembers(entity);
     const dbMembers = response.data.map((obj: any) => {
       const member: Member = {
@@ -120,37 +107,39 @@ export const EntityBazaarInfoCard = () => {
 
     dbMembers.sort(sortMembers);
 
-    setMembers(dbMembers);
-    setIsMember(
-      dbMembers
-        .map((member: Member) => member.userId)
-        .indexOf(identity.getUserId()) >= 0,
-    );
-  };
-
-  const getMetadata = async () => {
-    const response = await bazaarApi.getMetadata(entity);
-
-    if (response.status !== 404) {
-      setIsBazaar(true);
-      const data = await response.json().then((resp: any) => resp.data);
-
-      setBazaarProject({
-        entityRef: data[0].entity_ref,
-        name: data[0].name,
-        community: data[0].community,
-        announcement: data[0].announcement,
-        status: data[0].status,
-        updatedAt: data[0].updated_at,
-        membersCount: data[0].members_count,
-      });
-    }
-  };
-
-  const { loading, error } = useAsync(async () => {
-    await getInitMemberStatus();
-    await getMetadata();
+    return dbMembers;
   });
+
+  const [bazaarProject, fetchBazaarProject] = useAsyncFn(async () => {
+    const response = await bazaarApi.getMetadata(entity);
+    const metadata = await response.json().then((resp: any) => resp.data[0]);
+
+    return {
+      entityRef: metadata.entity_ref,
+      name: metadata.name,
+      community: metadata.community,
+      announcement: metadata.announcement,
+      status: metadata.status,
+      updatedAt: metadata.updated_at,
+      membersCount: metadata.members_count,
+    } as BazaarProject;
+  });
+
+  useEffect(() => {
+    fetchMembers();
+    fetchBazaarProject();
+  }, [fetchMembers, fetchBazaarProject]);
+
+  useEffect(() => {
+    const isBazaarMember =
+      members?.value
+        ?.map((member: Member) => member.userId)
+        .indexOf(identity.getUserId()) >= 0;
+    const isBazaarProject = bazaarProject !== undefined;
+
+    setIsMember(isBazaarMember);
+    setIsBazaar(isBazaarProject);
+  }, [bazaarProject, members, identity]);
 
   const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -170,37 +159,21 @@ export const EntityBazaarInfoCard = () => {
   };
 
   const handleMembersClick = async () => {
-    setIsMember(!isMember);
-
-    const newMember: Member = {
-      userId: identity.getUserId(),
-      entityRef: stringifyEntityRef(entity),
-    };
-
     if (!isMember) {
-      setMembers((prevMembers: Member[]) => {
-        const newMembers: Member[] = [newMember, ...prevMembers];
-
-        newMembers.sort(sortMembers);
-        return newMembers;
-      });
       await bazaarApi.addMember(entity);
     } else {
-      setMembers(
-        members.filter(
-          (member: Member) => member.userId !== identity.getUserId(),
-        ),
-      );
       await bazaarApi.deleteMember(entity);
     }
+
+    fetchMembers();
   };
 
   const links: IconLinkVerticalProps[] = [
     {
       label: 'Community',
       icon: <ChatIcon />,
-      href: bazaarProject.community,
-      disabled: bazaarProject.community === '',
+      href: bazaarProject?.value?.community,
+      disabled: bazaarProject?.value?.community === '',
     },
     {
       label: isMember ? 'Leave' : 'Join',
@@ -212,10 +185,12 @@ export const EntityBazaarInfoCard = () => {
     },
   ];
 
-  if (loading) {
+  if (bazaarProject.loading || members.loading) {
     return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+  } else if (bazaarProject.error) {
+    return <Alert severity="error">{bazaarProject?.error?.message}</Alert>;
+  } else if (members.error) {
+    return <Alert severity="error">{members?.error?.message}</Alert>;
   } else if (!isBazaar) {
     return (
       <Card>
@@ -239,21 +214,25 @@ export const EntityBazaarInfoCard = () => {
   }
   return (
     <Card>
-      <EditProjectDialog
-        open={open}
-        entity={entity}
-        bazaarProject={bazaarProject}
-        setBazaarProject={setBazaarProject}
-        handleClose={closeEdit}
-        isAddForm={false}
-      />
+      {bazaarProject?.value && (
+        <EditProjectDialog
+          open={open}
+          entity={entity}
+          bazaarProject={bazaarProject.value}
+          fetchBazaarProject={fetchBazaarProject}
+          handleClose={closeEdit}
+          isAddForm={false}
+        />
+      )}
 
-      <DeleteProjectDialog
-        bazaarProject={bazaarProject}
-        openDelete={openDelete}
-        handleClose={closeDelete}
-        setIsBazaar={setIsBazaar}
-      />
+      {bazaarProject?.value && (
+        <DeleteProjectDialog
+          bazaarProject={bazaarProject.value}
+          openDelete={openDelete}
+          handleClose={closeDelete}
+          setIsBazaar={setIsBazaar}
+        />
+      )}
       <CardHeader
         title="Bazaar"
         action={
@@ -297,8 +276,8 @@ export const EntityBazaarInfoCard = () => {
         <Grid container>
           <Grid item xs={12}>
             <AboutField label="Announcement">
-              {bazaarProject.announcement
-                ? bazaarProject.announcement
+              {bazaarProject?.value?.announcement
+                ? bazaarProject?.value?.announcement
                     .split('\n')
                     .map((str: string, i: number) => (
                       <Typography
@@ -316,15 +295,15 @@ export const EntityBazaarInfoCard = () => {
 
           <Grid item xs={6}>
             <AboutField label="Status">
-              <StatusTag status={bazaarProject.status} />
+              <StatusTag status={bazaarProject?.value?.status || 'proposed'} />
             </AboutField>
           </Grid>
 
           <Grid item xs={6}>
             {' '}
             <AboutField label="Latest members">
-              {members.length ? (
-                members.slice(0, 3).map(member => {
+              {members?.value?.length ? (
+                members.value.slice(0, 3).map((member: Member) => {
                   return (
                     <div key={member.userId}>
                       <Avatar
