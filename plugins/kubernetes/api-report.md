@@ -33,6 +33,11 @@ export function formatClusterLink(
   options: FormatClusterLinkOptions,
 ): string | undefined;
 
+// Warning: (ae-missing-release-tag) "isKubernetesAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const isKubernetesAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvidersApi" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
