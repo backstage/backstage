@@ -162,14 +162,9 @@ wouldn't be enough to alter the `box-shadow` property or to add css rules that
 aren't already defined like a margin. For these cases you should also create an
 override.
 
-_Creating your custom overrides_
-
 ```ts
-import {
-  BackstageTheme,
-  createThemeOverrides as createBackstageOverrides,
-} from '@backstage/theme';
-
+import { createApp } from '@backstage/core-app-api';
+import { BackstageTheme, lightTheme } from '@backstage/theme';
 /**
  * The `@backstage/core-components` package exposes this type that
  * contains all Backstage and `material-ui` components that can be
@@ -178,84 +173,38 @@ import {
 import { BackstageOverrides } from '@backstage/core-components';
 
 export const createCustomThemeOverrides = (
-  _: BackstageTheme,
+  theme: BackstageTheme,
 ): BackstageOverrides => {
   return {
-    /**
-     * You can reference the component by the name it passed to the makeStyles function.
-     * in the previous example it was { name: 'BackstageHeader' }
-     */
     BackstageHeader: {
       header: {
+        width: 'auto',
         margin: '20px',
         boxShadow: 'none',
+        borderBottom: `4px solid ${theme.palette.primary.main}`,
       },
     },
   };
 };
 
-export const createOverrides = (theme: BackstageTheme): BackstageOverrides => ({
-  ...createBackstageOverrides(theme), // These are the overrides that Backstage applies to `material-ui` components
-  ...createCustomThemeOverrides(theme), // These are your custom overrides, either to `material-ui` components or to Backstage components.
-});
-```
-
-_Your custom theme that uses the overrides_
-
-```ts
-import { createTheme as createMuiTheme } from '@material-ui/core';
-import { AppTheme } from '@backstage/core-plugin-api';
-import {
-  BackstagePaletteOptions,
-  BackstageTheme,
-  BackstageThemeOptions,
-  PageTheme,
-  shapes,
-} from '@backstage/theme';
-
-import { createOverrides } from './customThemeOverrides';
-import { THEME_OPTIONS } from './themeOptions'; // This is the object created in the "Example of a custom theme" section
-
-export const createTheme = (
-  paletteOptions: BackstagePaletteOptions,
-): BackstageTheme => {
-  const pageTheme: PageTheme = {
-    colors: [],
-    shape: shapes.round,
-    backgroundImage: '',
-  };
-
-  const themeOptions: BackstageThemeOptions = {
-    palette: paletteOptions,
-    page: pageTheme,
-    getPageTheme: _ => pageTheme,
-  };
-
-  const baseTheme = createMuiTheme(themeOptions) as BackstageTheme;
-  const overrides = createOverrides(baseTheme);
-
-  return { ...baseTheme, overrides } as BackstageTheme;
-};
-
-export const CustomTheme: AppTheme = {
-  id: 'custom-theme',
-  title: 'Custom Theme',
-  variant: 'light',
-  theme: createTheme(THEME_OPTIONS),
-};
-```
-
-_Applying your custom theme with overrides_
-
-```ts
-import { createApp } from '@backstage/core-app-api';
-import { CustomTheme } from './theme/customTheme';
-
 const app = createApp({
-  apis,
-  themes: [CustomTheme],
-  plugins: Object.values(plugins),
-  ...
+  apis: ...,
+  plugins: ...,
+  themes: [{
+    id: 'my-theme',
+    title: 'My Custom Theme',
+    variant: 'light',
+    theme: {
+      ...lightTheme,
+      overrides: {
+        // These are the overrides that Backstage applies to `material-ui` components
+        ...lightTheme.overrides,
+        // These are your custom overrides, either to `material-ui` or Backstage components.
+        ...createCustomThemeOverrides(lightTheme),
+      },
+    },
+  }]
+});
 ```
 
 ## Custom Logo
