@@ -44,4 +44,4 @@ export {
   TechDocsReaderPage,
 } from './plugin';
 export * from './reader';
-export { EmbeddedDocsRouter, Router } from './Router';
+export { EmbeddedDocsRouter, Router, isTechDocsAvailable } from './Router';
