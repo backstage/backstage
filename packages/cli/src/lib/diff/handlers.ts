@@ -123,11 +123,41 @@ class PackageJsonHandler {
   }
 
   private async syncFiles() {
-    if (typeof this.targetPkg.configSchema === 'string') {
-      const files = [...this.pkg.files, this.targetPkg.configSchema];
-      await this.syncField('files', { files });
+    const { configSchema } = this.targetPkg;
+    const hasSchemaFile = typeof configSchema === 'string';
+
+    if (!this.targetPkg.files) {
+      const expected = hasSchemaFile ? ['dist', configSchema] : ['dist'];
+      if (
+        await this.prompt(
+          `package.json is missing field "files", set to ${JSON.stringify(
+            expected,
+          )}?`,
+        )
+      ) {
+        this.targetPkg.files = expected;
+        await this.write();
+      }
     } else {
-      await this.syncField('files');
+      const missing = [];
+      if (!this.targetPkg.files.includes('dist')) {
+        missing.push('dist');
+      }
+      if (hasSchemaFile && !this.targetPkg.files.includes(configSchema)) {
+        missing.push(configSchema);
+      }
+      if (missing.length) {
+        if (
+          await this.prompt(
+            `package.json is missing ${JSON.stringify(
+              missing,
+            )} in the "files" field, add?`,
+          )
+        ) {
+          this.targetPkg.files.push(...missing);
+          await this.write();
+        }
+      }
     }
   }
 
