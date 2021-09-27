@@ -23,6 +23,17 @@ export type ConfigSchemaProcessingOptions = {
   withFilteredKeys?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "ConfigTarget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ConfigTarget =
+  | {
+      path: string;
+    }
+  | {
+      url: string;
+    };
+
 // @public
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
@@ -32,13 +43,11 @@ export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 // @public
 export type LoadConfigOptions = {
   configRoot: string;
-  configPaths: string[];
+  configTargets: ConfigTarget[];
   env?: string;
   experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
-  watch?: {
-    onChange: (configs: AppConfig[]) => void;
-    stopSignal?: Promise<void>;
-  };
+  remote?: Remote;
+  watch?: Watch;
 };
 
 // @public
@@ -64,6 +73,13 @@ export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
 
+// Warning: (ae-missing-release-tag) "Remote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type Remote = {
+  reloadIntervalSeconds: number;
+};
+
 // @public
 export type TransformFunc<T extends number | string | boolean> = (
   value: T,
@@ -71,4 +87,12 @@ export type TransformFunc<T extends number | string | boolean> = (
     visibility: ConfigVisibility;
   },
 ) => T | undefined;
+
+// Warning: (ae-missing-release-tag) "Watch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type Watch = {
+  onChange: (configs: AppConfig[]) => void;
+  stopSignal?: Promise<void>;
+};
 ```

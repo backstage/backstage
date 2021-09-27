@@ -27,6 +27,7 @@ export * from './gitlab';
 export * from './googleGcs';
 export * from './awsS3';
 export { defaultScmResolveUrl } from './helpers';
+export { isValidUrl } from './helpers';
 export { ScmIntegrations } from './ScmIntegrations';
 export type { ScmIntegration, ScmIntegrationsGroup } from './types';
 export type { ScmIntegrationRegistry } from './registry';

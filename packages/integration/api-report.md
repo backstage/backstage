@@ -347,6 +347,11 @@ export type GoogleGcsIntegrationConfig = {
   privateKey?: string;
 };
 
+// Warning: (ae-missing-release-tag) "isValidUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function isValidUrl(url: string): boolean;
+
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "readAwsS3IntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
