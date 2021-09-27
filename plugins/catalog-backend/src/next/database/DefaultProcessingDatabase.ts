@@ -156,7 +156,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const { toAdd, toRemove } = await this.createDelta(tx, options);
+    const { toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
       // TODO(freben): Batch split, to not hit variable limits?
@@ -273,14 +273,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       );
     }
 
-    if (toAdd.length) {
-      for (const { entity, locationKey } of toAdd) {
+    if (toUpsert.length) {
+      for (const { entity, locationKey } of toUpsert) {
         const entityRef = stringifyEntityRef(entity);
 
         try {
-          let ok = await this.insertUnprocessedEntity(tx, entity, locationKey);
+          let ok = await this.updateUnprocessedEntity(tx, entity, locationKey);
           if (!ok) {
-            ok = await this.updateUnprocessedEntity(tx, entity, locationKey);
+            ok = await this.insertUnprocessedEntity(tx, entity, locationKey);
           }
 
           if (ok) {
@@ -558,10 +558,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   private async createDelta(
     tx: Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
-  ): Promise<{ toAdd: DeferredEntity[]; toRemove: string[] }> {
+  ): Promise<{ toUpsert: DeferredEntity[]; toRemove: string[] }> {
     if (options.type === 'delta') {
       return {
-        toAdd: options.added,
+        toUpsert: options.added,
         toRemove: options.removed.map(e => stringifyEntityRef(e.entity)),
       };
     }
@@ -586,7 +586,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
     const newRefsSet = new Set(items.map(item => item.ref));
 
-    const toAdd = new Array<DeferredEntity>();
+    const toUpsert = new Array<DeferredEntity>();
     const toRemove = oldRefs
       .map(row => row.target_entity_ref)
       .filter(ref => !newRefsSet.has(ref));
@@ -594,15 +594,15 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     for (const item of items) {
       if (!oldRefsSet.has(item.ref)) {
         // Add any entity that does not exist in the database
-        toAdd.push(item.deferred);
+        toUpsert.push(item.deferred);
       } else if (oldRefsSet.get(item.ref) !== item.deferred.locationKey) {
         // Remove and then re-add any entity that exists, but with a different location key
         toRemove.push(item.ref);
-        toAdd.push(item.deferred);
+        toUpsert.push(item.deferred);
       }
     }
 
-    return { toAdd, toRemove };
+    return { toUpsert, toRemove };
   }
 
   /**
