@@ -223,8 +223,7 @@ export const createGithubProvider = (
       const enterpriseInstanceUrl = envConfig.getOptionalString(
         'enterpriseInstanceUrl',
       );
-      const customCallbackUrl =
-        envConfig.getOptionalString('customCallbackUrl');
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
       const authorizationUrl = enterpriseInstanceUrl
         ? `${enterpriseInstanceUrl}/login/oauth/authorize`
         : undefined;
