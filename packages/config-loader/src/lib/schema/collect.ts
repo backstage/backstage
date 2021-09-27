@@ -43,9 +43,10 @@ export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
 ): Promise<ConfigSchemaPackageEntry[]> {
-  const visitedPackages = new Set<string>();
-  const schemas = Array<ConfigSchemaPackageEntry>();
-  const tsSchemaPaths = Array<string>();
+  const schemas = new Array<ConfigSchemaPackageEntry>();
+  const tsSchemaPaths = new Array<string>();
+  const visitedPackageVersions = new Map<string, Set<string>>(); // pkgName: [versions...]
+
   const currentDir = await fs.realpath(process.cwd());
 
   async function processItem(item: Item) {
@@ -58,16 +59,6 @@ export async function collectConfigSchemas(
       }
     } else if (item.name) {
       const { name, parentPath } = item;
-
-      // Ensures that we only process each package once. We don't bother with
-      // loading in schemas from duplicates of different versions, as that's not
-      // supported by Backstage right now anyway. We may want to change that in
-      // the future though, if it for example becomes possible to load in two
-      // different versions of e.g. @backstage/core at once.
-      if (visitedPackages.has(name)) {
-        return;
-      }
-      visitedPackages.add(name);
 
       try {
         pkgPath = req.resolve(
@@ -86,6 +77,18 @@ export async function collectConfigSchemas(
     }
 
     const pkg = await fs.readJson(pkgPath);
+
+    // Ensures that we only process the same version of each package once.
+    let versions = visitedPackageVersions.get(pkg.name);
+    if (versions?.has(pkg.version)) {
+      return;
+    }
+    if (!versions) {
+      versions = new Set();
+      visitedPackageVersions.set(pkg.name, versions);
+    }
+    versions.add(pkg.version);
+
     const depNames = [
       ...Object.keys(pkg.dependencies ?? {}),
       ...Object.keys(pkg.devDependencies ?? {}),
