@@ -13,39 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { JsonObject, JsonValue } from '@backstage/config';
-import { InputError } from '@backstage/errors';
-import fs from 'fs-extra';
-
-import path from 'path';
-
-import { Logger } from 'winston';
-import { parseRepoUrl } from '../actions/builtin/publish/util';
-import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
-import { isTruthy } from './helper';
 import { Task, TaskBroker, WorkflowRunner } from './types';
-import { ScmIntegrations } from '@backstage/integration';
 import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
-import { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
 
 type Options = {
-  logger: Logger;
   taskBroker: TaskBroker;
-  workingDirectory: string;
-  actionRegistry: TemplateActionRegistry;
-  integrations: ScmIntegrations;
+  runners: {
+    legacyWorkflowRunner: LegacyWorkflowRunner;
+    workflowRunner: WorkflowRunner;
+  };
 };
 
 export class TaskWorker {
-  private readonly legacyWorkflowRunner: LegacyWorkflowRunner;
-  private readonly workflowRunner: WorkflowRunner;
-
-  constructor(private readonly options: Options) {
-    this.legacyWorkflowRunner = new LegacyWorkflowRunner(options);
-    this.workflowRunner = new DefaultWorkflowRunner(options);
-  }
-
+  constructor(private readonly options: Options) {}
   start() {
     (async () => {
       for (;;) {
@@ -59,8 +39,8 @@ export class TaskWorker {
     try {
       const { output } =
         task.spec.apiVersion === 'backstage.io/v1beta3'
-          ? await this.workflowRunner.execute(task)
-          : await this.legacyWorkflowRunner.execute(task);
+          ? await this.options.runners.workflowRunner.execute(task)
+          : await this.options.runners.legacyWorkflowRunner.execute(task);
 
       await task.complete('completed', { output });
     } catch (error) {
