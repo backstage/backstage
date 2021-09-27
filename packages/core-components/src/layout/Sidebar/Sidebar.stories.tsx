@@ -46,7 +46,7 @@ export const SampleSidebar = () => (
   <Sidebar>
     <SidebarSearchField onSearch={handleSearch} to="/search" />
     <SidebarDivider />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
+    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" hasSubMenu />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
     <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
     <SidebarDivider />

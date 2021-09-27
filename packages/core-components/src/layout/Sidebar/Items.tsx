@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
@@ -131,6 +132,7 @@ type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
   hasNotifications?: boolean;
+  hasSubMenu?: boolean;
   children?: ReactNode;
   className?: string;
 };
@@ -205,6 +207,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     icon: Icon,
     text,
     hasNotifications = false,
+    hasSubMenu = false,
     onClick,
     children,
     className,
@@ -224,6 +227,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
+      {hasSubMenu && <ArrowRightIcon fontSize="small" />}
     </Badge>
   );
 
