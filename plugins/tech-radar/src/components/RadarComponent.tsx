@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { Progress } from '@backstage/core-components';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import React, { useEffect } from 'react';
 import { useAsync } from 'react-use';
-import Radar from '../components/Radar';
 import {
+  RadarEntry,
   techRadarApiRef,
   TechRadarComponentProps,
   TechRadarLoaderResponse,
 } from '../api';
+import Radar from '../components/Radar';
 import { Entry } from '../utils/types';
-
-import { Progress } from '@backstage/core-components';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 const useTechRadarLoader = (id: string | undefined) => {
   const errorApi = useApi(errorApiRef);
@@ -45,37 +45,44 @@ const useTechRadarLoader = (id: string | undefined) => {
   return { loading, value, error };
 };
 
+function matchFilter(filter?: string): (entry: RadarEntry) => boolean {
+  const terms = filter
+    ?.toLocaleLowerCase('en-US')
+    .split(/\s/)
+    .map(e => e.trim())
+    .filter(Boolean);
+
+  if (!terms?.length) {
+    return () => true;
+  }
+
+  return entry => {
+    const text = `${entry.title} ${
+      entry.timeline[0]?.description || ''
+    }`.toLocaleLowerCase('en-US');
+    return terms.every(term => text.includes(term));
+  };
+}
+
 const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
-    loaderResponse: TechRadarLoaderResponse | undefined,
+    loaderResponse: TechRadarLoaderResponse,
   ): Array<Entry> => {
-    let filteredArray = loaderResponse!.entries;
-    if (props.searchText) {
-      // Compare the name or the description with the search input text
-      filteredArray = loaderResponse!.entries.filter(
-        element =>
-          element.title
-            .toLowerCase()
-            .includes(props.searchText!.toLowerCase()) ||
-          element.timeline[0].description
-            ?.toLowerCase()
-            .includes(props.searchText!.toLowerCase()),
-      );
-    }
-    return filteredArray.map(entry => {
-      return {
+    return loaderResponse.entries
+      .filter(matchFilter(props.searchText))
+      .map(entry => ({
         id: entry.key,
-        quadrant: loaderResponse!.quadrants.find(q => q.id === entry.quadrant)!,
+        quadrant: loaderResponse.quadrants.find(q => q.id === entry.quadrant)!,
         title: entry.title,
-        ring: loaderResponse!.rings.find(
+        ring: loaderResponse.rings.find(
           r => r.id === entry.timeline[0].ringId,
         )!,
         timeline: entry.timeline.map(e => {
           return {
             date: e.date,
-            ring: loaderResponse!.rings.find(a => a.id === e.ringId)!,
+            ring: loaderResponse.rings.find(a => a.id === e.ringId)!,
             description: e.description,
             moved: e.moved,
           };
@@ -83,18 +90,17 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
         moved: entry.timeline[0].moved,
         description: entry.description || entry.timeline[0].description,
         url: entry.url,
-      };
-    });
+      }));
   };
 
   return (
     <>
       {loading && <Progress />}
-      {!loading && !error && (
+      {!loading && !error && data && (
         <Radar
           {...props}
-          rings={data!.rings}
-          quadrants={data!.quadrants}
+          rings={data.rings}
+          quadrants={data.quadrants}
           entries={mapToEntries(data)}
         />
       )}

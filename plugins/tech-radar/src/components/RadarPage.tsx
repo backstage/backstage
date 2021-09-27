@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid, makeStyles, TextField } from '@material-ui/core';
-import RadarComponent from '../components/RadarComponent';
-import { TechRadarComponentProps } from '../api';
 import {
   Content,
   ContentHeader,
-  Page,
   Header,
+  Page,
   SupportButton,
 } from '@backstage/core-components';
+import { Grid, Input, makeStyles } from '@material-ui/core';
+import React from 'react';
+import { TechRadarComponentProps } from '../api';
+import RadarComponent from '../components/RadarComponent';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {
@@ -47,24 +47,16 @@ export const RadarPage = ({
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
 
-  const searchInput = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setSearchText(event.target.value);
-  };
-
   return (
     <Page themeId="tool">
       <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
-          <TextField
-            id="standard-search"
-            label="Search field"
+          <Input
+            id="tech-radar-filter"
             type="search"
-            onChange={e => {
-              searchInput(e);
-            }}
+            placeholder="Filter"
+            onChange={e => setSearchText(e.target.value)}
           />
           <SupportButton>
             This is used for visualizing the official guidelines of different

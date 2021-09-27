@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-radar': minor
+'@backstage/plugin-tech-radar': patch
 ---
 
-Added SearchBar to allow filtering and a scroll bar to display hidden tech
+Added `SearchBar` to allow filtering and a scroll bar to display hidden tech

@@ -55,12 +55,8 @@ const RadarPlot = (props: Props): JSX.Element => {
         quadrants={quadrants}
         rings={rings}
         entries={entries}
-        onEntryMouseEnter={
-          onEntryMouseEnter && (entry => onEntryMouseEnter(entry))
-        }
-        onEntryMouseLeave={
-          onEntryMouseLeave && (entry => onEntryMouseLeave(entry))
-        }
+        onEntryMouseEnter={entry => onEntryMouseEnter?.(entry)}
+        onEntryMouseLeave={entry => onEntryMouseLeave?.(entry)}
       />
       <g transform={`translate(${width / 2}, ${height / 2})`}>
         <RadarGrid radius={radius} rings={rings} />
@@ -76,8 +72,8 @@ const RadarPlot = (props: Props): JSX.Element => {
             description={entry.description}
             moved={entry.moved}
             title={entry.title}
-            onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}
-            onMouseLeave={onEntryMouseLeave && (() => onEntryMouseLeave(entry))}
+            onMouseEnter={() => onEntryMouseEnter?.(entry)}
+            onMouseLeave={() => onEntryMouseLeave?.(entry)}
           />
         ))}
         <RadarBubble
