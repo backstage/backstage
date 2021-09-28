@@ -150,9 +150,7 @@ export function createMetadataDescriptionColumn<
   };
 }
 
-export function createMetadataTitleColumn<
-  T extends Entity,
->(): TableColumn<T> {
+export function createMetadataTitleColumn<T extends Entity>(): TableColumn<T> {
   return {
     title: 'Title',
     field: 'metadata.title',

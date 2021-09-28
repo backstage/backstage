@@ -99,10 +99,7 @@ export function createMetadataTitleColumn(): TableColumn<EntityRow> {
     title: 'Title',
     field: 'entity.metadata.title',
     render: ({ entity }) => (
-      <OverflowTooltip
-        text={entity.metadata.title}
-        placement="bottom-start"
-      />
+      <OverflowTooltip text={entity.metadata.title} placement="bottom-start" />
     ),
     width: 'auto',
   };
