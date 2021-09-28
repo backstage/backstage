@@ -31,6 +31,7 @@ import { JsonObject, JsonValue } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { isTruthy } from './helper';
+import { validate as validateJsonSchema } from 'jsonschema';
 
 type Options = {
   workingDirectory: string;
@@ -79,6 +80,8 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 
   constructor(private readonly options: Options) {
+    // TODO(blam): Probably need the repo helper here.
+    // Or we move to returning Objects in the RepoUrlPickerV2 or something?
     this.nunjucks = nunjucks.configure({
       autoescape: false,
       tags: {
@@ -164,7 +167,20 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
-          const input = step.input && this.render(step.input, context);
+          const input = (step.input && this.render(step.input, context)) ?? {};
+
+          if (action.schema?.input) {
+            const validateResult = validateJsonSchema(
+              input,
+              action.schema.input,
+            );
+            if (!validateResult.valid) {
+              const errors = validateResult.errors.join(', ');
+              throw new InputError(
+                `Invalid input passed to action ${action.id}, ${errors}`,
+              );
+            }
+          }
 
           const tmpDirs = new Array<string>();
           const stepOutput: { [outputName: string]: JsonValue } = {};

@@ -56,6 +56,23 @@ describe('DefaultWorkflowRunner', () => {
     });
 
     actionRegistry.register({
+      id: 'jest-validated-action',
+      description: 'Mock action for testing',
+      handler: fakeActionHandler,
+      schema: {
+        input: {
+          type: 'object',
+          required: ['foo'],
+          properties: {
+            foo: {
+              type: 'number',
+            },
+          },
+        },
+      },
+    });
+
+    actionRegistry.register({
       id: 'output-action',
       description: 'Mock action for testing',
       handler: async ctx => {
@@ -85,7 +102,40 @@ describe('DefaultWorkflowRunner', () => {
     );
   });
 
-  describe('validation', () => {});
+  describe('validation', () => {
+    it('should throw an error if the action has a schema and the input does not match', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrowError(
+        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+      );
+    });
+
+    it('should run the action when the validation passes', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+  });
   describe('conditionals', () => {
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
