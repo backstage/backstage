@@ -313,10 +313,6 @@ export const FilterTable = () => {
       column: 'Column 2',
       type: 'multiple-select',
     },
-    {
-      column: 'Numeric value',
-      type: 'checkbox-tree',
-    },
   ];
 
   return (
