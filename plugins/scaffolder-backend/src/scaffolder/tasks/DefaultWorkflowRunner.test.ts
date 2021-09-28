@@ -235,6 +235,34 @@ describe('DefaultWorkflowRunner', () => {
       );
     });
 
+    it('should keep the original types for the input and not parse things that arent meant to be parsed', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              number: '${{parameters.number}}',
+              string: '${{parameters.string}}',
+            },
+          },
+        ],
+        output: {},
+        parameters: {
+          number: 0,
+          string: '1',
+        },
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { number: 0, string: '1' } }),
+      );
+    });
+
     it('should template complex values into the action', async () => {
       const task = createMockTaskWithSpec({
         apiVersion: 'backstage.io/v1beta3',
@@ -355,7 +383,7 @@ describe('DefaultWorkflowRunner', () => {
           },
         ],
         output: {
-          foo: '${{parameters.repoUrl | parseRepoUrl}}',
+          foo: '${{ parameters.repoUrl | parseRepoUrl }}',
         },
         parameters: {
           repoUrl: 'github.com?repo=repo&owner=owner',

@@ -94,7 +94,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     // objects in the params block.
     // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
     this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
-      return JSON.stringify(parseRepoUrl(repoUrl, this.options.integrations));
+      return parseRepoUrl(repoUrl, this.options.integrations);
     });
 
     this.nunjucks.addFilter('projectSlug', repoUrl => {
@@ -107,40 +107,49 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     return JSON.parse(JSON.stringify(input), (_key, value) => {
       try {
         if (typeof value === 'string') {
+          try {
+            // Let's assume that we're dealing with a template string.
+            if (value.startsWith('${{') && value.endsWith('}}')) {
+              // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
+              const wrappedDumped = value.replace(
+                /\${{(.+)}}/g,
+                '${{ ( $1 ) | dump }}',
+              );
+
+              // Run the templating
+              const templated = this.nunjucks.renderString(
+                wrappedDumped,
+                context,
+              );
+
+              // If there's emtpy string returned, then it's undefined
+              if (templated === '') {
+                return undefined;
+              }
+
+              // Reparse the dumped string
+              return JSON.parse(templated);
+            }
+          } catch (ex) {
+            this.options.logger.debug(
+              `Failed to parse template string: ${value} with error ${ex.message}`,
+            );
+          }
+
+          // Fallback to default behaviour
           const templated = this.nunjucks.renderString(value, context);
+
           if (templated === '') {
             return undefined;
           }
-          try {
-            return JSON.parse(templated);
-          } catch {
-            return templated;
-          }
+
+          return templated;
         }
       } catch {
         return value;
       }
       return value;
     });
-  }
-
-  private makeStringifyableParams<T>(input: T): T {
-    /**
-     * This is a little bit of a hack / magic so that when we use nunjucks and we try to
-     * pass through something other than a string from the parameters section.
-     * When an accessor is used that is an object, it's toString is the JSON.stringify'd version of it's children
-     * Which makes it work really well in string templating as we can parse the result again after.
-     */
-    return JSON.parse(
-      JSON.stringify(input),
-      (key: string, value: JsonObject) => {
-        if (typeof value === 'object' && key) {
-          value.toString = () => JSON.stringify(value);
-        }
-
-        return value;
-      },
-    );
   }
 
   async execute(task: Task): Promise<WorkflowResponse> {
@@ -160,7 +169,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
       );
 
       const context: TemplateContext = {
-        parameters: this.makeStringifyableParams(task.spec.parameters),
+        parameters: task.spec.parameters,
         steps: {},
       };
 
