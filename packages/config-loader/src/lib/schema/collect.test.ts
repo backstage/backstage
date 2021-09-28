@@ -231,6 +231,74 @@ describe('collectConfigSchemas', () => {
     ]);
   });
 
+  it('should load schema from different package versions', async () => {
+    mockFs({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              b: '1',
+              c: '1',
+            },
+            configSchema: mockSchema,
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1',
+            dependencies: {
+              c: '2',
+            },
+            configSchema: { ...mockSchema, title: 'b' },
+          }),
+          node_modules: {
+            c: {
+              'package.json': JSON.stringify({
+                name: 'c',
+                version: '2',
+                configSchema: { ...mockSchema, title: 'c2' },
+              }),
+            },
+          },
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            version: '1',
+            configSchema: { ...mockSchema, title: 'c1' },
+          }),
+        },
+      },
+    });
+
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
+      {
+        path: path.join('node_modules', 'a', 'package.json'),
+        value: mockSchema,
+      },
+      {
+        path: path.join('node_modules', 'b', 'package.json'),
+        value: { ...mockSchema, title: 'b' },
+      },
+      {
+        path: path.join('node_modules', 'c', 'package.json'),
+        value: { ...mockSchema, title: 'c1' },
+      },
+      {
+        path: path.join(
+          'node_modules',
+          'b',
+          'node_modules',
+          'c',
+          'package.json',
+        ),
+        value: { ...mockSchema, title: 'c2' },
+      },
+    ]);
+  });
+
   it('should not allow unknown schema file types', async () => {
     mockFs({
       node_modules: {
