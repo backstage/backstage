@@ -553,6 +553,33 @@ export interface TemplateEntityV1beta2 extends Entity {
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
 
+// @public (undocumented)
+export interface TemplateEntityV1beta3 extends Entity {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1beta3';
+  // (undocumented)
+  kind: 'Template';
+  // (undocumented)
+  spec: {
+    type: string;
+    parameters?: JsonObject | JsonObject[];
+    steps: Array<{
+      id?: string;
+      name?: string;
+      action: string;
+      input?: JsonObject;
+      if?: string | boolean;
+    }>;
+    output?: {
+      [name: string]: string;
+    };
+    owner?: string;
+  };
+}
+
+// @public (undocumented)
+export const templateEntityV1beta3Validator: KindValidator;
+
 // @alpha
 export type UNSTABLE_EntityStatus = {
   items?: UNSTABLE_EntityStatusItem[];
