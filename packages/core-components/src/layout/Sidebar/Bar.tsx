@@ -21,7 +21,7 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 
-import { SidebarPageContext } from '.';
+import { useContentRef } from '.';
 import { sidebarConfig, SidebarContext } from './config';
 import { SidebarPinStateContext } from './Page';
 
@@ -105,7 +105,7 @@ export function Sidebar(props: PropsWithChildren<Props>) {
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
   const { isPinned } = useContext(SidebarPinStateContext);
-  const { contentRef } = useContext(SidebarPageContext);
+  const contentRef = useContentRef();
 
   const focusContent = () => {
     contentRef?.current?.focus();
