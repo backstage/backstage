@@ -39,12 +39,10 @@ export const TechDocsPage = () => {
     return Promise.resolve(undefined);
   }, [kind, namespace, name, techdocsApi, documentReady]);
 
-  const {
-    value: entityMetadataValue,
-    error: entityMetadataError,
-  } = useAsync(() => {
-    return techdocsApi.getEntityMetadata({ kind, namespace, name });
-  }, [kind, namespace, name, techdocsApi]);
+  const { value: entityMetadataValue, error: entityMetadataError } =
+    useAsync(() => {
+      return techdocsApi.getEntityMetadata({ kind, namespace, name });
+    }, [kind, namespace, name, techdocsApi]);
 
   const onReady = useCallback(() => {
     setDocumentReady(true);
