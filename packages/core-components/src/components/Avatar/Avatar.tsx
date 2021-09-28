@@ -22,17 +22,21 @@ import {
 } from '@material-ui/core';
 import { extractInitials, stringToColor } from './utils';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    avatar: {
-      width: '4rem',
-      height: '4rem',
-      color: '#fff',
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-    },
-  }),
+export type AvatarClassKey = 'avatar';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      avatar: {
+        width: '4rem',
+        height: '4rem',
+        color: '#fff',
+        fontWeight: theme.typography.fontWeightBold,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+      },
+    }),
+  { name: 'BackstageAvatar' },
 );
 
 export type AvatarProps = {
