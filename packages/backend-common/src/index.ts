@@ -21,7 +21,7 @@
  */
 
 export * from './cache';
-export * from './config';
+export { loadBackendConfig } from './config';
 export * from './database';
 export * from './discovery';
 export * from './hot';

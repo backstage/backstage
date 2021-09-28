@@ -1,5 +1,62 @@
 # @backstage/plugin-catalog-import
 
+## 0.6.0
+
+### Minor Changes
+
+- 690657799e: Add initial support for customizing the catalog import page.
+
+  It is now possible to pass a custom layout to the import page, as it's already
+  supported by the search page. If no custom layout is passed, the default layout
+  is used.
+
+  ```typescript
+  <Route path="/catalog-import" element={<CatalogImportPage />}>
+    <Page themeId="home">
+      <Header title="Register an existing component" />
+      <Content>
+        <ContentHeader title="Start tracking your components">
+          <SupportButton>
+            Start tracking your component in Backstage by adding it to the
+            software catalog.
+          </SupportButton>
+        </ContentHeader>
+
+        <Grid container spacing={2} direction="row-reverse">
+          <Grid item xs={12} md={4} lg={6} xl={8}>
+            Hello World
+          </Grid>
+
+          <Grid item xs={12} md={8} lg={6} xl={4}>
+            <ImportStepper />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  </Route>
+  ```
+
+  Previously it was possible to disable and customize the automatic pull request
+  feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+  `pullRequest.preparePullRequest`). This functionality is moved to the
+  `CatalogImportApi` which now provides an optional `preparePullRequest()`
+  function. The function can either be overridden to generate a different content
+  for the pull request, or removed to disable this feature.
+
+  The export of the long term deprecated legacy `<Router>` is removed, migrate to
+  `<CatalogImportPage>` instead.
+
+### Patch Changes
+
+- 9ef2987a83: The import form is now aware of locations that already exist. It lists them separately and shows a button for triggering a refresh.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/integration-react@0.1.10
+
 ## 0.5.21
 
 ### Patch Changes

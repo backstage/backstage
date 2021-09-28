@@ -127,6 +127,16 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
               }
               return pkge.version;
             },
+            versionQuery(name: string, hint: string) {
+              const pkgData = require(`${name}/package.json`);
+              if (!pkgData) {
+                if (typeof hint !== 'string') {
+                  throw new Error(`No version available for package ${name}`);
+                }
+                return `^${hint}`;
+              }
+              return `^${pkgData.version}`;
+            },
           },
         },
       ),

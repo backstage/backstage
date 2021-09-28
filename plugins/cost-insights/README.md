@@ -40,7 +40,7 @@ export class CostInsightsClient implements CostInsightsApi { ... }
 
 ```ts
 // packages/app/src/api.ts
-import { createApiFactory } from '@backstage/core';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
 import { CostInsightsClient } from './path/to/file';
 

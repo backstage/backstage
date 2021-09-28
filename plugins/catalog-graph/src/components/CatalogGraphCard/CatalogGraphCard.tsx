@@ -27,11 +27,11 @@ import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from '../../routes';
 import {
+  ALL_RELATION_PAIRS,
   Direction,
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
-  ALL_RELATION_PAIRS,
 } from '../EntityRelationsGraph';
 
 const useStyles = makeStyles<Theme, { height: number | undefined }>({
@@ -58,6 +58,7 @@ export const CatalogGraphCard = ({
   direction = Direction.LEFT_RIGHT,
   height,
   title = 'Relations',
+  zoom = 'enable-on-click',
 }: {
   variant?: InfoCardVariants;
   relationPairs?: RelationPairs;
@@ -69,6 +70,7 @@ export const CatalogGraphCard = ({
   direction?: Direction;
   height?: number;
   title?: string;
+  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }) => {
   const { entity } = useEntity();
   const entityName = getEntityName(entity);
@@ -118,6 +120,7 @@ export const CatalogGraphCard = ({
         onNodeClick={onNodeClick}
         className={classes.graph}
         relationPairs={relationPairs}
+        zoom={zoom}
       />
     </InfoCard>
   );

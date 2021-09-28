@@ -1,5 +1,16 @@
 # @backstage/plugin-circleci
 
+## 0.2.24
+
+### Patch Changes
+
+- 47e21d8d69: Swapped over to using Luxon as opposed to DayJS in the CircleCI plugin as part of the single Date library improvements.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
 ## 0.2.23
 
 ### Patch Changes

@@ -24,28 +24,28 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^{{version '@backstage/core-components'}}",
-    "@backstage/core-plugin-api": "^{{version '@backstage/core-plugin-api'}}",
-    "@backstage/theme": "^{{version '@backstage/theme'}}",
-    "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-use": "^17.2.4"
+    "@backstage/core-components": "{{versionQuery '@backstage/core-components'}}",
+    "@backstage/core-plugin-api": "{{versionQuery '@backstage/core-plugin-api'}}",
+    "@backstage/theme": "{{versionQuery '@backstage/theme'}}",
+    "@material-ui/core": "{{versionQuery '@material-ui/core' '4.12.2'}}",
+    "@material-ui/icons": "{{versionQuery '@material-ui/icons' '4.9.1'}}",
+    "@material-ui/lab": "{{versionQuery '@material-ui/lab' '4.0.0-alpha.57'}}",
+    "react": "{{versionQuery 'react' '16.13.1'}}",
+    "react-dom": "{{versionQuery 'react-dom' '16.13.1'}}",
+    "react-use": "{{versionQuery 'react-use' '17.2.4'}}"
   },
   "devDependencies": {
-    "@backstage/cli": "^{{version '@backstage/cli'}}",
-    "@backstage/core-app-api": "^{{version '@backstage/core-app-api'}}",
-    "@backstage/dev-utils": "^{{version '@backstage/dev-utils'}}",
-    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^13.1.8",
-    "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32",
-    "msw": "^0.29.0",
-    "cross-fetch": "^3.0.6"
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@backstage/core-app-api": "{{versionQuery '@backstage/core-app-api'}}",
+    "@backstage/dev-utils": "{{versionQuery '@backstage/dev-utils'}}",
+    "@backstage/test-utils": "{{versionQuery '@backstage/test-utils'}}",
+    "@testing-library/jest-dom": "{{versionQuery '@testing-library/jest-dom' '5.10.1'}}",
+    "@testing-library/react": "{{versionQuery '@testing-library/react' '11.2.5'}}",
+    "@testing-library/user-event": "{{versionQuery '@testing-library/user-event' '13.1.8'}}",
+    "@types/jest": "{{versionQuery '@types/jest' '26.0.7'}}",
+    "@types/node": "{{versionQuery '@types/node' '14.14.32'}}",
+    "msw": "{{versionQuery 'msw' '0.29.0'}}",
+    "cross-fetch": "{{versionQuery 'cross-fetch' '3.0.6'}}"
   },
   "files": [
     "dist"

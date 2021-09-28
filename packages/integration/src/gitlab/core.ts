@@ -76,7 +76,7 @@ export function buildRawUrl(target: string): URL {
       userOrOrg === '' ||
       repoName === '' ||
       blobKeyword !== 'blob' ||
-      !restOfPath.join('/').match(/\.yaml$/)
+      !restOfPath.join('/').match(/\.(yaml|yml)$/)
     ) {
       throw new Error('Wrong GitLab URL');
     }

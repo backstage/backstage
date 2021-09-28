@@ -162,11 +162,35 @@ type DependencyEdge<T = CustomType> = T & {
   label?: string;
 };
 
-// Warning: (ae-forgotten-export) The symbol "DependencyGraphProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "DependencyGraph" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function DependencyGraph(props: DependencyGraphProps): JSX.Element;
+
+// Warning: (ae-missing-release-tag) "DependencyGraphProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DependencyGraphProps = React_2.SVGProps<SVGSVGElement> & {
+  edges: DependencyEdge[];
+  nodes: DependencyNode[];
+  direction?: Direction;
+  align?: Alignment;
+  nodeMargin?: number;
+  edgeMargin?: number;
+  rankMargin?: number;
+  paddingX?: number;
+  paddingY?: number;
+  acyclicer?: 'greedy';
+  ranker?: Ranker;
+  labelPosition?: LabelPosition;
+  labelOffset?: number;
+  edgeRanks?: number;
+  edgeWeight?: number;
+  renderNode?: RenderNodeFunction;
+  renderLabel?: RenderLabelFunction;
+  defs?: SVGDefsElement | SVGDefsElement[];
+  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
+};
 
 declare namespace DependencyGraphTypes {
   export {

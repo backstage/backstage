@@ -77,6 +77,7 @@ export const EntityCatalogGraphCard: ({
   direction,
   height,
   title,
+  zoom,
 }: {
   variant?: InfoCardVariants | undefined;
   relationPairs?: RelationPairs | undefined;
@@ -88,6 +89,7 @@ export const EntityCatalogGraphCard: ({
   direction?: Direction | undefined;
   height?: number | undefined;
   title?: string | undefined;
+  zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
 }) => JSX.Element;
 
 // @public
@@ -119,6 +121,7 @@ export const EntityRelationsGraph: ({
   onNodeClick,
   relationPairs,
   className,
+  zoom,
 }: {
   rootEntityNames: EntityName | EntityName[];
   maxDepth?: number | undefined;
@@ -132,6 +135,7 @@ export const EntityRelationsGraph: ({
     | undefined;
   relationPairs?: RelationPairs | undefined;
   className?: string | undefined;
+  zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
 }) => JSX.Element;
 
 // @public

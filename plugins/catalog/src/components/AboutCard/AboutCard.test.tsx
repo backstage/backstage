@@ -220,6 +220,10 @@ describe('<AboutCard />', () => {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://backstage.io/catalog-info.yaml',
+        },
         name: 'software',
       },
       spec: {
@@ -250,6 +254,35 @@ describe('<AboutCard />', () => {
     expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
       'component:default/software',
     );
+  });
+
+  it('should not render refresh button if the location is not an url', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+    ).with(catalogApiRef, catalogApi);
+
+    const { queryByTitle } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(queryByTitle('Schedule entity refresh')).not.toBeInTheDocument();
   });
 
   it('renders techdocs link', async () => {

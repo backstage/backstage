@@ -7,6 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
+import { DomainEntity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
@@ -22,6 +23,12 @@ export const catalogEntityRouteRef: ExternalRouteRef<
   },
   false
 >;
+
+// Warning: (ae-forgotten-export) The symbol "DomainCardProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "DomainCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DomainCard: ({ entity }: DomainCardProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DomainExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

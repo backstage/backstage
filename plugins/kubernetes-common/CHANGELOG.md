@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.4
+
+### Patch Changes
+
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+
 ## 0.1.3
 
 ### Patch Changes

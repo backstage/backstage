@@ -217,3 +217,56 @@ techdocs:
 [beta-migrate-bug]:
 https://github.com/backstage/backstage/issues/new?assignees=&labels=bug&template=bug_template.md&title=[TechDocs]%20Unable%20to%20run%20beta%20migration
 [using-cloud-storage]: ./using-cloud-storage.md
+
+## How to implement your own TechDocs APIs
+
+The TechDocs plugin provides implementations of two primary APIs by default: the
+[TechDocsStorageApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L33),
+which is responsible for talking to TechDocs storage to fetch files to render,
+and
+[TechDocsApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L49),
+which is responsible for talking to techdocs-backend.
+
+There may be occasions where you need to implement these two APIs yourself, to
+customize them to your own needs. The purpose of this guide is to walk you
+through how to do that in two steps.
+
+1. Implement the `TechDocsStorageApi` and `TechDocsApi` interfaces according to
+   your needs.
+
+```typescript
+export class TechDocsCustomStorageApi implements TechDocsStorageApi {
+  // your implementation
+}
+
+export class TechDocsCustomApiClient implements TechDocsApi {
+  // your implementation
+}
+```
+
+2. Override the API refs `techdocsStorageApiRef` and `techdocsApiRef` with your
+   new implemented APIs in the `App.tsx` using `ApiFactories`.
+   [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
+
+```typescript
+const app = createApp({
+  apis: [
+    // TechDocsStorageApi
+    createApiFactory({
+      api: techdocsStorageApiRef,
+      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      factory({ discoveryApi, configApi }) {
+        return new TechDocsCustomStorageApi({ discoveryApi, configApi });
+      },
+    }),
+    // TechDocsApi
+    createApiFactory({
+      api: techdocsApiRef,
+      deps: { discoveryApi: discoveryApiRef },
+      factory({ discoveryApi }) {
+        return new TechDocsCustomApiClient({ discoveryApi });
+      },
+    }),
+  ],
+});
+```

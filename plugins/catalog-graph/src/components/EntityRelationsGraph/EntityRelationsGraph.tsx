@@ -24,7 +24,7 @@ import classNames from 'classnames';
 import React, { MouseEvent, useEffect, useMemo } from 'react';
 import { CustomLabel } from './CustomLabel';
 import { CustomNode } from './CustomNode';
-import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
+import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
 import { Direction, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
@@ -75,6 +75,7 @@ export const EntityRelationsGraph = ({
   onNodeClick,
   relationPairs = ALL_RELATION_PAIRS,
   className,
+  zoom = 'enabled',
 }: {
   rootEntityNames: EntityName | EntityName[];
   maxDepth?: number;
@@ -86,6 +87,7 @@ export const EntityRelationsGraph = ({
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
   className?: string;
+  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }) => {
   const theme = useTheme();
   const classes = useStyles();
@@ -130,6 +132,7 @@ export const EntityRelationsGraph = ({
           paddingY={theme.spacing(4)}
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}
           labelOffset={theme.spacing(1)}
+          zoom={zoom}
         />
       )}
     </div>
