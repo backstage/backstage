@@ -423,7 +423,7 @@ export type ExternalRouteRef<
   Params extends AnyParams = any,
   Optional extends boolean = any,
 > = {
-  readonly [routeRefType]: 'external';
+  $$routeRefType: 'external';
   params: ParamKeys<Params>;
   optional?: Optional;
 };
@@ -720,7 +720,7 @@ export type RoutePath = string;
 //
 // @public (undocumented)
 export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
+  $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
   path: string;
   icon?: OldIconComponent;
@@ -811,7 +811,7 @@ export type StorageValueChange<T = any> = {
 //
 // @public (undocumented)
 export type SubRouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'sub';
+  $$routeRefType: 'sub';
   parent: RouteRef;
   path: string;
   params: ParamKeys<Params>;
@@ -901,6 +901,6 @@ export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
 // src/apis/definitions/auth.d.ts:110:16 - (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration
 // src/apis/definitions/auth.d.ts:113:68 - (tsdoc-undefined-tag) The TSDoc tag "@AuthRequestOptions" is not defined in this configuration
 // src/extensions/extensions.d.ts:14:5 - (ae-forgotten-export) The symbol "ComponentLoader" needs to be exported by the entry point index.d.ts
-// src/routing/RouteRef.d.ts:34:5 - (ae-forgotten-export) The symbol "OldIconComponent" needs to be exported by the entry point index.d.ts
+// src/routing/RouteRef.d.ts:35:5 - (ae-forgotten-export) The symbol "OldIconComponent" needs to be exported by the entry point index.d.ts
 // src/routing/types.d.ts:30:5 - (ae-forgotten-export) The symbol "ParamKeys" needs to be exported by the entry point index.d.ts
 ```
