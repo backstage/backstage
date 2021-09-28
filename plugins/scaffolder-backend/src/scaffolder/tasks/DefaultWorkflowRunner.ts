@@ -129,7 +129,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
      * This is a little bit of a hack / magic so that when we use nunjucks and we try to
      * pass through something other than a string from the parameters section.
      * When an accessor is used that is an object, it's toString is the JSON.stringify'd version of it's children
-     * Which makes it work really well in string templating as we can parse the result again after.yarn
+     * Which makes it work really well in string templating as we can parse the result again after.
      */
     return JSON.parse(
       JSON.stringify(input),
@@ -171,10 +171,16 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
             if (!isTruthy(ifResult)) {
               await task.emitLog(
                 `Skipping step ${step.id} because it's if condition was false`,
+                { stepId: step.id, status: 'skipped' },
               );
               continue;
             }
           }
+
+          await task.emitLog(`Beginning step ${step.name}`, {
+            stepId: step.id,
+            status: 'processing',
+          });
 
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
@@ -219,6 +225,11 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
               stepOutput[name] = value;
             },
           });
+
+          // Remove all temporary directories that were created when executing the action
+          for (const tmpDir of tmpDirs) {
+            await fs.remove(tmpDir);
+          }
 
           context.steps[step.id] = { output: stepOutput };
 
