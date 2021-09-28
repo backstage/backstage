@@ -330,7 +330,7 @@ describe('useElementFilter', () => {
       },
     );
 
-    expect(result.error.message).toEqual('Could not find component');
+    expect(result.error?.message).toEqual('Could not find component');
   });
 
   it('should support fragments and text node iteration', () => {
