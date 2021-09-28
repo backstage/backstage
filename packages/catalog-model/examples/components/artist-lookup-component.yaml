@@ -6,6 +6,7 @@ metadata:
   tags:
     - java
     - data
+    - pii:firstname
   links:
     - url: https://example.com/user
       title: Examples Users
