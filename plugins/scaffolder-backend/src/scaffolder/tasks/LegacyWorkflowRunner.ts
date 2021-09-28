@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Task, WorkflowRunner, WorkflowResponse } from './types';
+import {
+  Task,
+  WorkflowRunner,
+  WorkflowResponse,
+  TaskSpecV1beta2,
+} from './types';
 import * as Handlebars from 'handlebars';
 import { TemplateActionRegistry } from '..';
 import { ScmIntegrations } from '@backstage/integration';
@@ -35,6 +40,8 @@ type Options = {
   logger: Logger;
 };
 
+const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta2 =>
+  taskSpec.apiVersion === 'backstage.io/v1beta2';
 /**
  * This is the legacy workflow runner, which supports handlebars. This entire implementation will be replaced
  * with the default workflow runner interface in the future so this entire thing can go bye bye.
@@ -65,6 +72,9 @@ export class LegacyWorkflowRunner implements WorkflowRunner {
   }
 
   async execute(task: Task): Promise<WorkflowResponse> {
+    if (!isValidTaskSpec(task.spec)) {
+      throw new InputError(`Task spec is not a valid v1beta2 task spec`);
+    }
     const { actionRegistry } = this.options;
 
     const workspacePath = path.join(

@@ -43,8 +43,8 @@ export type DbTaskEventRow = {
   createdAt: string;
 };
 
-export type TaskSpec = {
-  apiVersion: 'backstage.io/v1beta2' | 'backstage.io/v1beta3';
+export interface TaskSpecV1beta2 {
+  apiVersion: 'backstage.io/v1beta2';
   baseUrl?: string;
   values: JsonObject;
   steps: Array<{
@@ -55,7 +55,24 @@ export type TaskSpec = {
     if?: string | boolean;
   }>;
   output: { [name: string]: string };
-};
+}
+
+export interface TaskStep {
+  id: string;
+  name: string;
+  action: string;
+  input?: JsonObject;
+  if?: string | boolean;
+}
+export interface TaskSpecV1beta3 {
+  apiVersion: 'backstage.io/v1beta3';
+  baseUrl?: string;
+  parameters: JsonObject;
+  steps: TaskStep[];
+  output: { [name: string]: string };
+}
+
+export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
 
 export type TaskSecrets = {
   token: string | undefined;
