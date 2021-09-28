@@ -33,13 +33,12 @@ export type Props = {
 
 const useStyles = makeStyles<Theme>(theme => ({
   quadrantLegend: {
-    overflowY: 'scroll',
+    overflowY: 'auto',
     scrollbarWidth: 'thin',
   },
   quadrant: {
     height: '100%',
     width: '100%',
-    overflow: 'scroll',
     scrollbarWidth: 'thin',
     pointerEvents: 'none',
   },
@@ -188,8 +187,12 @@ const RadarLegend = (props: Props): JSX.Element => {
               <li
                 key={entry.id}
                 value={(entry.index || 0) + 1}
-                onMouseEnter={() => onEntryMouseEnter?.(entry)}
-                onMouseLeave={() => onEntryMouseLeave?.(entry)}
+                onMouseEnter={
+                  onEntryMouseEnter && (() => onEntryMouseEnter(entry))
+                }
+                onMouseLeave={
+                  onEntryMouseLeave && (() => onEntryMouseLeave(entry))
+                }
               >
                 <RadarLegendLink
                   url={entry.url}
