@@ -41,6 +41,7 @@ import {
   ListAncestorsResult,
   UpdateEntityCacheOptions,
 } from './types';
+import { generateStableHash } from './util';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -156,7 +157,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const { toAdd, toRemove } = await this.createDelta(tx, options);
+    const { toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
       // TODO(freben): Batch split, to not hit variable limits?
@@ -273,14 +274,27 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       );
     }
 
-    if (toAdd.length) {
-      for (const { entity, locationKey } of toAdd) {
+    if (toUpsert.length) {
+      for (const {
+        deferred: { entity, locationKey },
+        hash,
+      } of toUpsert) {
         const entityRef = stringifyEntityRef(entity);
 
         try {
-          let ok = await this.insertUnprocessedEntity(tx, entity, locationKey);
+          let ok = await this.updateUnprocessedEntity(
+            tx,
+            entity,
+            hash,
+            locationKey,
+          );
           if (!ok) {
-            ok = await this.updateUnprocessedEntity(tx, entity, locationKey);
+            ok = await this.insertUnprocessedEntity(
+              tx,
+              entity,
+              hash,
+              locationKey,
+            );
           }
 
           if (ok) {
@@ -448,6 +462,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   private async updateUnprocessedEntity(
     tx: Knex.Transaction,
     entity: Entity,
+    hash: string,
     locationKey?: string,
   ): Promise<boolean> {
     const entityRef = stringifyEntityRef(entity);
@@ -456,6 +471,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         unprocessed_entity: serializedEntity,
+        unprocessed_hash: hash,
         location_key: locationKey,
         last_discovery_at: tx.fn.now(),
         // We only get to this point if a processed entity actually had any changes, or
@@ -483,6 +499,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   private async insertUnprocessedEntity(
     tx: Knex.Transaction,
     entity: Entity,
+    hash: string,
     locationKey?: string,
   ): Promise<boolean> {
     const entityRef = stringifyEntityRef(entity);
@@ -493,6 +510,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         entity_id: uuid(),
         entity_ref: entityRef,
         unprocessed_entity: serializedEntity,
+        unprocessed_hash: hash,
         errors: '',
         location_key: locationKey,
         next_update_at: tx.fn.now(),
@@ -558,10 +576,16 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   private async createDelta(
     tx: Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
-  ): Promise<{ toAdd: DeferredEntity[]; toRemove: string[] }> {
+  ): Promise<{
+    toUpsert: { deferred: DeferredEntity; hash: string }[];
+    toRemove: string[];
+  }> {
     if (options.type === 'delta') {
       return {
-        toAdd: options.added,
+        toUpsert: options.added.map(e => ({
+          deferred: e,
+          hash: generateStableHash(e.entity),
+        })),
         toRemove: options.removed.map(e => stringifyEntityRef(e.entity)),
       };
     }
@@ -570,39 +594,55 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const oldRefs = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
-      .where({ source_key: options.sourceKey })
       .leftJoin<DbRefreshStateRow>('refresh_state', {
         target_entity_ref: 'entity_ref',
       })
-      .select(['target_entity_ref', 'location_key']);
+      .where({ source_key: options.sourceKey })
+      .select({
+        target_entity_ref: 'refresh_state_references.target_entity_ref',
+        location_key: 'refresh_state.location_key',
+        unprocessed_hash: 'refresh_state.unprocessed_hash',
+      });
 
     const items = options.items.map(deferred => ({
       deferred,
       ref: stringifyEntityRef(deferred.entity),
+      hash: generateStableHash(deferred.entity),
     }));
 
     const oldRefsSet = new Map(
-      oldRefs.map(r => [r.target_entity_ref, r.location_key]),
+      oldRefs.map(r => [
+        r.target_entity_ref,
+        {
+          locationKey: r.location_key,
+          oldEntityHash: r.unprocessed_hash,
+        },
+      ]),
     );
     const newRefsSet = new Set(items.map(item => item.ref));
 
-    const toAdd = new Array<DeferredEntity>();
+    const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
     const toRemove = oldRefs
       .map(row => row.target_entity_ref)
       .filter(ref => !newRefsSet.has(ref));
 
     for (const item of items) {
-      if (!oldRefsSet.has(item.ref)) {
+      const oldRef = oldRefsSet.get(item.ref);
+      const upsertItem = { deferred: item.deferred, hash: item.hash };
+      if (!oldRef) {
         // Add any entity that does not exist in the database
-        toAdd.push(item.deferred);
-      } else if (oldRefsSet.get(item.ref) !== item.deferred.locationKey) {
+        toUpsert.push(upsertItem);
+      } else if (oldRef.locationKey !== item.deferred.locationKey) {
         // Remove and then re-add any entity that exists, but with a different location key
         toRemove.push(item.ref);
-        toAdd.push(item.deferred);
+        toUpsert.push(upsertItem);
+      } else if (oldRef.oldEntityHash !== item.hash) {
+        // Entities with modifications should be pushed through too
+        toUpsert.push(upsertItem);
       }
     }
 
-    return { toAdd, toRemove };
+    return { toUpsert, toRemove };
   }
 
   /**
@@ -626,10 +666,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // their entity ref.
     for (const { entity, locationKey } of options.entities) {
       const entityRef = stringifyEntityRef(entity);
+      const hash = generateStableHash(entity);
 
       const updated = await this.updateUnprocessedEntity(
         tx,
         entity,
+        hash,
         locationKey,
       );
       if (updated) {
@@ -640,6 +682,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const inserted = await this.insertUnprocessedEntity(
         tx,
         entity,
+        hash,
         locationKey,
       );
       if (inserted) {
