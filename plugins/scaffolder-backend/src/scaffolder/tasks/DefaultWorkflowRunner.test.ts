@@ -60,6 +60,7 @@ describe('DefaultWorkflowRunner', () => {
       description: 'Mock action for testing',
       handler: async ctx => {
         ctx.output('mock', 'backstage');
+        ctx.output('shouldRun', true);
       },
     });
 
@@ -85,7 +86,76 @@ describe('DefaultWorkflowRunner', () => {
   });
 
   describe('validation', () => {});
-  describe('running', () => {});
+  describe('conditionals', () => {
+    it('should execute steps conditionally', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          { id: 'test', name: 'test', action: 'output-action' },
+          {
+            id: 'conditional',
+            name: 'conditional',
+            action: 'output-action',
+            if: '${{ steps.test.output.shouldRun }}',
+          },
+        ],
+        output: {
+          result: '${{ steps.conditional.output.mock }}',
+        },
+        parameters: {},
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.result).toBe('backstage');
+    });
+
+    it('should skips steps conditionally', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          { id: 'test', name: 'test', action: 'output-action' },
+          {
+            id: 'conditional',
+            name: 'conditional',
+            action: 'output-action',
+            if: '${{ not steps.test.output.shouldRun}}',
+          },
+        ],
+        output: {
+          result: '${{ steps.conditional.output.mock }}',
+        },
+        parameters: {},
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.result).toBeUndefined();
+    });
+
+    it('should skips steps using the negating equals operator', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          { id: 'test', name: 'test', action: 'output-action' },
+          {
+            id: 'conditional',
+            name: 'conditional',
+            action: 'output-action',
+            if: '${{ steps.test.output.mock !== "backstage"}}',
+          },
+        ],
+        output: {
+          result: '${{ steps.conditional.output.mock }}',
+        },
+        parameters: {},
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.result).toBeUndefined();
+    });
+  });
 
   describe('templating', () => {
     it('should template the input to an action', async () => {

@@ -30,6 +30,7 @@ import path from 'path';
 import { JsonObject, JsonValue } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
+import { isTruthy } from './helper';
 
 type Options = {
   workingDirectory: string;
@@ -92,6 +93,9 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
       try {
         if (typeof value === 'string') {
           const templated = this.nunjucks.renderString(value, context);
+          if (templated === '') {
+            return undefined;
+          }
           try {
             return JSON.parse(templated);
           } catch {
@@ -147,6 +151,16 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
 
       for (const step of task.spec.steps) {
         try {
+          if (step.if) {
+            const ifResult = await this.render(step.if, context);
+            if (!isTruthy(ifResult)) {
+              await task.emitLog(
+                `Skipping step ${step.id} because it's if condition was false`,
+              );
+              continue;
+            }
+          }
+
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
@@ -189,6 +203,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
             stepId: step.id,
             status: 'failed',
           });
+          throw err;
         }
       }
 
