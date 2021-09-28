@@ -18,7 +18,6 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 
 import {
   AvatarClassKey,
-  CheckboxTreeClassKey,
   DependencyGraphDefaultLabelClassKey,
   DependencyGraphDefaultNodeClassKey,
   DependencyGraphEdgeClassKey,
@@ -95,7 +94,6 @@ import {
 
 type BackstageComponentsNameToClassKey = {
   BackstageAvatar: AvatarClassKey;
-  BackstageCheckboxTree: CheckboxTreeClassKey;
   BackstageDependencyGraphDefaultLabel: DependencyGraphDefaultLabelClassKey;
   BackstageDependencyGraphDefaultNode: DependencyGraphDefaultNodeClassKey;
   BackstageDependencyGraphEdge: DependencyGraphEdgeClassKey;
