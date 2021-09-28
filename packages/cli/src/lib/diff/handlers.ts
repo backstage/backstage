@@ -85,6 +85,7 @@ class PackageJsonHandler {
     targetObj: any = this.targetPkg,
     prefix?: string,
     sort?: boolean,
+    optional?: boolean,
   ) {
     const fullFieldName = chalk.cyan(
       prefix ? `${prefix}[${fieldName}]` : fieldName,
@@ -107,7 +108,7 @@ class PackageJsonHandler {
         }
         await this.write();
       }
-    } else if (fieldName in obj) {
+    } else if (fieldName in obj && optional !== true) {
       if (
         await this.prompt(
           `package.json is missing field ${fullFieldName}, set to ${coloredNewValue}?`,
@@ -230,7 +231,7 @@ class PackageJsonHandler {
         continue;
       }
 
-      await this.syncField(key, pkgDeps, targetDeps, fieldName, true);
+      await this.syncField(key, pkgDeps, targetDeps, fieldName, true, true);
     }
   }
 

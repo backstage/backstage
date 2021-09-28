@@ -39,9 +39,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.13",
-    "@backstage/test-utils": "^0.1.16",
-    "@types/lodash": "^4.14.151",
-    "msw": "^0.29.0"
+    "@types/lodash": "^4.14.151"
   },
   "files": [
     "dist",

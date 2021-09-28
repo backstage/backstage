@@ -6777,7 +6777,7 @@
     "@types/express" "*"
     "@types/xml2js" "*"
 
-"@types/express@*", "@types/express@^4.17.12", "@types/express@^4.17.6", "@types/express@^4.17.7":
+"@types/express@*", "@types/express@^4.17.12", "@types/express@^4.17.6":
   version "4.17.12"
   resolved "https://registry.npmjs.org/@types/express/-/express-4.17.12.tgz#4bc1bf3cd0cfe6d3f6f2853648b40db7d54de350"
   integrity sha512-pTYas6FrP15B1Oa0bkN5tQMNqOcVXa9j4FTFtO8DWI9kppKib+6NJtfTOOLcwxuuYvcX2+dVG6et1SxW/Kc17Q==
