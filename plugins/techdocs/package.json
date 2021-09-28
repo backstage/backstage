@@ -67,7 +67,7 @@
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/react-hooks": "^3.4.2",
+    "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.1.8",
     "@types/dompurify": "^2.2.2",
     "@types/jest": "^26.0.7",
