@@ -261,7 +261,7 @@ export class GoogleGCSPublish implements PublisherBase {
           res.writeHead(200, responseHeaders);
         })
         .on('error', err => {
-          this.logger.error(
+          this.logger.warn(
             `TechDocs Google GCS router failed to serve content from bucket ${this.bucketName} at path ${filePath}: ${err.message}`,
           );
           // Send a 404 with a meaningful message if possible.

@@ -339,7 +339,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
           res.send(fileContent);
         })
         .catch(e => {
-          this.logger.error(
+          this.logger.warn(
             `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${e.message}`,
           );
           res.status(404).send('File Not Found');
