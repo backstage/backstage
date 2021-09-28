@@ -91,7 +91,8 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
 
     // TODO(blam): let's work out how we can deprecate these.
     // We shouln't really need to be exposing these now we can deal with
-    // objects in the params block
+    // objects in the params block.
+    // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
     this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
       return JSON.stringify(parseRepoUrl(repoUrl, this.options.integrations));
     });

@@ -141,7 +141,7 @@ export interface TaskStore {
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
 }
 
-export type WorkflowResponse = { output: { [key: string]: JsonObject } };
+export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 export interface WorkflowRunner {
   execute(task: Task): Promise<WorkflowResponse>;
 }

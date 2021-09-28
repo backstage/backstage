@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
-import { ConfigReader, JsonObject } from '@backstage/config';
-import { createTemplateAction, TemplateActionRegistry } from '../actions';
-import { RepoSpec } from '../actions/builtin/publish/util';
+import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker } from './TaskWorker';
-import { ScmIntegrations } from '@backstage/integration';
 import { WorkflowRunner } from './types';
 import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
 

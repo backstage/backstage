@@ -364,9 +364,11 @@ describe('DefaultWorkflowRunner', () => {
 
       const { output } = await runner.execute(task);
 
-      expect(output.foo.host).toEqual('github.com');
-      expect(output.foo.owner).toEqual('owner');
-      expect(output.foo.repo).toEqual('repo');
+      expect(output.foo).toEqual({
+        host: 'github.com',
+        owner: 'owner',
+        repo: 'repo',
+      });
     });
   });
 });
