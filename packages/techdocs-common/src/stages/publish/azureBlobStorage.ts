@@ -328,8 +328,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      try {
-        this.download(this.containerName, filePath).then(fileContent => {
+      this.download(this.containerName, filePath)
+        .then(fileContent => {
           // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
@@ -337,11 +337,13 @@ export class AzureBlobStoragePublish implements PublisherBase {
             res.setHeader(headerKey, headerValue);
           }
           res.send(fileContent);
+        })
+        .catch(e => {
+          this.logger.error(
+            `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${e.message}`,
+          );
+          res.status(404).send('File Not Found');
         });
-      } catch (e) {
-        this.logger.error(e.message);
-        res.status(404).json(e.message);
-      }
     };
   }
 
