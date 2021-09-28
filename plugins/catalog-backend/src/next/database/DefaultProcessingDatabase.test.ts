@@ -998,6 +998,100 @@ describe('Default Processing Database', () => {
       },
       60_000,
     );
+
+    it.each(databases.eachSupportedId())(
+      'should support replacing modified entities during a full update, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'a' },
+                  spec: { marker: 'WILL_CHANGE' },
+                } as Entity,
+                locationKey: 'file:///tmp/a',
+              },
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'b' },
+                  spec: { marker: 'NEVER_CHANGES' },
+                } as Entity,
+                locationKey: 'file:///tmp/b',
+              },
+            ],
+          });
+        });
+
+        let state = await knex<DbRefreshStateRow>('refresh_state').select();
+        expect(state).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: 'component:default/a',
+              location_key: 'file:///tmp/a',
+              unprocessed_entity: expect.stringContaining('WILL_CHANGE'),
+            }),
+            expect.objectContaining({
+              entity_ref: 'component:default/b',
+              location_key: 'file:///tmp/b',
+              unprocessed_entity: expect.stringContaining('NEVER_CHANGES'),
+            }),
+          ]),
+        );
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'a' },
+                  spec: { marker: 'HAS_CHANGED' },
+                } as Entity,
+                locationKey: 'file:///tmp/a',
+              },
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'b' },
+                  spec: { marker: 'NEVER_CHANGES' },
+                } as Entity,
+                locationKey: 'file:///tmp/b',
+              },
+            ],
+          });
+        });
+
+        state = await knex<DbRefreshStateRow>('refresh_state').select();
+        expect(state).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: 'component:default/a',
+              location_key: 'file:///tmp/a',
+              unprocessed_entity: expect.stringContaining('HAS_CHANGED'),
+            }),
+            expect.objectContaining({
+              entity_ref: 'component:default/b',
+              location_key: 'file:///tmp/b',
+              unprocessed_entity: expect.stringContaining('NEVER_CHANGES'),
+            }),
+          ]),
+        );
+      },
+      60_000,
+    );
   });
 
   describe('getProcessableEntities', () => {
