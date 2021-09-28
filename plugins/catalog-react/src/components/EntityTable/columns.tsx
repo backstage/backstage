@@ -150,6 +150,23 @@ export function createMetadataDescriptionColumn<
   };
 }
 
+export function createMetadataTitleColumn<
+  T extends Entity,
+>(): TableColumn<T> {
+  return {
+    title: 'Title',
+    field: 'metadata.title',
+    render: entity => (
+      <OverflowTooltip
+        text={entity.metadata.title}
+        placement="bottom-start"
+        line={2}
+      />
+    ),
+    width: 'auto',
+  };
+}
+
 export function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {
   return {
     title: 'Lifecycle',

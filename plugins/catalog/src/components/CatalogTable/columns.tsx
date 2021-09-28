@@ -94,6 +94,20 @@ export function createMetadataDescriptionColumn(): TableColumn<EntityRow> {
   };
 }
 
+export function createMetadataTitleColumn(): TableColumn<EntityRow> {
+  return {
+    title: 'Title',
+    field: 'entity.metadata.title',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        text={entity.metadata.title}
+        placement="bottom-start"
+      />
+    ),
+    width: 'auto',
+  };
+}
+
 export function createTagsColumn(): TableColumn<EntityRow> {
   return {
     title: 'Tags',
