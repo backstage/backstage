@@ -41,8 +41,6 @@ auth:
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
         ## uncomment if using GitHub Enterprise
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
-        ## uncomment if intermediate service is used when using github apps
-        # callbackUrl: ${AUTH_GITHUB_CALLBACK_URL}
 ```
 
 The GitHub provider is a structure with three configuration keys:
