@@ -400,3 +400,8 @@ jenkins:
       baseUrl: https://jenkins.example.com
       username: backstage-bot
       apiKey: 123456789abcdef0123456789abcedf012
+
+azureDevOps:
+  host: dev.azure.com
+  token: ${AZURE_TOKEN}
+  organization: my-company
