@@ -78,8 +78,7 @@
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
-          "features/software-templates/template-legacy",
-          "features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
       {
