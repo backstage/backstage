@@ -7,28 +7,27 @@ metadata:
 spec:
   type: website
   parameters:
-  - name: Enter some stuff
-    description: Enter some stuff
-    properties:
-      inputString:
-        type: string
-        title: string input test
-      inputObject:
-        type: object
-        title: object input test
-        properties:
-          first:
-            type: string
-            title: first
-          second:
-            type: number
-            title: second
+    - name: Enter some stuff
+      description: Enter some stuff
+      properties:
+        inputString:
+          type: string
+          title: string input test
+        inputObject:
+          type: object
+          title: object input test
+          properties:
+            first:
+              type: string
+              title: first
+            second:
+              type: number
+              title: second
   steps:
-  - id: debug
-    name: Debug
-    action: debug:log
-    input:
-      message: ${{ parameters.inputString }}
-      extra: ${{ parameters.inputObject }}
-
-    
+    - id: debug
+      if: ${{ true === true }}
+      name: Debug
+      action: debug:log
+      input:
+        message: ${{ parameters.inputString }}
+        extra: ${{ parameters.inputObject }}

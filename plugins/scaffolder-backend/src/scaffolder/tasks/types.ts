@@ -69,7 +69,7 @@ export interface TaskSpecV1beta3 {
   baseUrl?: string;
   parameters: JsonObject;
   steps: TaskStep[];
-  output: { [name: string]: string };
+  output: { [name: string]: JsonValue };
 }
 
 export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
@@ -141,7 +141,7 @@ export interface TaskStore {
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
 }
 
-export type WorkflowResponse = { output: { [name: string]: JsonValue } };
+export type WorkflowResponse = { output: { [key: string]: JsonObject } };
 export interface WorkflowRunner {
   execute(task: Task): Promise<WorkflowResponse>;
 }

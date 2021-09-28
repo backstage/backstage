@@ -32,6 +32,7 @@ import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
+import { parseRepoUrl } from '../actions/builtin/publish/util';
 
 type Options = {
   workingDirectory: string;
@@ -80,14 +81,24 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 
   constructor(private readonly options: Options) {
-    // TODO(blam): Probably need the repo helper here.
-    // Or we move to returning Objects in the RepoUrlPickerV2 or something?
     this.nunjucks = nunjucks.configure({
       autoescape: false,
       tags: {
         variableStart: '${{',
         variableEnd: '}}',
       },
+    });
+
+    // TODO(blam): let's work out how we can deprecate these.
+    // We shouln't really need to be exposing these now we can deal with
+    // objects in the params block
+    this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
+      return JSON.stringify(parseRepoUrl(repoUrl, this.options.integrations));
+    });
+
+    this.nunjucks.addFilter('projectSlug', repoUrl => {
+      const { owner, repo } = parseRepoUrl(repoUrl, this.options.integrations);
+      return `${owner}/${repo}`;
     });
   }
 

@@ -136,6 +136,7 @@ describe('DefaultWorkflowRunner', () => {
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('conditionals', () => {
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
@@ -338,6 +339,34 @@ describe('DefaultWorkflowRunner', () => {
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('BACKSTAGE');
+    });
+  });
+
+  describe('filters', () => {
+    it('provides the parseRepoUrl filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{parameters.repoUrl | parseRepoUrl}}',
+        },
+        parameters: {
+          repoUrl: 'github.com?repo=repo&owner=owner',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo.host).toEqual('github.com');
+      expect(output.foo.owner).toEqual('owner');
+      expect(output.foo.repo).toEqual('repo');
     });
   });
 });
