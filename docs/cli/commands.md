@@ -57,7 +57,7 @@ postpack                 Restores the changes made by the prepack command
 
 create-github-app        Create new GitHub App in your organization (experimental)
 
-info                     Outputs versions of all dependencies for debugging purposes
+info                     Show helpful information for debugging and reporting bugs
 help [command]           display help for command
 ```
 
