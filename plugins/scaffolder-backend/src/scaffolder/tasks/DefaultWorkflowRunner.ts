@@ -80,17 +80,19 @@ const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
 export class DefaultWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 
+  private readonly nunjucksOptions: nunjucks.ConfigureOptions = {
+    autoescape: false,
+    tags: {
+      variableStart: '${{',
+      variableEnd: '}}',
+    },
+  };
+
   constructor(private readonly options: Options) {
-    this.nunjucks = nunjucks.configure({
-      autoescape: false,
-      tags: {
-        variableStart: '${{',
-        variableEnd: '}}',
-      },
-    });
+    this.nunjucks = nunjucks.configure(this.nunjucksOptions);
 
     // TODO(blam): let's work out how we can deprecate these.
-    // We shouln't really need to be exposing these now we can deal with
+    // We shouldn't really need to be exposing these now we can deal with
     // objects in the params block.
     // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
     this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
@@ -103,13 +105,21 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     });
   }
 
+  private isSingleTemplateString(input: string) {
+    const { parser, nodes } = require('nunjucks');
+    const parsed = parser.parse(input, {}, this.nunjucksOptions);
+    return (
+      parsed.children.length === 1 &&
+      !(parsed.children[0] instanceof nodes.TemplateData)
+    );
+  }
+
   private render<T>(input: T, context: TemplateContext): T {
     return JSON.parse(JSON.stringify(input), (_key, value) => {
       try {
         if (typeof value === 'string') {
           try {
-            // Let's assume that we're dealing with a template string.
-            if (value.startsWith('${{') && value.endsWith('}}')) {
+            if (this.isSingleTemplateString(value)) {
               // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
               const wrappedDumped = value.replace(
                 /\${{(.+)}}/g,
@@ -122,7 +132,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
                 context,
               );
 
-              // If there's emtpy string returned, then it's undefined
+              // If there's an empty string returned, then it's undefined
               if (templated === '') {
                 return undefined;
               }
@@ -131,7 +141,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
               return JSON.parse(templated);
             }
           } catch (ex) {
-            this.options.logger.debug(
+            this.options.logger.error(
               `Failed to parse template string: ${value} with error ${ex.message}`,
             );
           }
