@@ -47,11 +47,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const ErrorPage = ({
-  status,
-  statusMessage,
-  additionalInfo,
-}: IErrorPageProps) => {
+export function ErrorPage(props: IErrorPageProps) {
+  const { status, statusMessage, additionalInfo } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
@@ -86,4 +83,4 @@ export const ErrorPage = ({
       </Grid>
     </Grid>
   );
-};
+}

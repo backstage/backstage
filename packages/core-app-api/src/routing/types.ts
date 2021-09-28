@@ -19,7 +19,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 type RouteRefType = Exclude<
   keyof RouteRef,
@@ -75,7 +75,7 @@ export function isSubRouteRef<Params extends AnyParams>(
 
 export function isExternalRouteRef<
   Params extends AnyParams,
-  Optional extends boolean
+  Optional extends boolean,
 >(
   routeRef:
     | RouteRef<Params>

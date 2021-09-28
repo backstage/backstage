@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { DomainCard } from './DomainCard';
 export { ExploreLayout } from './ExploreLayout';

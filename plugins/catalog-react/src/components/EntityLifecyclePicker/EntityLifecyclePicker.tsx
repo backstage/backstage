@@ -34,12 +34,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityLifecyclePicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
 
   const queryParamLifecycles = [queryParameters.lifecycles]
     .flat()
@@ -75,7 +71,8 @@ export const EntityLifecyclePicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Lifecycle</Typography>
-      <Autocomplete<string>
+      <Autocomplete
+        aria-label="Lifecycle"
         multiple
         options={availableLifecycles}
         value={selectedLifecycles}

@@ -68,9 +68,7 @@ export class AlertApiForwarder implements AlertApi {
 //
 // @public (undocumented)
 export type ApiFactoryHolder = {
-  get<T>(
-    api: ApiRef<T>,
-  ):
+  get<T>(api: ApiRef<T>):
     | ApiFactory<
         T,
         T,
@@ -86,9 +84,7 @@ export type ApiFactoryHolder = {
 // @public
 export class ApiFactoryRegistry implements ApiFactoryHolder {
   // (undocumented)
-  get<T>(
-    api: ApiRef<T>,
-  ):
+  get<T>(api: ApiRef<T>):
     | ApiFactory<
         T,
         T,
@@ -105,7 +101,7 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
     Impl extends Api,
     Deps extends {
       [name in string]: unknown;
-    }
+    },
   >(scope: ApiFactoryScope, factory: ApiFactory<Api, Impl, Deps>): boolean;
 }
 
@@ -169,6 +165,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -191,10 +188,9 @@ export type AppContext = {
 // @public (undocumented)
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
-  icons?: Partial<AppIcons> &
-    {
-      [key in string]: IconComponent;
-    };
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
   plugins?: BackstagePluginWithAnyOutput[];
   components?: Partial<AppComponents>;
   themes?: AppTheme[];
@@ -211,7 +207,7 @@ export type AppOptions = {
 export type AppRouteBinder = <
   ExternalRoutes extends {
     [name: string]: ExternalRouteRef;
-  }
+  },
 >(
   externalRoutes: ExternalRoutes,
   targetRoutes: PartialKeys<
@@ -398,7 +394,7 @@ export type GithubSession = {
   providerInfo: {
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
@@ -469,7 +465,8 @@ export class OAuth2
     OpenIdConnectApi,
     ProfileInfoApi,
     BackstageIdentityApi,
-    SessionApi {
+    SessionApi
+{
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
@@ -561,7 +558,8 @@ export class OneLoginAuth {
 //
 // @public (undocumented)
 export class SamlAuth
-  implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
+  implements ProfileInfoApi, BackstageIdentityApi, SessionApi
+{
   // Warning: (ae-forgotten-export) The symbol "SamlSession" needs to be exported by the entry point index.d.ts
   constructor(sessionManager: SessionManager<SamlSession>);
   // Warning: (ae-forgotten-export) The symbol "AuthApiCreateOptions" needs to be exported by the entry point index.d.ts
@@ -643,8 +641,6 @@ export class WebStorage implements StorageApi {
 // Warnings were encountered during analysis:
 //
 // src/apis/system/ApiProvider.d.ts:9:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:88:5 - (ae-forgotten-export) The symbol "UnknownPluginOutput" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:99:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// src/app/types.d.ts:89:5 - (ae-forgotten-export) The symbol "UnknownPluginOutput" needs to be exported by the entry point index.d.ts
+// src/app/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```

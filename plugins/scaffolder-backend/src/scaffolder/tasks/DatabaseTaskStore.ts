@@ -153,11 +153,7 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  async listStaleTasks({
-    timeoutS,
-  }: {
-    timeoutS: number;
-  }): Promise<{
+  async listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }> {
     const rawRows = await this.db<RawDbTaskRow>('tasks')

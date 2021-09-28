@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 import {
   createVersionedValueMap,
-  VersionedValue,
-} from '../lib/versionedValues';
+  createVersionedContext,
+} from '@backstage/version-bridge';
 import { RouteResolver } from './RouteResolver';
 import { BackstageRouteObject } from './types';
 
-type RoutingContextType = VersionedValue<{ 1: RouteResolver }> | undefined;
-const RoutingContext = getOrCreateGlobalSingleton('routing-context', () =>
-  createContext<RoutingContextType>(undefined),
-);
+const RoutingContext =
+  createVersionedContext<{ 1: RouteResolver }>('routing-context');
 
 type ProviderProps = {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  basePath?: string;
   children: ReactNode;
 };
 
@@ -46,6 +44,7 @@ export const RoutingProvider = ({
   routeParents,
   routeObjects,
   routeBindings,
+  basePath = '',
   children,
 }: ProviderProps) => {
   const resolver = new RouteResolver(
@@ -53,6 +52,7 @@ export const RoutingProvider = ({
     routeParents,
     routeObjects,
     routeBindings,
+    basePath,
   );
 
   const versionedValue = createVersionedValueMap({ 1: resolver });

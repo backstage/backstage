@@ -14,42 +14,19 @@
  * limitations under the License.
  */
 import { Readable } from 'stream';
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
 
-type storageOptions = {
-  keyFilename?: string;
-};
-
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-/**
- * @param sourceFile Absolute path. Contains either / or \ as file separator depending upon the OS.
- */
-const checkFileExists = async (sourceFile: string): Promise<boolean> => {
-  // sourceFile will always have / as file separator irrespective of OS since GCS expects /.
-  // Normalize sourceFile to OS specific path before checking if file exists.
-  const filePath = sourceFile.split(path.posix.sep).join(path.sep);
-
-  try {
-    await fs.access(filePath, fs.constants.F_OK);
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
+const storage = global.storageFilesMock;
 
 class GCSFile {
-  private readonly localFilePath: string;
+  private readonly path: string;
 
-  constructor(private readonly destinationFilePath: string) {
-    this.destinationFilePath = destinationFilePath;
-    this.localFilePath = path.join(rootDir, this.destinationFilePath);
+  constructor(path: string) {
+    this.path = path;
   }
 
   exists() {
     return new Promise(async (resolve, reject) => {
-      if (await checkFileExists(this.localFilePath)) {
+      if (storage.fileExists(this.path)) {
         resolve([true]);
       } else {
         reject();
@@ -62,20 +39,25 @@ class GCSFile {
     readable._read = () => {};
 
     process.nextTick(() => {
-      if (fs.existsSync(this.localFilePath)) {
+      if (storage.fileExists(this.path)) {
         if (readable.eventNames().includes('pipe')) {
           readable.emit('pipe');
         }
-        readable.emit('data', fs.readFileSync(this.localFilePath));
+        readable.emit('data', storage.readFile(this.path));
         readable.emit('end');
       } else {
         readable.emit(
           'error',
-          new Error(`The file ${this.localFilePath} does not exist !`),
+          new Error(`The file ${this.path} does not exist!`),
         );
       }
     });
+
     return readable;
+  }
+
+  delete() {
+    return Promise.resolve();
   }
 }
 
@@ -87,33 +69,47 @@ class Bucket {
   }
 
   async getMetadata() {
-    if (this.bucketName === 'errorBucket') {
+    if (this.bucketName === 'bad_bucket_name') {
       throw Error('Bucket does not exist');
     }
-
     return '';
   }
 
   upload(source: string, { destination }) {
-    return new Promise(async (resolve, reject) => {
-      if (await checkFileExists(source)) {
-        resolve({ source, destination });
-      } else {
-        reject(`Source file ${source} does not exist.`);
-      }
+    return new Promise(async resolve => {
+      storage.writeFile(destination, source);
+      resolve(null);
     });
   }
 
   file(destinationFilePath: string) {
+    if (this.bucketName === 'delete_stale_files_error') {
+      throw Error('Message');
+    }
     return new GCSFile(destinationFilePath);
+  }
+
+  getFilesStream() {
+    const readable = new Readable();
+    readable._read = () => {};
+
+    process.nextTick(() => {
+      if (
+        this.bucketName === 'delete_stale_files_success' ||
+        this.bucketName === 'delete_stale_files_error'
+      ) {
+        readable.emit('data', { name: 'stale-file.png' });
+      }
+      readable.emit('end');
+    });
+
+    return readable;
   }
 }
 
 export class Storage {
-  private readonly keyFilename;
-
-  constructor(options: storageOptions) {
-    this.keyFilename = options.keyFilename;
+  constructor() {
+    storage.emptyFiles();
   }
 
   bucket(bucketName) {

@@ -23,7 +23,10 @@ export type EntityFilter = {
    *   { field: 'kind', values: ['component'] }
    *   { field: 'metadata.name', values: ['component-1', 'component-2'] }
    */
-  getCatalogFilters?: () => Record<string, string | string[]>;
+  getCatalogFilters?: () => Record<
+    string,
+    string | symbol | (string | symbol)[]
+  >;
 
   /**
    * Filter entities on the frontend after a catalog-backend request. This function will be called

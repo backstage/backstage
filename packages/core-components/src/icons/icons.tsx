@@ -15,27 +15,48 @@
  */
 
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { useApp, IconComponent } from '@backstage/core-plugin-api';
 
-const overridableSystemIcon = (key: string): IconComponent => {
-  const Component: IconComponent = props => {
-    const app = useApp();
-    const Icon = app.getSystemIcon(key);
-    return Icon ? <Icon {...props} /> : <MuiBrokenImageIcon {...props} />;
-  };
-  return Component;
-};
+type IconComponentProps = ComponentProps<IconComponent>;
+
+function useSystemIcon(key: string, props: IconComponentProps) {
+  const app = useApp();
+  const Icon = app.getSystemIcon(key);
+  return Icon ? <Icon {...props} /> : <MuiBrokenImageIcon {...props} />;
+}
 
 // Should match the list of overridable system icon keys in @backstage/core-app-api
-export const BrokenImageIcon = overridableSystemIcon('brokenImage');
-export const CatalogIcon = overridableSystemIcon('catalog');
-export const ChatIcon = overridableSystemIcon('chat');
-export const DashboardIcon = overridableSystemIcon('dashboard');
-export const DocsIcon = overridableSystemIcon('docs');
-export const EmailIcon = overridableSystemIcon('email');
-export const GitHubIcon = overridableSystemIcon('github');
-export const GroupIcon = overridableSystemIcon('group');
-export const HelpIcon = overridableSystemIcon('help');
-export const UserIcon = overridableSystemIcon('user');
-export const WarningIcon = overridableSystemIcon('warning');
+export function BrokenImageIcon(props: IconComponentProps) {
+  return useSystemIcon('brokenImage', props);
+}
+export function CatalogIcon(props: IconComponentProps) {
+  return useSystemIcon('catalog', props);
+}
+export function ChatIcon(props: IconComponentProps) {
+  return useSystemIcon('chat', props);
+}
+export function DashboardIcon(props: IconComponentProps) {
+  return useSystemIcon('dashboard', props);
+}
+export function DocsIcon(props: IconComponentProps) {
+  return useSystemIcon('docs', props);
+}
+export function EmailIcon(props: IconComponentProps) {
+  return useSystemIcon('email', props);
+}
+export function GitHubIcon(props: IconComponentProps) {
+  return useSystemIcon('github', props);
+}
+export function GroupIcon(props: IconComponentProps) {
+  return useSystemIcon('group', props);
+}
+export function HelpIcon(props: IconComponentProps) {
+  return useSystemIcon('help', props);
+}
+export function UserIcon(props: IconComponentProps) {
+  return useSystemIcon('user', props);
+}
+export function WarningIcon(props: IconComponentProps) {
+  return useSystemIcon('warning', props);
+}

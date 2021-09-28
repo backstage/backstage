@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Incident, OnCall, Service } from '../components/types';
+import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type TriggerAlarmRequest = {
@@ -38,6 +38,12 @@ export interface PagerDutyApi {
   getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
 
   /**
+   * Fetches a list of change events a provided service has.
+   *
+   */
+  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]>;
+
+  /**
    * Fetches the list of users in an escalation policy.
    *
    */
@@ -55,6 +61,10 @@ export type ServicesResponse = {
 
 export type IncidentsResponse = {
   incidents: Incident[];
+};
+
+export type ChangeEventsResponse = {
+  change_events: ChangeEvent[];
 };
 
 export type OnCallsResponse = {

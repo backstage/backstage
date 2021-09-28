@@ -147,11 +147,6 @@ are separated out into their own folder, see further down.
   Helps you setup a plugin for isolated development so that it can be served
   separately.
 
-- [`docgen/`](https://github.com/backstage/backstage/tree/master/packages/docgen) -
-  Uses the
-  [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
-  to read out definitions and generate documentation for it.
-
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -
   Another CLI that can be run to try out what would happen if you build all the
   packages, publish them, create a new app, and then run them. CI uses this for
@@ -171,12 +166,12 @@ are separated out into their own folder, see further down.
   plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
 
 - [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils) -
-  This package contains specific testing facilities used when testing
-  `core-api`.
+  This package contains more general purpose testing facilities for testing a
+  Backstage App or its plugins.
 
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core) -
-  This package contains more general purpose testing facilities for testing a
-  Backstage App.
+  This package contains specific testing facilities used when testing Backstage
+  core internals.
 
 - [`theme/`](https://github.com/backstage/backstage/tree/master/packages/theme) -
   Holds the Backstage Theme.

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './render';
+export { createDevApp } from './render';
+export type { DevAppBuilder, DevAppPageOptions } from './render';

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '@backstage/errors';
 import {
   ReaderFactory,
   ReadTreeResponse,
@@ -27,6 +27,8 @@ import {
 
 /**
  * A UrlReader that does a plain fetch of the URL.
+ *
+ * @public
  */
 export class FetchUrlReader implements UrlReader {
   /**
@@ -57,15 +59,34 @@ export class FetchUrlReader implements UrlReader {
   };
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
     let response: Response;
     try {
-      response = await fetch(url);
+      response = await fetch(url, {
+        headers: {
+          ...(options?.etag && { 'If-None-Match': options.etag }),
+        },
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
+    if (response.status === 304) {
+      throw new NotModifiedError();
+    }
+
     if (response.ok) {
-      return Buffer.from(await response.text());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+        etag: response.headers.get('ETag') ?? undefined,
+      };
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;
@@ -73,15 +94,6 @@ export class FetchUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
-  }
-
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
   }
 
   async readTree(): Promise<ReadTreeResponse> {

@@ -18,7 +18,8 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { IconButton, Tooltip } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import PropTypes from 'prop-types';
-import React, { MouseEventHandler, useRef, useState } from 'react';
+import React, { MouseEventHandler, useEffect, useState } from 'react';
+import { useCopyToClipboard } from 'react-use';
 
 /**
  * Copy text button with visual feedback in the form of
@@ -46,36 +47,29 @@ const defaultProps = {
   tooltipText: 'Text copied to clipboard',
 };
 
-export const CopyTextButton = (props: Props) => {
+export function CopyTextButton(props: Props) {
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
     ...props,
   };
   const errorApi = useApi(errorApiRef);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
+  const [{ error }, copyToClipboard] = useCopyToClipboard();
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
 
   const handleCopyClick: MouseEventHandler = e => {
     e.stopPropagation();
     setOpen(true);
-
-    try {
-      if (inputRef.current) {
-        inputRef.current.select();
-        document.execCommand('copy');
-      }
-    } catch (error) {
-      errorApi.post(error);
-    }
+    copyToClipboard(text);
   };
 
   return (
     <>
-      <textarea
-        ref={inputRef}
-        style={{ position: 'absolute', top: -9999, left: -9999 }}
-        defaultValue={text}
-      />
       <Tooltip
         id="copy-test-tooltip"
         title={tooltipText}
@@ -90,7 +84,7 @@ export const CopyTextButton = (props: Props) => {
       </Tooltip>
     </>
   );
-};
+}
 
 // Type check for the JS files using this core component
 CopyTextButton.propTypes = {

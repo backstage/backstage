@@ -6,10 +6,10 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
-import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -17,7 +17,6 @@ import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
-import * as http from 'http';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
@@ -28,12 +27,36 @@ import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { S3 } from 'aws-sdk';
 import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "AzureUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
+// @public (undocumented)
+export class AwsS3UrlReader implements UrlReader {
+  constructor(
+    integration: AwsS3Integration,
+    deps: {
+      s3: S3;
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
 // @public (undocumented)
 export class AzureUrlReader implements UrlReader {
   constructor(
@@ -42,31 +65,20 @@ export class AzureUrlReader implements UrlReader {
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
-  // Warning: (ae-forgotten-export) The symbol "ReaderFactory" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
-  // Warning: (ae-forgotten-export) The symbol "ReadTreeOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "ReadUrlResponse" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // Warning: (ae-forgotten-export) The symbol "SearchOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
   // (undocumented)
   toString(): string;
 }
 
-// Warning: (ae-missing-release-tag) "BitbucketUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class BitbucketUrlReader implements UrlReader {
   constructor(
@@ -89,92 +101,82 @@ export class BitbucketUrlReader implements UrlReader {
   toString(): string;
 }
 
-// Warning: (ae-missing-release-tag) "CacheClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface CacheClient {
   delete(key: string): Promise<void>;
   get(key: string): Promise<JsonValue | undefined>;
-  // Warning: (ae-forgotten-export) The symbol "CacheSetOptions" needs to be exported by the entry point index.d.ts
-  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<void>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheClientSetOptions,
+  ): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "CacheManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CacheClientOptions = {
+  defaultTtl?: number;
+};
+
+// @public (undocumented)
+export type CacheClientSetOptions = {
+  ttl?: number;
+};
+
 // @public
 export class CacheManager {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   forPlugin(pluginId: string): PluginCacheManager;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-forgotten-export) The symbol "CacheManagerOptions" needs to be exported by the entry point index.d.ts
   static fromConfig(
     config: Config,
     options?: CacheManagerOptions,
   ): CacheManager;
 }
 
-// Warning: (ae-missing-release-tag) "coloredFormat" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CacheManagerOptions = {
+  logger?: Logger_2;
+  onError?: (err: Error) => void;
+};
+
 // @public (undocumented)
 export const coloredFormat: winston.Logform.Format;
 
-// Warning: (ae-missing-release-tag) "ContainerRunner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ContainerRunner {
   // (undocumented)
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "createDatabase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "createDatabaseClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
 ): Knex<any, unknown[]>;
 
-// Warning: (ae-missing-release-tag) "createRootLogger" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
 ): winston.Logger;
 
-// Warning: (ae-forgotten-export) The symbol "ServiceBuilderImpl" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createServiceBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
+export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
-// Warning: (ae-forgotten-export) The symbol "StatusCheckRouterOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createStatusCheckRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export function createStatusCheckRouter(
-  options: StatusCheckRouterOptions,
-): Promise<express.Router>;
+export function createStatusCheckRouter(options: {
+  logger: Logger_2;
+  path?: string;
+  statusCheck?: StatusCheck;
+}): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "DatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class DatabaseManager {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   forPlugin(pluginId: string): PluginDatabaseManager;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   static fromConfig(config: Config): DatabaseManager;
 }
 
-// Warning: (ae-missing-release-tag) "DockerContainerRunner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {
   constructor({ dockerClient }: { dockerClient: Docker });
@@ -191,23 +193,17 @@ export class DockerContainerRunner implements ContainerRunner {
   }: RunContainerOptions): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "ensureDatabaseExists" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function ensureDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
 ): Promise<void>;
 
-// Warning: (ae-missing-release-tag) "errorHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
 
-// Warning: (ae-missing-release-tag) "ErrorHandlerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
@@ -215,18 +211,12 @@ export type ErrorHandlerOptions = {
   logClientErrors?: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "getRootLogger" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function getRootLogger(): winston.Logger;
 
-// Warning: (ae-missing-release-tag) "getVoidLogger" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getVoidLogger(): winston.Logger;
 
-// Warning: (ae-missing-release-tag) "Git" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class Git {
   // (undocumented)
@@ -331,8 +321,6 @@ export class Git {
   resolveRef({ dir, ref }: { dir: string; ref: string }): Promise<string>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class GithubUrlReader implements UrlReader {
   constructor(
@@ -356,8 +344,6 @@ export class GithubUrlReader implements UrlReader {
   toString(): string;
 }
 
-// Warning: (ae-missing-release-tag) "GitlabUrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class GitlabUrlReader implements UrlReader {
   constructor(
@@ -382,41 +368,49 @@ export class GitlabUrlReader implements UrlReader {
 
 export { isChildPath };
 
-// Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "loadBackendConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export function loadBackendConfig(options: Options): Promise<Config>;
+export function loadBackendConfig(options: {
+  logger: Logger_2;
+  argv: string[];
+}): Promise<Config>;
 
-// Warning: (ae-missing-release-tag) "notFoundHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function notFoundHandler(): RequestHandler;
 
-// Warning: (ae-missing-release-tag) "PluginCacheManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type PluginCacheManager = {
-  getClient: (options?: ClientOptions) => CacheClient;
+  getClient: (options?: CacheClientOptions) => CacheClient;
 };
 
-// Warning: (ae-missing-release-tag) "PluginDatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
 }
 
-// Warning: (ae-missing-release-tag) "PluginEndpointDiscovery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type PluginEndpointDiscovery = {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
 };
 
-// Warning: (ae-missing-release-tag) "ReadTreeResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger_2;
+  treeResponseFactory: ReadTreeResponseFactory;
+}) => UrlReaderPredicateTuple[];
+
+// @public
+export type ReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+};
+
 // @public
 export type ReadTreeResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
@@ -425,41 +419,73 @@ export type ReadTreeResponse = {
   etag: string;
 };
 
-// Warning: (ae-missing-release-tag) "ReadTreeResponseFile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type ReadTreeResponseDirOptions = {
+  targetDir?: string;
+};
+
+// @public (undocumented)
+export interface ReadTreeResponseFactory {
+  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse>;
+  // (undocumented)
+  fromTarArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+  // (undocumented)
+  fromZipArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+}
+
+// @public (undocumented)
+export type ReadTreeResponseFactoryOptions = {
+  stream: Readable;
+  subpath?: string;
+  etag: string;
+  filter?: (
+    path: string,
+    info?: {
+      size: number;
+    },
+  ) => boolean;
+};
+
 // @public
 export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "requestLoggingHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type ReadUrlOptions = {
+  etag?: string;
+};
+
+// @public
+export type ReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  etag?: string;
+};
+
 // @public
 export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
 
-// Warning: (ae-missing-release-tag) "RequestLoggingHandlerFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type RequestLoggingHandlerFactory = (
   logger?: Logger_2,
 ) => RequestHandler;
 
-// Warning: (ae-missing-release-tag) "resolvePackagePath" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "resolveSafeChildPath" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function resolveSafeChildPath(base: string, path: string): string;
 
-// Warning: (ae-missing-release-tag) "RunContainerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type RunContainerOptions = {
   imageName: string;
@@ -472,32 +498,40 @@ export type RunContainerOptions = {
   pullImage?: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "SearchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type SearchOptions = {
+  etag?: string;
+};
+
 // @public
 export type SearchResponse = {
   files: SearchResponseFile[];
   etag: string;
 };
 
-// Warning: (ae-missing-release-tag) "SearchResponseFile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type SearchResponseFile = {
   url: string;
   content(): Promise<Buffer>;
 };
 
-// Warning: (ae-missing-release-tag) "ServiceBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ServiceBuilder = {
-  loadConfig(config: ConfigReader): ServiceBuilder;
+  loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
   setLogger(logger: Logger_2): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
-  setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
+  setHttpsSettings(settings: {
+    certificate:
+      | {
+          key: string;
+          cert: string;
+        }
+      | {
+          hostname: string;
+        };
+  }): ServiceBuilder;
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
@@ -505,18 +539,12 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-// Warning: (ae-missing-release-tag) "setRootLogger" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function setRootLogger(newLogger: winston.Logger): void;
 
-// Warning: (ae-missing-release-tag) "SingleConnectionDatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export const SingleConnectionDatabaseManager: typeof DatabaseManager;
 
-// Warning: (ae-missing-release-tag) "SingleHostDiscovery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class SingleHostDiscovery implements PluginEndpointDiscovery {
   static fromConfig(
@@ -531,28 +559,19 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
-// Warning: (ae-missing-release-tag) "StatusCheck" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type StatusCheck = () => Promise<any>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "statusCheckHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function statusCheckHandler(
   options?: StatusCheckHandlerOptions,
 ): Promise<RequestHandler>;
 
-// Warning: (ae-missing-release-tag) "StatusCheckHandlerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-// Warning: (ae-missing-release-tag) "UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
@@ -561,49 +580,31 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
-// Warning: (ae-missing-release-tag) "UrlReaders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
 // @public
 export class UrlReaders {
-  // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
-  static create({ logger, config, factories }: CreateOptions): UrlReader;
-  static default({ logger, config, factories }: CreateOptions): UrlReader;
+  static create({ logger, config, factories }: UrlReadersOptions): UrlReader;
+  static default({ logger, config, factories }: UrlReadersOptions): UrlReader;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "useHotCleanup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type UrlReadersOptions = {
+  config: Config;
+  logger: Logger_2;
+  factories?: ReaderFactory[];
+};
+
 // @public
 export function useHotCleanup(
   _module: NodeModule,
   cancelEffect: () => void,
 ): void;
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@warning" is not defined in this configuration
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "useHotMemoize" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
-
-// Warnings were encountered during analysis:
-//
-// src/cache/types.d.ts:34:5 - (ae-forgotten-export) The symbol "ClientOptions" needs to be exported by the entry point index.d.ts
-// src/middleware/errorHandler.d.ts:17:26 - (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
-// src/reading/AzureUrlReader.d.ts:9:9 - (ae-forgotten-export) The symbol "ReadTreeResponseFactory" needs to be exported by the entry point index.d.ts
-// src/reading/types.d.ts:106:5 - (ae-forgotten-export) The symbol "ReadTreeResponseDirOptions" needs to be exported by the entry point index.d.ts
-// src/service/types.d.ts:12:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:22:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:30:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:38:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:47:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:55:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:57:5 - (ae-forgotten-export) The symbol "HttpsSettings" needs to be exported by the entry point index.d.ts
-// src/service/types.d.ts:61:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:62:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/service/types.d.ts:70:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

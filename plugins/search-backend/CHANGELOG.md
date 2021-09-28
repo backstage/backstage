@@ -1,5 +1,34 @@
 # @backstage/plugin-search-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/backend-common@0.9.1
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+
+## 0.2.4
+
+### Patch Changes
+
+- 64baedea5: Improve search query logging message
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+
 ## 0.2.3
 
 ### Patch Changes

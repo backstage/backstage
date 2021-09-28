@@ -18,11 +18,22 @@ export { AzureUrlReader } from './AzureUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
+export { AwsS3UrlReader } from './AwsS3UrlReader';
 export type {
+  ReaderFactory,
+  ReadTreeOptions,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
   ReadTreeResponseFile,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFactoryOptions,
+  ReadUrlOptions,
+  ReadUrlResponse,
+  SearchOptions,
   SearchResponse,
   SearchResponseFile,
   UrlReader,
+  UrlReaderPredicateTuple,
 } from './types';
 export { UrlReaders } from './UrlReaders';
+export type { UrlReadersOptions } from './UrlReaders';

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you manage GitOps profiles
+ *
+ * @packageDocumentation
+ */
+
 export {
   gitopsProfilesPlugin,
   gitopsProfilesPlugin as plugin,

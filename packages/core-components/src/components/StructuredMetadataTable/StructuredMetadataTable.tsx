@@ -44,16 +44,16 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 // Sub Components
-const StyledList = withStyles(
-  listStyle,
-)(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-const StyledNestedList = withStyles(
-  nestedListStyle,
-)(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
+const StyledList = withStyles(listStyle)(
+  ({ classes, children }: StyleProps) => (
+    <MetadataList classes={classes}>{children}</MetadataList>
+  ),
+);
+const StyledNestedList = withStyles(nestedListStyle)(
+  ({ classes, children }: StyleProps) => (
+    <MetadataList classes={classes}>{children}</MetadataList>
+  ),
+);
 
 function renderList(list: Array<any>, nested?: boolean) {
   const values = list.map((item: any, index: number) => (
@@ -153,11 +153,8 @@ type Props = {
   options?: any;
 };
 
-export const StructuredMetadataTable = ({
-  metadata,
-  dense = true,
-  options,
-}: Props) => {
+export function StructuredMetadataTable(props: Props) {
+  const { metadata, dense = true, options } = props;
   const metadataItems = mapToItems(metadata, options || {});
   return <MetadataTable dense={dense}>{metadataItems}</MetadataTable>;
-};
+}

@@ -1,5 +1,169 @@
 # @backstage/core-components
 
+## 0.5.0
+
+### Minor Changes
+
+- 537bd04005: Fixed a popup-blocking bug affecting iOS Safari in SignInPage.tsx by ensuring that the popup occurs in the same tick as the tap/click
+
+### Patch Changes
+
+- c0eb1fb9df: Allow to configure zooming for `<DependencyGraph>`. `zoom` can either be
+  `enabled`, `disabled`, or `enable-on-click`. The latter requires the user to
+  click into the diagram to enable zooming.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.4.2
+
+### Patch Changes
+
+- 60c03f69a7: Change the styling of the `<DependencyGraph>` to have more contrast in light
+  mode. Nodes now have a design similar to material UI buttons.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- d9f2ff12bb: Deprecated CheckboxTree component. Deprecated the filter type `'checkbox-tree'` from the `TableFilter` types.
+- 61e9fcf406: Improve UX for Login pop-up
+- 005510dabe: remove hard coded min height in page header
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.1
+
+### Patch Changes
+
+- 06e275705: Fix warning produced by BottomLink component
+
+  During development, we noticed warnings such as:
+
+  ```
+  react_devtools_backend.js:2842 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  ```
+
+  The BottomLink component renders a Box component within a Typography component which leads to a div tag within a p tag.
+  This change inverts that ordering without changing the visual appearance.
+
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.4.0
+
+### Minor Changes
+
+- 3ed78fca3: Changed the `titleComponent` prop on `ContentHeader` to accept `ReactNode` instead of a React `ComponentType`. Usages of this prop should be converted from passing a component to passing in the rendered element:
+
+  ```diff
+  -<ContentHeader titleComponent={MyComponent}>
+  +<ContentHeader titleComponent={<MyComponent />}>
+  ```
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+
+## 0.3.3
+
+### Patch Changes
+
+- d041655a7: Fix accessibility issue in `<CopyTextButton />`. The component doesn't render anymore an hidden `textarea` containing the text to be copied.
+- 6d76bca85: Handle changes to nodes passed into `<DependencyGraph>` correctly.
+- Updated dependencies
+  - @backstage/config@0.1.8
+
+## 0.3.2
+
+### Patch Changes
+
+- a3f3cff3b: Change the default hover experience for the sidebar to be not jumpy & add visual separation between sidebar & Entity Page tabs for dark mode.
+- 6b1afe8c0: Add a configurable `palette.bursts.gradient` property to the Backstage theme, to support customizing the gradients in the `ItemCard` header.
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/theme@0.2.10
+
+## 0.3.1
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 55a5dbd54: Fix for `SidebarItem` matching the active route too broadly.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.3.0
+
+### Minor Changes
+
+- 7bf006210: Remove unused props from InfoCard prop type
+
+### Patch Changes
+
+- c4d8ff963: Switched frontend identity code to use `token` instead of the deprecated `idToken` field
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.2.0
+
+### Minor Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.1.6
+
+### Patch Changes
+
+- 9a751bb28: Increase the vertical padding of the sidebar search input field to match the height of the parent anchor tag. This prevents users from accidentally navigating to the search page when they actually wanted to use the search input directly.
+- 45b5fc3a8: Updated the layout of catalog and API index pages to handle smaller screen sizes. This adds responsive wrappers to the entity tables, and switches filters to a drawer when width-constrained. If you have created a custom catalog or API index page, you will need to update the page structure to match the updated [catalog customization](https://backstage.io/docs/features/software-catalog/catalog-customization) documentation.
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
 ## 0.1.5
 
 ### Patch Changes

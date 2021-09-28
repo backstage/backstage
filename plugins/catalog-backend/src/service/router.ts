@@ -28,7 +28,7 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
-import { LocationService } from '../next/types';
+import { RefreshService, LocationService, RefreshOptions } from '../next/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -47,6 +47,7 @@ export interface RouterOptions {
   higherOrderOperation?: HigherOrderOperation;
   locationAnalyzer?: LocationAnalyzer;
   locationService?: LocationService;
+  refreshService?: RefreshService;
   logger: Logger;
   config: Config;
 }
@@ -60,6 +61,7 @@ export async function createRouter(
     higherOrderOperation,
     locationAnalyzer,
     locationService,
+    refreshService,
     config,
     logger,
   } = options;
@@ -71,6 +73,14 @@ export async function createRouter(
     config.getOptionalBoolean('catalog.readonly') || false;
   if (readonlyEnabled) {
     logger.info('Catalog is running in readonly mode');
+  }
+
+  if (refreshService) {
+    router.post('/refresh', async (req, res) => {
+      const refreshOptions: RefreshOptions = req.body;
+      await refreshService.refresh(refreshOptions);
+      res.status(200).send();
+    });
   }
 
   if (entitiesCatalog) {

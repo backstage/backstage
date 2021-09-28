@@ -7,60 +7,71 @@ import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 
-// Warning: (ae-missing-release-tag) "ConfigSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type ConfigSchema = {
   process(
     appConfigs: AppConfig[],
-    options?: ConfigProcessingOptions,
+    options?: ConfigSchemaProcessingOptions,
   ): AppConfig[];
   serialize(): JsonObject;
 };
 
-// Warning: (ae-forgotten-export) The symbol "CONFIG_VISIBILITIES" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ConfigVisibility" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
+export type ConfigSchemaProcessingOptions = {
+  visibility?: ConfigVisibility[];
+  valueTransform?: TransformFunc<any>;
+  withFilteredKeys?: boolean;
+};
 
-// Warning: (ae-missing-release-tag) "loadConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
+
 // @public (undocumented)
+export type EnvFunc = (name: string) => Promise<string | undefined>;
+
+// @public
 export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 
-// Warning: (ae-missing-release-tag) "LoadConfigOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type LoadConfigOptions = {
   configRoot: string;
   configPaths: string[];
   env?: string;
   experimentalEnvFunc?: EnvFunc;
+  watch?: {
+    onChange: (configs: AppConfig[]) => void;
+    stopSignal?: Promise<void>;
+  };
 };
 
-// Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "loadConfigSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export function loadConfigSchema(options: Options): Promise<ConfigSchema>;
+export function loadConfigSchema(
+  options: LoadConfigSchemaOptions,
+): Promise<ConfigSchema>;
 
-// Warning: (ae-missing-release-tag) "mergeConfigSchemas" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type LoadConfigSchemaOptions =
+  | {
+      dependencies: string[];
+      packagePaths?: string[];
+    }
+  | {
+      serialized: JsonObject;
+    };
+
 // @public
 export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;
 
-// Warning: (ae-missing-release-tag) "readEnvConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
 
-// Warnings were encountered during analysis:
-//
-// src/lib/schema/types.d.ts:77:5 - (ae-forgotten-export) The symbol "ConfigProcessingOptions" needs to be exported by the entry point index.d.ts
-// src/loader.d.ts:13:5 - (ae-forgotten-export) The symbol "EnvFunc" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// @public
+export type TransformFunc<T extends number | string | boolean> = (
+  value: T,
+  context: {
+    visibility: ConfigVisibility;
+  },
+) => T | undefined;
 ```

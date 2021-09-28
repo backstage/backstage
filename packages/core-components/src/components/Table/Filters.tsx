@@ -18,8 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { Button, makeStyles } from '@material-ui/core';
 import { Select } from '../Select';
-import { CheckboxTree } from '../CheckboxTree';
-import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 
 const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
@@ -53,10 +51,8 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
 export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 export type Filter = {
-  type: 'select' | 'checkbox-tree' | 'multiple-select';
-  element:
-    | Without<CheckboxTreeProps, 'onChange'>
-    | Without<SelectProps, 'onChange'>;
+  type: 'select' | 'multiple-select';
+  element: Without<SelectProps, 'onChange'>;
 };
 
 export type SelectedFilters = {
@@ -100,57 +96,20 @@ export const Filters = (props: Props) => {
       </div>
       <div className={classes.filters}>
         {props.filters?.length &&
-          props.filters.map(filter =>
-            filter.type === 'checkbox-tree' ? (
-              <CheckboxTree
-                triggerReset={reset}
-                key={filter.element.label}
-                {...(filter.element as CheckboxTreeProps)}
-                selected={
-                  selectedFilters[filter.element.label]
-                    ? (selectedFilters[filter.element.label] as string[]).map(
-                        s => ({
-                          category: s,
-                        }),
-                      )
-                    : undefined
-                }
-                onChange={el =>
-                  setSelectedFilters({
-                    ...selectedFilters,
-                    [filter.element.label]: el
-                      .filter(
-                        (checkboxFilter: any) =>
-                          checkboxFilter.category ||
-                          checkboxFilter.selectedChildren.length,
-                      )
-                      .map((checkboxFilter: any) =>
-                        checkboxFilter.category
-                          ? [
-                              ...checkboxFilter.selectedChildren,
-                              checkboxFilter.category,
-                            ]
-                          : checkboxFilter.selectedChildren,
-                      )
-                      .flat(),
-                  })
-                }
-              />
-            ) : (
-              <Select
-                triggerReset={reset}
-                key={filter.element.label}
-                {...(filter.element as SelectProps)}
-                selected={selectedFilters[filter.element.label]}
-                onChange={el =>
-                  setSelectedFilters({
-                    ...selectedFilters,
-                    [filter.element.label]: el as any,
-                  })
-                }
-              />
-            ),
-          )}
+          props.filters.map(filter => (
+            <Select
+              triggerReset={reset}
+              key={filter.element.label}
+              {...(filter.element as SelectProps)}
+              selected={selectedFilters[filter.element.label]}
+              onChange={el =>
+                setSelectedFilters({
+                  ...selectedFilters,
+                  [filter.element.label]: el as any,
+                })
+              }
+            />
+          ))}
       </div>
     </div>
   );

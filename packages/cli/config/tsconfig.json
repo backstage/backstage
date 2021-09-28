@@ -33,6 +33,7 @@
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2019",
-    "types": ["node", "jest", "webpack-env"]
+    "types": ["node", "jest", "webpack-env"],
+    "useDefineForClassFields": true
   }
 }

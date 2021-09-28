@@ -60,6 +60,9 @@ export type Repository = {
   name: string;
   url: string;
   isArchived: boolean;
+  defaultBranchRef: {
+    name: string;
+  } | null;
 };
 
 export type Connection<T> = {
@@ -79,6 +82,7 @@ export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
+  userNamespace?: string,
 ): Promise<{ users: UserEntity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
@@ -114,6 +118,7 @@ export async function getOrganizationUsers(
       },
     };
 
+    if (userNamespace) entity.metadata.namespace = userNamespace;
     if (user.bio) entity.metadata.description = user.bio;
     if (user.name) entity.spec.profile!.displayName = user.name;
     if (user.email) entity.spec.profile!.email = user.email;
@@ -252,6 +257,9 @@ export async function getOrganizationRepositories(
             name
             url
             isArchived
+            defaultBranchRef {
+              name
+            }
           }
           pageInfo {
             hasNextPage
@@ -330,7 +338,7 @@ export async function queryWithPaging<
   GraphqlType,
   OutputType,
   Variables extends {},
-  Response = QueryResponse
+  Response = QueryResponse,
 >(
   client: typeof graphql,
   query: string,

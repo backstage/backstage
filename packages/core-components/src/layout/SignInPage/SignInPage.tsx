@@ -15,12 +15,13 @@
  */
 
 import {
+  BackstageIdentity,
   configApiRef,
   SignInPageProps,
   useApi,
 } from '@backstage/core-plugin-api';
 import { Button, Grid, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -70,7 +71,7 @@ export const MultiSignInPage = ({
         {title && <ContentHeader title={title} textAlign={align} />}
         <Grid
           container
-          justify={align === 'center' ? align : 'flex-start'}
+          justifyContent={align === 'center' ? align : 'flex-start'}
           spacing={2}
           component="ul"
           classes={classes}
@@ -91,60 +92,63 @@ export const SingleSignInPage = ({
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
 
-  const [autoShowPopup, setAutoShowPopup] = useState<boolean>(auto ?? false);
-  // Defaults to true so that an initial check for existing user session is made
-  const [retry, setRetry] = useState<{} | boolean | undefined>(undefined);
   const [error, setError] = useState<Error>();
+  const [loginCount, setLoginCount] = useState(0);
 
   // The SignIn component takes some time to decide whether the user is logged-in or not.
   // showLoginPage is used to prevent a glitch-like experience where the sign-in page is
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
-  useEffect(() => {
-    const login = async () => {
-      try {
-        let identity;
+  type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
+  const login = async ({ checkExisting, showPopup }: LoginOpts) => {
+    setLoginCount(prev => prev + 1);
+    try {
+      let identity: BackstageIdentity | undefined;
+      if (checkExisting) {
         // Do an initial check if any logged-in session exists
         identity = await authApi.getBackstageIdentity({
           optional: true,
         });
-
-        // If no session exists, show the sign-in page
-        if (!identity && autoShowPopup) {
-          // Unless auto is set to true, this step should not happen.
-          // When user intentionally clicks the Sign In button, autoShowPopup is set to true
-          setShowLoginPage(true);
-          identity = await authApi.getBackstageIdentity({
-            instantPopup: true,
-          });
-        }
-
-        if (!identity) {
-          setShowLoginPage(true);
-          return;
-        }
-
-        const profile = await authApi.getProfile();
-        onResult({
-          userId: identity!.id,
-          profile: profile!,
-          getIdToken: () => {
-            return authApi.getBackstageIdentity().then(i => i!.idToken);
-          },
-          signOut: async () => {
-            await authApi.signOut();
-          },
-        });
-      } catch (err) {
-        // User closed the sign-in modal
-        setError(err);
-        setShowLoginPage(true);
       }
-    };
 
-    login();
-  }, [onResult, authApi, retry, autoShowPopup]);
+      // If no session exists, show the sign-in page
+      if (!identity && (showPopup || auto)) {
+        // Unless auto is set to true, this step should not happen.
+        // When user intentionally clicks the Sign In button, autoShowPopup is set to true
+        setShowLoginPage(true);
+        identity = await authApi.getBackstageIdentity({
+          instantPopup: true,
+        });
+      }
+
+      if (!identity) {
+        setShowLoginPage(true);
+        return;
+      }
+
+      const profile = await authApi.getProfile();
+      onResult({
+        userId: identity!.id,
+        profile: profile!,
+        getIdToken: () => {
+          return authApi
+            .getBackstageIdentity()
+            .then(i => i!.token ?? i!.idToken);
+        },
+        signOut: async () => {
+          await authApi.signOut();
+        },
+      });
+    } catch (err: any) {
+      // User closed the sign-in modal
+      setError(err);
+      setShowLoginPage(true);
+    }
+  };
+  if (loginCount === 0) {
+    login({ checkExisting: true });
+  }
 
   return showLoginPage ? (
     <Page themeId="home">
@@ -152,7 +156,7 @@ export const SingleSignInPage = ({
       <Content>
         <Grid
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
           component="ul"
           classes={classes}
@@ -166,8 +170,7 @@ export const SingleSignInPage = ({
                   color="primary"
                   variant="outlined"
                   onClick={() => {
-                    setRetry({});
-                    setAutoShowPopup(true);
+                    login({ showPopup: true });
                   }}
                 >
                   Sign In
@@ -190,10 +193,10 @@ export const SingleSignInPage = ({
   );
 };
 
-export const SignInPage = (props: Props) => {
+export function SignInPage(props: Props) {
   if ('provider' in props) {
     return <SingleSignInPage {...props} />;
   }
 
   return <MultiSignInPage {...props} />;
-};
+}

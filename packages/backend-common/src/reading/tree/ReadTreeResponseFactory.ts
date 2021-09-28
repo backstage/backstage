@@ -18,11 +18,13 @@ import os from 'os';
 import { Config } from '@backstage/config';
 import {
   ReadTreeResponse,
-  FromArchiveOptions,
+  ReadTreeResponseFactoryOptions,
   ReadTreeResponseFactory,
+  FromReadableArrayOptions,
 } from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
+import { ReadableArrayResponse } from './ReadableArrayResponse';
 
 export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   static create(options: { config: Config }): DefaultReadTreeResponseFactory {
@@ -34,7 +36,9 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
 
   constructor(private readonly workDir: string) {}
 
-  async fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
+  async fromTarArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse> {
     return new TarArchiveResponse(
       options.stream,
       options.subpath ?? '',
@@ -44,7 +48,9 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
     );
   }
 
-  async fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
+  async fromZipArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse> {
     return new ZipArchiveResponse(
       options.stream,
       options.subpath ?? '',
@@ -52,5 +58,11 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
       options.etag,
       options.filter,
     );
+  }
+
+  async fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse> {
+    return new ReadableArrayResponse(options, this.workDir, '');
   }
 }

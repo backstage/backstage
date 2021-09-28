@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { renderWithEffects } from '../../../../../packages/test-utils-core/src';
+import { renderWithEffects } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {
@@ -65,17 +65,17 @@ const entities: Entity[] = [
 const apis = ApiRegistry.from([
   [
     catalogApiRef,
-    ({
+    {
       getEntities: jest
         .fn()
         .mockImplementation(() => Promise.resolve({ items: entities })),
-    } as unknown) as CatalogApi,
+    } as unknown as CatalogApi,
   ],
   [
     alertApiRef,
-    ({
+    {
       post: jest.fn(),
-    } as unknown) as AlertApi,
+    } as unknown as AlertApi,
   ],
 ]);
 
@@ -94,6 +94,7 @@ describe('<TemplateTypePicker/>', () => {
       </ApiProvider>,
     );
     expect(rendered.getByText('Categories')).toBeInTheDocument();
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
 
     entities.forEach(entity => {
       expect(
@@ -116,22 +117,27 @@ describe('<TemplateTypePicker/>', () => {
       </ApiProvider>,
     );
 
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Service'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Website'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).toBeChecked();
     expect(rendered.getByLabelText('Website')).toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Service'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).toBeChecked();
 
     fireEvent.click(rendered.getByLabelText('Website'));
+    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
     expect(rendered.getByLabelText('Service')).not.toBeChecked();
     expect(rendered.getByLabelText('Website')).not.toBeChecked();
   });

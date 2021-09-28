@@ -16,11 +16,10 @@
 
 import React, { PropsWithChildren } from 'react';
 import qs from 'qs';
-import { MemoryRouter as Router } from 'react-router-dom';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, UserEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import {
   EntityListProvider,
   useEntityListProvider,
@@ -38,17 +37,6 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-
-const mockUser: UserEntity = {
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'User',
-  metadata: {
-    name: 'guest',
-  },
-  spec: {
-    memberOf: [],
-  },
-};
 
 const entities: Entity[] = [
   {
@@ -81,13 +69,12 @@ const mockConfigApi = {
   getOptionalString: () => '',
 } as Partial<ConfigApi>;
 const mockIdentityApi: Partial<IdentityApi> = {
-  getUserId: () => 'guest@example.com',
+  getUserId: () => 'guest',
+  getIdToken: async () => undefined,
 };
 const mockCatalogApi: Partial<CatalogApi> = {
-  getEntities: jest
-    .fn()
-    .mockImplementation(() => Promise.resolve({ items: entities })),
-  getEntityByName: () => Promise.resolve(mockUser),
+  getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
+  getEntityByName: async () => undefined,
 };
 const apis = ApiRegistry.from([
   [configApiRef, mockConfigApi],
@@ -98,26 +85,30 @@ const apis = ApiRegistry.from([
 
 const wrapper = ({
   userFilter,
-  queryParams,
   children,
 }: PropsWithChildren<{
   userFilter?: UserListFilterKind;
-  queryParams?: string;
 }>) => {
   return (
-    <Router initialEntries={[`/?${queryParams ?? ''}`]}>
-      <ApiProvider apis={apis}>
-        <EntityListProvider>
-          <EntityKindPicker initialFilter="component" hidden />
-          <UserListPicker initialFilter={userFilter} />
-          {children}
-        </EntityListProvider>
-      </ApiProvider>
-    </Router>
+    <ApiProvider apis={apis}>
+      <EntityListProvider>
+        <EntityKindPicker initialFilter="component" hidden />
+        <UserListPicker initialFilter={userFilter} />
+        {children}
+      </EntityListProvider>
+    </ApiProvider>
   );
 };
 
-describe('<EntityListProvider/>', () => {
+describe('<EntityListProvider />', () => {
+  const origReplaceState = window.history.replaceState;
+  beforeEach(() => {
+    window.history.replaceState = jest.fn();
+  });
+  afterEach(() => {
+    window.history.replaceState = origReplaceState;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -149,16 +140,13 @@ describe('<EntityListProvider/>', () => {
   });
 
   it('resolves query param filter values', async () => {
+    const query = qs.stringify({
+      filters: { kind: 'component', type: 'service' },
+    });
+    delete (window as any).location;
+    (window as any).location = new URL(`http://localhost/catalog?${query}`);
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
-      initialProps: {
-        queryParams: qs.stringify({
-          filters: {
-            kind: 'component',
-            type: 'service',
-          },
-        }),
-      },
     });
     await waitFor(() => !!result.current.queryParameters);
     expect(result.current.queryParameters).toEqual({
@@ -171,18 +159,26 @@ describe('<EntityListProvider/>', () => {
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
     });
-    await waitFor(() => !!result.current.entities.length);
-    expect(result.current.entities.length).toBe(2);
-    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(2);
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    });
 
     act(() =>
       result.current.updateFilters({
-        user: new UserListFilter('owned', mockUser, () => true),
+        user: new UserListFilter(
+          'owned',
+          entity => entity.metadata.name === 'component-1',
+          () => true,
+        ),
       }),
     );
-    await waitFor(() => result.current.entities.length !== 2);
-    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
-    expect(result.current.entities.length).toBe(1);
+
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(1);
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('debounces multiple filter changes', async () => {
@@ -205,7 +201,7 @@ describe('<EntityListProvider/>', () => {
   });
 
   it('returns an error on catalogApi failure', async () => {
-    const { result, waitForNextUpdate, waitForValueToChange } = renderHook(
+    const { result, waitForValueToChange, waitFor } = renderHook(
       () => useEntityListProvider(),
       {
         wrapper,
@@ -218,7 +214,8 @@ describe('<EntityListProvider/>', () => {
     act(() => {
       result.current.updateFilters({ kind: new EntityKindFilter('api') });
     });
-    await waitForNextUpdate();
-    expect(result.current.error).toBeDefined();
+    await waitFor(() => {
+      expect(result.current.error).toBeDefined();
+    });
   });
 });

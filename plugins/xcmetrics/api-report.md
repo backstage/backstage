@@ -22,6 +22,4 @@ export const xcmetricsPlugin: BackstagePlugin<
   },
   {}
 >;
-
-// (No @packageDocumentation comment for this package)
 ```

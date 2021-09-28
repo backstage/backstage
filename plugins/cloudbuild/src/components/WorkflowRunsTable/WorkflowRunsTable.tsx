@@ -24,7 +24,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
 import { buildRouteRef } from '../../routes';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Table, TableColumn } from '@backstage/core-components';
 
 const generatedColumns: TableColumn[] = [
@@ -45,7 +45,7 @@ const generatedColumns: TableColumn[] = [
     width: '150px',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.id?.substring(0, 8)}</p>
+        {row.id?.substring(0, 8)}
       </Typography>
     ),
   },
@@ -57,6 +57,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Link
         component={RouterLink}
+        data-testid="cell-source"
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
         {row.message}
@@ -67,7 +68,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Ref',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.substitutions?.BRANCH_NAME}</p>
+        {row.substitutions?.BRANCH_NAME}
       </Typography>
     ),
   },
@@ -75,15 +76,17 @@ const generatedColumns: TableColumn[] = [
     title: 'Commit',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.substitutions?.SHORT_SHA}</p>
+        {row.substitutions?.SHORT_SHA}
       </Typography>
     ),
   },
   {
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
-      <Typography variant="body2" noWrap>
-        <p>{moment(row.createTime).format('DD-MM-YYYY hh:mm:ss')}</p>
+      <Typography data-testid="cell-created" variant="body2" noWrap>
+        {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()).toFormat(
+          'dd-MM-yyyy hh:mm:ss',
+        )}
       </Typography>
     ),
   },
@@ -91,7 +94,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     render: (row: Partial<WorkflowRun>) => (
       <Tooltip title="Rerun workflow">
-        <IconButton onClick={row.rerun}>
+        <IconButton data-testid="action-rerun" onClick={row.rerun}>
           <RetryIcon />
         </IconButton>
       </Tooltip>
@@ -138,8 +141,8 @@ export const WorkflowRunsTableView = ({
         },
       ]}
       data={runs ?? []}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangePageSize}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangePageSize}
       style={{ width: '100%' }}
       title={
         <Box display="flex" alignItems="center">

@@ -129,16 +129,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       entity: {
@@ -211,6 +211,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         {
           name: 'test-cluster',
           authProvider: 'serviceAccount',
+          dashboardUrl: 'https://k8s.foo.coom',
         },
         {
           name: 'other-cluster',
@@ -221,16 +222,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {
@@ -260,6 +261,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
           },
           errors: [],
@@ -357,16 +359,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {
@@ -497,16 +499,16 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const sut = new KubernetesFanOutHandler(
-      getVoidLogger(),
-      {
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
         fetchObjectsForService,
       },
-      {
+      serviceLocator: {
         getClustersByServiceId,
       },
-      [],
-    );
+      customResources: [],
+    });
 
     const result = await sut.getKubernetesObjectsByEntity({
       auth: {

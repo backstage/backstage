@@ -27,6 +27,7 @@ import {
   useInRouterContext,
 } from 'react-router-dom';
 import { PrivateAppImpl } from './App';
+import { AppThemeProvider } from './AppThemeProvider';
 import { defaultApis } from './defaultApis';
 import { defaultAppIcons } from './icons';
 import {
@@ -60,7 +61,7 @@ export const defaultConfigLoader: AppConfigLoader = async (
   if (!Array.isArray(appConfig)) {
     throw new Error('Static configuration has invalid format');
   }
-  const configs = (appConfig.slice() as unknown) as AppConfig[];
+  const configs = appConfig.slice() as unknown as AppConfig[];
 
   // Avoiding this string also being replaced at runtime
   if (
@@ -88,11 +89,6 @@ export const defaultConfigLoader: AppConfigLoader = async (
   }
   return configs;
 };
-
-// createApp is defined in core, and not core-api, since we need access
-// to the components inside core to provide defaults.
-// The actual implementation of the app class still lives in core-api,
-// as it needs to be used by dev- and test-utils.
 
 export function OptionallyWrapInRouter({ children }: PropsWithChildren<{}>) {
   if (useInRouterContext()) {
@@ -149,6 +145,7 @@ export function createApp(options?: AppOptions) {
     Progress: Progress,
     Router: BrowserRouter,
     ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
+    ThemeProvider: AppThemeProvider,
     ...options?.components,
   };
   const themes = options?.themes ?? [

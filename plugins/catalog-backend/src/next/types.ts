@@ -21,7 +21,7 @@ export interface LocationService {
   createLocation(
     spec: LocationSpec,
     dryRun: boolean,
-  ): Promise<{ location: Location; entities: Entity[] }>;
+  ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
@@ -37,6 +37,28 @@ export interface LocationStore {
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
+}
+
+/**
+ * Options for requesting a refresh of entities in the catalog.
+ *
+ * @public
+ */
+export type RefreshOptions = {
+  /** The reference to a single entity that should be refreshed */
+  entityRef: string;
+};
+
+/**
+ * A service that manages refreshes of entities in the catalog.
+ *
+ * @public
+ */
+export interface RefreshService {
+  /**
+   * Request a refresh of entities in the catalog.
+   */
+  refresh(options: RefreshOptions): Promise<void>;
 }
 
 export type EntityProviderMutation =

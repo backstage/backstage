@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that lets you display a Tech Radar for your organization
+ *
+ * @packageDocumentation
+ */
+
 export {
   techRadarPlugin,
   techRadarPlugin as plugin,

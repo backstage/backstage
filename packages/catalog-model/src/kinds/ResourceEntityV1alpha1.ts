@@ -18,6 +18,7 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Resource.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
+/** @public */
 export interface ResourceEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Resource';
@@ -29,6 +30,6 @@ export interface ResourceEntityV1alpha1 extends Entity {
   };
 }
 
-export const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+/** @public */
+export const resourceEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);

@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  PropsWithChildren,
-} from 'react';
+import React, { useContext, ReactNode, PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiAggregator } from './ApiAggregator';
-import { getOrCreateGlobalSingleton } from '../../lib/globalObject';
 import {
-  VersionedValue,
   createVersionedValueMap,
-} from '../../lib/versionedValues';
+  createVersionedContext,
+} from '@backstage/version-bridge';
 
 type ApiProviderProps = {
   apis: ApiHolder;
   children: ReactNode;
 };
 
-type ApiContextType = VersionedValue<{ 1: ApiHolder }> | undefined;
-const ApiContext = getOrCreateGlobalSingleton('api-context', () =>
-  createContext<ApiContextType>(undefined),
-);
+const ApiContext = createVersionedContext<{ 1: ApiHolder }>('api-context');
 
 export const ApiProvider = ({
   apis,

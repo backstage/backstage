@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you manage releases in git
+ *
+ * @packageDocumentation
+ */
+
 export {
   gitReleaseManagerPlugin,
   GitReleaseManagerPage,
   gitReleaseManagerApiRef,
 } from './plugin';
+
+import { components, constants, helpers, testHelpers } from './plugin';
+
+export const internals = {
+  components,
+  constants,
+  helpers,
+  testHelpers,
+};

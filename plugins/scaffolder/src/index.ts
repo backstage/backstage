@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that helps you create new things
+ *
+ * @packageDocumentation
+ */
+
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type { ScaffolderApi } from './api';
 export {
@@ -23,9 +29,18 @@ export {
 export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
 export {
   EntityPickerFieldExtension,
+  EntityNamePickerFieldExtension,
   OwnerPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';
+export {
+  EntityNamePicker,
+  EntityPicker,
+  OwnerPicker,
+  RepoUrlPicker,
+  TextValuePicker,
+} from './components/fields';
+export { FavouriteTemplate } from './components/FavouriteTemplate';

@@ -65,6 +65,7 @@ export const techdocsPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
+    docRoot: rootDocsRouteRef,
     entityContent: rootCatalogDocsRouteRef,
   },
 });
@@ -108,6 +109,16 @@ export const TechDocsCustomHome = techdocsPlugin.provide(
     component: () =>
       import('./home/components/TechDocsCustomHome').then(
         m => m.TechDocsCustomHome,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const TechDocsIndexPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./home/components/TechDocsIndexPage').then(
+        m => m.TechDocsIndexPage,
       ),
     mountPoint: rootRouteRef,
   }),

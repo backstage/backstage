@@ -51,12 +51,12 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * This can be useful for e.g. overriding gridTemplateColumns to adapt the
  * minimum size of the cells to fit the content better.
  */
-export const ItemCardGrid = (props: ItemCardGridProps) => {
+export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;
   const classes = useStyles(otherProps);
   return (
-    <div role="grid" className={classes.root} {...otherProps}>
+    <div className={classes.root} {...otherProps}>
       {children}
     </div>
   );
-};
+}

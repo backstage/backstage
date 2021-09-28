@@ -49,7 +49,7 @@ export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   },
 );
 
-export const SidebarPage = (props: PropsWithChildren<{}>) => {
+export function SidebarPage(props: PropsWithChildren<{}>) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
@@ -71,4 +71,4 @@ export const SidebarPage = (props: PropsWithChildren<{}>) => {
       <div className={classes.root}>{props.children}</div>
     </SidebarPinStateContext.Provider>
   );
-};
+}

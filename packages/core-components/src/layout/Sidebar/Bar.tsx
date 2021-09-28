@@ -42,6 +42,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
+    borderRight: `1px solid #383838`,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
@@ -60,14 +61,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       duration: theme.transitions.duration.shorter,
     }),
   },
-  drawerPeek: {
-    width: sidebarConfig.drawerWidthClosed + 4,
-  },
 }));
 
 enum State {
   Closed,
-  Peek,
+  Idle,
   Open,
 }
 
@@ -76,11 +74,12 @@ type Props = {
   closeDelayMs?: number;
 };
 
-export const Sidebar = ({
-  openDelayMs = sidebarConfig.defaultOpenDelayMs,
-  closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-  children,
-}: PropsWithChildren<Props>) => {
+export function Sidebar(props: PropsWithChildren<Props>) {
+  const {
+    openDelayMs = sidebarConfig.defaultOpenDelayMs,
+    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+    children,
+  } = props;
   const classes = useStyles();
   const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
@@ -103,7 +102,7 @@ export const Sidebar = ({
         setState(State.Open);
       }, openDelayMs);
 
-      setState(State.Peek);
+      setState(State.Idle);
     }
   };
 
@@ -115,7 +114,7 @@ export const Sidebar = ({
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
     }
-    if (state === State.Peek) {
+    if (state === State.Idle) {
       setState(State.Closed);
     } else if (state === State.Open) {
       hoverTimerRef.current = window.setTimeout(() => {
@@ -143,7 +142,6 @@ export const Sidebar = ({
       >
         <div
           className={clsx(classes.drawer, {
-            [classes.drawerPeek]: state === State.Peek,
             [classes.drawerOpen]: isOpen,
           })}
         >
@@ -152,4 +150,4 @@ export const Sidebar = ({
       </SidebarContext.Provider>
     </div>
   );
-};
+}

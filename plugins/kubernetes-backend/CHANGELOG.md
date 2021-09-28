@@ -1,5 +1,59 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.16
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
+## 0.3.15
+
+### Patch Changes
+
+- 22fc579fe: Fixes bug reading ExternalId from k8s backend config
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.3.14
+
+### Patch Changes
+
+- bbcd92afa: Adds ability to send an ExternalId with the assume role request to AWS
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+
+## 0.3.13
+
+### Patch Changes
+
+- a0a8d3571: Add configuration option to the kubernetes object types. Config option is under `kubernetes.objectTypes`. Defaults to ['pods', 'services', 'configmaps', 'deployments', 'replicasets', 'horizontalpodautoscalers', 'ingresses']
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+
+## 0.3.12
+
+### Patch Changes
+
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.3
+
+## 0.3.11
+
+### Patch Changes
+
+- 5bd57f8f5: Support assume role on kubernetes api configuration for AWS.
+- Updated dependencies
+  - @backstage/backend-common@0.8.7
+
 ## 0.3.10
 
 ### Patch Changes

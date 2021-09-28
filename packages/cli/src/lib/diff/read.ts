@@ -24,7 +24,7 @@ import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from '../paths';
 import { FileDiff } from './types';
-import { packageVersions } from '../../lib/version';
+import { createPackageVersionProvider } from '../../lib/version';
 
 export type TemplatedFile = {
   path: string;
@@ -40,14 +40,15 @@ async function readTemplateFile(
   if (!templateFile.endsWith('.hbs')) {
     return contents;
   }
+  const packageVersionProvider = createPackageVersionProvider(undefined);
 
   return handlebars.compile(contents)(templateVars, {
     helpers: {
-      version(name: keyof typeof packageVersions) {
-        if (name in packageVersions) {
-          return packageVersions[name];
-        }
-        throw new Error(`No version available for package ${name}`);
+      versionQuery(name: string, hint: string | unknown) {
+        return packageVersionProvider(
+          name,
+          typeof hint === 'string' ? hint : undefined,
+        );
       },
     },
   });

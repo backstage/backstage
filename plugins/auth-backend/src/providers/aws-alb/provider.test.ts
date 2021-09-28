@@ -68,7 +68,6 @@ beforeEach(() => {
 
 describe('AwsALBAuthProvider', () => {
   const catalogApi = {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
     getEntities: jest.fn(),
@@ -77,24 +76,25 @@ describe('AwsALBAuthProvider', () => {
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
+    refreshEntity: jest.fn(),
   };
 
-  const mockRequest = ({
+  const mockRequest = {
     header: jest.fn(() => {
       return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZvbyIsImlzcyI6ImZvbyJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.T2BNS4G-6RoiFnXc8Q8TiwdWzTpNitY8jcsGM3N3-Yo';
     }),
-  } as unknown) as express.Request;
-  const mockRequestWithoutJwt = ({
+  } as unknown as express.Request;
+  const mockRequestWithoutJwt = {
     header: jest.fn(() => {
       return undefined;
     }),
-  } as unknown) as express.Request;
-  const mockResponse = ({
+  } as unknown as express.Request;
+  const mockResponse = {
     end: jest.fn(),
     header: () => jest.fn(),
     json: jest.fn().mockReturnThis(),
     status: jest.fn(),
-  } as unknown) as express.Response;
+  } as unknown as express.Response;
 
   describe('should transform to type OAuthResponse', () => {
     it('when JWT is valid and identity is resolved successfully', async () => {

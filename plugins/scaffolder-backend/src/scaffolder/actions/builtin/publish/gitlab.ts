@@ -84,7 +84,13 @@ export function createPublishGitlabAction(options: {
         defaultBranch = 'master',
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const integrationConfig = integrations.gitlab.byHost(host);
 
@@ -121,7 +127,7 @@ export function createPublishGitlabAction(options: {
       });
 
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
-      const repoContentsUrl = `${remoteUrl}/-/blob/master`;
+      const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
         name: config.getOptionalString('scaffolder.defaultAuthor.name'),
@@ -137,6 +143,9 @@ export function createPublishGitlabAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 

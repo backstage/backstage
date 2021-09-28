@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api/';
 import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
-
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<StepInitAnalyzeUrl />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -382,7 +381,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
-      Promise.resolve(({ type: 'unknown' } as any) as AnalyzeResult),
+      Promise.resolve({ type: 'unknown' } as any as AnalyzeResult),
     );
 
     await act(async () => {

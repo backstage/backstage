@@ -1,5 +1,90 @@
 # @backstage/cli
 
+## 0.7.13
+
+### Patch Changes
+
+- c0c51c9710: Disabled ECMAScript transforms in app and backend builds in order to reduce bundle size and runtime performance. For the rationale and a full list of syntax that is no longer transformed, see https://github.com/alangpierce/sucrase#transforms. This also enables TypeScripts `useDefineForClassFields` flag by default, which in rare occasions could cause build failures. For instructions on how to mitigate issues due to the flag, see the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
+- e9f332a51c: Restrict imports on the form `../../plugins/x/src`
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 050797c5b3: Switched the Jest YAML transform from `yaml-jest` to `jest-transform-yaml`, which works with newer versions of Node.js.
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.7.12
+
+### Patch Changes
+
+- d835d112fe: replace the deprecated file-loader for fonts with assets module
+- 15e324ce60: Set the default TZ (Timezone) env for the test command to be UTC so any date related tests are consistent across timezones.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+
+## 0.7.11
+
+### Patch Changes
+
+- 13895db37: Support importing font files in tests.
+  This fixes remaining issues from [#7019](https://github.com/backstage/backstage/pull/7019).
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/config@0.1.9
+
+## 0.7.10
+
+### Patch Changes
+
+- 5e803edb8: Added support for importing font files. Imports in CSS via `url()` are supported for the final frontend bundle, but not for packages that are built for publishing. Module imports of fonts files from TypeScript are supported everywhere.
+- b5118ff76: Updated dependencies
+
+## 0.7.9
+
+### Patch Changes
+
+- f3bba3d2b: Remove debug logging
+- 8ea1e96b3: Fix file path handling in diff commands on Windows.
+- 2518aab58: Compensate for error formatting mismatch between Webpack 5 and react-dev-utils
+- 1ac2961c3: Reintroduce Node.js shims that were removed in the Webpack 5 migration.
+- 8d07a8b03: Add Buffer to `ProvidePlugin` since this is no longer provided in `webpack@5`
+- fe506a0cf: Remove Webpack deprecation message when running build.
+- 485438a56: Fix `backstage-cli backend:dev` argument passing
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+
+## 0.7.8
+
+### Patch Changes
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+
+## 0.7.7
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- e9d3983ee: Keep track of filtered configuration values when running frontend in development mode.
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/config-loader@0.6.6
+
+## 0.7.6
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+
+## 0.7.5
+
+### Patch Changes
+
+- 9a96b5da7: chore: bump `eslint` to `7.30.0`
+
 ## 0.7.4
 
 ### Patch Changes

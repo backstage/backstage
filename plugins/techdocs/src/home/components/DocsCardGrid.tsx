@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { generatePath } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 import { rootDocsRouteRef } from '../../routes';
 
@@ -32,6 +32,15 @@ export const DocsCardGrid = ({
 }: {
   entities: Entity[] | undefined;
 }) => {
+  const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
+
+  // Lower-case entity triplets by default, but allow override.
+  const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  )
+    ? (str: string) => str
+    : (str: string) => str.toLocaleLowerCase();
+
   if (!entities) return null;
   return (
     <ItemCardGrid data-testid="docs-explore">
@@ -45,10 +54,12 @@ export const DocsCardGrid = ({
               <CardContent>{entity.metadata.description}</CardContent>
               <CardActions>
                 <Button
-                  to={generatePath(rootDocsRouteRef.path, {
-                    namespace: entity.metadata.namespace ?? 'default',
-                    kind: entity.kind,
-                    name: entity.metadata.name,
+                  to={getRouteToReaderPageFor({
+                    namespace: toLowerMaybe(
+                      entity.metadata.namespace ?? 'default',
+                    ),
+                    kind: toLowerMaybe(entity.kind),
+                    name: toLowerMaybe(entity.metadata.name),
                   })}
                   color="primary"
                   data-testid="read_docs"

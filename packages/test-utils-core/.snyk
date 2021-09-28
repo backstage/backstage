@@ -1,0 +1,10 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-ANSIREGEX-1583908:
+    - '*':
+        reason: This only exposes the user's machine or build worker to a ReDos attack, which we don't consider an issue
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+patch: {}

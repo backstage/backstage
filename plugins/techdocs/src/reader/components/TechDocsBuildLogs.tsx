@@ -67,7 +67,7 @@ export const TechDocsBuildLogsDrawerContent = ({
       <Grid
         item
         container
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         spacing={0}
         wrap="nowrap"

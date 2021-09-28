@@ -15,7 +15,7 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
@@ -57,12 +57,12 @@ const defaultEntity: GroupEntity = {
 
 export const Default = () => (
   <MemoryRouter>
-    <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+    <EntityProvider entity={defaultEntity}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
           <GroupProfileCard variant="gridItem" />
         </Grid>
       </Grid>
-    </EntityContext.Provider>
+    </EntityProvider>
   </MemoryRouter>
 );

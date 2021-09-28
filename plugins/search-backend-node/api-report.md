@@ -8,6 +8,8 @@ import { DocumentDecorator } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
+import { QueryTranslator } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/search-common';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
 
@@ -50,8 +52,6 @@ export class LunrSearchEngine implements SearchEngine {
   //
   // (undocumented)
   setTranslator(translator: LunrQueryTranslator): void;
-  // Warning: (ae-forgotten-export) The symbol "QueryTranslator" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   protected translator: QueryTranslator;
 }
@@ -66,14 +66,5 @@ export class Scheduler {
   stop(): void;
 }
 
-// Warning: (ae-missing-release-tag) "SearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export interface SearchEngine {
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
-  query(query: SearchQuery): Promise<SearchResultSet>;
-  setTranslator(translator: QueryTranslator): void;
-}
-
-// (No @packageDocumentation comment for this package)
+export { SearchEngine };
 ```

@@ -1,5 +1,116 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.4.0
+
+### Minor Changes
+
+- 19f45179a5: Bump `passport-saml` to version 3. This is a breaking change, in that it [now requires](https://github.com/node-saml/passport-saml/pull/548) the `auth.saml.cert` parameter to be set. If you are not using SAML auth, you can ignore this.
+
+  To update your settings, add something similar to the following to your app-config:
+
+  ```yaml
+  auth:
+    saml:
+      # ... other settings ...
+      cert: 'MIICizCCAfQCCQCY8tKaMc0BMjANBgkqh ... W=='
+  ```
+
+  For more information, see the [library README](https://github.com/node-saml/passport-saml#security-and-signatures).
+
+### Patch Changes
+
+- 560d6810f0: Fix a bug preventing an access token to be refreshed a second time with the GitLab provider.
+- de5717872d: Use a more informative error message if the configured OIDC identity provider does not provide a `userinfo_endpoint` in its metadata.
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+
+## 0.3.24
+
+### Patch Changes
+
+- 2a105f451: Add a warning log message that `passport-saml` will require a `cert` config parameter imminently.
+
+  We intend to upgrade this package soon, past the point where we will start to strictly require the `auth.saml.cert` configuration parameter to be present. To avoid issues starting your auth backend, please
+
+- 31892ee25: typo fix `tenentId` in Azure auth provider docs
+- e9b1e2a9f: Added signIn and authHandler resolver for oAuth2 provider
+- ca45b169d: Export GitHub to allow use with Identity resolver
+- Updated dependencies
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.3.23
+
+### Patch Changes
+
+- 392b36fa1: Added support for using authenticating via GitHub Apps in addition to GitHub OAuth Apps. It used to be possible to use GitHub Apps, but they did not handle session refresh correctly.
+
+  Note that GitHub Apps handle OAuth scope at the app installation level, meaning that the `scope` parameter for `getAccessToken` has no effect. When calling `getAccessToken` in open source plugins, one should still include the appropriate scope, but also document in the plugin README what scopes are required in the case of GitHub Apps.
+
+  In addition, the `authHandler` and `signInResolver` options have been implemented for the GitHub provider in the auth backend.
+
+- ea9fe9567: Fixed a bug where OAuth state parameters would be serialized as the string `'undefined'`.
+- 39fc3d7f8: Add Sign In and Handler resolver for GitLab provider
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.3.22
+
+### Patch Changes
+
+- 79d24a966: Fix an issue where the default app origin was not allowed to authenticate users.
+
+## 0.3.21
+
+### Patch Changes
+
+- 72a31c29a: Add support for additional app origins
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+
+## 0.3.20
+
+### Patch Changes
+
+- 29f7cfffb: Added `resolveCatalogMembership` utility to query the catalog for additional authentication claims within sign-in resolvers.
+- 8bedb75ae: Update Luxon dependency to 2.x
+- bfe0ff93f: Add Sign In and Handler resolver for Okta provider
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+  - @backstage/test-utils@0.1.17
+
+## 0.3.19
+
+### Patch Changes
+
+- 4edca1bd0: Allow to configure SAML auth `acceptedClockSkewMs`
+- b68f2c83c: Added the `disableRefresh` option to the `OAuth2` config
+- Updated dependencies
+  - @backstage/test-utils@0.1.16
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.18
+
+### Patch Changes
+
+- 2567c066d: TokenIssuer is now exported so it may be used by auth providers that are not bundled with Backstage
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+  - @backstage/test-utils@0.1.15
+
 ## 0.3.17
 
 ### Patch Changes

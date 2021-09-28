@@ -1,5 +1,160 @@
 # @backstage/plugin-catalog-import
 
+## 0.6.0
+
+### Minor Changes
+
+- 690657799e: Add initial support for customizing the catalog import page.
+
+  It is now possible to pass a custom layout to the import page, as it's already
+  supported by the search page. If no custom layout is passed, the default layout
+  is used.
+
+  ```typescript
+  <Route path="/catalog-import" element={<CatalogImportPage />}>
+    <Page themeId="home">
+      <Header title="Register an existing component" />
+      <Content>
+        <ContentHeader title="Start tracking your components">
+          <SupportButton>
+            Start tracking your component in Backstage by adding it to the
+            software catalog.
+          </SupportButton>
+        </ContentHeader>
+
+        <Grid container spacing={2} direction="row-reverse">
+          <Grid item xs={12} md={4} lg={6} xl={8}>
+            Hello World
+          </Grid>
+
+          <Grid item xs={12} md={8} lg={6} xl={4}>
+            <ImportStepper />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  </Route>
+  ```
+
+  Previously it was possible to disable and customize the automatic pull request
+  feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+  `pullRequest.preparePullRequest`). This functionality is moved to the
+  `CatalogImportApi` which now provides an optional `preparePullRequest()`
+  function. The function can either be overridden to generate a different content
+  for the pull request, or removed to disable this feature.
+
+  The export of the long term deprecated legacy `<Router>` is removed, migrate to
+  `<CatalogImportPage>` instead.
+
+### Patch Changes
+
+- 9ef2987a83: The import form is now aware of locations that already exist. It lists them separately and shows a button for triggering a refresh.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/integration-react@0.1.10
+
+## 0.5.21
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.5.20
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
+## 0.5.19
+
+### Patch Changes
+
+- cfcb486aa: Add system icons for the built-in entity types and use them in the entity list of the `catalog-import` plugin.
+- b5a2896ed: handle azure devops url query parameter for importing .yaml
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
+## 0.5.18
+
+### Patch Changes
+
+- ced85b598: Fix importing yaml files from URLs with trailing query parameters.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
+## 0.5.17
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.5.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.5.15
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+  - @backstage/catalog-client@0.3.18
+
+## 0.5.14
+
+### Patch Changes
+
+- 903f3323c: Fix heading that wrongly implied catalog-import supports entity discovery for multiple integrations.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/plugin-catalog-react@0.3.1
+
 ## 0.5.13
 
 ### Patch Changes

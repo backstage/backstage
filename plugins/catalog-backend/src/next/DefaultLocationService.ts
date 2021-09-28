@@ -36,7 +36,7 @@ export class DefaultLocationService implements LocationService {
   async createLocation(
     spec: LocationSpec,
     dryRun: boolean,
-  ): Promise<{ location: Location; entities: Entity[] }> {
+  ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     if (dryRun) {
       return this.dryRunCreateLocation(spec);
     }
@@ -56,7 +56,14 @@ export class DefaultLocationService implements LocationService {
 
   private async dryRunCreateLocation(
     spec: LocationSpec,
-  ): Promise<{ location: Location; entities: Entity[] }> {
+  ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
+    // Run the existence check in parallel with the processing
+    const existsPromise = this.store
+      .listLocations()
+      .then(locations =>
+        locations.some(l => l.type === spec.type && l.target === spec.target),
+      );
+
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Location',
@@ -80,7 +87,6 @@ export class DefaultLocationService implements LocationService {
       { entity, locationKey: `${spec.type}:${spec.target}` },
     ];
     const entities: Entity[] = [];
-    const state = new Map(); // ignored
     while (unprocessedEntities.length) {
       const currentEntity = unprocessedEntities.pop();
       if (!currentEntity) {
@@ -88,7 +94,7 @@ export class DefaultLocationService implements LocationService {
       }
       const processed = await this.orchestrator.process({
         entity: currentEntity.entity,
-        state,
+        state: {}, // we process without the existing cache
       });
 
       if (processed.ok) {
@@ -100,6 +106,7 @@ export class DefaultLocationService implements LocationService {
     }
 
     return {
+      exists: await existsPromise,
       location: { ...spec, id: `${spec.type}:${spec.target}` },
       entities,
     };

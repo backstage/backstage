@@ -22,7 +22,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../helpers';
+import {
+  enableBranchProtectionOnDefaultRepoBranch,
+  initRepoAndPush,
+} from '../helpers';
 import { when } from 'jest-when';
 
 describe('publish:github', () => {
@@ -55,42 +58,6 @@ describe('publish:github', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-  });
-
-  it('should throw if there is no integration config provided', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
-      }),
-    ).rejects.toThrow(/No matching integration configuration/);
-  });
-
-  it('should throw if there is no token in the integration config that is returned', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          repoUrl: 'ghe.github.com?repo=bob&owner=owner',
-        },
-      }),
-    ).rejects.toThrow(/No token available for host/);
   });
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
@@ -229,9 +196,8 @@ describe('publish:github', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -257,6 +223,50 @@ describe('publish:github', () => {
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
+    });
+  });
+
+  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        github: [
+          { host: 'github.com', token: 'tokenlols' },
+          { host: 'ghe.github.com' },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createPublishGithubAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://github.com/clone/url.git',
+      defaultBranch: 'master',
+      auth: { username: 'x-access-token', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -539,5 +549,62 @@ describe('publish:github', () => {
       'repoContentsUrl',
       'https://github.com/html/url/blob/main',
     );
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requireCodeOwnerReviews', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repository',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockGithubClient,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requireCodeOwnerReviews: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockGithubClient,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requireCodeOwnerReviews: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockGithubClient,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+    });
   });
 });
