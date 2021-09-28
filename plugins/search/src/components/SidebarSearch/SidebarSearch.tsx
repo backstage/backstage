@@ -18,19 +18,20 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { rootRouteRef } from '../../plugin';
 
-import { SidebarSearchField } from '@backstage/core-components';
+import { SidebarSearchField, useContentRef } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 export const SidebarSearch = () => {
   const searchRoute = useRouteRef(rootRouteRef);
+  const contentRef = useContentRef();
   const navigate = useNavigate();
   const handleSearch = useCallback(
     (query: string): void => {
       const queryString = qs.stringify({ query }, { addQueryPrefix: true });
-
+      contentRef?.current?.focus();
       navigate(`${searchRoute()}${queryString}`);
     },
-    [navigate, searchRoute],
+    [navigate, searchRoute, contentRef],
   );
 
   return <SidebarSearchField onSearch={handleSearch} to="/search" />;
