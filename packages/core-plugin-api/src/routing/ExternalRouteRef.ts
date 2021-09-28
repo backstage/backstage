@@ -27,6 +27,8 @@ export class ExternalRouteRefImpl<
   Optional extends boolean,
 > implements ExternalRouteRef<Params, Optional>
 {
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'external';
   readonly [routeRefType] = 'external';
 
   constructor(
