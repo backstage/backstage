@@ -87,6 +87,43 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     });
   }
 
+  private render<T>(input: T, context: TemplateContext): T {
+    return JSON.parse(JSON.stringify(input), (_key, value) => {
+      try {
+        if (typeof value === 'string') {
+          const templated = this.nunjucks.renderString(value, context);
+          try {
+            return JSON.parse(templated);
+          } catch {
+            return templated;
+          }
+        }
+      } catch {
+        return value;
+      }
+      return value;
+    });
+  }
+
+  private makeStringifyableParams<T>(input: T): T {
+    /**
+     * This is a little bit of a hack / magic so that when we use nunjucks and we try to
+     * pass through something other than a string from the parameters section.
+     * When an accessor is used that is an object, it's toString is the JSON.stringify'd version of it's children
+     * Which makes it work really well in string templating as we can parse the result again after.yarn
+     */
+    return JSON.parse(
+      JSON.stringify(input),
+      (key: string, value: JsonObject) => {
+        if (typeof value === 'object' && key) {
+          value.toString = () => JSON.stringify(value);
+        }
+
+        return value;
+      },
+    );
+  }
+
   async execute(task: Task): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
@@ -103,70 +140,61 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
         `Starting up task with ${task.spec.steps.length} steps`,
       );
 
-      /**
-       * This is a little bit of a hack / magic so that when we use nunjucks and we try to
-       * pass through an object from the `parameters` section of the task spec, it will
-       * actually work as the toString method is called from the nunjucks template.
-       */
-      const parsedParams = JSON.parse(
-        JSON.stringify(task.spec.parameters),
-        (key: string, value: JsonObject) => {
-          if (typeof value === 'object' && key) {
-            value.toString = () => JSON.stringify(value);
-          }
-
-          return value;
-        },
-      );
-
       const context: TemplateContext = {
-        parameters: parsedParams,
+        parameters: this.makeStringifyableParams(task.spec.parameters),
         steps: {},
       };
 
       for (const step of task.spec.steps) {
-        const action = this.options.actionRegistry.get(step.action);
-        const { taskLogger, streamLogger } = createStepLogger({ task, step });
+        try {
+          const action = this.options.actionRegistry.get(step.action);
+          const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
-        const input =
-          step.input &&
-          JSON.parse(JSON.stringify(step.input), (_key, value) => {
-            try {
-              if (typeof value === 'string') {
-                const templated = this.nunjucks.renderString(value, context);
-                try {
-                  return JSON.parse(templated);
-                } catch {
-                  return templated;
-                }
-              }
-            } catch {
-              return value;
-            }
-            return value;
+          const input = step.input && this.render(step.input, context);
+
+          const tmpDirs = new Array<string>();
+          const stepOutput: { [outputName: string]: JsonValue } = {};
+
+          await task.emitLog(`Beginning step ${step.name}`, {
+            stepId: step.id,
+            status: 'processing',
           });
 
-        const tmpDirs = new Array<string>();
-        const stepOutputs: { [outputName: string]: JsonValue } = {};
+          await action.handler({
+            baseUrl: task.spec.baseUrl,
+            input,
+            logger: taskLogger,
+            logStream: streamLogger,
+            workspacePath,
+            createTemporaryDirectory: async () => {
+              const tmpDir = await fs.mkdtemp(
+                `${workspacePath}_step-${step.id}-`,
+              );
+              tmpDirs.push(tmpDir);
+              return tmpDir;
+            },
+            output(name: string, value: JsonValue) {
+              stepOutput[name] = value;
+            },
+          });
 
-        await action.handler({
-          baseUrl: task.spec.baseUrl,
-          input,
-          logger: taskLogger,
-          logStream: streamLogger,
-          workspacePath,
-          createTemporaryDirectory: async () => {
-            const tmpDir = await fs.mkdtemp(
-              `${workspacePath}_step-${step.id}-`,
-            );
-            tmpDirs.push(tmpDir);
-            return tmpDir;
-          },
-          output(name: string, value: JsonValue) {
-            stepOutputs[name] = value;
-          },
-        });
+          context.steps[step.id] = { output: stepOutput };
+
+          await task.emitLog(`Finished step ${step.name}`, {
+            stepId: step.id,
+            status: 'completed',
+          });
+        } catch (err) {
+          await task.emitLog(String(err.stack), {
+            stepId: step.id,
+            status: 'failed',
+          });
+        }
       }
+
+      const output = this.render(task.spec.output, context);
+
+      return { output };
     } finally {
       if (workspacePath) {
         await fs.remove(workspacePath);

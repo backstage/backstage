@@ -18,6 +18,7 @@ import {
   WorkflowRunner,
   WorkflowResponse,
   TaskSpecV1beta2,
+  TaskSpec,
 } from './types';
 import * as Handlebars from 'handlebars';
 import { TemplateActionRegistry } from '..';
@@ -75,6 +76,7 @@ export class LegacyWorkflowRunner implements WorkflowRunner {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(`Task spec is not a valid v1beta2 task spec`);
     }
+
     const { actionRegistry } = this.options;
 
     const workspacePath = path.join(

@@ -101,7 +101,7 @@ describe('TaskWorker', () => {
       output: {
         result: '{{ steps.test.output.testOutput }}',
       },
-      values: {},
+      parameters: {},
     });
 
     const task = await broker.claim();
@@ -130,7 +130,7 @@ describe('TaskWorker', () => {
       output: {
         result: '{{ steps.test.output.testOutput }}',
       },
-      values: {},
+      parameters: {},
     });
 
     const task = await broker.claim();

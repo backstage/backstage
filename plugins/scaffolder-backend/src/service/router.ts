@@ -42,6 +42,8 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
+import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
+import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
 
 export interface RouterOptions {
   logger: Logger;
@@ -90,14 +92,28 @@ export async function createRouter(
   );
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
+  const legacyWorkflowRunner = new LegacyWorkflowRunner({
+    logger,
+    actionRegistry,
+    integrations,
+    workingDirectory,
+  });
+
+  const workflowRunner = new DefaultWorkflowRunner({
+    actionRegistry,
+    integrations,
+    logger,
+    workingDirectory,
+  });
+
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
     const worker = new TaskWorker({
-      logger,
       taskBroker,
-      actionRegistry,
-      workingDirectory,
-      integrations,
+      runners: {
+        legacyWorkflowRunner,
+        workflowRunner,
+      },
     });
     workers.push(worker);
   }
@@ -184,18 +200,32 @@ export async function createRouter(
         }
 
         const baseUrl = getEntityBaseUrl(template);
-
-        taskSpec = {
-          apiVersion: template.apiVersion,
-          baseUrl,
-          values,
-          steps: template.spec.steps.map((step, index) => ({
-            ...step,
-            id: step.id ?? `step-${index + 1}`,
-            name: step.name ?? step.action,
-          })),
-          output: template.spec.output ?? {},
-        };
+        // TODO: need to make sure that the TaskSpec is the right format here.
+        // If it's beta2 use values, beta3 uses parameters to clear that up.
+        taskSpec =
+          template.apiVersion === 'backstage.io/v1beta2'
+            ? {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+              }
+            : {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                parameters: values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+              };
       } else {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${

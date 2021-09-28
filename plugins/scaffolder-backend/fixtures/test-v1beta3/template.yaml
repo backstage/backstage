@@ -12,13 +12,17 @@ spec:
     properties:
       inputString:
         type: string
+        title: string input test
       inputObject:
         type: object
+        title: object input test
         properties:
           first:
             type: string
+            title: first
           second:
             type: number
+            title: second
   steps:
   - id: debug
     name: Debug

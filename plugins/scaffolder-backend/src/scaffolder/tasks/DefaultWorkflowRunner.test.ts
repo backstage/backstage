@@ -55,6 +55,14 @@ describe('DefaultWorkflowRunner', () => {
       handler: fakeActionHandler,
     });
 
+    actionRegistry.register({
+      id: 'output-action',
+      description: 'Mock action for testing',
+      handler: async ctx => {
+        ctx.output('mock', 'backstage');
+      },
+    });
+
     runner = new DefaultWorkflowRunner({
       actionRegistry,
       integrations,
@@ -188,6 +196,28 @@ describe('DefaultWorkflowRunner', () => {
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: 1 } }),
       );
+    });
+
+    it('should template the output from simple actions', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{steps.test.output.mock | upper}}',
+        },
+        parameters: {},
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('BACKSTAGE');
     });
   });
 });
