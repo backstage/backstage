@@ -200,7 +200,7 @@ import { CatalogProcessorParser } from '.';
 // changes to the processor implementation or CacheItem.
 const CACHE_KEY = 'v1';
 
-// CacheItem is our cache containing ETag used in the upstream request
+// Our cache item contains the ETag used in the upstream request
 // as well as the processing result used when the Etag matches.
 // Bump the CACHE_KEY version if you make any changes to this type.
 type CacheItem = {
