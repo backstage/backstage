@@ -36,9 +36,9 @@ export async function createRouter(
   const { logger } = options;
   const config = options.config.getConfig('azureDevOps');
 
-  const token: string = config.getString('token');
-  const host: string = config.getString('host');
-  const organization: string = config.getString('organization');
+  const token = config.getString('token');
+  const host = config.getString('host');
+  const organization = config.getString('organization');
 
   const authHandler = getPersonalAccessTokenHandler(token);
   const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
@@ -49,36 +49,8 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  router.get('/health', (_, response) => {
-    let code: number = 200;
-    let status: string = '';
-    let details: string = '';
-
-    if (token && host && organization) {
-      code = 200;
-      status = 'Healthy';
-      details = 'All required config has been provided';
-    }
-
-    if (!token) {
-      code = 500;
-      status = 'Unhealthy';
-      details = 'Token is missing';
-    }
-
-    if (!host) {
-      code = 500;
-      status = 'Unhealthy';
-      details = 'Host is missing';
-    }
-
-    if (!organization) {
-      code = 500;
-      status = 'Unhealthy';
-      details = 'Organization is missing';
-    }
-
-    response.status(code).json({ status: status, details: details });
+  router.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' });
   });
 
   router.get('/repository/:projectName/:repoName', async (req, res) => {
