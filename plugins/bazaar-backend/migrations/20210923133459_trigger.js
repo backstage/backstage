@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-exports.up = function (knex) {
+exports.up = function up(knex) {
   return knex.raw(`
         CREATE OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER
         LANGUAGE plpgsql
@@ -28,7 +28,7 @@ exports.up = function (knex) {
       `);
 };
 
-exports.down = function (knex) {
+exports.down = function down(knex) {
   return knex.raw(`
         DROP FUNCTION IF EXISTS update_timestamp() CASCADE;
       `);

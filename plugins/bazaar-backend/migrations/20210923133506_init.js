@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-exports.up = async function setUpTables(knex) {
+exports.up = async function up(knex) {
   await knex.schema.createTable('metadata', table => {
     table.comment('The table of Bazaar metadata');
     table.text('name').notNullable().comment('The name of the entity');
@@ -54,7 +54,7 @@ exports.up = async function setUpTables(knex) {
   });
 };
 
-exports.down = async function tearDownTables(knex) {
+exports.down = async function down(knex) {
   await knex.schema.dropTable('metadata');
   await knex.schema.dropTable('members');
 };
