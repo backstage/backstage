@@ -40,6 +40,7 @@ import {
   SidebarDivider,
   SidebarSpace,
   SidebarScrollWrapper,
+  SideBarPageContent,
 } from '@backstage/core-components';
 
 const useSidebarLogoStyles = makeStyles({
@@ -101,6 +102,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarSettings />
     </Sidebar>
-    {children}
+    <SideBarPageContent>{children}</SideBarPageContent>
   </SidebarPage>
 );
