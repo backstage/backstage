@@ -59,19 +59,19 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
         namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE,
       name,
     };
+    const formattedEntityRefTitle = formatEntityRefTitle(entityRef, {
+      defaultKind,
+    });
 
     const link = (
       <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
         {children}
-        {!children &&
-          (title ?? formatEntityRefTitle(entityRef, { defaultKind }))}
+        {!children && (title ?? formattedEntityRefTitle)}
       </Link>
     );
 
     return title ? (
-      <Tooltip title={formatEntityRefTitle(entityRef, { defaultKind })}>
-        {link}
-      </Tooltip>
+      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
     ) : (
       link
     );
