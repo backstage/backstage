@@ -62,10 +62,7 @@ describe('createRouter', () => {
       const response = await request(app).get('/health');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        status: 'Healthy',
-        details: 'All required config has been provided',
-      });
+      expect(response.body).toEqual({ status: 'ok' });
     });
   });
 
