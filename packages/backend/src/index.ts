@@ -86,9 +86,8 @@ async function main() {
     argv: process.argv,
     logger,
   });
-  const createEnv = makeCreateEnv(config);
 
-  logger.info('hiiiii secret-1');
+  const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

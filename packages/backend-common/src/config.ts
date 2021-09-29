@@ -18,10 +18,40 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader } from '@backstage/config';
-import { JsonValue } from '@backstage/types';
-import { loadConfig } from '@backstage/config-loader';
-import { setRootLoggerFilteredKeys } from './logging';
+import { loadConfigSchema, loadConfig } from '@backstage/config-loader';
+import { AppConfig, Config, ConfigReader, JsonValue } from '@backstage/config';
+
+import { setRedactionMap } from './logging';
+
+// Fetch the schema and get all the secrets to pass to the rootLogger for redaction
+const updateRedactionMap = async (configs: AppConfig[], logger: Logger) => {
+  // Consider all packages in the monorepo when loading in config
+  const { Project } = require('@lerna/project');
+  const project = new Project();
+  const packages = await project.getPackages();
+  const localPackageNames = packages.map((p: any) => p.name);
+
+  const schema = await loadConfigSchema({ dependencies: localPackageNames });
+  const secretAppConfigs = schema.process(configs, { visibility: ['secret'] });
+  const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
+  const configMap = secretConfig.getMap();
+
+  logger.info(
+    `${
+      Object.keys(configMap).length
+    } secrets found in the config which will be redacted`,
+  );
+
+  setRedactionMap(
+    Object.entries(configMap).reduce<Record<any, string>>(
+      (map, [key, value]) => {
+        map[value] = key;
+        return map;
+      },
+      {},
+    ),
+  );
+};
 
 export class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -89,6 +119,9 @@ export class ObservableConfigProxy implements Config {
   }
   get<T = JsonValue>(key?: string): T {
     return this.select(true).get(key);
+  }
+  getMap() {
+    return this.config.getMap();
   }
   getOptional<T = JsonValue>(key?: string): T | undefined {
     return this.select(false)?.getOptional(key);
@@ -161,12 +194,13 @@ export async function loadBackendConfig(options: {
     configRoot: paths.targetRoot,
     configPaths: configPaths.map(opt => resolvePath(opt)),
     watch: {
-      onChange(newConfigs) {
+      async onChange(newConfigs) {
         options.logger.info(
           `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
         );
 
         config.setConfig(ConfigReader.fromConfigs(newConfigs));
+        await updateRedactionMap(configs, options.logger);
       },
       stopSignal: new Promise(resolve => {
         if (currentCancelFunc) {
@@ -187,6 +221,7 @@ export async function loadBackendConfig(options: {
   );
 
   config.setConfig(ConfigReader.fromConfigs(configs));
-  setRootLoggerFilteredKeys({ 'secret-1': 'GOATS', 'secret-2': 'SHARKS' });
+  await updateRedactionMap(configs, options.logger);
+
   return config;
 }
