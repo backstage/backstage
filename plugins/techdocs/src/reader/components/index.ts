@@ -15,3 +15,5 @@
  */
 
 export * from './Reader';
+export * from './TechDocsPage';
+export * from './TechDocsPageHeader';
