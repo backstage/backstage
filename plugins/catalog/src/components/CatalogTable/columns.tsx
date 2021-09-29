@@ -34,6 +34,7 @@ export function createNameColumn(
       <EntityRefLink
         entityRef={entity}
         defaultKind={props?.defaultKind || 'Component'}
+        title={entity.metadata?.title}
       />
     ),
   };
@@ -89,17 +90,6 @@ export function createMetadataDescriptionColumn(): TableColumn<EntityRow> {
         text={entity.metadata.description}
         placement="bottom-start"
       />
-    ),
-    width: 'auto',
-  };
-}
-
-export function createMetadataTitleColumn(): TableColumn<EntityRow> {
-  return {
-    title: 'Title',
-    field: 'entity.metadata.title',
-    render: ({ entity }) => (
-      <OverflowTooltip text={entity.metadata.title} placement="bottom-start" />
     ),
     width: 'auto',
   };

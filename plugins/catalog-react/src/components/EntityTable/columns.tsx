@@ -58,7 +58,11 @@ export function createEntityRefColumn<T extends Entity>({
       return formatContent(entity1).localeCompare(formatContent(entity2));
     },
     render: entity => (
-      <EntityRefLink entityRef={entity} defaultKind={defaultKind} />
+      <EntityRefLink
+        entityRef={entity}
+        defaultKind={defaultKind}
+        title={entity.metadata?.title}
+      />
     ),
   };
 }
@@ -142,21 +146,6 @@ export function createMetadataDescriptionColumn<
     render: entity => (
       <OverflowTooltip
         text={entity.metadata.description}
-        placement="bottom-start"
-        line={2}
-      />
-    ),
-    width: 'auto',
-  };
-}
-
-export function createMetadataTitleColumn<T extends Entity>(): TableColumn<T> {
-  return {
-    title: 'Title',
-    field: 'metadata.title',
-    render: entity => (
-      <OverflowTooltip
-        text={entity.metadata.title}
         placement="bottom-start"
         line={2}
       />

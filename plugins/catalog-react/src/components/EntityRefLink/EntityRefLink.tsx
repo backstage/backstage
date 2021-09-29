@@ -19,20 +19,23 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
-import { generatePath } from 'react-router';
-import { entityRoute } from '../../routes';
+import { entityRouteRef } from '../../routes';
 import { formatEntityRefTitle } from './format';
 import { Link, LinkProps } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { Tooltip } from '@material-ui/core';
 
 export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
+  title?: string;
   children?: React.ReactNode;
 } & Omit<LinkProps, 'to'>;
 
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
-    const { entityRef, defaultKind, children, ...linkProps } = props;
+    const { entityRef, defaultKind, title, children, ...linkProps } = props;
+    const entityRoute = useRouteRef(entityRouteRef);
 
     let kind;
     let namespace;
@@ -57,16 +60,20 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       name,
     };
 
-    // TODO: Use useRouteRef here to generate the path
-    return (
-      <Link
-        {...linkProps}
-        ref={ref}
-        to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
-      >
+    const link = (
+      <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
         {children}
-        {!children && formatEntityRefTitle(entityRef, { defaultKind })}
+        {!children &&
+          (title ?? formatEntityRefTitle(entityRef, { defaultKind }))}
       </Link>
+    );
+
+    return title ? (
+      <Tooltip title={formatEntityRefTitle(entityRef, { defaultKind })}>
+        {link}
+      </Tooltip>
+    ) : (
+      link
     );
   },
 );
