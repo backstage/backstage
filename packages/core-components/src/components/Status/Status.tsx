@@ -19,49 +19,61 @@ import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  status: {
-    fontWeight: 500,
-    '&::before': {
-      width: '0.7em',
-      height: '0.7em',
-      display: 'inline-block',
-      marginRight: 8,
-      borderRadius: '50%',
-      content: '""',
+export type StatusClassKey =
+  | 'status'
+  | 'ok'
+  | 'warning'
+  | 'error'
+  | 'pending'
+  | 'running'
+  | 'aborted';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    status: {
+      fontWeight: 500,
+      '&::before': {
+        width: '0.7em',
+        height: '0.7em',
+        display: 'inline-block',
+        marginRight: 8,
+        borderRadius: '50%',
+        content: '""',
+      },
     },
-  },
-  ok: {
-    '&::before': {
-      backgroundColor: theme.palette.status.ok,
+    ok: {
+      '&::before': {
+        backgroundColor: theme.palette.status.ok,
+      },
     },
-  },
-  warning: {
-    '&::before': {
-      backgroundColor: theme.palette.status.warning,
+    warning: {
+      '&::before': {
+        backgroundColor: theme.palette.status.warning,
+      },
     },
-  },
-  error: {
-    '&::before': {
-      backgroundColor: theme.palette.status.error,
+    error: {
+      '&::before': {
+        backgroundColor: theme.palette.status.error,
+      },
     },
-  },
-  pending: {
-    '&::before': {
-      backgroundColor: theme.palette.status.pending,
+    pending: {
+      '&::before': {
+        backgroundColor: theme.palette.status.pending,
+      },
     },
-  },
-  running: {
-    '&::before': {
-      backgroundColor: theme.palette.status.running,
+    running: {
+      '&::before': {
+        backgroundColor: theme.palette.status.running,
+      },
     },
-  },
-  aborted: {
-    '&::before': {
-      backgroundColor: theme.palette.status.aborted,
+    aborted: {
+      '&::before': {
+        backgroundColor: theme.palette.status.aborted,
+      },
     },
-  },
-}));
+  }),
+  { name: 'BackstageStatus' },
+);
 
 export function StatusOK(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);

@@ -430,5 +430,5 @@ jenkins:
 
 azureDevOps:
   host: dev.azure.com
-  token: ${AZURE_TOKEN}
+  token: my-token
   organization: my-company

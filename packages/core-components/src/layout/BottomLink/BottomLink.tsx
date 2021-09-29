@@ -21,19 +21,24 @@ import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { Link } from '../../components/Link';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    maxWidth: 'fit-content',
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  boxTitle: {
-    margin: 0,
-    color: theme.palette.textSubtle,
-  },
-  arrow: {
-    color: theme.palette.textSubtle,
-  },
-}));
+export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      maxWidth: 'fit-content',
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    boxTitle: {
+      margin: 0,
+      color: theme.palette.textSubtle,
+    },
+    arrow: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageBottomLink' },
+);
 
 export type BottomLinkProps = {
   link: string;

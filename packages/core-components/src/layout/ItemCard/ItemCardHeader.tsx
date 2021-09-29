@@ -23,6 +23,8 @@ import {
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 
+export type ItemCardHeaderClassKey = 'root';
+
 const styles = (theme: BackstageTheme) =>
   createStyles({
     root: {
@@ -34,7 +36,7 @@ const styles = (theme: BackstageTheme) =>
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**
