@@ -22,7 +22,7 @@ import { act } from 'react-dom/test-utils';
 import { withLogCollector } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
-import RadarComponent from './RadarComponent';
+import { RadarComponent } from './RadarComponent';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';
 
 import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';

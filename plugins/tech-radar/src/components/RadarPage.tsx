@@ -23,8 +23,7 @@ import {
 } from '@backstage/core-components';
 import { Grid, Input, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { TechRadarComponentProps } from '../api';
-import RadarComponent from '../components/RadarComponent';
+import { RadarComponent, TechRadarComponentProps } from './RadarComponent';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {
@@ -32,18 +31,34 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export type TechRadarPageProps = TechRadarComponentProps & {
+/**
+ * Properties for {@link TechRadarPage}
+ */
+export interface TechRadarPageProps extends TechRadarComponentProps {
+  /**
+   * Title
+   */
   title?: string;
+  /**
+   * Subtitle
+   */
   subtitle?: string;
+  /**
+   * Page Title
+   */
   pageTitle?: string;
-};
+}
 
-export const RadarPage = ({
-  title,
-  subtitle,
-  pageTitle,
-  ...props
-}: TechRadarPageProps): JSX.Element => {
+/**
+ * Main Page of Tech Radar
+ */
+export function RadarPage(props: TechRadarPageProps) {
+  const {
+    title = 'Tech Radar',
+    subtitle = 'Pick the recommended technologies for your projects',
+    pageTitle = 'Company Radar',
+    ...componentProps
+  } = props;
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
 
@@ -66,16 +81,10 @@ export const RadarPage = ({
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent searchText={searchText} {...props} />
+            <RadarComponent searchText={searchText} {...componentProps} />
           </Grid>
         </Grid>
       </Content>
     </Page>
   );
-};
-
-RadarPage.defaultProps = {
-  title: 'Tech Radar',
-  subtitle: 'Pick the recommended technologies for your projects',
-  pageTitle: 'Company Radar',
-};
+}
