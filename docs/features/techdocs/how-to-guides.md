@@ -142,6 +142,64 @@ const AppRoutes = () => {
 };
 ```
 
+## How to customize the TechDocs reader page?
+
+### Custom Header
+
+This is done in your `app` package. By default, you might see something like
+this in your `App.tsx`:
+
+```tsx
+const AppRoutes = () => {
+  <FlatRoutes>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    />
+  </FlatRoutes>;
+};
+```
+
+But the `<TechDocsReaderPage />` component accepts children, which means that
+you can customize the page with any other Header component you would like to
+use.
+
+Most likely, you would want to create and maintain such a component in a new
+directory at `packages/app/src/components/techdocs`, and import and use it in
+`App.tsx`:
+
+```tsx
+<Route
+  path="/docs/:namespace/:kind/:name/*"
+  element={
+    <TechDocsReaderPage>
+      {({ techdocsMetadataValue, entityMetadataValue, entityId }) => (
+        <TechDocsCustomPageHeader
+          techDocsMetadata={techdocsMetadataValue}
+          entityMetadata={entityMetadataValue}
+          entityId={entityId}
+        />
+      )}
+    </TechDocsReaderPage>
+  }
+/>
+```
+
+### Without Search
+
+By default, the TechDocsReaderPage includes a in-context SearchBar where you can
+search for documentation within the context of a site.
+
+If you would like to use the TechDocsReaderPage without the in-context
+SearchBar, you can set the withSearch property to false:
+
+```tsx
+<Route
+  path="/docs/:namespace/:kind/:name/*"
+  element={<TechDocsReaderPage withSearch={false} />}
+/>
+```
+
 ## How to migrate from TechDocs Alpha to Beta
 
 > This guide only applies to the "recommended" TechDocs deployment method (where
