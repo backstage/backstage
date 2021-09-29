@@ -19,7 +19,7 @@ export type { SidebarClassKey } from './Bar';
 export {
   SidebarPage,
   SidebarPinStateContext,
-  SideBarPageContent,
+  SidebarPageContent,
   useContentRef,
 } from './Page';
 

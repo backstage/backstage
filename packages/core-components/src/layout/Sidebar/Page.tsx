@@ -98,7 +98,7 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
   );
 }
 
-export function SideBarPageContent(props: PropsWithChildren<{}>) {
+export function SidebarPageContent(props: PropsWithChildren<{}>) {
   const { contentRef } = useContext(SidebarPageContext);
   const classes = useStyles({});
 
