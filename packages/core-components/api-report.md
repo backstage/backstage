@@ -1155,11 +1155,6 @@ export type SidebarPageClassKey = 'root';
 // @public (undocumented)
 export function SideBarPageContent(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SidebarPageContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const SidebarPageContext: React_2.Context<SidebarPageContextType>;
-
 // Warning: (ae-missing-release-tag) "SidebarPageContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -2285,6 +2280,13 @@ export function TrendLine(
       title?: string;
     },
 ): JSX.Element | null;
+
+// Warning: (ae-missing-release-tag) "useContentRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useContentRef():
+  | React_2.MutableRefObject<HTMLDivElement | null>
+  | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
