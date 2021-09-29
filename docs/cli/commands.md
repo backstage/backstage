@@ -57,6 +57,7 @@ postpack                 Restores the changes made by the prepack command
 
 create-github-app        Create new GitHub App in your organization (experimental)
 
+info                     Show helpful information for debugging and reporting bugs
 help [command]           display help for command
 ```
 
@@ -646,4 +647,16 @@ YAML file that can be referenced in the GitHub integration configuration.
 
 ```text
 Usage: backstage-cli create-github-app &lt;github-org&gt;
+```
+
+## info
+
+Scope: `root`
+
+Outputs debug information which is useful when opening an issue. Outputs system
+information, node.js and npm versions, CLI version and type (inside backstage
+repo or a created app), all `@backstage/*` package dependency versions.
+
+```text
+Usage: backstage-cli info
 ```
