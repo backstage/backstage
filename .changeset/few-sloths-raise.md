@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-catalog': minor
-'@backstage/plugin-catalog-react': minor
+'@backstage/plugin-catalog': patch
+'@backstage/plugin-catalog-react': patch
 ---
 
 Name column will now render entity `metadata.title` if its present
