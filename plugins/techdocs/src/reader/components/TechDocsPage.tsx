@@ -19,6 +19,7 @@ import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsApiRef } from '../../api';
+import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -63,6 +64,10 @@ export const TechDocsPage = ({ children }: Props) => {
   const onReady = useCallback(() => {
     setDocumentReady(true);
   }, [setDocumentReady]);
+
+  if (entityMetadataError) {
+    return <TechDocsNotFound errorMessage={entityMetadataError.message} />;
+  }
 
   if (!children) return outlet;
 
