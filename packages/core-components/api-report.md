@@ -170,22 +170,6 @@ export function CatalogIcon(props: IconComponentProps): JSX.Element;
 // @public (undocumented)
 export function ChatIcon(props: IconComponentProps): JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "CheckboxTreeProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CheckboxTree" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export function CheckboxTree(props: CheckboxTreeProps): JSX.Element;
-
-// Warning: (ae-missing-release-tag) "CheckboxTreeClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type CheckboxTreeClassKey =
-  | 'root'
-  | 'nested'
-  | 'listItemIcon'
-  | 'listItem'
-  | 'text';
-
 // Warning: (ae-missing-release-tag) "ClosedDropdownClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
