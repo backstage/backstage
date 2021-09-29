@@ -22,6 +22,7 @@ import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
+import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';
@@ -89,6 +90,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     userEvent.click(screen.getByText('Cancel'));
@@ -110,6 +116,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -132,6 +143,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -159,6 +175,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -198,6 +219,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -239,6 +265,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -282,6 +313,11 @@ describe('UnregisterEntityDialog', () => {
           entity={entity}
         />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
