@@ -17,41 +17,55 @@
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { IconButton, Tooltip } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import PropTypes from 'prop-types';
 import React, { MouseEventHandler, useEffect, useState } from 'react';
 import { useCopyToClipboard } from 'react-use';
 
 /**
- * Copy text button with visual feedback in the form of
+ * Properties for {@link CopyTextButton}
+ */
+export interface CopyTextButtonProps {
+  /**
+   * The text to be copied
+   */
+  text: string;
+  /**
+   * Number os ms to show the tooltip
+   *
+   * @remarks
+   *
+   * Default: 1000
+   */
+  tooltipDelay?: number;
+  /**
+   * Text to show in the tooltip when user has clicked the button
+   *
+   * @remarks
+   *
+   * Default: "Text copied to clipboard"
+   */
+  tooltipText?: string;
+}
+
+/**
+ * Copy text button with visual feedback
+ *
+ * @remarks
+ *
+ * Visual feedback takes form of:
  *  - a hover color
  *  - click ripple
  *  - Tooltip shown when user has clicked
  *
- *  Properties:
- *  - text: the text to be copied
- *  - tooltipDelay: Number os ms to show the tooltip, default: 1000ms
- *  - tooltipText: Text to show in the tooltip when user has clicked the button, default: "Text
- * copied to clipboard"
+ * @example
  *
- * Example:
- *    <CopyTextButton text="My text that I want to be copied to the clipboard" />
+ * `<CopyTextButton text="My text that I want to be copied to the clipboard" />`
  */
-type Props = {
-  text: string;
-  tooltipDelay?: number;
-  tooltipText?: string;
-};
-
-const defaultProps = {
-  tooltipDelay: 1000,
-  tooltipText: 'Text copied to clipboard',
-};
-
-export function CopyTextButton(props: Props) {
-  const { text, tooltipDelay, tooltipText } = {
-    ...defaultProps,
-    ...props,
-  };
+export function CopyTextButton(props: CopyTextButtonProps) {
+  const {
+    text,
+    tooltipDelay = 1000,
+    tooltipText = 'Text copied to clipboard',
+  } = props;
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
   const [{ error }, copyToClipboard] = useCopyToClipboard();
@@ -85,10 +99,3 @@ export function CopyTextButton(props: Props) {
     </>
   );
 }
-
-// Type check for the JS files using this core component
-CopyTextButton.propTypes = {
-  text: PropTypes.string.isRequired,
-  tooltipDelay: PropTypes.number,
-  tooltipText: PropTypes.string,
-};
