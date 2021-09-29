@@ -819,7 +819,7 @@ export type EntitiesCatalog = {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
-  entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse>;
+  entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -858,10 +858,10 @@ function entity(
 
 // @public (undocumented)
 export type EntityAncestryResponse = {
-  root: EntityName;
+  rootEntityRef: string;
   items: Array<{
     entity: Entity;
-    parents: EntityName[];
+    parentEntityRefs: string[];
   }>;
 };
 

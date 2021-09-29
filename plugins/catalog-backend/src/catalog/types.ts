@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityName,
-  EntityRelationSpec,
-  Location,
-} from '@backstage/catalog-model';
+import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
 import { EntityFilter, EntityPagination } from '../database/types';
 
 //
@@ -58,10 +53,10 @@ export type EntityUpsertResponse = {
 
 /** @public */
 export type EntityAncestryResponse = {
-  root: EntityName;
+  rootEntityRef: string;
   items: Array<{
     entity: Entity;
-    parents: EntityName[];
+    parentEntityRefs: string[];
   }>;
 };
 
@@ -101,9 +96,9 @@ export type EntitiesCatalog = {
   /**
    * Returns the full ancestry tree upward along reference edges.
    *
-   * @param entityRef - The root of the tree
+   * @param entityRef - An entity reference to the root of the tree
    */
-  entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse>;
+  entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
 };
 
 //

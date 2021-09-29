@@ -16,6 +16,8 @@
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Knex } from 'knex';
+import { v4 as uuid } from 'uuid';
 import { DatabaseManager } from './database/DatabaseManager';
 import {
   DbFinalEntitiesRow,
@@ -23,8 +25,6 @@ import {
   DbRefreshStateRow,
 } from './database/tables';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
-import { v4 as uuid } from 'uuid';
-import { Knex } from 'knex';
 
 describe('NextEntitiesCatalog', () => {
   const databases = TestDatabases.create({
@@ -103,34 +103,24 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, root, [{ entity: parent }]);
 
         const catalog = new NextEntitiesCatalog(knex);
-        const result = await catalog.entityAncestry({
-          kind: 'k',
-          namespace: 'default',
-          name: 'root',
-        });
-        expect(result.root).toEqual({
-          kind: 'k',
-          namespace: 'default',
-          name: 'root',
-        });
+        const result = await catalog.entityAncestry('k:default/root');
+        expect(result.rootEntityRef).toEqual('k:default/root');
 
         expect(result.items).toEqual(
           expect.arrayContaining([
             {
               entity: expect.objectContaining({ metadata: { name: 'root' } }),
-              parents: [{ kind: 'k', namespace: 'default', name: 'parent' }],
+              parentEntityRefs: ['k:default/parent'],
             },
             {
               entity: expect.objectContaining({ metadata: { name: 'parent' } }),
-              parents: [
-                { kind: 'k', namespace: 'default', name: 'grandparent' },
-              ],
+              parentEntityRefs: ['k:default/grandparent'],
             },
             {
               entity: expect.objectContaining({
                 metadata: { name: 'grandparent' },
               }),
-              parents: [],
+              parentEntityRefs: [],
             },
           ]),
         );
@@ -144,11 +134,7 @@ describe('NextEntitiesCatalog', () => {
         const { knex } = await createDatabase(databaseId);
         const catalog = new NextEntitiesCatalog(knex);
         await expect(() =>
-          catalog.entityAncestry({
-            kind: 'k',
-            namespace: 'default',
-            name: 'root',
-          }),
+          catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
       },
       60_000,
@@ -190,47 +176,32 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, root, [{ entity: parent1 }, { entity: parent2 }]);
 
         const catalog = new NextEntitiesCatalog(knex);
-        const result = await catalog.entityAncestry({
-          kind: 'k',
-          namespace: 'default',
-          name: 'root',
-        });
-        expect(result.root).toEqual({
-          kind: 'k',
-          namespace: 'default',
-          name: 'root',
-        });
+        const result = await catalog.entityAncestry('k:default/root');
+        expect(result.rootEntityRef).toEqual('k:default/root');
 
         expect(result.items).toEqual(
           expect.arrayContaining([
             {
               entity: expect.objectContaining({ metadata: { name: 'root' } }),
-              parents: [
-                { kind: 'k', namespace: 'default', name: 'parent1' },
-                { kind: 'k', namespace: 'default', name: 'parent2' },
-              ],
+              parentEntityRefs: ['k:default/parent1', 'k:default/parent2'],
             },
             {
               entity: expect.objectContaining({
                 metadata: { name: 'parent1' },
               }),
-              parents: [
-                { kind: 'k', namespace: 'default', name: 'grandparent' },
-              ],
+              parentEntityRefs: ['k:default/grandparent'],
             },
             {
               entity: expect.objectContaining({
                 metadata: { name: 'parent2' },
               }),
-              parents: [
-                { kind: 'k', namespace: 'default', name: 'grandparent' },
-              ],
+              parentEntityRefs: ['k:default/grandparent'],
             },
             {
               entity: expect.objectContaining({
                 metadata: { name: 'grandparent' },
               }),
-              parents: [],
+              parentEntityRefs: [],
             },
           ]),
         );

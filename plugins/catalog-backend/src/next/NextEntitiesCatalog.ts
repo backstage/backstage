@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityName,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import {
@@ -169,8 +164,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       .delete();
   }
 
-  async entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse> {
-    const rootRef = stringifyEntityRef(entityRef);
+  async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {
     const [rootRow] = await this.database<DbRefreshStateRow>('refresh_state')
       .leftJoin<DbFinalEntitiesRow>('final_entities', {
         'refresh_state.entity_id': 'final_entities.entity_id',
@@ -187,7 +181,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     const rootEntity = JSON.parse(rootRow.entityJson) as Entity;
     const seenEntityRefs = new Set<string>();
     const todo = new Array<Entity>();
-    const items = new Array<{ entity: Entity; parents: EntityName[] }>();
+    const items = new Array<{ entity: Entity; parentEntityRefs: string[] }>();
 
     for (
       let current: Entity | undefined = rootEntity;
@@ -213,9 +207,9 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
           parentEntityJson: 'final_entities.final_entity',
         });
 
-      const parentRefs: EntityName[] = [];
+      const parentRefs: string[] = [];
       for (const { parentEntityRef, parentEntityJson } of parentRows) {
-        parentRefs.push(parseEntityRef(parentEntityRef));
+        parentRefs.push(parentEntityRef);
         if (!seenEntityRefs.has(parentEntityRef)) {
           seenEntityRefs.add(parentEntityRef);
           todo.push(JSON.parse(parentEntityJson));
@@ -224,12 +218,12 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
 
       items.push({
         entity: current,
-        parents: parentRefs,
+        parentEntityRefs: parentRefs,
       });
     }
 
     return {
-      root: entityRef,
+      rootEntityRef: stringifyEntityRef(rootEntity),
       items,
     };
   }
