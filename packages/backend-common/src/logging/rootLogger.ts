@@ -18,7 +18,8 @@ import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
 
-type RedactionMap = Record<string, string>;
+/** @public */
+export type RedactionMap = Record<string, string>;
 
 let rootLogger: winston.Logger;
 let redactionMap: RedactionMap;
@@ -42,7 +43,7 @@ export function setRedactionMap(newRedactionMap: RedactionMap) {
  * A winston formatting function that finds occurrences of filteredKeys
  * and replaces them with the corresponding identifier.
  */
-export function redactLogLine(info: winston.Logform.TransformableInfo) {
+function redactLogLine(info: winston.Logform.TransformableInfo) {
   // TODO(hhogg): The logger is created before the config is loaded,
   // because the logger is needed in the config loader. There is a risk of
   // a secret being logged out during the config loading stage 🤷‍♂️
