@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageTheme } from '@backstage/theme';
 import { BottomNavigationActionProps } from '@material-ui/core';
 import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core';
@@ -780,10 +781,10 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 // Warning: (ae-missing-release-tag) "Sidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Sidebar: ({
+export function Sidebar({
   children,
   ...props
-}: React_2.PropsWithChildren<Props_21>) => JSX.Element;
+}: React_2.PropsWithChildren<Props_21>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
