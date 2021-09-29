@@ -27,6 +27,7 @@ export const DeploymentDrawer = ({
   deployment: V1Deployment;
   expanded?: boolean;
 }) => {
+  const namespace = deployment.metadata?.namespace;
   return (
     <KubernetesDrawer
       object={deployment}
@@ -66,12 +67,11 @@ export const DeploymentDrawer = ({
             Deployment
           </Typography>
         </Grid>
-        <Grid item>
-          <Chip
-            size="small"
-            label={`namespace: ${deployment.metadata?.namespace}` ?? 'default'}
-          />
-        </Grid>
+        {namespace && (
+          <Grid item>
+            <Chip size="small" label={`namespace: ${namespace}`} />
+          </Grid>
+        )}
       </Grid>
     </KubernetesDrawer>
   );
