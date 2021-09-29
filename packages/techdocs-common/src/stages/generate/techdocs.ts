@@ -37,9 +37,11 @@ import {
   GeneratorRunOptions,
 } from './types';
 
-const defaultDockerImage = 'spotify/techdocs';
-
 export class TechdocsGenerator implements GeneratorBase {
+  /**
+   * The default docker image used to generate cnotent.
+   */
+  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.2';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -124,7 +126,8 @@ export class TechdocsGenerator implements GeneratorBase {
           break;
         case 'docker':
           await this.containerRunner.runContainer({
-            imageName: this.options.dockerImage ?? defaultDockerImage,
+            imageName:
+              this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
             logStream,
             mountDirs,
