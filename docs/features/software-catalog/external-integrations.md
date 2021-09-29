@@ -178,7 +178,7 @@ The catalog periodically refreshes entities in the catalog, and in doing so it c
 out to external systems to fetch changes. This can be taxing for upstream
 services and large deployments may get rate limited if too many requests are
 sent. Luckily many external systems provide ETag support to check for changes
-which usually don't count towards the quota and saves resources both internally
+which usually doesn't count towards the quota and saves resources both internally
 and externally.
 
 The catalog has built in support for leveraging ETags when refreshing external locations
