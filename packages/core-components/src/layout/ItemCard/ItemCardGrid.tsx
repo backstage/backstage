@@ -17,6 +17,8 @@
 import { createStyles, makeStyles, Theme, WithStyles } from '@material-ui/core';
 import React from 'react';
 
+export type ItemCardGridClassKey = 'root';
+
 const styles = (theme: Theme) =>
   createStyles({
     root: {
@@ -27,7 +29,7 @@ const styles = (theme: Theme) =>
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
 
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**

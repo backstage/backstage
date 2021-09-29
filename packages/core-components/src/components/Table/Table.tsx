@@ -100,52 +100,72 @@ function extractValueByField(data: any, field: string): any | undefined {
   return value;
 }
 
-const StyledMTableHeader = withStyles(theme => ({
-  header: {
-    padding: theme.spacing(1, 2, 1, 2.5),
-    borderTop: `1px solid ${theme.palette.grey.A100}`,
-    borderBottom: `1px solid ${theme.palette.grey.A100}`,
-    // withStyles hasn't a generic overload for theme
-    color: (theme as BackstageTheme).palette.textSubtle,
-    fontWeight: theme.typography.fontWeightBold,
-    position: 'static',
-    wordBreak: 'normal',
-  },
-}))(MTableHeader);
+export type TableHeaderClassKey = 'header';
 
-const StyledMTableToolbar = withStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 0, 2.5, 2.5),
-  },
-  title: {
-    '& > h6': {
-      fontWeight: 'bold',
+const StyledMTableHeader = withStyles(
+  theme => ({
+    header: {
+      padding: theme.spacing(1, 2, 1, 2.5),
+      borderTop: `1px solid ${theme.palette.grey.A100}`,
+      borderBottom: `1px solid ${theme.palette.grey.A100}`,
+      // withStyles hasn't a generic overload for theme
+      color: (theme as BackstageTheme).palette.textSubtle,
+      fontWeight: theme.typography.fontWeightBold,
+      position: 'static',
+      wordBreak: 'normal',
     },
-  },
-  searchField: {
-    paddingRight: theme.spacing(2),
-  },
-}))(MTableToolbar);
+  }),
+  { name: 'BackstageTableHeader' },
+)(MTableHeader);
 
-const useFilterStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    whiteSpace: 'nowrap',
-  },
-}));
+export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
 
-const useTableStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    display: 'flex',
-    alignItems: 'start',
-  },
-}));
+const StyledMTableToolbar = withStyles(
+  theme => ({
+    root: {
+      padding: theme.spacing(3, 0, 2.5, 2.5),
+    },
+    title: {
+      '& > h6': {
+        fontWeight: 'bold',
+      },
+    },
+    searchField: {
+      paddingRight: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageTableToolbar' },
+)(MTableToolbar);
+
+export type FiltersContainerClassKey = 'root' | 'title';
+
+const useFilterStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    title: {
+      fontWeight: 'bold',
+      fontSize: 18,
+      whiteSpace: 'nowrap',
+    },
+  }),
+  { name: 'BackstageTableFiltersContainer' },
+);
+
+export type TableClassKey = 'root';
+
+const useTableStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      display: 'flex',
+      alignItems: 'start',
+    },
+  }),
+  { name: 'BackstageTable' },
+);
 
 function convertColumns<T extends object>(
   columns: TableColumn<T>[],

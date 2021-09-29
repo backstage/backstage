@@ -17,24 +17,29 @@
 import { Link, makeStyles, Typography, Grid } from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    textAlign: 'left',
-  },
-  label: {
-    color: theme.palette.common.white,
-    fontWeight: 'bold',
-    letterSpacing: 0,
-    fontSize: theme.typography.fontSize,
-    marginBottom: theme.spacing(1) / 2,
-    lineHeight: 1,
-  },
-  value: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: theme.typography.fontSize,
-    lineHeight: 1,
-  },
-}));
+export type HeaderLabelClassKey = 'root' | 'label' | 'value';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      textAlign: 'left',
+    },
+    label: {
+      color: theme.palette.common.white,
+      fontWeight: 'bold',
+      letterSpacing: 0,
+      fontSize: theme.typography.fontSize,
+      marginBottom: theme.spacing(1) / 2,
+      lineHeight: 1,
+    },
+    value: {
+      color: 'rgba(255, 255, 255, 0.8)',
+      fontSize: theme.typography.fontSize,
+      lineHeight: 1,
+    },
+  }),
+  { name: 'BackstageHeaderLabel' },
+);
 
 type HeaderLabelContentProps = {
   value: React.ReactNode;

@@ -64,56 +64,66 @@ const ExpandMoreIconStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
   return <ExpandMoreIcon classes={classes} />;
 };
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  panel: {
-    backgroundColor: ({ severity }: WarningProps) =>
-      getWarningBackgroundColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
-    color: ({ severity }: WarningProps) =>
-      getWarningTextColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
-    verticalAlign: 'middle',
-  },
-  summary: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  summaryText: {
-    color: ({ severity }: WarningProps) =>
-      getWarningTextColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
-    fontWeight: 'bold',
-  },
-  message: {
-    width: '100%',
-    display: 'block',
-    color: ({ severity }: WarningProps) =>
-      getWarningTextColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
-    backgroundColor: ({ severity }: WarningProps) =>
-      getWarningBackgroundColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
-  },
-  details: {
-    width: '100%',
-    display: 'block',
-    color: theme.palette.textContrast,
-    backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.border}`,
-    padding: theme.spacing(2.0),
-    fontFamily: 'sans-serif',
-  },
-}));
+export type WarningPanelClassKey =
+  | 'panel'
+  | 'summary'
+  | 'summaryText'
+  | 'message'
+  | 'details';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    panel: {
+      backgroundColor: ({ severity }: WarningProps) =>
+        getWarningBackgroundColor(
+          severity as NonNullable<WarningProps['severity']>,
+          theme,
+        ),
+      color: ({ severity }: WarningProps) =>
+        getWarningTextColor(
+          severity as NonNullable<WarningProps['severity']>,
+          theme,
+        ),
+      verticalAlign: 'middle',
+    },
+    summary: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    summaryText: {
+      color: ({ severity }: WarningProps) =>
+        getWarningTextColor(
+          severity as NonNullable<WarningProps['severity']>,
+          theme,
+        ),
+      fontWeight: 'bold',
+    },
+    message: {
+      width: '100%',
+      display: 'block',
+      color: ({ severity }: WarningProps) =>
+        getWarningTextColor(
+          severity as NonNullable<WarningProps['severity']>,
+          theme,
+        ),
+      backgroundColor: ({ severity }: WarningProps) =>
+        getWarningBackgroundColor(
+          severity as NonNullable<WarningProps['severity']>,
+          theme,
+        ),
+    },
+    details: {
+      width: '100%',
+      display: 'block',
+      color: theme.palette.textContrast,
+      backgroundColor: theme.palette.background.default,
+      border: `1px solid ${theme.palette.border}`,
+      padding: theme.spacing(2.0),
+      fontFamily: 'sans-serif',
+    },
+  }),
+  { name: 'BackstageWarningPanel' },
+);
 
 export type WarningProps = {
   title?: string;

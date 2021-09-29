@@ -54,52 +54,66 @@ type Props = {
   minScrollDistance?: number; // limits how small steps the scroll can take in px
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
-  root: {
-    position: 'relative',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-  },
-  container: {
-    overflow: 'auto',
-    scrollbarWidth: 0 as any, // hide in FF
-    '&::-webkit-scrollbar': {
-      display: 'none', // hide in Chrome
+export type HorizontalScrollGridClassKey =
+  | 'root'
+  | 'container'
+  | 'fade'
+  | 'fadeLeft'
+  | 'fadeRight'
+  | 'fadeHidden'
+  | 'button'
+  | 'buttonLeft'
+  | 'buttonRight';
+
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    root: {
+      position: 'relative',
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
     },
-  },
-  fade: {
-    position: 'absolute',
-    width: fadeSize,
-    height: `calc(100% + ${fadePadding}px)`,
-    transition: 'opacity 300ms',
-    pointerEvents: 'none',
-  },
-  fadeLeft: {
-    left: -fadePadding,
-    background: `linear-gradient(90deg, ${generateGradientStops(
-      theme.palette.type,
-    )})`,
-  },
-  fadeRight: {
-    right: -fadePadding,
-    background: `linear-gradient(270deg, ${generateGradientStops(
-      theme.palette.type,
-    )})`,
-  },
-  fadeHidden: {
-    opacity: 0,
-  },
-  button: {
-    position: 'absolute',
-  },
-  buttonLeft: {
-    left: -theme.spacing(2),
-  },
-  buttonRight: {
-    right: -theme.spacing(2),
-  },
-}));
+    container: {
+      overflow: 'auto',
+      scrollbarWidth: 0 as any, // hide in FF
+      '&::-webkit-scrollbar': {
+        display: 'none', // hide in Chrome
+      },
+    },
+    fade: {
+      position: 'absolute',
+      width: fadeSize,
+      height: `calc(100% + ${fadePadding}px)`,
+      transition: 'opacity 300ms',
+      pointerEvents: 'none',
+    },
+    fadeLeft: {
+      left: -fadePadding,
+      background: `linear-gradient(90deg, ${generateGradientStops(
+        theme.palette.type,
+      )})`,
+    },
+    fadeRight: {
+      right: -fadePadding,
+      background: `linear-gradient(270deg, ${generateGradientStops(
+        theme.palette.type,
+      )})`,
+    },
+    fadeHidden: {
+      opacity: 0,
+    },
+    button: {
+      position: 'absolute',
+    },
+    buttonLeft: {
+      left: -theme.spacing(2),
+    },
+    buttonRight: {
+      right: -theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageHorizontalScrollGrid' },
+);
 
 // Returns scroll distance from left and right
 function useScrollDistance(

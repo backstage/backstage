@@ -32,16 +32,21 @@ import { GridItem } from './styles';
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 
-const useFormStyles = makeStyles(theme => ({
-  form: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-  },
-  button: {
-    alignSelf: 'center',
-    marginTop: theme.spacing(2),
-  },
-}));
+export type CustomProviderClassKey = 'form' | 'button';
+
+const useFormStyles = makeStyles(
+  theme => ({
+    form: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+    },
+    button: {
+      alignSelf: 'center',
+      marginTop: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageCustomProvider' },
+);
 
 type Data = {
   userId: string;
