@@ -64,7 +64,14 @@ function matchFilter(filter?: string): (entry: RadarEntry) => boolean {
   };
 }
 
-const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
+/**
+ * Main React component of Tech Radar
+ *
+ * @remarks
+ *
+ * For advanced use cases. Typically, you want to use {@link TechRadarPage}
+ */
+function RadarComponent(props: TechRadarComponentProps) {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
@@ -106,6 +113,6 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
       )}
     </>
   );
-};
+}
 
 export default RadarComponent;

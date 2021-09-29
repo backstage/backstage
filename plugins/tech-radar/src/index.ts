@@ -26,6 +26,9 @@ export {
   TechRadarPage,
 } from './plugin';
 
+/**
+ * @deprecated Use plugin extensions instead
+ */
 export { RadarPage as Router } from './components/RadarPage';
 
 /**
