@@ -194,7 +194,7 @@ import {
   CatalogProcessorEmit,
   CatalogProcessorCache,
 } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorParser } from '.';
+import { CatalogProcessorParser } from './CatalogProcessorParser';
 
 // It's recommended to always bump the CACHE_KEY version if you make
 // changes to the processor implementation or CacheItem.
