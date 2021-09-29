@@ -5,35 +5,27 @@ sidebar_label: Okta
 description: Adding Okta OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Okta authentication provider that
-can authenticate users using Okta OpenID Connect.
+The Backstage `core-plugin-api` package comes with a Okta authentication
+provider that can authenticate users using Okta OpenID Connect.
 
 ## Create an Application on Okta
 
 To add Okta authentication, you must create an Application from Okta:
 
 1. Log into Okta (generally company.okta.com)
-2. Navigation to Applications > Applications
-3. Click `Add Application`
-4. Click `Create New App` and select Web + OpenID Connect
-5. Fill out the OpenID Connect App Integration form:
-   - `Application name`: Backstage (or your custom app name)
-   - `Login redirect URIs`: `Add URI` >
+2. Navigate to Menu >> Applications >> Applications >> `Create App Integration`
+3. Fill out the Create a new app integration form:
+   - `Sign-in method`: `OIDC - OpenID Connect`
+   - `Application type`: `Web Application`
+   - Click Next
+4. Fill out the New Web App Integration form:
+   - `App integration name`: `Backstage` (or your custom app name)
+   - `Grant type`: `Authorization Code` & `Refresh Token`
+   - `Sign-in redirect URIs`:
      `http://localhost:7000/api/auth/okta/handler/frame`
-6. Click Save
-7. Under `General Settings`, click Edit and check the `Refresh Token` box
-8. Click Save
-
-## Assign the Application
-
-Okta login is only permitted to those people or groups that have this new
-Application **assigned**. This can be done from Okta's Directory.
-
-These are the steps to assign Backstage login permission to **everyone**:
-
-1. Navigate to Directory > Groups on Okta
-2. Click on the `Everyone` group
-3. Click `Manage Apps` and then `Assign` next to Backstage
+   - `Sign-out redirect URIs`: `http://localhost:7000`
+   - `Controlled access`: (select as appropriate)
+   - Click Save
 
 # Configuration
 

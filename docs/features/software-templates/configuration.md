@@ -33,9 +33,12 @@ scaffolder:
 
 ### Disabling Docker in Docker situation (Optional)
 
-Software Templates use
-[Cookiecutter](https://github.com/cookiecutter/cookiecutter) as a templating
-library. By default it will use the
+Software templates use the `fetch:template` action by default, which requires no
+external dependencies and offers a
+[Cookiecutter-compatible mode](https://backstage.io/docs/features/software-templates/builtin-actions#using-cookiecuttercompat-mode).
+There is also a `fetch:cookiecutter` action, which uses
+[Cookiecutter](https://github.com/cookiecutter/cookiecutter) directly for
+templating. By default, the `fetch:cookiecutter` action will use the
 [scaffolder-backend/Cookiecutter](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)
 docker image.
 

@@ -1,11 +1,11 @@
 # PagerDuty + Backstage Integration Benefits
 
-- Display relevant PagerDuty information about an entity within Backstage, such as the escalation policy or if there are any active incidents
+- Display relevant PagerDuty information about an entity within Backstage, such as the escalation policy, if there are any active incidents, and recent changes
 - Trigger an incident to the currently on-call responder(s) for a service
 
 # How it Works
 
-- The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
+- The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents, recent change events, as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
 - Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
 
 # Requirements
@@ -35,34 +35,59 @@ If you need help with this plugin, please reach out on the [Backstage Discord se
 
 ### Install the plugin
 
-Install the plugin via a CLI:
+The file paths mentioned in the following steps are relative to your app's root directory — for example, the directory created by following the [Getting Started](https://backstage.io/docs/getting-started/) guide and creating your app with `npx @backstage/create-app`.
+
+First, install the PagerDuty plugin via a CLI:
 
 ```bash
-# From your Backstage root directory
+# From your Backstage app root directory
 cd packages/app
 yarn add @backstage/plugin-pagerduty
 ```
 
-Next, add the plugin to `EntityPage.tsx` by adding the following code snippet where appropriate:
+Next, add the plugin to `EntityPage.tsx` in `packages/app/src/components/catalog` by adding the following code snippets.
+
+Add the following imports to the top of the file:
 
 ```ts
 import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
   EntityPagerDutyCard,
 } from '@backstage/plugin-pagerduty';
-// add to code
-{
-  isPagerDutyAvailable(entity) && (
+```
+
+Find `const overviewContent` in `EntityPage.tsx`, and add the following snippet inside the outermost `Grid` defined there, just before the closing `</Grid>` tag:
+
+```ts
+<EntitySwitch>
+  <EntitySwitch.Case if={isPagerDutyAvailable}>
     <Grid item md={6}>
       <EntityPagerDutyCard />
     </Grid>
-  );
-}
+  </EntitySwitch.Case>
+</EntitySwitch>
+```
+
+When you're done, the `overviewContent` definition should look something like this:
+
+```ts
+const overviewContent = (
+  <Grid ...>
+    ...
+    <EntitySwitch>
+      <EntitySwitch.Case if={isPagerDutyAvailable}>
+        <Grid item md={6}>
+          <EntityPagerDutyCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </Grid>
+);
 ```
 
 ### Configure the plugin
 
-First, annotate the appropriate entity with the PagerDuty integration key:
+First, [annotate](https://backstage.io/docs/features/software-catalog/descriptor-format#annotations-optional) the appropriate entity with the PagerDuty integration key in its `.yaml` configuration file:
 
 ```yaml
 annotations:

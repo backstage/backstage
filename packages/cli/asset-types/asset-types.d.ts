@@ -68,6 +68,26 @@ declare module '*.svg' {
   export default src;
 }
 
+declare module '*.eot' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.woff' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.woff2' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.ttf' {
+  const src: string;
+  export default src;
+}
+
 declare module '*.css' {
   const classes: { readonly [key: string]: string };
   export default classes;

@@ -24,8 +24,11 @@ import {
 
 export class ExternalRouteRefImpl<
   Params extends AnyParams,
-  Optional extends boolean
-> implements ExternalRouteRef<Params, Optional> {
+  Optional extends boolean,
+> implements ExternalRouteRef<Params, Optional>
+{
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'external';
   readonly [routeRefType] = 'external';
 
   constructor(
@@ -42,7 +45,7 @@ export class ExternalRouteRefImpl<
 export function createExternalRouteRef<
   Params extends { [param in ParamKey]: string },
   Optional extends boolean = false,
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(options: {
   /**
    * An identifier for this route, used to identify it in error messages

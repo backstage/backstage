@@ -25,12 +25,14 @@ import { LocationResponse } from '../catalog/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from './request';
+import { RefreshService } from '../next';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
   let app: express.Express;
+  let refreshService: RefreshService;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -51,11 +53,13 @@ describe('createRouter readonly disabled', () => {
       addLocation: jest.fn(),
       refreshAllLocations: jest.fn(),
     };
+    refreshService = { refresh: jest.fn() };
     const router = await createRouter({
       entitiesCatalog,
       locationsCatalog,
       higherOrderOperation,
       logger: getVoidLogger(),
+      refreshService,
       config: new ConfigReader(undefined),
     });
     app = express().use(router);
@@ -65,6 +69,18 @@ describe('createRouter readonly disabled', () => {
     jest.resetAllMocks();
   });
 
+  describe('POST /refresh', () => {
+    it('refreshes an entity using the refresh service', async () => {
+      const response = await request(app)
+        .post('/refresh')
+        .set('Content-Type', 'application/json')
+        .send({ entityRef: 'Component/default:foo' });
+      expect(response.status).toBe(200);
+      expect(refreshService.refresh).toHaveBeenCalledWith({
+        entityRef: 'Component/default:foo',
+      });
+    });
+  });
   describe('GET /entities', () => {
     it('happy path: lists entities', async () => {
       const entities: Entity[] = [
@@ -291,10 +307,10 @@ describe('createRouter readonly disabled', () => {
 
   describe('POST /locations', () => {
     it('rejects malformed locations', async () => {
-      const spec = ({
+      const spec = {
         typez: 'b',
         target: 'c',
-      } as unknown) as LocationSpec;
+      } as unknown as LocationSpec;
 
       const response = await request(app).post('/locations').send(spec);
 

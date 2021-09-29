@@ -45,7 +45,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
+export function MissingAnnotationEmptyState(props: Props) {
+  const { annotation } = props;
   const classes = useStyles();
   const description = (
     <>
@@ -84,4 +85,4 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
       }
     />
   );
-};
+}

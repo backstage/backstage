@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.4
+
+### Patch Changes
+
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+
+## 0.1.3
+
+### Patch Changes
+
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+
 ## 0.1.2
 
 ### Patch Changes

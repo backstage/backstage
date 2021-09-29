@@ -27,7 +27,10 @@ import {
 const PARAM_PATTERN = /^\w+$/;
 
 export class SubRouteRefImpl<Params extends AnyParams>
-  implements SubRouteRef<Params> {
+  implements SubRouteRef<Params>
+{
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'sub';
   readonly [routeRefType] = 'sub';
 
   constructor(
@@ -55,7 +58,7 @@ type PathParams<S extends string> = { [name in ParamNames<S>]: string };
  */
 type MergeParams<
   P1 extends { [param in string]: string },
-  P2 extends AnyParams
+  P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
 /**
@@ -64,14 +67,14 @@ type MergeParams<
  */
 type MakeSubRouteRef<
   Params extends { [param in string]: string },
-  ParentParams extends AnyParams
+  ParentParams extends AnyParams,
 > = keyof Params & keyof ParentParams extends never
   ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
   : never;
 
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyParams = never
+  ParentParams extends AnyParams = never,
 >(config: {
   id: string;
   path: Path;

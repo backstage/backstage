@@ -74,7 +74,7 @@ type IntroCardProps = {
   onClose: () => void;
 };
 
-export const IntroCard = (props: IntroCardProps) => {
+export function IntroCard(props: IntroCardProps) {
   const classes = useStyles();
   const { text, onClose } = props;
   const handleClose = () => onClose();
@@ -97,7 +97,7 @@ export const IntroCard = (props: IntroCardProps) => {
       </div>
     </div>
   );
-};
+}
 
 type SidebarIntroLocalStorage = {
   starredItemsDismissed: boolean;
@@ -127,16 +127,14 @@ Keep an eye out for the little star icon (⭐) next to the plugin name and give 
 const recentlyViewedIntroText =
   'And your recently viewed plugins will pop up here!';
 
-export const SidebarIntro = () => {
+export function SidebarIntro(_props: {}) {
   const { isOpen } = useContext(SidebarContext);
   const defaultValue = {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
   };
-  const [
-    dismissedIntro,
-    setDismissedIntro,
-  ] = useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
+  const [dismissedIntro, setDismissedIntro] =
+    useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =
     dismissedIntro ?? {};
@@ -179,4 +177,4 @@ export const SidebarIntro = () => {
       )}
     </>
   );
-};
+}

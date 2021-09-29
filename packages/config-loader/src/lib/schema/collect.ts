@@ -26,8 +26,9 @@ import { getProgramFromFiles, generateSchema } from 'typescript-json-schema';
 import { JsonObject } from '@backstage/config';
 
 type Item = {
-  name: string;
+  name?: string;
   parentPath?: string;
+  packagePath?: string;
 };
 
 const req =
@@ -40,40 +41,58 @@ const req =
  */
 export async function collectConfigSchemas(
   packageNames: string[],
+  packagePaths: string[],
 ): Promise<ConfigSchemaPackageEntry[]> {
-  const visitedPackages = new Set<string>();
-  const schemas = Array<ConfigSchemaPackageEntry>();
-  const tsSchemaPaths = Array<string>();
+  const schemas = new Array<ConfigSchemaPackageEntry>();
+  const tsSchemaPaths = new Array<string>();
+  const visitedPackageVersions = new Map<string, Set<string>>(); // pkgName: [versions...]
+
   const currentDir = await fs.realpath(process.cwd());
 
-  async function processItem({ name, parentPath }: Item) {
-    // Ensures that we only process each package once. We don't bother with
-    // loading in schemas from duplicates of different versions, as that's not
-    // supported by Backstage right now anyway. We may want to change that in
-    // the future though, if it for example becomes possible to load in two
-    // different versions of e.g. @backstage/core at once.
-    if (visitedPackages.has(name)) {
-      return;
-    }
-    visitedPackages.add(name);
+  async function processItem(item: Item) {
+    let pkgPath = item.packagePath;
 
-    let pkgPath: string;
-    try {
-      pkgPath = req.resolve(
-        `${name}/package.json`,
-        parentPath && {
-          paths: [parentPath],
-        },
-      );
-    } catch {
-      // We can somewhat safely ignore packages that don't export package.json,
-      // as they are likely not part of the Backstage ecosystem anyway.
+    if (pkgPath) {
+      const pkgExists = await fs.pathExists(pkgPath);
+      if (!pkgExists) {
+        return;
+      }
+    } else if (item.name) {
+      const { name, parentPath } = item;
+
+      try {
+        pkgPath = req.resolve(
+          `${name}/package.json`,
+          parentPath && {
+            paths: [parentPath],
+          },
+        );
+      } catch {
+        // We can somewhat safely ignore packages that don't export package.json,
+        // as they are likely not part of the Backstage ecosystem anyway.
+      }
+    }
+    if (!pkgPath) {
       return;
     }
 
     const pkg = await fs.readJson(pkgPath);
+
+    // Ensures that we only process the same version of each package once.
+    let versions = visitedPackageVersions.get(pkg.name);
+    if (versions?.has(pkg.version)) {
+      return;
+    }
+    if (!versions) {
+      versions = new Set();
+      visitedPackageVersions.set(pkg.name, versions);
+    }
+    versions.add(pkg.version);
+
     const depNames = [
       ...Object.keys(pkg.dependencies ?? {}),
+      ...Object.keys(pkg.devDependencies ?? {}),
+      ...Object.keys(pkg.optionalDependencies ?? {}),
       ...Object.keys(pkg.peerDependencies ?? {}),
     ];
 
@@ -124,9 +143,10 @@ export async function collectConfigSchemas(
     );
   }
 
-  await Promise.all(
-    packageNames.map(name => processItem({ name, parentPath: currentDir })),
-  );
+  await Promise.all([
+    ...packageNames.map(name => processItem({ name, parentPath: currentDir })),
+    ...packagePaths.map(path => processItem({ name: path, packagePath: path })),
+  ]);
 
   const tsSchemas = compileTsSchemas(tsSchemaPaths);
 

@@ -5,8 +5,8 @@ sidebar_label: Google
 description: Adding Google OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Google authentication provider
-that can authenticate users using Google OAuth.
+The Backstage `core-plugin-api` package comes with a Google authentication
+provider that can authenticate users using Google OAuth.
 
 ## Create OAuth Credentials
 

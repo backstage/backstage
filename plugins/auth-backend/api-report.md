@@ -84,6 +84,20 @@ export type BackstageIdentity = {
   entity?: Entity;
 };
 
+// Warning: (ae-missing-release-tag) "createGithubProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGithubProvider: (
+  options?: GithubProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// Warning: (ae-missing-release-tag) "createGitlabProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGitlabProvider: (
+  options?: GitlabProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createGoogleProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -97,6 +111,25 @@ export const createGoogleProvider: (
 export const createMicrosoftProvider: (
   options?: MicrosoftProviderOptions | undefined,
 ) => AuthProviderFactory;
+
+// Warning: (ae-missing-release-tag) "createOAuth2Provider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOAuth2Provider: (
+  options?: OAuth2ProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOktaProvider: (
+  _options?: OktaProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createOriginFilter(config: Config): (origin: string) => boolean;
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -126,7 +159,40 @@ export const encodeState: (state: OAuthState) => string;
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
-// Warning: (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GithubOAuthResult = {
+  fullProfile: Profile;
+  params: {
+    scope: string;
+    expires_in?: string;
+    refresh_token_expires_in?: string;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
+// Warning: (ae-missing-release-tag) "GithubProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GithubProviderOptions = {
+  authHandler?: AuthHandler<GithubOAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<GithubOAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GitlabProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "googleEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -165,6 +231,16 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 //
 // @public (undocumented)
 export type MicrosoftProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "OAuth2ProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;
@@ -223,9 +299,7 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  handler(
-    req: express.Request,
-  ): Promise<{
+  handler(req: express.Request): Promise<{
     response: AuthResponse<OAuthProviderInfo>;
     refreshToken?: string;
   }>;
@@ -303,6 +377,22 @@ export type OAuthStartRequest = express.Request<{}> & {
 export type OAuthState = {
   nonce: string;
   env: string;
+  origin?: string;
+};
+
+// Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const oktaEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// Warning: (ae-missing-release-tag) "OktaProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OktaProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
 };
 
 // Warning: (ae-missing-release-tag) "postMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -378,10 +468,9 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/google/provider.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:105:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:111:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:128:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
-
-// (No @packageDocumentation comment for this package)
+// src/providers/github/provider.d.ts:50:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:58:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 ```

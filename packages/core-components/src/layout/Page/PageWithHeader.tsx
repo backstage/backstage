@@ -23,13 +23,12 @@ type PageWithHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
 };
 
-export const PageWithHeader = ({
-  themeId,
-  children,
-  ...props
-}: PropsWithChildren<PageWithHeaderProps>) => (
-  <Page themeId={themeId}>
-    <Header {...props} />
-    {children}
-  </Page>
-);
+export function PageWithHeader(props: PropsWithChildren<PageWithHeaderProps>) {
+  const { themeId, children, ...restProps } = props;
+  return (
+    <Page themeId={themeId}>
+      <Header {...restProps} />
+      {children}
+    </Page>
+  );
+}

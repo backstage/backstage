@@ -442,14 +442,14 @@ component, you would do the following:
   </EntitySwitch.Case>
 
   <EntitySwitch.Case>
-    <MyTemplate />
+    <MyOther />
   </EntitySwitch.Case>
 </EntitySwitch>
 
 // Shorter form if desired:
 <EntitySwitch>
   <EntitySwitch.Case if={isKind('template')} children={<MyTemplate />}/>
-  <EntitySwitch.Case children={<MyTemplate />}/>
+  <EntitySwitch.Case children={<MyOther />}/>
 </EntitySwitch>
 ```
 

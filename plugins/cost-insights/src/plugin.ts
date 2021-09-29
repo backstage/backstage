@@ -55,22 +55,24 @@ export const CostInsightsPage = costInsightsPlugin.provide(
   }),
 );
 
-export const CostInsightsProjectGrowthInstructionsPage = costInsightsPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ProjectGrowthInstructionsPage').then(
-        m => m.ProjectGrowthInstructionsPage,
-      ),
-    mountPoint: projectGrowthAlertRef,
-  }),
-);
+export const CostInsightsProjectGrowthInstructionsPage =
+  costInsightsPlugin.provide(
+    createRoutableExtension({
+      component: () =>
+        import('./components/ProjectGrowthInstructionsPage').then(
+          m => m.ProjectGrowthInstructionsPage,
+        ),
+      mountPoint: projectGrowthAlertRef,
+    }),
+  );
 
-export const CostInsightsLabelDataflowInstructionsPage = costInsightsPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/LabelDataflowInstructionsPage').then(
-        m => m.LabelDataflowInstructionsPage,
-      ),
-    mountPoint: unlabeledDataflowAlertRef,
-  }),
-);
+export const CostInsightsLabelDataflowInstructionsPage =
+  costInsightsPlugin.provide(
+    createRoutableExtension({
+      component: () =>
+        import('./components/LabelDataflowInstructionsPage').then(
+          m => m.LabelDataflowInstructionsPage,
+        ),
+      mountPoint: unlabeledDataflowAlertRef,
+    }),
+  );

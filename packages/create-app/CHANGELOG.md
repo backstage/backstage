@@ -1,5 +1,345 @@
 # @backstage/create-app
 
+## 0.3.42
+
+### Patch Changes
+
+- 89fd81a1ab: This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+  The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
+
+  ```diff
+  -  import {
+  -    CatalogBuilder,
+  -    createRouter,
+  -  } from '@backstage/plugin-catalog-backend';
+  +  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+      const builder = await CatalogBuilder.create(env);
+  -    const {
+  -      entitiesCatalog,
+  -      locationAnalyzer,
+  -      processingEngine,
+  -      locationService,
+  -    } = await builder.build();
+  +   const { processingEngine, router } = await builder.build();
+      await processingEngine.start();
+
+  -   return await createRouter({
+  -     entitiesCatalog,
+  -     locationAnalyzer,
+  -     locationService,
+  -     logger: env.logger,
+  -     config: env.config,
+  -   });
+  +   return router;
+    }
+  ```
+
+- d0a47c8605: Switched required engine from Node.js 12 or 14, to 14 or 16.
+
+  To apply these changes to an existing app, switch out the following in the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "12 || 14"
+  +    "node": "14 || 16"
+     },
+  ```
+
+  Also get rid of the entire `engines` object in `packages/backend/package.json`, as it is redundant:
+
+  ```diff
+  -  "engines": {
+  -    "node": "12 || 14"
+  -  },
+  ```
+
+- df95665e4b: Bumped the default `@spotify/prettier-config` dependency to `^11.0.0`.
+
+  This is an optional upgrade, but you may be interested in doing the same, to get the most modern lint rules out there.
+
+## 0.3.41
+
+## 0.3.40
+
+### Patch Changes
+
+- a5013957e: Updated the search configuration class to use the static `fromConfig`-based constructor for the `DefaultCatalogCollator`.
+
+  To apply this change to an existing app, replace the following line in `search.ts`:
+
+  ```diff
+  -collator: new DefaultCatalogCollator({ discovery })
+  +collator: DefaultCatalogCollator.fromConfig(config, { discovery })
+  ```
+
+  The `config` parameter was not needed before, so make sure you also add that in the signature of `createPlugin`
+  in `search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    discovery,
+  +  config,
+  }: PluginEnvironment) {
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
+## 0.3.38
+
+### Patch Changes
+
+- 787bc0826: Wire up TechDocs, which now relies on the composability API for routing.
+
+  First, ensure you've mounted `<TechDocsReaderPage />`. If you already updated
+  to use the composable `<TechDocsIndexPage />` (see below), no action is
+  necessary. Otherwise, update your `App.tsx` so that `<TechDocsReaderPage />` is
+  mounted:
+
+  ```diff
+       <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+  Next, ensure links from the Catalog Entity Page to its TechDocs site are bound:
+
+  ```diff
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+  +     viewTechDoc: techdocsPlugin.routes.docRoot,
+      });
+  ```
+
+- d02768171: Updated the default create-app `EntityPage` to include orphan and processing error alerts for all entity types. Previously these were only shown for entities with the `Component` kind. This also adds the `EntityLinkCard` for API entities.
+
+  As an example, you might add this to your `packages/app/src/components/catalog/EntityPage.tsx`:
+
+  ```tsx
+  const entityWarningContent = (
+    <>
+      <EntitySwitch>
+        <EntitySwitch.Case if={isOrphan}>
+          <Grid item xs={12}>
+            <EntityOrphanWarning />
+          </Grid>
+        </EntitySwitch.Case>
+      </EntitySwitch>
+      <EntitySwitch>
+        <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+          <Grid item xs={12}>
+            <EntityProcessingErrorsPanel />
+          </Grid>
+        </EntitySwitch.Case>
+      </EntitySwitch>
+    </>
+  );
+  ```
+
+  and then add that at the top of your various content pages:
+
+  ```diff
+   const overviewContent = (
+     <Grid container spacing={3} alignItems="stretch">
+  +    {entityWarningContent}
+       <Grid item md={6}>
+         <EntityAboutCard variant="gridItem" />
+       </Grid>
+  ```
+
+  or in actual page wrappers:
+
+  ```diff
+   const apiPage = (
+     <EntityLayout>
+       <EntityLayout.Route path="/" title="Overview">
+         <Grid container spacing={3}>
+  +        {entityWarningContent}
+           <Grid item md={6}>
+             <EntityAboutCard />
+           </Grid>
+  ```
+
+  Note that there may be many such `*Page` pages in that file, and you probably want that warning at the top of them all.
+
+  You can also add the links card to your API page if you do not already have it:
+
+  ```diff
+  const apiPage = (
+    <EntityLayout>
+      <EntityLayout.Route path="/" title="Overview">
+        <Grid container spacing={3}>
+  +       {entityWarningContent}
+           <Grid item md={6}>
+             <EntityAboutCard />
+           </Grid>
+  +        <Grid item md={4} xs={12}>
+  +          <EntityLinksCard />
+  +        </Grid>
+  ```
+
+## 0.3.37
+
+## 0.3.36
+
+## 0.3.35
+
+### Patch Changes
+
+- 362ea5a72: Updated the index page redirect to work with apps served on a different base path than `/`.
+
+  To apply this change to an existing app, remove the `/` prefix from the target route in the `Navigate` element in `packages/app/src/App.tsx`:
+
+  ```diff
+  -<Navigate key="/" to="/catalog" />
+  +<Navigate key="/" to="catalog" />
+  ```
+
+- 80582cbec: Use new composable `TechDocsIndexPage` and `DefaultTechDocsHome`
+
+  Make the following changes to your `App.tsx` to migrate existing apps:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+- 56c773909: Add a complete prettier setup to the created project. Prettier used to only be added as a dependency to create apps, but there wasn't a complete setup included that makes it easy to run prettier. That has now changed, and the new `prettier:check` command can be used to check the formatting of the files in your created project.
+
+  To apply this change to an existing app, a couple of changes need to be made.
+
+  Create a `.prettierignore` file at the root of your repository with the following contents:
+
+  ```
+  dist
+  dist-types
+  coverage
+  .vscode
+  ```
+
+  Next update the root `package.json` by bumping the prettier version and adding the new `prettier:check` command:
+
+  ```diff
+     "scripts": {
+       ...
+  +    "prettier:check": "prettier --check .",
+       ...
+     },
+     ...
+     "dependencies": {
+       ...
+  -    "prettier": "^1.19.1"
+  +    "prettier": "^2.3.2"
+     }
+  ```
+
+  Finally run `yarn prettier --write .` on your project to update the existing formatting.
+
+- 9f8f8dd6b: Removed the `/` prefix in the catalog `SidebarItem` element, as it is no longer needed.
+
+  To apply this change to an existing app, remove the `/` prefix from the catalog and any other sidebar items in `packages/app/src/components/Root/Root.ts`:
+
+  ```diff
+  -<SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+  +<SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+  ```
+
+- 56c773909: Switched `@types/react-dom` dependency to of the app package to request `*` rather than a specific version.
+
+  To apply this change to an existing app, change the following in `packages/app/package.json`:
+
+  ```diff
+  -    "@types/react-dom": "^16.9.8",
+  +    "@types/react-dom": "*",
+  ```
+
+## 0.3.34
+
+### Patch Changes
+
+- c189c5da5: fix typo in the comments of EntityPage component
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- 98dda80b4: Update `techdocs.generators` with the latest `techdocs.generator` config in `app-config.yaml`. See
+  https://backstage.io/docs/features/techdocs/configuration for reference and relevant PR
+  https://github.com/backstage/backstage/pull/6071/files for the changes.
+
+## 0.3.33
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- d50c9e7c0: Update the `software-templates` to point to `main` branch instead of `master`
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
+## 0.3.32
+
+### Patch Changes
+
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- eb740ee24: Moved sample software templates to the [backstage/software-templates](https://github.com/backstage/software-templates) repository. If you previously referenced the sample templates straight from `scaffolder-backend` plugin in the main [backstage/backstage](https://github.com/backstage/backstage) repository in your `app-config.yaml`, these references will need to be updated.
+
+  See https://github.com/backstage/software-templates
+
 ## 0.3.31
 
 ### Patch Changes
@@ -446,7 +786,7 @@
   -<Route path="/search" element={<SearchPage />} />
   +<Route path="/search" element={<SearchPage />}>
   +  {searchPage}
-  +</Route>;
+  +</Route>
   ```
 
 - Updated dependencies [9cd3c533c]

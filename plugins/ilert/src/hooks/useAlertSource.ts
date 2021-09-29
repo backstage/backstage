@@ -28,13 +28,10 @@ export const useAlertSource = (integrationKey: string) => {
     null,
   );
   const [isAlertSourceLoading, setIsAlertSourceLoading] = React.useState(false);
-  const [
-    uptimeMonitor,
-    setUptimeMonitor,
-  ] = React.useState<UptimeMonitor | null>(null);
-  const [isUptimeMonitorLoading, setIsUptimeMonitorLoading] = React.useState(
-    false,
-  );
+  const [uptimeMonitor, setUptimeMonitor] =
+    React.useState<UptimeMonitor | null>(null);
+  const [isUptimeMonitorLoading, setIsUptimeMonitorLoading] =
+    React.useState(false);
 
   const fetchAlertSourceCall = async () => {
     try {
@@ -54,10 +51,10 @@ export const useAlertSource = (integrationKey: string) => {
     }
   };
 
-  const {
-    error: alertSourceError,
-    retry: alertSourceRetry,
-  } = useAsyncRetry(fetchAlertSourceCall, [integrationKey]);
+  const { error: alertSourceError, retry: alertSourceRetry } = useAsyncRetry(
+    fetchAlertSourceCall,
+    [integrationKey],
+  );
 
   const fetchUptimeMonitorCall = async () => {
     try {
@@ -77,10 +74,8 @@ export const useAlertSource = (integrationKey: string) => {
     }
   };
 
-  const {
-    error: uptimeMonitorError,
-    retry: uptimeMonitorRetry,
-  } = useAsyncRetry(fetchUptimeMonitorCall, [alertSource]);
+  const { error: uptimeMonitorError, retry: uptimeMonitorRetry } =
+    useAsyncRetry(fetchUptimeMonitorCall, [alertSource]);
 
   const retry = () => {
     alertSourceRetry();

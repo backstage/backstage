@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that integrates towards Kubernetes
+ *
+ * @packageDocumentation
+ */
+
 export {
   kubernetesPlugin,
   kubernetesPlugin as plugin,
   EntityKubernetesContent,
 } from './plugin';
-export { Router } from './Router';
+export { Router, isKubernetesAvailable } from './Router';
+export * from './api';
 export * from './kubernetes-auth-provider';
+export * from './utils/clusterLinks';

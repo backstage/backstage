@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { asInputRef } from '../helpers';
 import {
   generateEntities,
   StepPrepareCreatePullRequest,
 } from './StepPrepareCreatePullRequest';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
     analyzeUrl: jest.fn(),
     submitPullRequest: jest.fn(),
+    preparePullRequest: jest.fn(),
   };
 
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
@@ -41,14 +44,19 @@ describe('<StepPrepareCreatePullRequest />', () => {
     getLocationById: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+  };
+
+  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
+    error$: jest.fn(),
+    post: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ApiProvider
-      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi).with(
-        catalogApiRef,
-        catalogApi,
-      )}
+      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi)
+        .with(catalogApiRef, catalogApi)
+        .with(errorApiRef, errorApi)}
     >
       {children}
     </ApiProvider>
@@ -76,25 +84,28 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    (catalogImportApi.preparePullRequest! as jest.Mock).mockResolvedValue({
+      title: 'My title',
+      body: 'My **body**',
+    });
   });
 
   it('renders without exploding', async () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
     await act(async () => {
-      const { getByText } = render(
+      const { findByText } = render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
-                <TextField name="owner" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
               </>
             );
           }}
@@ -104,8 +115,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      const title = getByText('My title');
-      const description = getByText('body', { selector: 'strong' });
+      const title = await findByText('My title');
+      const description = await findByText('body', { selector: 'strong' });
       expect(title).toBeInTheDocument();
       expect(title).toBeVisible();
       expect(description).toBeInTheDocument();
@@ -123,28 +134,24 @@ describe('<StepPrepareCreatePullRequest />', () => {
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
                 <TextField
+                  {...asInputRef(register('componentName'))}
                   id="name"
                   label="name"
-                  name="componentName"
-                  inputRef={register()}
                 />
                 <TextField
+                  {...asInputRef(register('owner'))}
                   id="owner"
                   label="owner"
-                  name="owner"
-                  inputRef={register()}
                 />
               </>
             );
@@ -155,11 +162,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      await userEvent.type(await screen.getByLabelText('name'), '-changed');
-      await userEvent.type(await screen.getByLabelText('owner'), '-changed');
-      await userEvent.click(
-        await screen.getByRole('button', { name: /Create PR/i }),
-      );
+      userEvent.type(await screen.findByLabelText('name'), '-changed');
+      userEvent.type(await screen.findByLabelText('owner'), '-changed');
+      userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
     });
 
     expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
@@ -213,19 +218,17 @@ spec:
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={({ register }) => {
             return (
               <>
-                <TextField name="title" inputRef={register()} />
-                <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
-                <TextField name="owner" inputRef={register()} />
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
               </>
             );
           }}
@@ -235,8 +238,8 @@ spec:
         },
       );
 
-      await userEvent.click(
-        await screen.getByRole('button', { name: /Create PR/i }),
+      userEvent.click(
+        await screen.findByRole('button', { name: /Create PR/i }),
       );
     });
 
@@ -262,10 +265,8 @@ spec:
     );
 
     await act(async () => {
-      await render(
+      render(
         <StepPrepareCreatePullRequest
-          defaultTitle="My title"
-          defaultBody="My **body**"
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={renderFormFieldsFn}

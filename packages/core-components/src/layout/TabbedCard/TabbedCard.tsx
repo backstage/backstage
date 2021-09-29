@@ -62,15 +62,16 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
-const TabbedCard = ({
-  slackChannel,
-  errorBoundaryProps,
-  children,
-  title,
-  deepLink,
-  value,
-  onChange,
-}: PropsWithChildren<Props>) => {
+export function TabbedCard(props: PropsWithChildren<Props>) {
+  const {
+    slackChannel,
+    errorBoundaryProps,
+    children,
+    title,
+    deepLink,
+    value,
+    onChange,
+  } = props;
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
@@ -98,6 +99,7 @@ const TabbedCard = ({
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
         <Tabs
+          selectionFollowsFocus
           classes={tabsClasses}
           value={value || selectedIndex}
           onChange={handleChange}
@@ -110,7 +112,7 @@ const TabbedCard = ({
       </ErrorBoundary>
     </Card>
   );
-};
+}
 
 const useCardTabStyles = makeStyles(theme => ({
   root: {
@@ -119,6 +121,11 @@ const useCardTabStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 2, 0, 0),
     padding: theme.spacing(0.5, 0, 0.5, 0),
     textTransform: 'none',
+    '&:hover': {
+      opacity: 1,
+      backgroundColor: 'transparent',
+      color: theme.palette.text.primary,
+    },
   },
   selected: {
     fontWeight: 'bold',
@@ -129,10 +136,9 @@ type CardTabProps = TabProps & {
   children: ReactNode;
 };
 
-const CardTab = ({ children, ...props }: PropsWithChildren<CardTabProps>) => {
+export function CardTab(props: PropsWithChildren<CardTabProps>) {
+  const { children, ...restProps } = props;
   const classes = useCardTabStyles();
 
-  return <Tab disableRipple classes={classes} {...props} />;
-};
-
-export { TabbedCard, CardTab };
+  return <Tab disableRipple classes={classes} {...restProps} />;
+}

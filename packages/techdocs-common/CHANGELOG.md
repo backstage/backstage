@@ -1,5 +1,290 @@
 # @backstage/techdocs-common
 
+## 0.10.1
+
+### Patch Changes
+
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.10.0
+
+### Minor Changes
+
+- 8b0f6f860: Set the correct `edit_uri` or `repo_url` for documentation pages that are hosted on GitHub and GitLab.
+
+  The constructor of the `TechDocsGenerator` changed.
+  Prefer the use of `TechdocsGenerator.fromConfig(…)` instead:
+
+  ```diff
+  - const techdocsGenerator = new TechdocsGenerator({
+  + const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
+      logger,
+      containerRunner,
+  -   config,
+    });
+  ```
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- 3624616e7: "Local" (out-of-the-box) publisher explicitly follows lower-case entity triplet
+  logic.
+- 67ba7e088: Only write the updated `mkdocs.yml` file if the content was updated.
+
+  This keeps local files unchanged if the `dir` annotation is used in combination with the `file` location.
+
+- 8eab6be6a: Force using `posix` path for cloud storage
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.9.0
+
+### Minor Changes
+
+- 58452cdb7: OpenStack Swift Client changed with Trendyol's OpenStack Swift SDK.
+
+  ## Migration from old OpenStack Swift Configuration
+
+  Let's assume we have the old OpenStack Swift configuration here.
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          username: ${OPENSTACK_SWIFT_STORAGE_USERNAME}
+          password: ${OPENSTACK_SWIFT_STORAGE_PASSWORD}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        keystoneAuthVersion: ${OPENSTACK_SWIFT_STORAGE_AUTH_VERSION}
+        domainId: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_ID}
+        domainName: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME}
+        region: ${OPENSTACK_SWIFT_STORAGE_REGION}
+  ```
+
+  ##### Step 1: Change the credential keys
+
+  Since the new SDK uses _Application Credentials_ to authenticate OpenStack, we
+  need to change the keys `credentials.username` to `credentials.id`,
+  `credentials.password` to `credentials.secret` and use Application Credential ID
+  and secret here. For more detail about credentials look
+  [here](https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential).
+
+  ##### Step 2: Remove the unused keys
+
+  Since the new SDK doesn't use the old way authentication, we don't need the keys
+  `openStackSwift.keystoneAuthVersion`, `openStackSwift.domainId`,
+  `openStackSwift.domainName` and `openStackSwift.region`. So you can remove them.
+
+  ##### Step 3: Add Swift URL
+
+  The new SDK needs the OpenStack Swift connection URL for connecting the Swift.
+  So you need to add a new key called `openStackSwift.swiftUrl` and give the
+  OpenStack Swift url here. Example url should look like that:
+  `https://example.com:6780/swift/v1`
+
+  ##### That's it!
+
+  Your new configuration should look like that!
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+          secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
+  ```
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.8.1
+
+### Patch Changes
+
+- bc405be6e: Stale TechDocs content (files that had previously been published but which have
+  since been removed) is now removed from storage at publish-time. This is now
+  supported by the following publishers:
+
+  - Google GCS
+  - AWS S3
+  - Azure Blob Storage
+
+  You may need to apply a greater level of permissions (e.g. the ability to
+  delete objects in your storage provider) to any credentials/accounts used by
+  the TechDocs CLI or TechDocs backend in order for this change to take effect.
+
+  For more details, see [#6132][issue-ref].
+
+  [issue-ref]: https://github.com/backstage/backstage/issues/6132
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.8.0
+
+### Minor Changes
+
+- 48ea3d25b: TechDocs has dropped all support for the long-ago deprecated git-based common
+  prepares as well as all corresponding values in `backstage.io/techdocs-ref`
+  annotations.
+
+  Entities whose `backstage.io/techdocs-ref` annotation values still begin with
+  `github:`, `gitlab:`, `bitbucket:`, or `azure/api:` will no longer be generated
+  by TechDocs. Be sure to update these values so that they align with their
+  expected format and your usage of TechDocs.
+
+  For details, see [this explainer on TechDocs ref annotation values][how].
+
+  [how]: https://backstage.io/docs/features/techdocs/how-to-guides#how-to-understand-techdocs-ref-annotation-values
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
+## 0.7.1
+
+### Patch Changes
+
+- 59a5fa319: Migrated files are now printed when `techdocs-cli migrate` is run with the
+  `--verbose` flag set.
+- 54356336e: TechDocs generator stage now supports `mkdocs.yaml` file, in addition to `.yml`
+  depending on whichever is present at the time of generation. (Assumes the
+  latest `spotify/techdocs` container, running mkdocs `v1.2.2` or greater).
+
+## 0.7.0
+
+### Minor Changes
+
+- d32d01e5b: Improve the annotation `backstage.io/techdocs-ref: dir:<relative-target>` that links to a path that is relative to the source of the annotated entity.
+  This annotation works with the basic and the recommended flow, however, it will be most useful with the basic approach.
+
+  This change remove the deprecation of the `dir` reference and provides first-class support for it.
+  In addition, this change removes the support of the deprecated `github`, `gitlab`, and `azure/api` locations from the `dir` reference preparer.
+
+  #### Example Usage
+
+  The annotation is convenient if the documentation is stored in the same location, i.e. the same git repository, as the `catalog-info.yaml`.
+  While it is still supported to add full URLs such as `backstage.io/techdocs-ref: url:https://...` for custom setups, documentation is mostly stored in the same repository as the entity definition.
+  By automatically resolving the target relative to the registration location of the entity, the configuration overhead for this default setup is minimized.
+  Since it leverages the `@backstage/integrations` package for the URL resolution, this is compatible with every supported source.
+
+  Consider the following examples:
+
+  1. "I have a repository with a single `catalog-info.yaml` and a TechDocs page in the root folder!"
+
+  ```
+  https://github.com/backstage/example/tree/main/
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Component
+   |  > metadata:
+   |  >   name: example
+   |  >   annotations:
+   |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+   |  > spec: {}
+   |- docs/
+   |- mkdocs.yml
+  ```
+
+  2. "I have a repository with a single `catalog-info.yaml` and my TechDocs page in located in a folder!"
+
+  ```
+  https://bitbucket.org/my-owner/my-project/src/master/
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Component
+   |  > metadata:
+   |  >   name: example
+   |  >   annotations:
+   |  >     backstage.io/techdocs-ref: dir:./some-folder # -> subfolder
+   |  > spec: {}
+   |- some-folder/
+     |- docs/
+     |- mkdocs.yml
+  ```
+
+  3. "I have a mono repository that hosts multiple components!"
+
+  ```
+  https://dev.azure.com/organization/project/_git/repository
+   |- my-1st-module/
+     |- catalog-info.yaml
+     |  > apiVersion: backstage.io/v1alpha1
+     |  > kind: Component
+     |  > metadata:
+     |  >   name: my-1st-module
+     |  >   annotations:
+     |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+     |  > spec: {}
+     |- docs/
+     |- mkdocs.yml
+   |- my-2nd-module/
+     |- catalog-info.yaml
+     |  > apiVersion: backstage.io/v1alpha1
+     |  > kind: Component
+     |  > metadata:
+     |  >   name: my-2nd-module
+     |  >   annotations:
+     |  >     backstage.io/techdocs-ref: dir:. # -> same folder
+     |  > spec: {}
+     |- docs/
+     |- mkdocs.yml
+   |- catalog-info.yaml
+   |  > apiVersion: backstage.io/v1alpha1
+   |  > kind: Location
+   |  > metadata:
+   |  >   name: example
+   |  > spec:
+   |  >   targets:
+   |  >     - ./*/catalog-info.yaml
+  ```
+
+### Patch Changes
+
+- 6e5aed1c9: Fix validation of mkdocs.yml docs_dir
+- 250984333: Add link to https://backstage.io/docs/features/techdocs/configuration in the log warning message about updating techdocs.generate key.
+- Updated dependencies
+  - @backstage/backend-common@0.8.7
+
 ## 0.6.8
 
 ### Patch Changes

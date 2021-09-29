@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
@@ -31,12 +31,11 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(2),
       textAlign: props.textAlign,
     },
     leftItemsBox: {
       flex: '1 1 auto',
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
@@ -47,13 +46,13 @@ const useStyles = (props: ContentHeaderProps) =>
       flexWrap: 'wrap',
       alignItems: 'center',
       marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
       minWidth: 0,
       overflow: 'visible',
     },
     description: {},
     title: {
       display: 'inline-flex',
+      marginBottom: 0,
     },
   }));
 
@@ -78,22 +77,23 @@ const ContentHeaderTitle = ({
 
 type ContentHeaderProps = {
   title?: ContentHeaderTitleProps['title'];
-  titleComponent?: ComponentType;
+  titleComponent?: ReactNode;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
 };
 
-export const ContentHeader = ({
-  description,
-  title,
-  titleComponent: TitleComponent = undefined,
-  children,
-  textAlign = 'left',
-}: PropsWithChildren<ContentHeaderProps>) => {
+export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
+  const {
+    description,
+    title,
+    titleComponent: TitleComponent = undefined,
+    children,
+    textAlign = 'left',
+  } = props;
   const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
-    <TitleComponent />
+    TitleComponent
   ) : (
     <ContentHeaderTitle title={title} className={classes.title} />
   );
@@ -113,4 +113,4 @@ export const ContentHeader = ({
       </div>
     </>
   );
-};
+}

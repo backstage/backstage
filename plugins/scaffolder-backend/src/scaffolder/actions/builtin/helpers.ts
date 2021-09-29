@@ -16,7 +16,6 @@
 
 import { spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
-import globby from 'globby';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
 import { Octokit } from '@octokit/rest';
@@ -62,6 +61,7 @@ export async function initRepoAndPush({
   auth,
   logger,
   defaultBranch = 'master',
+  commitMessage = 'Initial commit',
   gitAuthorInfo,
 }: {
   dir: string;
@@ -69,6 +69,7 @@ export async function initRepoAndPush({
   auth: { username: string; password: string };
   logger: Logger;
   defaultBranch?: string;
+  commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<void> {
   const git = Git.fromAuth({
@@ -82,15 +83,7 @@ export async function initRepoAndPush({
     defaultBranch,
   });
 
-  const paths = await globby(['./**', './**/.*', '!.git'], {
-    cwd: dir,
-    gitignore: true,
-    dot: true,
-  });
-
-  for (const filepath of paths) {
-    await git.add({ dir, filepath });
-  }
+  await git.add({ dir, filepath: '.' });
 
   // use provided info if possible, otherwise use fallbacks
   const authorInfo = {
@@ -100,7 +93,7 @@ export async function initRepoAndPush({
 
   await git.commit({
     dir,
-    message: 'Initial commit',
+    message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
   });
@@ -122,6 +115,7 @@ type BranchProtectionOptions = {
   owner: string;
   repoName: string;
   logger: Logger;
+  requireCodeOwnerReviews: boolean;
   defaultBranch?: string;
 };
 
@@ -130,6 +124,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   client,
   owner,
   logger,
+  requireCodeOwnerReviews,
   defaultBranch = 'master',
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
@@ -151,7 +146,10 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         required_status_checks: { strict: true, contexts: [] },
         restrictions: null,
         enforce_admins: true,
-        required_pull_request_reviews: { required_approving_review_count: 1 },
+        required_pull_request_reviews: {
+          required_approving_review_count: 1,
+          require_code_owner_reviews: requireCodeOwnerReviews,
+        },
       });
     } catch (e) {
       if (

@@ -17,10 +17,15 @@
 import fs from 'fs';
 import { dirname, resolve as resolvePath } from 'path';
 
+/** @public */
 export type ResolveFunc = (...paths: string[]) => string;
 
-// Common paths and resolve functions used by the cli.
-// Currently assumes it is being executed within a monorepo.
+/**
+ * Common paths and resolve functions used by the cli.
+ * Currently assumes it is being executed within a monorepo.
+ *
+ * @public
+ */
 export type Paths = {
   // Root dir of the cli itself, containing package.json
   ownDir: string;
@@ -100,6 +105,7 @@ export function findOwnRootDir(ownDir: string) {
 /**
  * Find paths related to a package and its execution context.
  *
+ * @public
  * @example
  *
  * const paths = findPaths(__dirname)

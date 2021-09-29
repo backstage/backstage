@@ -21,6 +21,7 @@ import { Entity } from './Entity';
 /**
  * Generates a new random UID for an entity.
  *
+ * @public
  * @returns A string with enough randomness to uniquely identify an entity
  */
 export function generateEntityUid(): string {
@@ -30,6 +31,7 @@ export function generateEntityUid(): string {
 /**
  * Generates a new random Etag for an entity.
  *
+ * @public
  * @returns A string with enough randomness to uniquely identify an entity
  *          revision
  */
@@ -48,8 +50,9 @@ export function generateEntityEtag(): string {
  * account. It only compares the actual input entity data, i.e. metadata and
  * spec.
  *
- * @param previous The old state of the entity
- * @param next The new state of the entity
+ * @public
+ * @param previous - The old state of the entity
+ * @param next - The new state of the entity
  */
 export function entityHasChanges(previous: Entity, next: Entity): boolean {
   const e1 = lodash.cloneDeep(previous);
@@ -98,8 +101,9 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
  * The previous revision is expected to be a complete model loaded from the
  * catalog, including the uid, etag and generation fields.
  *
- * @param previous The old state of the entity
- * @param next The new state of the entity
+ * @public
+ * @param previous - The old state of the entity
+ * @param next - The new state of the entity
  * @returns An entity with the merged state of both
  */
 export function generateUpdatedEntity(previous: Entity, next: Entity): Entity {

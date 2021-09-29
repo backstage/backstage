@@ -1,5 +1,69 @@
 # @backstage/integration
 
+## 0.6.5
+
+### Patch Changes
+
+- 8113ba5ebb: Allow file extension `.yml` to be ingested in GitLab processor
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.6.4
+
+### Patch Changes
+
+- f7ad3a8925: Fix Azure URL handling to properly support both repo shorthand (`/owner/_git/project`) and full URLs (`/owner/project/_git/repo`).
+
+  Fix Azure DevOps Server URL handling by being able to parse URLs with hosts other than `dev.azure.com`. Note that the `api-version` used for API requests is currently `6.0`, meaning you need to support at least this version in your Azure DevOps Server instance.
+
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- cc5c8f4979: Handle pagination on return results when fetch GitHub API to list selected repos
+
+## 0.6.3
+
+### Patch Changes
+
+- 5dca42b17: Update to properly handle Azure DevOps Server download URL
+
+## 0.6.2
+
+### Patch Changes
+
+- f0ba514f0: Take custom ports into account when matching integrations to URLs. It used to be the case that an integration with e.g. `host: 'scm.mycompany.net:8080'` would not be matched by the `byUrl` method, while hosts without a custom port did match.
+- 90c68a2ca: Export `replaceGitHubUrlType`
+- Updated dependencies
+  - @backstage/config@0.1.8
+
+## 0.6.1
+
+### Patch Changes
+
+- b8cb12009: Add AWS S3 URL Reader
+- Updated dependencies
+  - @backstage/config@0.1.7
+
+## 0.6.0
+
+### Minor Changes
+
+- ce1958021: `getGitHubFileFetchUrl` and `getGitHubRequestOptions` now require a `credentials` argument. This is needed to address an issue where the raw route was chosen by the `UrlReader` when using GitHub Apps based auth.
+
+  Deprecated the `getGitHubRequestOptions` function, which is no longer used internally.
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 68af4d556: Adds an allow list of GitHub installations
+- 5fd31c2f4: Remove repo restriction from GitHub credentials provider
+
+## 0.5.9
+
+### Patch Changes
+
+- 3c50ff562: Fixed bug for comparing Organization name in `GithubCredentialsProvider`
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.5.8
 
 ### Patch Changes

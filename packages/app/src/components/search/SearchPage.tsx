@@ -14,35 +14,36 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
-
+import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
+  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
-  DefaultResultListItem,
+  SearchResultPager,
+  SearchType,
 } from '@backstage/plugin-search';
-import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
+import { DocsResultListItem } from '@backstage/plugin-techdocs';
+import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
     padding: theme.spacing(1, 0),
-  },
-  filters: {
-    padding: theme.spacing(2),
   },
   filter: {
     '& + &': {
       marginTop: theme.spacing(2.5),
     },
   },
+  filters: {
+    padding: theme.spacing(2),
+  },
 }));
 
 const SearchPage = () => {
   const classes = useStyles();
-
   return (
     <Page themeId="home">
       <Header title="Search" subtitle={<Lifecycle alpha />} />
@@ -55,6 +56,11 @@ const SearchPage = () => {
           </Grid>
           <Grid item xs={3}>
             <Paper className={classes.filters}>
+              <SearchType
+                values={['techdocs', 'software-catalog']}
+                name="type"
+                defaultValue="software-catalog"
+              />
               <SearchFilter.Select
                 className={classes.filter}
                 name="kind"
@@ -80,6 +86,13 @@ const SearchPage = () => {
                             result={document}
                           />
                         );
+                      case 'techdocs':
+                        return (
+                          <DocsResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
                       default:
                         return (
                           <DefaultResultListItem
@@ -92,6 +105,7 @@ const SearchPage = () => {
                 </List>
               )}
             </SearchResult>
+            <SearchResultPager />
           </Grid>
         </Grid>
       </Content>

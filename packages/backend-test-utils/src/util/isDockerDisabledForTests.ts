@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export function isDockerDisabledForTests() {
   // If we are not running in continuous integration, the default is to skip
   // the (relatively heavy, long running) docker based tests. If you want to

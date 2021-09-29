@@ -20,6 +20,8 @@ import { Config } from '@backstage/config';
 
 /**
  * A generic interface for fetching plain data from URLs.
+ *
+ * @public
  */
 export type UrlReader = {
   /* Used to read a single file and return its content. */
@@ -39,6 +41,7 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
+/** @public */
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
   reader: UrlReader;
@@ -47,6 +50,8 @@ export type UrlReaderPredicateTuple = {
 /**
  * A factory function that can read config to construct zero or more
  * UrlReaders along with a predicate for when it should be used.
+ *
+ * @public
  */
 export type ReaderFactory = (options: {
   config: Config;
@@ -56,6 +61,8 @@ export type ReaderFactory = (options: {
 
 /**
  * An options object for readUrl operations.
+ *
+ * @public
  */
 export type ReadUrlOptions = {
   /**
@@ -74,6 +81,8 @@ export type ReadUrlOptions = {
 
 /**
  * A response object for readUrl operations.
+ *
+ * @public
  */
 export type ReadUrlResponse = {
   /**
@@ -90,6 +99,8 @@ export type ReadUrlResponse = {
 
 /**
  * An options object for readTree operations.
+ *
+ * @public
  */
 export type ReadTreeOptions = {
   /**
@@ -104,7 +115,7 @@ export type ReadTreeOptions = {
    *
    * If no filter is provided all files are extracted.
    */
-  filter?(path: string): boolean;
+  filter?(path: string, info?: { size: number }): boolean;
 
   /**
    * An etag can be provided to check whether readTree's response has changed from a previous execution.
@@ -120,8 +131,16 @@ export type ReadTreeOptions = {
   etag?: string;
 };
 
+/** @public */
+export type ReadTreeResponseDirOptions = {
+  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
+  targetDir?: string;
+};
+
 /**
  * A response object for readTree operations.
+ *
+ * @public
  */
 export type ReadTreeResponse = {
   /**
@@ -142,20 +161,18 @@ export type ReadTreeResponse = {
   etag: string;
 };
 
-export type ReadTreeResponseDirOptions = {
-  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
-  targetDir?: string;
-};
-
 /**
  * Represents a single file in a readTree response.
+ *
+ * @public
  */
 export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
 };
 
-export type FromArchiveOptions = {
+/** @public */
+export type ReadTreeResponseFactoryOptions = {
   // A binary stream of a tar archive.
   stream: Readable;
   // If unset, the files at the root of the tree will be read.
@@ -164,16 +181,33 @@ export type FromArchiveOptions = {
   // etag of the blob
   etag: string;
   // Filter passed on from the ReadTreeOptions
-  filter?: (path: string) => boolean;
+  filter?: (path: string, info?: { size: number }) => boolean;
 };
+/** @public */
+export type FromReadableArrayOptions = Array<{
+  // Data in the form of a readable
+  data: Readable;
+  // A string containing the filepath of the data
+  path: string;
+}>;
 
+/** @public */
 export interface ReadTreeResponseFactory {
-  fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
-  fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
+  fromTarArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+  fromZipArchive(
+    options: ReadTreeResponseFactoryOptions,
+  ): Promise<ReadTreeResponse>;
+  fromReadableArray(
+    options: FromReadableArrayOptions,
+  ): Promise<ReadTreeResponse>;
 }
 
 /**
  * An options object for search operations.
+ *
+ * @public
  */
 export type SearchOptions = {
   /**
@@ -192,6 +226,8 @@ export type SearchOptions = {
 
 /**
  * The output of a search operation.
+ *
+ * @public
  */
 export type SearchResponse = {
   /**
@@ -207,6 +243,8 @@ export type SearchResponse = {
 
 /**
  * Represents a single file in a search response.
+ *
+ * @public
  */
 export type SearchResponseFile = {
   /**

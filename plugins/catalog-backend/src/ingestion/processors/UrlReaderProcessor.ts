@@ -15,65 +15,88 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import * as result from './results';
 import {
   CatalogProcessor,
+  CatalogProcessorCache,
   CatalogProcessorEmit,
+  CatalogProcessorEntityResult,
   CatalogProcessorParser,
+  CatalogProcessorResult,
 } from './types';
 
-// TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
-// can be removed in a bit
-const deprecatedTypes = [
-  'github',
-  'github/api',
-  'bitbucket/api',
-  'gitlab/api',
-  'azure/api',
-];
+const CACHE_KEY = 'v1';
 
 type Options = {
   reader: UrlReader;
   logger: Logger;
 };
 
+// WARNING: If you change this type, you likely need to bump the CACHE_KEY as well
+type CacheItem = {
+  etag: string;
+  value: {
+    type: 'entity';
+    entity: Entity;
+    location: LocationSpec;
+  }[];
+};
+
 export class UrlReaderProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
+
+  getProcessorName() {
+    return 'url-reader';
+  }
 
   async readLocation(
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
+    cache: CatalogProcessorCache,
   ): Promise<boolean> {
-    if (deprecatedTypes.includes(location.type)) {
-      // TODO(Rugvip): Remove this warning a month or two into 2021, and remove support for the deprecated types.
-      this.options.logger.warn(
-        `Location '${location.target}' uses deprecated location type '${location.type}', use 'url' instead. ` +
-          'Use "scripts/migrate-location-types.js" in the Backstage repo to migrate existing locations.',
-      );
-    } else if (location.type !== 'url') {
+    if (location.type !== 'url') {
       return false;
     }
 
+    const cacheItem = await cache.get<CacheItem>(CACHE_KEY);
+
     try {
-      const output = await this.doRead(location.target);
-      for (const item of output) {
+      const { response, etag: newEtag } = await this.doRead(
+        location.target,
+        cacheItem?.etag,
+      );
+
+      const parseResults: CatalogProcessorResult[] = [];
+      for (const item of response) {
         for await (const parseResult of parser({
           data: item.data,
           location: { type: location.type, target: item.url },
         })) {
+          parseResults.push(parseResult);
           emit(parseResult);
         }
       }
+
+      const isOnlyEntities = parseResults.every(r => r.type === 'entity');
+      if (newEtag && isOnlyEntities) {
+        await cache.set<CacheItem>(CACHE_KEY, {
+          etag: newEtag,
+          value: parseResults as CatalogProcessorEntityResult[],
+        });
+      }
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
-
-      if (error.name === 'NotFoundError') {
+      if (error.name === 'NotModifiedError' && cacheItem) {
+        for (const parseResult of cacheItem.value) {
+          emit(parseResult);
+        }
+      } else if (error.name === 'NotFoundError') {
         if (!optional) {
           emit(result.notFoundError(location, message));
         }
@@ -87,27 +110,31 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
   private async doRead(
     location: string,
-  ): Promise<{ data: Buffer; url: string }[]> {
+    etag?: string,
+  ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
     const { filepath } = parseGitUrl(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
-      const response = await this.options.reader.search(location);
+      const response = await this.options.reader.search(location, { etag });
       const output = response.files.map(async file => ({
         url: file.url,
         data: await limiter(file.content),
       }));
-      return Promise.all(output);
+      return { response: await Promise.all(output), etag: response.etag };
     }
 
     // Otherwise do a plain read, prioritizing readUrl if available
     if (this.options.reader.readUrl) {
-      const data = await this.options.reader.readUrl(location);
-      return [{ url: location, data: await data.buffer() }];
+      const data = await this.options.reader.readUrl(location, { etag });
+      return {
+        response: [{ url: location, data: await data.buffer() }],
+        etag: data.etag,
+      };
     }
 
     const data = await this.options.reader.read(location);
-    return [{ url: location, data }];
+    return { response: [{ url: location, data }] };
   }
 }

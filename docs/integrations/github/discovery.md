@@ -19,13 +19,23 @@ to the catalog configuration:
 ```yaml
 catalog:
   locations:
+    # (since 0.13.5) Scan all repositories for a catalog-info.yaml in the root of the default branch
     - type: github-discovery
-      target: https://github.com/myorg/service-*/blob/main/catalog-info.yaml
+      target: https://github.com/myorg
+    # Or use a custom pattern for a subset of all repositories with default repository
+    - type: github-discovery
+      target: https://github.com/myorg/service-*/blob/-/catalog-info.yaml
+    # Or use a custom file format and location
+    - type: github-discovery
+      target: https://github.com/*/blob/-/docs/your-own-format.yaml
+    # Or use a specific branch-name
+    - type: github-discovery
+      target: https://github.com/*/blob/backstage-docs/catalog-info.yaml
 ```
 
 Note the `github-discovery` type, as this is not a regular `url` processor.
 
-The target is composed of three parts:
+When using a custom pattern, the target is composed of three parts:
 
 - The base organization URL, `https://github.com/myorg` in this case
 - The repository blob to scan, which accepts \* wildcard tokens. This can simply
@@ -34,21 +44,33 @@ The target is composed of three parts:
 - The path within each repository to find the catalog YAML file. This will
   usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
   a similar variation for catalog files stored in the root directory of each
-  repository.
+  repository. You could also use a dash (`-`) for referring to the default
+  branch.
 
 ## GitHub API Rate Limits
 
-GitHub
-[rate limits](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
-API requests to 5,000 per hour (or more for Enterprise accounts). The default
-Backstage catalog backend refreshes data every 100 seconds, which issues an API
-request for each discovered location.
+GitHub [rate limits] API requests to 5,000 per hour (or more for Enterprise
+accounts). The default Backstage catalog backend refreshes data every 100
+seconds, which issues an API request for each discovered location.
 
 This means if you have more than ~140 catalog entities, you may get throttled by
 rate limiting. This will soon be resolved once catalog refreshes make use of
 ETags; to work around this in the meantime, you can change the refresh rate of
-the catalog in your `packages/backend/src/plugins/catalog.ts` file, or configure
-Backstage to use the [github-apps plugin](../../plugins/github-apps.md).
+the catalog in your `packages/backend/src/plugins/catalog.ts` file:
+
+```typescript
+const builder = await CatalogBuilder.create(env);
+
+// For example, to refresh every 5 minutes (300 seconds).
+builder.setRefreshIntervalSeconds(300);
+```
+
+Alternatively, or additionally, you can configure [github-apps] authentication
+which carries a much higher rate limit at GitHub.
 
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.
+
+[rate limits]:
+  https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+[github-apps]: ../../plugins/github-apps.md

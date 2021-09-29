@@ -56,31 +56,34 @@ export type DependencyGraphProps = React.SVGProps<SVGSVGElement> & {
   renderNode?: RenderNodeFunction;
   renderLabel?: RenderLabelFunction;
   defs?: SVGDefsElement | SVGDefsElement[];
+  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 };
 
 const WORKSPACE_ID = 'workspace';
 
-export function DependencyGraph({
-  edges,
-  nodes,
-  renderNode,
-  direction = Direction.TOP_BOTTOM,
-  align,
-  nodeMargin = 50,
-  edgeMargin = 10,
-  rankMargin = 50,
-  paddingX = 0,
-  paddingY = 0,
-  acyclicer,
-  ranker = Ranker.NETWORK_SIMPLEX,
-  labelPosition = LabelPosition.RIGHT,
-  labelOffset = 10,
-  edgeRanks = 1,
-  edgeWeight = 1,
-  renderLabel,
-  defs,
-  ...svgProps
-}: DependencyGraphProps) {
+export function DependencyGraph(props: DependencyGraphProps) {
+  const {
+    edges,
+    nodes,
+    renderNode,
+    direction = Direction.TOP_BOTTOM,
+    align,
+    nodeMargin = 50,
+    edgeMargin = 10,
+    rankMargin = 50,
+    paddingX = 0,
+    paddingY = 0,
+    acyclicer,
+    ranker = Ranker.NETWORK_SIMPLEX,
+    labelPosition = LabelPosition.RIGHT,
+    labelOffset = 10,
+    edgeRanks = 1,
+    edgeWeight = 1,
+    renderLabel,
+    defs,
+    zoom = 'enabled',
+    ...svgProps
+  } = props;
   const theme: BackstageTheme = useTheme();
   const [containerWidth, setContainerWidth] = React.useState<number>(100);
   const [containerHeight, setContainerHeight] = React.useState<number>(100);
@@ -109,33 +112,40 @@ export function DependencyGraph({
         // Set up zooming + panning
         const container = d3Selection.select<SVGSVGElement, null>(node);
         const workspace = d3Selection.select(node.getElementById(WORKSPACE_ID));
-        const zoom = d3Zoom
-          .zoom<SVGSVGElement, null>()
-          .scaleExtent([1, 10])
-          .on('zoom', event => {
-            event.transform.x = Math.min(
-              0,
-              Math.max(
-                event.transform.x,
-                maxWidth - maxWidth * event.transform.k,
-              ),
-            );
-            event.transform.y = Math.min(
-              0,
-              Math.max(
-                event.transform.y,
-                maxHeight - maxHeight * event.transform.k,
-              ),
-            );
-            workspace.attr('transform', event.transform);
-          });
 
-        container.call(zoom);
+        function enableZoom() {
+          container.call(
+            d3Zoom
+              .zoom<SVGSVGElement, null>()
+              .scaleExtent([1, 10])
+              .on('zoom', event => {
+                event.transform.x = Math.min(
+                  0,
+                  Math.max(
+                    event.transform.x,
+                    maxWidth - maxWidth * event.transform.k,
+                  ),
+                );
+                event.transform.y = Math.min(
+                  0,
+                  Math.max(
+                    event.transform.y,
+                    maxHeight - maxHeight * event.transform.k,
+                  ),
+                );
+                workspace.attr('transform', event.transform);
+              }),
+          );
+        }
 
-        const {
-          width: newContainerWidth,
-          height: newContainerHeight,
-        } = node.getBoundingClientRect();
+        if (zoom === 'enabled') {
+          enableZoom();
+        } else if (zoom === 'enable-on-click') {
+          container.on('click', () => enableZoom());
+        }
+
+        const { width: newContainerWidth, height: newContainerHeight } =
+          node.getBoundingClientRect();
         if (containerWidth !== newContainerWidth) {
           setContainerWidth(newContainerWidth);
         }
@@ -143,7 +153,7 @@ export function DependencyGraph({
           setContainerHeight(newContainerHeight);
         }
       }, 100),
-    [containerHeight, containerWidth, maxWidth, maxHeight],
+    [containerHeight, containerWidth, maxWidth, maxHeight, zoom],
   );
 
   const setNodesAndEdges = React.useCallback(() => {
@@ -173,7 +183,7 @@ export function DependencyGraph({
         .nodes()
         .find(nodeId => node.id === nodeId);
 
-      if (existingNode) {
+      if (existingNode && graph.current.node(existingNode)) {
         const { width, height, x, y } = graph.current.node(existingNode);
         graph.current.setNode(existingNode, { ...node, width, height, x, y });
       } else {

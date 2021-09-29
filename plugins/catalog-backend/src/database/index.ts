@@ -16,6 +16,7 @@
 
 export { CommonDatabase } from './CommonDatabase';
 export { DatabaseManager } from './DatabaseManager';
+export type { CreateDatabaseOptions } from './DatabaseManager';
 export type {
   Database,
   DbEntityRequest,
@@ -24,4 +25,11 @@ export type {
   EntityFilter,
   EntityPagination,
   Transaction,
+  DbEntitiesRequest,
+  DbEntitiesResponse,
+  DbLocationsRowWithStatus,
+  DatabaseLocationUpdateLogEvent,
+  DbLocationsRow,
+  DatabaseLocationUpdateLogStatus,
+  DbPageInfo,
 } from './types';

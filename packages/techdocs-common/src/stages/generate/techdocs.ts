@@ -19,7 +19,12 @@ import { Config } from '@backstage/config';
 import path from 'path';
 import { Logger } from 'winston';
 import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
+import {
   addBuildTimestampMetadata,
+  getMkdocsYml,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -32,35 +37,48 @@ import {
   GeneratorRunOptions,
 } from './types';
 
-const defaultDockerImage = 'spotify/techdocs';
-
 export class TechdocsGenerator implements GeneratorBase {
+  /**
+   * The default docker image (and version) used to generate content. Public
+   * and static so that techdocs-common consumers can use the same version.
+   */
+  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.2';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
+  private readonly scmIntegrations: ScmIntegrationRegistry;
 
-  static async fromConfig(
+  static fromConfig(
     config: Config,
     {
       containerRunner,
       logger,
     }: { containerRunner: ContainerRunner; logger: Logger },
   ) {
-    return new TechdocsGenerator({ logger, containerRunner, config });
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    return new TechdocsGenerator({
+      logger,
+      containerRunner,
+      config,
+      scmIntegrations,
+    });
   }
 
   constructor({
     logger,
     containerRunner,
     config,
+    scmIntegrations,
   }: {
     logger: Logger;
     containerRunner: ContainerRunner;
     config: Config;
+    scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = logger;
     this.options = readGeneratorConfig(config, logger);
     this.containerRunner = containerRunner;
+    this.scmIntegrations = scmIntegrations;
   }
 
   public async run({
@@ -71,19 +89,20 @@ export class TechdocsGenerator implements GeneratorBase {
     logger: childLogger,
     logStream,
   }: GeneratorRunOptions): Promise<void> {
-    // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
-    // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
+
+    // validate the docs_dir first
+    await validateMkdocsYaml(inputDir, content);
+
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
         mkdocsYmlPath,
         childLogger,
         parsedLocationAnnotation,
+        this.scmIntegrations,
       );
     }
-
-    await validateMkdocsYaml(inputDir, mkdocsYmlPath);
 
     // Directories to bind on container
     const mountDirs = {
@@ -108,7 +127,8 @@ export class TechdocsGenerator implements GeneratorBase {
           break;
         case 'docker':
           await this.containerRunner.runContainer({
-            imageName: this.options.dockerImage ?? defaultDockerImage,
+            imageName:
+              this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
             logStream,
             mountDirs,

@@ -100,7 +100,7 @@ export enum AlertDismissReason {
 // @public (undocumented)
 export type AlertForm<
   A extends Alert = any,
-  Data = any
+  Data = any,
 > = ForwardRefExoticComponent<
   AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
 >;
@@ -829,6 +829,4 @@ export interface UnlabeledDataflowData {
 // src/api/CostInsightsApi.d.ts:83:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/api/CostInsightsApi.d.ts:84:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/api/CostInsightsApi.d.ts:100:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

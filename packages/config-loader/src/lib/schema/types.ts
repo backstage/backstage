@@ -37,8 +37,10 @@ export const CONFIG_VISIBILITIES = ['frontend', 'backend', 'secret'] as const;
 
 /**
  * A type representing the possible configuration value visibilities
+ *
+ * @public
  */
-export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
+export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 /**
  * The default configuration visibility if no other values is given.
@@ -73,6 +75,8 @@ export type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
 
 /**
  * A function used to transform primitive configuration values.
+ *
+ * @public
  */
 export type TransformFunc<T extends number | string | boolean> = (
   value: T,
@@ -81,8 +85,10 @@ export type TransformFunc<T extends number | string | boolean> = (
 
 /**
  * Options used to process configuration data with a schema.
+ *
+ * @public
  */
-type ConfigProcessingOptions = {
+export type ConfigSchemaProcessingOptions = {
   /**
    * The visibilities that should be included in the output data.
    * If omitted, the data will not be filtered by visibility.
@@ -96,15 +102,24 @@ type ConfigProcessingOptions = {
    * will be omitted.
    */
   valueTransform?: TransformFunc<any>;
+
+  /**
+   * Whether or not to include the `filteredKeys` property in the output `AppConfig`s.
+   *
+   * Default: `false`.
+   */
+  withFilteredKeys?: boolean;
 };
 
 /**
  * A loaded configuration schema that is ready to process configuration data.
+ *
+ * @public
  */
 export type ConfigSchema = {
   process(
     appConfigs: AppConfig[],
-    options?: ConfigProcessingOptions,
+    options?: ConfigSchemaProcessingOptions,
   ): AppConfig[];
 
   serialize(): JsonObject;

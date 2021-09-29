@@ -15,9 +15,15 @@
  */
 
 export const mockGithubClient = {
+  rest: {
+    actions: {
+      createWorkflowDispatch: jest.fn(),
+    },
+  },
   repos: {
     createInOrg: jest.fn(),
     createForAuthenticatedUser: jest.fn(),
+    createWebhook: jest.fn(),
     addCollaborator: jest.fn(),
     replaceAllTopics: jest.fn(),
   },

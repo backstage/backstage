@@ -23,7 +23,7 @@ Locations are added to the catalog under the `catalog.locations` key:
 catalog:
   locations:
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 The `url` type locations are handled by a standard processor included with the

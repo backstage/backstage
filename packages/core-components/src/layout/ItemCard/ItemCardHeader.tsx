@@ -17,18 +17,18 @@
 import {
   createStyles,
   makeStyles,
-  Theme,
   Typography,
   WithStyles,
 } from '@material-ui/core';
 import React from 'react';
+import { BackstageTheme } from '@backstage/theme';
 
-const styles = (theme: Theme) =>
+const styles = (theme: BackstageTheme) =>
   createStyles({
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
-      backgroundImage: 'linear-gradient(-137deg,  #4BB8A5 0%,  #187656 100%)',
+      backgroundImage: theme.palette.bursts.gradient.linear,
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
@@ -72,7 +72,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  *   <ItemCardHeader title="Hello" classes={{ root: myClassName }} />
  * </code>
  */
-export const ItemCardHeader = (props: ItemCardHeaderProps) => {
+export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
   const classes = useStyles(props);
   return (
@@ -90,4 +90,4 @@ export const ItemCardHeader = (props: ItemCardHeaderProps) => {
       {children}
     </div>
   );
-};
+}

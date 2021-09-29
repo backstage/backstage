@@ -66,7 +66,6 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
-import { AppThemeProvider } from './AppThemeProvider';
 import {
   AppComponents,
   AppConfigLoader,
@@ -107,6 +106,20 @@ export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   return result;
 }
 
+/**
+ * Get the app base path from the configured app baseUrl.
+ *
+ * The returned path does not have a trailing slash.
+ */
+function getBasePath(configApi: Config) {
+  let { pathname } = new URL(
+    configApi.getOptionalString('app.baseUrl') ?? '/',
+    'http://dummy.dev', // baseUrl can be specified as just a path
+  );
+  pathname = pathname.replace(/\/*$/, '');
+  return pathname;
+}
+
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
   icons: NonNullable<AppOptions['icons']>;
@@ -137,12 +150,14 @@ function useConfigLoader(
     noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
   }
 
+  const { ThemeProvider } = components;
+
   // Before the config is loaded we can't use a router, so exit early
   if (noConfigNode) {
     return {
       node: (
         <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
-          <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+          <ThemeProvider>{noConfigNode}</ThemeProvider>
         </ApiProvider>
       ),
     };
@@ -183,6 +198,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly bindRoutes: AppOptions['bindRoutes'];
 
   private readonly identityApi = new AppIdentity();
+  private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
@@ -193,6 +209,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.configLoader = options.configLoader;
     this.defaultApis = options.defaultApis;
     this.bindRoutes = options.bindRoutes;
+    this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
@@ -216,37 +233,33 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      const {
-        routePaths,
-        routeParents,
-        routeObjects,
-        featureFlags,
-      } = useMemo(() => {
-        const result = traverseElementTree({
-          root: children,
-          discoverers: [childDiscoverer, routeElementDiscoverer],
-          collectors: {
-            routePaths: routePathCollector,
-            routeParents: routeParentCollector,
-            routeObjects: routeObjectCollector,
-            collectedPlugins: pluginCollector,
-            featureFlags: featureFlagCollector,
-          },
-        });
+      const { routePaths, routeParents, routeObjects, featureFlags } =
+        useMemo(() => {
+          const result = traverseElementTree({
+            root: children,
+            discoverers: [childDiscoverer, routeElementDiscoverer],
+            collectors: {
+              routePaths: routePathCollector,
+              routeParents: routeParentCollector,
+              routeObjects: routeObjectCollector,
+              collectedPlugins: pluginCollector,
+              featureFlags: featureFlagCollector,
+            },
+          });
 
-        validateRoutes(result.routePaths, result.routeParents);
+          validateRoutes(result.routePaths, result.routeParents);
 
-        // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
-        //               the app, rather than having to wait for the provider to render.
-        //               For now we need to push the additional plugins we find during
-        //               collection and then make sure we initialize things afterwards.
-        result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
-        this.verifyPlugins(this.plugins);
+          // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
+          //               the app, rather than having to wait for the provider to render.
+          //               For now we need to push the additional plugins we find during
+          //               collection and then make sure we initialize things afterwards.
+          result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
+          this.verifyPlugins(this.plugins);
 
-        // Initialize APIs once all plugins are available
-        this.getApiHolder();
-        return result;
-      }, [children]);
+          // Initialize APIs once all plugins are available
+          this.getApiHolder();
+          return result;
+        }, [children]);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -293,19 +306,22 @@ export class PrivateAppImpl implements BackstageApp {
         return loadedConfig.node;
       }
 
+      const { ThemeProvider } = this.components;
+
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
-            <AppThemeProvider>
+            <ThemeProvider>
               <RoutingProvider
                 routePaths={routePaths}
                 routeParents={routeParents}
                 routeObjects={routeObjects}
                 routeBindings={generateBoundRoutes(this.bindRoutes)}
+                basePath={getBasePath(loadedConfig.api)}
               >
                 {children}
               </RoutingProvider>
-            </AppThemeProvider>
+            </ThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
@@ -314,10 +330,8 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getRouter(): ComponentType<{}> {
-    const {
-      Router: RouterComponent,
-      SignInPage: SignInPageComponent,
-    } = this.components;
+    const { Router: RouterComponent, SignInPage: SignInPageComponent } =
+      this.components;
 
     // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
     const SignInPageWrapper = ({
@@ -339,14 +353,7 @@ export class PrivateAppImpl implements BackstageApp {
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
-
-      let { pathname } = new URL(
-        configApi.getOptionalString('app.baseUrl') ?? '/',
-        'http://dummy.dev', // baseUrl can be specified as just a path
-      );
-      if (pathname.endsWith('/')) {
-        pathname = pathname.replace(/\/$/, '');
-      }
+      const mountPath = `${getBasePath(configApi)}/*`;
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
@@ -361,7 +368,7 @@ export class PrivateAppImpl implements BackstageApp {
         return (
           <RouterComponent>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </RouterComponent>
         );
@@ -371,7 +378,7 @@ export class PrivateAppImpl implements BackstageApp {
         <RouterComponent>
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
-              <Route path={`${pathname}/*`} element={<>{children}</>} />
+              <Route path={mountPath} element={<>{children}</>} />
             </Routes>
           </SignInPageWrapper>
         </RouterComponent>
@@ -383,17 +390,27 @@ export class PrivateAppImpl implements BackstageApp {
 
   private getApiHolder(): ApiHolder {
     if (this.apiHolder) {
+      // Register additional plugins if they have been added.
+      // Routes paths, objects and others are already updated in the provider when children of it change
+      for (const plugin of this.plugins) {
+        for (const factory of plugin.getApis()) {
+          if (!this.apiFactoryRegistry.get(factory.api)) {
+            this.apiFactoryRegistry.register('default', factory);
+          }
+        }
+      }
+      ApiResolver.validateFactories(
+        this.apiFactoryRegistry,
+        this.apiFactoryRegistry.getAllApis(),
+      );
       return this.apiHolder;
     }
-
-    const registry = new ApiFactoryRegistry();
-
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: appThemeApiRef,
       deps: {},
       factory: () => AppThemeSelector.createWithStorage(this.themes),
     });
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: configApiRef,
       deps: {},
       factory: () => {
@@ -405,7 +422,7 @@ export class PrivateAppImpl implements BackstageApp {
         return this.configApi;
       },
     });
-    registry.register('static', {
+    this.apiFactoryRegistry.register('static', {
       api: identityApiRef,
       deps: {},
       factory: () => this.identityApi,
@@ -413,18 +430,18 @@ export class PrivateAppImpl implements BackstageApp {
 
     // It's possible to replace the feature flag API, but since we must have at least
     // one implementation we add it here directly instead of through the defaultApis.
-    registry.register('default', {
+    this.apiFactoryRegistry.register('default', {
       api: featureFlagsApiRef,
       deps: {},
       factory: () => new LocalStorageFeatureFlags(),
     });
     for (const factory of this.defaultApis) {
-      registry.register('default', factory);
+      this.apiFactoryRegistry.register('default', factory);
     }
 
     for (const plugin of this.plugins) {
       for (const factory of plugin.getApis()) {
-        if (!registry.register('default', factory)) {
+        if (!this.apiFactoryRegistry.register('default', factory)) {
           throw new Error(
             `Plugin ${plugin.getId()} tried to register duplicate or forbidden API factory for ${
               factory.api
@@ -435,17 +452,19 @@ export class PrivateAppImpl implements BackstageApp {
     }
 
     for (const factory of this.apis) {
-      if (!registry.register('app', factory)) {
+      if (!this.apiFactoryRegistry.register('app', factory)) {
         throw new Error(
           `Duplicate or forbidden API factory for ${factory.api} in app`,
         );
       }
     }
 
-    ApiResolver.validateFactories(registry, registry.getAllApis());
+    ApiResolver.validateFactories(
+      this.apiFactoryRegistry,
+      this.apiFactoryRegistry.getAllApis(),
+    );
 
-    this.apiHolder = new ApiResolver(registry);
-
+    this.apiHolder = new ApiResolver(this.apiFactoryRegistry);
     return this.apiHolder;
   }
 

@@ -24,6 +24,10 @@ export interface Config {
       name?: string;
       email?: string;
     };
+    /**
+     * The commit message used when new components are created.
+     */
+    defaultCommitMessage?: string;
     github?: {
       [key: string]: string;
       /**

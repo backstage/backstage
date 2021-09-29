@@ -39,14 +39,20 @@ import {
   ReadUrlResponse,
 } from './types';
 
-export type GhRepoResponse = RestEndpointMethodTypes['repos']['get']['response']['data'];
-export type GhBranchResponse = RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
-export type GhTreeResponse = RestEndpointMethodTypes['git']['getTree']['response']['data'];
-export type GhBlobResponse = RestEndpointMethodTypes['git']['getBlob']['response']['data'];
+export type GhRepoResponse =
+  RestEndpointMethodTypes['repos']['get']['response']['data'];
+export type GhBranchResponse =
+  RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+export type GhTreeResponse =
+  RestEndpointMethodTypes['git']['getTree']['response']['data'];
+export type GhBlobResponse =
+  RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
+ *
+ * @public
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
@@ -87,15 +93,20 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const ghUrl = getGitHubFileFetchUrl(url, this.integration.config);
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
+    const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
+    const ghUrl = getGitHubFileFetchUrl(
+      url,
+      this.integration.config,
+      credentials,
+    );
+
     let response: Response;
     try {
-      response = await fetch(ghUrl.toString(), {
+      response = await fetch(ghUrl, {
         headers: {
-          ...headers,
+          ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
           Accept: 'application/vnd.github.v3.raw',
         },
@@ -110,7 +121,7 @@ export class GithubUrlReader implements UrlReader {
 
     if (response.ok) {
       return {
-        buffer: async () => Buffer.from(await response.text()),
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
         etag: response.headers.get('ETag') ?? undefined,
       };
     }
@@ -195,7 +206,7 @@ export class GithubUrlReader implements UrlReader {
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
-      stream: (archive.body as unknown) as Readable,
+      stream: archive.body as unknown as Readable,
       subpath,
       etag: sha,
       filter: options?.filter,
@@ -258,9 +269,7 @@ export class GithubUrlReader implements UrlReader {
     }));
   }
 
-  private async getRepoDetails(
-    url: string,
-  ): Promise<{
+  private async getRepoDetails(url: string): Promise<{
     repo: GhRepoResponse;
     branch: GhBranchResponse;
   }> {

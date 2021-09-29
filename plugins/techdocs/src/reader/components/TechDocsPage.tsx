@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsApiRef } from '../../api';
 import { Reader } from './Reader';
+import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageHeader } from './TechDocsPageHeader';
 
 import { Content, Page } from '@backstage/core-components';
@@ -38,13 +39,18 @@ export const TechDocsPage = () => {
     return Promise.resolve(undefined);
   }, [kind, namespace, name, techdocsApi, documentReady]);
 
-  const { value: entityMetadataValue } = useAsync(() => {
-    return techdocsApi.getEntityMetadata({ kind, namespace, name });
-  }, [kind, namespace, name, techdocsApi]);
+  const { value: entityMetadataValue, error: entityMetadataError } =
+    useAsync(() => {
+      return techdocsApi.getEntityMetadata({ kind, namespace, name });
+    }, [kind, namespace, name, techdocsApi]);
 
   const onReady = useCallback(() => {
     setDocumentReady(true);
   }, [setDocumentReady]);
+
+  if (entityMetadataError) {
+    return <TechDocsNotFound errorMessage={entityMetadataError.message} />;
+  }
 
   return (
     <Page themeId="documentation">

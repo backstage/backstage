@@ -19,8 +19,10 @@ import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
   CatalogApi,
   catalogApiRef,
-  EntityContext,
+  catalogRouteRef,
+  EntityProvider,
 } from '@backstage/plugin-catalog-react';
+import { wrapInTestApp } from '@backstage/test-utils';
 import {
   BackstageTheme,
   createTheme,
@@ -29,7 +31,6 @@ import {
 } from '@backstage/theme';
 import { Grid, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
 import { OwnershipCard } from './OwnershipCard';
 
 export default {
@@ -87,19 +88,21 @@ const catalogApi: Partial<CatalogApi> = {
 
 const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
 
-export const Default = () => (
-  <MemoryRouter>
+export const Default = () =>
+  wrapInTestApp(
     <ApiProvider apis={apiRegistry}>
-      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+      <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <OwnershipCard />
           </Grid>
         </Grid>
-      </EntityContext.Provider>
-    </ApiProvider>
-  </MemoryRouter>
-);
+      </EntityProvider>
+    </ApiProvider>,
+    {
+      mountedRoutes: { '/catalog': catalogRouteRef },
+    },
+  );
 
 const monochromeTheme = (outer: BackstageTheme) =>
   createTheme({
@@ -117,20 +120,20 @@ const monochromeTheme = (outer: BackstageTheme) =>
     },
   });
 
-export const Themed = () => (
-  <MemoryRouter>
+export const Themed = () =>
+  wrapInTestApp(
     <ThemeProvider theme={monochromeTheme}>
       <ApiProvider apis={apiRegistry}>
-        <EntityContext.Provider
-          value={{ entity: defaultEntity, loading: false }}
-        >
+        <EntityProvider entity={defaultEntity}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
               <OwnershipCard />
             </Grid>
           </Grid>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>
-    </ThemeProvider>
-  </MemoryRouter>
-);
+    </ThemeProvider>,
+    {
+      mountedRoutes: { '/catalog': catalogRouteRef },
+    },
+  );

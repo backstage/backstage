@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegisterReturn } from 'react-hook-form';
 import {
   Typography,
   Button,
@@ -48,11 +48,20 @@ type Data = {
   idToken?: string;
 };
 
+const asInputRef = (renderResult: UseFormRegisterReturn) => {
+  const { ref, ...rest } = renderResult;
+  return {
+    inputRef: ref,
+    ...rest,
+  };
+};
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
-  const { register, handleSubmit, errors, formState } = useForm<Data>({
+  const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
   });
+
+  const { errors } = formState;
 
   const handleResult = ({ userId, idToken }: Data) => {
     onResult({
@@ -76,11 +85,10 @@ const Component: ProviderComponent = ({ onResult }) => {
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
-              name="userId"
+              {...asInputRef(register('userId', { required: true }))}
               label="User ID"
               margin="normal"
               error={Boolean(errors.userId)}
-              inputRef={register({ required: true })}
             />
             {errors.userId && (
               <FormHelperText error>{errors.userId.message}</FormHelperText>
@@ -88,18 +96,19 @@ const Component: ProviderComponent = ({ onResult }) => {
           </FormControl>
           <FormControl>
             <TextField
-              name="idToken"
+              {...asInputRef(
+                register('idToken', {
+                  required: false,
+                  validate: token =>
+                    !token ||
+                    ID_TOKEN_REGEX.test(token) ||
+                    'Token is not a valid OpenID Connect JWT Token',
+                }),
+              )}
               label="ID Token (optional)"
               margin="normal"
               autoComplete="off"
               error={Boolean(errors.idToken)}
-              inputRef={register({
-                required: false,
-                validate: token =>
-                  !token ||
-                  ID_TOKEN_REGEX.test(token) ||
-                  'Token is not a valid OpenID Connect JWT Token',
-              })}
             />
             {errors.idToken && (
               <FormHelperText error>{errors.idToken.message}</FormHelperText>

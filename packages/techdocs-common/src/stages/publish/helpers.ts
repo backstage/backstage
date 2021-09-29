@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import mime from 'mime-types';
+import path from 'path';
+import createLimiter from 'p-limit';
 import recursiveReadDir from 'recursive-readdir';
 
 /**
@@ -84,30 +87,101 @@ export const getFileTreeRecursively = async (
 };
 
 /**
- * Returns the version of an object's storage path where the first three parts
- * of the path (the entity triplet of namespace, kind, and name) are
- * lower-cased.
+ * Takes a posix path and returns a lower-cased version of entity's triplet
+ * with the remaining path in posix.
  *
  * Path must not include a starting slash.
  *
  * @example
- * lowerCaseEntityTripletInStoragePath('default/Component/backstage')
+ * lowerCaseEntityTriplet('default/Component/backstage')
  * // return default/component/backstage
+ */
+export const lowerCaseEntityTriplet = (posixPath: string): string => {
+  const [namespace, kind, name, ...rest] = posixPath.split(path.posix.sep);
+  const lowerNamespace = namespace.toLowerCase();
+  const lowerKind = kind.toLowerCase();
+  const lowerName = name.toLowerCase();
+  return [lowerNamespace, lowerKind, lowerName, ...rest].join(path.posix.sep);
+};
+
+/**
+ * Takes either a win32 or posix path and returns a lower-cased version of entity's triplet
+ * with the remaining path in posix.
+ *
+ * Starting slashes will be trimmed.
+ *
+ * Throws an error if the path does not appear to be an entity triplet.
+ *
+ * @example
+ * lowerCaseEntityTripletInStoragePath('/default/Component/backstage/file.txt')
+ * // return default/component/backstage/file.txt
  */
 export const lowerCaseEntityTripletInStoragePath = (
   originalPath: string,
 ): string => {
-  const trimmedPath =
-    originalPath[0] === '/' ? originalPath.substring(1) : originalPath;
-  const matches = trimmedPath.match(/\//g) || [];
-  if (matches.length <= 2) {
+  let posixPath = originalPath;
+  if (originalPath.includes(path.win32.sep)) {
+    posixPath = originalPath.split(path.win32.sep).join(path.posix.sep);
+  }
+
+  // remove leading slash
+  const parts = posixPath.split(path.posix.sep);
+  if (parts[0] === '') {
+    parts.shift();
+  }
+
+  // check if all parts of the entity exist (name, namespace, kind) plus filename
+  if (parts.length <= 3) {
     throw new Error(
       `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`,
     );
   }
-  const [namespace, kind, name, ...parts] = originalPath.split('/');
-  const lowerNamespace = namespace.toLowerCase();
-  const lowerKind = kind.toLowerCase();
-  const lowerName = name.toLowerCase();
-  return [lowerNamespace, lowerKind, lowerName, ...parts].join('/');
+
+  return lowerCaseEntityTriplet(parts.join(path.posix.sep));
+};
+
+// Only returns the files that existed previously and are not present anymore.
+export const getStaleFiles = (
+  newFiles: string[],
+  oldFiles: string[],
+): string[] => {
+  const staleFiles = new Set(oldFiles);
+  newFiles.forEach(newFile => {
+    staleFiles.delete(newFile);
+  });
+  return Array.from(staleFiles);
+};
+
+// Compose actual filename on remote bucket including entity information
+export const getCloudPathForLocalPath = (
+  entity: Entity,
+  localPath = '',
+  useLegacyPathCasing = false,
+): string => {
+  // Convert destination file path to a POSIX path for uploading.
+  // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
+  // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
+  const relativeFilePathPosix = localPath.split(path.sep).join(path.posix.sep);
+
+  // The / delimiter is intentional since it represents the cloud storage and not the local file system.
+  const entityRootDir = `${
+    entity.metadata?.namespace ?? ENTITY_DEFAULT_NAMESPACE
+  }/${entity.kind}/${entity.metadata.name}`;
+
+  const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
+  const destination = useLegacyPathCasing
+    ? relativeFilePathTriplet
+    : lowerCaseEntityTriplet(relativeFilePathTriplet);
+
+  return destination; // Remote storage file relative path
+};
+
+// Perform rate limited generic operations by passing a function and a list of arguments
+export const bulkStorageOperation = async <T>(
+  operation: (arg: T) => Promise<unknown>,
+  args: T[],
+  { concurrencyLimit } = { concurrencyLimit: 25 },
+) => {
+  const limiter = createLimiter(concurrencyLimit);
+  await Promise.all(args.map(arg => limiter(operation, arg)));
 };

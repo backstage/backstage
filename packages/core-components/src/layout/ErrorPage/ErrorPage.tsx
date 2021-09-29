@@ -47,11 +47,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const ErrorPage = ({
-  status,
-  statusMessage,
-  additionalInfo,
-}: IErrorPageProps) => {
+export function ErrorPage(props: IErrorPageProps) {
+  const { status, statusMessage, additionalInfo } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
@@ -60,7 +57,11 @@ export const ErrorPage = ({
     <Grid container spacing={0} className={classes.container}>
       <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
-        <Typography variant="body1" className={classes.subtitle}>
+        <Typography
+          data-testid="error"
+          variant="body1"
+          className={classes.subtitle}
+        >
           ERROR {status}: {statusMessage}
         </Typography>
         <Typography variant="body1" className={classes.subtitle}>
@@ -82,4 +83,4 @@ export const ErrorPage = ({
       </Grid>
     </Grid>
   );
-};
+}

@@ -23,6 +23,7 @@ export type UserOptions = {
   User?: string;
 };
 
+/** @public */
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
 
@@ -92,18 +93,17 @@ export class DockerContainerRunner implements ContainerRunner {
       Env.push(`${key}=${value}`);
     }
 
-    const [
-      { Error: error, StatusCode: statusCode },
-    ] = await this.dockerClient.run(imageName, args, logStream, {
-      Volumes,
-      HostConfig: {
-        Binds,
-      },
-      ...(workingDir ? { WorkingDir: workingDir } : {}),
-      Entrypoint: command,
-      Env,
-      ...userOptions,
-    } as Docker.ContainerCreateOptions);
+    const [{ Error: error, StatusCode: statusCode }] =
+      await this.dockerClient.run(imageName, args, logStream, {
+        Volumes,
+        HostConfig: {
+          Binds,
+        },
+        ...(workingDir ? { WorkingDir: workingDir } : {}),
+        Entrypoint: command,
+        Env,
+        ...userOptions,
+      } as Docker.ContainerCreateOptions);
 
     if (error) {
       throw new Error(

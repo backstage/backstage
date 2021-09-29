@@ -16,34 +16,31 @@
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { Transaction } from '../../database/types';
 import { DeferredEntity } from '../processing/types';
-
-export type AddUnprocessedEntitiesOptions =
-  | {
-      sourceEntityRef: string;
-      entities: DeferredEntity[];
-    }
-  | {
-      sourceKey: string;
-      entities: DeferredEntity[];
-    };
 
 export type AddUnprocessedEntitiesResult = {};
 
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
-  state?: Map<string, JsonObject>;
+  resultHash: string;
   errors?: string;
   relations: EntityRelationSpec[];
   deferredEntities: DeferredEntity[];
   locationKey?: string;
 };
 
+export type UpdateEntityCacheOptions = {
+  id: string;
+  state?: JsonObject;
+};
+
 export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
+  resultHash: string;
 };
 
 export type RefreshStateItem = {
@@ -51,9 +48,10 @@ export type RefreshStateItem = {
   entityRef: string;
   unprocessedEntity: Entity;
   processedEntity?: Entity;
-  nextUpdateAt: string;
-  lastDiscoveryAt: string; // remove?
-  state: Map<string, JsonObject>;
+  resultHash: string;
+  nextUpdateAt: DateTime;
+  lastDiscoveryAt: DateTime; // remove?
+  state?: JsonObject;
   errors?: string;
   locationKey?: string;
 };
@@ -75,24 +73,51 @@ export type ReplaceUnprocessedEntitiesOptions =
       type: 'delta';
     };
 
+export type RefreshOptions = {
+  entityRef: string;
+};
+
+export type ListAncestorsOptions = {
+  entityRef: string;
+};
+
+export type ListAncestorsResult = {
+  entityRefs: string[];
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
+  /**
+   * Add unprocessed entities to the front of the processing queue using a mutation.
+   */
   replaceUnprocessedEntities(
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void>;
+
   getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult>;
 
   /**
-   * Updates a processed entity
+   * Updates a processed entity.
+   *
+   * Any deferred entities are added at the front of the processing queue for
+   * immediate processing, meaning this should only be called when the entity has changes.
    */
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
+  ): Promise<void>;
+
+  /**
+   * Updates the cache associated with an entity.
+   */
+  updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
   ): Promise<void>;
 
   /**
@@ -102,4 +127,19 @@ export interface ProcessingDatabase {
     txOpaque: Transaction,
     options: UpdateProcessedEntityErrorsOptions,
   ): Promise<void>;
+
+  /**
+   * Schedules a refresh of a given entityRef.
+   */
+  refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
+
+  /**
+   * Lists all ancestors of a given entityRef.
+   *
+   * The returned list is ordered from the most immediate ancestor to the most distant one.
+   */
+  listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult>;
 }

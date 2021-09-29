@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { act, render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult } from '../../api';
@@ -25,7 +26,7 @@ describe('<StepPrepareSelectLocations />', () => {
     type: 'locations',
     locations: [
       {
-        target: 'url',
+        target: 'url-1',
         entities: [
           {
             kind: 'component',
@@ -56,8 +57,8 @@ describe('<StepPrepareSelectLocations />', () => {
     jest.resetAllMocks();
   });
 
-  it('renders without exploding', async () => {
-    const { getByRole } = render(
+  it('renders display locations to be added', async () => {
+    const rendered = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -65,11 +66,52 @@ describe('<StepPrepareSelectLocations />', () => {
       />,
     );
 
-    expect(getByRole('button', { name: /Review/i })).toBeDisabled();
+    expect(rendered.getByText('url-1')).toBeInTheDocument();
+    expect(rendered.getByText('url-2')).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/Select one or more locations/),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/locations already exist/),
+    ).not.toBeInTheDocument();
+    expect(rendered.getByRole('button', { name: /Review/i })).toBeDisabled();
+  });
+
+  it('should display existing locations only', async () => {
+    const analyzeResultWithExistingLocation = {
+      type: 'locations',
+      locations: [
+        {
+          target: 'my-target',
+          exists: true,
+          entities: [
+            {
+              kind: 'component',
+              namespace: 'default',
+              name: 'name',
+            },
+          ],
+        },
+      ],
+    } as Extract<AnalyzeResult, { type: 'locations' }>;
+
+    const rendered = await renderInTestApp(
+      <StepPrepareSelectLocations
+        analyzeResult={analyzeResultWithExistingLocation}
+        onPrepare={() => undefined}
+        onGoBack={() => undefined}
+      />,
+    );
+
+    expect(rendered.getByText(/my-target/)).toBeInTheDocument();
+    expect(rendered.queryByText(/locations already exist/)).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/Select one or more locations/),
+    ).not.toBeInTheDocument();
   });
 
   it('should select and deselect all', async () => {
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -97,7 +139,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should preselect prepared locations', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         prepareResult={{
@@ -117,7 +159,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should select items', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -146,7 +188,7 @@ describe('<StepPrepareSelectLocations />', () => {
   it('should go back', async () => {
     const onGoBack = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -164,7 +206,7 @@ describe('<StepPrepareSelectLocations />', () => {
   it('should submit', async () => {
     const onPrepare = jest.fn();
 
-    const { getAllByRole, getByRole } = render(
+    const { getAllByRole, getByRole } = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={onPrepare}
@@ -187,7 +229,7 @@ describe('<StepPrepareSelectLocations />', () => {
       type: 'locations',
       locations: [
         {
-          target: 'url',
+          target: 'url-1',
           entities: [
             {
               kind: 'component',

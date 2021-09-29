@@ -43,7 +43,7 @@ export { isJenkinsAvailable as isPluginApplicableToEntity };
 // Warning: (ae-missing-release-tag) "JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 
 // Warning: (ae-missing-release-tag) "JenkinsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -143,11 +143,14 @@ export const LatestRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "LEGACY_JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

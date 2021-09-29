@@ -28,7 +28,18 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 /**
  * Extracts repositories out of a GitHub org.
- */
+ *
+ * The following will create locations for all projects which have a catalog-info.yaml
+ * on the default branch. The first is shorthand for the second.
+ *
+ *    target: "https://github.com/backstage"
+ *    or
+ *    target: https://github.com/backstage/*\/blob/-/catalog-info.yaml
+ *
+ * You may also explicitly specify the source branch:
+ *
+ *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
+ **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
@@ -56,17 +67,26 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const gitHubConfig = this.integrations.github.byUrl(location.target)
-      ?.config;
+    const gitHubConfig = this.integrations.github.byUrl(
+      location.target,
+    )?.config;
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
       );
     }
+
+    const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
+      location.target,
+    );
+
+    // Building the org url here so that the github creds provider doesn't need to know
+    // about how to handle the wild card which is special for this processor.
+    const orgUrl = `https://${host}/${org}`;
+
     const { headers } = await GithubCredentialsProvider.create(
       gitHubConfig,
-    ).getCredentials({ url: location.target });
-    const { org, repoSearchPath, catalogPath } = parseUrl(location.target);
+    ).getCredentials({ url: orgUrl });
 
     const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,
@@ -88,11 +108,23 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     );
 
     for (const repository of matching) {
+      const branchName =
+        branch === '-' ? repository.defaultBranchRef?.name : branch;
+
+      if (!branchName) {
+        this.logger.info(
+          `the repository ${repository.url} does not have a default branch, skipping`,
+        );
+        continue;
+      }
+
+      const path = `/blob/${branchName}${catalogPath}`;
+
       emit(
         results.location(
           {
             type: 'url',
-            target: `${repository.url}${catalogPath}`,
+            target: `${repository.url}${path}`,
           },
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
@@ -110,18 +142,34 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
  * Helpers
  */
 
-export function parseUrl(
-  urlString: string,
-): { org: string; repoSearchPath: RegExp; catalogPath: string } {
+export function parseUrl(urlString: string): {
+  org: string;
+  repoSearchPath: RegExp;
+  catalogPath: string;
+  branch: string;
+  host: string;
+} {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
 
   // /backstage/techdocs-*/blob/master/catalog-info.yaml
+  // can also be
+  // /backstage
   if (path.length > 2 && path[0].length && path[1].length) {
     return {
       org: decodeURIComponent(path[0]),
       repoSearchPath: escapeRegExp(decodeURIComponent(path[1])),
-      catalogPath: `/${decodeURIComponent(path.slice(2).join('/'))}`,
+      branch: decodeURIComponent(path[3]),
+      catalogPath: `/${decodeURIComponent(path.slice(4).join('/'))}`,
+      host: url.host,
+    };
+  } else if (path.length === 1 && path[0].length) {
+    return {
+      org: decodeURIComponent(path[0]),
+      host: url.host,
+      repoSearchPath: escapeRegExp('*'),
+      catalogPath: '/catalog-info.yaml',
+      branch: '-',
     };
   }
 

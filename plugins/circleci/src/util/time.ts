@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DateTime, Interval } from 'luxon';
+import humanizeDuration from 'humanize-duration';
 
-import dayjs from 'dayjs';
-import durationPlugin from 'dayjs/plugin/duration';
-import relativeTimePlugin from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(durationPlugin);
-dayjs.extend(relativeTimePlugin);
-
-type DateTimeObject = Date | string | number | undefined;
-
-export function relativeTimeTo(time: DateTimeObject, withoutSuffix = false) {
-  return dayjs().to(dayjs(time), withoutSuffix);
+export function relativeTimeTo(dateTimeISOString?: string) {
+  return dateTimeISOString
+    ? DateTime.fromISO(dateTimeISOString).toRelative()
+    : '';
 }
 
 export function durationHumanized(
-  startTime: DateTimeObject,
-  endTime: DateTimeObject,
-) {
-  return dayjs
-    .duration(dayjs(startTime).diff(dayjs(endTime || new Date())))
-    .humanize();
+  startDateTimeISOString?: string,
+  endDateTimeISOString?: string,
+): string {
+  if (!startDateTimeISOString || !endDateTimeISOString) {
+    return '';
+  }
+
+  const startDateTime = DateTime.fromISO(startDateTimeISOString);
+  const endDateTime = DateTime.fromISO(endDateTimeISOString);
+  const duration = Interval.fromDateTimes(
+    startDateTime,
+    endDateTime,
+  ).toDuration();
+
+  return humanizeDuration(duration.as('milliseconds'), {
+    largest: 1,
+  });
 }

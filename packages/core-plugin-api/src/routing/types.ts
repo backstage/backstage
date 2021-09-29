@@ -15,15 +15,14 @@
  */
 
 import { OldIconComponent } from '../icons/types';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
   ? []
   : (keyof Params)[];
-export type OptionalParams<
-  Params extends { [param in string]: string }
-> = Params[keyof Params] extends never ? undefined : Params;
+export type OptionalParams<Params extends { [param in string]: string }> =
+  Params[keyof Params] extends never ? undefined : Params;
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
@@ -34,13 +33,18 @@ export type RouteFunc<Params extends AnyParams> = (
   ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
+// This symbol is what we use at runtime to determine whether a given object
+// is a type of RouteRef or not. It doesn't work well in TypeScript though since
+// the `unique symbol` will refer to different values between package versions.
+// For that reason we use the marker $$routeRefType to represent the symbol at
+// compile-time instead of using the symbol directly.
 export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
 
 export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
+  $$routeRefType: 'absolute'; // See routeRefType above
 
   params: ParamKeys<Params>;
 
@@ -54,7 +58,7 @@ export type RouteRef<Params extends AnyParams = any> = {
 };
 
 export type SubRouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'sub';
+  $$routeRefType: 'sub'; // See routeRefType above
 
   parent: RouteRef;
 
@@ -65,9 +69,9 @@ export type SubRouteRef<Params extends AnyParams = any> = {
 
 export type ExternalRouteRef<
   Params extends AnyParams = any,
-  Optional extends boolean = any
+  Optional extends boolean = any,
 > = {
-  readonly [routeRefType]: 'external';
+  $$routeRefType: 'external'; // See routeRefType above
 
   params: ParamKeys<Params>;
 

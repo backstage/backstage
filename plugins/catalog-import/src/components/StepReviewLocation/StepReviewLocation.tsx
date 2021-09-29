@@ -24,6 +24,7 @@ import { PrepareResult, ReviewResult } from '../useImportState';
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 type Props = {
   prepareResult: PrepareResult;
@@ -43,27 +44,48 @@ export const StepReviewLocation = ({
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
-
-  const handleImport = useCallback(async () => {
+  const exists =
+    prepareResult.type === 'locations' &&
+    prepareResult.locations.some(l => l.exists)
+      ? true
+      : false;
+  const handleClick = useCallback(async () => {
     setSubmitted(true);
     try {
-      const result = await Promise.all(
-        prepareResult.locations.map(l =>
-          catalogApi.addLocation({
-            type: 'url',
-            target: l.target,
-            presence:
-              prepareResult.type === 'repository' ? 'optional' : 'required',
+      let refreshed = new Array<{ target: string }>();
+      if (prepareResult.type === 'locations') {
+        refreshed = await Promise.all(
+          prepareResult.locations
+            .filter(l => l.exists)
+            .map(async l => {
+              const ref = stringifyEntityRef(l.entities[0] ?? l);
+              await catalogApi.refreshEntity(ref);
+              return { target: l.target };
+            }),
+        );
+      }
+
+      const locations = await Promise.all(
+        prepareResult.locations
+          .filter((l: unknown) => !(l as { exists?: boolean }).exists)
+          .map(async l => {
+            const result = await catalogApi.addLocation({
+              type: 'url',
+              target: l.target,
+              presence:
+                prepareResult.type === 'repository' ? 'optional' : 'required',
+            });
+            return {
+              target: result.location.target,
+              entities: result.entities,
+            };
           }),
-        ),
       );
 
       onReview({
         ...prepareResult,
-        locations: result.map(r => ({
-          target: r.location.target,
-          entities: r.entities,
-        })),
+        ...{ refreshed },
+        locations,
       });
     } catch (e) {
       // TODO: this error should be handled differently. We add it as 'optional' and
@@ -111,7 +133,9 @@ export const StepReviewLocation = ({
       )}
 
       <Typography>
-        The following entities will be added to the catalog:
+        {exists
+          ? 'The following locations already exist in the catalog:'
+          : 'The following entities will be added to the catalog:'}
       </Typography>
 
       <EntityListComponent
@@ -126,9 +150,9 @@ export const StepReviewLocation = ({
         <NextButton
           disabled={submitted}
           loading={submitted}
-          onClick={() => handleImport()}
+          onClick={() => handleClick()}
         >
-          Import
+          {exists ? 'Refresh' : 'Import'}
         </NextButton>
       </Grid>
     </>

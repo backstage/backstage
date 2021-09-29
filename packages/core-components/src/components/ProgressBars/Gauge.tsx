@@ -77,7 +77,7 @@ export function getProgressColor(
   return palette.status.ok;
 }
 
-export const Gauge = (props: Props) => {
+export function Gauge(props: Props) {
   const classes = useStyles(props);
   const theme = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
@@ -103,4 +103,4 @@ export const Gauge = (props: Props) => {
       </div>
     </div>
   );
-};
+}

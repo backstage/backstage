@@ -125,23 +125,19 @@ export const createSamlProvider = (
       entryPoint: config.getString('entryPoint'),
       logoutUrl: config.getOptionalString('logoutUrl'),
       issuer: config.getString('issuer'),
-      cert: config.getOptionalString('cert'),
+      cert: config.getString('cert'),
       privateCert: config.getOptionalString('privateKey'),
       decryptionPvk: config.getOptionalString('decryptionPvk'),
       signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
         | SignatureAlgorithm
         | undefined,
       digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+      acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
 
       tokenIssuer,
       appUrl: globalConfig.appUrl,
     };
 
-    // passport-saml will return an error if the `cert` key is set, and the value is empty.
-    // Since we read from config (such as environment variables) an empty string should be equal to being unset.
-    if (!opts.cert) {
-      delete opts.cert;
-    }
     return new SamlAuthProvider(opts);
   };
 };

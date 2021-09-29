@@ -92,8 +92,7 @@ describe('JenkinsApi', () => {
             result: 'success',
             displayName: '#7',
             fullDisplayName: 'Example jobName » Example Build #7',
-            url:
-              'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+            url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
             number: 7,
             status: 'success',
             source: {},
@@ -280,10 +279,18 @@ describe('JenkinsApi', () => {
           result: 'success',
           displayName: '#7',
           fullDisplayName: 'Example jobName » Example Build #7',
-          url:
-            'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
+          url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
           number: 7,
         },
+      };
+
+      const projectWithoutBuild: JenkinsProject = {
+        actions: [],
+        displayName: 'Example Build',
+        fullDisplayName: 'Example jobName » Example Build',
+        fullName: 'example-jobName/exampleBuild',
+        inQueue: false,
+        lastBuild: null,
       };
 
       it('augments project', async () => {
@@ -296,6 +303,16 @@ describe('JenkinsApi', () => {
         expect(result).toHaveLength(1);
         expect(result[0].status).toEqual('success');
       });
+      it('augments project without build', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [projectWithoutBuild],
+        });
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].status).toEqual('build not found');
+      });
       it('augments  build', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce({
           jobs: [projectWithScmActions],
@@ -306,7 +323,7 @@ describe('JenkinsApi', () => {
         expect(result).toHaveLength(1);
         // TODO: I am really just asserting the previous behaviour wth no understanding here.
         // In my 2 Jenkins instances, 1 returns a lot of different and confusing BuildData sections and 1 returns none ☹️
-        expect(result[0].lastBuild.source).toEqual({
+        expect(result[0].lastBuild!.source).toEqual({
           branchName: 'master',
           commit: {
             hash: '14d31bde',
@@ -324,7 +341,7 @@ describe('JenkinsApi', () => {
         const result = await jenkinsApi.getProjects(jenkinsInfo);
 
         expect(result).toHaveLength(1);
-        expect(result[0].lastBuild.tests).toEqual({
+        expect(result[0].lastBuild!.tests).toEqual({
           total: 635,
           passed: 632,
           skipped: 1,

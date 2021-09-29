@@ -24,7 +24,6 @@ import {
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
-import { stripFirstDirectoryFromPath } from './util';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -37,7 +36,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     private readonly subPath: string,
     private readonly workDir: string,
     public readonly etag: string,
-    private readonly filter?: (path: string) => boolean,
+    private readonly filter?: (path: string, info: { size: number }) => boolean,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
@@ -67,15 +66,17 @@ export class ZipArchiveResponse implements ReadTreeResponse {
   }
 
   private shouldBeIncluded(entry: Entry): boolean {
-    const strippedPath = stripFirstDirectoryFromPath(entry.path);
-
     if (this.subPath) {
-      if (!strippedPath.startsWith(this.subPath)) {
+      if (!entry.path.startsWith(this.subPath)) {
         return false;
       }
     }
     if (this.filter) {
-      return this.filter(this.getInnerPath(entry.path));
+      return this.filter(this.getInnerPath(entry.path), {
+        size:
+          (entry.vars as { uncompressedSize?: number }).uncompressedSize ??
+          entry.vars.compressedSize,
+      });
     }
     return true;
   }
@@ -95,7 +96,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
         if (this.shouldBeIncluded(entry)) {
           files.push({
-            path: this.getInnerPath(stripFirstDirectoryFromPath(entry.path)),
+            path: this.getInnerPath(entry.path),
             content: () => entry.buffer(),
           });
         } else {
@@ -143,9 +144,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         // Ignore directory entries since we handle that with the file entries
         // as a zip can have files with directories without directory entries
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          const entryPath = this.getInnerPath(
-            stripFirstDirectoryFromPath(entry.path),
-          );
+          const entryPath = this.getInnerPath(entry.path);
           const dirname = platformPath.dirname(entryPath);
           if (dirname) {
             await fs.mkdirp(platformPath.join(dir, dirname));

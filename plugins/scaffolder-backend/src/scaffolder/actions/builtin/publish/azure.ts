@@ -80,7 +80,10 @@ export function createPublishAzureAction(options: {
     async handler(ctx) {
       const { repoUrl, defaultBranch = 'master' } = ctx.input;
 
-      const { owner, repo, host, organization } = parseRepoUrl(repoUrl);
+      const { owner, repo, host, organization } = parseRepoUrl(
+        repoUrl,
+        integrations,
+      );
 
       if (!organization) {
         throw new InputError(
@@ -139,6 +142,9 @@ export function createPublishAzureAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 

@@ -58,6 +58,9 @@ type PaletteAdditions = {
     backgroundColor: {
       default: string;
     };
+    gradient: {
+      linear: string;
+    };
   };
   pinSidebarButton: {
     icon: string;

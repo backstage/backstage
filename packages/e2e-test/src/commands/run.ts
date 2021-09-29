@@ -127,6 +127,16 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
               }
               return pkge.version;
             },
+            versionQuery(name: string, hint: string) {
+              const pkgData = require(`${name}/package.json`);
+              if (!pkgData) {
+                if (typeof hint !== 'string') {
+                  throw new Error(`No version available for package ${name}`);
+                }
+                return `^${hint}`;
+              }
+              return `^${pkgData.version}`;
+            },
           },
         },
       ),
@@ -232,7 +242,14 @@ async function createApp(
 
     print('Test app created');
 
-    for (const cmd of ['install', 'tsc', 'build', 'lint:all', 'test:all']) {
+    for (const cmd of [
+      'install',
+      'tsc:full',
+      'build',
+      'lint:all',
+      'prettier:check',
+      'test:all',
+    ]) {
       print(`Running 'yarn ${cmd}' in newly created app`);
       await runPlain(['yarn', cmd], { cwd: appDir });
     }
@@ -396,14 +413,9 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   if (isPostgres) {
     print('Dropping old DBs');
     await Promise.all(
-      [
-        'catalog',
-        'scaffolder',
-        'auth',
-        'identity',
-        'proxy',
-        'techdocs',
-      ].map(name => dropDB(`backstage_plugin_${name}`)),
+      ['catalog', 'scaffolder', 'auth', 'identity', 'proxy', 'techdocs'].map(
+        name => dropDB(`backstage_plugin_${name}`),
+      ),
     );
     print('Created DBs');
   }

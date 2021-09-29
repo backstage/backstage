@@ -29,7 +29,7 @@ import path from 'path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
 
-// NOTE: /packages/techdocs-common/__mocks__ is being used to mock pkgcloud client library
+// NOTE: /packages/techdocs-common/__mocks__ is being used to mock @trendyol-js/openstack-swift-sdk client library
 
 const createMockEntity = (annotations = {}): Entity => {
   return {
@@ -62,6 +62,20 @@ const getEntityRootDir = (entity: Entity) => {
   return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
+const getPosixEntityRootDir = (entity: Entity) => {
+  const {
+    kind,
+    metadata: { namespace, name },
+  } = entity;
+
+  return path.posix.join(
+    '/rootDir',
+    namespace || ENTITY_DEFAULT_NAMESPACE,
+    kind,
+    name,
+  );
+};
+
 const logger = getVoidLogger();
 
 let publisher: PublisherBase;
@@ -75,11 +89,11 @@ beforeEach(() => {
         type: 'openStackSwift',
         openStackSwift: {
           credentials: {
-            username: 'mockuser',
-            password: 'verystrongpass',
+            id: 'mockid',
+            secret: 'verystrongsecret',
           },
           authUrl: 'mockauthurl',
-          region: 'mockregion',
+          swiftUrl: 'mockSwiftUrl',
           containerName: 'mock',
         },
       },
@@ -105,11 +119,11 @@ describe('OpenStackSwiftPublish', () => {
             type: 'openStackSwift',
             openStackSwift: {
               credentials: {
-                username: 'mockuser',
-                password: 'verystrongpass',
+                id: 'mockId',
+                secret: 'mockSecret',
               },
               authUrl: 'mockauthurl',
-              region: 'mockregion',
+              swiftUrl: 'mockSwiftUrl',
               containerName: 'errorBucket',
             },
           },
@@ -267,12 +281,12 @@ describe('OpenStackSwiftPublish', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const entityRootDir = getPosixEntityRootDir(entity);
 
       const fails = publisher.fetchTechDocsMetadata(entityNameMock);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed, The file ${path.join(
+        message: `TechDocs metadata fetch failed, The file ${path.posix.join(
           entityRootDir,
           'techdocs_metadata.json',
         )} does not exist !`,
@@ -349,6 +363,22 @@ describe('OpenStackSwiftPublish', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should return 404 if file is not found', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const response = await request(app).get(
+        `/${namespace}/${kind}/${name}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
     });
   });
 });

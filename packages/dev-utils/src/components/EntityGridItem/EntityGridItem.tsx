@@ -34,6 +34,7 @@ const useStyles = makeStyles<BackstageTheme, { entity: Entity }>(theme => ({
   }),
 }));
 
+/** @public */
 export const EntityGridItem = ({
   entity,
   classes,

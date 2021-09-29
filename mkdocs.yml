@@ -33,6 +33,7 @@ nav:
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
+          - The Life of an Entity: 'features/software-catalog/life-of-an-entity.md'
           - Catalog Configuration: 'features/software-catalog/configuration.md'
           - System Model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
@@ -64,6 +65,7 @@ nav:
           - Getting Started: 'features/search/getting-started.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
+          - Search Engines: 'features/search/search-engines.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
@@ -78,6 +80,9 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
+      - AWS S3:
+          - Locations: 'integrations/aws-s3/locations.md'
+          - Discovery: 'integrations/aws-s3/discovery.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
           - Org Data: 'integrations/azure/org.md'
@@ -152,14 +157,9 @@ nav:
       - Design: 'dls/design.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
-  - API references:
-      - TypeScript API:
+  - API Reference:
+      - Guides:
           - Utility APIs: 'api/utility-apis.md'
-          - reference/utility-apis/README: 'reference/utility-apis/README.md'
-          - createPlugin: 'reference/createPlugin.md'
-          - createPlugin -feature flags: 'reference/createPlugin-feature-flags.md'
-      - Backend APIs:
-          - Backend: 'api/backend.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'

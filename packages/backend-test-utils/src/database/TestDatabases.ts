@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { randomBytes } from 'crypto';
 import { Knex } from 'knex';
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { startMysqlContainer } from './startMysqlContainer';
@@ -30,11 +31,12 @@ import {
 /**
  * Encapsulates the creation of ephemeral test database instances for use
  * inside unit or integration tests.
+ *
+ * @public
  */
 export class TestDatabases {
   private readonly instanceById: Map<string, Instance>;
   private readonly supportedIds: TestDatabaseId[];
-  private lastDatabaseIndex: number;
 
   /**
    * Creates an empty `TestDatabases` instance, and sets up Jest to clean up
@@ -99,7 +101,6 @@ export class TestDatabases {
   private constructor(supportedIds: TestDatabaseId[]) {
     this.instanceById = new Map();
     this.supportedIds = supportedIds;
-    this.lastDatabaseIndex = 0;
   }
 
   supports(id: TestDatabaseId): boolean {
@@ -114,7 +115,7 @@ export class TestDatabases {
    * Returns a fresh, unique, empty logical database on an instance of the
    * given database ID platform.
    *
-   * @param id The ID of the database platform to use, e.g. 'POSTGRES_13'
+   * @param id - The ID of the database platform to use, e.g. 'POSTGRES_13'
    * @returns A `Knex` connection object
    */
   async init(id: TestDatabaseId): Promise<Knex> {
@@ -142,7 +143,7 @@ export class TestDatabases {
 
     // Ensure that a unique logical database is created in the instance
     const connection = await instance.databaseManager
-      .forPlugin(String(`db${this.lastDatabaseIndex++}`))
+      .forPlugin(`db${randomBytes(16).toString('hex')}`)
       .getClient();
 
     instance.connections.push(connection);

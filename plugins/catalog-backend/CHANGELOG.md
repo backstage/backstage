@@ -1,5 +1,189 @@
 # @backstage/plugin-catalog-backend
 
+## 0.14.0
+
+### Minor Changes
+
+- d6f90e934d: #### Enforcing catalog rules
+
+  Apply the catalog rules enforcer, based on origin location.
+
+  This is a breaking change, in the sense that this was not properly checked in earlier versions of the new catalog engine. You may see ingestion of certain entities start to be rejected after this update, if the following conditions apply to you:
+
+  - You are using the configuration key `catalog.rules.[].allow`, and
+  - Your registered locations point (directly or transitively) to entities whose kinds are not listed in `catalog.rules.[].allow`
+
+  and/or
+
+  - You are using the configuration key `catalog.locations.[].rules.[].allow`
+  - The config locations point (directly or transitively) to entities whose kinds are not listed neither `catalog.rules.[].allow`, nor in the corresponding `.rules.[].allow` of that config location
+
+  This is an example of what the configuration might look like:
+
+  ```yaml
+  catalog:
+    # These do not list Template as a valid kind; users are therefore unable to
+    # manually register entities of the Template kind
+    rules:
+      - allow:
+          - Component
+          - API
+          - Resource
+          - Group
+          - User
+          - System
+          - Domain
+          - Location
+    locations:
+      # This lists Template as valid only for that specific config location
+      - type: file
+        target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+        rules:
+          - allow: [Template]
+  ```
+
+  If you are not using any of those `rules` section, you should not be affected by this change.
+
+  If you do use any of those `rules` sections, make sure that they are complete and list all of the kinds that are in active use in your Backstage installation.
+
+  #### Other
+
+  Also, the class `CatalogRulesEnforcer` was renamed to `DefaultCatalogRulesEnforcer`, implementing the type `CatalogRulesEnforcer`.
+
+- 501ce92f9c: Bitbucket Cloud Discovery support
+- 89fd81a1ab: Add API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+
+  The new method is used to trigger a refresh of an entity in an as localized was as possible, usually by refreshing the parent location.
+
+### Patch Changes
+
+- 9ef2987a83: Update `createLocation` to optionally return `exists` to signal that the location already exists, this is only returned for dry runs.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.13.8
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- a41ac6b952: Fill in most missing type exports.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.13.7
+
+### Patch Changes
+
+- ce17a1693: Allow the catalog search collator to filter the entities that it indexes
+- dbb952787: Use `ScmIntegrationRegistry#resolveUrl` in the placeholder processors instead of a custom implementation.
+
+  If you manually instantiate the `PlaceholderProcessor` (you most probably don't), add the new required constructor parameter:
+
+  ```diff
+  + import { ScmIntegrations } from '@backstage/integration';
+    // ...
+  + const integrations = ScmIntegrations.fromConfig(config);
+    // ...
+    new PlaceholderProcessor({
+      resolvers: placeholderResolvers,
+      reader,
+  +   integrations,
+    });
+  ```
+
+  All custom `PlaceholderResolver` can use the new `resolveUrl` parameter to resolve relative URLs.
+
+- 1797c5ce5: This change drops support for deprecated location types which have all been replaced by the `url` type.
+  There has been a deprecation warning in place since the beginning of this year so most should already be migrated and received information at this point.
+
+  The now removed location types are:
+
+  ```
+  github
+  github/api
+  bitbucket/api
+  gitlab/api
+  azure/api
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.13.6
+
+### Patch Changes
+
+- 4d62dc15b: GitHub discovery processor passes over repositories that do not have a default branch
+- 977b1dfbe: Adds optional namespacing for users in the GitHub Multi Org Plugin
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.13.5
+
+### Patch Changes
+
+- 8b39242c4: GitHub discovery processor adds support for discovering the default GitHub branch
+- 96785dce3: Added GitLabDiscoveryProcessor, which allows catalog discovery from a GitLab instance
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.13.4
+
+### Patch Changes
+
+- 7ab55167d: Properly handle Date objects being returned for timestamps in the database driver
+
+## 0.13.3
+
+### Patch Changes
+
+- 61aa6526f: Avoid duplicate work by comparing previous processing rounds with the next
+- fe960ad0f: Updates the `DefaultProcessingDatabase` to accept a refresh interval function instead of a fixed refresh interval in seconds which used to default to 100s. The catalog now ships with a default refresh interval function that schedules entities for refresh every 100-150 seconds, this should
+  help to smooth out bursts that occur when a lot of entities are scheduled for refresh at the same second.
+
+  Custom `RefreshIntervalFunction` can be implemented and passed to the CatalogBuilder using `.setInterval(fn)`
+
+- 54b441abe: Export the entity provider related types for external use.
+- 03bb05af6: Enabled live reload of locations configured in `catalog.locations`.
+- 2766b2aa5: Add experimental Prometheus metrics instrumentation to the catalog
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
+## 0.13.1
+
+### Patch Changes
+
+- 11c370af2: Support filtering entities via property existence. For example you can now query with `/entities?filter=metadata.annotations.blah` to fetch all entities that has the particular property defined.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.18
+
 ## 0.13.0
 
 ### Minor Changes
@@ -434,13 +618,11 @@
   and lets the other processors take care of further processing.
 
   ```typescript
-  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
-    client,
-    repository,
-  }) {
-    // Custom logic for interpret the matching repository.
-    // See defaultRepositoryParser for an example
-  };
+  const customRepositoryParser: BitbucketRepositoryParser =
+    async function* customRepositoryParser({ client, repository }) {
+      // Custom logic for interpret the matching repository.
+      // See defaultRepositoryParser for an example
+    };
 
   const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
     parser: customRepositoryParser,
@@ -912,7 +1094,6 @@
   spec:
     type: website
   ---
-
   ```
 
   This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.

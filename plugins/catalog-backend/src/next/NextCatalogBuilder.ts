@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -29,10 +25,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { createHash } from 'crypto';
+import { Router } from 'express';
 import lodash from 'lodash';
-import { Logger } from 'winston';
 import {
   DatabaseLocationsCatalog,
   EntitiesCatalog,
@@ -49,6 +45,7 @@ import {
   FileReaderProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
+  GitLabDiscoveryProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   UrlReaderProcessor,
@@ -74,13 +71,14 @@ import { DefaultLocationStore } from './DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
 import { Stitcher } from './stitching/Stitcher';
-
-export type CatalogEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-};
+import {
+  createRandomRefreshInterval,
+  RefreshIntervalFunction,
+} from './refresh';
+import { CatalogEnvironment } from '../service/CatalogBuilder';
+import { createNextRouter } from './NextRouter';
+import { DefaultRefreshService } from './DefaultRefreshService';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -111,7 +109,11 @@ export class NextCatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
-  private refreshIntervalSeconds = 100;
+  private refreshInterval: RefreshIntervalFunction =
+    createRandomRefreshInterval({
+      minSeconds: 100,
+      maxSeconds: 150,
+    });
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -143,11 +145,26 @@ export class NextCatalogBuilder {
 
   /**
    * Refresh interval determines how often entities should be refreshed.
-   * The default refresh duration is 100, setting this too low will potentially
-   * deplete request quotas to upstream services.
+   * Seconds provided will be multiplied by 1.5
+   * The default refresh duration is 100-150 seconds.
+   * setting this too low will potentially deplete request quotas to upstream services.
    */
   setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder {
-    this.refreshIntervalSeconds = seconds;
+    this.refreshInterval = createRandomRefreshInterval({
+      minSeconds: seconds,
+      maxSeconds: seconds * 1.5,
+    });
+    return this;
+  }
+
+  /**
+   * Overwrites the default refresh interval function used to spread
+   * entity updates in the catalog.
+   */
+  setRefreshInterval(
+    refreshInterval: RefreshIntervalFunction,
+  ): NextCatalogBuilder {
+    this.refreshInterval = refreshInterval;
     return this;
   }
 
@@ -264,6 +281,7 @@ export class NextCatalogBuilder {
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
+    router: Router;
   }> {
     const { config, database, logger } = this.env;
 
@@ -284,12 +302,14 @@ export class NextCatalogBuilder {
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
       logger,
-      refreshIntervalSeconds: this.refreshIntervalSeconds,
+      refreshInterval: this.refreshInterval,
     });
     const integrations = ScmIntegrations.fromConfig(config);
+    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
       integrations,
+      rulesEnforcer,
       logger,
       parser,
       policy,
@@ -310,6 +330,7 @@ export class NextCatalogBuilder {
       processingDatabase,
       orchestrator,
       stitcher,
+      () => createHash('sha1'),
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
@@ -318,6 +339,17 @@ export class NextCatalogBuilder {
       locationStore,
       orchestrator,
     );
+    const refreshService = new DefaultRefreshService({
+      database: processingDatabase,
+    });
+    const router = await createNextRouter({
+      entitiesCatalog,
+      locationAnalyzer,
+      locationService,
+      refreshService,
+      logger,
+      config,
+    });
 
     return {
       entitiesCatalog,
@@ -325,6 +357,7 @@ export class NextCatalogBuilder {
       locationAnalyzer,
       processingEngine,
       locationService,
+      router,
     };
   }
 
@@ -359,7 +392,11 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new PlaceholderProcessor({
+        resolvers: placeholderResolvers,
+        reader,
+        integrations,
+      }),
       new BuiltinKindsEntityProcessor(),
     ];
 
@@ -370,6 +407,7 @@ export class NextCatalogBuilder {
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
         GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
         new AnnotateLocationEntityProcessor({ integrations }),

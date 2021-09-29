@@ -58,7 +58,7 @@ export type ApiFactory<
   Impl extends Api,
   Deps extends {
     [name in string]: unknown;
-  }
+  },
 > = {
   api: ApiRef<Api>;
   deps: TypesToApiRefs<Deps>;
@@ -86,7 +86,7 @@ export type ApiRef<T> = {
 export type ApiRefsToTypes<
   T extends {
     [key in string]: ApiRef<unknown>;
-  }
+  },
 > = {
   [key in keyof T]: ApiRefType<T[key]>;
 };
@@ -196,6 +196,7 @@ export type AuthRequestOptions = {
 export type BackstageIdentity = {
   id: string;
   idToken: string;
+  token: string;
 };
 
 // Warning: (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration
@@ -215,7 +216,7 @@ export type BackstageIdentityApi = {
 // @public (undocumented)
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 > = {
   getId(): string;
   output(): PluginOutput[];
@@ -252,7 +253,7 @@ export function createApiFactory<
   Impl extends Api,
   Deps extends {
     [name in string]: unknown;
-  }
+  },
 >(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
 
 // @public (undocumented)
@@ -271,7 +272,7 @@ export function createApiRef<T>(config: ApiRefConfig): ApiRef<T>;
 //
 // @public (undocumented)
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: ComponentLoader<T> }): Extension<T>;
 
 // Warning: (ae-forgotten-export) The symbol "OptionalParams" needs to be exported by the entry point index.d.ts
@@ -283,7 +284,7 @@ export function createExternalRouteRef<
     [param in ParamKey]: string;
   },
   Optional extends boolean = false,
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(options: {
   id: string;
   params?: ParamKey[];
@@ -295,7 +296,7 @@ export function createExternalRouteRef<
 // @public (undocumented)
 export function createPlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   config: PluginConfig<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes>;
@@ -304,7 +305,7 @@ export function createPlugin<
 //
 // @public (undocumented)
 export function createReactExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
@@ -314,7 +315,7 @@ export function createReactExtension<
 //
 // @public (undocumented)
 export function createRoutableExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: () => Promise<T>; mountPoint: RouteRef }): Extension<T>;
 
 // Warning: (ae-missing-release-tag) "createRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -324,7 +325,7 @@ export function createRouteRef<
   Params extends {
     [param in ParamKey]: string;
   },
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(config: {
   id?: string;
   params?: ParamKey[];
@@ -341,7 +342,7 @@ export function createRouteRef<
 // @public (undocumented)
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyParams = never
+  ParentParams extends AnyParams = never,
 >(config: {
   id: string;
   path: Path;
@@ -368,7 +369,7 @@ export interface ElementCollection {
   getElements<
     Props extends {
       [name: string]: unknown;
-    }
+    },
   >(): Array<ReactElement<Props>>;
   selectByComponentData(query: {
     key: string;
@@ -420,9 +421,9 @@ export type Extension<T> = {
 // @public (undocumented)
 export type ExternalRouteRef<
   Params extends AnyParams = any,
-  Optional extends boolean = any
+  Optional extends boolean = any,
 > = {
-  readonly [routeRefType]: 'external';
+  $$routeRefType: 'external';
   params: ParamKeys<Params>;
   optional?: Optional;
 };
@@ -666,7 +667,7 @@ export type PendingAuthRequest = {
 // @public (undocumented)
 export type PluginConfig<
   Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes
+  ExternalRoutes extends AnyExternalRoutes,
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
@@ -719,7 +720,7 @@ export type RoutePath = string;
 //
 // @public (undocumented)
 export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
+  $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
   path: string;
   icon?: OldIconComponent;
@@ -810,7 +811,7 @@ export type StorageValueChange<T = any> = {
 //
 // @public (undocumented)
 export type SubRouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'sub';
+  $$routeRefType: 'sub';
   parent: RouteRef;
   path: string;
   params: ParamKeys<Params>;
@@ -884,9 +885,7 @@ export function useRouteRefParams<Params extends AnyParams>(
 // Warning: (ae-missing-release-tag) "withApis" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function withApis<T>(
-  apis: TypesToApiRefs<T>,
-): <P extends T>(
+export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
   WrappedComponent: React_2.ComponentType<P>,
 ) => {
   (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
@@ -902,8 +901,6 @@ export function withApis<T>(
 // src/apis/definitions/auth.d.ts:110:16 - (tsdoc-undefined-tag) The TSDoc tag "@IdentityApi" is not defined in this configuration
 // src/apis/definitions/auth.d.ts:113:68 - (tsdoc-undefined-tag) The TSDoc tag "@AuthRequestOptions" is not defined in this configuration
 // src/extensions/extensions.d.ts:14:5 - (ae-forgotten-export) The symbol "ComponentLoader" needs to be exported by the entry point index.d.ts
-// src/routing/RouteRef.d.ts:34:5 - (ae-forgotten-export) The symbol "OldIconComponent" needs to be exported by the entry point index.d.ts
+// src/routing/RouteRef.d.ts:35:5 - (ae-forgotten-export) The symbol "OldIconComponent" needs to be exported by the entry point index.d.ts
 // src/routing/types.d.ts:30:5 - (ae-forgotten-export) The symbol "ParamKeys" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

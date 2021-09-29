@@ -36,6 +36,7 @@ import { ServicesAccordions } from '../ServicesAccordions';
 import { CustomResources } from '../CustomResources';
 import EmptyStateImage from '../../assets/emptystate.svg';
 import {
+  ClusterContext,
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
   useKubernetesObjects,
@@ -65,7 +66,7 @@ const ClusterSummary = ({
     <Grid
       container
       direction="row"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       <Grid
@@ -73,7 +74,7 @@ const ClusterSummary = ({
         item
         container
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
         spacing={0}
       >
@@ -92,7 +93,7 @@ const ClusterSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -119,35 +120,37 @@ type ClusterProps = {
 const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   return (
-    <GroupedResponsesContext.Provider value={groupedResponses}>
-      <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
-        <Accordion TransitionProps={{ unmountOnExit: true }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <ClusterSummary
-              clusterName={clusterObjects.cluster.name}
-              totalNumberOfPods={groupedResponses.pods.length}
-              numberOfPodsWithErrors={podsWithErrors.size}
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid container direction="column">
-              <Grid item>
-                <CustomResources />
+    <ClusterContext.Provider value={clusterObjects.cluster}>
+      <GroupedResponsesContext.Provider value={groupedResponses}>
+        <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+          <Accordion TransitionProps={{ unmountOnExit: true }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <ClusterSummary
+                clusterName={clusterObjects.cluster.name}
+                totalNumberOfPods={groupedResponses.pods.length}
+                numberOfPodsWithErrors={podsWithErrors.size}
+              />
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container direction="column">
+                <Grid item>
+                  <CustomResources />
+                </Grid>
+                <Grid item>
+                  <DeploymentsAccordions />
+                </Grid>
+                <Grid item>
+                  <IngressesAccordions />
+                </Grid>
+                <Grid item>
+                  <ServicesAccordions />
+                </Grid>
               </Grid>
-              <Grid item>
-                <DeploymentsAccordions />
-              </Grid>
-              <Grid item>
-                <IngressesAccordions />
-              </Grid>
-              <Grid item>
-                <ServicesAccordions />
-              </Grid>
-            </Grid>
-          </AccordionDetails>
-        </Accordion>
-      </PodNamesWithErrorsContext.Provider>
-    </GroupedResponsesContext.Provider>
+            </AccordionDetails>
+          </Accordion>
+        </PodNamesWithErrorsContext.Provider>
+      </GroupedResponsesContext.Provider>
+    </ClusterContext.Provider>
   );
 };
 
@@ -208,7 +211,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               {kubernetesObjects?.items.length <= 0 && (
                 <Grid
                   container
-                  justify="space-around"
+                  justifyContent="space-around"
                   direction="row"
                   alignItems="center"
                   spacing={2}

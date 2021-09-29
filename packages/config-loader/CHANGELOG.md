@@ -1,5 +1,31 @@
 # @backstage/config-loader
 
+## 0.6.8
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config@0.1.9
+
+## 0.6.7
+
+### Patch Changes
+
+- 0ade9d02b: Include `devDependencies` and `optionalDependencies` in the detection of Backstage packages when collecting configuration schema.
+- 9b8cec063: Add support for config file watching through a new group of `watch` options to `loadConfig`.
+- Updated dependencies
+  - @backstage/config@0.1.7
+
+## 0.6.6
+
+### Patch Changes
+
+- e9d3983ee: Add option to populate the `filteredKeys` property when processing configuration with a schema.
+- Updated dependencies
+  - @backstage/config@0.1.6
+
 ## 0.6.5
 
 ### Patch Changes

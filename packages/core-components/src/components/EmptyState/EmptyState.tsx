@@ -38,13 +38,14 @@ type Props = {
   action?: JSX.Element;
 };
 
-export const EmptyState = ({ title, description, missing, action }: Props) => {
+export function EmptyState(props: Props) {
+  const { title, description, missing, action } = props;
   const classes = useStyles();
   return (
     <Grid
       container
       direction="row"
-      justify="space-around"
+      justifyContent="space-around"
       alignItems="flex-start"
       className={classes.root}
       spacing={2}
@@ -67,4 +68,4 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
       </Grid>
     </Grid>
   );
-};
+}

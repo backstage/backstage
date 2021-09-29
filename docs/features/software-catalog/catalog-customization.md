@@ -34,15 +34,14 @@ export const CustomCatalogPage = ({
 }: CatalogPageProps) => {
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
-      <Content>
-        <ContentHeader title="Components">
-          <CreateComponentButton />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <EntityListProvider>
+      <EntityListProvider>
+        <Content>
+          <ContentHeader titleComponent={<CatalogKindHeader />}>
+            <CreateButton title="Create Component" to={link} />
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
           <FilteredEntityLayout>
             <FilterContainer>
-              <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />
@@ -51,8 +50,8 @@ export const CustomCatalogPage = ({
               <CatalogTable columns={columns} actions={actions} />
             </EntityListContainer>
           </FilteredEntityLayout>
-        </EntityListProvider>
-      </Content>
+        </Content>
+      </EntityListProvider>
     </PageWithHeader>
   );
 };
@@ -187,7 +186,7 @@ new `CustomCatalogIndexPage`.
 # packages/app/src/App.tsx
 const routes = (
   <FlatRoutes>
-    <Navigate key="/" to="/catalog" />
+    <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
 +    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
 ```

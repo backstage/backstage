@@ -72,6 +72,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider: ComponentType<{}>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -105,14 +106,14 @@ type KeysWithType<Obj extends { [key in string]: any }, Type> = {
  */
 type PartialKeys<
   Map extends { [name in string]: any },
-  Keys extends keyof Map
+  Keys extends keyof Map,
 > = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
 
 /**
  * Creates a map of target routes with matching parameters based on a map of external routes.
  */
 type TargetRouteMap<
-  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+  ExternalRoutes extends { [name: string]: ExternalRouteRef },
 > = {
   [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
     infer Params,
@@ -123,7 +124,7 @@ type TargetRouteMap<
 };
 
 export type AppRouteBinder = <
-  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+  ExternalRoutes extends { [name: string]: ExternalRouteRef },
 >(
   externalRoutes: ExternalRoutes,
   targetRoutes: PartialKeys<

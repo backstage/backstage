@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
+/**
+ * Helpers for managing integrations towards external systems
+ *
+ * @packageDocumentation
+ */
+
 export * from './azure';
 export * from './bitbucket';
 export * from './github';
 export * from './gitlab';
 export * from './googleGcs';
+export * from './awsS3';
 export { defaultScmResolveUrl } from './helpers';
 export { ScmIntegrations } from './ScmIntegrations';
 export type { ScmIntegration, ScmIntegrationsGroup } from './types';

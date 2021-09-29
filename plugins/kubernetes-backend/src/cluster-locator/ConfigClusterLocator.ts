@@ -29,13 +29,42 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     // is required if authProvider is serviceAccount
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
-        return {
+        const authProvider = c.getString('authProvider');
+        const clusterDetails: ClusterDetails = {
           name: c.getString('name'),
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
-          authProvider: c.getString('authProvider'),
+          authProvider: authProvider,
         };
+        const dashboardUrl = c.getOptionalString('dashboardUrl');
+        if (dashboardUrl) {
+          clusterDetails.dashboardUrl = dashboardUrl;
+        }
+        const dashboardApp = c.getOptionalString('dashboardApp');
+        if (dashboardApp) {
+          clusterDetails.dashboardApp = dashboardApp;
+        }
+
+        switch (authProvider) {
+          case 'google': {
+            return clusterDetails;
+          }
+          case 'aws': {
+            const assumeRole = c.getOptionalString('assumeRole');
+            const externalId = c.getOptionalString('externalId');
+
+            return { assumeRole, externalId, ...clusterDetails };
+          }
+          case 'serviceAccount': {
+            return clusterDetails;
+          }
+          default: {
+            throw new Error(
+              `authProvider "${authProvider}" has no config associated with it`,
+            );
+          }
+        }
       }),
     );
   }

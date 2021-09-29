@@ -26,6 +26,7 @@ import {
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import {
+  CATALOG_FILTER_EXISTS,
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
@@ -35,6 +36,7 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
+/** @public */
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
 
@@ -69,9 +71,13 @@ export class CatalogClient implements CatalogApi {
       const filterParts: string[] = [];
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
-          filterParts.push(
-            `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-          );
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
         }
       }
 
@@ -130,6 +136,24 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
+    const response = await fetch(
+      `${await this.discoveryApi.getBaseUrl('catalog')}/refresh`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        },
+        method: 'POST',
+        body: JSON.stringify({ entityRef }),
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(await response.text());
+    }
+  }
+
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -152,7 +176,7 @@ export class CatalogClient implements CatalogApi {
       throw new Error(await response.text());
     }
 
-    const { location, entities } = await response.json();
+    const { location, entities, exists } = await response.json();
 
     if (!location) {
       throw new Error(`Location wasn't added: ${target}`);
@@ -161,6 +185,7 @@ export class CatalogClient implements CatalogApi {
     return {
       location,
       entities,
+      exists,
     };
   }
 

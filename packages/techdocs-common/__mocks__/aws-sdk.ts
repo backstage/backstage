@@ -13,45 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { S3 as S3Types } from 'aws-sdk';
 import { EventEmitter } from 'events';
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import { ReadStream } from 'fs';
 
 export { Credentials } from 'aws-sdk';
 
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-
-/**
- * @param Key Relative path to entity root dir. Contains either / or \ as file separator
- * depending upon the OS.
- */
-const checkFileExists = async (Key: string): Promise<boolean> => {
-  // Key will always have / as file separator irrespective of OS since S3 expects /.
-  // Normalize Key to OS specific path before checking if file exists.
-  const relativeFilePath = Key.split(path.posix.sep).join(path.sep);
-  const filePath = path.join(rootDir, Key);
-
-  try {
-    await fs.access(filePath, fs.constants.F_OK);
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
+const storage = global.storageFilesMock;
 
 export class S3 {
-  private readonly options;
-
-  constructor(options: S3Types.ClientConfiguration) {
-    this.options = options;
+  constructor() {
+    storage.emptyFiles();
   }
 
   headObject({ Key }: { Key: string }) {
     return {
       promise: async () => {
-        if (!(await checkFileExists(Key))) {
+        if (!storage.fileExists(Key)) {
           throw new Error('File does not exist');
         }
       },
@@ -59,20 +36,16 @@ export class S3 {
   }
 
   getObject({ Key }: { Key: string }) {
-    const filePath = path.join(rootDir, Key);
     return {
-      promise: () => checkFileExists(filePath),
+      promise: async () => storage.fileExists(Key),
       createReadStream: () => {
         const emitter = new EventEmitter();
         process.nextTick(() => {
-          if (fs.existsSync(filePath)) {
-            emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+          if (storage.fileExists(Key)) {
+            emitter.emit('data', Buffer.from(storage.readFile(Key)));
             emitter.emit('end');
           } else {
-            emitter.emit(
-              'error',
-              new Error(`The file ${filePath} does not exist !`),
-            );
+            emitter.emit('error', new Error(`The file ${Key} does not exist!`));
           }
         });
         return emitter;
@@ -86,22 +59,51 @@ export class S3 {
         if (Bucket === 'errorBucket') {
           throw new Error('Bucket does not exist');
         }
-
         return {};
       },
     };
   }
 
-  upload({ Key }: { Key: string }) {
+  upload({ Key, Body }: { Key: string; Body: ReadStream }) {
     return {
       promise: () =>
-        new Promise(async (resolve, reject) => {
-          if (!(await checkFileExists(Key))) {
-            reject(`The file ${Key} does not exist`);
-          } else {
-            resolve('');
-          }
+        new Promise(async resolve => {
+          const chunks = [];
+          Body.on('data', chunk => {
+            chunks.push(chunk);
+          });
+          Body.once('end', () => {
+            storage.writeFile(Key, Buffer.concat(chunks));
+            resolve(null);
+          });
         }),
+    };
+  }
+
+  listObjectsV2({ Bucket }) {
+    return {
+      promise: () => {
+        if (
+          Bucket === 'delete_stale_files_success' ||
+          Bucket === 'delete_stale_files_error'
+        ) {
+          return Promise.resolve({
+            Contents: [{ Key: 'stale_file.png' }],
+          });
+        }
+        return Promise.resolve({});
+      },
+    };
+  }
+
+  deleteObject({ Bucket }) {
+    return {
+      promise: () => {
+        if (Bucket === 'delete_stale_files_error') {
+          throw new Error('Message');
+        }
+        return Promise.resolve();
+      },
     };
   }
 }

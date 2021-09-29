@@ -40,7 +40,7 @@ export class CostInsightsClient implements CostInsightsApi { ... }
 
 ```ts
 // packages/app/src/api.ts
-import { createApiFactory } from '@backstage/core';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
 import { CostInsightsClient } from './path/to/file';
 
@@ -146,6 +146,36 @@ costInsights:
       name: Metric B
     metricC:
       name: Metric C
+```
+
+### Currencies (Optional)
+
+In the `Cost Overview` panel, users can choose from a dropdown of currencies to see costs in, such as Engineers or USD. Currencies must be defined as keys on the `currencies` field. A user-friendly label and unit are **required**. If not set, the `defaultCurrencies` in `currenc.ts` will be used.
+
+A currency without `kind` is reserved to calculate cost for `engineers`. There should only be one currency without `kind`.
+
+```yaml
+## ./app-config.yaml
+costInsights:
+  engineerCost: 200000
+  products:
+    productA:
+      name: Some Cloud Product
+      icon: storage
+    productB:
+      name: Some Other Cloud Product
+      icon: data
+  currencies:
+    metricA:
+      currencyA:
+        label: Currency A
+        unit: Unit A
+      currencyB:
+        label: Currency B
+        kind: CURRENCY_B
+        unit: Unit B
+        prefix: B
+        rate: 3.5
 ```
 
 ## Alerts

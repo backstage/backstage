@@ -17,14 +17,21 @@ import { V1Service } from '@kubernetes/client-node';
 // @public (undocumented)
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 
+// Warning: (ae-missing-release-tag) "ClusterAttributes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClusterAttributes {
+  dashboardApp?: string;
+  dashboardUrl?: string;
+  name: string;
+}
+
 // Warning: (ae-missing-release-tag) "ClusterObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface ClusterObjects {
   // (undocumented)
-  cluster: {
-    name: string;
-  };
+  cluster: ClusterAttributes;
   // (undocumented)
   errors: KubernetesFetchError[];
   // (undocumented)
@@ -164,6 +171,4 @@ export interface ServiceFetchResponse {
   // (undocumented)
   type: 'services';
 }
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+/**
+ * Common functionality library for Backstage backends
+ *
+ * @packageDocumentation
+ */
+
 export * from './cache';
-export * from './config';
+export { loadBackendConfig } from './config';
 export * from './database';
 export * from './discovery';
 export * from './hot';
