@@ -185,6 +185,20 @@ directory at `packages/app/src/components/techdocs`, and import and use it in
 />
 ```
 
+And if your Header do not need access to specific metadata, you can just use
+something like:
+
+```tsx
+<Route
+  path="/docs/:namespace/:kind/:name/*"
+  element={
+    <TechDocsReaderPage>
+      {() => <Header type="documentation" title="Custom Header" />}
+    </TechDocsReaderPage>
+  }
+/>
+```
+
 ### Without Search
 
 By default, the TechDocsReaderPage includes a in-context SearchBar where you can
