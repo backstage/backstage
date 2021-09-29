@@ -33,7 +33,7 @@
     "@backstage/catalog-model": "^0.9.3",
     "@backstage/config": "^0.1.10",
     "@backstage/plugin-catalog-backend": "^0.14.0",
-    "@microsoft/microsoft-graph-types": "^1.25.0",
+    "@microsoft/microsoft-graph-types": "^2.6.0",
     "cross-fetch": "^3.0.6",
     "lodash": "^4.17.21",
     "p-limit": "^3.0.2",
