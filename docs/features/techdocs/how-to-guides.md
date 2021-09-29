@@ -144,74 +144,80 @@ const AppRoutes = () => {
 
 ## How to customize the TechDocs reader page?
 
-### Custom Header
-
-This is done in your `app` package. By default, you might see something like
-this in your `App.tsx`:
+Similar to how it is possible to customize the TechDocs Home, it is also
+possible to customize the TechDocs Reader Page. It is done in your `app`
+package. By default, you might see something like this in your `App.tsx`:
 
 ```tsx
 const AppRoutes = () => {
-  <FlatRoutes>
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    />
-  </FlatRoutes>;
+  <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+    {techDocsPage}
+  </Route>;
 };
 ```
 
-But the `<TechDocsReaderPage />` component accepts children, which means that
-you can customize the page with any other Header component you would like to
-use.
-
-Most likely, you would want to create and maintain such a component in a new
-directory at `packages/app/src/components/techdocs`, and import and use it in
-`App.tsx`:
+The `techDocsPage` is a default techdocs reader page which lives in
+`packages/app/src/components/techdocs`. It includes the following without you
+having to set anything up.
 
 ```tsx
-<Route
-  path="/docs/:namespace/:kind/:name/*"
-  element={
-    <TechDocsReaderPage>
-      {({ techdocsMetadataValue, entityMetadataValue, entityId }) => (
-        <TechDocsCustomPageHeader
-          techDocsMetadata={techdocsMetadataValue}
-          entityMetadata={entityMetadataValue}
-          entityId={entityId}
-        />
-      )}
-    </TechDocsReaderPage>
-  }
-/>
+<TechDocsPage>
+  {({ techdocsMetadataValue, entityMetadataValue, entityId, onReady }) => (
+    <>
+      <TechDocsPageHeader
+        techDocsMetadata={techdocsMetadataValue}
+        entityMetadata={entityMetadataValue}
+        entityId={entityId}
+      />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityId={entityId} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
 ```
 
-And if your Header do not need access to specific metadata, you can just use
-something like:
+If you would like to compose your own `techDocsPage`, you can do so by replacing
+the children of TechDocsPage with something else. Maybe you are _just_
+interested in replacing the Header:
 
 ```tsx
-<Route
-  path="/docs/:namespace/:kind/:name/*"
-  element={
-    <TechDocsReaderPage>
-      {() => <Header type="documentation" title="Custom Header" />}
-    </TechDocsReaderPage>
-  }
-/>
+<TechDocsPage>
+  {({ entityId, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityId={entityId} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
 ```
 
-### Without Search
-
-By default, the TechDocsReaderPage includes a in-context SearchBar where you can
-search for documentation within the context of a site.
-
-If you would like to use the TechDocsReaderPage without the in-context
-SearchBar, you can set the withSearch property to false:
+Or maybe you want to disable the in-context search
 
 ```tsx
-<Route
-  path="/docs/:namespace/:kind/:name/*"
-  element={<TechDocsReaderPage withSearch={false} />}
-/>
+<TechDocsPage>
+  {({ entityId, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityId={entityId} withSearch={false} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+Or maybe you want to replace the entire TechDocs Page.
+
+```tsx
+<TechDocsPage>
+  <Header type="documentation" title="Custom Header" />
+  <Content data-testid="techdocs-content">
+    <p>my own content</p>
+  </Content>
+</TechDocsPage>
 ```
 
 ## How to migrate from TechDocs Alpha to Beta
