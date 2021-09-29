@@ -171,3 +171,105 @@ export default async function createPlugin(
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
+
+## Caching processing results
+
+The catalog periodically refreshes entities in the catalog, and in doing so it
+calls out to external systems to fetch changes. This can be taxing for upstream
+services and large deployments may get rate limited if too many requests are
+sent. Luckily many external systems provide ETag support to check for changes
+which usually doesn't count towards the quota and saves resources both
+internally and externally.
+
+The catalog has built in support for leveraging ETags when refreshing external
+locations in GitHub. This example aims to demonstrate how to add the same
+behavior for `system-x` that we implemented earlier.
+
+```ts
+import { UrlReader } from '@backstage/backend-common';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  results,
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogProcessorCache,
+  CatalogProcessorParser,
+} from '@backstage/plugin-catalog-backend';
+
+// It's recommended to always bump the CACHE_KEY version if you make
+// changes to the processor implementation or CacheItem.
+const CACHE_KEY = 'v1';
+
+// Our cache item contains the ETag used in the upstream request
+// as well as the processing result used when the Etag matches.
+// Bump the CACHE_KEY version if you make any changes to this type.
+type CacheItem = {
+  etag: string;
+  entity: Entity;
+};
+
+export class SystemXReaderProcessor implements CatalogProcessor {
+  constructor(private readonly reader: UrlReader) {}
+
+  // It's recommended to give the processor a unique name.
+  getProcessorName() {
+    return 'system-x-processor';
+  }
+
+  async readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+    _parser: CatalogProcessorParser,
+    cache: CatalogProcessorCache,
+  ): Promise<boolean> {
+    // Pick a custom location type string. A location will be
+    // registered later with this type.
+    if (location.type !== 'system-x') {
+      return false;
+    }
+    const cacheItem = await cache.get<CacheItem>(CACHE_KEY);
+    try {
+      // This assumes an URL reader that returns the response together with the ETag.
+      // We send the ETag from the previous run if it exists.
+      // The previous ETag will be set in the headers for the outgoing request and system-x
+      // is going to throw NOT_MODIFIED (HTTP 304) if the ETag matches.
+      const response = await this.reader.readUrl?.(location.target, {
+        etag: cacheItem?.etag,
+      });
+      if (!response) {
+        // readUrl is currently optional to implement so we have to check if we get a response back.
+        throw new Error(
+          'No URL reader that can parse system-x targets installed',
+        );
+      }
+
+      // ETag is optional in the response but we need it to cache the result.
+      if (!response.etag) {
+        throw new Error(
+          'No ETag returned from system-x, cannot use response for caching',
+        );
+      }
+
+      // For this example the JSON payload is a single entity.
+      const entity: Entity = JSON.parse(response.buffer.toString());
+      emit(results.entity(location, entity));
+
+      // Update the cache with the new ETag and entity used for the next run.
+      await cache.set<CacheItem>(CACHE_KEY, {
+        etag: response.etag,
+        entity,
+      });
+    } catch (error) {
+      if (error.name === 'NotModifiedError' && cacheItem) {
+        // The ETag matches and we have a cached value from the previous run.
+        emit(results.entity(location, cacheItem.entity));
+      }
+      const message = `Unable to read ${location.type}, ${error}`;
+      emit(results.generalError(location, message));
+    }
+
+    return true;
+  }
+}
+```
