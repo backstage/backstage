@@ -4661,10 +4661,10 @@
   resolved "https://registry.npmjs.org/@microsoft/fetch-event-source/-/fetch-event-source-2.0.1.tgz#9ceecc94b49fbaa15666e38ae8587f64acce007d"
   integrity sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==
 
-"@microsoft/microsoft-graph-types@^1.25.0":
-  version "1.25.0"
-  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.25.0.tgz#1f543ebc029a115dd1d48a1ae99d7ddd5ee9af57"
-  integrity sha512-RsuA+ROaU3voWzG9TVBkRKxmLatteRGduFDi5p0k3FUHho49rm9SvrA7DUyYbSXLy2xXRx9AnjKM9klYBeKEiQ==
+"@microsoft/microsoft-graph-types@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.6.0.tgz#d1f97049362ea5c0ed79199875f24707f9832b29"
+  integrity sha512-wK26kqUdQJLpgPh2Fk5jcRuFtnGLjNrXCWKM78zXnvAg+On246WYLz6+7amILJDC5rpaZTGXf4eynXoJFuNBTw==
 
 "@microsoft/tsdoc-config@~0.15.2":
   version "0.15.2"
