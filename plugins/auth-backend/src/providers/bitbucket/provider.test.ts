@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { BitbucketAuthProvider } from './provider';
+import { BitbucketAuthProvider, BitbucketOAuthResult } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { OAuthResult } from '../../lib/oauth';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
@@ -25,7 +24,7 @@ const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
 ) as unknown as jest.MockedFunction<
-  () => Promise<{ result: OAuthResult; privateInfo: any }>
+  () => Promise<{ result: BitbucketOAuthResult; privateInfo: any }>
 >;
 
 describe('createBitbucketProvider', () => {
@@ -58,6 +57,13 @@ describe('createBitbucketProvider', () => {
     mockFrameHandler.mockResolvedValueOnce({
       result: {
         fullProfile: {
+          _json: {
+            links: {
+              avatar: {
+                href: 'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
+              },
+            },
+          },
           emails: [{ value: 'conrad@example.com' }],
           displayName: 'Conrad',
           id: 'conrad',

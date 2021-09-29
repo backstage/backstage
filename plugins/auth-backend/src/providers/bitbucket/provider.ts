@@ -53,7 +53,7 @@ type PrivateInfo = {
 
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<OAuthResult>;
+  authHandler: AuthHandler<BitbucketOAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -213,7 +213,7 @@ export const bitbucketEmailSignInResolver: SignInResolver<OAuthResult> = async (
 
   const entity = await ctx.catalogIdentityClient.findUser({
     annotations: {
-      'bitbucket/email': profile.email,
+      'bitbucket.org/email': profile.email,
     },
   });
 
@@ -248,11 +248,11 @@ export type BitbucketProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  signIn?: {
+  signIn: {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
