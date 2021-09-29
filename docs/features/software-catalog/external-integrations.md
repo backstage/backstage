@@ -174,7 +174,7 @@ registered location and you'll see your entities start to appear in Backstage.
 
 ## Caching processing results
 
-The catalog periodically refresh entities in the catalog and by doing so it call
+The catalog periodically refreshes entities in the catalog, and in doing so it calls
 out to external systems to fetch changes. This can be taxing for upstream
 services and large deployments may get rate limited if too many requests are
 sent. Luckily many external systems provide ETag support to check for changes
