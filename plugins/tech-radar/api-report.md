@@ -41,6 +41,11 @@ export interface RadarEntrySnapshot {
   ringId: string;
 }
 
+// Warning: (ae-missing-release-tag) "RadarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function RadarPage(props: TechRadarPageProps): JSX.Element;
+
 // Warning: (ae-missing-release-tag) "RadarQuadrant" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -58,10 +63,10 @@ export interface RadarRing {
   name: string;
 }
 
-// Warning: (ae-missing-release-tag) "RadarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
-export function Router(props: TechRadarPageProps): JSX.Element;
+// @public @deprecated (undocumented)
+export const Router: typeof RadarPage;
 
 // Warning: (ae-missing-release-tag) "TechRadarApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -103,16 +108,16 @@ export interface TechRadarLoaderResponse {
 // Warning: (ae-missing-release-tag) "TechRadarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const TechRadarPage: Router;
+export const TechRadarPage: RadarPage;
 
 // Warning: (ae-missing-release-tag) "TechRadarPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type TechRadarPageProps = TechRadarComponentProps & {
-  title?: string;
-  subtitle?: string;
+export interface TechRadarPageProps extends TechRadarComponentProps {
   pageTitle?: string;
-};
+  subtitle?: string;
+  title?: string;
+}
 
 // Warning: (ae-missing-release-tag) "techRadarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -18,12 +18,7 @@ import { Progress } from '@backstage/core-components';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import React, { useEffect } from 'react';
 import { useAsync } from 'react-use';
-import {
-  RadarEntry,
-  techRadarApiRef,
-  TechRadarComponentProps,
-  TechRadarLoaderResponse,
-} from '../api';
+import { RadarEntry, techRadarApiRef, TechRadarLoaderResponse } from '../api';
 import Radar from '../components/Radar';
 import { Entry } from '../utils/types';
 
@@ -65,13 +60,43 @@ function matchFilter(filter?: string): (entry: RadarEntry) => boolean {
 }
 
 /**
+ * Properties of {@link TechRadarComponent}
+ */
+export interface TechRadarComponentProps {
+  /**
+   * ID of this Tech Radar
+   *
+   * @remarks
+   *
+   * Used when there are multiple Tech Radars and passed to {@link TechRadarApi.load}
+   */
+  id?: string;
+  /**
+   * Width of Tech Radar
+   */
+  width: number;
+  /**
+   * Height of Tech Radar
+   */
+  height: number;
+  /**
+   * Custom React props to the `<svg>` element created for Tech Radar
+   */
+  svgProps?: object;
+  /**
+   * Text to filter {@link RadarEntry} inside Tech Radar
+   */
+  searchText?: string;
+}
+
+/**
  * Main React component of Tech Radar
  *
  * @remarks
  *
  * For advanced use cases. Typically, you want to use {@link TechRadarPage}
  */
-function RadarComponent(props: TechRadarComponentProps) {
+export function RadarComponent(props: TechRadarComponentProps) {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
 
   const mapToEntries = (
@@ -114,5 +139,3 @@ function RadarComponent(props: TechRadarComponentProps) {
     </>
   );
 }
-
-export default RadarComponent;

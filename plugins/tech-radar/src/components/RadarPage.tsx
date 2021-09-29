@@ -23,14 +23,31 @@ import {
 } from '@backstage/core-components';
 import { Grid, Input, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { TechRadarPageProps } from '../api';
-import RadarComponent from '../components/RadarComponent';
+import { RadarComponent, TechRadarComponentProps } from './RadarComponent';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {
     overflowX: 'scroll',
   },
 }));
+
+/**
+ * Properties for {@link TechRadarPage}
+ */
+export interface TechRadarPageProps extends TechRadarComponentProps {
+  /**
+   * Title
+   */
+  title?: string;
+  /**
+   * Subtitle
+   */
+  subtitle?: string;
+  /**
+   * Page Title
+   */
+  pageTitle?: string;
+}
 
 /**
  * Main Page of Tech Radar
