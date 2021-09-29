@@ -15,23 +15,14 @@
  */
 
 import BitbucketIcon from '@material-ui/icons/FormatBold';
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { BitbucketSession } from './types';
 import {
-  OAuthApi,
-  SessionApi,
-  SessionState,
-  ProfileInfo,
   BackstageIdentity,
-  AuthRequestOptions,
-  Observable,
+  bitbucketAuthApiRef,
+  ProfileInfo,
 } from '@backstage/core-plugin-api';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import {
-  AuthSessionStore,
-  StaticAuthSessionManager,
-} from '../../../../lib/AuthSessionManager';
+
 import { OAuthApiCreateOptions } from '../types';
+import { OAuth2 } from '../oauth2';
 
 export type BitbucketAuthResponse = {
   providerInfo: {
@@ -49,94 +40,22 @@ const DEFAULT_PROVIDER = {
   icon: BitbucketIcon,
 };
 
-class BitbucketAuth implements OAuthApi, SessionApi {
+class BitbucketAuth {
   static create({
     discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     defaultScopes = ['team'],
-  }: OAuthApiCreateOptions) {
-    const connector = new DefaultAuthConnector({
+  }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T {
+    return OAuth2.create({
       discoveryApi,
-      environment,
+      oauthRequestApi,
       provider,
-      oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: BitbucketAuthResponse): BitbucketSession {
-        return {
-          ...res,
-          providerInfo: {
-            accessToken: res.providerInfo.accessToken,
-            scopes: BitbucketAuth.normalizeScope(res.providerInfo.scope),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
-          },
-        };
-      },
+      environment,
+      defaultScopes,
     });
-
-    const sessionManager = new StaticAuthSessionManager({
-      connector,
-      defaultScopes: new Set(defaultScopes),
-      sessionScopes: (session: BitbucketSession) => session.providerInfo.scopes,
-    });
-
-    const authSessionStore = new AuthSessionStore<BitbucketSession>({
-      manager: sessionManager,
-      storageKey: `${provider.id}Session`,
-      sessionScopes: (session: BitbucketSession) => session.providerInfo.scopes,
-    });
-
-    return new BitbucketAuth(authSessionStore);
-  }
-
-  constructor(
-    private readonly sessionManager: SessionManager<BitbucketSession>,
-  ) {}
-
-  async signIn() {
-    await this.getAccessToken();
-  }
-
-  async signOut() {
-    await this.sessionManager.removeSession();
-  }
-
-  sessionState$(): Observable<SessionState> {
-    return this.sessionManager.sessionState$();
-  }
-
-  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
-    const session = await this.sessionManager.getSession({
-      ...options,
-      scopes: BitbucketAuth.normalizeScope(scope),
-    });
-    return session?.providerInfo.accessToken ?? '';
-  }
-
-  async getBackstageIdentity(
-    options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity;
-  }
-
-  async getProfile(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.profile;
-  }
-
-  static normalizeScope(scope?: string): Set<string> {
-    if (!scope) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scope)
-      ? scope
-      : scope.split(/[\s|,]/).filter(Boolean);
-
-    return new Set(scopeList);
   }
 }
+
 export default BitbucketAuth;

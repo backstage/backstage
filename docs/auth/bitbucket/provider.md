@@ -5,9 +5,9 @@ sidebar_label: Bitbucket
 description: Adding Bitbucket OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Bitbucket authentication provider
-that can authenticate users using Bitbucket Cloud. This does **NOT** work with
-Bitbucket Server.
+The Backstage `core-plugin-api` package comes with a Bitbucket authentication
+provider that can authenticate users using Bitbucket Cloud. This does **NOT**
+work with Bitbucket Server.
 
 ## Create an OAuth Consumer in Bitbucket
 
@@ -47,24 +47,6 @@ The Bitbucket provider is a structure with two configuration keys:
 
 ## Adding the provider to the Backstage frontend
 
-Ensure identityProviders contains Bitbucket at
-`packages/app/src/identityProviders.ts`:
-
-```yaml
-import {
-  ...
-  bitbucketAuthApiRef,
-  ...
-} from '@backstage/core-plugin-api';
-
-export const providers = [
-...
-  {
-    id: 'bitbucket-auth-provider',
-    title: 'Bitbucket',
-    message: 'Sign In using Bitbucket Cloud',
-    apiRef: bitbucketAuthApiRef,
-  },
-...
-];
-```
+To add the provider to the frontend, add the `bitbucketAuthApi` reference and
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).

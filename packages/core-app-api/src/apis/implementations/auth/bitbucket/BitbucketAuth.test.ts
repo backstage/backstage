@@ -14,16 +14,34 @@
  * limitations under the License.
  */
 
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
+import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import BitbucketAuth from './BitbucketAuth';
 
-describe('BitbucketAuth', () => {
-  it('should get access token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
-    const githubAuth = new BitbucketAuth({ getSession } as any);
+const getSession = jest.fn();
 
-    expect(await githubAuth.getAccessToken()).toBe('access-token');
-    expect(getSession).toBeCalledTimes(1);
+jest.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+  RefreshingAuthSessionManager: class {
+    getSession = getSession;
+  },
+}));
+
+describe('BitbucketAuth', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it.each([
+    ['team api write_repository', ['team', 'api', 'write_repository']],
+    ['read_repository sudo', ['read_repository', 'sudo']],
+  ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    const gitlabAuth = BitbucketAuth.create({
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
+
+    gitlabAuth.getAccessToken(scope);
+    expect(getSession).toHaveBeenCalledWith({ scopes: new Set(scopes) });
   });
 });
