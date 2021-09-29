@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { merge } from 'lodash';
-import { Config } from '@backstage/config';
 import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
 
-type FilteredKeys = Record<string, string>;
+type RedactionMap = Record<string, string>;
 
 let rootLogger: winston.Logger;
-let filteredKeys: FilteredKeys;
-
-/**
- {
-    secret-1: 'integrations.github[0].token',
-    secrets-2: 'something'
- }
- */
+let redactionMap: RedactionMap;
 
 /** @public */
 export function getRootLogger(): winston.Logger {
@@ -42,8 +33,26 @@ export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
 
-export function setRootLoggerFilteredKeys(_filteredKeys: FilteredKeys) {
-  filteredKeys = _filteredKeys;
+/** @public */
+export function setRedactionMap(newRedactionMap: RedactionMap) {
+  redactionMap = newRedactionMap;
+}
+
+/**
+ * A winston formatting function that finds occurrences of filteredKeys
+ * and replaces them with the corresponding identifier.
+ */
+export function redactLogLine(info: winston.Logform.TransformableInfo) {
+  // TODO(hhogg): The logger is created before the config is loaded,
+  // because the logger is needed in the config loader. There is a risk of
+  // a secret being logged out during the config loading stage 🤷‍♂️
+  if (redactionMap) {
+    Object.entries(redactionMap || {}).forEach(([key, value]) => {
+      info.message = info.message.replace(new RegExp(key, 'g'), `{{${value}}}`);
+    });
+  }
+
+  return info;
 }
 
 /** @public */
@@ -51,22 +60,12 @@ export function createRootLogger(
   options: winston.LoggerOptions = {},
   env = process.env,
 ): winston.Logger {
-  // TODO(Harry/Himanshu): Get the config schema, filter all the configs with @visibility secret, and pass that to winston so that it can mask it in the logs. https://github.com/winstonjs/winston/issues/1079#issuecomment-382861053
-
   const logger = winston.createLogger(
     merge<LoggerOptions, LoggerOptions>(
       {
         level: env.LOG_LEVEL || 'info',
         format: winston.format.combine(
-          winston.format(info => {
-            // TODO(Harry/Himanshu): Iterate over all secrets, and substitute info.message string. Or dynamically create regex from all the secrets and do a one time substitution.
-            // example: info.message = info.message.replace(new RegExp('abc123', 'g'), "**[Redacted: Config integration.github.token]**");
-            // Make sure do it in a case-insensitive way
-            Object.entries(filteredKeys || {}).forEach(([key, value]) => {
-              info.message = info.message.replace(new RegExp(key, 'g'), value);
-            });
-            return info;
-          })(),
+          winston.format(redactLogLine)(),
           env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
         ),
         defaultMeta: {
