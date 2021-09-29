@@ -15,32 +15,33 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsApiRef } from '../../api';
-import { Reader } from './Reader';
-import { TechDocsNotFound } from './TechDocsNotFound';
-import { TechDocsPageHeader } from './TechDocsPageHeader';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
-
-import { Content, Page } from '@backstage/core-components';
 import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
+import { Page } from '@backstage/core-components';
+
+type RenderFunction = ({
+  techdocsMetadataValue,
+  entityMetadataValue,
+  entityId,
+}: {
+  techdocsMetadataValue?: TechDocsMetadata | undefined;
+  entityMetadataValue?: TechDocsEntityMetadata | undefined;
+  entityId: EntityName;
+  onReady: () => void;
+}) => JSX.Element;
 
 type Props = {
-  withSearch?: boolean;
-  children?: ({
-    techdocsMetadataValue,
-    entityMetadataValue,
-    entityId,
-  }: {
-    techdocsMetadataValue?: TechDocsMetadata | undefined;
-    entityMetadataValue?: TechDocsEntityMetadata | undefined;
-    entityId?: EntityName;
-  }) => JSX.Element;
+  children?: RenderFunction | React.ReactNode;
 };
 
-export const TechDocsPage = ({ children, withSearch = true }: Props) => {
+export const TechDocsPage = ({ children }: Props) => {
+  const outlet = useOutlet();
+
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { namespace, kind, name } = useParams();
 
@@ -63,36 +64,18 @@ export const TechDocsPage = ({ children, withSearch = true }: Props) => {
     setDocumentReady(true);
   }, [setDocumentReady]);
 
-  if (entityMetadataError) {
-    return <TechDocsNotFound errorMessage={entityMetadataError.message} />;
-  }
+  if (!children) return outlet;
 
   return (
     <Page themeId="documentation">
-      {children ? (
-        children({
-          techdocsMetadataValue,
-          entityMetadataValue,
-          entityId: { kind, namespace, name },
-        })
-      ) : (
-        <TechDocsPageHeader
-          techDocsMetadata={techdocsMetadataValue}
-          entityMetadata={entityMetadataValue}
-          entityId={{ kind, namespace, name }}
-        />
-      )}
-      <Content data-testid="techdocs-content">
-        <Reader
-          withSearch={withSearch}
-          onReady={onReady}
-          entityId={{
-            kind,
-            namespace,
-            name,
-          }}
-        />
-      </Content>
+      {children instanceof Function
+        ? children({
+            techdocsMetadataValue,
+            entityMetadataValue,
+            entityId: { kind, namespace, name },
+            onReady,
+          })
+        : children}
     </Page>
   );
 };
