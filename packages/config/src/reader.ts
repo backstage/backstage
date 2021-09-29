@@ -17,6 +17,7 @@
 import { JsonValue, JsonObject } from '@backstage/types';
 import { AppConfig, Config } from './types';
 import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 import mergeWith from 'lodash/mergeWith';
 
 // Update the same pattern in config-loader package if this is changed
@@ -116,6 +117,28 @@ export class ConfigReader implements Config {
       throw new Error(errors.missing(this.fullKey(key ?? '')));
     }
     return value as T;
+  }
+
+  getMap() {
+    const map: Record<string, any> = {};
+
+    const flatten = (data: JsonValue, path = '') => {
+      if (isObject(data)) {
+        Object.entries(data).forEach(([key, value]: [string, any]) =>
+          flatten(value, `${path}${path ? '.' : ''}${key}`),
+        );
+      } else if (Array.isArray(data)) {
+        data.forEach((value, key) => {
+          flatten(value, `${path}[${key}]`);
+        });
+      } else {
+        map[path] = data;
+      }
+    };
+
+    flatten(merge({}, this.fallback?.data, this.data));
+
+    return map;
   }
 
   getOptional<T = JsonValue>(key?: string): T | undefined {
