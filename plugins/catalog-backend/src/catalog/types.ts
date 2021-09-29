@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  EntityRelationSpec,
+  Location,
+} from '@backstage/catalog-model';
 import { EntityFilter, EntityPagination } from '../database/types';
 
 //
@@ -51,28 +56,38 @@ export type EntityUpsertResponse = {
   entity?: Entity;
 };
 
+/** @public */
+export type EntityAncestryResponse = {
+  root: EntityName;
+  items: Array<{
+    entity: Entity;
+    parents: EntityName[];
+  }>;
+};
+
+/** @public */
 export type EntitiesCatalog = {
   /**
    * Fetch entities.
    *
-   * @param request Request options
+   * @param request - Request options
    */
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
 
   /**
    * Removes a single entity.
    *
-   * @param uid The metadata.uid of the entity
+   * @param uid - The metadata.uid of the entity
    */
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
    * Writes a number of entities efficiently to storage.
    *
-   * @param requests The entities and their relations
-   * @param options.locationId The location that they all belong to (default none)
-   * @param options.dryRun Whether to throw away the results (default false)
-   * @param options.outputEntities Whether to return the resulting entities (default false)
+   * @param requests - The entities and their relations
+   * @param options.locationId - The location that they all belong to (default none)
+   * @param options.dryRun - Whether to throw away the results (default false)
+   * @param options.outputEntities - Whether to return the resulting entities (default false)
    */
   batchAddOrUpdateEntities(
     requests: EntityUpsertRequest[],
@@ -82,6 +97,13 @@ export type EntitiesCatalog = {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
+
+  /**
+   * Returns the full ancestry tree upward along reference edges.
+   *
+   * @param entityRef - The root of the tree
+   */
+  entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse>;
 };
 
 //
@@ -93,6 +115,7 @@ export type LocationUpdateStatus = {
   status: string | null;
   message: string | null;
 };
+
 export type LocationUpdateLogEvent = {
   id: string;
   status: 'fail' | 'success';

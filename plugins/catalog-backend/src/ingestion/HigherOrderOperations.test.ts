@@ -33,6 +33,7 @@ describe('HigherOrderOperations', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
+      entityAncestry: jest.fn(),
     };
     locationsCatalog = {
       addLocation: jest.fn(),

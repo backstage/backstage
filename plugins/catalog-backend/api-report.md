@@ -588,6 +588,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // (undocumented)
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
   // (undocumented)
+  entityAncestry(): Promise<never>;
+  // (undocumented)
   removeEntityByUid(uid: string): Promise<void>;
 }
 
@@ -805,8 +807,6 @@ export type DeferredEntity = {
 // @public
 export function durationText(startTimestamp: [number, number]): string;
 
-// Warning: (ae-missing-release-tag) "EntitiesCatalog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
@@ -819,6 +819,7 @@ export type EntitiesCatalog = {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
+  entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse>;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -854,6 +855,15 @@ function entity(
   atLocation: LocationSpec,
   newEntity: Entity,
 ): CatalogProcessorResult;
+
+// @public (undocumented)
+export type EntityAncestryResponse = {
+  root: EntityName;
+  items: Array<{
+    entity: Entity;
+    parents: EntityName[];
+  }>;
+};
 
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1501,12 +1511,9 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/catalog/types.d.ts:30:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/catalog/types.d.ts:36:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/catalog/types.d.ts:42:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/catalog/types.d.ts:43:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:44:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:45:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:52:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:53:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:54:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/database/types.d.ts:125:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:131:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/database/types.d.ts:132:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

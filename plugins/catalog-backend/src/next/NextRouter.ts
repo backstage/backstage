@@ -124,7 +124,19 @@ export async function createNextRouter(
           );
         }
         res.status(200).json(entities[0]);
-      });
+      })
+      .get(
+        '/entities/by-name/:kind/:namespace/:name/ancestry',
+        async (req, res) => {
+          const { kind, namespace, name } = req.params;
+          const response = await entitiesCatalog.entityAncestry({
+            kind,
+            namespace,
+            name,
+          });
+          res.status(200).json(response);
+        },
+      );
   }
 
   if (locationService) {

@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
+import {
+  Entity,
+  EntityName,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
+  EntityAncestryResponse,
 } from '../catalog/types';
 import { DbPageInfo, EntityPagination } from '../database/types';
 import {
   DbFinalEntitiesRow,
+  DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbSearchRow,
 } from './database/tables';
@@ -159,6 +167,71 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
+  }
+
+  async entityAncestry(entityRef: EntityName): Promise<EntityAncestryResponse> {
+    const rootRef = stringifyEntityRef(entityRef);
+    const [rootRow] = await this.database<DbRefreshStateRow>('refresh_state')
+      .leftJoin<DbFinalEntitiesRow>('final_entities', {
+        'refresh_state.entity_id': 'final_entities.entity_id',
+      })
+      .where('refresh_state.entity_ref', '=', rootRef)
+      .select({
+        entityJson: 'final_entities.final_entity',
+      });
+
+    if (!rootRow) {
+      throw new NotFoundError(`No such entity ${rootRef}`);
+    }
+
+    const rootEntity = JSON.parse(rootRow.entityJson) as Entity;
+    const seenEntityRefs = new Set<string>();
+    const todo = new Array<Entity>();
+    const items = new Array<{ entity: Entity; parents: EntityName[] }>();
+
+    for (
+      let current: Entity | undefined = rootEntity;
+      current;
+      current = todo.pop()
+    ) {
+      const currentRef = stringifyEntityRef(current);
+      seenEntityRefs.add(currentRef);
+
+      const parentRows = await this.database<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        .innerJoin<DbRefreshStateRow>('refresh_state', {
+          'refresh_state_references.source_entity_ref':
+            'refresh_state.entity_ref',
+        })
+        .innerJoin<DbFinalEntitiesRow>('final_entities', {
+          'refresh_state.entity_id': 'final_entities.entity_id',
+        })
+        .where('refresh_state_references.target_entity_ref', '=', currentRef)
+        .select({
+          parentEntityRef: 'refresh_state.entity_ref',
+          parentEntityJson: 'final_entities.final_entity',
+        });
+
+      const parentRefs: EntityName[] = [];
+      for (const { parentEntityRef, parentEntityJson } of parentRows) {
+        parentRefs.push(parseEntityRef(parentEntityRef));
+        if (!seenEntityRefs.has(parentEntityRef)) {
+          seenEntityRefs.add(parentEntityRef);
+          todo.push(JSON.parse(parentEntityJson));
+        }
+      }
+
+      items.push({
+        entity: current,
+        parents: parentRefs,
+      });
+    }
+
+    return {
+      root: entityRef,
+      items,
+    };
   }
 
   async batchAddOrUpdateEntities(): Promise<never> {
