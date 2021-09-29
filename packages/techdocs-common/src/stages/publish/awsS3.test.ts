@@ -352,5 +352,16 @@ describe('AwsS3Publish', () => {
         'content-type': 'text/plain; charset=utf-8',
       });
     });
+
+    it('should return 404 if file is not found', async () => {
+      const response = await request(app).get(
+        `/${entityTripletPath}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
+    });
   });
 });

@@ -245,10 +245,15 @@ export class OpenStackSwiftPublish implements PublisherBase {
 
           res.send(await streamToBuffer(stream));
         } catch (err) {
-          this.logger.warn(err.message);
-          res.status(404).send(err.message);
+          this.logger.warn(
+            `TechDocs OpenStack swift router failed to serve content from container ${this.containerName} at path ${filePath}: ${err.message}`,
+          );
+          res.status(404).send('File Not Found');
         }
       } else {
+        this.logger.warn(
+          `TechDocs OpenStack swift router failed to serve content from container ${this.containerName} at path ${filePath}: Not found`,
+        );
         res.status(404).send('File Not Found');
       }
     };
