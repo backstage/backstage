@@ -2,12 +2,15 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: bih
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
+  description: The VA Benefits Innovation Hub.
+  tags:
+    - Backstage
+    - typescript
+  annotations:
+    github.com/project-slug: department-of-veterans-affairs/bih
+    backstage.io/techdocs-ref: url:s3://zk-backstage-test/default/api/bih/
 spec:
   type: website
-  owner: john@example.com
+  owner: bip
+  system: bip
   lifecycle: experimental
