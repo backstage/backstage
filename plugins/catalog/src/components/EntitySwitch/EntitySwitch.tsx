@@ -32,7 +32,7 @@ const EntitySwitchCase = (_: {
 attachComponentData(EntitySwitchCase, ENTITY_SWITCH_KEY, true);
 
 type SwitchCase = {
-  if?: (entity: Entity) => boolean;
+  if?: (entity: Entity) => boolean | Promise<boolean>;
   children: JSX.Element;
 };
 

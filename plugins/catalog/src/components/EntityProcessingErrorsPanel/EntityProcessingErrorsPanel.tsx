@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-import { Entity, UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  Entity,
+  getEntityName,
+  UNSTABLE_EntityStatusItem,
+} from '@backstage/catalog-model';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
 
-const errorfilter = (i: UNSTABLE_EntityStatusItem) =>
+const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
   i.error &&
   i.level === 'error' &&
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
-export const hasCatalogProcessingErrors = (entity: Entity) =>
-  entity?.status?.items?.filter(errorfilter).length! > 0;
+export const hasCatalogProcessingErrors = async (entity: Entity) => {
+  return entity?.status?.items?.filter(errorFilter).length! > 0;
+  const catalogApi = useApi(catalogApiRef);
+  const { status } = await catalogApi.getEntityStatus(entity.id);
+  return status.some(errorFilter);
+};
 
 /**
  * Displays a list of errors if the entity is invalid.
@@ -36,16 +46,55 @@ export const EntityProcessingErrorsPanel = () => {
   const { entity } = useEntity();
   const catalogProcessingErrors =
     (entity?.status?.items?.filter(
-      errorfilter,
+      errorFilter,
     ) as Required<UNSTABLE_EntityStatusItem>[]) || [];
 
-  return (
-    <>
-      {catalogProcessingErrors.map(({ error }, index) => (
-        <Box key={index} mb={1}>
-          <ResponseErrorPanel error={error} />
-        </Box>
-      ))}
-    </>
+  return catalogProcessingErrors.map(({ error }, index) => (
+    <Box key={index} mb={1}>
+      <ResponseErrorPanel error={error} />
+    </Box>
+  ));
+};
+
+/**
+ * Displays a list of errors from the ancestors of the current entity.
+ */
+export const EntityAncestorsProcessingErrorsPanel = () => {
+  const { entity } = useEntity();
+  const catalogApi = useApi(catalogApiRef);
+
+  const { loading, value, error } = useAsync(() =>
+    catalogApi.getEntityAncestors({ entityName: getEntityName(entity) }),
   );
+
+  if (loading) {
+    return null;
+  }
+
+  if (error) {
+    return (
+      <Box mb={1}>
+        <ResponseErrorPanel error={error} />
+      </Box>
+    );
+  }
+
+  const ancestorErrors =
+    value?.items.flatMap(({ entity: ancestor }) =>
+      ancestor?.status?.items?.filter?.(errorFilter),
+    ) ?? [];
+
+  if (ancestorErrors.length === 0) {
+    return null;
+  }
+
+  const filteredAncestors = ancestorErrors.filter(
+    (e): e is UNSTABLE_EntityStatusItem => Boolean(e),
+  );
+
+  return filteredAncestors.map(({ error: ancestorError }, index) => (
+    <Box key={index} mb={1}>
+      <ResponseErrorPanel error={ancestorError!} />
+    </Box>
+  ));
 };

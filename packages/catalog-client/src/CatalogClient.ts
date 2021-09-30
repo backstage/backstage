@@ -33,6 +33,8 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
+  CatalogEntityAncestorsRequest,
+  CatalogEntityAncestorsResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
@@ -42,6 +44,24 @@ export class CatalogClient implements CatalogApi {
 
   constructor(options: { discoveryApi: DiscoveryApi }) {
     this.discoveryApi = options.discoveryApi;
+  }
+
+  async getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse> {
+    const { kind, namespace, name } = Object.fromEntries(
+      Object.entries(request.entityName).map(([k, v]) => [
+        k,
+        encodeURIComponent(v),
+      ]),
+    );
+
+    return await this.requestRequired(
+      'GET',
+      `/entity/by-name/${kind}/${namespace}/${name}/ancestry`,
+      options,
+    );
   }
 
   async getLocationById(
