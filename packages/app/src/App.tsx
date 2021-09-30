@@ -83,6 +83,7 @@ import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/cust
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { UserProfilesModuleGithubReadmePage } from '@backstage/plugin-user-profiles-module-github-readme';
 
 const app = createApp({
   apis,
@@ -199,6 +200,10 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route
+      path="/user-profiles-module-github-readme"
+      element={<UserProfilesModuleGithubReadmePage />}
+    />
   </FlatRoutes>
 );
 
