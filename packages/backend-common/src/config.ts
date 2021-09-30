@@ -191,13 +191,12 @@ export async function loadBackendConfig(options: {
     configRoot: paths.targetRoot,
     configPaths: configPaths.map(opt => resolvePath(opt)),
     watch: {
-      async onChange(newConfigs) {
+      onChange(newConfigs) {
         options.logger.info(
           `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
         );
 
         config.setConfig(ConfigReader.fromConfigs(newConfigs));
-        await updateRedactionMap(configs, options.logger);
       },
       stopSignal: new Promise(resolve => {
         if (currentCancelFunc) {
@@ -218,7 +217,10 @@ export async function loadBackendConfig(options: {
   );
 
   config.setConfig(ConfigReader.fromConfigs(configs));
-  await updateRedactionMap(configs, options.logger);
+
+  // Subscribe to config changes and update the redaction list for logging
+  updateRedactionMap(schema, configs, options.logger);
+  config.subscribe(() => updateRedactionMap(schema, configs, options.logger));
 
   return config;
 }

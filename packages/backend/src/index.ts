@@ -86,7 +86,6 @@ async function main() {
     argv: process.argv,
     logger,
   });
-
   const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
