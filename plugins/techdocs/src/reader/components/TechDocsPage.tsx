@@ -26,7 +26,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { Page } from '@backstage/core-components';
 
-type RenderFunction = ({
+export type TechDocsPageRenderFunction = ({
   techdocsMetadataValue,
   entityMetadataValue,
   entityId,
@@ -37,11 +37,11 @@ type RenderFunction = ({
   onReady: () => void;
 }) => JSX.Element;
 
-type Props = {
-  children?: RenderFunction | React.ReactNode;
+export type TechDocsPageProps = {
+  children?: TechDocsPageRenderFunction | React.ReactNode;
 };
 
-export const TechDocsPage = ({ children }: Props) => {
+export const TechDocsPage = ({ children }: TechDocsPageProps) => {
   const outlet = useOutlet();
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);

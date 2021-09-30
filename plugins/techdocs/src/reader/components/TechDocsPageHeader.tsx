@@ -27,7 +27,7 @@ import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 
-type TechDocsPageHeaderProps = {
+export type TechDocsPageHeaderProps = {
   entityId: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
