@@ -38,7 +38,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@types/dagre": "^0.7.44",
-    "@types/prop-types": "^15.7.3",
     "@types/react": "*",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",

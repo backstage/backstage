@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export { Avatar } from './Avatar';
-export type { AvatarClassKey } from './Avatar';
+export type { AvatarClassKey, AvatarProps } from './Avatar';

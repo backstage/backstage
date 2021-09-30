@@ -39,12 +39,31 @@ const useStyles = makeStyles(
   { name: 'BackstageAvatar' },
 );
 
-export type AvatarProps = {
+/**
+ * Properties for {@link Avatar}
+ */
+export interface AvatarProps {
+  /**
+   * A display name, which will be used to generate initials as a fallback in case a picture is not provided.
+   */
   displayName?: string;
+  /**
+   * URL to avatar image source
+   */
   picture?: string;
+  /**
+   * Custom styles applied to avatar
+   */
   customStyles?: CSSProperties;
-};
+}
 
+/**
+ *  Component rendering an Avatar
+ *
+ *  @remarks
+ *
+ *  Based on https://v4.mui.com/components/avatars/#avatar with some styling adjustment and two-letter initials
+ */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
   const classes = useStyles();

@@ -20,10 +20,16 @@ import React from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
-type CreateButtonProps = {
+/**
+ * Properties for {@link CreateButton}
+ */
+export type CreateButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps, 'to'>>;
 
+/**
+ * Responsive Button giving consistent UX for creation of different things
+ */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;
   const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
