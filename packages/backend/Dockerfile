@@ -30,8 +30,8 @@ RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 RUN chown -hR node /app
 
-USER node
+EXPOSE 7000
 
-EXPOSE 80
+USER node
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
