@@ -70,8 +70,11 @@ export type BitbucketOAuthResult = {
 };
 
 export type BitbucketPassportProfile = PassportProfile & {
+  displayName?: string;
+  username?: string;
   avatarUrl?: string;
   _json?: {
+    uuid?: string;
     links?: {
       avatar?: {
         href?: string;
@@ -200,42 +203,65 @@ export class BitbucketAuthProvider implements OAuthHandlers {
   }
 }
 
-export const bitbucketEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
+export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResult> =
+  async (info, ctx) => {
+    const { result } = info;
 
-  if (!profile.email) {
-    throw new Error('Bitbucket profile contained no email');
-  }
+    if (!result.fullProfile.username) {
+      throw new Error('Bitbucket profile contained no Username');
+    }
 
-  const entity = await ctx.catalogIdentityClient.findUser({
-    annotations: {
-      'bitbucket.org/email': profile.email,
-    },
-  });
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'bitbucket.org/username': result.fullProfile.username,
+      },
+    });
 
-  const claims = getEntityClaims(entity);
-  const token = await ctx.tokenIssuer.issueToken({ claims });
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
 
-  return { id: entity.metadata.name, entity, token };
-};
+    return { id: entity.metadata.name, entity, token };
+  };
 
-const bitbucketDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { fullProfile } = info.result;
+export const bitbucketDisplayNameSignInResolver: SignInResolver<BitbucketOAuthResult> =
+  async (info, ctx) => {
+    const { result } = info;
 
-  const userId = fullProfile.username || fullProfile.id;
+    if (!result.fullProfile.displayName) {
+      throw new Error('Bitbucket profile contained no display name');
+    }
 
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
-  });
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'bitbucket.org/displayName': result.fullProfile.displayName,
+      },
+    });
 
-  return { id: userId, token };
-};
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
+
+export const bitbucketUuidSignInResolver: SignInResolver<BitbucketOAuthResult> =
+  async (info, ctx) => {
+    const { result } = info;
+
+    if (!result.fullProfile?._json?.uuid) {
+      throw new Error('Bitbucket profile contained no UUID');
+    }
+
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'bitbucket.org/uuid': result.fullProfile._json?.uuid,
+      },
+    });
+
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
 
 export type BitbucketProviderOptions = {
   /**
@@ -256,7 +282,7 @@ export type BitbucketProviderOptions = {
 };
 
 export const createBitbucketProvider = (
-  options?: BitbucketProviderOptions,
+  options: BitbucketProviderOptions,
 ): AuthProviderFactory => {
   return ({
     providerId,
@@ -276,17 +302,15 @@ export const createBitbucketProvider = (
         tokenIssuer,
       });
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+      const authHandler: AuthHandler<BitbucketOAuthResult> =
+        options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? bitbucketDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
+      const signInResolver: SignInResolver<BitbucketOAuthResult> = info =>
+        options.signIn.resolver(info, {
           catalogIdentityClient,
           tokenIssuer,
           logger,
