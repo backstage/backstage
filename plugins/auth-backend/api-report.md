@@ -84,6 +84,57 @@ export type BackstageIdentity = {
   entity?: Entity;
 };
 
+// Warning: (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "bitbucketEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const bitbucketEmailSignInResolver: SignInResolver<OAuthResult>;
+
+// Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketOAuthResult = {
+  fullProfile: BitbucketPassportProfile;
+  params: {
+    id_token?: string;
+    scope: string;
+    expires_in: number;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
+// Warning: (ae-missing-release-tag) "BitbucketPassportProfile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketPassportProfile = Profile & {
+  avatarUrl?: string;
+  _json?: {
+    links?: {
+      avatar?: {
+        href?: string;
+      };
+    };
+  };
+};
+
+// Warning: (ae-missing-release-tag) "BitbucketProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn: {
+    resolver: SignInResolver<OAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "createBitbucketProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createBitbucketProvider: (
+  options?: BitbucketProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createGithubProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -468,8 +519,7 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:50:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:58:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// src/providers/bitbucket/provider.d.ts:57:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:109:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:115:5 - (ae-forgotten-export) The symbol "ExperimentalIdentityResolver" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:132:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative

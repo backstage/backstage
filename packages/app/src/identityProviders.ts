@@ -85,7 +85,7 @@ export const providers = [
   {
     id: 'bitbucket-auth-provider',
     title: 'Bitbucket',
-    message: 'Sign In using Bitbucket Cloud',
+    message: 'Sign In using Bitbucket',
     apiRef: bitbucketAuthApiRef,
   },
 ];

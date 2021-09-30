@@ -18,4 +18,8 @@ export {
   createBitbucketProvider,
   bitbucketEmailSignInResolver,
 } from './provider';
-export type { BitbucketProviderOptions } from './provider';
+export type {
+  BitbucketProviderOptions,
+  BitbucketPassportProfile,
+  BitbucketOAuthResult,
+} from './provider';

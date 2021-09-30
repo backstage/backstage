@@ -20,6 +20,7 @@ export * from './google';
 export * from './microsoft';
 export * from './oauth2';
 export * from './okta';
+export * from './bitbucket';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 
