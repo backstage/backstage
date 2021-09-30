@@ -16,7 +16,6 @@
 
 import express from 'express';
 import passport, { Profile as PassportProfile } from 'passport';
-// @ts-ignore passport-bitbucket-oauth2 does not have type definitions
 import { Strategy as BitbucketStrategy } from 'passport-bitbucket-oauth2';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
