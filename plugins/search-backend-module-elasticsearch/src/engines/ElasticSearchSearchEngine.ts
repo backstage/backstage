@@ -59,12 +59,6 @@ type ElasticSearchResult = {
   _source: IndexableDocument;
 };
 
-function duration(startTimestamp: [number, number]): string {
-  const delta = process.hrtime(startTimestamp);
-  const seconds = delta[0] + delta[1] / 1e9;
-  return `${seconds.toFixed(1)}s`;
-}
-
 function isBlank(str: string) {
   return (isEmpty(str) && !isNumber(str)) || nan(str);
 }
@@ -168,30 +162,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
-    const index = this.constructIndexName(type, `${Date.now()}`);
     const indexer = new ElasticSearchEngineIndexer({
       type,
-      index,
+      indexPrefix: this.indexPrefix,
+      indexSeparator: this.indexSeparator,
       alias,
       elasticSearchClient: this.elasticSearchClient,
       logger: this.logger,
-    });
-
-    // Rotate aliases upon completion.
-    indexer.on('close', async () => {
-      this.logger.info(`Indexing completed for index ${type}`);
-      try {
-        await this.elasticSearchClient.indices.updateAliases({
-          body: {
-            actions: [
-              { remove: { index: this.constructIndexName(type, '*'), alias } },
-              { add: { index, alias } },
-            ],
-          },
-        });
-      } catch (e) {
-        this.logger.error(`Unable to rotate indices: ${e}`);
-      }
     });
 
     // Attempt cleanup upon failure.
@@ -199,13 +176,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       this.logger.error(`Failed to index documents for type ${type}`, e);
       try {
         const response = await this.elasticSearchClient.indices.exists({
-          index,
+          index: indexer.indexName,
         });
         const indexCreated = response.body;
         if (indexCreated) {
-          this.logger.info(`Removing created index ${index}`);
+          this.logger.info(`Removing created index ${indexer.indexName}`);
           await this.elasticSearchClient.indices.delete({
-            index,
+            index: indexer.indexName,
           });
         }
       } catch (error) {
@@ -255,10 +232,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 
   private readonly indexSeparator = '-index__';
-
-  private constructIndexName(type: string, postFix: string) {
-    return `${this.indexPrefix}${type}${this.indexSeparator}${postFix}`;
-  }
 
   private getTypeFromIndex(index: string) {
     return index

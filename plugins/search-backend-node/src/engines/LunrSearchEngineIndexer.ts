@@ -31,6 +31,10 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.builder.searchPipeline.add(lunr.stemmer);
   }
 
+  // No async initialization required.
+  async initialize(): Promise<void> {}
+  async finalize(): Promise<void> {}
+
   async index(documents: IndexableDocument[]): Promise<void> {
     if (!this.schemaInitialized) {
       // Make this lunr index aware of all relevant fields.

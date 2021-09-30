@@ -22,20 +22,29 @@ import { Logger } from 'winston';
 
 type IndexerOptions = {
   type: string;
-  index: string;
+  indexPrefix: string;
+  indexSeparator: string;
   alias: string;
   logger: Logger;
   elasticSearchClient: Client;
 };
 
+function duration(startTimestamp: [number, number]): string {
+  const delta = process.hrtime(startTimestamp);
+  const seconds = delta[0] + delta[1] / 1e9;
+  return `${seconds.toFixed(1)}s`;
+}
+
 export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
-  private initialized = false;
   private received: number = 0;
   private processed: number = 0;
   private removableIndices: string[] = [];
 
+  private readonly startTimestamp: [number, number];
   private readonly type: string;
-  private readonly indexName: string;
+  public readonly indexName: string;
+  private readonly indexPrefix: string;
+  private readonly indexSeparator: string;
   private readonly alias: string;
   private readonly logger: Logger;
   private readonly sourceStream: Readable;
@@ -45,8 +54,11 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor(options: IndexerOptions) {
     super({ batchSize: 100 });
     this.logger = options.logger;
+    this.startTimestamp = process.hrtime();
     this.type = options.type;
-    this.indexName = options.index;
+    this.indexPrefix = options.indexPrefix;
+    this.indexSeparator = options.indexSeparator;
+    this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
     this.elasticSearchClient = options.elasticSearchClient;
     this.sourceStream = new Readable({ objectMode: true });
@@ -54,6 +66,9 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     // eslint-disable-next-line consistent-this
     const that = this;
+
+    // Keep a reference to the ES Bulk helper so that we can know when all
+    // documents have been successfully written to ES.
     this.bulkResult = this.elasticSearchClient.helpers.bulk({
       datasource: this.sourceStream,
       onDocument() {
@@ -66,57 +81,7 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
     });
   }
 
-  async index(documents: IndexableDocument[]): Promise<void> {
-    await this.isInitialized();
-    await this.isReady();
-    documents.forEach(document => {
-      this.received++;
-      this.sourceStream.push(document);
-    });
-  }
-
-  async _final(done: Function) {
-    super._final(async e => {
-      if (e) {
-        done(e);
-        return;
-      }
-
-      await this.isReady();
-      this.sourceStream.push(null);
-      await this.bulkResult;
-      done();
-      this.emit('close');
-    });
-  }
-
-  async _destroy() {
-    if (this.removableIndices.length) {
-      this.logger.info('Removing stale search indices', this.removableIndices);
-      await this.elasticSearchClient.indices.delete({
-        index: this.removableIndices,
-      });
-    }
-  }
-
-  private isReady(): Promise<void> {
-    return new Promise(resolve => {
-      const interval = setInterval(() => {
-        if (this.received === this.processed) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 50);
-    });
-  }
-
-  private async isInitialized(): Promise<void> {
-    if (this.initialized) {
-      return;
-    }
-
-    this.initialized = true;
-
+  async initialize(): Promise<void> {
     this.logger.info(`Started indexing documents for index ${this.type}`);
 
     const aliases = await this.elasticSearchClient.cat.aliases({
@@ -131,5 +96,77 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
     await this.elasticSearchClient.indices.create({
       index: this.indexName,
     });
+  }
+
+  async index(documents: IndexableDocument[]): Promise<void> {
+    await this.isReady();
+    documents.forEach(document => {
+      this.received++;
+      this.sourceStream.push(document);
+    });
+  }
+
+  async finalize(): Promise<void> {
+    // Wait for all documents to be processed.
+    await this.isReady();
+
+    // Close off the underlying stream connected to ES, indicating that no more
+    // documents will be written.
+    this.sourceStream.push(null);
+
+    // Wait for the bulk helper to finish processing.
+    const result = await this.bulkResult;
+
+    // Rotate aliases upon completion. Allow errors to bubble up so that we can
+    // clean up the create index.
+    this.logger.info(
+      `Indexing completed for index ${this.type} in ${duration(
+        this.startTimestamp,
+      )}`,
+      result,
+    );
+    await this.elasticSearchClient.indices.updateAliases({
+      body: {
+        actions: [
+          {
+            remove: { index: this.constructIndexName('*'), alias: this.alias },
+          },
+          { add: { index: this.indexName, alias: this.alias } },
+        ],
+      },
+    });
+
+    // If any indices are removable, remove them. Do not bubble up this error,
+    // as doing so would delete the now aliased index. Log instead.
+    if (this.removableIndices.length) {
+      this.logger.info('Removing stale search indices', this.removableIndices);
+      try {
+        await this.elasticSearchClient.indices.delete({
+          index: this.removableIndices,
+        });
+      } catch (e) {
+        this.logger.warn(`Failed to remove stale search indices: ${e}`);
+      }
+    }
+  }
+
+  /**
+   * Ensures that the number of documents sent over the wire to ES matches the
+   * number of documents this stream has received so far. This helps manage
+   * backpressure in other parts of the indexing pipeline.
+   */
+  private isReady(): Promise<void> {
+    return new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (this.received === this.processed) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 50);
+    });
+  }
+
+  private constructIndexName(postFix: string) {
+    return `${this.indexPrefix}${this.type}${this.indexSeparator}${postFix}`;
   }
 }

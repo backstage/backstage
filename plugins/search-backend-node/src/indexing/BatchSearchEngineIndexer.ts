@@ -26,15 +26,52 @@ type BatchSearchEngineOptions = {
 export abstract class BatchSearchEngineIndexer extends Writable {
   private batchSize: number;
   private currentBatch: IndexableDocument[] = [];
+  private initialized: Promise<undefined | Error>;
 
   constructor(options: BatchSearchEngineOptions) {
     super({ objectMode: true });
     this.batchSize = options.batchSize;
+
+    // @todo Once node v15 is minimum, convert to _construct implementation.
+    this.initialized = new Promise(done => {
+      // Necessary to allow concrete implementation classes to construct
+      // themselves before calling their initialize() methods.
+      setImmediate(async () => {
+        try {
+          await this.initialize();
+          done(undefined);
+        } catch (e) {
+          done(e as Error);
+        }
+      });
+    });
   }
 
+  /**
+   * Receives an array of indexable documents (of size this.batchSize) which
+   * should be written to the search engine. This method won't be called again
+   * at least until it resolves.
+   */
   public abstract index(documents: IndexableDocument[]): Promise<void>;
 
+  /**
+   * Any asynchronous setup tasks can be performed here.
+   */
+  public abstract initialize(): Promise<void>;
+
+  /**
+   * Any asynchronous teardown tasks can be performed here.
+   */
+  public abstract finalize(): Promise<void>;
+
   async _write(doc: IndexableDocument, _e: any, done: ErrorCallback) {
+    // Wait for init before proceeding. Throw error if initialization failed.
+    const maybeError = await this.initialized;
+    if (maybeError) {
+      done(maybeError);
+      return;
+    }
+
     if (this.currentBatch.length < this.batchSize) {
       this.currentBatch.push(doc);
       done();
@@ -54,6 +91,7 @@ export abstract class BatchSearchEngineIndexer extends Writable {
     try {
       await this.index(this.currentBatch);
       this.currentBatch = [];
+      await this.finalize();
       done();
     } catch (e) {
       done(e as Error);
