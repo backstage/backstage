@@ -369,4 +369,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
     return response.entity;
   }
+
+  async entityAncestry(): Promise<never> {
+    throw new Error('Not implemented');
+  }
 }
