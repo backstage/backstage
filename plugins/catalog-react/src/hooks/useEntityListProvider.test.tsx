@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import qs from 'qs';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import {
-  EntityListProvider,
-  useEntityListProvider,
-} from './useEntityListProvider';
-import { catalogApiRef } from '../api';
-import { UserListFilterKind } from '../types';
-import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
-import { EntityKindPicker, UserListPicker } from '../components';
-
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
   ConfigApi,
@@ -37,6 +24,19 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { MockStorageApi } from '@backstage/test-utils';
+import { act, renderHook } from '@testing-library/react-hooks';
+import qs from 'qs';
+import React, { PropsWithChildren } from 'react';
+import { catalogApiRef } from '../api';
+import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
+import { EntityKindPicker, UserListPicker } from '../components';
+import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
+import { UserListFilterKind } from '../types';
+import {
+  EntityListProvider,
+  useEntityListProvider,
+} from './useEntityListProvider';
 
 const entities: Entity[] = [
   {
@@ -81,6 +81,10 @@ const apis = ApiRegistry.from([
   [catalogApiRef, mockCatalogApi],
   [identityApiRef, mockIdentityApi],
   [storageApiRef, MockStorageApi.create()],
+  [
+    starredEntitiesApiRef,
+    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
+  ],
 ]);
 
 const wrapper = ({

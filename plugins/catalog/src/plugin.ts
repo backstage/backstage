@@ -18,7 +18,9 @@ import { CatalogClient } from '@backstage/catalog-client';
 import {
   catalogApiRef,
   catalogRouteRef,
+  DefaultStarredEntitiesApi,
   entityRouteRef,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
 import { createComponentRouteRef, viewTechDocRouteRef } from './routes';
@@ -29,6 +31,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 
 export const catalogPlugin = createPlugin({
@@ -42,6 +45,13 @@ export const catalogPlugin = createPlugin({
           client: new CatalogClient({ discoveryApi }),
           identityApi,
         }),
+    }),
+
+    createApiFactory({
+      api: starredEntitiesApiRef,
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) =>
+        new DefaultStarredEntitiesApi({ storageApi }),
     }),
   ],
   routes: {

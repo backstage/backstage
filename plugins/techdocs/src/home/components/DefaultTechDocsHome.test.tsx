@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
-import React from 'react';
-import { DefaultTechDocsHome } from './DefaultTechDocsHome';
-
 import {
   ApiProvider,
   ApiRegistry,
@@ -30,7 +24,17 @@ import {
   configApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  CatalogApi,
+  catalogApiRef,
+  DefaultStarredEntitiesApi,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
+import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
+import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
 jest.mock('@backstage/plugin-catalog-react', () => {
   const actual = jest.requireActual('@backstage/plugin-catalog-react');
@@ -63,10 +67,13 @@ describe('TechDocs Home', () => {
     },
   });
 
+  const storageApi = MockStorageApi.create();
+
   const apiRegistry = ApiRegistry.from([
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
     [storageApiRef, MockStorageApi.create()],
+    [starredEntitiesApiRef, new DefaultStarredEntitiesApi({ storageApi })],
   ]);
 
   it('should render a TechDocs home page', async () => {
