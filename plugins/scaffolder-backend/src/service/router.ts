@@ -200,8 +200,7 @@ export async function createRouter(
         }
 
         const baseUrl = getEntityBaseUrl(template);
-        // TODO: need to make sure that the TaskSpec is the right format here.
-        // If it's beta2 use values, beta3 uses parameters to clear that up.
+
         taskSpec =
           template.apiVersion === 'backstage.io/v1beta2'
             ? {

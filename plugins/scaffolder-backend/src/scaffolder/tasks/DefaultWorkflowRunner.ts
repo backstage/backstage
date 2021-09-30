@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateActionRegistry } from '..';
 import {
   Task,
   TaskSpec,
@@ -33,6 +32,7 @@ import { PassThrough } from 'stream';
 import { isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
+import { TemplateActionRegistry } from '../actions';
 
 type Options = {
   workingDirectory: string;
