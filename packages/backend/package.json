@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -24,16 +24,16 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.4",
+    "@backstage/backend-common": "^0.9.5",
     "@backstage/catalog-client": "^0.4.0",
     "@backstage/catalog-model": "^0.9.3",
     "@backstage/config": "^0.1.10",
-    "@backstage/integration": "^0.6.5",
+    "@backstage/integration": "^0.6.6",
     "@backstage/plugin-app-backend": "^0.3.16",
-    "@backstage/plugin-auth-backend": "^0.4.1",
-    "@backstage/plugin-azure-devops-backend": "^0.1.0",
+    "@backstage/plugin-auth-backend": "^0.4.2",
+    "@backstage/plugin-azure-devops-backend": "^0.1.1",
     "@backstage/plugin-badges-backend": "^0.1.10",
-    "@backstage/plugin-catalog-backend": "^0.14.0",
+    "@backstage/plugin-catalog-backend": "^0.15.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.11",
     "@backstage/plugin-graphql-backend": "^0.1.9",
     "@backstage/plugin-jenkins-backend": "^0.1.5",
@@ -53,7 +53,7 @@
     "@octokit/rest": "^18.5.3",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.2.1",
-    "example-app": "^0.2.47",
+    "example-app": "^0.2.48",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-prom-bundle": "^6.3.6",
@@ -65,7 +65,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.13",
+    "@backstage/cli": "^0.7.14",
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5"
