@@ -182,7 +182,7 @@ export type PanelType = 'DocsCardGrid' | 'DocsTable';
 //
 // @public (undocumented)
 export const Reader: ({
-  entityId,
+  entityRef,
   onReady,
   withSearch,
 }: Props_3) => JSX.Element;
@@ -278,7 +278,7 @@ export const TechdocsPage: () => JSX.Element;
 //
 // @public (undocumented)
 export const TechDocsPageHeader: ({
-  entityId,
+  entityRef,
   entityMetadata,
   techDocsMetadata,
 }: TechDocsPageHeaderProps) => JSX.Element;
@@ -287,7 +287,7 @@ export const TechDocsPageHeader: ({
 //
 // @public (undocumented)
 export type TechDocsPageHeaderProps = {
-  entityId: EntityName;
+  entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 };
@@ -305,11 +305,11 @@ export type TechDocsPageProps = {
 export type TechDocsPageRenderFunction = ({
   techdocsMetadataValue,
   entityMetadataValue,
-  entityId,
+  entityRef,
 }: {
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
-  entityId: EntityName;
+  entityRef: EntityName;
   onReady: () => void;
 }) => JSX.Element;
 
