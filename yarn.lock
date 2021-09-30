@@ -7620,9 +7620,9 @@
     "@types/superagent" "*"
 
 "@types/swagger-ui-react@^3.23.3":
-  version "3.35.1"
-  resolved "https://registry.npmjs.org/@types/swagger-ui-react/-/swagger-ui-react-3.35.1.tgz#74623b7a8e0ee2b8df5e3eadea654b5eb3340de1"
-  integrity sha512-jQhfM9dHG596me/Js3hk8IjTvqXYjR9MGPcUQlUScHlPoKHoVY3ZrQW4UWlboqtKFORW9vnn9oqL7zeieJm/xg==
+  version "3.35.2"
+  resolved "https://registry.npmjs.org/@types/swagger-ui-react/-/swagger-ui-react-3.35.2.tgz#f362a60a0d71c2da5dc1ab420ed4aa1721e6c8a0"
+  integrity sha512-HA/1pw5uzn3+3gDX1R50SpzP/3GiqhUZoT5LLl8rhVu1i39Et1acz9ryuzmf5i4PoZNIfLcZYBlIok0P/6qmyA==
   dependencies:
     "@types/react" "*"
 
