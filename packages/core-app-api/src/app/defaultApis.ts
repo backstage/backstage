@@ -16,6 +16,7 @@
 
 import {
   AlertApiForwarder,
+  NoOpAnalyticsApi,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
@@ -36,6 +37,7 @@ import {
 import {
   createApiFactory,
   alertApiRef,
+  analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
   oauthRequestApiRef,
@@ -65,6 +67,7 @@ export const defaultApis = [
       ),
   }),
   createApiFactory(alertApiRef, new AlertApiForwarder()),
+  createApiFactory(analyticsApiRef, new NoOpAnalyticsApi()),
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },

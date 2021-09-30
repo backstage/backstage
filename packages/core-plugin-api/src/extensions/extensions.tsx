@@ -133,6 +133,8 @@ export function createReactExtension<
       const Result: any = (props: any) => {
         const app = useApp();
         const { Progress } = app.getComponents();
+        // todo(iamEAP): Account for situations where this is attached via
+        // separate calls to attachComponentData().
         const mountPoint = data?.['core.mountPoint'] as
           | { id?: string }
           | undefined;

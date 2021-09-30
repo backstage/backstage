@@ -99,6 +99,8 @@ const TrackNavigation = ({
  */
 export const RouteTracker = ({ tree }: { tree: React.ReactNode }) => {
   const { pathname, search, hash } = useLocation();
+  // todo(iamEAP): Work this into the existing traversal and make the data
+  // available on the provider. Then grab from app instance on the router.
   const { routeObjects } = useMemo(() => {
     return traverseElementTree({
       root: tree,

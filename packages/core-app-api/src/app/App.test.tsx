@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags } from '../apis';
+import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
 import {
   MockAnalyticsApi,
   renderWithEffects,
@@ -63,6 +63,10 @@ describe('generateBoundRoutes', () => {
 });
 
 describe('Integration Test', () => {
+  const noOpAnalyticsApi = createApiFactory(
+    analyticsApiRef,
+    new NoOpAnalyticsApi(),
+  );
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
   const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
@@ -182,7 +186,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths', async () => {
     const app = new PrivateAppImpl({
-      apis: [],
+      apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
         {
@@ -236,7 +240,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths without optional routes', async () => {
     const app = new PrivateAppImpl({
-      apis: [],
+      apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
         {
@@ -282,6 +286,7 @@ describe('Integration Test', () => {
     jest.spyOn(storageFlags, 'registerFlag');
 
     const apis = [
+      noOpAnalyticsApi,
       createApiFactory({
         api: featureFlagsApiRef,
         deps: { configApi: configApiRef },

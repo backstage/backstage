@@ -36,7 +36,6 @@ events to GA. All that's needed is your Universal Analytics tracking ID:
 # app-config.yaml
 app:
   analytics:
-    provider: ga
     ga:
       trackingId: UA-0000000-0
 ```
@@ -58,7 +57,6 @@ to capture Plugin IDs associated with events, including page views.
 ```yaml
 app:
   analytics:
-    provider: ga
     ga:
       trackingId: UA-0000000-0
       customDimensionsMetrics:
@@ -122,7 +120,7 @@ make and test changes is to do the following:
    the monorepo and add config for this plugin (see below)
 4. Enter this plugin's working directory: `cd plugins/analytics-provider-ga`
 5. Start the plugin in isolation: `yarn start`
-6. Navigate to the playground page at [/ga](http://localhost:3000/ga)
+6. Navigate to the playground page at `http://localhost:3000/ga`
 7. Open the web console to see events fire when you navigate or when you
    interact with instrumented components.
 
@@ -136,7 +134,6 @@ Paste this into your `app-config.local.yaml` while developing this plugin:
 ```yaml
 app:
   analytics:
-    provider: ga
     ga:
       trackingId: UA-0000000-0
       debug: true

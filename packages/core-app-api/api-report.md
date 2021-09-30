@@ -5,6 +5,8 @@
 ```ts
 import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
+import { AnalyticsApi } from '@backstage/core-plugin-api';
+import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
@@ -454,6 +456,14 @@ export class MicrosoftAuth {
     discoveryApi,
     defaultScopes,
   }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+}
+
+// Warning: (ae-missing-release-tag) "NoOpAnalyticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class NoOpAnalyticsApi implements AnalyticsApi {
+  // (undocumented)
+  captureEvent(_event: AnalyticsEvent): void;
 }
 
 // Warning: (ae-missing-release-tag) "OAuth2" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

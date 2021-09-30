@@ -21,4 +21,4 @@ analytics context, which can be useful for analyzing plugin usage:
 ```
 
 These events can be identified and handled by checking for the action
-`navigate` and the componentName `App`.
+`navigate` and the extension `App`.

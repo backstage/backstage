@@ -20,7 +20,6 @@ export interface Config {
     // context of the monorepo is too strict. Ideally, this would be marked as
     // required.
     analytics?: {
-      provider: 'ga';
       ga: {
         /**
          * Google Analytics tracking ID, e.g. UA-000000-0

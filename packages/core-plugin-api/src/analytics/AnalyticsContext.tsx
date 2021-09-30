@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { AnalyticsContextValue } from './types';
 
+// todo(iamEAP): Manage this using a version bridge.
 const AnalyticsReactContext = createContext<AnalyticsContextValue>({
   routeRef: 'unknown',
   pluginId: 'root',
@@ -47,13 +48,10 @@ export const AnalyticsContext = ({
   children: ReactNode;
 }) => {
   const parentValues = useAnalyticsContext();
-  const combinedValue = useMemo(
-    () => ({
-      ...parentValues,
-      ...attributes,
-    }),
-    [parentValues, attributes],
-  );
+  const combinedValue = {
+    ...parentValues,
+    ...attributes,
+  };
 
   return (
     <AnalyticsReactContext.Provider value={combinedValue}>

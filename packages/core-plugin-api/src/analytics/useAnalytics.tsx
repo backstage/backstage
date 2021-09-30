@@ -19,7 +19,10 @@ import { analyticsApiRef, AnalyticsTracker, useApi } from '../apis';
 import { useRef } from 'react';
 import { Tracker } from './Tracker';
 
-function useTracker(): AnalyticsTracker {
+/**
+ * Get a pre-configured analytics tracker.
+ */
+export function useAnalytics(): AnalyticsTracker {
   const trackerRef = useRef<Tracker | null>(null);
   const analyticsApi = useApi(analyticsApiRef);
   const context = useAnalyticsContext();
@@ -35,20 +38,4 @@ function useTracker(): AnalyticsTracker {
   tracker.setContext(context);
 
   return tracker;
-}
-
-/**
- * Get a pre-configured analytics tracker.
- */
-export function useAnalytics(): AnalyticsTracker {
-  // Return a no-op tracker if no implementation for the Analytics API is
-  // available. Having no default Analytics API implementation enables simple
-  // provider installation via plugin instantiation.
-  try {
-    return useTracker();
-  } catch {
-    return {
-      captureEvent: () => {},
-    };
-  }
 }
