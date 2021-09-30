@@ -56,7 +56,7 @@ export const LegacyTechDocsPage = () => {
       <TechDocsPageHeader
         techDocsMetadata={techdocsMetadataValue}
         entityMetadata={entityMetadataValue}
-        entityId={{
+        entityRef={{
           kind,
           namespace,
           name,
@@ -65,7 +65,7 @@ export const LegacyTechDocsPage = () => {
       <Content data-testid="techdocs-content">
         <Reader
           onReady={onReady}
-          entityId={{
+          entityRef={{
             kind,
             namespace,
             name,

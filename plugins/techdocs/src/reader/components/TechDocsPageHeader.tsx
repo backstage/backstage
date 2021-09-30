@@ -28,17 +28,17 @@ import { rootRouteRef } from '../../routes';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 
 export type TechDocsPageHeaderProps = {
-  entityId: EntityName;
+  entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 };
 
 export const TechDocsPageHeader = ({
-  entityId,
+  entityRef,
   entityMetadata,
   techDocsMetadata,
 }: TechDocsPageHeaderProps) => {
-  const { name } = entityId;
+  const { name } = entityRef;
 
   const { site_name: siteName, site_description: siteDescription } =
     techDocsMetadata || {};
@@ -59,7 +59,7 @@ export const TechDocsPageHeader = ({
         value={
           <EntityRefLink
             color="inherit"
-            entityRef={entityId}
+            entityRef={entityRef}
             defaultKind="Component"
           />
         }

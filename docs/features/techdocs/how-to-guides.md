@@ -162,15 +162,15 @@ having to set anything up.
 
 ```tsx
 <TechDocsPage>
-  {({ techdocsMetadataValue, entityMetadataValue, entityId, onReady }) => (
+  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
     <>
       <TechDocsPageHeader
         techDocsMetadata={techdocsMetadataValue}
         entityMetadata={entityMetadataValue}
-        entityId={entityId}
+        entityRef={entityRef}
       />
       <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityId={entityId} />
+        <Reader onReady={onReady} entityRef={entityRef} />
       </Content>
     </>
   )}
@@ -183,11 +183,11 @@ interested in replacing the Header:
 
 ```tsx
 <TechDocsPage>
-  {({ entityId, onReady }) => (
+  {({ entityRef, onReady }) => (
     <>
       <Header type="documentation" title="Custom Header" />
       <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityId={entityId} />
+        <Reader onReady={onReady} entityRef={entityRef} />
       </Content>
     </>
   )}
@@ -198,11 +198,11 @@ Or maybe you want to disable the in-context search
 
 ```tsx
 <TechDocsPage>
-  {({ entityId, onReady }) => (
+  {({ entityRef, onReady }) => (
     <>
       <Header type="documentation" title="Custom Header" />
       <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityId={entityId} withSearch={false} />
+        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
       </Content>
     </>
   )}

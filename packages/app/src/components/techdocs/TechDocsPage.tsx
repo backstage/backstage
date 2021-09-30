@@ -25,15 +25,15 @@ import React from 'react';
 const DefaultTechDocsPage = () => {
   return (
     <TechDocsPage>
-      {({ techdocsMetadataValue, entityMetadataValue, entityId, onReady }) => (
+      {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
         <>
           <TechDocsPageHeader
             techDocsMetadata={techdocsMetadataValue}
             entityMetadata={entityMetadataValue}
-            entityId={entityId}
+            entityRef={entityRef}
           />
           <Content data-testid="techdocs-content">
-            <Reader onReady={onReady} entityId={entityId} />
+            <Reader onReady={onReady} entityRef={entityRef} />
           </Content>
         </>
       )}

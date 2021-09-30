@@ -29,11 +29,11 @@ import { Page } from '@backstage/core-components';
 export type TechDocsPageRenderFunction = ({
   techdocsMetadataValue,
   entityMetadataValue,
-  entityId,
+  entityRef,
 }: {
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
-  entityId: EntityName;
+  entityRef: EntityName;
   onReady: () => void;
 }) => JSX.Element;
 
@@ -78,7 +78,7 @@ export const TechDocsPage = ({ children }: TechDocsPageProps) => {
         ? children({
             techdocsMetadataValue,
             entityMetadataValue,
-            entityId: { kind, namespace, name },
+            entityRef: { kind, namespace, name },
             onReady,
           })
         : children}

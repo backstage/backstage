@@ -54,7 +54,7 @@ global.scroll = jest.fn();
 describe('<TechDocsPage />', () => {
   it('should render techdocs page', async () => {
     useParams.mockReturnValue({
-      entityId: 'Component::backstage',
+      entityRef: 'Component::backstage',
     });
 
     const scmIntegrationsApi: ScmIntegrationsApi =
@@ -111,7 +111,7 @@ describe('<TechDocsPage />', () => {
 
   it('should render techdocs page with custom header', async () => {
     useParams.mockReturnValue({
-      entityId: 'Component::backstage',
+      entityRef: 'Component::backstage',
     });
 
     const scmIntegrationsApi: ScmIntegrationsApi =
