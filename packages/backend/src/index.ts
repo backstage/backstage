@@ -53,6 +53,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
+import userProfilesGithubReadme from './plugins/userprofilesgithubreadme';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -107,6 +108,9 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const userProfilesEnv = useHotMemoize(module, () =>
+    createEnv('user-profiles-github-readme'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -124,6 +128,10 @@ async function main() {
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+  apiRouter.use(
+    '/user-profiles-github-readme',
+    await userProfilesGithubReadme(userProfilesEnv),
+  );
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
