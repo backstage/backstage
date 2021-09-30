@@ -33,10 +33,8 @@ const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
 export const hasCatalogProcessingErrors = async (entity: Entity) => {
+  // go grab ancestors and check all items, not just the current entity
   return entity?.status?.items?.filter(errorFilter).length! > 0;
-  const catalogApi = useApi(catalogApiRef);
-  const { status } = await catalogApi.getEntityStatus(entity.id);
-  return status.some(errorFilter);
 };
 
 /**
@@ -60,6 +58,7 @@ export const EntityProcessingErrorsPanel = () => {
  * Displays a list of errors from the ancestors of the current entity.
  */
 export const EntityAncestorsProcessingErrorsPanel = () => {
+  // move this logic into the existing component
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
 
