@@ -57,7 +57,7 @@ import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
 import { PluginEnvironment } from './types';
 
-async function makeCreateEnv(config: Config) {
+function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
@@ -90,7 +90,7 @@ async function main() {
     argv: process.argv,
     logger,
   });
-  const createEnv = await makeCreateEnv(config);
+  const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

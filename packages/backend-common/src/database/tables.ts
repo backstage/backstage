@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-export type DbTaskLocksRow = {
+export const DB_MUTEXES_TABLE = 'backstage_backend_common__mutexes';
+export const DB_TASKS_TABLE = 'backstage_backend_common__tasks';
+
+export type DbMutexesRow = {
   id: string;
-  acquired_ticket?: string;
-  acquired_at?: Date;
-  expires_at?: Date;
+  current_lock_ticket?: string;
+  current_lock_acquired_at?: Date | string;
+  current_lock_expires_at?: Date | string;
+};
+
+export type DbTasksRow = {
+  id: string;
+  settings_json: string;
+  next_run_start_at?: Date | string;
+  current_run_ticket?: string;
+  current_run_started_at?: Date | string;
+  current_run_expires_at?: Date | string;
 };

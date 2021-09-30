@@ -17,9 +17,11 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import { DatabaseManager } from '../database';
+import { getVoidLogger } from '../logging';
 import { TaskManager } from './TaskManager';
 
 describe('TaskManager', () => {
+  const logger = getVoidLogger();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
@@ -36,38 +38,16 @@ describe('TaskManager', () => {
     return databaseManager as DatabaseManager;
   }
 
-  describe('locking', () => {
-    it.each(databases.eachSupportedId())(
-      'can run the happy path, %p',
-      async databaseId => {
-        const database = await createDatabase(databaseId);
-        const manager = new TaskManager(database).forPlugin('test');
+  it.each(databases.eachSupportedId())(
+    'can return a working plugin impl, %p',
+    async databaseId => {
+      const database = await createDatabase(databaseId);
+      const manager = new TaskManager(database, logger).forPlugin('test');
 
-        const lock1 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        const lock2 = await manager.acquireLock('lock2', {
-          timeout: Duration.fromMillis(5000),
-        });
-
-        expect(lock1.acquired).toBe(true);
-        expect(lock2.acquired).toBe(true);
-
-        await expect(
-          manager.acquireLock('lock1', {
-            timeout: Duration.fromMillis(5000),
-          }),
-        ).resolves.toEqual({ acquired: false });
-
-        await (lock1 as any).release();
-        await (lock2 as any).release();
-
-        const lock1Again = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        expect(lock1Again.acquired).toBe(true);
-        await (lock1Again as any).release();
-      },
-    );
-  });
+      const lock = await manager.acquireLock('lock1', {
+        timeout: Duration.fromMillis(5000),
+      });
+      expect(lock.acquired).toBe(true);
+    },
+  );
 });

@@ -15,6 +15,7 @@
  */
 
 import { Duration } from 'luxon';
+import { z } from 'zod';
 
 /**
  * Deals with management and locking related to distributed tasks, for a given
@@ -41,5 +42,34 @@ export interface PluginTaskManager {
       initialDelay?: Duration;
     },
     fn: () => Promise<void>,
-  ): Promise<{ release: () => Promise<void> }>;
+  ): Promise<{ unschedule: () => Promise<void> }>;
 }
+
+function isValidOptionalDurationString(d: string | undefined): boolean {
+  try {
+    return !d || Duration.fromISO(d).isValid === true;
+  } catch {
+    return false;
+  }
+}
+
+export const taskSettingsV1Schema = z.object({
+  version: z.literal(1),
+  initialDelayDuration: z
+    .string()
+    .optional()
+    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+  recurringAtMostEveryDuration: z
+    .string()
+    .optional()
+    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+  timeoutAfterDuration: z
+    .string()
+    .optional()
+    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+});
+
+/**
+ * The properties that control a scheduled task (version 1).
+ */
+export type TaskSettingsV1 = z.infer<typeof taskSettingsV1Schema>;

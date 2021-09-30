@@ -12,6 +12,7 @@ import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
+import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -400,6 +401,37 @@ export type PluginEndpointDiscovery = {
 };
 
 // @public
+export interface PluginTaskManager {
+  // (undocumented)
+  acquireLock(
+    id: string,
+    options: {
+      timeout: Duration;
+    },
+  ): Promise<
+    | {
+        acquired: false;
+      }
+    | {
+        acquired: true;
+        release: () => void | Promise<void>;
+      }
+  >;
+  // (undocumented)
+  scheduleTask(
+    id: string,
+    options: {
+      timeout: Duration;
+      frequency: Duration;
+      initialDelay?: Duration;
+    },
+    fn: () => Promise<void>,
+  ): Promise<{
+    unschedule: () => Promise<void>;
+  }>;
+}
+
+// @public
 export type ReaderFactory = (options: {
   config: Config;
   logger: Logger_2;
@@ -574,6 +606,21 @@ export function statusCheckHandler(
 // @public (undocumented)
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
+}
+
+// @public
+export class TaskManager {
+  constructor(databaseManager: DatabaseManager, logger: Logger_2);
+  // (undocumented)
+  forPlugin(pluginId: string): PluginTaskManager;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options?: {
+      databaseManager?: DatabaseManager;
+      logger?: Logger_2;
+    },
+  ): TaskManager;
 }
 
 // @public

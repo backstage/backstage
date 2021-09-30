@@ -20895,11 +20895,6 @@ node-abi@^2.21.0:
   dependencies:
     semver "^5.4.1"
 
-node-abort-controller@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/node-abort-controller/-/node-abort-controller-3.0.0.tgz#e7b1f2b72f4c5a74b5594cc23fa8fe3b62010ab5"
-  integrity sha512-IqMCPbihDpbHV4bNws015hU0svIBGyzPjJearwXMGJyungWdblbBcboNojTz9bWOrrJD3zIwmcr5w5c+NH+2+A==
-
 node-addon-api@^3.0.0:
   version "3.2.1"
   resolved "https://registry.npmjs.org/node-addon-api/-/node-addon-api-3.2.1.tgz#81325e0a2117789c0128dab65e7e38f07ceba161"
