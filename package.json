@@ -13,7 +13,7 @@
     "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
     "build:api-docs": "yarn build:api-reports --docs",
     "tsc": "tsc",
-    "tsc:full": "tsc --skipLibCheck false --incremental false",
+    "tsc:full": "backstage-cli clean && tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
     "test": "lerna run test --since origin/master -- --coverage",
