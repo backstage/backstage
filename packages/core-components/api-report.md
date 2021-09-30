@@ -70,6 +70,59 @@ enum Alignment {
 // @public
 export function Avatar(props: AvatarProps): JSX.Element;
 
+// Warning: (ae-missing-release-tag) "AvatarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AvatarClassKey = 'avatar';
+
+// Warning: (ae-missing-release-tag) "AvatarProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface AvatarProps {
+  customStyles?: CSSProperties;
+  displayName?: string;
+  picture?: string;
+}
+
+// Warning: (ae-missing-release-tag) "BackstageContentClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';
+
+// Warning: (ae-forgotten-export) The symbol "BackstageComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "BackstageOverrides" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
+    StyleRules_2<BackstageComponentsNameToClassKey[Name]>
+  >;
+};
+
+// Warning: (ae-missing-release-tag) "BoldHeaderClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
+
+// Warning: (ae-missing-release-tag) "BottomLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function BottomLink(props: BottomLinkProps): JSX.Element;
+
+// Warning: (ae-missing-release-tag) "BottomLinkClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
+
+// Warning: (ae-missing-release-tag) "BottomLinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BottomLinkProps = {
+  link: string;
+  title: string;
+  onClick?: (event: React_2.MouseEvent<HTMLAnchorElement>) => void;
+};
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Breadcrumbs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -175,8 +228,6 @@ export type ContentHeaderClassKey =
   | 'description'
   | 'title';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CopyTextButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-missing-release-tag) "CopyTextButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -202,6 +253,11 @@ export function CreateButton(props: CreateButtonProps): JSX.Element | null;
 export type CreateButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps_3, 'to'>>;
+
+// Warning: (ae-missing-release-tag) "CustomProviderClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CustomProviderClassKey = 'form' | 'button';
 
 // Warning: (ae-missing-release-tag) "DashboardIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

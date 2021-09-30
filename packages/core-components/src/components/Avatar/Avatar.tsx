@@ -44,7 +44,7 @@ const useStyles = makeStyles(
  */
 export interface AvatarProps {
   /**
-   * Display Name
+   * A display name, which will be used to generate initials as a fallback in case a picture is not provided.
    */
   displayName?: string;
   /**

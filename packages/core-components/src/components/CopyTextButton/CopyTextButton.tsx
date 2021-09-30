@@ -29,7 +29,7 @@ export interface CopyTextButtonProps {
    */
   text: string;
   /**
-   * Number os ms to show the tooltip
+   * Number of milliseconds that the tooltip is shown
    *
    * @remarks
    *
