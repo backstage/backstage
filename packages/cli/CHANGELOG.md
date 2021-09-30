@@ -1,5 +1,17 @@
 # @backstage/cli
 
+## 0.7.14
+
+### Patch Changes
+
+- 3a8704f16b: Only serve static assets if there is a public folder during `app:serve` and `plugin:serve`. This fixes a common bug that would break `plugin:serve` with an `EBUSY` error.
+- 40199b61d6: Configuration schema is now also collected from the root `package.json` if it exists.
+- 2a6c393c06: The `create-plugin` command now prefers dependency versions ranges that are already in the lockfile.
+- 58f91943ab: Improved ´plugin:diff´ check for the `package.json` `"files"` field.
+- 12e074a6e4: Fix duplication checks to stop looking for the old core packages, and to allow some explicitly
+- Updated dependencies
+  - @backstage/config-loader@0.6.9
+
 ## 0.7.13
 
 ### Patch Changes

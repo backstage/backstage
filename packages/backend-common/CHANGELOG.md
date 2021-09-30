@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.9.5
+
+### Patch Changes
+
+- 8bb3c0a578: The `subscribe` method on the `Config` returned by `loadBackendConfig` is now forwarded through `getConfig` and `getOptionalConfig`.
+- 0c8a59e293: Fix an issue where filtering in search doesn't work correctly for Bitbucket.
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/config-loader@0.6.9
+
 ## 0.9.4
 
 ### Patch Changes

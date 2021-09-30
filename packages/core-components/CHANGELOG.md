@@ -1,5 +1,22 @@
 # @backstage/core-components
 
+## 0.6.0
+
+### Minor Changes
+
+- 21767b08ca: Checkbox tree filters are no longer available in the Table component:
+
+  - Deleted the `CheckboxTree` component
+  - Removed the filter type `'checkbox-tree'` from the `TableFilter` types.
+
+### Patch Changes
+
+- 9c3cb8d4e2: Stop forcing `target="_blank"` in the `SupportButton` but instead use the default logic of the `Link` component, that opens external targets in a new window and relative targets in the same window.
+- d21e39e303: Support `material-ui` overrides in Backstage internal components
+- c4e77bb34a: Added documentation for exported symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+
 ## 0.5.0
 
 ### Minor Changes

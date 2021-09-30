@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- 88622e6422: Allow users to override callback url of GitHub provider
+- c46396ebb0: Update OAuth refresh handler to pass updated refresh token to ensure cookie is updated with new value.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+
 ## 0.4.1
 
 ### Patch Changes

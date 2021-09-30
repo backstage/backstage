@@ -1,7 +1,7 @@
 {
   "name": "@backstage/integration-react",
   "description": "Frontend package for managing integrations towards external systems",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.10",
-    "@backstage/core-components": "^0.5.0",
-    "@backstage/core-plugin-api": "^0.1.8",
-    "@backstage/integration": "^0.6.5",
+    "@backstage/core-components": "^0.6.0",
+    "@backstage/core-plugin-api": "^0.1.9",
+    "@backstage/integration": "^0.6.6",
     "@backstage/theme": "^0.2.9",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -34,8 +34,8 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.13",
-    "@backstage/dev-utils": "^0.2.10",
+    "@backstage/cli": "^0.7.14",
+    "@backstage/dev-utils": "^0.2.11",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

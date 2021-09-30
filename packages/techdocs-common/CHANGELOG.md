@@ -1,5 +1,17 @@
 # @backstage/techdocs-common
 
+## 0.10.2
+
+### Patch Changes
+
+- 1c75e8bf98: Add more context to techdocs log lines when files are not found along with
+  ensuring that the routers return 404 with a descriptive message.
+- e92f0f728b: Locks the version of the default docker image used to generate TechDocs. As of
+  this changelog entry, it is v0.3.2!
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
 ## 0.10.1
 
 ### Patch Changes

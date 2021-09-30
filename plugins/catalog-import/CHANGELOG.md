@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-import
 
+## 0.7.0
+
+### Minor Changes
+
+- 6a6ec777ce: Switched to using the `ScmAuthApi` for authentication rather than GitHub auth. If you are instantiating your `CatalogImportClient` manually you now need to pass in an instance of `ScmAuthApi` instead.
+
+  Also be sure to register the `scmAuthApiRef` from the `@backstage/integration-react` in your app:
+
+  ```ts
+  import { ScmAuth } from '@backstage/integration-react';
+
+  // in packages/app/apis.ts
+
+  const apis = [
+  // ... other APIs
+
+  ScmAuth.createDefaultApiFactory();
+
+  // OR
+
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ]
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
 ## 0.6.0
 
 ### Minor Changes

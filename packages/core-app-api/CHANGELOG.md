@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 0.1.15
+
+### Patch Changes
+
+- 0c4ee1876f: Enables late registration of plugins into the application by updating ApiHolder when additional plugins have been added in.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.1.14
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-kafka
 
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
 ## 0.2.16
 
 ### Patch Changes

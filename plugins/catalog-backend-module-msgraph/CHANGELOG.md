@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.5
+
+### Patch Changes
+
+- 664bba5c45: Bumped `@microsoft/microsoft-graph-types` to v2
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.15.0
+
 ## 0.2.4
 
 ### Patch Changes

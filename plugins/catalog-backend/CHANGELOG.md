@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend
 
+## 0.15.0
+
+### Minor Changes
+
+- 1572d02b63: Introduced a new `CatalogProcessorCache` that is available to catalog processors. It allows arbitrary values to be saved that will then be visible during the next run. The cache is scoped to each individual processor and entity, but is shared across processing steps in a single processor.
+
+  The cache is available as a new argument to each of the processing steps, except for `validateEntityKind` and `handleError`.
+
+  This also introduces an optional `getProcessorName` to the `CatalogProcessor` interface, which is used to provide a stable identifier for the processor. While it is currently optional it will move to be required in the future.
+
+  The breaking part of this change is the modification of the `state` field in the `EntityProcessingRequest` and `EntityProcessingResult` types. This is unlikely to have any impact as the `state` field was previously unused, but could require some minor updates.
+
+- c1836728e0: Add `/entities/by-name/:kind/:namespace/:name/ancestry` to get the "processing parents" lineage of an entity.
+
+  This involves a breaking change of adding the method `entityAncestry` to `EntitiesCatalog`.
+
+### Patch Changes
+
+- 3d10360c82: When issuing a `full` update from an entity provider, entities with updates are now properly persisted.
+- 9ea4565b00: Fixed a bug where internal references within the catalog were broken when new entities where added through entity providers, such as registering a new location or adding one in configuration. These broken references then caused some entities to be incorrectly marked as orphaned and prevented refresh from working properly.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
 ## 0.14.0
 
 ### Minor Changes

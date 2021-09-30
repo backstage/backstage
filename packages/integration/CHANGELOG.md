@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.6.6
+
+### Patch Changes
+
+- d1f2118389: Support selective GitHub app installation for GHE
+
 ## 0.6.5
 
 ### Patch Changes

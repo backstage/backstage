@@ -1,5 +1,17 @@
 # example-backend
 
+## 0.2.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/plugin-catalog-backend@0.15.0
+  - @backstage/plugin-azure-devops-backend@0.1.1
+  - @backstage/integration@0.6.6
+  - @backstage/plugin-auth-backend@0.4.2
+  - example-app@0.2.48
+
 ## 0.2.47
 
 ### Patch Changes

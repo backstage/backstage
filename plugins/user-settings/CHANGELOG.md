@@ -1,5 +1,14 @@
 # @backstage/plugin-user-settings
 
+## 0.3.7
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.3.6
 
 ### Patch Changes
