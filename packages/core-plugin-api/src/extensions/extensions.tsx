@@ -15,6 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { AnalyticsDomain } from '../analytics/AnalyticsDomain';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
@@ -94,7 +95,7 @@ export function createRoutableExtension<
 // ComponentType inserts children as an optional prop whether the inner component accepts it or not,
 // making it impossible to make the usage of children type safe.
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element | null
+  T extends (props: any) => JSX.Element | null,
 >(options: { component: ComponentLoader<T>; name?: string }): Extension<T> {
   const { component, name } = options;
   return createReactExtension({ component, name });
@@ -136,7 +137,20 @@ export function createReactExtension<
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
-              <Component {...props} />
+              <AnalyticsDomain
+                attributes={{
+                  pluginId: plugin.getId(),
+                  componentName,
+                  ...(data['core.mountpoint']
+                    ? {
+                        routeRef: (data['core.mountpoint'] as { id?: string })
+                          .id,
+                      }
+                    : {}),
+                }}
+              >
+                <Component {...props} />
+              </AnalyticsDomain>
             </PluginErrorBoundary>
           </Suspense>
         );
