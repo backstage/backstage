@@ -45,7 +45,7 @@
   });
   ```
 
-  The additional `gheAuthApiRef` utility API can be defined either inside the app itself if it's only used for this purpose, for inside an internal common package for APIs, such as `@internal/apis`:
+  The additional `gheAuthApiRef` utility API can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
 
   ```ts
   const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
@@ -58,7 +58,7 @@
 
   ```ts
   createApiFactory({
-    api: githubAuthApiRef,
+    api: gheAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
