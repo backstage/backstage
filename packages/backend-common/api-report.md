@@ -472,9 +472,6 @@ export type ReadUrlResponse = {
   etag?: string;
 };
 
-// @public (undocumented)
-export type RedactionMap = Record<string, string>;
-
 // @public
 export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
 
@@ -543,7 +540,7 @@ export type ServiceBuilder = {
 };
 
 // @public (undocumented)
-export function setRedactionMap(newRedactionMap: RedactionMap): void;
+export function setRedactionList(redactionList: string[]): void;
 
 // @public (undocumented)
 export function setRootLogger(newLogger: winston.Logger): void;

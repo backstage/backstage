@@ -19,10 +19,8 @@ import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
 
 /** @public */
-export type RedactionMap = Record<string, string>;
-
 let rootLogger: winston.Logger;
-let redactionMap: RedactionMap;
+let redactionRegExp: RegExp;
 
 /** @public */
 export function getRootLogger(): winston.Logger {
@@ -35,8 +33,8 @@ export function setRootLogger(newLogger: winston.Logger) {
 }
 
 /** @public */
-export function setRedactionMap(newRedactionMap: RedactionMap) {
-  redactionMap = newRedactionMap;
+export function setRedactionList(redactionList: string[]) {
+  redactionRegExp = new RegExp(`(${redactionList.join('|')})`, 'g');
 }
 
 /**
@@ -46,11 +44,9 @@ export function setRedactionMap(newRedactionMap: RedactionMap) {
 function redactLogLine(info: winston.Logform.TransformableInfo) {
   // TODO(hhogg): The logger is created before the config is loaded,
   // because the logger is needed in the config loader. There is a risk of
-  // a secret being logged out during the config loading stage 🤷‍♂️
-  if (redactionMap) {
-    Object.entries(redactionMap || {}).forEach(([key, value]) => {
-      info.message = info.message.replace(new RegExp(key, 'g'), `{{${value}}}`);
-    });
+  // a secret being logged out during the config loading stage.
+  if (redactionRegExp) {
+    info.message = info.message.replace(redactionRegExp, '[REDACTED]');
   }
 
   return info;

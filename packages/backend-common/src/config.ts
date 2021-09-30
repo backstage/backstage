@@ -18,39 +18,36 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { loadConfigSchema, loadConfig } from '@backstage/config-loader';
+import {
+  loadConfigSchema,
+  loadConfig,
+  ConfigSchema,
+} from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader, JsonValue } from '@backstage/config';
 
-import { setRedactionMap } from './logging';
+import { setRedactionList } from './logging';
 
 // Fetch the schema and get all the secrets to pass to the rootLogger for redaction
-const updateRedactionMap = async (configs: AppConfig[], logger: Logger) => {
-  // Consider all packages in the monorepo when loading in config
-  const { Project } = require('@lerna/project');
-  const project = new Project();
-  const packages = await project.getPackages();
-  const localPackageNames = packages.map((p: any) => p.name);
-
-  const schema = await loadConfigSchema({ dependencies: localPackageNames });
+const updateRedactionMap = (
+  schema: ConfigSchema,
+  configs: AppConfig[],
+  logger: Logger,
+) => {
   const secretAppConfigs = schema.process(configs, { visibility: ['secret'] });
   const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
-  const configMap = secretConfig.getMap();
+  const values = new Set<string>();
+  const data = secretConfig.get();
+
+  JSON.parse(
+    JSON.stringify(data),
+    (_, v) => typeof v === 'string' && values.add(v),
+  );
 
   logger.info(
-    `${
-      Object.keys(configMap).length
-    } secrets found in the config which will be redacted`,
+    `${values.size} secrets found in the config which will be redacted`,
   );
 
-  setRedactionMap(
-    Object.entries(configMap).reduce<Record<any, string>>(
-      (map, [key, value]) => {
-        map[value] = key;
-        return map;
-      },
-      {},
-    ),
-  );
+  setRootLoggerRedactionList(Array.from(values));
 };
 
 export class ObservableConfigProxy implements Config {
@@ -120,9 +117,6 @@ export class ObservableConfigProxy implements Config {
   get<T = JsonValue>(key?: string): T {
     return this.select(true).get(key);
   }
-  getMap() {
-    return this.config.getMap();
-  }
   getOptional<T = JsonValue>(key?: string): T | undefined {
     return this.select(false)?.getOptional(key);
   }
@@ -185,6 +179,9 @@ export async function loadBackendConfig(options: {
   const args = parseArgs(options.argv);
   const configPaths: string[] = [args.config ?? []].flat();
 
+  const schema = await loadConfigSchema({
+    dependencies: ['@backstage/backend-common'],
+  });
   const config = new ObservableConfigProxy(options.logger);
 
   /* eslint-disable-next-line no-restricted-syntax */

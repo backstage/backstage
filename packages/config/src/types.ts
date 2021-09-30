@@ -66,12 +66,6 @@ export type Config = {
   keys(): string[];
 
   /**
-   * Returns a flattened map of the config with the full path to the keys and
-   * the config value as the value.
-   */
-  getMap(): Record<string, JsonPrimitive>;
-
-  /**
    * Same as `getOptional`, but will throw an error if there's no value for the given key.
    */
   get<T = JsonValue>(key?: string): T;
