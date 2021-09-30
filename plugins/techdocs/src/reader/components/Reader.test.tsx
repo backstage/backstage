@@ -41,7 +41,7 @@ const { useParams }: { useParams: jest.Mock } =
 describe('<Reader />', () => {
   it('should render Reader content', async () => {
     useParams.mockReturnValue({
-      entityId: 'Component::backstage',
+      entityRef: 'Component::backstage',
     });
 
     const scmIntegrationsApi: ScmIntegrationsApi =
@@ -68,7 +68,7 @@ describe('<Reader />', () => {
         wrapInTestApp(
           <ApiProvider apis={apiRegistry}>
             <Reader
-              entityId={{
+              entityRef={{
                 kind: 'Component',
                 namespace: 'default',
                 name: 'example',

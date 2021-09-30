@@ -84,6 +84,8 @@ import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
+import { techDocsPage } from './components/techdocs/TechDocsPage';
+
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
@@ -170,7 +172,9 @@ const routes = (
     <Route
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
-    />
+    >
+      {techDocsPage}
+    </Route>
     <Route path="/create" element={<ScaffolderPage />}>
       <ScaffolderFieldExtensions>
         <LowerCaseValuePickerFieldExtension />

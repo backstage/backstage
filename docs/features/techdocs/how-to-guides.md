@@ -142,6 +142,84 @@ const AppRoutes = () => {
 };
 ```
 
+## How to customize the TechDocs reader page?
+
+Similar to how it is possible to customize the TechDocs Home, it is also
+possible to customize the TechDocs Reader Page. It is done in your `app`
+package. By default, you might see something like this in your `App.tsx`:
+
+```tsx
+const AppRoutes = () => {
+  <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+    {techDocsPage}
+  </Route>;
+};
+```
+
+The `techDocsPage` is a default techdocs reader page which lives in
+`packages/app/src/components/techdocs`. It includes the following without you
+having to set anything up.
+
+```tsx
+<TechDocsPage>
+  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
+    <>
+      <TechDocsPageHeader
+        techDocsMetadata={techdocsMetadataValue}
+        entityMetadata={entityMetadataValue}
+        entityRef={entityRef}
+      />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+If you would like to compose your own `techDocsPage`, you can do so by replacing
+the children of TechDocsPage with something else. Maybe you are _just_
+interested in replacing the Header:
+
+```tsx
+<TechDocsPage>
+  {({ entityRef, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+Or maybe you want to disable the in-context search
+
+```tsx
+<TechDocsPage>
+  {({ entityRef, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+Or maybe you want to replace the entire TechDocs Page.
+
+```tsx
+<TechDocsPage>
+  <Header type="documentation" title="Custom Header" />
+  <Content data-testid="techdocs-content">
+    <p>my own content</p>
+  </Content>
+</TechDocsPage>
+```
+
 ## How to migrate from TechDocs Alpha to Beta
 
 > This guide only applies to the "recommended" TechDocs deployment method (where
