@@ -36,12 +36,12 @@ to upgrade.
 
 ## `${{ }}` instead of `"{{ }}"`
 
-One really big readability and cause for confusing was the fact that with
-`handlebars` and `yaml` was that you always had to wrap your templating strings
-in quotes in `yaml` so that it didn't try to parse it as a `json` object and
-fail. This was pretty annoying, as it also meant that all things look like
-strings. Now that's no longer the case, you can now remove the `""` and take
-advantage of writing nice `yaml` files that just work.
+One really big readability issue and cause for confusion was the fact that with
+`handlebars` and `yaml`you always had to wrap your templating strings in quotes
+in `yaml` so that it didn't try to parse it as a `json` object and fail. This
+was pretty annoying, as it also meant that all things look like strings. Now
+that's no longer the case, you can now remove the `""` and take advantage of
+writing nice `yaml` files that just work.
 
 ```diff
   spec:
@@ -54,7 +54,7 @@ advantage of writing nice `yaml` files that just work.
 +         repoUrl: ${{ parameters.repoUrl }}
 ```
 
-## No more `eq` or `not` helper
+## No more `eq` or `not` helpers
 
 These helpers are no longer needed with the more expressive `api` that
 `nunjucks` provides. You can simply use the built-in `nunjucks` and `jinja2`
@@ -117,7 +117,7 @@ input schema.
 -         address: '{{ json parameters.address }}'
 +         address: ${{ parameters.address }}
 -         number: '{{ parameters.number }}'
-+         number: ${{ parameters.number }} # this will now make sure that the type of number is a number now 🙏
++         number: ${{ parameters.number }} # this will now make sure that the type of number is a number 🙏
 
 ```
 
