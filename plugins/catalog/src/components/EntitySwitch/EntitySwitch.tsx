@@ -19,25 +19,35 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { PropsWithChildren, ReactNode } from 'react';
 import {
   attachComponentData,
+  useApiHolder,
   useElementFilter,
+  ApiHolder,
 } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 
 const EntitySwitchCase = (_: {
-  if?: (entity: Entity) => boolean;
+  if?: (
+    entity: Entity,
+    context: { apiRegistry: ApiHolder },
+  ) => boolean | Promise<boolean>;
   children: ReactNode;
 }) => null;
 
 attachComponentData(EntitySwitchCase, ENTITY_SWITCH_KEY, true);
 
 type SwitchCase = {
-  if?: (entity: Entity) => boolean | Promise<boolean>;
+  if?: (
+    entity: Entity,
+    context: { apiRegistry: ApiHolder },
+  ) => boolean | Promise<boolean>;
   children: JSX.Element;
 };
 
 export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
   const { entity } = useEntity();
+  const apiRegistry = useApiHolder();
   const switchCases = useElementFilter(children, collection =>
     collection
       .selectByComponentData({
@@ -51,10 +61,29 @@ export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
       }),
   );
 
-  const matchingCase = switchCases.find(switchCase =>
-    switchCase.if ? switchCase.if(entity) : true,
-  );
-  return matchingCase?.children ?? null;
+  const { loading, value } = useAsync(async () => {
+    const promises = switchCases.map(
+      async ({ if: condition, children: output }) => {
+        if (!condition) {
+          return output;
+        }
+
+        try {
+          const matches = await condition(entity, { apiRegistry });
+          return matches ? output : null;
+        } catch {
+          return null;
+        }
+      },
+    );
+    return (await Promise.all(promises)).find(Boolean) ?? null;
+  }, [switchCases]);
+
+  if (loading || !value) {
+    return null;
+  }
+
+  return value;
 };
 
 EntitySwitch.Case = EntitySwitchCase;
