@@ -290,6 +290,9 @@ export type GithubOAuthResult = {
 // @public (undocumented)
 export type GithubProviderOptions = {
   authHandler?: AuthHandler<GithubOAuthResult>;
+  extraState?: {
+    [key: string]: string;
+  };
   signIn?: {
     resolver?: SignInResolver<GithubOAuthResult>;
   };
@@ -488,7 +491,7 @@ export type OAuthStartRequest = express.Request<{}> & {
 export type OAuthState = {
   nonce: string;
   env: string;
-  origin?: string;
+  [key: string]: string;
 };
 
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
