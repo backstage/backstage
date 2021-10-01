@@ -1,42 +1,39 @@
 ---
 id: composability
-title: Composability System Migration
+title: Composability System
 # prettier-ignore
-description: Documentation and migration instructions for new composability APIs.
+description: Documentation for the Backstage plugin composability APIs.
 ---
 
 ## Summary
 
-This page describes the new composability system that was recently introduced in
-Backstage, and it does so from the perspective of the existing patterns and
-APIs. As the new system is solidified and existing code is ported, this page
-will be removed and replaced with a more direct description of the composability
-system. For now, the primary purpose of this documentation is to aid in the
-migration of existing plugins, but it does cover the migration of apps as well.
+This page describes the composability system that helps bring together content
+from a multitude of plugins into one Backstage application.
 
-The core principle of the new composability system is that plugins should have
-clear boundaries and connections. It should isolate crashes within a plugin, but
-allow navigation between them. It should allow for plugins to be loaded only
-when needed, and enable plugins to provide extension points for other plugins to
+The core principle of the composability system is that plugins should have clear
+boundaries and connections. It should isolate crashes within a plugin, but allow
+navigation between them. It should allow for plugins to be loaded only when
+needed, and enable plugins to provide extension points for other plugins to
 build upon. The composability system is also built with an app-first mindset,
 prioritizing simplicity and clarity in the app over that in the plugins and core
 APIs.
 
-The new composability system isn't a single new API surface. It is a collection
-of patterns, primitives, new APIs, and old APIs used in new ways. At the core is
-the new concept of extensions, which are exported by plugins for use in the app.
-There is also a new primitive called component data, which assists in the
-conversion to a more declarative app. The `RouteRef`s now have a clear purpose
-as well, and can be used route to pages in a flexible way.
+The composability system isn't a single API surface. It is a collection of
+patterns, primitives, and APIs. At the core is the concept of **extensions**,
+which are exported by plugins for use in the app. There is also a primitive
+called component data, which helps keep the structure of the app more
+declarative. There are also `RouteRef`s that help route between pages in a
+flexible way, which is especially important when bringing together different
+open source plugins.
 
-## New Concepts
+## Concepts
 
-This section is a brief look into all the new and updated concepts that were put
-in place to support the new composability system.
+This section is a brief look into all the concepts that help support the
+composability system.
 
 ### Component Data
 
-Component data is a new composability primitive that is introduced as a way to
+Component data is a composability primitive that is introduced as a way to
 provide a new data dimension for React components. Data is attached to React
 components using a key, and is then readable from any JSX elements created with
 those components, using the same key, as illustrated by the following example:
@@ -59,7 +56,7 @@ inspected, while our component data adds more structured access and simplifies
 evolution by allowing for multiple different versions of a piece of data to be
 used and interpreted at once.
 
-The initial use-case for component data is to support route and plugin discovery
+One of the use-cases for component data is to support route and plugin discovery
 through elements in the app. Through this we allow for the React element tree in
 the app to be the source of truth, both for which plugins are used, as well as
 all top-level plugin routes in the app. The use of component data is not limited
@@ -101,9 +98,11 @@ supply a `RouteRef` as `mountPoint`. The mount point will be the handle of the
 component for the outside world, and is used by other components and plugins
 that wish to link to the routable component.
 
-As of now there are only two extension creation functions, but it is possible to
-add more of them in the future, both in the core library and in plugins that
-wish to provide an extension point for other plugins to build upon. Extensions
+As of now there are only two extension creation functions in the core library,
+but it is possible to add more of them in the future, but more may be added in
+the future. There are also some plugins that provide ways to extend
+functionality through their own extensions, like
+`createScaffolderFieldExtension` from `@backstage/plugin-scaffolder`. Extensions
 are also not tied to React, and can both be used to model generic JavaScript
 concepts, as well as potentially bridge to rendering libraries and web
 frameworks other than React.
@@ -192,14 +191,30 @@ const App = () => (
 );
 ```
 
-### New Routing System
+### Naming Patterns
 
-A big piece of what is enabled by moving over to this new composability system
-is to make `RouteRef`s useful. The `RouteRef`s no longer have their own path, in
-fact the only required parameter is currently a `title`. Instead of assigning a
-path to each `RouteRef` and possibly overriding these paths in the app, the
-concrete `path` for each `RouteRef` is discovered based on the element tree in
-the app. Let's consider the following example:
+There are a couple of naming patters to adhere to as you build plugins, which
+helps clarify the intent and usage of the exports.
+
+| Description           | Pattern         | Examples                                       |
+| --------------------- | --------------- | ---------------------------------------------- |
+| Top-level Pages       | \*Page          | CatalogIndexPage, SettingsPage, LighthousePage |
+| Entity Tab Content    | Entity\*Content | EntityJenkinsContent, EntityKubernetesContent  |
+| Entity Overview Card  | Entity\*Card    | EntitySentryCard, EntityPagerDutyCard          |
+| Entity Conditional    | is\*Available   | isPagerDutyAvailable, isJenkinsAvailable       |
+| Plugin Instance       | \*Plugin        | jenkinsPlugin, catalogPlugin                   |
+| Utility API Reference | \*ApiRef        | configApiRef, catalogApiRef                    |
+
+### Routing System
+
+The routing system of Backstage relies heavily on the composability system. It
+uses `RouteRef`s to represent routing targets in the app, which at runtime will
+be bound to a concrete `path`, but provides a level of indirection to help mix
+together different plugins that otherwise wouldn't know how to route to each
+other.
+
+The concrete `path` for each `RouteRef` is discovered based on the element tree
+in the app. Let's consider the following example:
 
 ```tsx
 const appRoutes = (
@@ -216,12 +231,10 @@ extension it has a `RouteRef` assigned as its mount point, which we'll refer to
 as `fooPageRouteRef`.
 
 Given the above example, the `fooPageRouteRef` will be associated with the
-`'/foo'` route. The path is no longer accessible via the `path` property of the
-`RouteRef` though, as the routing structure is tied to the app's react tree. We
-instead use the new `useRouteRef` hook if we want to create a concrete link to
-the page. The `useRouteRef` hook takes a single `RouteRef` as its only
-parameter, and returns a function that is called to create the URL. For example
-like this:
+`'/foo'` route. If we want to route to the `FooPage`, we can use the
+`useRouteRef` hook to create a concrete link to the page. The `useRouteRef` hook
+takes a single `RouteRef` as its only parameter, and returns a function that is
+called to create the URL. For example like this:
 
 ```tsx
 const MyComponent = () => {
@@ -230,16 +243,15 @@ const MyComponent = () => {
 };
 ```
 
-Now let's assume that we want to link from the `BarPage` to the `FooPage`.
-Before the introduction of the new composability system, we would do this by
-importing the `fooPageRouteRef` exported by the `fooPlugin`. This created an
-unnecessary dependency on the plugin, and also provided little flexibility in
-allowing the app to tie plugins together, with the links instead being dictated
-by the plugins themselves. To solve this, we introduce `ExternalRouteRef`s. Much
-like regular route references, they can be passed to `useRouteRef` to create
-concrete URLs, but they can not be used as mount points in routable component
-and instead have to be associated with a target route using route bindings in
-the app.
+Now let's assume that we want to link from the `BarPage` to the `FooPage`. We
+don't want to reference the `fooPageRouteRef` directly from our `barPlugin`,
+since that would create an unnecessary dependency on the `fooPlugin`. It would
+also provided little flexibility in allowing the app to tie plugins together,
+with the links instead being dictated by the plugins themselves. To solve this,
+we use `ExternalRouteRef`s. Much like regular route references, they can be
+passed to `useRouteRef` to create concrete URLs, but they can not be used as
+mount points in routable component and instead have to be associated with a
+target route using route bindings in the app.
 
 We create a new `ExternalRouteRef` inside the `barPlugin`, using a neutral name
 that describes its role in the plugin rather than a specific plugin page that it
@@ -305,6 +317,14 @@ in a different file than the one that creates the plugin instance, for example a
 top-level `routes.ts`. This is to avoid circular imports when you use the route
 references from other parts of the same plugin.
 
+Another thing to note is that this indirection in the routing is particularly
+useful for open source plugins than need to leave flexibility in how they are
+integrated. For plugins that you build internally for your own Backstage
+application, you can choose to go the route of direct imports or even use
+concrete routes directly. Although there can be some benefits to using the full
+routing system even in internal plugins. It can help you structure your routes,
+and as you will see further down it also helps you manage route parameters.
+
 ### Optional External Routes
 
 When creating an `ExternalRouteRef` it is possible to mark it as optional:
@@ -338,7 +358,7 @@ const MyComponent = () => {
 
 ### Parameterized Routes
 
-A new addition to `RouteRef`s is the possibility of adding named and typed
+A feature of `RouteRef`s is the possibility of adding named and typed
 parameters. Parameters are declared at creation, and will enforce presence of
 the parameters in the path in the app, and require them as a parameter when
 using `useRouteRef`.
@@ -415,21 +435,12 @@ const MyPage = () => (
 );
 ```
 
-### New Catalog Components
+### Catalog Components
 
-The established pattern for selecting what plugins should be available on each
-catalog page is to use custom components in the app, with logic embedded in the
-render function. Typically this takes form as a component that either receives
-the entity via props or uses the `useEntity` hook to retrieve the selected
-entity. A `switch` or `if` / `else if` chain is then used to select what
-children should be rendered based on information in the entity.
-
-This pattern will no longer work with the new composability system, and in
-general is very difficult to build any form of declarative model around, as it
-depends on runtime execution. To help replace existing code, a new
-`EntitySwitch` component has been added to the `@backstage/catalog` plugin,
-which grabs the selected entity from a context, and selects at most one element
-to render using a list of `EntitySwitch.Case` children.
+To help structure the catalog entity pages in your app and choose what content
+to render in different scenarios, the `@backstage/catalog` plugin provides an
+`EntitySwitch` component. It works by selecting at most one element to render
+using a list of `EntitySwitch.Case` children.
 
 For example, if you want all entities of kind `"Template"` to be rendered with a
 `MyTemplate` component, and all other entities to be rendered with a `MyOther`
@@ -474,6 +485,9 @@ In addition to the `EntitySwitch` component, the catalog plugin also exports a
 new `EntityLayout` component. It is a tweaked version and replacement for the
 `EntityPageLayout` component, and is introduced more in depth in the app
 migration section below.
+
+**NOTE**: The rest of this documentation covers how to migrate older
+applications to the new composability system described above.
 
 ## Porting Existing Plugins
 
