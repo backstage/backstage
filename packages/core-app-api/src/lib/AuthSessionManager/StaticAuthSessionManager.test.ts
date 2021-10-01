@@ -83,7 +83,7 @@ describe('StaticAuthSessionManager', () => {
     expect(createSession).toHaveBeenCalledTimes(2);
   });
 
-  it('should remove session and reload', async () => {
+  it('should clear the local session', async () => {
     const removeSession = jest.fn();
     const manager = new StaticAuthSessionManager({
       connector: { removeSession },
@@ -91,7 +91,17 @@ describe('StaticAuthSessionManager', () => {
     } as any);
 
     await manager.removeSession();
-    expect(removeSession).toHaveBeenCalled();
     expect(await manager.getSession({ optional: true })).toBe(undefined);
+  });
+
+  it('should not remove the session via the connector', async () => {
+    const removeSession = jest.fn();
+    const manager = new StaticAuthSessionManager({
+      connector: { removeSession },
+      ...defaultOptions,
+    } as any);
+
+    await manager.removeSession();
+    expect(removeSession).not.toHaveBeenCalled();
   });
 });
