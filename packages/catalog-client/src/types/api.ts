@@ -30,7 +30,7 @@ export type CatalogEntitiesRequest = {
 
 /** @public */
 export type CatalogEntityAncestorsRequest = {
-  entityName: EntityName;
+  entityRef: EntityName;
 };
 
 /** @public */

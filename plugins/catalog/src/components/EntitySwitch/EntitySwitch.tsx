@@ -30,7 +30,7 @@ const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 const EntitySwitchCase = (_: {
   if?: (
     entity: Entity,
-    context: { apiRegistry: ApiHolder },
+    context: { apis: ApiHolder },
   ) => boolean | Promise<boolean>;
   children: ReactNode;
 }) => null;
@@ -40,14 +40,14 @@ attachComponentData(EntitySwitchCase, ENTITY_SWITCH_KEY, true);
 type SwitchCase = {
   if?: (
     entity: Entity,
-    context: { apiRegistry: ApiHolder },
+    context: { apis: ApiHolder },
   ) => boolean | Promise<boolean>;
   children: JSX.Element;
 };
 
 export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
   const { entity } = useEntity();
-  const apiRegistry = useApiHolder();
+  const apis = useApiHolder();
   const switchCases = useElementFilter(children, collection =>
     collection
       .selectByComponentData({
@@ -69,7 +69,7 @@ export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
         }
 
         try {
-          const matches = await condition(entity, { apiRegistry });
+          const matches = await condition(entity, { apis });
           return matches ? output : null;
         } catch {
           return null;

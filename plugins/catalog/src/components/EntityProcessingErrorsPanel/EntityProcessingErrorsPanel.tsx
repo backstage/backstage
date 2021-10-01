@@ -25,10 +25,12 @@ import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import {
+  CatalogApi,
+  ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+} from '@backstage/catalog-client';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { CatalogApi } from '@backstage/catalog-client';
 import { SerializedError } from '@backstage/errors';
 
 const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
@@ -37,10 +39,10 @@ const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
 async function getOwnAndAncestorsErrors(
-  entityName: EntityName,
+  entityRef: EntityName,
   catalogApi: CatalogApi,
 ): Promise<SerializedError[]> {
-  const ancestors = await catalogApi.getEntityAncestors({ entityName });
+  const ancestors = await catalogApi.getEntityAncestors({ entityRef });
   return ancestors.items.flatMap(item => {
     const statuses = item.entity.status?.items ?? [];
     return statuses
@@ -52,9 +54,9 @@ async function getOwnAndAncestorsErrors(
 
 export const hasCatalogProcessingErrors = async (
   entity: Entity,
-  context: { apiRegistry: ApiHolder },
+  context: { apis: ApiHolder },
 ) => {
-  const catalogApi = context.apiRegistry.get(catalogApiRef);
+  const catalogApi = context.apis.get(catalogApiRef);
   if (!catalogApi) {
     throw new Error(`No implementation available for ${catalogApiRef}`);
   }
@@ -67,66 +69,13 @@ export const hasCatalogProcessingErrors = async (
 };
 
 /**
- * Displays a list of errors if the entity is invalid.
- */
-export const EntityProcessingErrorsPanel = () => {
-  /*
-  const { entity } = useEntity();
-  const catalogProcessingErrors =
-    (entity?.status?.items?.filter(
-      errorFilter,
-    ) as Required<UNSTABLE_EntityStatusItem>[]) || [];
-
-  return (
-    <>
-      {catalogProcessingErrors.map(({ error }, index) => (
-        <Box key={index} mb={1}>
-          <ResponseErrorPanel error={error} />
-        </Box>
-      ))}
-    </>
-  );
-  */
-  // move this logic into the existing component
-  const { entity } = useEntity();
-  const catalogApi = useApi(catalogApiRef);
-
-  const { loading, error, value } = useAsync(() => {
-    return getOwnAndAncestorsErrors(getEntityName(entity), catalogApi);
-  }, [stringifyEntityRef(entity), catalogApi]);
-
-  if (error) {
-    return (
-      <Box mb={1}>
-        <ResponseErrorPanel error={error} />
-      </Box>
-    );
-  }
-
-  if (loading || !value?.length) {
-    return null;
-  }
-
-  return (
-    <>
-      {value.map((ancestorError, index) => (
-        <Box key={index} mb={1}>
-          <ResponseErrorPanel error={ancestorError} />
-        </Box>
-      ))}
-    </>
-  );
-};
-
-/**
  * Displays a list of errors from the ancestors of the current entity.
  */
-export const EntityAncestorsProcessingErrorsPanel = () => {
-  // move this logic into the existing component
+export const EntityProcessingErrorsPanel = () => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
 
-  const { loading, error, value } = useAsync(() => {
+  const { loading, error, value } = useAsync(async () => {
     return getOwnAndAncestorsErrors(getEntityName(entity), catalogApi);
   }, [stringifyEntityRef(entity), catalogApi]);
 

@@ -51,7 +51,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<CatalogEntityAncestorsResponse> {
     const { kind, namespace, name } = Object.fromEntries(
-      Object.entries(request.entityName).map(([k, v]) => [
+      Object.entries(request.entityRef).map(([k, v]) => [
         k,
         encodeURIComponent(v),
       ]),
