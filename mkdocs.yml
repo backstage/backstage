@@ -1,0 +1,20 @@
+site_name: 'Benefits Innovation Hub Documentation'
+
+nav:
+  - Overview: index.md
+  - Local Development: 'local-development.md'
+  - Tech Docs:
+      - Overview: 'techdocs/README.md'
+      - Getting Started: 'techdocs/getting-started.md'
+      - Concepts: 'techdocs/concepts.md'
+      - TechDocs Architecture: 'techdocs/architecture.md'
+      - Creating and Publishing Documentation: 'techdocs/creating-and-publishing.md'
+      - TechDocs Configuration Options: 'techdocs/configuration.md'
+      - Using Cloud Storage: 'techdocs/using-cloud-storage.md'
+      - Configuring CI/CD to generate and publish TechDoc sites: 'techdocs/configuring-ci-cd.md'
+      - HOW TO guides: 'techdocs/how-to-guides.md'
+      - Troubleshooting: 'techdocs/troubleshooting.md'
+      - FAQ: 'techdocs/FAQ.md'
+
+plugins:
+  - techdocs-core
