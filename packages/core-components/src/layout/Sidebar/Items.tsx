@@ -311,6 +311,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
       search();
+      ev.preventDefault();
     }
   };
 
