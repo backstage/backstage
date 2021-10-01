@@ -157,7 +157,7 @@ export class DefaultCatalogProcessingOrchestrator
         ...collectorResults,
         completedEntity: entity,
         state: { cache: cache.collect() },
-        ok: true,
+        ok: collectorResults.errors.length === 0,
       };
     } catch (error) {
       this.options.logger.warn(error.message);
