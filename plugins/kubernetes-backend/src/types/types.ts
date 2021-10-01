@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
 import type {
   FetchResponse,
   KubernetesFetchError,
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 
 export interface ObjectFetchParams {
@@ -120,4 +124,43 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
   externalId?: string;
+}
+
+export interface KubernetesObjectsProviderOptions {
+  logger: Logger;
+  fetcher: KubernetesFetcher;
+  serviceLocator: KubernetesServiceLocator;
+  customResources: CustomResource[];
+  objectTypesToFetch?: ObjectToFetch[];
+}
+
+export type ObjectsByEntityRequest = KubernetesRequestBody;
+
+export interface KubernetesObjectsProvider {
+  getKubernetesObjectsByEntity(
+    request: ObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+}
+
+export interface KubernetesFactory {
+  createKubernetesClustersSupplier(config: Config): KubernetesClustersSupplier;
+
+  createKubernetesObjectsProvider(
+    options: KubernetesObjectsProviderOptions,
+  ): KubernetesObjectsProvider;
+
+  createKubernetesFetcher(logger: Logger): KubernetesFetcher;
+
+  createServiceLocator(
+    method: ServiceLocatorMethod,
+    clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
+
+  createMultiTenantServiceLocator(
+    clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
+
+  createHttpServiceLocator(
+    _clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
 }
