@@ -21,7 +21,7 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   MockStorageApi,
   renderWithEffects,
@@ -136,6 +136,7 @@ describe('CatalogPage', () => {
         {
           mountedRoutes: {
             '/create': createComponentRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
