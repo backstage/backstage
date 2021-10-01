@@ -70,11 +70,11 @@ export type BitbucketOAuthResult = {
 };
 
 export type BitbucketPassportProfile = PassportProfile & {
+  id?: string;
   displayName?: string;
   username?: string;
   avatarUrl?: string;
   _json?: {
-    uuid?: string;
     links?: {
       avatar?: {
         href?: string;
@@ -223,37 +223,17 @@ export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResul
     return { id: entity.metadata.name, entity, token };
   };
 
-export const bitbucketDisplayNameSignInResolver: SignInResolver<BitbucketOAuthResult> =
+export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult> =
   async (info, ctx) => {
     const { result } = info;
 
-    if (!result.fullProfile.displayName) {
-      throw new Error('Bitbucket profile contained no display name');
+    if (!result.fullProfile.id) {
+      throw new Error('Bitbucket profile contained no User ID');
     }
 
     const entity = await ctx.catalogIdentityClient.findUser({
       annotations: {
-        'bitbucket.org/displayName': result.fullProfile.displayName,
-      },
-    });
-
-    const claims = getEntityClaims(entity);
-    const token = await ctx.tokenIssuer.issueToken({ claims });
-
-    return { id: entity.metadata.name, entity, token };
-  };
-
-export const bitbucketUuidSignInResolver: SignInResolver<BitbucketOAuthResult> =
-  async (info, ctx) => {
-    const { result } = info;
-
-    if (!result.fullProfile?._json?.uuid) {
-      throw new Error('Bitbucket profile contained no UUID');
-    }
-
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'bitbucket.org/uuid': result.fullProfile._json?.uuid,
+        'bitbucket.org/user-id': result.fullProfile.id,
       },
     });
 

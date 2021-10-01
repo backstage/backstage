@@ -17,8 +17,7 @@
 export {
   createBitbucketProvider,
   bitbucketUsernameSignInResolver,
-  bitbucketUuidSignInResolver,
-  bitbucketDisplayNameSignInResolver,
+  bitbucketUserIdSignInResolver,
 } from './provider';
 export type {
   BitbucketProviderOptions,
