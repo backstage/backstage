@@ -52,16 +52,23 @@ proxy:
 # Note: After experimenting with basic setup, use CI/CD to generate docs
 # and an external cloud storage when deploying TechDocs for production use-case.
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
+# techdocs:
+#   builder: 'external'
+#   publisher:
+#     type: 'awsS3'
+#     awsS3:
+#       bucketName: ${AWS_BUCKET_NAME}
+#       region: ${AWS_BUCKET_REGION}
+#       credentials:
+#         accessKeyId: ${AWS_ACCESS_KEY_ID}
+#         secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
+
 techdocs:
-  builder: 'external'
+  builder: 'local'
   publisher:
-    type: 'awsS3'
-    awsS3:
-      bucketName: ${AWS_BUCKET_NAME}
-      region: ${AWS_BUCKET_REGION}
-      credentials:
-        accessKeyId: ${AWS_ACCESS_KEY_ID}
-        secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
+    type: 'local'
+  generator:
+    techdocs: local
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers

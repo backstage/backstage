@@ -9,8 +9,8 @@
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 
-#FROM container-registry.dev8.bip.va.gov/bip/node:14
-FROM node:14-buster
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs14:14.17.6
+# FROM node:14-buster
 
 WORKDIR /app
 
