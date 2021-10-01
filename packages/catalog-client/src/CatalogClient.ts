@@ -59,7 +59,7 @@ export class CatalogClient implements CatalogApi {
 
     return await this.requestRequired(
       'GET',
-      `/entity/by-name/${kind}/${namespace}/${name}/ancestry`,
+      `/entities/by-name/${kind}/${namespace}/${name}/ancestry`,
       options,
     );
   }
