@@ -141,7 +141,9 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login?.toLowerCase() === owner.toLowerCase(),
+      inst =>
+        inst.account?.login?.toLocaleLowerCase('en-US') ===
+        owner.toLocaleLowerCase('en-US'),
     );
     if (installation) {
       return {

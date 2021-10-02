@@ -193,8 +193,8 @@ export const WorkaroundNavLink = React.forwardRef<
   let { pathname: toPathname } = useResolvedPath(to);
 
   if (!caseSensitive) {
-    locationPathname = locationPathname.toLowerCase();
-    toPathname = toPathname.toLowerCase();
+    locationPathname = locationPathname.toLocaleLowerCase('en-US');
+    toPathname = toPathname.toLocaleLowerCase('en-US');
   }
 
   let isActive = locationPathname === toPathname;
