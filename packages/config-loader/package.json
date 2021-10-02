@@ -40,14 +40,14 @@
     "json-schema-merge-allof": "^0.8.1",
     "typescript-json-schema": "^0.50.1",
     "yaml": "^1.9.2",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^14.14.32",
-    "@types/yup": "^0.29.8",
+    "@types/yup": "^0.29.13",
     "mock-fs": "^5.1.0"
   },
   "files": [

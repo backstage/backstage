@@ -52,7 +52,7 @@
     "react-use": "^17.2.4",
     "recharts": "^1.8.5",
     "regression": "^2.0.1",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.14",
@@ -67,7 +67,7 @@
     "@types/pluralize": "^0.0.29",
     "@types/recharts": "^1.8.14",
     "@types/regression": "^2.0.0",
-    "@types/yup": "^0.29.8",
+    "@types/yup": "^0.29.13",
     "canvas": "^2.6.1",
     "cross-fetch": "^3.0.6",
     "msw": "^0.29.0"

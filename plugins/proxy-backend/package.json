@@ -40,14 +40,14 @@
     "winston": "^3.2.1",
     "yaml": "^1.9.2",
     "yn": "^4.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.2",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
-    "@types/yup": "^0.29.8",
+    "@types/yup": "^0.29.13",
     "supertest": "^6.1.3"
   },
   "files": [
