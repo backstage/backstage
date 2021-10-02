@@ -424,7 +424,10 @@ This command uses a default Jest configuration that is included in the CLI,
 which is set up with similar goals for speed, scale, and working within a
 monorepo. The configuration sets the `src` as the root directory, enforces the
 `.test.` infix for tests, and uses `src/setupTests.ts` as the test setup
-location.
+location. The included configuration also supports test execution at the root of
+a yarn workspaces monorepo by automatically creating one grouped configuration
+that includes all packages that have `backstage-cli test` in their package
+`test` script.
 
 If needed, the configuration can be extended using a `"jest"` field in
 `package.json`, both within the target package and the monorepo root, with
