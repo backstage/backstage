@@ -33,12 +33,12 @@
     "@backstage/config": "^0.1.10",
     "@backstage/errors": "^0.1.2",
     "@types/json-schema": "^7.0.5",
-    "@types/yup": "^0.29.8",
+    "@types/yup": "^0.29.13",
     "ajv": "^7.0.3",
     "json-schema": "^0.3.0",
     "lodash": "^4.17.21",
     "uuid": "^8.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.13",
