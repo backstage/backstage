@@ -24,7 +24,7 @@ import { bazaarApiRef } from '../../api';
 type Props = {
   entity: Entity;
   bazaarProject: BazaarProject;
-  fetchBazaarProject: () => Promise<BazaarProject>;
+  fetchBazaarProject: () => Promise<BazaarProject | null>;
   open: boolean;
   handleClose: () => void;
   isAddForm: boolean;

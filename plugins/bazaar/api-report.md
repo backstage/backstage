@@ -26,7 +26,7 @@ export const bazaarPlugin: BackstagePlugin<
 // Warning: (ae-missing-release-tag) "EntityBazaarInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityBazaarInfoCard: () => JSX.Element;
+export const EntityBazaarInfoCard: () => JSX.Element | null;
 
 // (No @packageDocumentation comment for this package)
 ```

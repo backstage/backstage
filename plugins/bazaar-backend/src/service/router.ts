@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  PluginDatabaseManager,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { DatabaseHandler } from './DatabaseHandler';
 
 export interface RouterOptions {
   logger: Logger;
@@ -33,19 +30,12 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-  const db = await options.database.getClient();
+  const { logger, database } = options;
+  const db = await database.getClient();
+
+  const dbHandler = await DatabaseHandler.create({ database: db });
 
   logger.info('Initializing Bazaar backend');
-
-  const migrationsDir = resolvePackagePath(
-    '@backstage/plugin-bazaar-backend',
-    'migrations',
-  );
-
-  await db.migrate.latest({
-    directory: migrationsDir,
-  });
 
   const router = Router();
   router.use(express.json());
@@ -53,10 +43,7 @@ export async function createRouter(
   router.get('/members', async (request, response) => {
     const entityRef = request.headers.entity_ref;
 
-    const data = await db
-      .select('*')
-      .from('public.members')
-      .where({ entity_ref: entityRef });
+    const data = await dbHandler.getMembers(entityRef);
 
     if (data?.length) {
       response.json({ status: 'ok', data: data });
@@ -69,12 +56,8 @@ export async function createRouter(
     const userId = request.headers.user_id;
     const entityRef = request.headers.entity_ref;
 
-    await db
-      .insert({
-        entity_ref: entityRef,
-        user_id: userId,
-      })
-      .into('public.members');
+    await dbHandler.addMember(userId, entityRef);
+
     response.json({ status: 'ok' });
   });
 

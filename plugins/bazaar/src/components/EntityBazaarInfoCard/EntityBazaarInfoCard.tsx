@@ -47,14 +47,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { EditProjectDialog } from '../EditProjectDialog';
 import { DeleteProjectDialog } from '../DeleteProjectDialog';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import {
-  useApi,
-  identityApiRef,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
 import { Alert } from '@material-ui/lab';
 import { useAsyncFn } from 'react-use';
 
@@ -92,7 +87,6 @@ export const EntityBazaarInfoCard = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [isBazaar, setIsBazaar] = useState(false);
-  const routeRef = useRouteRef(rootRouteRef);
   const [members, fetchMembers] = useAsyncFn(async () => {
     const response = await bazaarApi.getMembers(entity);
     const dbMembers = response.data.map((obj: any) => {
@@ -112,17 +106,21 @@ export const EntityBazaarInfoCard = () => {
 
   const [bazaarProject, fetchBazaarProject] = useAsyncFn(async () => {
     const response = await bazaarApi.getMetadata(entity);
-    const metadata = await response.json().then((resp: any) => resp.data[0]);
 
-    return {
-      entityRef: metadata.entity_ref,
-      name: metadata.name,
-      community: metadata.community,
-      announcement: metadata.announcement,
-      status: metadata.status,
-      updatedAt: metadata.updated_at,
-      membersCount: metadata.members_count,
-    } as BazaarProject;
+    if (response) {
+      const metadata = await response.json().then((resp: any) => resp.data[0]);
+
+      return {
+        entityRef: metadata.entity_ref,
+        name: metadata.name,
+        community: metadata.community,
+        announcement: metadata.announcement,
+        status: metadata.status,
+        updatedAt: metadata.updated_at,
+        membersCount: metadata.members_count,
+      } as BazaarProject;
+    }
+    return null;
   });
 
   useEffect(() => {
@@ -135,7 +133,7 @@ export const EntityBazaarInfoCard = () => {
       members?.value
         ?.map((member: Member) => member.userId)
         .indexOf(identity.getUserId()) >= 0;
-    const isBazaarProject = bazaarProject !== undefined;
+    const isBazaarProject = bazaarProject !== null;
 
     setIsMember(isBazaarMember);
     setIsBazaar(isBazaarProject);
@@ -185,32 +183,14 @@ export const EntityBazaarInfoCard = () => {
     },
   ];
 
-  if (bazaarProject.loading || members.loading) {
+  if (!isBazaar) {
+    return null;
+  } else if (bazaarProject.loading || members.loading) {
     return <Progress />;
   } else if (bazaarProject.error) {
     return <Alert severity="error">{bazaarProject?.error?.message}</Alert>;
   } else if (members.error) {
     return <Alert severity="error">{members?.error?.message}</Alert>;
-  } else if (!isBazaar) {
-    return (
-      <Card>
-        <CardHeader title="Bazaar" style={{ paddingBottom: '1rem' }} />
-        <Divider />
-        <CardContent>
-          <Typography variant="body1">
-            This project is not in the Bazaar. Go to the{' '}
-            <Link className={classes.link} to={`/${routeRef()}`}>
-              Bazaar
-            </Link>{' '}
-            to add the project or to{' '}
-            <Link className={classes.link} to={`/${routeRef()}/about`}>
-              read more
-            </Link>
-            .
-          </Typography>
-        </CardContent>
-      </Card>
-    );
   }
   return (
     <Card>

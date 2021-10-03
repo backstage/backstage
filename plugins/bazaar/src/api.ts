@@ -91,12 +91,14 @@ export class BazaarClient implements BazaarApi {
   async getMetadata(entity: Entity): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    return await fetch(`${baseUrl}/metadata`, {
+    const response = await fetch(`${baseUrl}/metadata`, {
       method: 'GET',
       headers: {
         entity_ref: stringifyEntityRef(entity),
       },
     });
+
+    return response.ok ? response : null;
   }
 
   async getMembers(entity: Entity): Promise<any> {

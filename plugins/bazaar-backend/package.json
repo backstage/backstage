@@ -27,6 +27,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^0.95.1",
     "supertest": "^6.1.6",
+    "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
