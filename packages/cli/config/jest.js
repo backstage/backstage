@@ -16,20 +16,23 @@
 
 const fs = require('fs-extra');
 const path = require('path');
+const glob = require('util').promisify(require('glob'));
 
-async function getConfig() {
+async function getProjectConfig(targetPath) {
+  const configJsPath = path.resolve(targetPath, 'jest.config.js');
+  const configTsPath = path.resolve(targetPath, 'jest.config.ts');
   // If the package has it's own jest config, we use that instead.
-  if (await fs.pathExists('jest.config.js')) {
-    return require(path.resolve('jest.config.js'));
-  } else if (await fs.pathExists('jest.config.ts')) {
-    return require(path.resolve('jest.config.ts'));
+  if (await fs.pathExists(configJsPath)) {
+    return require(configJsPath);
+  } else if (await fs.pathExists(configTsPath)) {
+    return require(configTsPath);
   }
 
   // We read all "jest" config fields in package.json files all the way to the filesystem root.
   // All configs are merged together to create the final config, with longer paths taking precedence.
   // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
   const pkgJsonConfigs = [];
-  let currentPath = process.cwd();
+  let currentPath = targetPath;
 
   // Some sanity check to avoid infinite loop
   for (let i = 0; i < 100; i++) {
@@ -70,8 +73,8 @@ async function getConfig() {
   const transformModulePattern = transformModules && `(?!${transformModules})`;
 
   const options = {
-    rootDir: path.resolve('src'),
-    coverageDirectory: path.resolve('coverage'),
+    rootDir: path.resolve(targetPath, 'src'),
+    coverageDirectory: path.resolve(targetPath, 'coverage'),
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
@@ -96,11 +99,61 @@ async function getConfig() {
   };
 
   // Use src/setupTests.ts as the default location for configuring test env
-  if (fs.existsSync('src/setupTests.ts')) {
+  if (fs.existsSync(path.resolve(targetPath, 'src/setupTests.ts'))) {
     options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
   }
 
   return Object.assign(options, ...pkgJsonConfigs);
 }
 
-module.exports = getConfig();
+// This loads the root jest config, which in turn will either refer to a single
+// configuration for the current package, or a collection of configurations for
+// the target workspace packages
+async function getRootConfig() {
+  const targetPath = process.cwd();
+  const targetPackagePath = path.resolve(targetPath, 'package.json');
+  const exists = await fs.pathExists(targetPackagePath);
+
+  if (!exists) {
+    return getProjectConfig(targetPath);
+  }
+
+  // Check whether the current package is a workspace root or not
+  const data = await fs.readJson(targetPackagePath);
+  const workspacePatterns = data.workspaces && data.workspaces.packages;
+  if (!workspacePatterns) {
+    return getProjectConfig(targetPath);
+  }
+
+  // If the target package is a workspace root, we find all packages in the
+  // workspace and load those in as separate jest projects instead.
+  const projectPaths = await Promise.all(
+    workspacePatterns.map(pattern => glob(path.join(targetPath, pattern))),
+  ).then(_ => _.flat());
+
+  const configs = await Promise.all(
+    projectPaths.flat().map(async projectPath => {
+      const packagePath = path.resolve(projectPath, 'package.json');
+      if (!(await fs.pathExists(packagePath))) {
+        return undefined;
+      }
+
+      // We check for the presence of "backstage-cli test" in the package test
+      // script to determine whether a given package should be tested
+      const packageData = await fs.readJson(packagePath);
+      const testScript = packageData.scripts && packageData.scripts.test;
+      if (testScript && testScript.includes('backstage-cli test')) {
+        return await getProjectConfig(projectPath);
+      }
+
+      return undefined;
+    }),
+  ).then(cs => cs.filter(Boolean));
+
+  return {
+    rootDir: targetPath,
+    projects: configs,
+  };
+}
+
+module.exports = getRootConfig();

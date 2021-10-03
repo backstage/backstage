@@ -76,6 +76,7 @@
     "express": "^4.17.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "9.1.0",
+    "glob": "^7.1.7",
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^5.3.1",
     "inquirer": "^7.0.4",

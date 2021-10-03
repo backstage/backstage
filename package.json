@@ -16,7 +16,7 @@
     "tsc:full": "backstage-cli clean && tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
-    "test": "lerna run test --since origin/master -- --coverage",
+    "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:docs": "node ./scripts/check-docs-quality",
