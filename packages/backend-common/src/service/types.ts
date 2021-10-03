@@ -69,6 +69,13 @@ export type ServiceBuilder = {
   enableCors(options: cors.CorsOptions): ServiceBuilder;
 
   /**
+   * Updates CORS options merging given settings.
+   *
+   * @param options - Standard CORS options
+   */
+  updateCorsOptions(options: cors.CorsOptions): ServiceBuilder;
+
+  /**
    * Configure self-signed certificate generation options.
    *
    * If this method is not called, the resulting service will use sensible defaults
@@ -97,6 +104,14 @@ export type ServiceBuilder = {
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ): ServiceBuilder;
+
+  /**
+   * Creates and configures the express app
+   *
+   * the app will be override each time this method is called to apply new configurations
+   *
+   */
+  getApp(): Express.Application;
 
   /**
    * Starts the server using the given settings.

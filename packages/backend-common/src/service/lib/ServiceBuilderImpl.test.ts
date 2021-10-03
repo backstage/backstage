@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { applyCspDirectives } from './ServiceBuilderImpl';
+import { ConfigReader } from '@backstage/config';
+import request from 'supertest';
+import { applyCspDirectives, ServiceBuilderImpl } from './ServiceBuilderImpl';
 
 describe('ServiceBuilderImpl', () => {
   describe('applyCspDirectives', () => {
@@ -32,5 +34,87 @@ describe('ServiceBuilderImpl', () => {
       const result = applyCspDirectives({ 'upgrade-insecure-requests': false });
       expect(result!['upgrade-insecure-requests']).toBeUndefined();
     });
+  });
+
+  describe('updateCorsOptions', () => {
+    it('enable cors with options', async () => {
+      const app = new ServiceBuilderImpl(module)
+        .updateCorsOptions({ origin: '*' })
+        .getApp();
+
+      const { header } = await request(app).options('/');
+
+      expect(header['access-control-allow-origin']).toBe('*');
+    });
+  });
+
+  it('updates existent options', async () => {
+    const config = new ConfigReader({
+      backend: {
+        listen: {
+          port: 7001,
+        },
+        cors: {
+          origin: '-',
+        },
+      },
+    });
+    const app = new ServiceBuilderImpl(module)
+      .loadConfig(config)
+      .updateCorsOptions({ origin: '*' })
+      .getApp();
+
+    const { header } = await request(app).options('/');
+
+    expect(header['access-control-allow-origin']).toBe('*');
+  });
+
+  it('merge new options', async () => {
+    const config = new ConfigReader({
+      backend: {
+        listen: {
+          port: 7001,
+        },
+        cors: {
+          origin: '-',
+        },
+      },
+    });
+    const app = new ServiceBuilderImpl(module)
+      .loadConfig(config)
+      .updateCorsOptions({ methods: 'GET' })
+      .getApp();
+
+    const { header } = await request(app).options('/');
+
+    expect(header['access-control-allow-origin']).toBe('-');
+
+    expect(header['access-control-allow-methods']).toBe('GET');
+  });
+
+  it('enableCors removes all the existent options', async () => {
+    const config = new ConfigReader({
+      backend: {
+        listen: {
+          port: 7001,
+        },
+        cors: {
+          origin: '-',
+        },
+      },
+    });
+    const app = new ServiceBuilderImpl(module)
+      .loadConfig(config)
+      .updateCorsOptions({ methods: 'GET' })
+      .enableCors({ allowedHeaders: 'X-header' })
+      .getApp();
+
+    const { header } = await request(app).options('/');
+
+    expect(header['access-control-allow-origin']).toBe('*'); // default value
+    expect(header['access-control-allow-methods']).toBe(
+      'GET,HEAD,PUT,PATCH,POST,DELETE', // default value
+    );
+    expect(header['access-control-allow-headers']).toBe('X-header');
   });
 });

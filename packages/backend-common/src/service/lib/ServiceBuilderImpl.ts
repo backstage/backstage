@@ -135,6 +135,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  updateCorsOptions(options: cors.CorsOptions): ServiceBuilder {
+    this.corsOptions = { ...this.corsOptions, ...options };
+    return this;
+  }
+
   setCsp(options: CspOptions): ServiceBuilder {
     this.cspOptions = options;
     return this;
@@ -152,10 +157,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  async start(): Promise<http.Server> {
+  getApp() {
     const app = express();
-    const { port, host, logger, corsOptions, httpsSettings, helmetOptions } =
-      this.getOptions();
+    const { logger, corsOptions, helmetOptions } = this.getOptions();
 
     app.use(helmet(helmetOptions));
     if (corsOptions) {
@@ -171,6 +175,12 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     app.use(notFoundHandler());
     app.use(errorHandler());
 
+    return app;
+  }
+
+  async start(): Promise<http.Server> {
+    const app = this.getApp();
+    const { port, host, logger, httpsSettings } = this.getOptions();
     const server: http.Server = httpsSettings
       ? await createHttpsServer(app, httpsSettings, logger)
       : createHttpServer(app, logger);
