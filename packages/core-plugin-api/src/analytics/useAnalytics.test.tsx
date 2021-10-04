@@ -23,6 +23,17 @@ jest.mock('../apis');
 const mocked = (f: Function) => f as jest.Mock;
 
 describe('useAnalytics', () => {
+  it('returns tracker with no implementation defined', () => {
+    // Simulate useApi() throwing an error.
+    mocked(useApi).mockImplementation(() => {
+      throw new Error();
+    });
+
+    // Result should still have a captureEvent method.
+    const { result } = renderHook(() => useAnalytics());
+    expect(result.current.captureEvent).toBeDefined();
+  });
+
   it('returns tracker from defined analytics api', () => {
     const captureEvent = jest.fn();
 

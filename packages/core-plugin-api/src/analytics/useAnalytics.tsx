@@ -15,17 +15,33 @@
  */
 
 import { useAnalyticsContext } from './AnalyticsContext';
-import { analyticsApiRef, AnalyticsTracker, useApi } from '../apis';
+import {
+  analyticsApiRef,
+  AnalyticsTracker,
+  AnalyticsApi,
+  useApi,
+} from '../apis';
 import { useRef } from 'react';
 import { Tracker } from './Tracker';
+
+function useAnalyticsApi(): AnalyticsApi {
+  try {
+    return useApi(analyticsApiRef);
+  } catch {
+    return { captureEvent: () => {} };
+  }
+}
 
 /**
  * Get a pre-configured analytics tracker.
  */
 export function useAnalytics(): AnalyticsTracker {
   const trackerRef = useRef<Tracker | null>(null);
-  const analyticsApi = useApi(analyticsApiRef);
   const context = useAnalyticsContext();
+  // Our goal is to make this API truly optional for any/all consuming code
+  // (including tests). This hook runs last to ensure hook order is, as much as
+  // possible, maintained.
+  const analyticsApi = useAnalyticsApi();
 
   function getTracker(): Tracker {
     if (trackerRef.current === null) {
