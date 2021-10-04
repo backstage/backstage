@@ -42,6 +42,7 @@ export const pagerDutyPlugin = createPlugin({
 
 export const EntityPagerDutyCard = pagerDutyPlugin.provide(
   createComponentExtension({
+    name: 'EntityPagerDutyCard',
     component: {
       lazy: () =>
         import('./components/PagerDutyCard').then(m => m.PagerDutyCard),

@@ -33,6 +33,7 @@ export const welcomePlugin = createPlugin({
 
 export const WelcomePage = welcomePlugin.provide(
   createRoutableExtension({
+    name: 'WelcomePage',
     component: () => import('./components/WelcomePage').then(m => m.default),
     mountPoint: rootRouteRef,
   }),

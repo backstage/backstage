@@ -56,6 +56,7 @@ export const catalogPlugin = createPlugin({
 
 export const CatalogIndexPage = catalogPlugin.provide(
   createRoutableExtension({
+    name: 'CatalogIndexPage',
     component: () =>
       import('./components/CatalogPage').then(m => m.CatalogPage),
     mountPoint: catalogRouteRef,
@@ -64,6 +65,7 @@ export const CatalogIndexPage = catalogPlugin.provide(
 
 export const CatalogEntityPage = catalogPlugin.provide(
   createRoutableExtension({
+    name: 'CatalogEntityPage',
     component: () =>
       import('./components/CatalogEntityPage').then(m => m.CatalogEntityPage),
     mountPoint: entityRouteRef,
@@ -72,6 +74,7 @@ export const CatalogEntityPage = catalogPlugin.provide(
 
 export const EntityAboutCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityAboutCard',
     component: {
       lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
     },
@@ -80,6 +83,7 @@ export const EntityAboutCard = catalogPlugin.provide(
 
 export const EntityLinksCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityLinksCard',
     component: {
       lazy: () =>
         import('./components/EntityLinksCard').then(m => m.EntityLinksCard),
@@ -89,6 +93,7 @@ export const EntityLinksCard = catalogPlugin.provide(
 
 export const EntityHasSystemsCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityHasSystemsCard',
     component: {
       lazy: () =>
         import('./components/HasSystemsCard').then(m => m.HasSystemsCard),
@@ -98,6 +103,7 @@ export const EntityHasSystemsCard = catalogPlugin.provide(
 
 export const EntityHasComponentsCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityHasComponentsCard',
     component: {
       lazy: () =>
         import('./components/HasComponentsCard').then(m => m.HasComponentsCard),
@@ -107,6 +113,7 @@ export const EntityHasComponentsCard = catalogPlugin.provide(
 
 export const EntityHasSubcomponentsCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityHasSubcomponentsCard',
     component: {
       lazy: () =>
         import('./components/HasSubcomponentsCard').then(
@@ -118,6 +125,7 @@ export const EntityHasSubcomponentsCard = catalogPlugin.provide(
 
 export const EntityHasResourcesCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityHasResourcesCard',
     component: {
       lazy: () =>
         import('./components/HasResourcesCard').then(m => m.HasResourcesCard),
@@ -127,6 +135,7 @@ export const EntityHasResourcesCard = catalogPlugin.provide(
 
 export const EntityDependsOnComponentsCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityDependsOnComponentsCard',
     component: {
       lazy: () =>
         import('./components/DependsOnComponentsCard').then(
@@ -138,6 +147,7 @@ export const EntityDependsOnComponentsCard = catalogPlugin.provide(
 
 export const EntityDependencyOfComponentsCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityDependencyOfComponentsCard',
     component: {
       lazy: () =>
         import('./components/DependencyOfComponentsCard').then(
@@ -149,6 +159,7 @@ export const EntityDependencyOfComponentsCard = catalogPlugin.provide(
 
 export const EntityDependsOnResourcesCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntityDependsOnResourcesCard',
     component: {
       lazy: () =>
         import('./components/DependsOnResourcesCard').then(
@@ -160,6 +171,7 @@ export const EntityDependsOnResourcesCard = catalogPlugin.provide(
 
 export const EntitySystemDiagramCard = catalogPlugin.provide(
   createComponentExtension({
+    name: 'EntitySystemDiagramCard',
     component: {
       lazy: () =>
         import('./components/SystemDiagramCard').then(m => m.SystemDiagramCard),

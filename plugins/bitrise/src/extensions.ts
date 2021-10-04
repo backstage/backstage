@@ -19,6 +19,7 @@ import { createComponentExtension } from '@backstage/core-plugin-api';
 
 export const EntityBitriseContent = bitrisePlugin.provide(
   createComponentExtension({
+    name: 'EntityBitriseContent',
     component: {
       lazy: () =>
         import('./components/BitriseBuildsComponent').then(

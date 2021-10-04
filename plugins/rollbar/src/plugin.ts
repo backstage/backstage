@@ -47,6 +47,7 @@ export const rollbarPlugin = createPlugin({
 
 export const EntityRollbarContent = rollbarPlugin.provide(
   createRoutableExtension({
+    name: 'EntityRollbarContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),

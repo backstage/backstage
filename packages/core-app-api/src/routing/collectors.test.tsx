@@ -51,30 +51,35 @@ const refOrder = [ref1, ref2, ref3, ref4, ref5];
 
 const Extension1 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension1',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref1,
   }),
 );
 const Extension2 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension2',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref2,
   }),
 );
 const Extension3 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension3',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref3,
   }),
 );
 const Extension4 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension4',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref4,
   }),
 );
 const Extension5 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension5',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref5,
   }),

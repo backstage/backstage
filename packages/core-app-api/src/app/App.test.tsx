@@ -127,6 +127,7 @@ describe('Integration Test', () => {
 
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
+      name: 'HiddenComponent',
       component: () => Promise.resolve((_: { path?: string }) => <div />),
       mountPoint: plugin2RouteRef,
     }),
@@ -134,6 +135,7 @@ describe('Integration Test', () => {
 
   const ExposedComponent = plugin1.provide(
     createRoutableExtension({
+      name: 'ExposedComponent',
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
           const link1 = useRouteRef(plugin1RouteRef);

@@ -40,6 +40,7 @@ export const gitopsProfilesPlugin = createPlugin({
 
 export const GitopsProfilesClusterListPage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
+    name: 'GitopsProfilesClusterListPage',
     component: () => import('./components/ClusterList').then(m => m.default),
     mountPoint: gitOpsClusterListRoute,
   }),
@@ -47,6 +48,7 @@ export const GitopsProfilesClusterListPage = gitopsProfilesPlugin.provide(
 
 export const GitopsProfilesClusterPage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
+    name: 'GitopsProfilesClusterPage',
     component: () => import('./components/ClusterPage').then(m => m.default),
     mountPoint: gitOpsClusterDetailsRoute,
   }),
@@ -54,6 +56,7 @@ export const GitopsProfilesClusterPage = gitopsProfilesPlugin.provide(
 
 export const GitopsProfilesCreatePage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
+    name: 'GitopsProfilesCreatePage',
     component: () => import('./components/ProfileCatalog').then(m => m.default),
     mountPoint: gitOpsClusterCreateRoute,
   }),

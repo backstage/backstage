@@ -51,6 +51,7 @@ export const apiDocsPlugin = createPlugin({
 
 export const ApiExplorerPage = apiDocsPlugin.provide(
   createRoutableExtension({
+    name: 'ApiExplorerPage',
     component: () =>
       import('./components/ApiExplorerPage').then(m => m.ApiExplorerPage),
     mountPoint: rootRoute,
@@ -59,6 +60,7 @@ export const ApiExplorerPage = apiDocsPlugin.provide(
 
 export const EntityApiDefinitionCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityApiDefinitionCard',
     component: {
       lazy: () =>
         import('./components/ApiDefinitionCard').then(m => m.ApiDefinitionCard),
@@ -68,6 +70,7 @@ export const EntityApiDefinitionCard = apiDocsPlugin.provide(
 
 export const EntityConsumedApisCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityConsumedApisCard',
     component: {
       lazy: () =>
         import('./components/ApisCards').then(m => m.ConsumedApisCard),
@@ -77,6 +80,7 @@ export const EntityConsumedApisCard = apiDocsPlugin.provide(
 
 export const EntityConsumingComponentsCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityConsumingComponentsCard',
     component: {
       lazy: () =>
         import('./components/ComponentsCards').then(
@@ -88,6 +92,7 @@ export const EntityConsumingComponentsCard = apiDocsPlugin.provide(
 
 export const EntityProvidedApisCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityProvidedApisCard',
     component: {
       lazy: () =>
         import('./components/ApisCards').then(m => m.ProvidedApisCard),
@@ -97,6 +102,7 @@ export const EntityProvidedApisCard = apiDocsPlugin.provide(
 
 export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityProvidingComponentsCard',
     component: {
       lazy: () =>
         import('./components/ComponentsCards').then(
@@ -108,6 +114,7 @@ export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
 
 export const EntityHasApisCard = apiDocsPlugin.provide(
   createComponentExtension({
+    name: 'EntityHasApisCard',
     component: {
       lazy: () => import('./components/ApisCards').then(m => m.HasApisCard),
     },
