@@ -77,7 +77,7 @@ async function buildApp(appDir: string) {
 
 async function moveApp(tempDir: string, destination: string, id: string) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch(error => {
+    await fs.move(tempDir, destination, { overwrite: true }).catch(error => {
       throw new Error(
         `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
       );
@@ -119,14 +119,24 @@ export default async (cmd: Command): Promise<void> => {
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
-  const appDir = resolvePath(paths.targetDir, answers.name);
+
+  // Use `[path]` argument as applicaiton directory when specified, otherwise
+  // create a directory using `answers.name`
+  const appDir =
+    cmd.args.length > 0
+      ? resolvePath(cmd.args[0])
+      : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
 
   try {
-    Task.section('Checking if the directory is available');
-    await checkExists(paths.targetDir, answers.name);
+    // Directory must not already exist when using consructed path from
+    // `answers.name`
+    if (cmd.args.length === 0) {
+      Task.section('Checking if the directory is available');
+      await checkExists(paths.targetDir, answers.name);
+    }
 
     Task.section('Creating a temporary app directory');
     await createTemporaryAppFolder(tempDir);
