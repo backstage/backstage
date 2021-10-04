@@ -59,14 +59,60 @@ steps:
   automatically.
 - **Type Checking** - Validates your TypeScript type annotations.
 - **Testing** - Runs test suites towards your code to catch issues early.
-- **Building** (optional) - Compiles the source code in an NPM package to make
-  it ready for publishing.
-- **Bundling** - Compiles and bundles a package and all of its dependencies into
-  a release bundle.
+- **Building** - Compiles the source code in an individual package.
+- **Bundling** - Compiles and combines a package and all of its dependencies
+  into a bundle.
 
 These steps are generally kept isolated form each other, with each step focusing
 on its specific task. For example, we do not do linting or type checking
 together with the building or bundling. This is so that we can provide more
 flexibility and avoid duplicate work, improving performance. It is strongly
 recommended that as a part of developing withing Backstage you use a code editor
-or IDE that has built-in support for formatting, linting, and type checking.
+or IDE that has support for formatting, linting, and type checking.
+
+Let's dive into a detailed look at each of these steps and how they are
+implemented in a typical Backstage app.
+
+### Formatting
+
+The formatting setup lives completely within each Backstage application. In an
+app created with `@backstage/create-app` the formatting is handled by
+[prettier](https://prettier.io/), but each application can those their own
+formatting rules and switch to a different formatter if desired.
+
+### Linting
+
+The Backstage CLI includes a `lint` command, which is a thin wrapper around
+`eslint`. It adds a few options that can't be set through configuration, such as
+including the `.ts` and `.tsx` extensions in the set of linted files. The `lint`
+command simply provides a sane default and is not intended to be customizable.
+If you want to supply more advanced options you can invoke `eslint` directly
+instead.
+
+In addition to the `lint` command, the Backstage CLI also includes a set of base
+ESLint configurations, one for frontend and one for backend packages. These lint
+configurations in turn build on top of the lint rules from
+[@spotify/web-scripts](https://github.com/spotify/web-scripts).
+
+In a standard Backstage setup, each individual package has its own lint
+configuration, along with that there's also a root configuration that applies to
+the entire project. Each configuration is initially one that simply extends a
+configuration provided by the Backstage CLI, but can be customized to fit the
+needs of each package.
+
+### Type Checking
+
+Just like formatting, the Backstage CLI does not have its own command for type
+checking. It does however have a base configuration with both recommended
+defaults as well as some required settings for the build system to work.
+
+Perhaps the most notable part about the TypeScript setup in Backstage projects
+is that the entire project is one big compilation unit. This is due to
+performance optimization as well as easy of use, since breaking projects down
+into smaller pieces has proven to both lead to a more complicated setup, as well
+as type checking of the entire project being an order of magnitude slower. In
+order to make this setup work, the entrypoint of each package needs to point to
+the TypeScript source files, which in turn cases some complications during
+publishing that we'll talk about below.
+
+The type checking is generally configured to be incremental
