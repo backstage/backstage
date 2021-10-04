@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': minor
+'@backstage/backend-common': patch
 ---
 
 - Add `updateCorsOptions` method to merge new options with existent ones
