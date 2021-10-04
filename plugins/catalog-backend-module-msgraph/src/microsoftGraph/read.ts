@@ -137,10 +137,6 @@ export async function readMicrosoftGraphUsersInGroups(
 }> {
   const users: UserEntity[] = [];
 
-  if (!options.userGroupMemberFilter) {
-    return { users };
-  }
-
   const limiter = limiterFactory(10);
 
   const transformer = options?.transformer ?? defaultUserTransformer;
@@ -161,9 +157,7 @@ export async function readMicrosoftGraphUsersInGroups(
           }
 
           if (member['@odata.type'] === '#microsoft.graph.user') {
-            if (!groupMemberUsers.has(member.id)) {
-              groupMemberUsers.add(member.id);
-            }
+            groupMemberUsers.add(member.id);
           }
         }
       }),
@@ -484,23 +478,26 @@ export async function readMicrosoftGraphOrg(
     logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
-    client,
-    {
-      userGroupMemberFilter: options.userGroupMemberFilter,
+  const users: UserEntity[] = [];
+
+  if (options.userGroupMemberFilter) {
+    const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
+      client,
+      {
+        userGroupMemberFilter: options.userGroupMemberFilter,
+        transformer: options.userTransformer,
+        logger: options.logger,
+      },
+    );
+    users.push(...usersInGroups);
+  } else {
+    const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
+      userFilter: options.userFilter,
       transformer: options.userTransformer,
       logger: options.logger,
-    },
-  );
-
-  const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
-    userFilter: options.userFilter,
-    transformer: options.userTransformer,
-    logger: options.logger,
-  });
-
-  const users: UserEntity[] = usersWithFilter.concat(usersInGroups);
-
+    });
+    users.push(...usersWithFilter);
+  }
   const { groups, rootGroup, groupMember, groupMemberOf } =
     await readMicrosoftGraphGroups(client, tenantId, {
       groupFilter: options?.groupFilter,

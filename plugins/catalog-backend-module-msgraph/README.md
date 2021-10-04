@@ -55,14 +55,19 @@ catalog:
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
+          # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           userFilter: accountEnabled eq true and userType eq 'member'
-          # Optional filter for users, use group membership to get users
-          # This appends the users to the list of users retrieved via userFilter
+          # Optional filter for users, use group membership to get users.
+          # This and userFilter are mutually exclusive, only one can be specified
           userGroupMemberFilter: "displayName eq 'Backstage Users'"
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
           groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 ```
+
+`userFilter` and `userGroupMemberFilter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
+
+By default, all users are loaded. If you want to filter users based on their attributes, use `userFilter`. `userGroupMemberFilter` can be used if you want to load users based on their group membership.
 
 5. Add a location that ingests from Microsoft Graph:
 

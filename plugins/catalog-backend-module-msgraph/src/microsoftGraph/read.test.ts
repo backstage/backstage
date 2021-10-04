@@ -19,6 +19,7 @@ import merge from 'lodash/merge';
 import { GroupMember, MicrosoftGraphClient } from './client';
 import {
   readMicrosoftGraphGroups,
+  readMicrosoftGraphOrg,
   readMicrosoftGraphOrganization,
   readMicrosoftGraphUsers,
   readMicrosoftGraphUsersInGroups,
@@ -535,6 +536,134 @@ describe('read microsoft graph', () => {
       expect(user2.spec.memberOf).toEqual(
         expect.arrayContaining(['group:default/c']),
       );
+    });
+  });
+
+  describe('readMicrosoftGraphOrg', () => {
+    async function* getExampleUsers() {
+      yield {
+        id: 'userid',
+        displayName: 'User Name',
+        mail: 'user.name@example.com',
+      };
+    }
+
+    async function* getExampleGroups() {
+      yield {
+        id: 'groupid',
+        displayName: 'Group Name',
+        description: 'Group Description',
+        mail: 'group@example.com',
+      };
+    }
+
+    async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+      yield {
+        '@odata.type': '#microsoft.graph.group',
+        id: 'childgroupid',
+      };
+      yield {
+        '@odata.type': '#microsoft.graph.user',
+        id: 'userid',
+      };
+    }
+
+    it('should read all users if no filter provided', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        filter: undefined,
+      });
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
+    });
+
+    it('should read users using userFilter', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        userFilter: 'accountEnabled eq true',
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        filter: 'accountEnabled eq true',
+      });
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
+    });
+
+    it('should read users using userGroupMemberFilter', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        userGroupMemberFilter: 'name eq backstage-group',
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(0);
+      expect(client.getGroups).toBeCalledTimes(2);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'name eq backstage-group',
+      });
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
     });
   });
 });
