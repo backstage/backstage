@@ -36,10 +36,6 @@ describe('<CustomNode />', () => {
             name: 'name',
             namespace: 'namespace',
             id: 'kind:namespace/name',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
             color: 'primary',
           }}
         />
@@ -59,10 +55,6 @@ describe('<CustomNode />', () => {
             name: 'name',
             namespace: 'default',
             id: 'kind:default/name',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
           }}
         />
       </svg>,
@@ -83,10 +75,6 @@ describe('<CustomNode />', () => {
             namespace: 'namespace',
             onClick,
             id: 'kind:namespace/name',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
           }}
         />
       </svg>,
@@ -108,10 +96,6 @@ describe('<CustomNode />', () => {
             namespace: 'namespace',
             title: 'Custom Title',
             id: 'kind:namespace/name',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
           }}
         />
       </svg>,
