@@ -16,14 +16,9 @@ WORKDIR /app
 # Change to root user for copying app files and adjusting perms for the app user.
 USER root
 
-# These three lines are in place to install python3, pip3 and mkdocs so that we can generate
-# within the application.  When we get to a point where BIH is just reading, we
-# can start to remove this piece and lighten the load on the backend of the application.
-# This can be removed and in the case that we are utilizing AWS S3, but if locally you
-# are just wanting to use local docs, then this needs to be included.
-# RUN apt-get update && apt-get install -y python3
-# RUN apt-get update && apt-get install -y python3-pip
-# RUN pip3 install --upgrade pip && pip3 install mkdocs-techdocs-core==0.0.16
+# curl envconsul package from dev8 Nexus and check for file placement
+RUN curl -k -X GET "https://nexus.dev8.bip.va.gov/repository/raw-dependencies/hashicorp/envconsul/envconsul_0.11.0_linux_amd64.tgz" -O
+RUN ls -la
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
