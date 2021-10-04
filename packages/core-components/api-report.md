@@ -305,23 +305,18 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   align?: Alignment;
   defs?: SVGDefsElement | SVGDefsElement[];
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   direction?: Direction;
   edgeMargin?: number;
   edgeRanks?: number;
   edges: DependencyEdge<EdgeData>[];
   edgeWeight?: number;
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelOffset?: number;
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelPosition?: LabelPosition;
   nodeMargin?: number;
   nodes: DependencyNode<NodeData>[];
   paddingX?: number;
   paddingY?: number;
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   ranker?: Ranker;
   rankMargin?: number;

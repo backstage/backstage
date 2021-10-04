@@ -56,7 +56,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    *
    * @remarks
    *
-   * Default: {@link DependencyGraphTypes.Direction.TOP_BOTTOM}
+   * Default: `DependencyGraphTypes.Direction.TOP_BOTTOM`
    */
   direction?: Direction;
   /**
@@ -112,7 +112,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    *
    * @remarks
    *
-   * Default: {@link DependencyGraphTypes.Ranker.NETWORK_SIMPLEX}
+   * Default: `DependencyGraphTypes.Ranker.NETWORK_SIMPLEX`
    */
   ranker?: Ranker;
   /**
@@ -120,7 +120,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    *
    * @remarks
    *
-   * Default: {@link DependencyGraphTypes.LabelPosition.RIGHT}
+   * Default: `DependencyGraphTypes.LabelPosition.RIGHT`
    */
   labelPosition?: LabelPosition;
   /**
@@ -128,8 +128,8 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    *
    * @remarks
    *
-   * Applies only when {@link DependencyGraphProps.labelPosition} is {@link DependencyGraphTypes.LabelPosition.LEFT} or
-   * {@link DependencyGraphTypes.LabelPosition.RIGHT}
+   * Applies only when {@link DependencyGraphProps.labelPosition} is `DependencyGraphTypes.LabelPosition.LEFT` or
+   * `DependencyGraphTypes.LabelPosition.RIGHT`
    */
   labelOffset?: number;
   /**
