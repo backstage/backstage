@@ -61,12 +61,9 @@ export const MICROSOFT_GRAPH_TENANT_ID_ANNOTATION =
 // @public
 export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 
-// Warning: (ae-missing-release-tag) "MicrosoftGraphClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class MicrosoftGraphClient {
   constructor(baseUrl: string, pca: msal.ConfidentialClientApplication);
-  // (undocumented)
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
   // Warning: (ae-forgotten-export) The symbol "GroupMember" needs to be exported by the entry point index.d.ts
   //
@@ -94,13 +91,12 @@ export class MicrosoftGraphClient {
   getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
   // (undocumented)
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestApi(path: string, query?: ODataQuery): Promise<Response>;
   // Warning: (ae-forgotten-export) The symbol "ODataQuery" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  // (undocumented)
   requestRaw(url: string): Promise<Response>;
 }
 

@@ -20,9 +20,24 @@ import fetch from 'cross-fetch';
 import qs from 'qs';
 import { MicrosoftGraphProviderConfig } from './config';
 
+/**
+ * OData (Open Data Protocol) Query
+ *
+ * {@link https://docs.microsoft.com/en-us/odata/concepts/queryoptions-overview}
+ * @public
+ */
 export type ODataQuery = {
+  /**
+   * filter a collection of resources
+   */
   filter?: string;
+  /**
+   * specifies the related resources or media streams to be included in line with retrieved resources
+   */
   expand?: string[];
+  /**
+   * request a specific set of properties for each entity or complex type
+   */
   select?: string[];
 };
 
@@ -30,7 +45,23 @@ export type GroupMember =
   | (MicrosoftGraph.Group & { '@odata.type': '#microsoft.graph.user' })
   | (MicrosoftGraph.User & { '@odata.type': '#microsoft.graph.group' });
 
+/**
+ * A HTTP Client that communicates with Microsoft Graph API.
+ * Simplify Authentication and API calls to get `User` and `Group` from Azure Active Directory
+ *
+ * Uses `msal-node` for authentication
+ *
+ * @public
+ */
 export class MicrosoftGraphClient {
+  /**
+   * Factory method that instantiate `msal` client and return
+   * an instance of `MicrosoftGraphClient`
+   *
+   * @public
+   *
+   * @param config - Configuration for Interacting with Graph API
+   */
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient {
     const clientConfig: msal.Configuration = {
       auth: {
@@ -43,6 +74,11 @@ export class MicrosoftGraphClient {
     return new MicrosoftGraphClient(config.target, pca);
   }
 
+  /**
+   * @param baseUrl - baseUrl of Graph API {@link MicrosoftGraphProviderConfig.target}
+   * @param pca - instance of `msal.ConfidentialClientApplication` that is used to acquire token for Graph API calls
+   *
+   */
   constructor(
     private readonly baseUrl: string,
     private readonly pca: msal.ConfidentialClientApplication,
@@ -73,6 +109,13 @@ export class MicrosoftGraphClient {
     }
   }
 
+  /**
+   * Abstract on top of {@link MicrosoftGraphClient.requestRaw}
+   *
+   * @public
+   * @param path - Resource in Microsoft Graph
+   * @param query - OData Query {@link ODataQuery}
+   */
   async requestApi(path: string, query?: ODataQuery): Promise<Response> {
     const queryString = qs.stringify(
       {
@@ -90,6 +133,11 @@ export class MicrosoftGraphClient {
     return await this.requestRaw(`${this.baseUrl}/${path}${queryString}`);
   }
 
+  /**
+   * Makes a HTTP call to Graph API with token
+   *
+   * @param url - HTTP Endpoint of Graph API
+   */
   async requestRaw(url: string): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
     const token = await this.pca.acquireTokenByClientCredential({
