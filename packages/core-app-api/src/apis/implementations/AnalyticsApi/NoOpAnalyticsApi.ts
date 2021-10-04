@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AnalyticsApi, AnalyticsEvent } from '@backstage/core-plugin-api';
 
-export * from './AnalyticsApi';
-export * from './ErrorApi';
-export * from './StorageApi';
+/**
+ * Base implementation for the AnalyticsApi that does nothing.
+ */
+export class NoOpAnalyticsApi implements AnalyticsApi {
+  captureEvent(_event: AnalyticsEvent): void {}
+}

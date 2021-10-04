@@ -63,6 +63,7 @@ import {
   routePathCollector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
+import { RouteTracker } from '../routing/RouteTracker';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
@@ -367,6 +368,7 @@ export class PrivateAppImpl implements BackstageApp {
 
         return (
           <RouterComponent>
+            <RouteTracker tree={children} />
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />
             </Routes>
@@ -376,6 +378,7 @@ export class PrivateAppImpl implements BackstageApp {
 
       return (
         <RouterComponent>
+          <RouteTracker tree={children} />
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />
