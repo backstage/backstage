@@ -38,6 +38,8 @@ labels: bug
 
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 
+<!-- ProTip: You can use `yarn backstage-cli info` command in your Backstage App for this section. -->
+
 - NodeJS Version (v14):
 - Operating System and Version (e.g. Ubuntu 14.04):
 - Browser Information:
