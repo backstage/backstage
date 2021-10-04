@@ -1,0 +1,17 @@
+services:
+  backstage:
+    image: tugboatqa/node:lts
+    expose: 7000
+    default: true
+    commands:
+      init:
+        - mkdir -p /etc/service/node
+        - echo "#!/bin/sh" > /etc/service/node/run
+        - echo "yarn --cwd ${TUGBOAT_ROOT} start-backend --config ${TUGBOAT_ROOT}/app-config.yaml --config ${TUGBOAT_ROOT}/.tugboat/tugboat.app-config.production.yaml" >> /etc/service/node/run
+        - chmod +x /etc/service/node/run
+      build:
+        - yarn install --frozen-lockfile
+        - yarn workspace example-app build
+      start:
+        # wget the endpoint. Will retry every 2 seconds. 30 retries = 1m for service to come up. Plenty.
+        - wget -O /dev/null -o /dev/null --tries=30 --timeout=5 --retry-connrefused http://localhost:7000

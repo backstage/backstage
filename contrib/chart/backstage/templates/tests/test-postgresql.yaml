@@ -1,0 +1,33 @@
+{{- if .Values.postgresql.enabled}}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "backstage.name" . -}}-test-postgres
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: postgresql-client
+      image:  bitnami/postgresql
+      env:
+        - name: PG_HOST
+          value: {{ include "postgresql.serviceName" . | quote }}
+        - name: PG_PORT
+          value: {{ .Values.postgresql.service.port | quote }}
+        - name: PG_USER
+          value: {{ .Values.global.postgresql.postgresqlUsername | quote }}
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "backend.postgresql.passwordSecret" .}}
+              key: postgresql-password
+        - name: PG_DBNAME
+          value: {{ .Values.appConfig.backend.database.connection.database }}
+      command:
+        - /bin/bash
+        - -ecx
+        - |
+          psql --host=$PG_HOST --port=$PG_PORT --username=$PG_USER --dbname=$PG_DBNAME --no-password
+  restartPolicy: Never
+{{- end }}

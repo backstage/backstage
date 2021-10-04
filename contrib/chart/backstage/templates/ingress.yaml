@@ -1,0 +1,92 @@
+{{- $frontendUrl := urlParse .Values.appConfig.app.baseUrl}}
+{{- $backendUrl := urlParse .Values.appConfig.backend.baseUrl}}
+{{- $lighthouseUrl := urlParse .Values.appConfig.lighthouse.baseUrl}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "backstage.fullname" . }}-ingress
+  annotations:
+    {{- if .Values.issuer.email }}
+    cert-manager.io/cluster-issuer: {{ .Values.issuer.clusterIssuer }}
+    {{- end }}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($scheme = https) {
+      add_header  Strict-Transport-Security "max-age=0;";
+      }
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  tls:
+    - secretName: {{ include "backstage.fullname" . }}-tls
+      hosts:
+        - {{ $frontendUrl.host }}
+        - {{ $backendUrl.host }}
+        - {{ $lighthouseUrl.host }}
+
+  rules:
+    - host: {{ $frontendUrl.host }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ include "frontend.serviceName" . }}
+              servicePort: 80
+          {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
+          {{- if eq $frontendUrl.host $backendUrl.host}}
+          - path: /api
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+          {{/* Route the backend through a different host */}}
+          {{- else -}}
+    - host: {{ $backendUrl.host }}
+      http:
+        paths:
+          - path: {{ $backendUrl.path | default "/" }}
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+         {{- end }}
+
+{{/* Route lighthouse through a different host */}}
+{{- if not ( eq $frontendUrl.host $lighthouseUrl.host ) }}
+    - host: {{ $lighthouseUrl.host }}
+      http:
+        paths:
+          - path: {{ $lighthouseUrl.path | default "/" }}
+            backend:
+              serviceName: {{ include "lighthouse.serviceName" . }}
+              servicePort: 80
+{{- else }}
+{{/* Route lighthouse by path with re-write rules when it is hosted under the same hostname */}}
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "backstage.fullname" . }}-ingress-lighthouse
+  annotations:
+    {{- if .Values.issuer.email }}
+    cert-manager.io/cluster-issuer: {{ .Values.issuer.clusterIssuer }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($scheme = https) {
+      add_header  Strict-Transport-Security "max-age=0;";
+      }
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  tls:
+    - secretName: {{ include "backstage.fullname" . }}-tls
+      hosts:
+        - {{ $lighthouseUrl.host }}
+  rules:
+    - host: {{ $frontendUrl.host }}
+      http:
+        paths:
+          - path: {{$lighthouseUrl.path}}(/|$)(.*)
+            backend:
+              serviceName: {{ include "lighthouse.serviceName" . }}
+              servicePort: 80
+{{- end }}

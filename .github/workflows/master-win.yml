@@ -1,0 +1,74 @@
+name: Master Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: find location of global yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
+
+      - name: lint
+        run: yarn lerna -- run lint
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      # The core packages need to be built for the codemods tests to work
+      - name: build core packages
+        run: lerna run --scope @backstage/core-* build
+
+      - name: test
+        run: yarn lerna -- run test
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+
+      # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
+      - name: Discord notification
+        if: ${{ failure() }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          $MESSAGE=@"
+          {\"content\": \"Windows master build failed https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\"}
+          "@
+          C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE

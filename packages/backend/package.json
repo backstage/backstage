@@ -1,0 +1,76 @@
+{
+  "name": "example-backend",
+  "version": "0.2.48",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "build": "backstage-cli backend:bundle",
+    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
+    "start": "backstage-cli backend:dev",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean",
+    "migrate:create": "knex migrate:make -x ts"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.9.5",
+    "@backstage/catalog-client": "^0.4.0",
+    "@backstage/catalog-model": "^0.9.3",
+    "@backstage/config": "^0.1.10",
+    "@backstage/integration": "^0.6.6",
+    "@backstage/plugin-app-backend": "^0.3.16",
+    "@backstage/plugin-auth-backend": "^0.4.2",
+    "@backstage/plugin-azure-devops-backend": "^0.1.1",
+    "@backstage/plugin-badges-backend": "^0.1.10",
+    "@backstage/plugin-catalog-backend": "^0.15.0",
+    "@backstage/plugin-code-coverage-backend": "^0.1.11",
+    "@backstage/plugin-graphql-backend": "^0.1.9",
+    "@backstage/plugin-jenkins-backend": "^0.1.5",
+    "@backstage/plugin-kubernetes-backend": "^0.3.16",
+    "@backstage/plugin-kafka-backend": "^0.2.10",
+    "@backstage/plugin-proxy-backend": "^0.2.12",
+    "@backstage/plugin-rollbar-backend": "^0.1.15",
+    "@backstage/plugin-scaffolder-backend": "^0.15.6",
+    "@backstage/plugin-scaffolder-backend-module-rails": "^0.1.5",
+    "@backstage/plugin-search-backend": "^0.2.6",
+    "@backstage/plugin-search-backend-node": "^0.4.2",
+    "@backstage/plugin-search-backend-module-elasticsearch": "^0.0.4",
+    "@backstage/plugin-search-backend-module-pg": "^0.2.1",
+    "@backstage/plugin-techdocs-backend": "^0.10.3",
+    "@backstage/plugin-todo-backend": "^0.1.12",
+    "@gitbeaker/node": "^30.2.0",
+    "@octokit/rest": "^18.5.3",
+    "azure-devops-node-api": "^11.0.1",
+    "dockerode": "^3.2.1",
+    "example-app": "^0.2.48",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "express-prom-bundle": "^6.3.6",
+    "knex": "^0.95.1",
+    "pg": "^8.3.0",
+    "pg-connection-string": "^2.3.0",
+    "prom-client": "^13.2.0",
+    "sqlite3": "^5.0.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.7.14",
+    "@types/dockerode": "^3.2.1",
+    "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.5"
+  },
+  "files": [
+    "dist"
+  ]
+}

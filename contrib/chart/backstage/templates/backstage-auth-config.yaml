@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "backstage.fullname" . }}-auth
+data:
+  AUTH_GOOGLE_CLIENT_ID: {{ .Values.auth.google.clientId }}
+  AUTH_GITHUB_CLIENT_ID: {{ .Values.auth.github.clientId }}
+  AUTH_GITLAB_CLIENT_ID: {{ .Values.auth.gitlab.clientId }}
+  # This should not be prefixed with AUTH_. This could be a typo in the Backstage app config.
+  # Regardless, it is not decided by me.
+  GITLAB_BASE_URL: {{ .Values.auth.gitlab.baseUrl }}
+  AUTH_OKTA_CLIENT_ID: {{ .Values.auth.okta.clientId }}
+  AUTH_OKTA_AUDIENCE: {{ .Values.auth.okta.audience }}
+  AUTH_OAUTH2_CLIENT_ID: {{ .Values.auth.oauth2.clientId }}
+  AUTH_OAUTH2_AUTH_URL: {{ .Values.auth.oauth2.authUrl }}
+  AUTH_OAUTH2_TOKEN_URL: {{ .Values.auth.oauth2.tokenUrl }}
+  AUTH_AUTH0_CLIENT_ID: {{ .Values.auth.auth0.clientId }}
+  AUTH_AUTH0_DOMAIN: {{ .Values.auth.auth0.domain }}
+  AUTH_MICROSOFT_CLIENT_ID: {{ .Values.auth.microsoft.clientId }}
+  AUTH_MICROSOFT_TENANT_ID: {{ .Values.auth.microsoft.tenantId }}
+

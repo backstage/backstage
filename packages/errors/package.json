@@ -1,0 +1,44 @@
+{
+  "name": "@backstage/errors",
+  "description": "Common utilities for error handling within Backstage",
+  "version": "0.1.2",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/errors"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/config": "^0.1.9",
+    "cross-fetch": "^3.0.6",
+    "serialize-error": "^8.0.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.7.11",
+    "@types/jest": "^26.0.7"
+  },
+  "files": [
+    "dist"
+  ]
+}

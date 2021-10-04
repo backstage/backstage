@@ -1,0 +1,14 @@
+---
+title: Splunk On-Call
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Monitoring
+description: Splunk On-Call offers a simple way to identify incidents and escalation policies.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/splunk-on-call
+iconUrl: img/splunk-black-white-bg.png
+npmPackageName: '@backstage/plugin-splunk-on-call'
+tags:
+  - monitoring
+  - errors
+  - alerting
+  - splunk

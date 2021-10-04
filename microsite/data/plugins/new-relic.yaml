@@ -1,0 +1,14 @@
+---
+title: New Relic
+author: '@timwheelercom'
+authorUrl: https://github.com/timwheelercom
+category: Monitoring
+description: Observability platform built to help engineers create and monitor their software.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/newrelic
+iconUrl: https://www.mulesoft.com/sites/default/files/2018-10/New_relic.png
+npmPackageName: '@backstage/plugin-newrelic'
+tags:
+  - performance
+  - monitoring
+  - errors
+  - alerting

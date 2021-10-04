@@ -1,0 +1,219 @@
+name: Main Master Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      needs_release: ${{ steps.release_check.outputs.needs_release }}
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    services:
+      postgres13:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      postgres9:
+        image: postgres:9
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      mysql8:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306/tcp
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
+
+      - name: Fetch previous commit for release check
+        run: git fetch origin '${{ github.event.before }}'
+
+      - name: Check if release
+        id: release_check
+        run: node scripts/check-if-release.js
+        env:
+          COMMIT_SHA_BEFORE: '${{ github.event.before }}'
+
+      - name: validate config
+        run: yarn backstage-cli config:check --lax
+
+      - name: lint
+        run: yarn lerna -- run lint
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: build
+        run: yarn build
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      - name: test (and upload coverage)
+        run: |
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
+          # Upload code coverage for some specific flags. Also see .codecov.yml
+          bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
+          bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
+          bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
+        env:
+          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+
+      - name: Discord notification
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.2.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+
+  # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
+  # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
+  # only run the build steps that are necessary for publishing
+  release:
+    needs: build
+
+    if: needs.build.outputs.needs_release == 'true'
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    env:
+      CI: 'true'
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
+
+      - name: build type declarations
+        run: yarn tsc:full
+
+      - name: build packages
+        run: yarn lerna -- run --ignore example-app build
+
+      # Publishes current version of packages that are not already present in the registry
+      - name: publish
+        run: yarn lerna -- publish from-package --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Creates the next available tag with format "release-<year>-<month>-<day>[.<n>]"
+      - name: Create a release tag
+        id: create_tag
+        run: node scripts/create-release-tag.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      # Convert the newly created tag into a release with changelog information
+      - name: Create release on GitHub
+        run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      # Notify everyone about this great new release :D
+      - name: Discord notification
+        uses: Ilshidur/action-discord@0.2.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+          TAG_NAME: ${{ steps.create_tag.outputs.tag_name }}
+        with:
+          args: 'A new release has been published! https://github.com/backstage/backstage/releases/tag/{{TAG_NAME}}'

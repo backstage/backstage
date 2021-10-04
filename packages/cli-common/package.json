@@ -1,0 +1,38 @@
+{
+  "name": "@backstage/cli-common",
+  "description": "Common functionality used by cli, backend, and create-app",
+  "version": "0.1.3",
+  "private": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-common"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "backstage-cli build --outputs cjs,types",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.14.32"
+  },
+  "files": [
+    "dist"
+  ]
+}

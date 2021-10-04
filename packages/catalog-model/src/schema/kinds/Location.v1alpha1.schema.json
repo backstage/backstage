@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "LocationV1alpha1",
+  "description": "A location is a marker that references other places to look for catalog data.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "Location",
+      "metadata": {
+        "name": "org-data"
+      },
+      "spec": {
+        "type": "url",
+        "targets": [
+          "http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml",
+          "http://github.com/myorg/myproject/org-data-dump/catalog-info-consultants.yaml"
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["Location"]
+        },
+        "spec": {
+          "type": "object",
+          "required": [],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The single location type, that's common to the targets specified in the spec. If it is left out, it is inherited from the location type that originally read the entity data.",
+              "examples": ["url"],
+              "minLength": 1
+            },
+            "target": {
+              "type": "string",
+              "description": "A single target as a string. Can be either an absolute path/URL (depending on the type), or a relative path such as ./details/catalog-info.yaml which is resolved relative to the location of this Location entity itself.",
+              "examples": ["./details/catalog-info.yaml"],
+              "minLength": 1
+            },
+            "targets": {
+              "type": "array",
+              "description": "A list of targets as strings. They can all be either absolute paths/URLs (depending on the type), or relative paths such as ./details/catalog-info.yaml which are resolved relative to the location of this Location entity itself.",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "./details/catalog-info.yaml",
+                  "http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml"
+                ],
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "version": "0.0.0",
+  "name": "backstage-microsite",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "examples": "docusaurus-examples",
+    "start": "docusaurus-start",
+    "build": "docusaurus-build",
+    "prettier:check": "prettier --check .",
+    "publish-gh-pages": "docusaurus-publish",
+    "write-translations": "docusaurus-write-translations",
+    "version": "docusaurus-version",
+    "rename-version": "docusaurus-rename-version",
+    "verify:sidebars": "node ./scripts/verify-sidebars",
+    "lock:check": "yarn-lock-check"
+  },
+  "devDependencies": {
+    "@spotify/prettier-config": "^12.0.0",
+    "docusaurus": "^2.0.0-alpha.70",
+    "js-yaml": "^4.1.0",
+    "prettier": "^2.4.1",
+    "yarn-lock-check": "^1.0.5"
+  },
+  "prettier": "@spotify/prettier-config"
+}

@@ -1,0 +1,217 @@
+# Default values for backstage.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+frontend:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: martinaif/backstage-k8s-demo-frontend
+    tag: test1
+    pullPolicy: IfNotPresent
+  containerPort: 80
+  serviceType: ClusterIP
+  resources:
+    requests:
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
+backend:
+  enabled: true
+  nodeEnv: development
+  demoData: true
+  replicaCount: 1
+  image:
+    repository: martinaif/backstage-k8s-demo-backend
+    tag: 20210423T1550
+    pullPolicy: IfNotPresent
+  containerPort: 7000
+  serviceType: ClusterIP
+  postgresCertMountEnabled: true
+  resources:
+    requests:
+      memory: 512Mi
+    limits:
+      memory: 1024Mi
+
+lighthouse:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: roadiehq/lighthouse-audit-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  containerPort: 3003
+  serviceType: ClusterIP
+  postgresCertMountEnabled: true
+  resources:
+    requests:
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  database:
+    connection:
+      port:
+      host:
+      user:
+      password:
+      database: lighthouse_audit_service
+    pathToDatabaseCa:
+
+nameOverride: ''
+fullnameOverride: ''
+
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+
+issuer:
+  email:
+  clusterIssuer: 'letsencrypt-staging'
+
+global:
+  postgresql:
+    postgresqlUsername: backend-user
+    caFilename: ca.crt
+  nodeSelector: {}
+
+postgresql:
+  enabled: true
+  nameOverride: postgresql
+  tls:
+    enabled: true
+    certificatesSecret: backstage-postgresql-certs
+    certFilename: tls.crt
+    certKeyFilename: tls.key
+  volumePermissions:
+    enabled: true
+  initdbScriptsSecret: backstage-postgresql-initdb
+
+appConfig:
+  app:
+    baseUrl: https://demo.example.com
+    title: Backstage
+    googleAnalyticsTrackingId:
+  backend:
+    baseUrl: https://demo.example.com
+    listen:
+      port: 7000
+    cors:
+      origin: https://demo.example.com
+    database:
+      client: pg
+      connection:
+        database: backstage_plugin_catalog
+        host:
+        user:
+        port:
+        password:
+        ssl:
+          rejectUnauthorized: false
+          ca:
+  sentry:
+    organization: example-org-name
+  techdocs:
+    storageUrl: https://demo.example.com/api/techdocs/static/docs
+    requestUrl: https://demo.example.com/api/techdocs
+  lighthouse:
+    baseUrl: https://demo.example.com/lighthouse-api
+  rollbar:
+    organization: example-org-name
+
+  # Auth config has recently moved into the app config file in upstream Backstage. However,
+  # most of this config simply mandates that items like the client id and client secret should
+  # be picked up from the environment variables named below. Those environment variables are
+  # set in this helm controlled environment by the 'auth' configuration below this section.
+  # Thus, the only key in this config which directly controls an app config is the
+  # auth.providers.github.development.appOrigin property.
+  auth:
+    providers:
+      google:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: ${AUTH_GOOGLE_CLIENT_ID}
+          clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+      github:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: ${AUTH_GITHUB_CLIENT_ID}
+          clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+          enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+      gitlab:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: ${AUTH_GITLAB_CLIENT_ID}
+          clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
+          audience: ${GITLAB_BASE_URL}
+      okta:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: ${AUTH_OKTA_CLIENT_ID}
+          clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
+          audience: ${AUTH_OKTA_AUDIENCE}
+      oauth2:
+        development:
+          appOrigin: 'http://localhost:3000/'
+          secure: false
+          clientId: ${AUTH_OAUTH2_CLIENT_ID}
+          clientSecret: ${AUTH_OAUTH2_CLIENT_SECRET}
+          authorizationURL: ${AUTH_OAUTH2_AUTH_URL}
+          tokenURL: ${AUTH_OAUTH2_TOKEN_URL}
+      auth0:
+        development:
+          clientId: ${AUTH_AUTH0_CLIENT_ID}
+          clientSecret: ${AUTH_AUTH0_CLIENT_SECRET}
+          domain: ${AUTH_AUTH0_DOMAIN}
+      microsoft:
+        development:
+          clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+          clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
+          tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+
+auth:
+  google:
+    clientId: a
+    clientSecret: a
+  github:
+    clientId: c
+    clientSecret: c
+  gitlab:
+    clientId: b
+    clientSecret: b
+    baseUrl: b
+  okta:
+    clientId: b
+    clientSecret: b
+    audience: b
+  oauth2:
+    clientId: b
+    clientSecret: b
+    authUrl: b
+    tokenUrl: b
+  auth0:
+    clientId: b
+    clientSecret: b
+    domain: b
+  microsoft:
+    clientId: f
+    clientSecret: f
+    tenantId: f
+  azure:
+    api:
+      token: h
+  sentryToken: e
+  rollbarAccountToken: f
+  # This is a 'Personal Access Token'
+  circleciAuthToken: r
+  # Used by the scaffolder to create GitHub repos. Must have 'repo' scope.
+  githubToken: g
+  gitlabToken: g
+  newRelicRestApiKey: r
+  travisciAuthToken: fake-travis-ci-auth-token
+  pagerdutyToken: h

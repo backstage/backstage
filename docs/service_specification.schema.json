@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "backstage.io/v1alpha1",
+  "type": "object",
+  "title": "A JSON Schema for Backstage catalog entities.",
+  "description": "Each descriptor file has a number of entities. This schema matches each of those.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "Component",
+      "metadata": {
+        "name": "LoremService",
+        "description": "Creates Lorems like a pro.",
+        "labels": {
+          "product_name": "Random value Generator"
+        },
+        "annnotations": {
+          "docs": "https://github.com/..../tree/develop/doc"
+        },
+        "teams": [
+          {
+            "name": "Team super great",
+            "email": "greatTeam@geemel.com"
+          }
+        ]
+      },
+      "spec": {
+        "type": "service",
+        "lifecycle": "production",
+        "owner": "tools@example.com"
+      }
+    }
+  ],
+  "required": ["apiVersion", "kind", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "description": "Version of the specification format for a particular file is written against.",
+      "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+    },
+    "kind": {
+      "type": "string",
+      "description": "High level entity type being described, from the Backstage system model.",
+      "enum": ["Component"]
+    },
+    "metadata": {
+      "$ref": "#/definitions/metadata"
+    },
+    "spec": {
+      "$ref": "#/definitions/spec"
+    }
+  },
+  "definitions": {
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about the entity, i.e. things that aren't directly part of the entity specification itself.",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9A-Z_.-]{1,63}$",
+          "description": "The name of the entity. This name is both meant for human eyes to recognize the entity, and for machines and other components to reference the entity"
+        },
+        "description": {
+          "type": "string",
+          "description": "A human readable description of the entity, to be shown in Backstage. Should be kept short and informative."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "The name of a namespace that the entity belongs to."
+        },
+        "labels": {
+          "type": "object",
+          "description": "Labels are optional key/value pairs of that are attached to the entity, and their use is identical to kubernetes object labels.",
+          "additionalProperties": true,
+          "patternProperties": {
+            "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}/)?[a-z0-9A-Z_\\-\\.]{1,63}$": {
+              "type": "string",
+              "pattern": "^[a-z0-9A-Z_.-]{1,63}$"
+            }
+          }
+        },
+        "annnotations": {
+          "type": "object",
+          "description": "Arbitrary non-identifying metadata attached to the entity, identical in use to kubernetes object annotations.",
+          "additionalProperties": true,
+          "patternProperties": {
+            "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}/)?[a-z0-9A-Z_\\-\\.]{1,63}$": {
+              "type": "string",
+              "pattern": "^[a-z0-9A-Z_.-]{1,63}$"
+            }
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "description": "Actual specification data that describes the entity. TODO: shape depend on `kind`",
+      "required": ["type", "lifecycle", "owner"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of component.",
+          "examples": ["service"]
+        },
+        "lifecycle": {
+          "type": "string",
+          "description": "The lifecycle step that this component is in.",
+          "examples": ["production"]
+        },
+        "owner": {
+          "type": "string",
+          "description": "The owner of the component.",
+          "examples": ["tools@example.com"]
+        }
+      }
+    }
+  }
+}

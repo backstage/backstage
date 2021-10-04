@@ -1,0 +1,12 @@
+---
+title: CircleCI
+author: Spotify
+authorUrl: https://github.com/spotify
+category: CI/CD
+description: Automate your development process with CI hosted in the cloud or on a private server.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/circleci
+iconUrl: img/circleci.png
+npmPackageName: '@backstage/plugin-circleci'
+tags:
+  - ci
+  - cd

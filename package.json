@@ -1,0 +1,96 @@
+{
+  "name": "root",
+  "private": true,
+  "engines": {
+    "node": "14 || 16"
+  },
+  "scripts": {
+    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+    "start": "yarn workspace example-app start",
+    "start-backend": "yarn workspace example-backend start",
+    "build": "lerna run build",
+    "build:api-reports": "yarn tsc:full && yarn build:api-reports:only",
+    "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
+    "build:api-docs": "yarn build:api-reports --docs",
+    "tsc": "tsc",
+    "tsc:full": "backstage-cli clean && tsc --skipLibCheck false --incremental false",
+    "clean": "backstage-cli clean && lerna run clean",
+    "diff": "lerna run diff --",
+    "test": "backstage-cli test",
+    "test:all": "lerna run test -- --coverage",
+    "lint": "lerna run lint --since origin/master --",
+    "lint:docs": "node ./scripts/check-docs-quality",
+    "lint:all": "lerna run lint --",
+    "lint:type-deps": "node scripts/check-type-dependencies.js",
+    "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
+    "create-plugin": "backstage-cli create-plugin --scope backstage --no-private",
+    "remove-plugin": "backstage-cli remove-plugin",
+    "release": "changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
+    "prettier:check": "prettier --check .",
+    "lerna": "lerna",
+    "storybook": "yarn workspace storybook start",
+    "build-storybook": "yarn workspace storybook build-storybook",
+    "prepare": "husky install",
+    "lock:check": "yarn-lock-check"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "plugins/*"
+    ],
+    "nohoist": [
+      "**/@storybook/**",
+      "**/@storybook"
+    ]
+  },
+  "resolutions": {
+    "**/@graphql-codegen/cli/**/ws": "^7.4.6",
+    "**/@roadiehq/**/@backstage/core": "*",
+    "**/@roadiehq/**/@backstage/plugin-catalog": "*",
+    "**/@roadiehq/**/@backstage/catalog-model": "*",
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+  },
+  "version": "1.0.0",
+  "dependencies": {
+    "@microsoft/api-documenter": "^7.13.47",
+    "@microsoft/api-extractor": "^7.18.7",
+    "@microsoft/api-extractor-model": "^7.13.5",
+    "@microsoft/tsdoc": "^0.13.2"
+  },
+  "devDependencies": {
+    "@types/webpack": "^5.28.0",
+    "@changesets/cli": "^2.14.0",
+    "@octokit/openapi-types": "^2.2.0",
+    "@spotify/prettier-config": "^11.0.0",
+    "command-exists": "^1.2.9",
+    "concurrently": "^6.0.0",
+    "eslint-plugin-notice": "^0.9.10",
+    "fs-extra": "9.1.0",
+    "husky": "^6.0.0",
+    "lerna": "^4.0.0",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.2.1",
+    "recursive-readdir": "^2.2.2",
+    "shx": "^0.3.2",
+    "yarn-lock-check": "^1.0.5"
+  },
+  "prettier": "@spotify/prettier-config",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "node ./scripts/check-docs-quality"
+    ]
+  },
+  "jest": {
+    "transformModules": [
+      "@asyncapi/react-component"
+    ]
+  }
+}
