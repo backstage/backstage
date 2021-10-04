@@ -7,8 +7,7 @@ description: Guide on how to create a set of API bindings that interface with a 
 
 This guide walks you through setting up a simple proxy to an existing API that
 is deployed externally to backstage and sending requests to that API from within
-a backstage frontend plugin. For a more detailed description of the APIs used
-here, check out the [Utility APIs section](../api/utility-apis.md).
+a backstage frontend plugin.
 
 If your plugin requires access to an API, backstage offers
 [3 options](../plugins/call-existing-api.md):
@@ -17,10 +16,7 @@ If your plugin requires access to an API, backstage offers
    [access the API directly](../plugins/call-existing-api.md#issuing-requests-directly),
 1. you can create a [backend plugin](../plugins/backend-plugin.md) if you are
    implementing the API alongside your frontend plugin
-1. you can configure backstage to proxy to an already existing API. The third
-   approach tends to be the most popular, since you likely already have an
-   existing API, and it allows you to develop/deploy your API in any way you
-   want.
+1. you can configure backstage to proxy to an already existing API.
 
 **Table of Contents**
 
@@ -29,7 +25,7 @@ If your plugin requires access to an API, backstage offers
   - [Defining the API client interface](#defining-the-api-client-interface)
   - [Creating the API client](#creating-the-api-client)
   - [Bundling your ApiRef with your plugin](#bundling-your-apiref-with-your-plugin)
-  - [Using your plugin in your components](#using-your-plugin-in-your-components)
+  - [Using the API in your components](#using-your-plugin-in-your-components)
 
 # Setting up the backstage proxy
 
@@ -42,7 +38,6 @@ and you want to be able to access it within backstage at
 proxy:
   '/<your-proxy-uri>':
     target: https://api.myawesomeservice.com/v1
-    changeOrigin: true # Use this to avoid cors related issues
     headers:
       X-Custom-Source: backstage
 ```
@@ -57,14 +52,21 @@ calling `${backend-url}/api/proxy/<your-proxy-uri>`. The reason why
 `backend-url` is referenced is because the backstage backend creates and runs
 the proxy. Backstage is structured in such a way that you could run the
 backstage frontend independently of the backend. So when calling your API you
-need to prepend the backend url to your http call. The supported way of doing
-this, is to use [`createApiRef`](../reference/core-plugin-api.createapiref.md)
-to create a new [`ApiRef`](../reference/core-plugin-api.apiref.md) and register
-an [`ApiFactory`](../reference/core-plugin-api.apifactory.md), which will wrap
-your API implementation, with your plugin using
-[`createApiFactory`](../reference/core-plugin-api.createapifactory.md). Then,
-you can use your API in your components by calling
-[`useApi`](../reference/core-plugin-api.useapi.md)
+need to prepend the backend url to your http call.
+
+The recommended pattern for calling out to services is to wrap your calls in a
+[Utility API](../api/utility-apis.md). This section describes the steps to wrap
+your API client in a Utility API, which are:
+
+- use [`createApiRef`](../reference/core-plugin-api.createapiref.md) to create a
+  new [`ApiRef`](../reference/core-plugin-api.apiref.md)
+- register an [`ApiFactory`](../reference/core-plugin-api.apifactory.md) with
+  your plugin using
+  [`createApiFactory`](../reference/core-plugin-api.createapifactory.md). This
+  will wrap your API implementation, associate your `ApiRef` with your
+  implementation and tell backstage how to instantiate it
+- finally, you can use your API in your components by calling
+  [`useApi`](../reference/core-plugin-api.useapi.md)
 
 ## Defining the API client interface
 
@@ -113,20 +115,20 @@ look something like this:
 
 /* ... */
 
-import { Config } from '@backstage/config';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class MyAwesomeApiClient implements MyAwesomeApi {
-  static fromConfig(config: Config) {
-    return new MyAwesomeApiClient(config.getString('backend.baseUrl'));
-  }
+  discoveryApi: DiscoveryApi;
 
-  constructor(public url: string) {}
+  constructor({discoveryApi}: {discoveryApi: DiscoveryApi}) {
+    this.discoveryApi = discoveryApi;
+  }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
     // As configured previously for the backend proxy
-    const proxyUri = '/api/proxy/<your-proxy-uri>'
+    const proxyUri = '${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>';
 
-    const resp = await fetch(`${this.url}${proxyUri}${input}`, init);
+    const resp = await fetch(`${proxyUri}${input}`, init);
     if (!resp.ok) throw new Error(resp);
     return await resp.json();
   }
@@ -147,8 +149,8 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
   }
 ```
 
-> If you want to understand how the Config object works at a deeper level, check
-> this [doc](../conf/reading.md)
+> For more information on the DiscoveryApi check out the
+> [docs](../reference/core-plugin-api.discoveryapi.md)
 
 ## Bundling your ApiRef with your plugin
 
@@ -160,36 +162,32 @@ assuming you added the previous code in a file called `api.ts`:
 ```ts
 /* src/plugin.ts */
 import { myAwesomeApiRef, MyAwesomeApiClient } from './api';
-import { rootRouteRef } from './routes';
 import {
   createPlugin,
   createRouteRef,
   createApiFactory,
-  configApiRef,
   createRoutableExtension,
   createComponentExtension,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
 //...
 
 export const myCustomPlugin = createPlugin({
   id: '<your-plugin-name>',
-  routes: {
-    root: rootRouteRef,
-  },
 
   // Configure a factory for myAwesomeApiRef
   apis: [
     createApiFactory({
       api: myAwesomeApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => MyAwesomeApiClient.fromConfig(configApi),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new MyAwesomeApiClient({ discoveryApi }),
     }),
   ],
 });
 ```
 
-## Using your plugin in your components
+## Using the API in your components
 
 Now you should be able to access your API using the backstage hook
 [`useApi`](../reference/core-plugin-api.useapi.md) from within your plugin code.

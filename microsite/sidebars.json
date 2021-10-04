@@ -255,7 +255,8 @@
       "tutorials/quickstart-app-plugin",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
-      "tutorials/switching-sqlite-postgres"
+      "tutorials/switching-sqlite-postgres",
+      "tutorials/using-backstage-proxy-within-plugin"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
