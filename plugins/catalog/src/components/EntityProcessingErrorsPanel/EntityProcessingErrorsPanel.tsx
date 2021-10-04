@@ -20,8 +20,13 @@ import {
   getEntityName,
   stringifyEntityRef,
   UNSTABLE_EntityStatusItem,
+  compareEntityToRef,
 } from '@backstage/catalog-model';
-import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityRefLink,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
@@ -38,18 +43,29 @@ const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
   i.level === 'error' &&
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
+type GetOwnAndAncestorsErrorsResponse = {
+  items: {
+    errors: SerializedError[];
+    entity: Entity;
+  }[];
+};
+
 async function getOwnAndAncestorsErrors(
   entityRef: EntityName,
   catalogApi: CatalogApi,
-): Promise<SerializedError[]> {
+): Promise<GetOwnAndAncestorsErrorsResponse> {
   const ancestors = await catalogApi.getEntityAncestors({ entityRef });
-  return ancestors.items.flatMap(item => {
-    const statuses = item.entity.status?.items ?? [];
-    return statuses
-      .filter(errorFilter)
-      .map(e => e.error)
-      .filter((e): e is SerializedError => Boolean(e));
-  });
+  const items = ancestors.items
+    .map(item => {
+      const statuses = item.entity.status?.items ?? [];
+      const errors = statuses
+        .filter(errorFilter)
+        .map(e => e.error)
+        .filter((e): e is SerializedError => Boolean(e));
+      return { errors: errors, entity: item.entity };
+    })
+    .filter(item => item.errors.length > 0);
+  return { items };
 }
 
 export const hasCatalogProcessingErrors = async (
@@ -65,7 +81,7 @@ export const hasCatalogProcessingErrors = async (
     getEntityName(entity),
     catalogApi,
   );
-  return errors.length > 0;
+  return errors.items.length > 0;
 };
 
 /**
@@ -87,15 +103,26 @@ export const EntityProcessingErrorsPanel = () => {
     );
   }
 
-  if (loading || !value?.length) {
+  if (loading || !value) {
     return null;
   }
 
   return (
     <>
-      {value.map((ancestorError, index) => (
+      {value.items.map((ancestorError, index) => (
         <Box key={index} mb={1}>
-          <ResponseErrorPanel error={ancestorError} />
+          {!compareEntityToRef(
+            entity,
+            stringifyEntityRef(ancestorError.entity),
+          ) && (
+            <Box p={1}>
+              The error below originates from{' '}
+              <EntityRefLink entityRef={ancestorError.entity} />
+            </Box>
+          )}
+          {ancestorError.errors.map((e, i) => (
+            <ResponseErrorPanel key={i} error={e} />
+          ))}
         </Box>
       ))}
     </>
