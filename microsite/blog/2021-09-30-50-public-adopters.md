@@ -5,7 +5,7 @@ authorURL: https://github.com/fcorti/
 authorImageURL: https://avatars.githubusercontent.com/u/6010860?v=4
 ---
 
-We’re excited to celebrate an important milestone for the Backstage community: 50+ [public adopters][adopters]!
+We’re excited to celebrate an important milestone for the Backstage community: 50+ [public adopters](https://github.com/backstage/backstage/blob/master/ADOPTERS.md)!
 
 ![Celebrating all of Backstage’s 50+ adopters.](assets/21-09-30/50-public-adopters.png)
 
@@ -35,7 +35,6 @@ While we’re thrilled to celebrate this milestone, the public adopters list is 
 
 If you are a Backstage enthusiast, please [join me][news] and the entire Backstage Team in celebrating this milestone. And if you are a Backstage adopter not already listed in the [GitHub page][gh], consider adding your name to better inform the community and participate in the project.
 
-[adopters]: https://github.com/backstage/backstage/blob/master/ADOPTERS.md
 [am]: https://backstage.spotify.com/blog/adopter-spotlight/american-airlines-runway/
 [sp]: https://backstage.spotify.com/blog/community-session/splunk-pink-phonebook/
 [za]: https://youtu.be/6sg5uMCLxTA
