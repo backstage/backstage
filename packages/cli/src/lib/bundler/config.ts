@@ -319,7 +319,7 @@ export async function createBackendConfig(
     plugins: [
       new RunScriptWebpackPlugin({
         name: 'main.js',
-        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : options.inspectEnabled ? ['--inspect-brk'] : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
