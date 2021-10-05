@@ -1,6 +1,6 @@
 # @backstage/backend-common
 
-## 0.9.6
+## 0.10.0
 
 ### Patch Changes
 
