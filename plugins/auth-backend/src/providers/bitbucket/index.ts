@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './microsoft';
-export * from './oauth2';
-export * from './okta';
-export * from './bitbucket';
-
-export { factories as defaultAuthProviderFactories } from './factories';
-
-// Export the minimal interface required for implementing a
-// custom Authorization Handler
+export {
+  createBitbucketProvider,
+  bitbucketUsernameSignInResolver,
+  bitbucketUserIdSignInResolver,
+} from './provider';
 export type {
-  AuthProviderRouteHandlers,
-  AuthProviderFactoryOptions,
-  AuthProviderFactory,
-} from './types';
-
-// These types are needed for a postMessage from the login pop-up
-// to the frontend
-export type { AuthResponse, BackstageIdentity, ProfileInfo } from './types';
+  BitbucketProviderOptions,
+  BitbucketPassportProfile,
+  BitbucketOAuthResult,
+} from './provider';

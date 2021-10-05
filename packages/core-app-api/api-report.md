@@ -23,6 +23,7 @@ import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -269,6 +270,33 @@ export type BackstagePluginWithAnyOutput = Omit<
   'output'
 > & {
   output(): (PluginOutput | UnknownPluginOutput)[];
+};
+
+// Warning: (ae-missing-release-tag) "BitbucketAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class BitbucketAuth {
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+    defaultScopes,
+  }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
+}
+
+// Warning: (ae-missing-release-tag) "BitbucketSession" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };
 
 // Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

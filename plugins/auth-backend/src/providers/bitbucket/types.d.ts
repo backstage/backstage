@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+declare module 'passport-bitbucket-oauth2' {
+  import { StrategyCreated } from 'passport';
+  import express = require('express');
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './auth0';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
+  export class Strategy {
+    name?: string | undefined;
+    authenticate(
+      this: StrategyCreated<this>,
+      req: express.Request,
+      options?: any,
+    ): any;
+    constructor(options: any, verify: any);
+  }
+}

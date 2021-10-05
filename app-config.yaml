@@ -360,6 +360,10 @@ auth:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}
         clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
         issuer: ${AUTH_ONELOGIN_ISSUER}
+    bitbucket:
+      development:
+        clientId: ${AUTH_BITBUCKET_CLIENT_ID}
+        clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
 costInsights:
   engineerCost: 200000
   products:

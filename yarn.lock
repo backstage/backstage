@@ -21272,6 +21272,14 @@ pascalcase@^0.1.1:
   resolved "https://registry.npmjs.org/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
+passport-bitbucket-oauth2@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/passport-bitbucket-oauth2/-/passport-bitbucket-oauth2-0.1.2.tgz#eb3af5cdd0d06830adc49b76acae4ad82290693b"
+  integrity sha1-6zr1zdDQaDCtxJt2rK5K2CKQaTs=
+  dependencies:
+    passport-oauth2 "^1.1.2"
+    pkginfo "0.2.x"
+
 passport-github2@^0.1.12:
   version "0.1.12"
   resolved "https://registry.npmjs.org/passport-github2/-/passport-github2-0.1.12.tgz#a72ebff4fa52a35bc2c71122dcf470d1116f772c"
@@ -21319,7 +21327,7 @@ passport-oauth2@1.2.0:
     passport-strategy "1.x.x"
     uid2 "0.0.x"
 
-passport-oauth2@1.x.x, passport-oauth2@^1.4.0, passport-oauth2@^1.5.0:
+passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-oauth2@^1.4.0, passport-oauth2@^1.5.0:
   version "1.6.0"
   resolved "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.6.0.tgz#5f599735e0ea40ea3027643785f81a3a9b4feb50"
   integrity sha512-emXPLqLcVEcLFR/QvQXZcwLmfK8e9CqvMgmOFJxcNT3okSFMtUbRRKpY20x5euD+01uHsjjCa07DYboEeLXYiw==

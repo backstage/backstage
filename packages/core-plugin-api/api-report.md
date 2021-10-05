@@ -294,6 +294,13 @@ export type BackstagePlugin<
   externalRoutes: ExternalRoutes;
 };
 
+// Warning: (ae-missing-release-tag) "bitbucketAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const bitbucketAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
+
 // Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
