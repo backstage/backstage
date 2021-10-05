@@ -120,6 +120,11 @@ export const SingleSignInPage = ({
         identity = await authApi.getBackstageIdentity({
           instantPopup: true,
         });
+        if (!identity) {
+          throw new Error(
+            `The ${provider.title} provider is not configured to support sign-in`,
+          );
+        }
       }
 
       if (!identity) {

@@ -33,6 +33,11 @@ const Component: ProviderComponent = ({ onResult }) => {
       const identity = await auth0AuthApi.getBackstageIdentity({
         instantPopup: true,
       });
+      if (!identity) {
+        throw new Error(
+          'The Auth0 provider is not configured to support sign-in',
+        );
+      }
 
       const profile = await auth0AuthApi.getProfile();
 
