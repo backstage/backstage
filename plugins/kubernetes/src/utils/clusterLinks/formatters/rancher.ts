@@ -28,9 +28,9 @@ export function rancherFormatter(options: ClusterLinksFormatterOptions): URL {
   const namespace = options.object.metadata?.namespace;
   const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
   if (validKind && name && namespace) {
-    result.pathname = `explorer/${validKind}/${namespace}/${name}`;
+    result.pathname += `explorer/${validKind}/${namespace}/${name}`;
   } else if (namespace) {
-    result.pathname = 'explorer/workload';
+    result.pathname += 'explorer/workload';
   }
   return result;
 }
