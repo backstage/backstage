@@ -18,6 +18,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 
 import { renderInTestApp } from '@backstage/test-utils';
@@ -210,6 +211,11 @@ describe('<EntityProcessErrors />', () => {
           <EntityProcessingErrorsPanel />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(
