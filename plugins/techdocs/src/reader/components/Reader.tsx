@@ -27,7 +27,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { DOMElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { techdocsStorageApiRef } from '../../api';
 import {
@@ -71,36 +71,33 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
-  const { kind, namespace, name } = entityRef;
+/**
+ * 
+ */
+export const useTechDocsReaderDom = (): Element | null => {
+  const techdocsStorageApi = useApi(techdocsStorageApiRef);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const theme = useTheme<BackstageTheme>();
-  const classes = useStyles();
-
+  const navigate = useNavigate();
+  const { namespace='', kind='', name='', '*': params }  = useParams();
   const {
     state,
     path,
-    contentReload,
     content: rawPage,
-    contentErrorMessage,
-    syncErrorMessage,
-    buildLog,
-  } = useReaderState(kind, namespace, name, useParams()['*']);
-
-  const techdocsStorageApi = useApi(techdocsStorageApiRef);
+  } = useReaderState(kind, namespace, name, params);
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
-  const navigate = useNavigate();
-  const shadowDomRef = useRef<HTMLDivElement>(null);
-  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-
+  const [dom, setDom] = useState<HTMLElement | null>(null);
+  
   const updateSidebarPosition = useCallback(() => {
-    if (!!shadowDomRef.current && !!sidebars) {
-      const shadowDiv: HTMLElement = shadowDomRef.current!;
+    if (!dom) return;
+    if (!!dom && !!sidebars) {
+      const shadowDiv: HTMLElement = dom!;
       const shadowRoot =
         shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
       const mdTabs = shadowRoot.querySelector('.md-container > .md-tabs');
       sidebars!.forEach(sidebar => {
         const newTop = Math.max(
-          shadowDomRef.current!.getBoundingClientRect().top,
+          dom!.getBoundingClientRect().top,
           0,
         );
         sidebar.style.top = mdTabs
@@ -108,7 +105,7 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
           : `${newTop}px`;
       });
     }
-  }, [shadowDomRef, sidebars]);
+  }, [dom, sidebars]);
 
   useEffect(() => {
     updateSidebarPosition();
@@ -273,14 +270,14 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
 
   // a function that performs transformations that are executed after adding it to the DOM
   const postRender = useCallback(
-    async (shadowRoot: ShadowRoot) =>
-      transformer(shadowRoot.children[0], [
+    async (shadowRoot: HTMLElement) =>
+      transformer(shadowRoot, [
         dom => {
           setTimeout(() => {
             // Scoll to the desired anchor on initial navigation
             if (window.location.hash) {
               const hash = window.location.hash.slice(1);
-              shadowRoot?.getElementById(hash)?.scrollIntoView();
+              shadowRoot?.querySelector(`#${hash}`)?.scrollIntoView();
             }
           }, 200);
           return dom;
@@ -295,7 +292,7 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
 
               // Scroll to hash if it's on the current page
               shadowRoot
-                ?.getElementById(parsedUrl.hash.slice(1))
+                ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
                 ?.scrollIntoView();
             } else {
               navigate(parsedUrl.pathname);
@@ -313,8 +310,9 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
             (dom as HTMLElement)
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
+            // todo: Get sidebar management working again.
             const sideDivs: HTMLElement[] = Array.from(
-              shadowRoot!.querySelectorAll('.md-sidebar'),
+              dom!.querySelectorAll('.md-sidebar'),
             );
             setSidebars(sideDivs);
             // set sidebar height so they don't initially render in wrong position
@@ -333,16 +331,7 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
   );
 
   useEffect(() => {
-    if (!rawPage || !shadowDomRef.current) {
-      // clear the shadow dom if no content is available
-      if (shadowDomRef.current?.shadowRoot) {
-        shadowDomRef.current.shadowRoot.innerHTML = '';
-      }
-      return () => {};
-    }
-    if (onReady) {
-      onReady();
-    }
+    if (!rawPage) return;
 
     // if false, there is already a newer execution of this effect
     let shouldReplaceContent = true;
@@ -358,26 +347,94 @@ export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
         return;
       }
 
-      const shadowDiv: HTMLElement = shadowDomRef.current!;
-      const shadowRoot =
-        shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
-      Array.from(shadowRoot.children).forEach(child =>
-        shadowRoot.removeChild(child),
-      );
-      shadowRoot.appendChild(transformedElement);
+      // const shadowDiv: HTMLElement = shadowDomRef.current!;
+      // const shadowRoot =
+      //   shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+      // Array.from(shadowRoot.children).forEach(child =>
+      //   shadowRoot.removeChild(child),
+      // );
+      // shadowRoot.appendChild(transformedElement);
 
       // Scroll to top after render
       window.scroll({ top: 0 });
 
       // Post-render
-      await postRender(shadowRoot);
+      const renderedElement = await postRender(transformedElement as HTMLElement);
+      setDom(renderedElement as HTMLElement)
     });
 
     // cancel this execution
     return () => {
       shouldReplaceContent = false;
     };
-  }, [onReady, path, postRender, preRender, rawPage]);
+  }, [rawPage, path]);
+
+  return dom;
+}
+
+export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
+  const { kind, namespace, name } = entityRef;
+  const theme = useTheme<BackstageTheme>();
+  const classes = useStyles();
+
+  const {
+    state,
+    path,
+    contentReload,
+    content: rawPage,
+    contentErrorMessage,
+    syncErrorMessage,
+    buildLog,
+  } = useReaderState(kind, namespace, name, useParams()['*']);
+
+  const techdocsStorageApi = useApi(techdocsStorageApiRef);
+  const [sidebars, setSidebars] = useState<HTMLElement[]>();
+  const navigate = useNavigate();
+  const shadowDomRef = useRef<HTMLDivElement>(null);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+
+  const updateSidebarPosition = useCallback(() => {
+    if (!!shadowDomRef.current && !!sidebars) {
+      const shadowDiv: HTMLElement = shadowDomRef.current!;
+      const shadowRoot =
+        shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+      const mdTabs = shadowRoot.querySelector('.md-container > .md-tabs');
+      sidebars!.forEach(sidebar => {
+        const newTop = Math.max(
+          shadowDomRef.current!.getBoundingClientRect().top,
+          0,
+        );
+        sidebar.style.top = mdTabs
+          ? `${newTop + mdTabs.getBoundingClientRect().height}px`
+          : `${newTop}px`;
+      });
+    }
+  }, [shadowDomRef, sidebars]);
+
+  useEffect(() => {
+    updateSidebarPosition();
+    window.addEventListener('scroll', updateSidebarPosition, true);
+    window.addEventListener('resize', updateSidebarPosition);
+    return () => {
+      window.removeEventListener('scroll', updateSidebarPosition, true);
+      window.removeEventListener('resize', updateSidebarPosition);
+    };
+    // an update to "state" might lead to an updated UI so we include it as a trigger
+  }, [updateSidebarPosition, state]);
+
+  const dom = useTechDocsReaderDom();
+
+  useEffect(() => {
+    if (!dom || !shadowDomRef.current) return;
+    const shadowDiv: HTMLElement = shadowDomRef.current!;
+    console.log('-----> DOM', dom, shadowDiv)
+    const shadowRoot =
+      shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+    Array.from(shadowRoot.children).forEach(child =>
+      shadowRoot.removeChild(child),
+    );
+    shadowRoot.appendChild(dom);
+  }, [dom]);
 
   return (
     <>
