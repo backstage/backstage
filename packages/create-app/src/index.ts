@@ -26,10 +26,11 @@ import { version } from '../package.json';
 import createApp from './createApp';
 
 const main = (argv: string[]) => {
-  program.name('backstage-create-app').version(version);
-
   program
-    .description('Creates a new app in a new directory')
+    .name('backstage-create-app')
+    .version(version)
+    .description('Creates a new app in a new directory or specified [path]')
+    .usage('[path] [options]')
     .option(
       '--skip-install',
       'Skip the install and builds steps after creating the app',
