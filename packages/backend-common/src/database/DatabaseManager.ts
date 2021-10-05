@@ -21,8 +21,11 @@ import {
   ensureDatabaseExists,
   createNameOverride,
   normalizeConnection,
+  createSchemaOverride,
+  ensureSchemaExists,
 } from './connection';
 import { PluginDatabaseManager } from './types';
+import { mergeDatabaseConfig } from './config';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -98,6 +101,21 @@ export class DatabaseManager {
     return (
       (connection as Knex.ConnectionConfig)?.database ??
       `${this.prefix}${pluginId}`
+    );
+  }
+
+  /**
+   * Provides the overriden schema name for a given plugin.
+   *
+   * If no value is present, the default schema will be used.
+   *
+   * @param pluginId The plugin to override the schema
+   * @returns String representing the plugin's schema name
+   */
+  getSchemaName(pluginId: string) {
+    return (
+      this.config.getOptionalString(`${pluginPath(pluginId)}.schema`) ||
+      undefined
     );
   }
 
@@ -200,6 +218,25 @@ export class DatabaseManager {
   }
 
   /**
+   * Provides a partial Knex.Config database schema override for a given plugin.
+   *
+   * @param pluginId Target plugin to get database schema override
+   * @returns Partial Knex.Config with database schema override
+   */
+  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
+    const schemaName = this.getSchemaName(pluginId);
+
+    if (schemaName) {
+      return createSchemaOverride(
+        this.getClientType(pluginId).client,
+        schemaName,
+      );
+    }
+
+    return undefined;
+  }
+
+  /**
    * Provides a scoped Knex client for a plugin as per application config.
    *
    *  @param pluginId Plugin to get a Knex client for
@@ -210,8 +247,9 @@ export class DatabaseManager {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
+    const databaseName = this.getDatabaseName(pluginId);
+
     if (this.getEnsureExistsConfig(pluginId)) {
-      const databaseName = this.getDatabaseName(pluginId);
       try {
         await ensureDatabaseExists(pluginConfig, databaseName);
       } catch (error) {
@@ -221,9 +259,25 @@ export class DatabaseManager {
       }
     }
 
-    return createDatabaseClient(
-      pluginConfig,
+    // Call getschemaoverrides first so an error is thrown if the client doesnt support schema overrides
+    const schemaName = this.getSchemaName(pluginId);
+
+    if (schemaName) {
+      try {
+        await ensureSchemaExists(pluginConfig, schemaName);
+      } catch (error) {
+        throw new Error(
+          `Failed to connect to the database '${databaseName}' to make sure that '${schemaName}' exists, ${error}`,
+        );
+      }
+    }
+
+    const databaseClientOverrides = mergeDatabaseConfig(
+      {},
       this.getDatabaseOverrides(pluginId),
+      this.getSchemaOverrides(pluginId),
     );
+
+    return createDatabaseClient(pluginConfig, databaseClientOverrides);
   }
 }

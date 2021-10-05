@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.9.6
+
+### Patch Changes
+
+- TBD: The `pg` client now supports `schema` override for plugins to create tables within specified schema name
+
 ## 0.9.5
 
 ### Patch Changes

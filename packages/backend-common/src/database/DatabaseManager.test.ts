@@ -15,13 +15,18 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
-import { createDatabaseClient, ensureDatabaseExists } from './connection';
+import {
+  createDatabaseClient,
+  ensureDatabaseExists,
+  ensureSchemaExists,
+} from './connection';
 import { DatabaseManager } from './DatabaseManager';
 
 jest.mock('./connection', () => ({
   ...jest.requireActual('./connection'),
   createDatabaseClient: jest.fn(),
   ensureDatabaseExists: jest.fn(),
+  ensureSchemaExists: jest.fn(),
 }));
 
 describe('DatabaseManager', () => {
@@ -82,6 +87,26 @@ describe('DatabaseManager', () => {
             },
             stringoverride: {
               connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
+            },
+            schemaoverride: {
+              client: 'pg',
+              schema: 'catalog',
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+            invalidschemaoverride: {
+              client: 'sqlite3',
+              schema: 'catalog',
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
             },
           },
         },
@@ -313,6 +338,55 @@ describe('DatabaseManager', () => {
         'connection.database',
         expect.stringContaining('userdbname'),
       );
+    });
+
+    it('plugin sets schema override for pg client', async () => {
+      const pluginId = 'schemaoverride';
+      await manager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, overrides] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: config.backend.database.plugin[pluginId].connection,
+      });
+
+      expect(overrides).toMatchObject({
+        searchPath: ['catalog'],
+      });
+    });
+
+    it('plugin does not provide schema override for non pg client', async () => {
+      const pluginId = 'invalidschemaoverride';
+      return expect(() =>
+        manager.forPlugin(pluginId).getClient(),
+      ).rejects.toThrowError();
+    });
+
+    it('plugin does not provide schema override if property is not provided', async () => {
+      const pluginId = 'testdbname';
+      await manager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_baseConfig, overrides] = mockCalls[0];
+
+      expect(overrides).not.toHaveProperty('searchPath');
+    });
+
+    it('plugin with schema override ensures schema exists', async () => {
+      const pluginId = 'schemaoverride';
+      await manager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(ensureSchemaExists).mock.calls.splice(-1);
+      const [baseConfig, schemaName] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: config.backend.database.plugin[pluginId].connection,
+      });
+
+      expect(schemaName).toEqual('catalog');
     });
   });
 });

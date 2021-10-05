@@ -84,6 +84,12 @@ export interface Config {
            * Defaults to base config if unspecified.
            */
           ensureExists?: boolean;
+          /**
+           * Override this plugin to create tables in a schema with the name
+           * specified here.
+           * Defaults to database engine default schema if unspecified.
+           */
+          schema?: string;
         };
       };
     };
