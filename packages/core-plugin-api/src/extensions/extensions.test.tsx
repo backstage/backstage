@@ -85,6 +85,7 @@ describe('extensions', () => {
   it('should wrap extended component with error boundary', async () => {
     const BrokenComponent = plugin.provide(
       createComponentExtension({
+        name: 'BrokenComponent',
         component: {
           sync: () => {
             throw new Error('Test error');

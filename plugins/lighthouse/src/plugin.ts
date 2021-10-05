@@ -60,6 +60,7 @@ export const lighthousePlugin = createPlugin({
 
 export const LighthousePage = lighthousePlugin.provide(
   createRoutableExtension({
+    name: 'LighthousePage',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
@@ -67,6 +68,7 @@ export const LighthousePage = lighthousePlugin.provide(
 
 export const EntityLighthouseContent = lighthousePlugin.provide(
   createRoutableExtension({
+    name: 'EntityLighthouseContent',
     component: () => import('./Router').then(m => m.EmbeddedRouter),
     mountPoint: entityContentRouteRef,
   }),
@@ -74,6 +76,7 @@ export const EntityLighthouseContent = lighthousePlugin.provide(
 
 export const EntityLastLighthouseAuditCard = lighthousePlugin.provide(
   createComponentExtension({
+    name: 'EntityLastLighthouseAuditCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.LastLighthouseAuditCard),

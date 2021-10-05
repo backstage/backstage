@@ -41,6 +41,7 @@ export const cloudbuildPlugin = createPlugin({
 
 export const EntityCloudbuildContent = cloudbuildPlugin.provide(
   createRoutableExtension({
+    name: 'EntityCloudbuildContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
@@ -48,6 +49,7 @@ export const EntityCloudbuildContent = cloudbuildPlugin.provide(
 
 export const EntityLatestCloudbuildRunCard = cloudbuildPlugin.provide(
   createComponentExtension({
+    name: 'EntityLatestCloudbuildRunCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.LatestWorkflowRunCard),
@@ -57,6 +59,7 @@ export const EntityLatestCloudbuildRunCard = cloudbuildPlugin.provide(
 
 export const EntityLatestCloudbuildsForBranchCard = cloudbuildPlugin.provide(
   createComponentExtension({
+    name: 'EntityLatestCloudbuildsForBranchCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.LatestWorkflowsForBranchCard),

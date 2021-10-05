@@ -59,6 +59,7 @@ export const kubernetesPlugin = createPlugin({
 
 export const EntityKubernetesContent = kubernetesPlugin.provide(
   createRoutableExtension({
+    name: 'EntityKubernetesContent',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootCatalogKubernetesRouteRef,
   }),

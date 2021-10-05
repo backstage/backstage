@@ -43,24 +43,35 @@ const ref2 = createRouteRef(mockConfig());
 
 const Extension1 = pluginA.provide(
   createRoutableExtension({
+    name: 'Extension1',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref1,
   }),
 );
 const Extension2 = pluginB.provide(
   createRoutableExtension({
+    name: 'Extension2',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref2,
   }),
 );
 const Extension3 = pluginA.provide(
-  createComponentExtension({ component: { sync: MockComponent } }),
+  createComponentExtension({
+    name: 'Extension3',
+    component: { sync: MockComponent },
+  }),
 );
 const Extension4 = pluginB.provide(
-  createComponentExtension({ component: { sync: MockComponent } }),
+  createComponentExtension({
+    name: 'Extension4',
+    component: { sync: MockComponent },
+  }),
 );
 const Extension5 = pluginC.provide(
-  createComponentExtension({ component: { sync: MockComponent } }),
+  createComponentExtension({
+    name: 'Extension5',
+    component: { sync: MockComponent },
+  }),
 );
 
 describe('collection', () => {

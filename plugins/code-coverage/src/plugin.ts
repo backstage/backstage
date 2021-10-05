@@ -39,6 +39,7 @@ export const codeCoveragePlugin = createPlugin({
 
 export const EntityCodeCoverageContent = codeCoveragePlugin.provide(
   createRoutableExtension({
+    name: 'EntityCodeCoverageContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),

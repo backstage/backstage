@@ -27,6 +27,7 @@ import { catalogGraphRouteRef } from './routes';
  */
 export const EntityCatalogGraphCard = catalogGraphPlugin.provide(
   createComponentExtension({
+    name: 'EntityCatalogGraphCard',
     component: {
       lazy: () =>
         import('./components/CatalogGraphCard').then(m => m.CatalogGraphCard),
@@ -42,6 +43,7 @@ export const EntityCatalogGraphCard = catalogGraphPlugin.provide(
  */
 export const CatalogGraphPage = catalogGraphPlugin.provide(
   createRoutableExtension({
+    name: 'CatalogGraphPage',
     component: () =>
       import('./components/CatalogGraphPage').then(m => m.CatalogGraphPage),
     mountPoint: catalogGraphRouteRef,
