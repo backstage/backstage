@@ -23,10 +23,12 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Location as Location_2 } from '@backstage/catalog-model';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
@@ -54,6 +56,16 @@ export const AboutField: ({
   gridSizes,
   children,
 }: Props_2) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "PluginCatalogComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "BackstageOverrides" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof PluginCatalogComponentsNameToClassKey]?: Partial<
+    StyleRules<PluginCatalogComponentsNameToClassKey[Name]>
+  >;
+};
 
 // Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
