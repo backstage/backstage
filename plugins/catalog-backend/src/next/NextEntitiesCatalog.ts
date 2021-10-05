@@ -189,6 +189,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       current = todo.pop()
     ) {
       const currentRef = stringifyEntityRef(current);
+      seenEntityRefs.add(currentRef);
 
       const parentRows = await this.database<DbRefreshStateReferencesRow>(
         'refresh_state_references',
