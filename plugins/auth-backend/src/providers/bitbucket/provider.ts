@@ -253,7 +253,7 @@ export type BitbucketProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  signIn: {
+  signIn?: {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
@@ -262,7 +262,7 @@ export type BitbucketProviderOptions = {
 };
 
 export const createBitbucketProvider = (
-  options: BitbucketProviderOptions,
+  options?: BitbucketProviderOptions,
 ): AuthProviderFactory => {
   return ({
     providerId,
@@ -289,18 +289,11 @@ export const createBitbucketProvider = (
               profile: makeProfileInfo(fullProfile, params.id_token),
             });
 
-      const signInResolver: SignInResolver<BitbucketOAuthResult> = info =>
-        options.signIn.resolver(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new BitbucketAuthProvider({
         clientId,
         clientSecret,
         callbackUrl,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         authHandler,
         tokenIssuer,
         catalogIdentityClient,
