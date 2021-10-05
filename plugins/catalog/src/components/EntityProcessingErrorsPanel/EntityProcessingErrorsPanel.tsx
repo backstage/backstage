@@ -16,8 +16,6 @@
 
 import {
   Entity,
-  EntityName,
-  getEntityName,
   stringifyEntityRef,
   UNSTABLE_EntityStatusItem,
   compareEntityToRef,
@@ -51,7 +49,7 @@ type GetOwnAndAncestorsErrorsResponse = {
 };
 
 async function getOwnAndAncestorsErrors(
-  entityRef: EntityName,
+  entityRef: string,
   catalogApi: CatalogApi,
 ): Promise<GetOwnAndAncestorsErrorsResponse> {
   const ancestors = await catalogApi.getEntityAncestors({ entityRef });
@@ -78,7 +76,7 @@ export const hasCatalogProcessingErrors = async (
   }
 
   const errors = await getOwnAndAncestorsErrors(
-    getEntityName(entity),
+    stringifyEntityRef(entity),
     catalogApi,
   );
   return errors.items.length > 0;
@@ -89,11 +87,11 @@ export const hasCatalogProcessingErrors = async (
  */
 export const EntityProcessingErrorsPanel = () => {
   const { entity } = useEntity();
+  const entityRef = stringifyEntityRef(entity);
   const catalogApi = useApi(catalogApiRef);
-
   const { loading, error, value } = useAsync(async () => {
-    return getOwnAndAncestorsErrors(getEntityName(entity), catalogApi);
-  }, [stringifyEntityRef(entity), catalogApi]);
+    return getOwnAndAncestorsErrors(entityRef, catalogApi);
+  }, [entityRef, catalogApi]);
 
   if (error) {
     return (

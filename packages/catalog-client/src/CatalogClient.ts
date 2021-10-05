@@ -20,6 +20,7 @@ import {
   Location,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  parseEntityRef,
   stringifyEntityRef,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
@@ -50,13 +51,7 @@ export class CatalogClient implements CatalogApi {
     request: CatalogEntityAncestorsRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogEntityAncestorsResponse> {
-    const { kind, namespace, name } = Object.fromEntries(
-      Object.entries(request.entityRef).map(([k, v]) => [
-        k,
-        encodeURIComponent(v),
-      ]),
-    );
-
+    const { kind, namespace, name } = parseEntityRef(request.entityRef);
     return await this.requestRequired(
       'GET',
       `/entities/by-name/${kind}/${namespace}/${name}/ancestry`,
