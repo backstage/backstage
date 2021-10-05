@@ -120,7 +120,7 @@ export type BitbucketPassportProfile = Profile & {
 // @public (undocumented)
 export type BitbucketProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
-  signIn: {
+  signIn?: {
     resolver: SignInResolver<OAuthResult>;
   };
 };
@@ -139,7 +139,7 @@ export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResul
 //
 // @public (undocumented)
 export const createBitbucketProvider: (
-  options: BitbucketProviderOptions,
+  options?: BitbucketProviderOptions | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createGithubProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
