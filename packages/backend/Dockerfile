@@ -22,11 +22,6 @@ RUN tar xzf envconsul_0.11.0_linux_amd64.tgz && rm envconsul_0.11.0_linux_amd64.
 RUN mv envconsul /bin
 RUN chmod 777 /bin/envconsul
 
-## TESTING ##
-RUN envconsul --help
-
-## TODO: Need commands to install and configure envconsul here...
-
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
