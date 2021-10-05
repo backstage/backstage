@@ -14,23 +14,40 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext } from 'react';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
+import React, { ReactNode, useContext } from 'react';
 import { AnalyticsContextValue } from './types';
 
-// todo(iamEAP): Manage this using a version bridge.
-const AnalyticsReactContext = createContext<AnalyticsContextValue>({
-  routeRef: 'unknown',
-  pluginId: 'root',
-  extension: 'App',
-});
+const AnalyticsReactContext =
+  createVersionedContext<{ 1: AnalyticsContextValue }>('analytics-context');
 
 /**
  * A "private" (to this package) hook that enables context inheritance and a
  * way to read Analytics Context values at event capture-time.
  * @private
  */
-export const useAnalyticsContext = () => {
-  return useContext(AnalyticsReactContext);
+export const useAnalyticsContext = (): AnalyticsContextValue => {
+  const theContext = useContext(AnalyticsReactContext);
+
+  // Provide a default value if no value exists.
+  if (theContext === undefined) {
+    return {
+      routeRef: 'unknown',
+      pluginId: 'root',
+      extension: 'App',
+    };
+  }
+
+  // This should probably never happen, but check for it.
+  const theValue = theContext.atVersion(1);
+  if (theValue === undefined) {
+    throw new Error('No context found for version 1.');
+  }
+
+  return theValue;
 };
 
 /**
@@ -53,8 +70,9 @@ export const AnalyticsContext = ({
     ...attributes,
   };
 
+  const versionedCombinedValue = createVersionedValueMap({ 1: combinedValue });
   return (
-    <AnalyticsReactContext.Provider value={combinedValue}>
+    <AnalyticsReactContext.Provider value={versionedCombinedValue}>
       {children}
     </AnalyticsReactContext.Provider>
   );
