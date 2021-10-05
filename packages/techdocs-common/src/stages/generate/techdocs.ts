@@ -42,7 +42,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-common consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.2';
+  public static readonly defaultDockerImage = 'spotify/techdocs:0.3.3';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
