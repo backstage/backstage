@@ -38,6 +38,11 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
   // (undocumented)
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
+  // (undocumented)
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
@@ -88,6 +93,11 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
   // (undocumented)
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
+  // (undocumented)
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
@@ -131,6 +141,20 @@ export type CatalogEntitiesRequest = {
     | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
+};
+
+// @public (undocumented)
+export type CatalogEntityAncestorsRequest = {
+  entityRef: EntityName;
+};
+
+// @public (undocumented)
+export type CatalogEntityAncestorsResponse = {
+  root: EntityName;
+  items: {
+    entity: Entity;
+    parents: EntityName[];
+  }[];
 };
 
 // @public (undocumented)
