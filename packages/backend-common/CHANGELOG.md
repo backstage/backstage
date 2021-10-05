@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- TBD: The `pg` client now supports `schema` override for plugins to create tables within specified schema name
+- b2a9895b0a: The `pg` client now supports `schema` override for plugins to create tables within specified schema name
 
 ## 0.9.5
 
