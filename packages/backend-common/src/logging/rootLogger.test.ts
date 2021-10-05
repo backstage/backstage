@@ -15,7 +15,12 @@
  */
 
 import * as winston from 'winston';
-import { createRootLogger, getRootLogger, setRootLogger } from './rootLogger';
+import {
+  createRootLogger,
+  getRootLogger,
+  setRootLogger,
+  setRedactionList,
+} from './rootLogger';
 
 describe('rootLogger', () => {
   it('can replace the default logger', () => {
@@ -27,6 +32,19 @@ describe('rootLogger', () => {
 
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('testing'),
+    );
+  });
+
+  it('redacts given secrets', () => {
+    const logger = createRootLogger();
+    jest.spyOn(logger, 'write');
+    setRedactionList(['SECRET_1', 'SECRET_2']);
+    logger.info('Logging SECRET_1 and SECRET_2 but not SECRET_3');
+
+    expect(logger.write).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Logging [REDACTED] and [REDACTED] but not SECRET_3',
+      }),
     );
   });
 
