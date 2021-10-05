@@ -104,7 +104,8 @@ backend:
 
 The example below uses PostgreSQL (`pg`) as the database client for all plugins.
 The `auth` plugin uses a user defined database name instead of the automatically
-generated one which would have been `backstage_plugin_auth`.
+generated one which would have been `backstage_plugin_auth`. It also uses a user
+defined schema name instead of the default schema `public`.
 
 ```yaml
 backend:
@@ -117,6 +118,7 @@ backend:
       port: 5432
     plugin:
       auth:
+        schema: schema_name_set_by_user
         connection:
           database: pg_auth_set_by_user
 ```
