@@ -24,10 +24,11 @@ import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
 import os from 'os';
 import { Task, templatingTask } from './lib/tasks';
+import recursive from 'recursive-readdir';
 
 const exec = promisify(execCb);
 
-async function checkExists(rootDir: string, name: string) {
+async function checkAppPathDoesntExist(rootDir: string, name: string) {
   await Task.forItem('checking', name, async () => {
     const destination = resolvePath(rootDir, name);
 
@@ -35,6 +36,22 @@ async function checkExists(rootDir: string, name: string) {
       const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
       throw new Error(
         `A directory with the same name already exists: ${existing}\nPlease try again with a different app name`,
+      );
+    }
+  });
+}
+
+async function checkPathExistsAndIsDirectory(path: string) {
+  await Task.forItem('checking', path, async () => {
+    if (await fs.pathExists(path)) {
+      if (!fs.lstatSync(path).isDirectory()) {
+        throw new Error(
+          'Directory specified with --path argument is a file\nPlease ensure target path is a directory',
+        );
+      }
+    } else {
+      throw new Error(
+        'Directory specified with --path argument does not exist\nPlease try again with a different path',
       );
     }
   });
@@ -77,11 +94,18 @@ async function buildApp(appDir: string) {
 
 async function moveApp(tempDir: string, destination: string, id: string) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination, { overwrite: true }).catch(error => {
-      throw new Error(
-        `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
-      );
+    const tempFiles = await recursive(tempDir).catch(error => {
+      throw new Error(`Failed to read temporary directory: ${error.message}`);
     });
+
+    for (const tempFile of tempFiles) {
+      const destFile = tempFile.replace(tempDir, destination);
+      await fs.copy(tempFile, destFile).catch(error => {
+        throw new Error(
+          `Failed to move file from ${tempFile} to ${destFile}: ${error.message}`,
+        );
+      });
+    }
   });
 }
 
@@ -130,11 +154,13 @@ export default async (cmd: Command): Promise<void> => {
   Task.log('Creating the app...');
 
   try {
-    // Directory must not already exist when using consructed path from
-    // `answers.name`
-    if (!cmd.path) {
-      Task.section('Checking if the directory is available');
-      await checkExists(paths.targetDir, answers.name);
+    Task.section('Checking if the directory is available');
+    if (cmd.path) {
+      await checkPathExistsAndIsDirectory(appDir);
+    } else {
+      // Directory must not already exist when using consructed path from
+      // `answers.name`
+      await checkAppPathDoesntExist(paths.targetDir, answers.name);
     }
 
     Task.section('Creating a temporary app directory');
@@ -145,6 +171,9 @@ export default async (cmd: Command): Promise<void> => {
 
     Task.section('Moving to final location');
     await moveApp(tempDir, appDir, answers.name);
+
+    Task.section('Cleanup');
+    await cleanUp(tempDir);
 
     if (!cmd.skipInstall) {
       Task.section('Building the app');
