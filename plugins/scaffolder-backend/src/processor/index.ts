@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that helps you create new things
- *
- * @packageDocumentation
- */
-
-export * from './scaffolder';
-export * from './service/router';
-export * from './lib/catalog';
-export * from './processor';
+export { TemplateEntityProcessor } from './TemplateEntityProcessor';
