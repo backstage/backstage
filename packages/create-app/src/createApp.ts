@@ -120,12 +120,11 @@ export default async (cmd: Command): Promise<void> => {
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
 
-  // Use `[path]` argument as applicaiton directory when specified, otherwise
+  // Use `--path` argument as applicaiton directory when specified, otherwise
   // create a directory using `answers.name`
-  const appDir =
-    cmd.args.length > 0
-      ? resolvePath(cmd.args[0])
-      : resolvePath(paths.targetDir, answers.name);
+  const appDir = cmd.path
+    ? resolvePath(cmd.path)
+    : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
@@ -133,7 +132,7 @@ export default async (cmd: Command): Promise<void> => {
   try {
     // Directory must not already exist when using consructed path from
     // `answers.name`
-    if (cmd.args.length === 0) {
+    if (!cmd.path) {
       Task.section('Checking if the directory is available');
       await checkExists(paths.targetDir, answers.name);
     }
