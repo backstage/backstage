@@ -20,31 +20,44 @@ import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
-export const UserSettingsProfileCard = () => {
+const UserDefaultCard = () => {
   const { profile, displayName } = useUserProfile();
-
   return (
-    <InfoCard title="Profile">
-      <Grid container spacing={6}>
-        <Grid item>
-          <UserSettingsSignInAvatar size={96} />
-        </Grid>
-        <Grid item xs={12} sm container>
-          <Grid item xs container direction="column" spacing={2}>
-            <Grid item xs>
-              <Typography variant="subtitle1" gutterBottom>
-                {displayName}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {profile.email}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <UserSettingsMenu />
+    <Grid container spacing={6}>
+      <Grid item>
+        <UserSettingsSignInAvatar size={96} />
+      </Grid>
+      <Grid item xs={12} sm container>
+        <Grid item xs container direction="column" spacing={2}>
+          <Grid item xs>
+            <Typography variant="subtitle1" gutterBottom>
+              {displayName}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {profile.email}
+            </Typography>
           </Grid>
         </Grid>
       </Grid>
+    </Grid>
+  );
+};
+
+type Props = {
+  UserProfileCard?: JSX.Element;
+};
+export const UserSettingsProfileCard = ({ UserProfileCard }: Props) => {
+  return (
+    <InfoCard
+      title={
+        <div>
+          Profile
+          <UserSettingsMenu />
+          {/* TODO: clean up layout */}
+        </div>
+      }
+    >
+      {UserProfileCard ?? <UserDefaultCard />}
     </InfoCard>
   );
 };

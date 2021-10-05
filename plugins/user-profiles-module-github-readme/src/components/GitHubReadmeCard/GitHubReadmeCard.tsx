@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEntity } from '@backstage/plugin-catalog-react';
+// import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
+// TODO (himanshu/ainhoa/vincenzo): refactor to GitHubProfile instead of GitHubREADME
+// TODO (himanshu/ainhoa/vincenzo): need to export 2 cards (for settings page and for user entity page)
 export const GitHubReadmeCard = () => {
-  const { entity } = useEntity();
+  // const { entity } = useEntity();
+  const entity = {
+    kind: 'user',
+    metadata: {
+      namespace: 'github',
+      name: 'brianna',
+    },
+  };
   const entityref = `${entity.kind}:${entity.metadata.namespace ?? 'default'}/${
     entity.metadata.name
   }`;

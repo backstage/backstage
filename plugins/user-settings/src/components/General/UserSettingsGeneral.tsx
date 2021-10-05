@@ -18,11 +18,14 @@ import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 
-export const UserSettingsGeneral = () => {
+type Props = {
+  UserProfileCard?: JSX.Element;
+};
+export const UserSettingsGeneral = ({ UserProfileCard }: Props) => {
   return (
     <Grid container direction="row" spacing={3}>
       <Grid item sm={12} md={6}>
-        <UserSettingsProfileCard />
+        <UserSettingsProfileCard UserProfileCard={UserProfileCard} />
       </Grid>
       <Grid item sm={12} md={6}>
         <UserSettingsAppearanceCard />
