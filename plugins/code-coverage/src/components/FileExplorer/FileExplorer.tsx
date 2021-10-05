@@ -56,9 +56,12 @@ const buildFileStructure = (row: CoverageTableRow) => {
     (acc: FileStructureObject, cur: CoverageTableRow) => {
       let path = cur.filename;
       if (row.path) {
-        path = path?.split(`${row.path}/`)[1];
+        if (path) {
+          path = '/' + path;
+        }
+        path = path?.split(`/${row.path}/`)[1];
       }
-      const pathArray = path?.split('/');
+      const pathArray = path?.split('/').filter(el => el!=='');
 
       if (!pathArray) {
         return acc;
