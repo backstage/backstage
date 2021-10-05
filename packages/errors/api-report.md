@@ -5,6 +5,11 @@
 ```ts
 import { JsonObject } from '@backstage/config';
 
+// Warning: (ae-missing-release-tag) "assertError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function assertError(val: unknown): asserts val is ErrorLike;
+
 // @public
 export class AuthenticationError extends CustomErrorBase {}
 
@@ -23,6 +28,15 @@ export function deserializeError<T extends Error = Error>(
   data: SerializedError,
 ): T;
 
+// Warning: (ae-missing-release-tag) "ErrorLike" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ErrorLike = {
+  name: string;
+  message: string;
+  stack?: string;
+};
+
 // @public
 export type ErrorResponse = {
   error: SerializedError;
@@ -37,6 +51,11 @@ export type ErrorResponse = {
 
 // @public
 export class InputError extends CustomErrorBase {}
+
+// Warning: (ae-missing-release-tag) "isError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function isError(val: unknown): val is ErrorLike;
 
 // @public
 export class NotAllowedError extends CustomErrorBase {}
