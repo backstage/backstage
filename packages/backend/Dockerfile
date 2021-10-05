@@ -16,8 +16,15 @@ WORKDIR /app
 # Change to root user for copying app files and adjusting perms for the app user.
 USER root
 
-# curl envconsul package from dev8 Nexus and install
+# curl envconsul package from dev8 Nexus and place package in PATH
 RUN curl -k -X GET "https://nexus.dev8.bip.va.gov/repository/raw-dependencies/hashicorp/envconsul/envconsul_0.11.0_linux_amd64.tgz" -O
+RUN tar xzf envconsul_0.11.0_linux_amd64.tgz && rm envconsul_0.11.0_linux_amd64.tgz
+RUN mv envconsul /bin
+RUN chmod 777 /bin/envconsul
+
+## TESTING ##
+RUN envconsul --help
+
 ## TODO: Need commands to install and configure envconsul here...
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
