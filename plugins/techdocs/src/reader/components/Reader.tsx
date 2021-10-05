@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Grid, makeStyles, useTheme } from '@material-ui/core';
+
 import { EntityName } from '@backstage/catalog-model';
-import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  makeStyles,
-  useTheme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+
 import { techdocsStorageApiRef } from '../../api';
+
 import {
   addBaseUrl,
   addGitFeedbackLink,
@@ -40,26 +35,22 @@ import {
   rewriteDocLinks,
   sanitizeDOM,
   simplifyMkdocsFooter,
+  scrollIntoAnchor,
   transform as transformer,
 } from '../transformers';
-import { TechDocsBuildLogs } from './TechDocsBuildLogs';
-import { TechDocsNotFound } from './TechDocsNotFound';
+
+import { TechDocsProgress } from './TechDocsProgress';
+import { TechDocsAlert } from './TechDocsAlert';
 import { TechDocsSearch } from './TechDocsSearch';
 import { useReaderState } from './useReaderState';
 
 type Props = {
   entityRef: EntityName;
-  onReady?: () => void;
   withSearch?: boolean;
+  onReady?: () => void;
 };
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
-  message: {
-    // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
-    wordBreak: 'break-word',
-    overflowWrap: 'anywhere',
-  },
   searchBar: {
     marginLeft: '20rem',
     maxWidth: 'calc(100% - 20rem * 2 - 3rem)',
@@ -91,6 +82,7 @@ export const useTechDocsReaderDom = (): Element | null => {
 
   const updateSidebarPosition = useCallback(() => {
     if (!dom || !sidebars) return;
+    // set sidebar height so they don't initially render in wrong position
     const mdTabs = dom.querySelector('.md-container > .md-tabs');
     sidebars.forEach(sidebar => {
       const newTop = Math.max(dom.getBoundingClientRect().top, 0);
@@ -263,36 +255,24 @@ export const useTechDocsReaderDom = (): Element | null => {
 
   // a function that performs transformations that are executed after adding it to the DOM
   const postRender = useCallback(
-    async (transformedElement: HTMLElement) =>
+    async (transformedElement: Element) =>
       transformer(transformedElement, [
-        (renderedElement: Element) => {
-          setTimeout(() => {
-            // Scoll to the desired anchor on initial navigation
-            if (window.location.hash) {
-              const hash = window.location.hash.slice(1);
-              renderedElement?.querySelector(`#${hash}`)?.scrollIntoView();
+        scrollIntoAnchor(),
+        addLinkClickListener({
+          baseUrl: window.location.origin,
+          onClick: (_: MouseEvent, url: string) => {
+            const parsedUrl = new URL(url);
+            if (parsedUrl.hash) {
+              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+              // Scroll to hash if it's on the current page
+              transformedElement
+                ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
+                ?.scrollIntoView();
+            } else {
+              navigate(parsedUrl.pathname);
             }
-          }, 200);
-          return renderedElement;
-        },
-        (renderedElement: Element) =>
-          addLinkClickListener({
-            baseUrl: window.location.origin,
-            onClick: (_: MouseEvent, url: string) => {
-              const parsedUrl = new URL(url);
-
-              if (parsedUrl.hash) {
-                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
-
-                // Scroll to hash if it's on the current page
-                renderedElement
-                  ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
-                  ?.scrollIntoView();
-              } else {
-                navigate(parsedUrl.pathname);
-              }
-            },
-          })(renderedElement),
+          },
+        }),
         onCssReady({
           docStorageUrl: await techdocsStorageApi.getApiOrigin(),
           onLoading: (renderedElement: Element) => {
@@ -301,25 +281,12 @@ export const useTechDocsReaderDom = (): Element | null => {
           onLoaded: (renderedElement: Element) => {
             (renderedElement as HTMLElement).style.removeProperty('opacity');
             // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
-            (renderedElement as HTMLElement)
+            renderedElement
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
-            const sideDivs: HTMLElement[] = Array.from(
-              renderedElement!.querySelectorAll('.md-sidebar'),
+            setSidebars(
+              Array.from(renderedElement.querySelectorAll('.md-sidebar')),
             );
-            setSidebars(sideDivs);
-            // set sidebar height so they don't initially render in wrong position
-            const docTopPosition = (
-              renderedElement as HTMLElement
-            ).getBoundingClientRect().top;
-            const mdTabs = renderedElement.querySelector(
-              '.md-container > .md-tabs',
-            );
-            sideDivs!.forEach(sidebar => {
-              sidebar.style.top = mdTabs
-                ? `${docTopPosition + mdTabs.getBoundingClientRect().height}px`
-                : `${docTopPosition}px`;
-            });
           },
         }),
       ]),
@@ -347,9 +314,7 @@ export const useTechDocsReaderDom = (): Element | null => {
       window.scroll({ top: 0 });
 
       // Post-render
-      const renderedElement = await postRender(
-        transformedElement as HTMLElement,
-      );
+      const renderedElement = await postRender(transformedElement);
       setDom(renderedElement as HTMLElement);
     });
 
@@ -364,27 +329,16 @@ export const useTechDocsReaderDom = (): Element | null => {
 
 export const Reader = ({
   entityRef,
-  onReady = () => {},
   withSearch = true,
+  onReady = () => {},
 }: Props) => {
-  const { kind, namespace, name } = entityRef;
   const classes = useStyles();
-
-  const {
-    state,
-    contentReload,
-    contentErrorMessage,
-    syncErrorMessage,
-    buildLog,
-  } = useReaderState(kind, namespace, name, useParams()['*']);
-
-  const shadowDomRef = useRef<HTMLDivElement>(null);
-
   const dom = useTechDocsReaderDom();
+  const shadowDomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!dom || !shadowDomRef.current) return;
-    const shadowDiv: HTMLElement = shadowDomRef.current!;
+    const shadowDiv = shadowDomRef.current;
     const shadowRoot =
       shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
     Array.from(shadowRoot.children).forEach(child =>
@@ -396,71 +350,8 @@ export const Reader = ({
 
   return (
     <>
-      {state === 'CHECKING' && <Progress />}
-      {state === 'INITIAL_BUILD' && (
-        <Alert
-          variant="outlined"
-          severity="info"
-          icon={<CircularProgress size="24px" />}
-          action={<TechDocsBuildLogs buildLog={buildLog} />}
-        >
-          Documentation is accessed for the first time and is being prepared.
-          The subsequent loads are much faster.
-        </Alert>
-      )}
-      {state === 'CONTENT_STALE_REFRESHING' && (
-        <Alert
-          variant="outlined"
-          severity="info"
-          icon={<CircularProgress size="24px" />}
-          action={<TechDocsBuildLogs buildLog={buildLog} />}
-        >
-          A newer version of this documentation is being prepared and will be
-          available shortly.
-        </Alert>
-      )}
-      {state === 'CONTENT_STALE_READY' && (
-        <Alert
-          variant="outlined"
-          severity="success"
-          action={
-            <Button color="inherit" onClick={() => contentReload()}>
-              Refresh
-            </Button>
-          }
-        >
-          A newer version of this documentation is now available, please refresh
-          to view.
-        </Alert>
-      )}
-      {state === 'CONTENT_STALE_ERROR' && (
-        <Alert
-          variant="outlined"
-          severity="error"
-          action={<TechDocsBuildLogs buildLog={buildLog} />}
-          classes={{ message: classes.message }}
-        >
-          Building a newer version of this documentation failed.{' '}
-          {syncErrorMessage}
-        </Alert>
-      )}
-      {state === 'CONTENT_NOT_FOUND' && (
-        <>
-          {syncErrorMessage && (
-            <Alert
-              variant="outlined"
-              severity="error"
-              action={<TechDocsBuildLogs buildLog={buildLog} />}
-              classes={{ message: classes.message }}
-            >
-              Building a newer version of this documentation failed.{' '}
-              {syncErrorMessage}
-            </Alert>
-          )}
-          <TechDocsNotFound errorMessage={contentErrorMessage} />
-        </>
-      )}
-
+      <TechDocsProgress />
+      <TechDocsAlert />
       {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
         <Grid container className={classes.searchBar}>
           <TechDocsSearch entityId={entityRef} />

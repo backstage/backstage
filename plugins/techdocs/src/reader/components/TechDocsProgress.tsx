@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-export * from './addBaseUrl';
-export * from './addGitFeedbackLink';
-export * from './rewriteDocLinks';
-export * from './addLinkClickListener';
-export * from './removeMkdocsHeader';
-export * from './simplifyMkdocsFooter';
-export * from './onCssReady';
-export * from './sanitizeDOM';
-export * from './injectCss';
-export * from './scrollIntoAnchor';
-export * from './transformer';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { Progress } from '@backstage/core-components';
+import { useReaderState } from './useReaderState';
+
+export const TechDocsProgress = () => {
+  const { namespace = '', kind = '', name = '', '*': params } = useParams();
+  const { state } = useReaderState(kind, namespace, name, params);
+  return state === 'CHECKING' ? <Progress /> : null;
+};
