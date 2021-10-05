@@ -34,6 +34,7 @@ describe('CatalogIdentityClient', () => {
     getLocationByEntity: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
   const tokenIssuer: jest.Mocked<TokenIssuer> = {
     issueToken: jest.fn(),
