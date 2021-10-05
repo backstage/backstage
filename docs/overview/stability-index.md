@@ -27,7 +27,7 @@ point building on top of the previous one:
   and the new APIs can be used in parallel. This deprecation must have been
   released for at least two weeks before the deprecated API is removed in a
   minor version bump.
-- **3** - The time limit for the deprecation is 3 months instead of two weeks.
+- **3** - The time limit for the deprecation is 3 months instead of two days.
 
 TL;DR:
 
