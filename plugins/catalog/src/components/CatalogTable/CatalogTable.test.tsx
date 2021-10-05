@@ -24,6 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 import {
+  entityRouteRef,
   MockEntityListContextProvider,
   UserListFilter,
 } from '@backstage/plugin-catalog-react';
@@ -60,6 +61,11 @@ describe('CatalogTable component', () => {
       <MockEntityListContextProvider value={{ error: new Error('error') }}>
         <CatalogTable />
       </MockEntityListContextProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     const errorMessage = await rendered.findByText(
       /Could not fetch catalog entities./,
@@ -83,6 +89,11 @@ describe('CatalogTable component', () => {
       >
         <CatalogTable />
       </MockEntityListContextProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
     expect(rendered.getByText(/component1/)).toBeInTheDocument();
@@ -104,6 +115,11 @@ describe('CatalogTable component', () => {
       <MockEntityListContextProvider value={{ entities: [entity] }}>
         <CatalogTable />
       </MockEntityListContextProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const editButton = getByTitle('Edit');
@@ -129,6 +145,11 @@ describe('CatalogTable component', () => {
       <MockEntityListContextProvider value={{ entities: [entity] }}>
         <CatalogTable />
       </MockEntityListContextProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const viewButton = getByTitle('View');

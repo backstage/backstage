@@ -19,6 +19,7 @@ import {
   catalogApiRef,
   EntityProvider,
   AsyncEntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
@@ -54,6 +55,11 @@ describe('EntityLayout', () => {
           </EntityLayout>
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.getByText('my-entity')).toBeInTheDocument();
@@ -80,6 +86,11 @@ describe('EntityLayout', () => {
           </EntityLayout>
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.getByText('My Entity')).toBeInTheDocument();
@@ -98,6 +109,11 @@ describe('EntityLayout', () => {
           </EntityLayout>
         </AsyncEntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.getByText('Warning: Entity not found')).toBeInTheDocument();
@@ -130,6 +146,11 @@ describe('EntityLayout', () => {
           }
         />
       </Routes>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const secondTab = rendered.queryAllByRole('tab')[1];
@@ -172,6 +193,11 @@ describe('EntityLayout', () => {
           </EntityLayout>
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.queryByText('tabbed-test-title')).toBeInTheDocument();

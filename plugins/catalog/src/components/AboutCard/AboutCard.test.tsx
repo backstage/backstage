@@ -28,6 +28,7 @@ import {
   catalogApiRef,
   EntityProvider,
   CatalogApi,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
@@ -85,6 +86,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('service')).toBeInTheDocument();
@@ -132,6 +138,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
@@ -178,6 +189,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const editLink = getByTitle('Edit Metadata').closest('a');
@@ -211,6 +227,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
   });
@@ -243,6 +264,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(catalogApi.refreshEntity).not.toHaveBeenCalledWith(
@@ -280,6 +306,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(queryByTitle('Schedule entity refresh')).not.toBeInTheDocument();
@@ -326,6 +357,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },
     );
@@ -371,6 +403,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
@@ -414,6 +451,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');

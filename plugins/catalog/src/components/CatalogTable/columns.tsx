@@ -34,6 +34,7 @@ export function createNameColumn(
       <EntityRefLink
         entityRef={entity}
         defaultKind={props?.defaultKind || 'Component'}
+        title={entity.metadata?.title}
       />
     ),
   };

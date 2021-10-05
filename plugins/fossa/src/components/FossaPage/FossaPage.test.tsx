@@ -15,7 +15,11 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
@@ -125,6 +129,11 @@ describe('<FossaPage />', () => {
       <Wrapper>
         <FossaPage />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     expect(getAllByText(/Not configured/i)).toHaveLength(2);
