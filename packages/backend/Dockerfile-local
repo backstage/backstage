@@ -1,18 +1,32 @@
-# This dockerfile builds an image for the backend package.
-# It should be executed with the root of the repo as docker context.
+# This dockerfile is used for local develoment purposes and builds an image for
+# the BIH backend package.
+# It should be executed within the root of the repo as docker context.
 #
-# Before building this image, be sure to have run the following commands in the repo root:
-#
+# Before building this image... 
+
+# 1. Be sure to have run the following commands in the repo root:
 # yarn install
 # yarn tsc
 # yarn build
 #
-# Once the commands have been run, you can build the image using `yarn build-image`
+# 2. Login to Registry One and pull the hardened node image locally.
+## Registry One login -- https://registry1.dso.mil/harbor/
+### Note: You must be registered and logged in to Registry One in order for the 
+### docker pull command to work.
 
-#FROM container-registry.dev8.bip.va.gov/bip/node:14
-FROM node:14-buster
+# Once the commands have been run, you can build the image using `yarn build-image`.
 
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs14:14.17.6
+
+# Can use this image as an unsecured alternative from the IB hardened image 
+# if it is unavaiable.
+# FROM node:14-buster
+
+# Change into app working directory.
 WORKDIR /app
+
+# Change to root user for copying app files and adjusting perms for the app user.
+USER root
 
 # These three lines are in place to install python3, pip3 and mkdocs so that we can generate
 # within the application.  When we get to a point where BIH is just reading, we
@@ -32,8 +46,18 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 RUN yarn config set "strict-ssl" false -g
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
-# Then copy the rest of the backend bundle, along with any other files we might want.
+# Then copy the rest of the backend bundle, along with other required files.
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
+# Give the node app user read access to app files.
+RUN chown -hR node /app
+
+# Change back to the app user.
+USER node
+
+# Expose the application port.
+EXPOSE 7000
+
+# Run the app at container start.
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
