@@ -129,7 +129,7 @@ dist-workspace
 site
 
 # Local configuration files
-*.local.yaml
+*.local*
 
 # Sensitive credentials
 #*-credentials.yaml
