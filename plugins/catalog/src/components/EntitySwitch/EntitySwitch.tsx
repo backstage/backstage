@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { PropsWithChildren, ReactNode } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import {
   attachComponentData,
   useApiHolder,
@@ -45,45 +45,69 @@ type SwitchCase = {
   children: JSX.Element;
 };
 
+type SwitchCaseResult = {
+  if: boolean | Promise<boolean>;
+  children: JSX.Element;
+};
+
 export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
   const { entity } = useEntity();
   const apis = useApiHolder();
-  const switchCases = useElementFilter(children, collection =>
-    collection
-      .selectByComponentData({
-        key: ENTITY_SWITCH_KEY,
-        withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
-      })
-      .getElements()
-      .flatMap<SwitchCase>((element: React.ReactElement) => {
-        const { if: condition, children: elementsChildren } = element.props;
-        return [{ if: condition, children: elementsChildren }];
-      }),
+  const results = useElementFilter(
+    children,
+    collection =>
+      collection
+        .selectByComponentData({
+          key: ENTITY_SWITCH_KEY,
+          withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
+        })
+        .getElements()
+        .flatMap<SwitchCaseResult>((element: React.ReactElement) => {
+          const { if: condition, children: elementsChildren } =
+            element.props as SwitchCase;
+          return [
+            {
+              if: condition?.(entity, { apis }) ?? true,
+              children: elementsChildren,
+            },
+          ];
+        }),
+    [apis, entity],
+  );
+  const hasAsyncCases = results.some(
+    r => typeof r.if === 'object' && 'then' in r.if,
   );
 
+  if (hasAsyncCases) {
+    return <AsyncEntitySwitch results={results} />;
+  }
+
+  return results.find(r => r.if)?.children ?? null;
+};
+
+function AsyncEntitySwitch({ results }: { results: SwitchCaseResult[] }) {
   const { loading, value } = useAsync(async () => {
-    const promises = switchCases.map(
+    const promises = results.map(
       async ({ if: condition, children: output }) => {
-        if (!condition) {
-          return output;
+        try {
+          if (await condition) {
+            return output;
+          }
+        } catch {
+          /* ignored */
         }
 
-        try {
-          const matches = await condition(entity, { apis });
-          return matches ? output : null;
-        } catch {
-          return null;
-        }
+        return null;
       },
     );
     return (await Promise.all(promises)).find(Boolean) ?? null;
-  }, [switchCases]);
+  }, [results]);
 
   if (loading || !value) {
     return null;
   }
 
   return value;
-};
+}
 
 EntitySwitch.Case = EntitySwitchCase;
