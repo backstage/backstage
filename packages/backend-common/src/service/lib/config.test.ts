@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readCspOptions } from './config';
+import { readCorsOptions, readCspOptions } from './config';
 
 describe('config', () => {
   describe('readCspOptions', () => {
@@ -40,6 +40,38 @@ describe('config', () => {
     it('rejects invalid value types', () => {
       const config = new ConfigReader({ csp: { key: [4] } });
       expect(() => readCspOptions(config)).toThrow(/wanted string-array/);
+    });
+  });
+
+  describe('readCorsOptions', () => {
+    it('reads single string', () => {
+      const config = new ConfigReader({ cors: { origin: 'https://*.value*' } });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(RegExp),
+        }),
+      );
+
+      const origin = cors?.origin as RegExp;
+      expect(origin.test('https://a.value')).toBe(true);
+      expect(origin.test('http://a.value')).toBe(false);
+    });
+
+    it('reads string array', () => {
+      const config = new ConfigReader({
+        cors: { origin: ['https://*.value*', 'http(s|)://*.value*'] },
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(Array),
+        }),
+      );
+      const origin = cors?.origin as RegExp[];
+      expect(origin[0].test('https://a.value')).toBe(true);
+      expect(origin[1].test('https://a.value')).toBe(true);
+      expect(origin[1].test('http://a.value')).toBe(true);
     });
   });
 });

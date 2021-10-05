@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
+import { makeRe } from 'micromatch';
 
 export type BaseOptions = {
   listenPort?: string | number;
@@ -112,7 +113,7 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
   }
 
   return removeUnknown({
-    origin: getOptionalStringOrStrings(cc, 'origin'),
+    origin: getOptionalGlobOrGlobs(cc, 'origin'),
     methods: getOptionalStringOrStrings(cc, 'methods'),
     allowedHeaders: getOptionalStringOrStrings(cc, 'allowedHeaders'),
     exposedHeaders: getOptionalStringOrStrings(cc, 'exposedHeaders'),
@@ -213,6 +214,23 @@ function getOptionalStringOrStrings(
     isStringArray(value)
   ) {
     return value;
+  }
+  throw new Error(`Expected string or array of strings, got ${typeof value}`);
+}
+
+function getOptionalGlobOrGlobs(
+  config: Config,
+  key: string,
+): RegExp | RegExp[] | undefined {
+  const value = config.getOptional(key);
+  if (value === undefined) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return makeRe(value, { debug: true });
+  }
+  if (isStringArray(value)) {
+    return value.map(val => makeRe(val));
   }
   throw new Error(`Expected string or array of strings, got ${typeof value}`);
 }
