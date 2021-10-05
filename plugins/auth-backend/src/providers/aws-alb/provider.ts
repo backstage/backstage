@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import {
+  AuthHandler,
   AuthProviderFactoryOptions,
   AuthProviderRouteHandlers,
-  ExperimentalIdentityResolver,
+  AuthResponse,
+  SignInResolver,
 } from '../types';
 import express from 'express';
 import fetch from 'cross-fetch';
@@ -25,66 +27,101 @@ import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
 import NodeCache from 'node-cache';
 import { JWT } from 'jose';
-import { CatalogApi } from '@backstage/catalog-client';
+import { TokenIssuer } from '../../identity/types';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { Profile as PassportProfile } from 'passport';
+import { makeProfileInfo } from '../../lib/passport';
+import { AuthenticationError } from '@backstage/errors';
 
-const ALB_JWT_HEADER = 'x-amzn-oidc-data';
-/**
- * A callback function that receives a verified JWT and returns a UserEntity
- *  @param {payload} The verified JWT payload
- */
-type AwsAlbAuthProviderOptions = {
+export const ALB_JWT_HEADER = 'x-amzn-oidc-data';
+export const ALB_ACCESSTOKEN_HEADER = 'x-amzn-oidc-accesstoken';
+
+type Options = {
   region: string;
   issuer?: string;
-  identityResolutionCallback: ExperimentalIdentityResolver;
+  logger: Logger;
+  authHandler: AuthHandler<AwsAlbResult>;
+  signInResolver: SignInResolver<AwsAlbResult>;
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
 };
-export const getJWTHeaders = (input: string) => {
+
+export const getJWTHeaders = (input: string): AwsAlbHeaders => {
   const encoded = input.split('.')[0];
   return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
 };
 
-export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
-  private logger: Logger;
-  private readonly catalogClient: CatalogApi;
-  private options: AwsAlbAuthProviderOptions;
-  private readonly keyCache: NodeCache;
+export type AwsAlbHeaders = {
+  alg: string;
+  kid: string;
+  signer: string;
+  iss: string;
+  client: string;
+  exp: number;
+};
 
-  constructor(
-    logger: Logger,
-    catalogClient: CatalogApi,
-    options: AwsAlbAuthProviderOptions,
-  ) {
-    this.logger = logger;
-    this.catalogClient = catalogClient;
-    this.options = options;
+export type AwsAlbClaims = {
+  sub: string;
+  name: string;
+  family_name: string;
+  given_name: string;
+  picture: string;
+  email: string;
+  exp: number;
+  iss: string;
+};
+
+export type AwsAlbResult = {
+  fullProfile: PassportProfile;
+  expiresInSeconds?: number;
+  accessToken: string;
+};
+
+export type AwsAlbProviderInfo = {
+  /**
+   * An access token issued for the signed in user.
+   */
+  accessToken: string;
+  /**
+   * Expiry of the access token in seconds.
+   */
+  expiresInSeconds?: number;
+};
+
+export type AwsAlbResponse = AuthResponse<AwsAlbProviderInfo>;
+
+export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
+  private readonly region: string;
+  private readonly issuer?: string;
+  private readonly tokenIssuer: TokenIssuer;
+  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
+  private readonly keyCache: NodeCache;
+  private readonly authHandler: AuthHandler<AwsAlbResult>;
+  private readonly signInResolver: SignInResolver<AwsAlbResult>;
+
+  constructor(options: Options) {
+    this.region = options.region;
+    this.issuer = options.issuer;
+    this.authHandler = options.authHandler;
+    this.signInResolver = options.signInResolver;
+    this.tokenIssuer = options.tokenIssuer;
+    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
     this.keyCache = new NodeCache({ stdTTL: 3600 });
   }
+
   frameHandler(): Promise<void> {
     return Promise.resolve(undefined);
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const jwt = req.header(ALB_JWT_HEADER);
-    if (jwt !== undefined) {
-      try {
-        const headers = getJWTHeaders(jwt);
-        const key = await this.getKey(headers.kid);
-        const payload = JWT.verify(jwt, key);
-
-        if (this.options.issuer && headers.iss !== this.options.issuer) {
-          throw new Error('issuer mismatch on JWT');
-        }
-
-        const resolvedEntity = await this.options.identityResolutionCallback(
-          payload,
-          this.catalogClient,
-        );
-        res.json(resolvedEntity);
-      } catch (e) {
-        this.logger.error('exception occurred during JWT processing', e);
-        res.status(401);
-        res.end();
-      }
-    } else {
+    try {
+      const result = await this.getResult(req);
+      const response = await this.handleResult(result);
+      res.json(response);
+    } catch (e) {
+      this.logger.error('Exception occurred during AWS ALB token refresh', e);
       res.status(401);
       res.end();
     }
@@ -94,13 +131,85 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     return Promise.resolve(undefined);
   }
 
+  private async getResult(req: express.Request): Promise<AwsAlbResult> {
+    const jwt = req.header(ALB_JWT_HEADER);
+    const accessToken = req.header(ALB_ACCESSTOKEN_HEADER);
+
+    if (jwt === undefined) {
+      throw new AuthenticationError(
+        `Missing ALB OIDC header: ${ALB_JWT_HEADER}`,
+      );
+    }
+
+    if (accessToken === undefined) {
+      throw new AuthenticationError(
+        `Missing ALB OIDC header: ${ALB_ACCESSTOKEN_HEADER}`,
+      );
+    }
+
+    try {
+      const headers = getJWTHeaders(jwt);
+      const key = await this.getKey(headers.kid);
+      const claims = JWT.verify(jwt, key) as AwsAlbClaims;
+
+      if (this.issuer && claims.iss !== this.issuer) {
+        throw new AuthenticationError('Issuer mismatch on JWT token');
+      }
+
+      const fullProfile: PassportProfile = {
+        provider: 'unknown',
+        id: claims.sub,
+        displayName: claims.name,
+        username: claims.email.split('@')[0].toLowerCase(),
+        name: {
+          familyName: claims.family_name,
+          givenName: claims.given_name,
+        },
+        emails: [{ value: claims.email.toLowerCase() }],
+        photos: [{ value: claims.picture }],
+      };
+
+      return {
+        fullProfile,
+        expiresInSeconds: claims.exp,
+        accessToken,
+      };
+    } catch (e) {
+      throw new Error(`Exception occurred during JWT processing: ${e}`);
+    }
+  }
+
+  private async handleResult(result: AwsAlbResult): Promise<AwsAlbResponse> {
+    const { profile } = await this.authHandler(result);
+    const backstageIdentity = await this.signInResolver(
+      {
+        result,
+        profile,
+      },
+      {
+        tokenIssuer: this.tokenIssuer,
+        catalogIdentityClient: this.catalogIdentityClient,
+        logger: this.logger,
+      },
+    );
+
+    return {
+      providerInfo: {
+        accessToken: result.accessToken,
+        expiresInSeconds: result.expiresInSeconds,
+      },
+      backstageIdentity,
+      profile,
+    };
+  }
+
   async getKey(keyId: string): Promise<KeyObject> {
     const optionalCacheKey = this.keyCache.get<KeyObject>(keyId);
     if (optionalCacheKey) {
       return crypto.createPublicKey(optionalCacheKey);
     }
     const keyText: string = await fetch(
-      `https://public-keys.auth.elb.${this.options.region}.amazonaws.com/${keyId}`,
+      `https://public-keys.auth.elb.${this.region}.amazonaws.com/${keyId}`,
     ).then(response => response.text());
     const keyValue = crypto.createPublicKey(keyText);
     this.keyCache.set(keyId, keyValue.export({ format: 'pem', type: 'spki' }));
@@ -108,26 +217,61 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-export type AwsAlbProviderOptions = {};
+export type AwsAlbProviderOptions = {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<AwsAlbResult>;
 
-export const createAwsAlbProvider = (_options?: AwsAlbProviderOptions) => {
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<AwsAlbResult>;
+  };
+};
+
+export const createAwsAlbProvider = (options?: AwsAlbProviderOptions) => {
   return ({
-    logger,
-    catalogApi,
     config,
-    identityResolver,
+    tokenIssuer,
+    catalogApi,
+    logger,
   }: AuthProviderFactoryOptions) => {
     const region = config.getString('region');
     const issuer = config.getOptionalString('iss');
-    if (identityResolver !== undefined) {
-      return new AwsAlbAuthProvider(logger, catalogApi, {
-        region,
-        issuer,
-        identityResolutionCallback: identityResolver,
-      });
+
+    if (options?.signIn.resolver === undefined) {
+      throw new Error(
+        'SignInResolver is required to use this authentication provider',
+      );
     }
-    throw new Error(
-      'Identity resolver is required to use this authentication provider',
-    );
+
+    const catalogIdentityClient = new CatalogIdentityClient({
+      catalogApi,
+      tokenIssuer,
+    });
+
+    const authHandler: AuthHandler<AwsAlbResult> = options?.authHandler
+      ? options.authHandler
+      : async ({ fullProfile }) => ({
+          profile: makeProfileInfo(fullProfile),
+        });
+
+    const signInResolver = options?.signIn.resolver;
+
+    return new AwsAlbAuthProvider({
+      region,
+      issuer,
+      signInResolver,
+      authHandler,
+      tokenIssuer,
+      catalogIdentityClient,
+      logger,
+    });
   };
 };
