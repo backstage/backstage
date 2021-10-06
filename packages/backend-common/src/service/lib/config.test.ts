@@ -69,7 +69,9 @@ describe('config', () => {
     it('reads string array', () => {
       const mockCallback = jest.fn();
       const config = new ConfigReader({
-        cors: { origin: ['https://*.value*', 'http://*.value'] },
+        cors: {
+          origin: ['http?(s)://*.value?(-+([0-9])).com', 'http://*.value'],
+        },
       });
       const cors = readCorsOptions(config);
       expect(cors).toEqual(
@@ -78,8 +80,8 @@ describe('config', () => {
         }),
       );
       const origin = cors?.origin as Function;
-      origin('https://a.value', mockCallback);
-      origin('https://a.valuex', mockCallback);
+      origin('https://a.b.c.value-9.com', mockCallback);
+      origin('http://a.value-999.com', mockCallback);
       origin('http://a.value', mockCallback);
       origin('http://a.valuex', mockCallback);
 
