@@ -298,19 +298,19 @@ vault {
 # This specifies a service in Consul to watch. This may be specified multiple
 # times to watch multiple prefixes, and the bottom-most service takes
 # precedence, should any values overlap.
-service {
-  # This is the query of the service in Consul from which to read data.
-  query = "my-service"
+# service {
+#   # This is the query of the service in Consul from which to read data.
+#   query = "my-service"
 
-  # This tells Envconsul to use a custom formatter when printing the key. The
-  # value between `{{ key }}` and `{{ service }}` will be replaced with the key
-  # and service name. Default format `{{ service }}/{{ key }}`
-  # format_id = "pg/{{ key }}"
-  # format_name = "pg/{{ key }}"
-  # format_address = "pg/host"
-  # format_tag = "pg/{{ key }}"
-  # format_port = "pg/{{ key }}"
-}
+#   # This tells Envconsul to use a custom formatter when printing the key. The
+#   # value between `{{ key }}` and `{{ service }}` will be replaced with the key
+#   # and service name. Default format `{{ service }}/{{ key }}`
+#   format_id = "pg/{{ key }}"
+#   format_name = "pg/{{ key }}"
+#   format_address = "pg/host"
+#   format_tag = "pg/{{ key }}"
+#   format_port = "pg/{{ key }}"
+# }
 
 # This is the quiescence timers; it defines the minimum and maximum amount of
 # time to wait for the cluster to reach a consistent state before relaunching
