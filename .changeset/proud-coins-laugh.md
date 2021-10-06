@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Support Rancher urls with an existing path component
+Support Rancher URL's with an existing path component
