@@ -15,7 +15,7 @@
  */
 import {
   AuthHandler,
-  AuthProviderFactoryOptions,
+  AuthProviderFactory,
   AuthProviderRouteHandlers,
   AuthResponse,
   SignInResolver,
@@ -235,13 +235,10 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-export const createAwsAlbProvider = (options?: AwsAlbProviderOptions) => {
-  return ({
-    config,
-    tokenIssuer,
-    catalogApi,
-    logger,
-  }: AuthProviderFactoryOptions) => {
+export const createAwsAlbProvider = (
+  options?: AwsAlbProviderOptions,
+): AuthProviderFactory => {
+  return ({ config, tokenIssuer, catalogApi, logger }) => {
     const region = config.getString('region');
     const issuer = config.getOptionalString('iss');
 
