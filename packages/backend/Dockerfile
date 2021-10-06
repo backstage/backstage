@@ -32,7 +32,7 @@ RUN yarn config set "strict-ssl" false -g
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # Then copy the rest of the backend bundle, along with other required files.
-COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml entrypoint.sh ./
+COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml scripts/entrypoint.sh ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 # Give the node app user read access to app files.
