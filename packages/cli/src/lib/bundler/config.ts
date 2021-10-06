@@ -247,6 +247,13 @@ export async function createBackendConfig(
 
   const { loaders } = transforms(options);
 
+  const runScriptNodeArgs = new Array<string>();
+  if (options.inspectEnabled) {
+    runScriptNodeArgs.push('--inspect');
+  } else if (options.inspectBrkEnabled) {
+    runScriptNodeArgs.push('--inspect-brk');
+  }
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -319,7 +326,7 @@ export async function createBackendConfig(
     plugins: [
       new RunScriptWebpackPlugin({
         name: 'main.js',
-        nodeArgs: options.inspectEnabled ? ['--inspect'] : options.inspectBrkEnabled ? ['--inspect-brk'] : undefined,
+        nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs[0] : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
