@@ -225,6 +225,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 //
 // @public
 export class CatalogBuilder {
+  // @deprecated
   constructor(env: CatalogEnvironment);
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
@@ -522,7 +523,7 @@ export function createRandomRefreshInterval(options: {
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // Warning: (ae-missing-release-tag) "Database" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -573,7 +574,7 @@ export type Database = {
 
 // Warning: (ae-missing-release-tag) "DatabaseEntitiesCatalog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(database: Database, logger: Logger_2);
   // (undocumented)
@@ -1442,7 +1443,7 @@ export { results };
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface RouterOptions {
   // (undocumented)
   config: Config;

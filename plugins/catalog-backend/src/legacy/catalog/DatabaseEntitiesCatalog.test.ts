@@ -16,10 +16,10 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Database, DatabaseManager, Transaction } from '../database';
-import { basicEntityFilter } from '../service/request';
+import { Database, DatabaseManager, Transaction } from '../../database';
+import { basicEntityFilter } from '../../service/request';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
-import { EntityUpsertRequest } from './types';
+import { EntityUpsertRequest } from '../../catalog/types';
 
 describe('DatabaseEntitiesCatalog', () => {
   let db: jest.Mocked<Database>;

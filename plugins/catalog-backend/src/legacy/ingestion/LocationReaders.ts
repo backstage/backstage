@@ -62,7 +62,7 @@ const noopCache = {
 /**
  * Implements the reading of a location through a series of processor tasks.
  *
- * @deprecated This class was part of the legacy catalog engine
+ * @deprecated This was part of the legacy catalog engine
  */
 export class LocationReaders implements LocationReader {
   private readonly options: Options;
