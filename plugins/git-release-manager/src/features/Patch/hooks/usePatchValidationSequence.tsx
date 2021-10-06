@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { useAsync, useAsyncFn } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
+import { useAsync, useAsyncFn } from 'react-use';
+import React from 'react';
 
 import { GetRecentCommitsResultSingle } from '../../../api/GitReleaseClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
@@ -26,31 +27,49 @@ import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
-export interface UsePatchPreparation {
+export interface UsePatchValidationSequence {
   bumpedTag: string;
   releaseBranchName: string;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
+const PatchValidationMessage = ({ message }: { message: string }) => (
+  <>
+    <strong>[Patch validation]</strong> {message}
+  </>
+);
+
 // Inspiration: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
-export function usePatchPreparation({
+export function usePatchValidationSequence({
   bumpedTag,
   releaseBranchName,
   project,
   tagParts,
-}: UsePatchPreparation) {
+}: UsePatchValidationSequence) {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
     useResponseSteps();
 
-  const tempPatchBranchName = `${releaseBranchName}-temp-patch-prep`;
+  const tempPatchBranchName = `${releaseBranchName}-grm-temp-patch-prep`;
 
   /**
    * (1) Get the release branch's most recent commit
    */
   const [latestCommitOnReleaseBranchRes, run] = useAsyncFn(
     async (selectedPatchCommit: GetRecentCommitsResultSingle) => {
+      try {
+        await pluginApiClient.deleteRef({
+          owner: project.owner,
+          repo: project.repo,
+          ref: `heads/${tempPatchBranchName}`,
+        });
+      } catch (error: any) {
+        if (error.message !== 'Reference does not exist') {
+          throw error;
+        }
+      }
+
       const { commit: latestCommit } = await pluginApiClient
         .getCommit({
           owner: project.owner,
@@ -60,9 +79,11 @@ export function usePatchPreparation({
         .catch(asyncCatcher);
 
       addStepToResponseSteps({
-        message: `[patch prep] Fetched latest commit from "${releaseBranchName}"`,
-        secondaryMessage: `with message "${latestCommit.commit.message}"`,
-        link: latestCommit.htmlUrl,
+        message: (
+          <PatchValidationMessage
+            message={`Fetched latest commit from "${releaseBranchName}"`}
+          />
+        ),
       });
 
       return {
@@ -98,8 +119,11 @@ export function usePatchPreparation({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: '[patch prep] Created Temp Patch Branch',
-      secondaryMessage: `with ref "${createdReleaseBranch.ref}"`,
+      message: (
+        <PatchValidationMessage
+          message={`Created temporary patch validating branch "${tempPatchBranchName}"`}
+        />
+      ),
     });
 
     return {
@@ -131,8 +155,11 @@ export function usePatchPreparation({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `[patch prep] Fetched release branch "${releaseBranch.name}"`,
-      link: releaseBranch.links.html,
+      message: (
+        <PatchValidationMessage
+          message={`Fetched release branch "${releaseBranch.name}"`}
+        />
+      ),
     });
 
     return {
@@ -155,7 +182,7 @@ export function usePatchPreparation({
       .createCommit({
         owner: project.owner,
         repo: project.repo,
-        message: `[patch prep] Temporary commit for patch ${tagParts.patch}`,
+        message: `[Patch validation] Temporary commit for patch ${tagParts.patch}`,
         parents: [
           tempPatchBranchRes.value.selectedPatchCommit.firstParentSha ?? '',
         ],
@@ -164,8 +191,7 @@ export function usePatchPreparation({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: '[patch prep] Created temporary commit',
-      secondaryMessage: `with message "${tempCommit.message}"`,
+      message: <PatchValidationMessage message="Created temporary commit" />,
     });
 
     return {
@@ -192,7 +218,11 @@ export function usePatchPreparation({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `[patch prep] Forced branch "${tempPatchBranchName}" to temporary commit "${tempCommitRes.value.sha}"`,
+      message: (
+        <PatchValidationMessage
+          message={`Forced branch "${tempPatchBranchName}" to temporary commit "${tempCommitRes.value.sha}"`}
+        />
+      ),
     });
 
     return {
@@ -215,12 +245,33 @@ export function usePatchPreparation({
         base: tempPatchBranchName,
         head: tempPatchBranchRes.value.selectedPatchCommit.sha,
       })
+      .catch(async error => {
+        if (error?.message === 'Merge conflict') {
+          try {
+            await pluginApiClient.deleteRef({
+              owner: project.owner,
+              repo: project.repo,
+              ref: `heads/${tempPatchBranchName}`,
+            });
+          } catch (_error) {
+            // swallow
+          }
+
+          throw new GitReleaseManagerError(
+            'Patching failed due to merge conflict. Will attempt to delete temporary patch validation branch. Manual patching is recommended.',
+          );
+        }
+
+        throw error;
+      })
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `[patch prep] Merged temporary commit into "${tempPatchBranchName}"`,
-      secondaryMessage: `with message "${merge.commit.message}"`,
-      link: merge.htmlUrl,
+      message: (
+        <PatchValidationMessage
+          message={`Merged temporary commit into "${tempPatchBranchName}"`}
+        />
+      ),
     });
 
     return {
@@ -243,7 +294,7 @@ export function usePatchPreparation({
     const { commit: cherryPickCommit } = await pluginApiClient.createCommit({
       owner: project.owner,
       repo: project.repo,
-      message: `[patch prep] [patch ${bumpedTag}] ${
+      message: `[Patch validation] [patch ${bumpedTag}] ${
         selectedPatchCommit.commit.message
       }
 
@@ -255,8 +306,11 @@ export function usePatchPreparation({
     });
 
     addStepToResponseSteps({
-      message: `[patch prep] Cherry-picked patch commit to "${releaseBranchSha}"`,
-      secondaryMessage: `with message "${cherryPickCommit.message}"`,
+      message: (
+        <PatchValidationMessage
+          message={`Cherry-picked patch commit to "${releaseBranchSha}"`}
+        />
+      ),
     });
 
     return {
@@ -283,7 +337,11 @@ export function usePatchPreparation({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `[patch prep] Updated reference "${updatedReference.ref}"`,
+      message: (
+        <PatchValidationMessage
+          message={`Updated reference "${updatedReference.ref}"`}
+        />
+      ),
     });
 
     return {
@@ -306,7 +364,11 @@ export function usePatchPreparation({
       });
 
     addStepToResponseSteps({
-      message: `[patch prep] Deleted temporary patch prep branch "${tempPatchBranchName}"`,
+      message: (
+        <PatchValidationMessage
+          message={`Deleted temporary patch prep branch "${tempPatchBranchName}"`}
+        />
+      ),
     });
 
     return {

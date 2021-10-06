@@ -34,7 +34,7 @@ import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
 import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
-import { usePatchPreparation } from './usePatchPrep';
+import { usePatchValidationSequence } from './usePatchValidationSequence';
 
 export interface UsePatch {
   bumpedTag: string;
@@ -67,7 +67,7 @@ export function usePatch({
     responseSteps,
     TOTAL_PATCH_PREP_STEPS,
     selectedPatchCommit,
-  } = usePatchPreparation({
+  } = usePatchValidationSequence({
     bumpedTag,
     releaseBranchName,
     project,
