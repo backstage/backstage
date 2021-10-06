@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 
 /**
  * The configuration parameters for a single Microsoft Graph provider.
@@ -72,10 +73,11 @@ export function readMicrosoftGraphConfig(
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
 
   for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
-    const authority =
-      providerConfig.getOptionalString('authority')?.replace(/\/+$/, '') ||
-      'https://login.microsoftonline.com';
+    const target = trimEnd(providerConfig.getString('target'), '/');
+
+    const authority = providerConfig.getOptionalString('authority')
+      ? trimEnd(providerConfig.getOptionalString('authority'), '/')
+      : 'https://login.microsoftonline.com';
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');

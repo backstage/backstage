@@ -83,7 +83,7 @@ export function readBitbucketIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === BITBUCKET_HOST) {
     apiBaseUrl = BITBUCKET_API_BASE_URL;
   }
