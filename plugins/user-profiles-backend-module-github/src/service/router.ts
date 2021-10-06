@@ -45,9 +45,15 @@ export async function createRouter(
   });
 
   router.get('/v1/user-profile', (request, response) => {
+    // TODO (ainhoa/chase/hhogg/himanshu): get github data with username
     const githubUsername = mapData[`${request.query.entity}`];
-    // TODO (himanshu/ainhoa): get github data with username
-    response.json({ user: githubUsername });
+
+    // return response (should match GetProfileResult type)
+    response.json({
+      profile: {
+        username: githubUsername,
+      },
+    });
   });
   router.use(errorHandler());
   return router;

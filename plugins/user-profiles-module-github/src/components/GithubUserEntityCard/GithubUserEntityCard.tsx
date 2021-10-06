@@ -16,7 +16,7 @@
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { githubProfileApiRef } from '../../api/types';
 
@@ -24,7 +24,7 @@ export const GithubUserEntityCard = () => {
   const { entity } = useEntity();
   const githubProfileApi = useApi(githubProfileApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const { value, error } = useAsync(async () => {
     return await githubProfileApi.getProfile({ entity });
   });
 
@@ -32,5 +32,5 @@ export const GithubUserEntityCard = () => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  return <div>User: {value?.profile.user}</div>;
+  return <div>Github username: {value?.profile.username}</div>;
 };

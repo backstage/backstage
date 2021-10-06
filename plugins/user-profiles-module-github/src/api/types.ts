@@ -23,11 +23,10 @@ import { createApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export type GithubProfile = {
-  // TODO: determine contents
-  // /** The contents of the TODO comment */
-  // text: string;
+  // TODO: additional contents
 
-  user: string;
+  /** Github username */
+  username: string;
 };
 
 /**
