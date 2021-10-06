@@ -95,5 +95,14 @@ describe('config', () => {
       expect(mockCallback.mock.calls[2][1]).toBe(true);
       expect(mockCallback.mock.calls[3][1]).toBe(false);
     });
+
+    it('reads undefined origin', () => {
+      const config = new ConfigReader({
+        cors: {},
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(expect.objectContaining({}));
+      expect(cors?.origin).toBeUndefined();
+    });
   });
 });
