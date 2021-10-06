@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
-// TODO (himanshu/ainhoa/vincenzo/chase): refactor to GitHubProfile instead of Github
-// TODO (himanshu/ainhoa/vincenzo/chase): need to export 2 cards (for settings page and for user entity page)
-export const GithubCard = () => {
-  // const { entity } = useEntity();
+export const GithubSettingsCard = () => {
+  // TODO (ainhoa/chase/hhogg/himanshu/vincenzo): Use identity API to get current user info
   const entity = {
     kind: 'user',
     metadata: {

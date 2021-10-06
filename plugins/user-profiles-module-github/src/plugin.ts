@@ -30,7 +30,10 @@ export const userProfilesModuleGithubPlugin = createPlugin({
 export const GithubProfileSettingsCard = userProfilesModuleGithubPlugin.provide(
   createComponentExtension({
     component: {
-      lazy: () => import('./components/GithubCard').then(m => m.GithubCard),
+      lazy: () =>
+        import('./components/GithubSettingsCard').then(
+          m => m.GithubSettingsCard,
+        ),
     },
   }),
 );
@@ -39,7 +42,10 @@ export const GithubProfileUserEntityCard =
   userProfilesModuleGithubPlugin.provide(
     createComponentExtension({
       component: {
-        lazy: () => import('./components/GithubCard').then(m => m.GithubCard),
+        lazy: () =>
+          import('./components/GithubUserEntityCard').then(
+            m => m.GithubUserEntityCard,
+          ),
       },
     }),
   );
