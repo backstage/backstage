@@ -461,11 +461,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   ): Promise<SyncResult>;
 }
 
-// Warning: (ae-missing-release-tag) "useTechDocsReaderDom" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const useTechDocsReaderDom: () => Element | null;
-
 // Warnings were encountered during analysis:
 //
 // src/home/components/EntityListDocsTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
