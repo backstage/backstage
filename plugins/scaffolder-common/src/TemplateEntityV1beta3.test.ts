@@ -25,7 +25,7 @@ describe('templateEntityV1beta3Validator', () => {
 
   beforeEach(() => {
     entity = {
-      apiVersion: 'templates.backstage.io/v1beta3',
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
       kind: 'Template',
       metadata: {
         name: 'test',

@@ -4,7 +4,7 @@
   "description": "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.",
   "examples": [
     {
-      "apiVersion": "templates.backstage.io/v1beta3",
+      "apiVersion": "scaffolder.backstage.io/v1beta3",
       "kind": "Template",
       "metadata": {
         "name": "react-ssr-template",
@@ -68,7 +68,7 @@
       "required": ["spec"],
       "properties": {
         "apiVersion": {
-          "enum": ["templates.backstage.io/v1beta3"]
+          "enum": ["scaffolder.backstage.io/v1beta3"]
         },
         "kind": {
           "enum": ["Template"]

@@ -19,7 +19,7 @@ import { TemplateEntityProcessor } from './TemplateEntityProcessor';
 
 const mockLocation = { type: 'a', target: 'b' };
 const mockEntity: TemplateEntityV1beta3 = {
-  apiVersion: 'templates.backstage.io/v1beta3',
+  apiVersion: 'scaffolder.backstage.io/v1beta3',
   kind: 'Template',
   metadata: { name: 'n' },
   spec: {

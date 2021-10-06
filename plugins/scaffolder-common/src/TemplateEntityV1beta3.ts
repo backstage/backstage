@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export interface TemplateEntityV1beta3 extends Entity {
-  apiVersion: 'templates.backstage.io/v1beta3';
+  apiVersion: 'scaffolder.backstage.io/v1beta3';
   kind: 'Template';
   spec: {
     type: string;

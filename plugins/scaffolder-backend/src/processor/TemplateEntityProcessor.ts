@@ -56,7 +56,7 @@ export class TemplateEntityProcessor implements CatalogProcessor {
     const selfRef = getEntityName(entity);
 
     if (
-      entity.apiVersion === 'templates.backstage.io/v1beta3' &&
+      entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
       entity.kind === 'Template'
     ) {
       const template = entity as TemplateEntityV1beta3;
