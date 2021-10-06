@@ -160,7 +160,6 @@ export class DefaultCatalogProcessingOrchestrator
         ok: collectorResults.errors.length === 0,
       };
     } catch (error) {
-      this.options.logger.warn(error.message);
       return {
         ok: false,
         errors: collector.results().errors.concat(error),
