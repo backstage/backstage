@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
-export { DefaultCatalogRulesEnforcer } from './CatalogRules';
-export type {
-  AnalyzeLocationRequest,
-  AnalyzeLocationResponse,
-  LocationAnalyzer,
-  AnalyzeLocationEntityField,
-  AnalyzeLocationExistingEntity,
-  AnalyzeLocationGenerateEntity,
-} from './types';
-export * from './processors';
+export * from './ingestion';

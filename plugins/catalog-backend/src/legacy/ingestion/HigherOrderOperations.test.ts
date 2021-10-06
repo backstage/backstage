@@ -16,9 +16,9 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { LocationUpdateStatus } from '../catalog/types';
-import { DatabaseLocationUpdateLogStatus } from '../database/types';
+import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
+import { LocationUpdateStatus } from '../../catalog/types';
+import { DatabaseLocationUpdateLogStatus } from '../../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
 import { LocationReader } from './types';
 

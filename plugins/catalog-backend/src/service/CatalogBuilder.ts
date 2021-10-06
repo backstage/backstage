@@ -47,15 +47,17 @@ import {
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   GitLabDiscoveryProcessor,
-  HigherOrderOperation,
-  HigherOrderOperations,
   LocationEntityProcessor,
-  LocationReaders,
   PlaceholderProcessor,
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
+import {
+  HigherOrderOperation,
+  HigherOrderOperations,
+  LocationReaders,
+} from '../legacy/ingestion';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
