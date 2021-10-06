@@ -144,7 +144,7 @@ export const PatchBody = ({
         <Box marginBottom={2}>
           <Typography>
             Patches the release branch, creates a new tag and updates the Git
-            release. A dry run on a temporary branch will run prioer to patching
+            release. A dry run on a temporary branch will run prior to patching
             the release branch to ensure there's no merge conflicts. Manual
             patching is recommended should the dry run fail.
           </Typography>
