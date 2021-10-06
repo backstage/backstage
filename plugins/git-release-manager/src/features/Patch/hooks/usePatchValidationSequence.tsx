@@ -51,7 +51,7 @@ export function usePatchValidationSequence({
   const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
     useResponseSteps();
 
-  const tempPatchBranchName = `${releaseBranchName}-grm-temp-patch-prep`;
+  const tempPatchBranchName = `${releaseBranchName}-backstage-grm-patch-validation`;
 
   /**
    * (1) Get the release branch's most recent commit
