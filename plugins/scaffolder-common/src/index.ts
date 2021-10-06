@@ -20,8 +20,13 @@
  * @packageDocumentation
  */
 
-// The `{ default as ...}` re-export does not seem to work for json in tests
-import templateEntityV1beta3Schema from './Template.v1beta3.schema.json';
+import { JSONSchema } from '@backstage/catalog-model';
+import v1beta3Schema from './Template.v1beta3.schema.json';
 
 export type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';
-export { templateEntityV1beta3Schema };
+
+/** @public */
+export const templateEntityV1beta3Schema: JSONSchema = v1beta3Schema as Omit<
+  JSONSchema,
+  'examples'
+>;
