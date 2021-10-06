@@ -40,9 +40,20 @@ export type ButtonProps = MaterialButtonProps &
  */
 declare function ButtonType(props: ButtonProps): JSX.Element;
 
-const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
-  <MaterialButton ref={ref} component={Link} {...props} />
-)) as { (props: ButtonProps): JSX.Element };
+const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => {
+  /**
+    This temporarily fixes a bug in material-ui where the color of the Link
+    overrides the color of the button
+    https://github.com/mui-org/material-ui/issues/28852
+  */
+  let color;
+  if (props.variant === 'contained') {
+    color = 'white';
+  }
+  return (
+    <MaterialButton ref={ref} component={Link} style={{ color }} {...props} />
+  );
+}) as { (props: ButtonProps): JSX.Element };
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
 //               function, which makes our API reference docs much nicer.
