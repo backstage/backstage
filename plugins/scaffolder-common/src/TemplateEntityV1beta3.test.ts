@@ -32,8 +32,9 @@ describe('templateEntityV1beta3Validator', () => {
       },
       spec: {
         type: 'website',
+        owner: 'team-b',
         parameters: {
-          required: ['storePath', 'owner'],
+          required: ['owner'],
           properties: {
             owner: {
               type: 'string',
@@ -56,7 +57,6 @@ describe('templateEntityV1beta3Validator', () => {
         output: {
           fetchUrl: '${{ steps.fetch.output.targetUrl }}',
         },
-        owner: 'team-b@example.com',
       },
     };
   });

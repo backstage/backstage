@@ -33,6 +33,7 @@ import {
   templateEntityV1beta3Schema,
 } from '@backstage/plugin-scaffolder-common';
 
+/** @public */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   private readonly validators = [
     entityKindSchemaValidator(templateEntityV1beta3Schema),

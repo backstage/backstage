@@ -83,6 +83,11 @@
               "examples": ["service", "website", "library"],
               "minLength": 1
             },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the template",
+              "minLength": 1
+            },
             "parameters": {
               "oneOf": [
                 {
@@ -172,11 +177,6 @@
               "additionalProperties": {
                 "type": "string"
               }
-            },
-            "owner": {
-              "type": "string",
-              "description": "The user (or group) owner of the template",
-              "minLength": 1
             }
           }
         }
