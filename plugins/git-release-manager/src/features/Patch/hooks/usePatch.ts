@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
-import {
-  GetLatestReleaseResult,
-  GetRecentCommitsResultSingle,
-} from '../../../api/GitReleaseClient';
+import { useEffect, useState } from 'react';
 
-import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import {
   CardHook,
   ComponentConfig,
   PatchOnSuccessArgs,
 } from '../../../types/types';
+import {
+  GetLatestReleaseResult,
+  GetRecentCommitsResultSingle,
+} from '../../../api/GitReleaseClient';
+import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
-import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
-import { usePatchValidationSequence } from './usePatchValidationSequence';
+import { usePatchDryRun } from './usePatchDryRun';
+import { useUserContext } from '../../../contexts/UserContext';
 
 export interface UsePatch {
   bumpedTag: string;
@@ -67,7 +67,7 @@ export function usePatch({
     responseSteps,
     TOTAL_PATCH_PREP_STEPS,
     selectedPatchCommit,
-  } = usePatchValidationSequence({
+  } = usePatchDryRun({
     bumpedTag,
     releaseBranchName,
     project,

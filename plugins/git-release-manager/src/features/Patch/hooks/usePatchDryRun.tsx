@@ -18,40 +18,40 @@ import { useApi } from '@backstage/core-plugin-api';
 import { useAsync, useAsyncFn } from 'react-use';
 import React from 'react';
 
-import { GetRecentCommitsResultSingle } from '../../../api/GitReleaseClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
+import { GetRecentCommitsResultSingle } from '../../../api/GitReleaseClient';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
-export interface UsePatchValidationSequence {
+export interface UsePatchDryRun {
   bumpedTag: string;
   releaseBranchName: string;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
-const PatchValidationMessage = ({ message }: { message: string }) => (
+const PatchDryRunMessage = ({ message }: { message: string }) => (
   <>
-    <strong>[Patch validation]</strong> {message}
+    <strong>[Patch dry run]</strong> {message}
   </>
 );
 
 // Inspiration: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
-export function usePatchValidationSequence({
+export function usePatchDryRun({
   bumpedTag,
   releaseBranchName,
   project,
   tagParts,
-}: UsePatchValidationSequence) {
+}: UsePatchDryRun) {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
     useResponseSteps();
 
-  const tempPatchBranchName = `${releaseBranchName}-backstage-grm-patch-validation`;
+  const tempPatchBranchName = `${releaseBranchName}-backstage-grm-patch-dry-run`;
 
   /**
    * (1) Get the release branch's most recent commit
@@ -80,7 +80,7 @@ export function usePatchValidationSequence({
 
       addStepToResponseSteps({
         message: (
-          <PatchValidationMessage
+          <PatchDryRunMessage
             message={`Fetched latest commit from "${releaseBranchName}"`}
           />
         ),
@@ -120,8 +120,8 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
-          message={`Created temporary patch validating branch "${tempPatchBranchName}"`}
+        <PatchDryRunMessage
+          message={`Created temporary patch dry run branch "${tempPatchBranchName}"`}
         />
       ),
     });
@@ -156,7 +156,7 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Fetched release branch "${releaseBranch.name}"`}
         />
       ),
@@ -182,7 +182,7 @@ export function usePatchValidationSequence({
       .createCommit({
         owner: project.owner,
         repo: project.repo,
-        message: `[Patch validation] Temporary commit for patch ${tagParts.patch}`,
+        message: `Temporary commit for patch ${tagParts.patch}`,
         parents: [
           tempPatchBranchRes.value.selectedPatchCommit.firstParentSha ?? '',
         ],
@@ -191,7 +191,7 @@ export function usePatchValidationSequence({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: <PatchValidationMessage message="Created temporary commit" />,
+      message: <PatchDryRunMessage message="Created temporary commit" />,
     });
 
     return {
@@ -219,7 +219,7 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Forced branch "${tempPatchBranchName}" to temporary commit "${tempCommitRes.value.sha}"`}
         />
       ),
@@ -258,7 +258,7 @@ export function usePatchValidationSequence({
           }
 
           throw new GitReleaseManagerError(
-            'Patching failed due to merge conflict. Will attempt to delete temporary patch validation branch. Manual patching is recommended.',
+            'Patching failed due to merge conflict. Will attempt to delete temporary patch dry run branch. Manual patching is recommended.',
           );
         }
 
@@ -268,7 +268,7 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Merged temporary commit into "${tempPatchBranchName}"`}
         />
       ),
@@ -289,25 +289,24 @@ export function usePatchValidationSequence({
     if (!mergeRes.value || !tempPatchBranchRes.value) return undefined;
 
     const releaseBranchSha = tempPatchBranchRes.value.releaseBranch.commit.sha;
-    const selectedPatchCommit = tempPatchBranchRes.value.selectedPatchCommit;
+    const {
+      commit: { message },
+      sha: commitSha,
+    } = tempPatchBranchRes.value.selectedPatchCommit;
 
     const { commit: cherryPickCommit } = await pluginApiClient.createCommit({
       owner: project.owner,
       repo: project.repo,
-      message: `[Patch validation] [patch ${bumpedTag}] ${
-        selectedPatchCommit.commit.message
-      }
+      message: `[patch (dry run) ${bumpedTag}] ${message}
 
-      ${getPatchCommitSuffix({
-        commitSha: selectedPatchCommit.sha,
-      })}`,
+      ${getPatchCommitSuffix({ commitSha })}`,
       parents: [releaseBranchSha],
       tree: mergeRes.value.commit.tree.sha,
     });
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Cherry-picked patch commit to "${releaseBranchSha}"`}
         />
       ),
@@ -338,7 +337,7 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Updated reference "${updatedReference.ref}"`}
         />
       ),
@@ -365,7 +364,7 @@ export function usePatchValidationSequence({
 
     addStepToResponseSteps({
       message: (
-        <PatchValidationMessage
+        <PatchDryRunMessage
           message={`Deleted temporary patch prep branch "${tempPatchBranchName}"`}
         />
       ),
