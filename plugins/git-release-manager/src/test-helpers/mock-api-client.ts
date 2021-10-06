@@ -87,6 +87,10 @@ export const mockApiClient: GitReleaseApi = {
     },
   })),
 
+  deleteRef: jest.fn(async () => ({
+    success: true,
+  })),
+
   createRelease: jest.fn(async () => ({
     release: {
       name: 'mock_createRelease_name',

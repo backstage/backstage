@@ -39,7 +39,7 @@ jest.mock('../../../contexts/UserContext', () => ({
 describe('patch', () => {
   beforeEach(jest.clearAllMocks);
 
-  it('should return the expected responseSteps and progress', async () => {
+  it('should return the expected responseSteps (including patch validation sequence) and progress', async () => {
     const { result } = renderHook(() =>
       usePatch({
         bumpedTag: mockBumpedTag,
@@ -54,10 +54,10 @@ describe('patch', () => {
     });
 
     expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(9);
+    expect(result.current.responseSteps).toHaveLength(18);
   });
 
-  it('should return the expected responseSteps and progress (with onSuccess)', async () => {
+  it('should return the expected responseSteps (including patch validation sequence) and progress (with onSuccess)', async () => {
     const { result } = renderHook(() =>
       usePatch({
         bumpedTag: mockBumpedTag,
@@ -73,11 +73,56 @@ describe('patch', () => {
     });
 
     expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(10);
+    expect(result.current.responseSteps).toHaveLength(19);
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "progress": 100,
         "responseSteps": Array [
+          Object {
+            "message": <PatchValidationMessage
+              message="Fetched latest commit from \\"rc/2020.01.01_1\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Created temporary patch validating branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Fetched release branch \\"rc/1.2.3\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Created temporary commit"
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Forced branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\" to temporary commit \\"mock_commit_sha\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Merged temporary commit into \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Cherry-picked patch commit to \\"mock_branch_commit_sha\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Updated reference \\"mock_update_ref_ref\\""
+            />,
+          },
+          Object {
+            "message": <PatchValidationMessage
+              message="Deleted temporary patch prep branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            />,
+          },
           Object {
             "link": "https://mock_branch_links_html",
             "message": "Fetched release branch \\"rc/1.2.3\\"",
