@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { userProfilesModuleGithubPlugin } from './plugin';
 
-export const rootRouteRef = createRouteRef({
-  title: 'user-profiles-module-github-readme',
+describe('user-profiles-module-github', () => {
+  it('should export plugin', () => {
+    expect(userProfilesModuleGithubPlugin).toBeDefined();
+  });
 });

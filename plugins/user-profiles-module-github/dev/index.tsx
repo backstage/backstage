@@ -13,4 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './GitHubReadmeCard';
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import {
+  userProfilesModuleGithubPlugin,
+  GithubProfileSettingsCard,
+} from '../src/plugin';
+
+createDevApp()
+  .registerPlugin(userProfilesModuleGithubPlugin)
+  .addPage({
+    element: <GithubProfileSettingsCard />,
+    title: 'Root Page',
+    path: '/user-profiles-module-github',
+  })
+  .render();

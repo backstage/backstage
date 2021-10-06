@@ -123,7 +123,7 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import React, { ReactNode, useMemo, useState } from 'react';
-import { GitHubReadmeCard } from '@backstage/plugin-user-profiles-module-github-readme';
+import { GithubProfileUserEntityCard } from '@backstage/plugin-user-profiles-module-github';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -507,7 +507,7 @@ const userPage = (
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
-          <GitHubReadmeCard />
+          <GithubProfileUserEntityCard />
         </Grid>
         <Grid item xs={12} md={6}>
           <EntityUserProfileCard variant="gridItem" />

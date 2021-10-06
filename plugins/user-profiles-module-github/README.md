@@ -1,12 +1,12 @@
-# user-profiles-module-github-readme
+# user-profiles-module-github
 
-Welcome to the user-profiles-module-github-readme plugin!
+Welcome to the user-profiles-module-github plugin!
 
 _This plugin was created through the Backstage CLI_
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/user-profiles-module-github-readme](http://localhost:3000/user-profiles-module-github-readme).
+Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/user-profiles-module-github](http://localhost:3000/user-profiles-module-github).
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.

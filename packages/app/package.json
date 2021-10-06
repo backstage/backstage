@@ -40,7 +40,7 @@
     "@backstage/plugin-tech-radar": "^0.4.8",
     "@backstage/plugin-techdocs": "^0.11.3",
     "@backstage/plugin-todo": "^0.1.11",
-    "@backstage/plugin-user-profiles-module-github-readme": "^0.1.0",
+    "@backstage/plugin-user-profiles-module-github": "^0.1.0",
     "@backstage/plugin-user-settings": "^0.3.6",
     "@backstage/search-common": "^0.2.0",
     "@backstage/theme": "^0.2.10",

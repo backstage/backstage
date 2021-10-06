@@ -16,32 +16,30 @@
 import {
   createComponentExtension,
   createPlugin,
-  createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 
-export const userProfilesModuleGithubReadmePlugin = createPlugin({
-  id: 'user-profiles-module-github-readme',
+export const userProfilesModuleGithubPlugin = createPlugin({
+  id: 'user-profiles-module-github',
   routes: {
     root: rootRouteRef,
   },
 });
 
-export const UserProfilesModuleGithubReadmePage =
-  userProfilesModuleGithubReadmePlugin.provide(
-    createRoutableExtension({
-      component: () =>
-        import('./components/ExampleComponent').then(m => m.ExampleComponent),
-      mountPoint: rootRouteRef,
-    }),
-  );
-
-export const GitHubReadmeCard = userProfilesModuleGithubReadmePlugin.provide(
+export const GithubProfileSettingsCard = userProfilesModuleGithubPlugin.provide(
   createComponentExtension({
     component: {
-      lazy: () =>
-        import('./components/GitHubReadmeCard').then(m => m.GitHubReadmeCard),
+      lazy: () => import('./components/GithubCard').then(m => m.GithubCard),
     },
   }),
 );
+
+export const GithubProfileUserEntityCard =
+  userProfilesModuleGithubPlugin.provide(
+    createComponentExtension({
+      component: {
+        lazy: () => import('./components/GithubCard').then(m => m.GithubCard),
+      },
+    }),
+  );

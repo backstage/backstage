@@ -16,9 +16,9 @@
 // import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
-// TODO (himanshu/ainhoa/vincenzo): refactor to GitHubProfile instead of GitHubREADME
-// TODO (himanshu/ainhoa/vincenzo): need to export 2 cards (for settings page and for user entity page)
-export const GitHubReadmeCard = () => {
+// TODO (himanshu/ainhoa/vincenzo/chase): refactor to GitHubProfile instead of Github
+// TODO (himanshu/ainhoa/vincenzo/chase): need to export 2 cards (for settings page and for user entity page)
+export const GithubCard = () => {
   // const { entity } = useEntity();
   const entity = {
     kind: 'user',

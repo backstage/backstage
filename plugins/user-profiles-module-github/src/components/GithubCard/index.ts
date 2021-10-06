@@ -13,10 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { userProfilesModuleGithubReadmePlugin } from './plugin';
-
-describe('user-profiles-module-github-readme', () => {
-  it('should export plugin', () => {
-    expect(userProfilesModuleGithubReadmePlugin).toBeDefined();
-  });
-});
+export * from './GithubCard';
