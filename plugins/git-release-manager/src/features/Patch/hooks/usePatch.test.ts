@@ -79,48 +79,48 @@ describe('patch', () => {
         "progress": 100,
         "responseSteps": Array [
           Object {
-            "message": <PatchValidationMessage
+            "message": <PatchDryRunMessage
               message="Fetched latest commit from \\"rc/2020.01.01_1\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
-              message="Created temporary patch validating branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            "message": <PatchDryRunMessage
+              message="Created temporary patch dry run branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
+            "message": <PatchDryRunMessage
               message="Fetched release branch \\"rc/1.2.3\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
+            "message": <PatchDryRunMessage
               message="Created temporary commit"
             />,
           },
           Object {
-            "message": <PatchValidationMessage
-              message="Forced branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\" to temporary commit \\"mock_commit_sha\\""
+            "message": <PatchDryRunMessage
+              message="Forced branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\" to temporary commit \\"mock_commit_sha\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
-              message="Merged temporary commit into \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            "message": <PatchDryRunMessage
+              message="Merged temporary commit into \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
+            "message": <PatchDryRunMessage
               message="Cherry-picked patch commit to \\"mock_branch_commit_sha\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
+            "message": <PatchDryRunMessage
               message="Updated reference \\"mock_update_ref_ref\\""
             />,
           },
           Object {
-            "message": <PatchValidationMessage
-              message="Deleted temporary patch prep branch \\"rc/2020.01.01_1-backstage-grm-patch-validation\\""
+            "message": <PatchDryRunMessage
+              message="Deleted temporary patch prep branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
             />,
           },
           Object {
