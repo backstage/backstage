@@ -39,7 +39,7 @@ jest.mock('../../../contexts/UserContext', () => ({
 describe('patch', () => {
   beforeEach(jest.clearAllMocks);
 
-  it('should return the expected responseSteps (including patch validation sequence) and progress', async () => {
+  it('should return the expected responseSteps (including patch dry run) and progress', async () => {
     const { result } = renderHook(() =>
       usePatch({
         bumpedTag: mockBumpedTag,
@@ -57,7 +57,7 @@ describe('patch', () => {
     expect(result.current.responseSteps).toHaveLength(18);
   });
 
-  it('should return the expected responseSteps (including patch validation sequence) and progress (with onSuccess)', async () => {
+  it('should return the expected responseSteps (including patch dry run) and progress (with onSuccess)', async () => {
     const { result } = renderHook(() =>
       usePatch({
         bumpedTag: mockBumpedTag,
