@@ -429,3 +429,101 @@ from one environment to the other, do rollbacks, see their relative performance
 metrics, and similar. This coherency and collection of tooling in one place is
 where something like Backstage can offer the most value and effectiveness of
 use. Splitting your entities apart into small islands makes this harder.
+
+## Implementing custom model extensions
+
+This section walks you through the steps involved extending the catalog model
+with a new Entity type.
+
+### Creating a custom entity definition
+
+The first step of introducing a custom entity is to define what shape and schema
+it has. We do this both using a TypeScript type, along with a JSONSchema schema.
+
+Most of the time you will want to have at least the TypeScript type of your
+extension available in both frontend and backend code, which means you likely
+want to have an isomorphic package that houses these types. Within the Backstage
+main repo the package naming pattern of `<plugin>-common` is used for isomorphic
+packages, and you may choose to adopt this pattern as well.
+
+There's at this point no existing templates for generating isomorphic plugins
+using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
+to copy the contents of one of the existing packages in the main repository,
+such as `plugins/scaffolder-common`, and rename the folder and file contents to
+the desired name. This example uses _foobar_ as the plugin name so the plugin
+will be named _foobar-common_.
+
+Once you have a common package in place you can start adding your own entity
+definitions. For the exact details on how to do that we defer to getting
+inspired by the existing
+[scaffolder-common](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-common/src/index.ts)
+package. But in short you will need to declare a TypeScript type and a
+JSONSchema for the new entity kind.
+
+### Building a custom processor for the entity
+
+The next step is to create a custom processor for your new entity kind. This
+will be used within the catalog to make sure that it's able to ingest and
+validate entities of our new kind. Just like with the definition package, you
+can find inspiration in for example the existing
+[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/src/processor/ScaffolderEntitiesProcessor.ts).
+We also provide a high-level example of what a catalog process for a custom
+entity might look like:
+
+```ts
+import { entityKindSchemaValidator } from '@backstage/catalog-model';
+
+export class FoobarEntitiesProcessor implements CatalogProcessor {
+  // You often end up wanting to support multiple versions of your kind as you
+  // iterate on the definition, so we keep each version inside this array.
+  private readonly validators = [
+    // This is where we use the JSONSchema that we export from our isomorphic package
+    entityKindSchemaValidator(foobarEntityV1alpha1Schema),
+  ];
+
+  // validateEntityKind is responsible for signaling to the catalog processing engine
+  // that this entity is valid and should therefore be submitted for further processing.
+  async validateEntityKind(entity: Entity): Promise<boolean> {
+    for (const validator of this.validators) {
+      if (validator(entity)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async postProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity> {
+    if (
+      entity.apiVersion === 'example.com/v1alpha1' &&
+      entity.kind === 'Foobar'
+    ) {
+      const foobarEntity = entity as FoobarEntityV1alpha1;
+
+      // Here we can modify the entity or emit results related to the entity
+      // Typically you will want to emit any relations associated with the entity here
+      emit(results.relation({ ... }))
+    }
+
+    return entity;
+  }
+}
+```
+
+Once the processor is created it can be wired up to the catalog via the
+`CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
+
+```diff
++ import { FoobarEntitiesProcessor implements CatalogProcessor {
+ } from '@internal/plugin-foobar-backend';
+
+ // ...
+
+     const builder = await CatalogBuilder.create(env);
++    builder.addProcessor(new FoobarEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+```
