@@ -66,36 +66,29 @@ export class MicrosoftGraphClient {
   constructor(baseUrl: string, pca: msal.ConfidentialClientApplication);
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
   // Warning: (ae-forgotten-export) The symbol "GroupMember" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
-  // (undocumented)
   getGroupPhotoWithSizeLimit(
     groupId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group>;
-  // (undocumented)
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
-  // (undocumented)
   getUserPhotoWithSizeLimit(
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  // (undocumented)
   getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestApi(path: string, query?: ODataQuery): Promise<Response>;
   // Warning: (ae-forgotten-export) The symbol "ODataQuery" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
   requestRaw(url: string): Promise<Response>;
 }

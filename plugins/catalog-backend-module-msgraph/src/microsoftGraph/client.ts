@@ -84,6 +84,15 @@ export class MicrosoftGraphClient {
     private readonly pca: msal.ConfidentialClientApplication,
   ) {}
 
+  /**
+   * Get a collection of resource from Graph API and
+   * return an `AsyncIterable` of that resource
+   *
+   * @public
+   * @param path - Resource in Microsoft Graph
+   * @param query - OData Query {@link ODataQuery}
+   *
+   */
   async *requestCollection<T>(
     path: string,
     query?: ODataQuery,
@@ -96,6 +105,8 @@ export class MicrosoftGraphClient {
       }
 
       const result = await response.json();
+
+      // Graph API return array of collections
       const elements: T[] = result.value;
 
       yield* elements;
@@ -155,6 +166,14 @@ export class MicrosoftGraphClient {
     });
   }
 
+  /**
+   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
+   * from Graph API
+   *
+   * @public
+   * @param userId - The unique identifier for the `User` resource
+   *
+   */
   async getUserProfile(userId: string): Promise<MicrosoftGraph.User> {
     const response = await this.requestApi(`users/${userId}`);
 
@@ -165,6 +184,14 @@ export class MicrosoftGraphClient {
     return await response.json();
   }
 
+  /**
+   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/profilephoto | profilePhoto}
+   * of `User` from Graph API with size limit
+   *
+   * @param userId - The unique identifier for the `User` resource
+   * @param maxSize - Maximum pixel height of the photo
+   *
+   */
   async getUserPhotoWithSizeLimit(
     userId: string,
     maxSize: number,
@@ -179,10 +206,27 @@ export class MicrosoftGraphClient {
     return await this.getPhoto('users', userId, sizeId);
   }
 
+  /**
+   * Get a collection of
+   * {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
+   * from Graph API and return as `AsyncIterable`
+   *
+   * @public
+   * @param query - OData Query {@link ODataQuery}
+   *
+   */
   async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
     yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
   }
 
+  /**
+   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/profilephoto | profilePhoto}
+   * of `Group` from Graph API with size limit
+   *
+   * @param groupId - The unique identifier for the `Group` resource
+   * @param maxSize - Maximum pixel height of the photo
+   *
+   */
   async getGroupPhotoWithSizeLimit(
     groupId: string,
     maxSize: number,
@@ -197,14 +241,37 @@ export class MicrosoftGraphClient {
     return await this.getPhoto('groups', groupId, sizeId);
   }
 
+  /**
+   * Get a collection of
+   * {@link https://docs.microsoft.com/en-us/graph/api/resources/group | Group}
+   * from Graph API and return as `AsyncIterable`
+   * @public
+   * @param query - OData Query {@link ODataQuery}
+   *
+   */
   async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
     yield* this.requestCollection<MicrosoftGraph.Group>(`groups`, query);
   }
 
+  /**
+   * Get a collection of
+   * {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
+   * belonging to a `Group` from Graph API and return as `AsyncIterable`
+   * @public
+   * @param groupId - The unique identifier for the `Group` resource
+   *
+   */
   async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
     yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
   }
 
+  /**
+   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/organization | Organization}
+   * from Graph API
+   * @public
+   * @param tenantId - The unique identifier for the `Organization` resource
+   *
+   */
   async getOrganization(
     tenantId: string,
   ): Promise<MicrosoftGraph.Organization> {
@@ -217,6 +284,15 @@ export class MicrosoftGraphClient {
     return await response.json();
   }
 
+  /**
+   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/profilephoto | profilePhoto}
+   * from Graph API
+   *
+   * @param entityName - type of parent resource, either `User` or `Group`
+   * @param id - The unique identifier for the {@link entityName | entityName} resource
+   * @param maxSize - Maximum pixel height of the photo
+   *
+   */
   private async getPhotoWithSizeLimit(
     entityName: string,
     id: string,
