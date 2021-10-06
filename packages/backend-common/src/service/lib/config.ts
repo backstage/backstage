@@ -120,7 +120,7 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
   }
 
   return removeUnknown({
-    origin: getOptionalGlobOrGlobs(cc, 'origin'),
+    origin: createCorsOriginMatcher(getOptionalStringOrStrings(cc, 'origin')),
     methods: getOptionalStringOrStrings(cc, 'methods'),
     allowedHeaders: getOptionalStringOrStrings(cc, 'allowedHeaders'),
     exposedHeaders: getOptionalStringOrStrings(cc, 'exposedHeaders'),
@@ -221,23 +221,24 @@ function getOptionalStringOrStrings(
   throw new Error(`Expected string or array of strings, got ${typeof value}`);
 }
 
-function getOptionalGlobOrGlobs(
-  config: Config,
-  key: string,
+function createCorsOriginMatcher(
+  originValue: string | string[] | undefined,
 ): CustomOrigin | undefined {
-  const value = config.getOptional(key);
-  if (!isStringOrStrings(value)) {
-    throw new Error(`Expected string or array of strings, got ${typeof value}`);
+  if (originValue === undefined) {
+    return originValue;
   }
 
-  if (value === undefined) {
-    return value;
+  if (!isStringOrStrings(originValue)) {
+    throw new Error(
+      `Expected string or array of strings, got ${typeof originValue}`,
+    );
   }
 
-  const valueArr = typeof value === 'string' ? [value] : value;
+  const allowedOrigin =
+    typeof originValue === 'string' ? [originValue] : originValue;
 
   const allowedOriginPatterns =
-    valueArr?.map(
+    allowedOrigin?.map(
       pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
     ) ?? [];
 
