@@ -144,9 +144,9 @@ export const PatchBody = ({
         <Box marginBottom={2}>
           <Typography>
             Patches the release branch, creates a new tag and updates the Git
-            release. Before patching the release branch, a validation sequence
-            will run to ensure there's no merge conflicts. Manual patching is
-            recommended should the validation fail.
+            release. A dry run on a temporary branch will run prioer to patching
+            the release branch to ensure there's no merge conflicts. Manual
+            patching is recommended should the dry run fail.
           </Typography>
         </Box>
 
