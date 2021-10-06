@@ -145,7 +145,7 @@ export type CatalogEntitiesRequest = {
 
 // @public (undocumented)
 export type CatalogEntityAncestorsRequest = {
-  entityRef: EntityName;
+  entityRef: string;
 };
 
 // @public (undocumented)
