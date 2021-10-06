@@ -97,8 +97,6 @@ nav:
           - Org Data: 'integrations/github/org.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
-      - Google Analytics:
-          - Installation: 'integrations/google-analytics/installation.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:

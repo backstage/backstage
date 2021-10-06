@@ -148,11 +148,6 @@
       },
       {
         "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
-      },
-      {
-        "type": "subcategory",
         "label": "Google GCS",
         "ids": ["integrations/google-cloud-storage/locations"]
       },
