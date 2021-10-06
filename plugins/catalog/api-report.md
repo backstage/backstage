@@ -7,10 +7,13 @@
 
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { CatalogEntityAncestorsRequest } from '@backstage/catalog-client';
+import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
 import { CatalogListResponse } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -67,6 +70,11 @@ export class CatalogClientWrapper implements CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  // (undocumented)
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
   // (undocumented)
   getEntityByName(
     compoundName: EntityName,
@@ -346,7 +354,7 @@ export const EntityPageLayout: {
 // Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const EntityProcessingErrorsPanel: () => JSX.Element;
+export const EntityProcessingErrorsPanel: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "EntitySwitch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -354,7 +362,14 @@ export const EntityProcessingErrorsPanel: () => JSX.Element;
 export const EntitySwitch: {
   ({ children }: PropsWithChildren<{}>): JSX.Element | null;
   Case: (_: {
-    if?: ((entity: Entity) => boolean) | undefined;
+    if?:
+      | ((
+          entity: Entity,
+          context: {
+            apis: ApiHolder;
+          },
+        ) => boolean | Promise<boolean>)
+      | undefined;
     children: ReactNode;
   }) => null;
 };
@@ -382,7 +397,12 @@ export const FilteredEntityLayout: ({
 // Warning: (ae-missing-release-tag) "hasCatalogProcessingErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const hasCatalogProcessingErrors: (entity: Entity) => boolean;
+export const hasCatalogProcessingErrors: (
+  entity: Entity,
+  context: {
+    apis: ApiHolder;
+  },
+) => Promise<boolean>;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

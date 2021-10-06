@@ -29,6 +29,17 @@ export type CatalogEntitiesRequest = {
 };
 
 /** @public */
+export type CatalogEntityAncestorsRequest = {
+  entityRef: string;
+};
+
+/** @public */
+export type CatalogEntityAncestorsResponse = {
+  root: EntityName;
+  items: { entity: Entity; parents: EntityName[] }[];
+};
+
+/** @public */
 export type CatalogListResponse<T> = {
   items: T[];
 };
@@ -45,6 +56,10 @@ export interface CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,

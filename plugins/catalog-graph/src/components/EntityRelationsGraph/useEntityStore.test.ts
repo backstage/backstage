@@ -37,6 +37,7 @@ describe('useEntityStore', () => {
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
+      getEntityAncestors: jest.fn(),
     };
 
     useApi.mockReturnValue(catalogApi);
