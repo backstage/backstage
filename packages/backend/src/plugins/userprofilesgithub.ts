@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-user-profiles-module-github-readme-backend';
+import { createRouter } from '@backstage/plugin-user-profiles-backend-module-github';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 

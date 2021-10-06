@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-user-profiles-module-github-readme-backend",
+  "name": "@backstage/plugin-user-profiles-backend-module-github",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

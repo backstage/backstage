@@ -49,7 +49,7 @@
     "@backstage/plugin-search-backend-module-pg": "^0.2.1",
     "@backstage/plugin-techdocs-backend": "^0.10.3",
     "@backstage/plugin-todo-backend": "^0.1.12",
-    "@backstage/plugin-user-profiles-module-github-readme-backend": "^0.1.0",
+    "@backstage/plugin-user-profiles-backend-module-github": "^0.1.0",
     "@gitbeaker/node": "^30.2.0",
     "@octokit/rest": "^18.5.3",
     "azure-devops-node-api": "^11.0.1",
