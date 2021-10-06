@@ -143,6 +143,15 @@ export const PatchBody = ({
 
         <Box marginBottom={2}>
           <Typography>
+            Patches the release branch, creates a new tag and updates the Git
+            release. Before patching the release branch, a validation sequence
+            will run to ensure there's no merge conflicts. Manual patching is
+            recommended should the validation fail.
+          </Typography>
+        </Box>
+
+        <Box marginBottom={2}>
+          <Typography>
             <Differ
               icon="tag"
               current={latestRelease.tagName}
@@ -301,6 +310,7 @@ export const PatchBody = ({
             gitDataResponse.value?.recentCommitsOnDefaultBranch[
               checkedCommitIndex
             ];
+
           if (!selectedPatchCommit) {
             throw new GitReleaseManagerError(
               'Could not find selected patch commit',
