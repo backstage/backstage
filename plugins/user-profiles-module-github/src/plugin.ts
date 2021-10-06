@@ -14,14 +14,31 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createComponentExtension,
   createPlugin,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { GithubProfileClient } from './api';
+import { githubProfileApiRef } from './api/types';
 
 import { rootRouteRef } from './routes';
 
 export const userProfilesModuleGithubPlugin = createPlugin({
   id: 'user-profiles-module-github',
+  apis: [
+    createApiFactory({
+      api: githubProfileApiRef,
+      deps: {
+        identityApi: identityApiRef,
+        discoveryApi: discoveryApiRef,
+      },
+      factory({ identityApi, discoveryApi }) {
+        return new GithubProfileClient({ identityApi, discoveryApi });
+      },
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },

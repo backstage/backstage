@@ -26,7 +26,7 @@ export interface RouterOptions {
 // TODO(chase/ainhoa): Move this somewhere else, a database?
 // key: entityref
 // value: github.com username
-const mapData = {
+const mapData: Record<string, string> = {
   'user:default/breanna.davison': 'orkohunter',
   'user:default/amelia.park': 'ainhoaL',
 };
@@ -44,9 +44,8 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  router.get('/profile/:namespace/:name', (request, response) => {
-    const githubUsername =
-      mapData[`user:${request.params.namespace}/${request.params.name}`];
+  router.get('/v1/user-profile', (request, response) => {
+    const githubUsername = mapData[`${request.query.entity}`];
     // TODO (himanshu/ainhoa): get github data with username
     response.json({ user: githubUsername });
   });

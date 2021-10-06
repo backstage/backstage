@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ResponseErrorPanel } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { useState } from 'react';
+import { useAsync } from 'react-use';
+import { githubProfileApiRef } from '../../api/types';
 
 export const GithubUserEntityCard = () => {
   const { entity } = useEntity();
+  const githubProfileApi = useApi(githubProfileApiRef);
 
-  const entityref = `${entity.kind}:${entity.metadata.namespace ?? 'default'}/${
-    entity.metadata.name
-  }`;
-  // TODO (himanshu/ainhoa): call backend to get user profile
-  return (
-    <div>{entityref} - Need to get github readme user profile from backend</div>
-  );
+  const { value, loading, error } = useAsync(async () => {
+    return await githubProfileApi.getProfile({ entity });
+  });
+
+  if (error) {
+    return <ResponseErrorPanel error={error} />;
+  }
+
+  return <div>User: {value?.profile.user}</div>;
 };

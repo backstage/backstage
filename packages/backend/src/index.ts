@@ -53,7 +53,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
-import userProfilesGithubReadme from './plugins/userprofilesgithub';
+import userProfilesGithub from './plugins/userprofilesgithub';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -129,8 +129,8 @@ async function main() {
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use(
-    '/user-profiles-github-readme',
-    await userProfilesGithubReadme(userProfilesEnv),
+    '/user-profiles-github',
+    await userProfilesGithub(userProfilesEnv),
   );
   apiRouter.use(notFoundHandler());
 
