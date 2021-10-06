@@ -326,7 +326,7 @@ export async function createBackendConfig(
     plugins: [
       new RunScriptWebpackPlugin({
         name: 'main.js',
-        nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs[0] : undefined,
+        nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new webpack.HotModuleReplacementPlugin(),
