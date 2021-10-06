@@ -78,7 +78,7 @@ export function readBaseOptions(config: Config): BaseOptions {
     typeof port !== 'string'
   ) {
     throw new Error(
-      `Invalid type in config for key 'backend.listen.post', got ${typeof port}, wanted string or number`,
+      `Invalid type in config for key 'backend.listen.port', got ${typeof port}, wanted string or number`,
     );
   }
 
