@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { TemplateEntityProcessor } from './TemplateEntityProcessor';
+export { ScaffolderEntitiesProcessor } from './ScaffolderEntitiesProcessor';

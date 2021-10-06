@@ -15,7 +15,7 @@
  */
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityProcessor } from './TemplateEntityProcessor';
+import { ScaffolderEntitiesProcessor } from './ScaffolderEntitiesProcessor';
 
 const mockLocation = { type: 'a', target: 'b' };
 const mockEntity: TemplateEntityV1beta3 = {
@@ -30,10 +30,10 @@ const mockEntity: TemplateEntityV1beta3 = {
   },
 };
 
-describe('TemplateEntityProcessor', () => {
+describe('ScaffolderEntitiesProcessor', () => {
   describe('validateEntityKind', () => {
     it('validates the entity kind', async () => {
-      const processor = new TemplateEntityProcessor();
+      const processor = new ScaffolderEntitiesProcessor();
 
       await expect(processor.validateEntityKind(mockEntity)).resolves.toBe(
         true,
@@ -52,7 +52,7 @@ describe('TemplateEntityProcessor', () => {
 
   describe('postProcessEntity', () => {
     it('generates relations for component entities', async () => {
-      const processor = new TemplateEntityProcessor();
+      const processor = new ScaffolderEntitiesProcessor();
 
       const emit = jest.fn();
 
