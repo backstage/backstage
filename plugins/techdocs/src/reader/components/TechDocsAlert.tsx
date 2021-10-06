@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { makeStyles, Button, CircularProgress } from '@material-ui/core';
+import { makeStyles, Button } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
@@ -49,7 +49,6 @@ export const TechDocsAlert = () => {
       <Alert
         variant="outlined"
         severity="info"
-        icon={<CircularProgress size="24px" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
       >
         Documentation is accessed for the first time and is being prepared. The
@@ -63,7 +62,6 @@ export const TechDocsAlert = () => {
       <Alert
         variant="outlined"
         severity="info"
-        icon={<CircularProgress size="24px" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
       >
         A newer version of this documentation is being prepared and will be

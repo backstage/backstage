@@ -16,11 +16,20 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
+
+import { Box } from '@material-ui/core';
 import { Progress } from '@backstage/core-components';
+
 import { useReaderState } from './useReaderState';
+
+const states = ['CHECKING', 'INITIAL_BUILD', 'CONTENT_STALE_REFRESHING'];
 
 export const TechDocsProgress = () => {
   const { namespace = '', kind = '', name = '', '*': params } = useParams();
   const { state } = useReaderState(kind, namespace, name, params);
-  return state === 'CHECKING' ? <Progress /> : null;
+  return states.includes(state) ? (
+    <Box mb={3}>
+      <Progress />
+    </Box>
+  ) : null;
 };
