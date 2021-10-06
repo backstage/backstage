@@ -27,7 +27,8 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer } from '../ingestion/types';
+import { HigherOrderOperation } from '../legacy/ingestion/types';
 import { RefreshService, LocationService, RefreshOptions } from '../next/types';
 import {
   basicEntityFilter,

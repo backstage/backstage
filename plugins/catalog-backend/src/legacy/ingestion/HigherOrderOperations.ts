@@ -21,8 +21,8 @@ import {
 } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
-import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { durationText } from '../util';
+import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
+import { durationText } from '../../util';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -33,8 +33,7 @@ import {
  * Placeholder for operations that span several catalogs and/or stretches out
  * in time.
  *
- * TODO(freben): Find a better home for these, possibly refactoring to use the
- * database more directly.
+ * @deprecated This class was part of the legacy catalog engine
  */
 export class HigherOrderOperations implements HigherOrderOperation {
   constructor(

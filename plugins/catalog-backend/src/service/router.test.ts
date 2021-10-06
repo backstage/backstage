@@ -22,7 +22,7 @@ import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationResponse } from '../catalog/types';
-import { HigherOrderOperation } from '../ingestion/types';
+import { HigherOrderOperation } from '../legacy/ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from './request';
 import { RefreshService } from '../next';

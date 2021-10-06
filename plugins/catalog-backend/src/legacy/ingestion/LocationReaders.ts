@@ -26,8 +26,8 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { CatalogRulesEnforcer } from './CatalogRules';
-import * as result from './processors/results';
+import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+import * as result from '../../ingestion/processors/results';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
@@ -36,7 +36,7 @@ import {
   CatalogProcessorLocationResult,
   CatalogProcessorParser,
   CatalogProcessorResult,
-} from './processors/types';
+} from '../../ingestion/processors/types';
 import { LocationReader, ReadLocationResult } from './types';
 
 // The max amount of nesting depth of generated work items
@@ -61,6 +61,8 @@ const noopCache = {
 
 /**
  * Implements the reading of a location through a series of processor tasks.
+ *
+ * @deprecated This class was part of the legacy catalog engine
  */
 export class LocationReaders implements LocationReader {
   private readonly options: Options;
