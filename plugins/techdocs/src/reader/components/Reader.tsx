@@ -63,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 /**
- *
+ * Hook the behavior of getting the raw HTML from the storage and applying transforms before rendering
  */
 export const useTechDocsReaderDom = (): Element | null => {
   const navigate = useNavigate();
