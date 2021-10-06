@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
-import { makeRe } from 'micromatch';
+import { Minimatch } from 'minimatch';
 
 export type BaseOptions = {
   listenPort?: string | number;
@@ -46,6 +46,13 @@ export type CertificateAttributes = {
  * Added here since helmet doesn't export this type publicly.
  */
 export type CspOptions = Record<string, string[]>;
+
+type StaticOrigin = boolean | string | RegExp | (boolean | string | RegExp)[];
+
+type CustomOrigin = (
+  requestOrigin: string | undefined,
+  callback: (err: Error | null, origin?: StaticOrigin) => void,
+) => void;
 
 /**
  * Reads some base options out of a config object.
@@ -208,11 +215,7 @@ function getOptionalStringOrStrings(
   key: string,
 ): string | string[] | undefined {
   const value = config.getOptional(key);
-  if (
-    value === undefined ||
-    typeof value === 'string' ||
-    isStringArray(value)
-  ) {
+  if (value === undefined || isStringOrStrings(value)) {
     return value;
   }
   throw new Error(`Expected string or array of strings, got ${typeof value}`);
@@ -221,18 +224,33 @@ function getOptionalStringOrStrings(
 function getOptionalGlobOrGlobs(
   config: Config,
   key: string,
-): RegExp | RegExp[] | undefined {
+): CustomOrigin | undefined {
   const value = config.getOptional(key);
+  if (!isStringOrStrings(value)) {
+    throw new Error(`Expected string or array of strings, got ${typeof value}`);
+  }
+
   if (value === undefined) {
     return value;
   }
-  if (typeof value === 'string') {
-    return makeRe(value, { debug: true });
-  }
-  if (isStringArray(value)) {
-    return value.map(val => makeRe(val));
-  }
-  throw new Error(`Expected string or array of strings, got ${typeof value}`);
+
+  const valueArr = typeof value === 'string' ? [value] : value;
+
+  const allowedOriginPatterns =
+    valueArr?.map(
+      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+    ) ?? [];
+
+  return (origin, callback) => {
+    return callback(
+      null,
+      allowedOriginPatterns.some(pattern => pattern.match(origin ?? '')),
+    );
+  };
+}
+
+function isStringOrStrings(value: any): value is string | string[] {
+  return typeof value === 'string' || isStringArray(value);
 }
 
 function isStringArray(value: any): value is string[] {

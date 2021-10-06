@@ -45,33 +45,53 @@ describe('config', () => {
 
   describe('readCorsOptions', () => {
     it('reads single string', () => {
+      const mockCallback = jest.fn();
       const config = new ConfigReader({ cors: { origin: 'https://*.value*' } });
       const cors = readCorsOptions(config);
       expect(cors).toEqual(
         expect.objectContaining({
-          origin: expect.any(RegExp),
+          origin: expect.any(Function),
         }),
       );
+      const origin = cors?.origin as Function;
+      origin('https://a.value', mockCallback); // valid origin
+      origin('http://a.value', mockCallback); // invalid origin
+      origin(undefined, mockCallback); // when not origin needs to reject the call
 
-      const origin = cors?.origin as RegExp;
-      expect(origin.test('https://a.value')).toBe(true);
-      expect(origin.test('http://a.value')).toBe(false);
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[1][0]).toBe(null);
+
+      expect(mockCallback.mock.calls[0][1]).toBe(true);
+      expect(mockCallback.mock.calls[1][1]).toBe(false);
+      expect(mockCallback.mock.calls[2][1]).toBe(false);
     });
 
     it('reads string array', () => {
+      const mockCallback = jest.fn();
       const config = new ConfigReader({
-        cors: { origin: ['https://*.value*', 'http(s|)://*.value*'] },
+        cors: { origin: ['https://*.value*', 'http://*.value'] },
       });
       const cors = readCorsOptions(config);
       expect(cors).toEqual(
         expect.objectContaining({
-          origin: expect.any(Array),
+          origin: expect.any(Function),
         }),
       );
-      const origin = cors?.origin as RegExp[];
-      expect(origin[0].test('https://a.value')).toBe(true);
-      expect(origin[1].test('https://a.value')).toBe(true);
-      expect(origin[1].test('http://a.value')).toBe(true);
+      const origin = cors?.origin as Function;
+      origin('https://a.value', mockCallback);
+      origin('https://a.valuex', mockCallback);
+      origin('http://a.value', mockCallback);
+      origin('http://a.valuex', mockCallback);
+
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[1][0]).toBe(null);
+      expect(mockCallback.mock.calls[2][0]).toBe(null);
+      expect(mockCallback.mock.calls[3][0]).toBe(null);
+
+      expect(mockCallback.mock.calls[0][1]).toBe(true);
+      expect(mockCallback.mock.calls[1][1]).toBe(true);
+      expect(mockCallback.mock.calls[2][1]).toBe(true);
+      expect(mockCallback.mock.calls[3][1]).toBe(false);
     });
   });
 });
