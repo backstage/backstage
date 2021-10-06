@@ -279,7 +279,7 @@ Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend/)
 
 A backend plugin that provides
 
