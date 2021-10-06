@@ -8,9 +8,7 @@ Add glob patterns support to config CORS options. It's possible to send patterns
 backend:
   cors:
     origin:
-      [
-        https://*.my-domain.com,
-        http://localhost:700?,
-        'https://sub-domain-+([0-9]).my-domain.com',
-      ]
+      - https://*.my-domain.com
+      - http://localhost:700[0-9]
+      - https://sub-domain-+([0-9]).my-domain.com
 ```
