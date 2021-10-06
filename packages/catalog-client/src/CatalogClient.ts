@@ -54,7 +54,9 @@ export class CatalogClient implements CatalogApi {
     const { kind, namespace, name } = parseEntityRef(request.entityRef);
     return await this.requestRequired(
       'GET',
-      `/entities/by-name/${kind}/${namespace}/${name}/ancestry`,
+      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
+        namespace,
+      )}/${encodeURIComponent(name)}/ancestry`,
       options,
     );
   }
