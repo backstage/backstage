@@ -1,5 +1,38 @@
 # @backstage/core-components
 
+## 0.6.1
+
+### Patch Changes
+
+- f139fed1ac: The `<Link />` component now automatically instruments all link clicks using
+  the new Analytics API. Each click triggers a `click` event, containing the
+  text of the link the user clicked on, as well as the location to which the user
+  clicked. In addition, these events inherit plugin/extension-level metadata,
+  allowing clicks to be attributed to the plugin/extension/route containing the
+  link:
+
+  ```json
+  {
+    "action": "click",
+    "subject": "Text content of the link that was clicked",
+    "attributes": {
+      "to": "/value/of-the/to-prop/passed-to-the-link"
+    },
+    "context": {
+      "extension": "ExtensionInWhichTheLinkWasClicked",
+      "pluginId": "plugin-in-which-link-was-clicked",
+      "routeRef": "route-ref-in-which-the-link-was-clicked"
+    }
+  }
+  ```
+
+- 666e1f478e: Provide a clearer error message when a authentication provider used by the `SignInPage` has not been configured to support sign-in.
+- 63d426bfeb: Wrap up the `Link` component in a component to reset the color so that we can actually see the button text
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 162e1eee65: SignInPage: move the initial invocation of `login` away from the render method
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+
 ## 0.6.0
 
 ### Minor Changes

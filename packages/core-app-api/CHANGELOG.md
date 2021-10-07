@@ -1,5 +1,42 @@
 # @backstage/core-app-api
 
+## 0.1.16
+
+### Patch Changes
+
+- d9fd798cc8: The Core App API now automatically instruments all route location changes using
+  the new Analytics API. Each location change triggers a `navigate` event, which
+  is an analogue of a "pageview" event in traditional web analytics systems. In
+  addition to the path, these events provide plugin-level metadata via the
+  analytics context, which can be useful for analyzing plugin usage:
+
+  ```json
+  {
+    "action": "navigate",
+    "subject": "/the-path/navigated/to?with=params#and-hashes",
+    "context": {
+      "extension": "App",
+      "pluginId": "id-of-plugin-that-exported-the-route",
+      "routeRef": "associated-route-ref-id"
+    }
+  }
+  ```
+
+  These events can be identified and handled by checking for the action
+  `navigate` and the extension `App`.
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- d6ad46eb22: Stop calling connector.removeSession in StaticAuthSessionManager, instead just discarding the
+  session locally.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
 ## 0.1.15
 
 ### Patch Changes

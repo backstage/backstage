@@ -1,5 +1,16 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.9
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
 ## 0.11.8
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/backend-common
 
+## 0.9.6
+
+### Patch Changes
+
+- 8f969d5a56: Correct error message typo
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- d7055285de: Add glob patterns support to config CORS options. It's possible to send patterns like:
+
+  ```yaml
+  backend:
+    cors:
+      origin:
+        - https://*.my-domain.com
+        - http://localhost:700[0-9]
+        - https://sub-domain-+([0-9]).my-domain.com
+  ```
+
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/integration@0.6.7
+  - @backstage/cli-common@0.1.4
+
 ## 0.9.5
 
 ### Patch Changes

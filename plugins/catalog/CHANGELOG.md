@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog
 
+## 0.7.0
+
+### Minor Changes
+
+- bb0f6b8a0f: Updates the `<EntitySwitch if={asyncMethod}/>` to accept asynchronous `if` functions.
+
+  Adds the new `getEntityAncestors` method to `CatalogClient`.
+
+  Updates the `<EntityProcessingErrorsPanel />` to make use of the ancestry endpoint to display errors for entities further up the ancestry tree. This makes it easier to discover issues where for example the origin location has been removed or malformed.
+
+  `hasCatalogProcessingErrors()` is now changed to be asynchronous so any calls outside the already established entitySwitch need to be awaited.
+
+### Patch Changes
+
+- 5aae9bb61e: Name column will now render entity `metadata.title` if its present
+- 1c5c5b23fb: Replace deprecated material UI components used by LinksCard to remove errors from console log
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+
 ## 0.6.17
 
 ### Patch Changes
