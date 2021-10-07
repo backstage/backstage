@@ -1098,12 +1098,12 @@ code {
   max-width: 1430px;
   height: 0;
 }
- 
+
 @media only screen and (max-width: 1024px) {
   .Banner__Container {
     margin-top: 20px;
   }
-} 
+}
 
 @media only screen and (max-width: 645px) {
   .Banner__Container {
