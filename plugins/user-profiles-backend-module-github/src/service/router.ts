@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { UserProfileStore } from '../database/UserProfileStore';
 
 export interface RouterOptions {
   logger: Logger;
+  database: PluginDatabaseManager;
 }
 
 // TODO(chase/ainhoa): Move this somewhere else, a database?
@@ -31,10 +33,12 @@ const mapData: Record<string, string> = {
   'user:default/amelia.park': 'ainhoaL',
 };
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger } = options;
+export async function createRouter({
+  logger,
+  database,
+}: RouterOptions): Promise<express.Router> {
+  const knex = await database.getClient();
+  const store = await UserProfileStore.create(knex);
 
   const router = Router();
   router.use(express.json());
@@ -55,6 +59,12 @@ export async function createRouter(
       },
     });
   });
+
+  router.put('/v1/user-profile', async (req, res) => {
+    await store.saveProfile({ id: '1234', name: 'vincenzo' });
+    res.json({});
+  });
+
   router.use(errorHandler());
   return router;
 }

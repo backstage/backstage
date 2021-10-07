@@ -20,8 +20,10 @@ import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
+  database,
 }: PluginEnvironment): Promise<Router> {
   return await createRouter({
     logger,
+    database,
   });
 }

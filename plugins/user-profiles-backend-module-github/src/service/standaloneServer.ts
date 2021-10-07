@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  DatabaseManager,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -32,8 +36,13 @@ export async function startStandaloneServer(
     service: 'user-profiles-backend-module-github',
   });
   logger.debug('Starting application server...');
+  const config = await loadBackendConfig({ logger, argv: process.argv });
+  const database = DatabaseManager.fromConfig(config).forPlugin(
+    'user-profiles-github-readme',
+  );
   const router = await createRouter({
     logger,
+    database,
   });
 
   let service = createServiceBuilder(module)
