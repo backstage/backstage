@@ -68,8 +68,8 @@ schema, but it's not supported right now. Feel free to contribute 🚀 👍.
 The `createTemplateAction` takes an object which specifies the following:
 
 - `id` - a unique ID for your custom action. We encourage you to namespace these
-  in someway so they won't collide with future built-in actions that we may ship
-  with the `scaffolder-backend` plugin.
+  in some way so that they won't collide with future built-in actions that we
+  may ship with the `scaffolder-backend` plugin.
 - `schema.input` - A JSON schema for input values to your function
 - `schema.output` - A JSON schema for values which are outputted from the
   function using `ctx.output`
