@@ -1,7 +1,6 @@
 ---
 '@backstage/integration': patch
 '@backstage/backend-common': patch
-'@backstage/integration': patch
 '@backstage/plugin-catalog-backend-module-ldap': patch
 '@backstage/plugin-catalog-backend-module-msgraph': patch
 '@backstage/plugin-catalog-import': patch
