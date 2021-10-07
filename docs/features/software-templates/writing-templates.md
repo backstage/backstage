@@ -97,7 +97,7 @@ spec:
     entityRef: '{{ steps.register.output.entityRef }}'
 ```
 
-Let's dive in an pick apart what each of these sections do and what they are.
+Let's dive in and pick apart what each of these sections do and what they are.
 
 ### `spec.parameters` - `FormStep | FormStep[]`
 
@@ -256,11 +256,11 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
 
 #### The Repository Picker
 
-So in order to make working with repository providers easier, we've built a
-custom picker that can be used by overriding the `ui:field` option in the
-`uiSchema` for a `string` field. Instead of displaying a text input block it
-will render our custom component that we've built which makes it easy to select
-a repository provider, and insert a project or owner, and repository name.
+In order to make working with repository providers easier, we've built a custom
+picker that can be used by overriding the `ui:field` option in the `uiSchema`
+for a `string` field. Instead of displaying a text input block it will render
+our custom component that we've built which makes it easy to select a repository
+provider, and insert a project or owner, and repository name.
 
 You can see it in the above full example which is a separate step and it looks a
 little like this:
@@ -323,9 +323,9 @@ template. These follow the same standard format:
       name: '{{ parameters.name }}'
 ```
 
-By default we ship some built in actions that you can take a look at
-[here](./builtin-actions.md), or you can create your own custom actions by
-looking at the docs [here](./writing-custom-actions.md)
+By default we ship some [built in actions](./builtin-actions.md) that you can
+take a look at, or you can
+[create your own custom actions](./writing-custom-actions.md).
 
 ### Outputs
 
@@ -359,5 +359,5 @@ As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. You can grab that output using `steps.$stepId.output.$property`.
 
 You can read more about all the `inputs` and `outputs` defined in the actions in
-code part of the `JSONSchema`, or you can read more about our built in ones
-[here](./builtin-actions.md).
+code part of the `JSONSchema`, or you can read more about our
+[built in actions](./builtin-actions.md).
