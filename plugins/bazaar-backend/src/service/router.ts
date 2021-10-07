@@ -94,16 +94,31 @@ export async function createRouter(
   router.get('/metadata', async (request, response) => {
     const entityRef = request.headers.entity_ref;
 
-    const data = await db
-      .select('*')
-      .from('public.metadata')
-      .where({ entity_ref: entityRef });
+    const coalesce = db.raw(
+      'coalesce(count(members.entity_ref), 0) as members_count',
+    );
 
-    if (data?.length) {
-      response.json({ status: 'ok', data: data });
-    } else {
-      response.status(404).json({ message: 'Record not found' });
-    }
+    const columns = [
+      'members.entity_ref',
+      'metadata.entity_ref',
+      'metadata.name',
+      'metadata.announcement',
+      'metadata.status',
+      'metadata.updated_at',
+    ];
+
+    const data = await db('public.members as members')
+      .select([...columns, coalesce])
+      .where({ 'metadata.entity_ref': entityRef })
+      .groupBy(columns)
+      .rightJoin(
+        'public.metadata as metadata',
+        'metadata.entity_ref',
+        '=',
+        'members.entity_ref',
+      );
+
+    response.json({ status: 'ok', data: data });
   });
 
   router.get('/entities', async (_, response) => {

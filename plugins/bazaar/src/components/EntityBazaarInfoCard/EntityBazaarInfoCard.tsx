@@ -89,6 +89,7 @@ export const EntityBazaarInfoCard = () => {
   const [isBazaar, setIsBazaar] = useState(false);
   const [members, fetchMembers] = useAsyncFn(async () => {
     const response = await bazaarApi.getMembers(entity);
+
     const dbMembers = response.data.map((obj: any) => {
       const member: Member = {
         userId: obj.user_id,
@@ -110,15 +111,17 @@ export const EntityBazaarInfoCard = () => {
     if (response) {
       const metadata = await response.json().then((resp: any) => resp.data[0]);
 
-      return {
-        entityRef: metadata.entity_ref,
-        name: metadata.name,
-        community: metadata.community,
-        announcement: metadata.announcement,
-        status: metadata.status,
-        updatedAt: metadata.updated_at,
-        membersCount: metadata.members_count,
-      } as BazaarProject;
+      if (metadata) {
+        return {
+          entityRef: metadata.entity_ref,
+          name: metadata.name,
+          community: metadata.community,
+          announcement: metadata.announcement,
+          status: metadata.status,
+          updatedAt: metadata.updated_at,
+          membersCount: metadata.members_count,
+        } as BazaarProject;
+      }
     }
     return null;
   });
@@ -133,7 +136,7 @@ export const EntityBazaarInfoCard = () => {
       members?.value
         ?.map((member: Member) => member.userId)
         .indexOf(identity.getUserId()) >= 0;
-    const isBazaarProject = bazaarProject !== null;
+    const isBazaarProject = bazaarProject.value !== null;
 
     setIsMember(isBazaarMember);
     setIsBazaar(isBazaarProject);
@@ -164,15 +167,10 @@ export const EntityBazaarInfoCard = () => {
     }
 
     fetchMembers();
+    fetchBazaarProject();
   };
 
   const links: IconLinkVerticalProps[] = [
-    {
-      label: 'Community',
-      icon: <ChatIcon />,
-      href: bazaarProject?.value?.community,
-      disabled: bazaarProject?.value?.community === '',
-    },
     {
       label: isMember ? 'Leave' : 'Join',
       icon: isMember ? <ExitToAppIcon /> : <PersonAddIcon />,
@@ -180,6 +178,12 @@ export const EntityBazaarInfoCard = () => {
       onClick: async () => {
         handleMembersClick();
       },
+    },
+    {
+      label: 'Community',
+      icon: <ChatIcon />,
+      href: bazaarProject?.value?.community,
+      disabled: bazaarProject?.value?.community === '',
     },
   ];
 

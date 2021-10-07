@@ -42,8 +42,6 @@ export interface BazaarApi {
 
   deleteMember(entity: Entity): Promise<void>;
 
-  deleteMembers(entity: Entity): Promise<void>;
-
   addMember(entity: Entity): Promise<void>;
 
   getEntities(): Promise<any>;
@@ -136,17 +134,6 @@ export class BazaarClient implements BazaarApi {
     });
   }
 
-  async deleteMembers(entity: Entity): Promise<void> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
-
-    await fetch(`${baseUrl}/members`, {
-      method: 'DELETE',
-      headers: {
-        entity_ref: stringifyEntityRef(entity),
-      },
-    });
-  }
-
   async getEntities(): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
@@ -157,11 +144,12 @@ export class BazaarClient implements BazaarApi {
 
   async deleteEntity(bazaarProject: BazaarProject): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+    const entityRef = bazaarProject.entityRef as string;
 
     await fetch(`${baseUrl}/metadata`, {
       method: 'DELETE',
       headers: {
-        entity_ref: bazaarProject.entityRef as string,
+        entity_ref: entityRef,
       },
     });
 
@@ -169,8 +157,7 @@ export class BazaarClient implements BazaarApi {
       await fetch(`${baseUrl}/members`, {
         method: 'DELETE',
         headers: {
-          user_id: this.identityApi.getUserId(),
-          entity_ref: bazaarProject.entityRef as string,
+          entity_ref: entityRef,
         },
       });
     }
