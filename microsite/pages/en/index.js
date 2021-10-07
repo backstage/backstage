@@ -20,21 +20,20 @@ class Index extends React.Component {
 
     return (
       <main className="MainContent">
-
         <Banner.Container>
-          <Banner.Dismissable storageKey="k8s-launch">
-            🚀Feature updates!{' '}
-            <a href = "https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta">
+          <Banner.Dismissable storageKey="2021-10-07-software-templates-techdocs-beta">
+            🚀 Feature updates!{' '}
+            <a href="https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta">
               Software Templates
-            </a>
-            {' '}and{' '}
-            <a href = "https://backstage.io/blog/2021/09/16/the-techdocs-beta-has-landed">
+            </a>{' '}
+            and{' '}
+            <a href="https://backstage.io/blog/2021/09/16/the-techdocs-beta-has-landed">
               TechDocs
-            </a>
-            {' '}are now in beta.
+            </a>{' '}
+            are now in beta.
           </Banner.Dismissable>
         </Banner.Container>
-        
+
         <Block small className="bg-black-grey stripe-bottom">
           <Block.Container>
             <Block.TextBox>
