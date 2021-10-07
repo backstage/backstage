@@ -16,6 +16,22 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { ObjectToFetch } from '../types/types';
+
+const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'pods',
+    objectType: 'pods',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'services',
+    objectType: 'services',
+  },
+]);
 
 describe('KubernetesFetcher', () => {
   let clientMock: any;
@@ -25,15 +41,10 @@ describe('KubernetesFetcher', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     clientMock = {
-      listPodForAllNamespaces: jest.fn(),
-      listServiceForAllNamespaces: jest.fn(),
+      listClusterCustomObject: jest.fn(),
     };
 
     kubernetesClientProvider = {
-      getCoreClientByClusterDetails: jest.fn(() => clientMock),
-      getAppsClientByClusterDetails: jest.fn(() => clientMock),
-      getAutoscalingClientByClusterDetails: jest.fn(() => clientMock),
-      getNetworkingBeta1Client: jest.fn(() => clientMock),
       getCustomObjectsClient: jest.fn(() => clientMock),
     };
 
@@ -44,7 +55,7 @@ describe('KubernetesFetcher', () => {
   });
 
   const testErrorResponse = async (errorResponse: any, expectedResult: any) => {
-    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
       body: {
         items: [
           {
@@ -56,7 +67,7 @@ describe('KubernetesFetcher', () => {
       },
     });
 
-    clientMock.listServiceForAllNamespaces.mockRejectedValue(errorResponse);
+    clientMock.listClusterCustomObject.mockRejectedValue(errorResponse);
 
     const result = await sut.fetchObjectsForService({
       serviceId: 'some-service',
@@ -66,7 +77,7 @@ describe('KubernetesFetcher', () => {
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      objectTypesToFetch: new Set(['pods', 'services']),
+      objectTypesToFetch: OBJECTS_TO_FETCH,
       labelSelector: '',
       customResources: [],
     });
@@ -87,19 +98,15 @@ describe('KubernetesFetcher', () => {
       ],
     });
 
-    expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(1);
-    expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(1);
+    expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
 
     expect(
-      kubernetesClientProvider.getAppsClientByClusterDetails.mock.calls.length,
-    ).toBe(2);
-    expect(
-      kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
+      kubernetesClientProvider.getCustomObjectsClient.mock.calls.length,
     ).toBe(2);
   };
 
   it('should return pods, services', async () => {
-    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
       body: {
         items: [
           {
@@ -111,7 +118,7 @@ describe('KubernetesFetcher', () => {
       },
     });
 
-    clientMock.listServiceForAllNamespaces.mockResolvedValueOnce({
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
       body: {
         items: [
           {
@@ -131,7 +138,7 @@ describe('KubernetesFetcher', () => {
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      objectTypesToFetch: new Set(['pods', 'services']),
+      objectTypesToFetch: OBJECTS_TO_FETCH,
       labelSelector: '',
       customResources: [],
     });
@@ -162,41 +169,11 @@ describe('KubernetesFetcher', () => {
       ],
     });
 
-    expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(1);
-    expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(1);
+    expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
 
     expect(
-      kubernetesClientProvider.getAppsClientByClusterDetails.mock.calls.length,
+      kubernetesClientProvider.getCustomObjectsClient.mock.calls.length,
     ).toBe(2);
-    expect(
-      kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
-    ).toBe(2);
-  });
-  it('should throw error on unknown type', () => {
-    expect(() =>
-      sut.fetchObjectsForService({
-        serviceId: 'some-service',
-        clusterDetails: {
-          name: 'cluster1',
-          url: 'http://localhost:9999',
-          serviceAccountToken: 'token',
-          authProvider: 'serviceAccount',
-        },
-        objectTypesToFetch: new Set<any>(['foo']),
-        labelSelector: '',
-        customResources: [],
-      }),
-    ).toThrow('unrecognised type=foo');
-
-    expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(0);
-    expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(0);
-
-    expect(
-      kubernetesClientProvider.getAppsClientByClusterDetails.mock.calls.length,
-    ).toBe(0);
-    expect(
-      kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
-    ).toBe(0);
   });
   // they're in testErrorResponse
   // eslint-disable-next-line jest/expect-expect
@@ -283,7 +260,7 @@ describe('KubernetesFetcher', () => {
     );
   });
   it('should always add a labelSelector query', async () => {
-    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
       body: {
         items: [
           {
@@ -295,7 +272,7 @@ describe('KubernetesFetcher', () => {
       },
     });
 
-    clientMock.listServiceForAllNamespaces.mockResolvedValueOnce({
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
       body: {
         items: [
           {
@@ -315,12 +292,12 @@ describe('KubernetesFetcher', () => {
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      objectTypesToFetch: new Set(['pods', 'services']),
+      objectTypesToFetch: OBJECTS_TO_FETCH,
       labelSelector: '',
       customResources: [],
     });
 
-    const mockCall = clientMock.listPodForAllNamespaces.mock.calls[0];
+    const mockCall = clientMock.listClusterCustomObject.mock.calls[0];
     const actualSelector = mockCall[mockCall.length - 1];
     const expectedSelector = 'backstage.io/kubernetes-id=some-service';
     expect(actualSelector).toBe(expectedSelector);

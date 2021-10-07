@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
+import {
+  AppsV1Api,
+  AutoscalingV1Api,
+  CoreV1Api,
+  ExtensionsV1beta1Ingress,
+  NetworkingV1beta1Api,
+  V1ConfigMap,
+  V1Deployment,
+  V1HorizontalPodAutoscaler,
+  V1Pod,
+  V1ReplicaSet,
+} from '@kubernetes/client-node';
 import type {
   FetchResponse,
   KubernetesFetchError,
 } from '@backstage/plugin-kubernetes-common';
-
-export interface CustomResource {
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
 
 export interface ObjectFetchParams {
   serviceId: string;
@@ -32,7 +38,7 @@ export interface ObjectFetchParams {
     | GKEClusterDetails
     | ServiceAccountClusterDetails
     | ClusterDetails;
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
 }
@@ -51,6 +57,17 @@ export interface FetchResponseWrapper {
 }
 
 // TODO fairly sure there's a easier way to do this
+
+export interface ObjectToFetch {
+  objectType: KubernetesObjectTypes;
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+export interface CustomResource extends ObjectToFetch {
+  objectType: 'customresources';
+}
 
 export type KubernetesObjectTypes =
   | 'pods'
