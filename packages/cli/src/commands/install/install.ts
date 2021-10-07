@@ -67,7 +67,7 @@ class PluginInstaller {
       step: stepDefinitionMap.dependencies.create({ dependencies }),
     });
 
-    for (const step of pkg.installationRecipe?.steps ?? []) {
+    for (const step of pkg.experimentalInstallationRecipe?.steps ?? []) {
       const { type } = step;
 
       const definition = stepDefinitions.find(d => d.type === type);

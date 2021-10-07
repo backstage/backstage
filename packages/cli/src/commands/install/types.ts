@@ -43,7 +43,7 @@ export type InstallationRecipe = {
 /** package.json data */
 export type PackageWithInstallRecipe = YarnInfoInspectData & {
   version: string;
-  installationRecipe?: InstallationRecipe;
+  experimentalInstallationRecipe?: InstallationRecipe;
 };
 
 export interface Step {

@@ -61,7 +61,7 @@
   "files": [
     "dist"
   ],
-  "installationRecipe": {
+  "experimentalInstallationRecipe": {
     "type": "frontend-plugin",
     "steps": [
       {
