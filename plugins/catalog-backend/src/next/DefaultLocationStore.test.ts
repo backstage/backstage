@@ -15,7 +15,7 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { v4 as uuid } from 'uuid';
-import { DatabaseManager } from './database/DatabaseManager';
+import { applyDatabaseMigrations } from './database/migrations';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
 describe('DefaultLocationStore', () => {
@@ -25,7 +25,7 @@ describe('DefaultLocationStore', () => {
 
   async function createLocationStore(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    await DatabaseManager.createDatabase(knex);
+    await applyDatabaseMigrations(knex);
     const connection = { applyMutation: jest.fn() };
     const store = new DefaultLocationStore(knex);
     await store.connect(connection);
