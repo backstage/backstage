@@ -29,7 +29,14 @@
       "getting-started/contributors",
       "getting-started/project-structure"
     ],
-    "CLI": ["cli/index", "cli/commands"],
+    "Local Development": [
+      {
+        "type": "subcategory",
+        "label": "CLI",
+        "ids": ["local-dev/cli-overview", "local-dev/cli-commands"]
+      },
+      "local-dev/linking-local-packages"
+    ],
     "Core Features": [
       {
         "type": "subcategory",

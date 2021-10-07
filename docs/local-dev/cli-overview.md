@@ -1,6 +1,6 @@
 ---
-id: index
-title: Overview
+id: cli-overview
+title: CLI Overview
 description: Overview of the Backstage CLI
 ---
 
@@ -20,7 +20,7 @@ Under the hood the CLI uses [Webpack](https://webpack.js.org/) for bundling,
 linting. It also includes custom tooling for working within Backstage apps, for
 example for keeping the app up to date and verifying static configuration.
 
-For a full list of CLI commands, see the [commands](./commands.md) page.
+For a full list of CLI commands, see the [commands](./cli-commands.md) page.
 
 ## Introduction
 
