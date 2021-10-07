@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readCspOptions } from './config';
+import { readCorsOptions, readCspOptions } from './config';
 
 describe('config', () => {
   describe('readCspOptions', () => {
@@ -40,6 +40,69 @@ describe('config', () => {
     it('rejects invalid value types', () => {
       const config = new ConfigReader({ csp: { key: [4] } });
       expect(() => readCspOptions(config)).toThrow(/wanted string-array/);
+    });
+  });
+
+  describe('readCorsOptions', () => {
+    it('reads single string', () => {
+      const mockCallback = jest.fn();
+      const config = new ConfigReader({ cors: { origin: 'https://*.value*' } });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(Function),
+        }),
+      );
+      const origin = cors?.origin as Function;
+      origin('https://a.value', mockCallback); // valid origin
+      origin('http://a.value', mockCallback); // invalid origin
+      origin(undefined, mockCallback); // when not origin needs to reject the call
+
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[1][0]).toBe(null);
+
+      expect(mockCallback.mock.calls[0][1]).toBe(true);
+      expect(mockCallback.mock.calls[1][1]).toBe(false);
+      expect(mockCallback.mock.calls[2][1]).toBe(false);
+    });
+
+    it('reads string array', () => {
+      const mockCallback = jest.fn();
+      const config = new ConfigReader({
+        cors: {
+          origin: ['http?(s)://*.value?(-+([0-9])).com', 'http://*.value'],
+        },
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(Function),
+        }),
+      );
+      const origin = cors?.origin as Function;
+      origin('https://a.b.c.value-9.com', mockCallback);
+      origin('http://a.value-999.com', mockCallback);
+      origin('http://a.value', mockCallback);
+      origin('http://a.valuex', mockCallback);
+
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[1][0]).toBe(null);
+      expect(mockCallback.mock.calls[2][0]).toBe(null);
+      expect(mockCallback.mock.calls[3][0]).toBe(null);
+
+      expect(mockCallback.mock.calls[0][1]).toBe(true);
+      expect(mockCallback.mock.calls[1][1]).toBe(true);
+      expect(mockCallback.mock.calls[2][1]).toBe(true);
+      expect(mockCallback.mock.calls[3][1]).toBe(false);
+    });
+
+    it('reads undefined origin', () => {
+      const config = new ConfigReader({
+        cors: {},
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(expect.objectContaining({}));
+      expect(cors?.origin).toBeUndefined();
     });
   });
 });
