@@ -20,7 +20,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
 import os from 'os';
 import { Task, templatingTask } from './lib/tasks';
@@ -94,12 +94,22 @@ async function buildApp(appDir: string) {
 
 async function moveApp(tempDir: string, destination: string, id: string) {
   await Task.forItem('moving', id, async () => {
-    const tempFiles = await recursive(tempDir).catch(error => {
-      throw new Error(`Failed to read temporary directory: ${error.message}`);
-    });
+    // Get the temporary files relative path in relation to the `tempDir` so
+    // that it can be used in resolving destination file path
+    const relativeTempFiles = await recursive(tempDir)
+      .then(files => {
+        return files.map(file => {
+          return relativePath(tempDir, file);
+        });
+      })
+      .catch(error => {
+        throw new Error(`Failed to read temporary directory: ${error.message}`);
+      });
 
-    for (const tempFile of tempFiles) {
-      const destFile = tempFile.replace(tempDir, destination);
+    for (const relativeTempFile of relativeTempFiles) {
+      const tempFile = resolvePath(tempDir, relativeTempFile);
+      const destFile = resolvePath(destination, relativeTempFile);
+
       await fs.copy(tempFile, destFile).catch(error => {
         throw new Error(
           `Failed to move file from ${tempFile} to ${destFile}: ${error.message}`,
