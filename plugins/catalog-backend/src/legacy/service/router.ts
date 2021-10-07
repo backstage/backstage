@@ -26,22 +26,27 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { LocationAnalyzer } from '../ingestion/types';
-import { HigherOrderOperation } from '../legacy/ingestion/types';
-import { RefreshService, LocationService, RefreshOptions } from '../next/types';
+import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
+import { LocationAnalyzer } from '../../ingestion/types';
+import { HigherOrderOperation } from '../ingestion/types';
+import {
+  RefreshService,
+  LocationService,
+  RefreshOptions,
+} from '../../next/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
-} from './request';
+} from '../../service/request';
 import {
   disallowReadonlyMode,
   requireRequestBody,
   validateRequestBody,
-} from './util';
+} from '../../service/util';
 
+/** @deprecated This was part of the legacy catalog engine */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
@@ -53,6 +58,7 @@ export interface RouterOptions {
   config: Config;
 }
 
+/** @deprecated This was part of the legacy catalog engine */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

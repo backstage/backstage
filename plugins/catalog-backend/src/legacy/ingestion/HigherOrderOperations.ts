@@ -33,7 +33,7 @@ import {
  * Placeholder for operations that span several catalogs and/or stretches out
  * in time.
  *
- * @deprecated This class was part of the legacy catalog engine
+ * @deprecated This was part of the legacy catalog engine
  */
 export class HigherOrderOperations implements HigherOrderOperation {
   constructor(

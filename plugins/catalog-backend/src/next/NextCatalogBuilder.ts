@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+  UrlReader,
+} from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -75,10 +79,18 @@ import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from './refresh';
-import { CatalogEnvironment } from '../service/CatalogBuilder';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+
+export type CatalogEnvironment = {
+  logger: Logger;
+  database: PluginDatabaseManager;
+  config: Config;
+  reader: UrlReader;
+};
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.

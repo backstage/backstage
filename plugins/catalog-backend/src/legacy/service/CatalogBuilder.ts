@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -25,17 +24,15 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import lodash from 'lodash';
-import { Logger } from 'winston';
 import {
-  DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
   EntitiesCatalog,
   LocationsCatalog,
-} from '../catalog';
-import { DatabaseManager } from '../database';
+} from '../../catalog';
+import { DatabaseEntitiesCatalog } from '../catalog';
+import { DatabaseManager } from '../../database';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -52,29 +49,22 @@ import {
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
-} from '../ingestion';
+} from '../../ingestion';
 import {
   HigherOrderOperation,
   HigherOrderOperations,
   LocationReaders,
-} from '../legacy/ingestion';
-import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
+} from '../ingestion';
+import { DefaultCatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+import { RepoLocationAnalyzer } from '../../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
-} from '../ingestion/processors/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
-import { LocationAnalyzer } from '../ingestion/types';
-import { NextCatalogBuilder } from '../next';
-
-export type CatalogEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-};
+} from '../../ingestion/processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
+import { LocationAnalyzer } from '../../ingestion/types';
+import { CatalogEnvironment, NextCatalogBuilder } from '../../next';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -94,6 +84,10 @@ export type CatalogEnvironment = {
  * - Processors can be added or replaced. These implement the functionality of
  *   reading, parsing, validating, and processing the entity data before it is
  *   persisted in the catalog.
+ *
+ * NOTE(freben): Not actually marking the class as deprecated formally, since
+ * it would appear to end users that even using `create` is deprecated. We will
+ * instead hot-swap the entire exported class when we are ready.
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
@@ -109,6 +103,7 @@ export class CatalogBuilder {
     return new NextCatalogBuilder(env);
   }
 
+  /** @deprecated Please use CatalogBuilder.create() instead */
   constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];

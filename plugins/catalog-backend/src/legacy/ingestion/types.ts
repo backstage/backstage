@@ -25,7 +25,7 @@ import {
 // LocationReader
 //
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type HigherOrderOperation = {
   addLocation(
     spec: LocationSpec,
@@ -34,7 +34,7 @@ export type HigherOrderOperation = {
   refreshAllLocations(): Promise<void>;
 };
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type AddLocationResult = {
   location: Location;
   entities: Entity[];
@@ -44,7 +44,7 @@ export type AddLocationResult = {
 // LocationReader
 //
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type LocationReader = {
   /**
    * Reads the contents of a location.
@@ -56,20 +56,20 @@ export type LocationReader = {
   read(location: LocationSpec): Promise<ReadLocationResult>;
 };
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type ReadLocationResult = {
   entities: ReadLocationEntity[];
   errors: ReadLocationError[];
 };
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type ReadLocationEntity = {
   location: LocationSpec;
   entity: Entity;
   relations: EntityRelationSpec[];
 };
 
-/** @deprecated This class was part of the legacy catalog engine */
+/** @deprecated This was part of the legacy catalog engine */
 export type ReadLocationError = {
   location: LocationSpec;
   error: Error;

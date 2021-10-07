@@ -26,17 +26,17 @@ import { ConflictError } from '@backstage/errors';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
-import type { Database, DbEntityResponse, Transaction } from '../database';
-import { DbEntitiesRequest } from '../database/types';
-import { basicEntityFilter } from '../service/request';
-import { durationText } from '../util/timing';
+import type { Database, DbEntityResponse, Transaction } from '../../database';
+import { DbEntitiesRequest } from '../../database/types';
+import { basicEntityFilter } from '../../service/request';
+import { durationText } from '../../util/timing';
 import type {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
   EntityUpsertRequest,
   EntityUpsertResponse,
-} from './types';
+} from '../../catalog/types';
 
 type BatchContext = {
   kind: string;
@@ -57,6 +57,7 @@ const BATCH_ATTEMPTS = 3;
 // The number of batches that may be ongoing at the same time.
 const BATCH_CONCURRENCY = 3;
 
+/** @deprecated This was part of the legacy catalog engine */
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly database: Database,
