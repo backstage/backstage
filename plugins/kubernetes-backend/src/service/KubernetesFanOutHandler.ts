@@ -42,32 +42,32 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
     group: '',
     apiVersion: 'v1',
-    plural: 'services',
-    objectType: 'services',
+    plural: 'configmaps',
+    objectType: 'configmaps',
   },
   {
     group: 'apps',
     apiVersion: 'v1',
     plural: 'deployments',
-    objectType: 'services',
+    objectType: 'deployments',
   },
   {
     group: 'apps',
     apiVersion: 'v1',
     plural: 'replicasets',
-    objectType: 'services',
+    objectType: 'replicasets',
   },
   {
     group: 'autoscaling',
     apiVersion: 'v1',
     plural: 'horizontalpodautoscalers',
-    objectType: 'services',
+    objectType: 'horizontalpodautoscalers',
   },
   {
     group: 'networking.k8s.io',
     apiVersion: 'v1',
     plural: 'ingresses',
-    objectType: 'services',
+    objectType: 'ingresses',
   },
 ];
 
