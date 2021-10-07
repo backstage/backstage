@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
+import { useAsync } from 'react-use';
 import { useEffect, useState } from 'react';
-import { useAsync, useAsyncFn } from 'react-use';
-import {
-  GetLatestReleaseResult,
-  GetRecentCommitsResultSingle,
-} from '../../../api/GitReleaseClient';
 
-import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import {
   CardHook,
   ComponentConfig,
   PatchOnSuccessArgs,
 } from '../../../types/types';
+import {
+  GetLatestReleaseResult,
+  GetRecentCommitsResultSingle,
+} from '../../../api/GitReleaseClient';
+import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
-import { useResponseSteps } from '../../../hooks/useResponseSteps';
-import { useUserContext } from '../../../contexts/UserContext';
 import { useApi } from '@backstage/core-plugin-api';
+import { usePatchDryRun } from './usePatchDryRun';
+import { useUserContext } from '../../../contexts/UserContext';
 
 export interface UsePatch {
   bumpedTag: string;
@@ -54,10 +54,25 @@ export function usePatch({
 }: UsePatch): CardHook<GetRecentCommitsResultSingle> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
-  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
-    useResponseSteps();
 
   const releaseBranchName = latestRelease.targetCommitish;
+
+  const {
+    run,
+    runInvoked,
+    lastCallRes,
+    abortIfError,
+    addStepToResponseSteps,
+    asyncCatcher,
+    responseSteps,
+    TOTAL_PATCH_PREP_STEPS,
+    selectedPatchCommit,
+  } = usePatchDryRun({
+    bumpedTag,
+    releaseBranchName,
+    project,
+    tagParts,
+  });
 
   /**
    * (1) Here is the branch we want to cherry-pick to:
@@ -65,27 +80,27 @@ export function usePatch({
    * > branchSha = branch.commit.sha
    * > branchTree = branch.commit.commit.tree.sha
    */
-  const [releaseBranchRes, run] = useAsyncFn(
-    async (selectedPatchCommit: GetRecentCommitsResultSingle) => {
-      const { branch: releaseBranch } = await pluginApiClient
-        .getBranch({
-          owner: project.owner,
-          repo: project.repo,
-          branch: releaseBranchName,
-        })
-        .catch(asyncCatcher);
+  const releaseBranchRes = useAsync(async () => {
+    abortIfError(lastCallRes.error);
+    if (!lastCallRes.value) return undefined;
 
-      addStepToResponseSteps({
-        message: `Fetched release branch "${releaseBranch.name}"`,
-        link: releaseBranch.links.html,
-      });
+    const { branch: releaseBranch } = await pluginApiClient
+      .getBranch({
+        owner: project.owner,
+        repo: project.repo,
+        branch: releaseBranchName,
+      })
+      .catch(asyncCatcher);
 
-      return {
-        releaseBranch,
-        selectedPatchCommit,
-      };
-    },
-  );
+    addStepToResponseSteps({
+      message: `Fetched release branch "${releaseBranch.name}"`,
+      link: releaseBranch.links.html,
+    });
+
+    return {
+      releaseBranch,
+    };
+  }, [lastCallRes.value, lastCallRes.error]);
 
   /**
    *  (2) Create a temporary commit on the branch, which extends as a sibling of
@@ -102,9 +117,7 @@ export function usePatch({
         owner: project.owner,
         repo: project.repo,
         message: `Temporary commit for patch ${tagParts.patch}`,
-        parents: [
-          releaseBranchRes.value.selectedPatchCommit.firstParentSha ?? '',
-        ],
+        parents: [selectedPatchCommit.firstParentSha ?? ''],
         tree: releaseBranchRes.value.releaseBranch.commit.commit.tree.sha,
       })
       .catch(asyncCatcher);
@@ -159,7 +172,7 @@ export function usePatch({
         owner: project.owner,
         repo: project.repo,
         base: releaseBranchName,
-        head: releaseBranchRes.value.selectedPatchCommit.sha,
+        head: selectedPatchCommit.sha,
       })
       .catch(asyncCatcher);
 
@@ -184,7 +197,6 @@ export function usePatch({
     if (!mergeRes.value || !releaseBranchRes.value) return undefined;
 
     const releaseBranchSha = releaseBranchRes.value.releaseBranch.commit.sha;
-    const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
 
     const { commit: cherryPickCommit } = await pluginApiClient.createCommit({
       owner: project.owner,
@@ -299,8 +311,6 @@ export function usePatch({
     abortIfError(createdReferenceRes.error);
     if (!createdReferenceRes.value || !releaseBranchRes.value) return undefined;
 
-    const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
-
     const { release } = await pluginApiClient
       .updateRelease({
         owner: project.owner,
@@ -343,16 +353,15 @@ ${selectedPatchCommit.commit.message}`,
           project,
           tagParts,
         },
-        patchCommitMessage:
-          releaseBranchRes.value.selectedPatchCommit.commit.message,
-        patchCommitUrl: releaseBranchRes.value.selectedPatchCommit.htmlUrl,
+        patchCommitMessage: selectedPatchCommit.commit.message,
+        patchCommitUrl: selectedPatchCommit.htmlUrl,
         patchedTag: updatedReleaseRes.value.tagName,
         previousTag: latestRelease.tagName,
         updatedReleaseName: updatedReleaseRes.value.name,
         updatedReleaseUrl: updatedReleaseRes.value.htmlUrl,
       });
     } catch (error) {
-      asyncCatcher(error);
+      asyncCatcher(error as Error);
     }
 
     addStepToResponseSteps({
@@ -361,7 +370,7 @@ ${selectedPatchCommit.commit.message}`,
     });
   }, [updatedReleaseRes.value, updatedReleaseRes.error]);
 
-  const TOTAL_STEPS = 9 + (!!onSuccess ? 1 : 0);
+  const TOTAL_STEPS = 9 + (!!onSuccess ? 1 : 0) + TOTAL_PATCH_PREP_STEPS;
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);
@@ -371,10 +380,6 @@ ${selectedPatchCommit.commit.message}`,
     progress,
     responseSteps,
     run,
-    runInvoked: Boolean(
-      releaseBranchRes.loading ||
-        releaseBranchRes.value ||
-        releaseBranchRes.error,
-    ),
+    runInvoked,
   };
 }

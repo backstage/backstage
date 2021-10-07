@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { ResponseStep } from '../types/types';
-
-const RESPONSE_STEP_FAILURE_ABORT: ResponseStep = {
-  message: 'Skipped due to error in previous step',
-  icon: 'failure',
-};
 
 export function useResponseSteps() {
   const [responseSteps, setResponseSteps] = useState<ResponseStep[]>([]);
@@ -32,7 +27,14 @@ export function useResponseSteps() {
 
   const asyncCatcher = (error: Error): never => {
     const responseStepError: ResponseStep = {
-      message: 'Something went wrong 🔥',
+      message: (
+        <b>
+          Something went wrong{' '}
+          <span role="img" aria-label="fire">
+            🔥
+          </span>
+        </b>
+      ),
       secondaryMessage: `Error message: ${
         error?.message ? error.message : 'unknown'
       }`,
@@ -45,7 +47,6 @@ export function useResponseSteps() {
 
   const abortIfError = (error?: Error) => {
     if (error) {
-      addStepToResponseSteps(RESPONSE_STEP_FAILURE_ABORT);
       throw error;
     }
   };

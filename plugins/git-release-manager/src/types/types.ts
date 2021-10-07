@@ -53,7 +53,7 @@ export interface PatchOnSuccessArgs {
 }
 
 export interface ResponseStep {
-  message: string | React.ReactNode;
+  message: React.ReactNode;
   secondaryMessage?: string | React.ReactNode;
   link?: string;
   icon?: 'success' | 'failure';
