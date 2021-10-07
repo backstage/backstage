@@ -18,6 +18,7 @@ export type ErrorLike = {
   name: string;
   message: string;
   stack?: string;
+  [unknownKeys: string]: unknown;
 };
 
 export function isError(val: unknown): val is ErrorLike {

@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
+import { isError } from './assertion';
+
 /** @public */
 export class CustomErrorBase extends Error {
   readonly cause?: Error;
 
-  constructor(message?: string, cause?: Error) {
+  constructor(message?: string, cause?: Error | unknown) {
+    let assignedCause: Error | undefined = undefined;
+
     let fullMessage = message;
-    if (cause) {
-      if (fullMessage) {
-        fullMessage += `; caused by ${cause}`;
+    if (cause !== undefined) {
+      let causeStr;
+      if (isError(cause)) {
+        assignedCause = cause;
+        causeStr = String(cause);
       } else {
-        fullMessage = `caused by ${cause}`;
+        causeStr = `unknown error '${cause}'`;
+      }
+      if (fullMessage) {
+        fullMessage += `; caused by ${causeStr}`;
+      } else {
+        fullMessage = `caused by ${causeStr}`;
       }
     }
 
@@ -33,6 +44,6 @@ export class CustomErrorBase extends Error {
     Error.captureStackTrace?.(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.cause = cause;
+    this.cause = assignedCause;
   }
 }

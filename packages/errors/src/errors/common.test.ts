@@ -18,7 +18,8 @@ import * as errors from './common';
 
 describe('common', () => {
   it('extends Error properly', () => {
-    for (const [name, E] of Object.entries(errors)) {
+    const { ForwardedError: _, ...optionalCauseErrors } = { ...errors };
+    for (const [name, E] of Object.entries(optionalCauseErrors)) {
       const error = new E('abcdef');
       expect(error.name).toBe(name);
       expect(error.message).toBe('abcdef');

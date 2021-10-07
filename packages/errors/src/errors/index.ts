@@ -19,6 +19,7 @@ export type { ErrorLike } from './assertion';
 export {
   AuthenticationError,
   ConflictError,
+  ForwardedError,
   InputError,
   NotAllowedError,
   NotFoundError,
