@@ -193,7 +193,7 @@ getEntity is now a function that returns a Promise.
 **BREAKING** The getEntity function now returns a Promise and **must** be awaited from now on.
 ```
 
-### Changes to code should include a diff of the files that needs updating
+### Changes to code should include a diff of the files that need updating
 
 #### Bad
 
