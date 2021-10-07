@@ -352,8 +352,8 @@ export function usePatchDryRun({
    * (9) Delete temp patch branch
    */
   const deleteTempPatchBranchRes = useAsync(async () => {
-    abortIfError(cherryPickRes.error);
-    if (!cherryPickRes.value) return undefined;
+    abortIfError(updatedRefRes.error);
+    if (!updatedRefRes.value) return undefined;
 
     const { success: deletedReferenceSuccess } =
       await pluginApiClient.deleteRef({
