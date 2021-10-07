@@ -221,9 +221,9 @@ sanitize = false
 # precedence, should any values overlap. Secret blocks without the path
 # defined are meaningless and are discarded. If secret names conflict with
 # prefix names, secret names will take precedence.
-secret {
-  # See `prefix` as they are the same options.
-}
+# secret {
+#   # See `prefix` as they are the same options.
+# }
 
 # This block defines the configuration for connecting to a syslog server for
 # logging.
@@ -242,77 +242,77 @@ upcase = false
 
 # This denotes the start of the configuration section for Vault. All values
 # contained in this section pertain to Vault.
-vault {
-  # This is the address of the Vault leader. The protocol (http(s)) portion
-  # of the address is required.
-  address = "https://vault.service.consul:8200"
+# vault {
+#   # This is the address of the Vault leader. The protocol (http(s)) portion
+#   # of the address is required.
+#   address = "https://vault.service.consul:8200"
 
-  # This is the token to use when communicating with the Vault server.
-  # Like other tools that integrate with Vault, Envconsul makes the
-  # assumption that you provide it with a Vault token; it does not have the
-  # incorporated logic to generate tokens via Vault's auth methods.
-  #
-  # This value can also be specified via the environment variable VAULT_TOKEN.
-  token = "abcd1234"
+#   # This is the token to use when communicating with the Vault server.
+#   # Like other tools that integrate with Vault, Envconsul makes the
+#   # assumption that you provide it with a Vault token; it does not have the
+#   # incorporated logic to generate tokens via Vault's auth methods.
+#   #
+#   # This value can also be specified via the environment variable VAULT_TOKEN.
+#   token = "abcd1234"
 
-  # This tells Envconsul to load the Vault token from the contents of a file.
-  # If this field is specified:
-  # - by default Envconsul will not try to renew the Vault token, if you want it
-  # to renew you will need to specify renew_token = true as below.
-  # - Envconsul will periodically stat the file and update the token if it has
-  # changed.
-  # vault_agent_token_file = "/path/to/vault/agent/token/file"
+#   # This tells Envconsul to load the Vault token from the contents of a file.
+#   # If this field is specified:
+#   # - by default Envconsul will not try to renew the Vault token, if you want it
+#   # to renew you will need to specify renew_token = true as below.
+#   # - Envconsul will periodically stat the file and update the token if it has
+#   # changed.
+#   # vault_agent_token_file = "/path/to/vault/agent/token/file"
 
 
-  # This tells Envconsul that the provided token is actually a wrapped
-  # token that should be unwrapped using Vault's cubbyhole response wrapping
-  # before being used. Please see Vault's cubbyhole response wrapping
-  # documentation for more information.
-  unwrap_token = true
+#   # This tells Envconsul that the provided token is actually a wrapped
+#   # token that should be unwrapped using Vault's cubbyhole response wrapping
+#   # before being used. Please see Vault's cubbyhole response wrapping
+#   # documentation for more information.
+#   unwrap_token = true
 
-  # This option tells Envconsul to automatically renew the Vault token given.
-  # If you are unfamiliar with Vault's architecture, Vault requires tokens be
-  # renewed at some regular interval or they will be revoked. Envconsul will
-  # automatically renew the token at half the lease duration of the token. The
-  # default value is true, but this option can be disabled if you want to renew
-  # the Vault token using an out-of-band process.
-  #
-  # Note that secrets specified as a prefix are always renewed, even if this
-  # option is set to false. This option only applies to the top-level Vault
-  # token itself.
-  renew_token = true
+#   # This option tells Envconsul to automatically renew the Vault token given.
+#   # If you are unfamiliar with Vault's architecture, Vault requires tokens be
+#   # renewed at some regular interval or they will be revoked. Envconsul will
+#   # automatically renew the token at half the lease duration of the token. The
+#   # default value is true, but this option can be disabled if you want to renew
+#   # the Vault token using an out-of-band process.
+#   #
+#   # Note that secrets specified as a prefix are always renewed, even if this
+#   # option is set to false. This option only applies to the top-level Vault
+#   # token itself.
+#   renew_token = true
 
-  # This section details the retry options for connecting to Vault. Please see
-  # the retry options in the Consul section for more information (they are the
-  # same).
-  retry {
-    # ...
-  }
+#   # This section details the retry options for connecting to Vault. Please see
+#   # the retry options in the Consul section for more information (they are the
+#   # same).
+#   retry {
+#     # ...
+#   }
 
-  # This section details the SSL options for connecting to the Vault server.
-  # Please see the SSL options in the Consul section for more information (they
-  # are the same).
-  ssl {
-    # ...
-  }
-}
+#   # This section details the SSL options for connecting to the Vault server.
+#   # Please see the SSL options in the Consul section for more information (they
+#   # are the same).
+#   ssl {
+#     # ...
+#   }
+# }
 
 # This specifies a service in Consul to watch. This may be specified multiple
 # times to watch multiple prefixes, and the bottom-most service takes
 # precedence, should any values overlap.
-service {
-  # This is the query of the service in Consul from which to read data.
-  query = "my-service"
+# service {
+#   # This is the query of the service in Consul from which to read data.
+#   query = "my-service"
 
-  # This tells Envconsul to use a custom formatter when printing the key. The
-  # value between `{{ key }}` and `{{ service }}` will be replaced with the key
-  # and service name. Default format `{{ service }}/{{ key }}`
-  format_id = "pg/{{ key }}"
-  format_name = "pg/{{ key }}"
-  format_address = "pg/host"
-  format_tag = "pg/{{ key }}"
-  format_port = "pg/{{ key }}"
-}
+#   # This tells Envconsul to use a custom formatter when printing the key. The
+#   # value between `{{ key }}` and `{{ service }}` will be replaced with the key
+#   # and service name. Default format `{{ service }}/{{ key }}`
+#   format_id = "pg/{{ key }}"
+#   format_name = "pg/{{ key }}"
+#   format_address = "pg/host"
+#   format_tag = "pg/{{ key }}"
+#   format_port = "pg/{{ key }}"
+# }
 
 # This is the quiescence timers; it defines the minimum and maximum amount of
 # time to wait for the cluster to reach a consistent state before relaunching
