@@ -40,8 +40,13 @@ export type ButtonProps = MaterialButtonProps &
  */
 declare function ButtonType(props: ButtonProps): JSX.Element;
 
+/**
+ * This wrapper is here to reset the color of the Link and make typescript happy.
+ */
+const LinkWrapper = (props: LinkProps) => <Link {...props} color="initial" />;
+
 const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
-  <MaterialButton ref={ref} component={Link} {...props} />
+  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
 )) as { (props: ButtonProps): JSX.Element };
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
