@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '../database';
+import { DatabaseManager } from '../../database';
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 const bootstrapLocation = {

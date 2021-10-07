@@ -26,12 +26,12 @@ import {
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import lodash from 'lodash';
+import { EntitiesCatalog } from '../../catalog';
 import {
+  DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
-  EntitiesCatalog,
   LocationsCatalog,
-} from '../../catalog';
-import { DatabaseEntitiesCatalog } from '../catalog';
+} from '../catalog';
 import { DatabaseManager } from '../../database';
 import {
   AnnotateLocationEntityProcessor,

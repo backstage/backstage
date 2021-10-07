@@ -33,11 +33,8 @@ import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
-import {
-  DatabaseLocationsCatalog,
-  EntitiesCatalog,
-  LocationsCatalog,
-} from '../catalog';
+import { EntitiesCatalog } from '../catalog';
+import { DatabaseLocationsCatalog, LocationsCatalog } from '../legacy/catalog';
 import { CommonDatabase } from '../database/CommonDatabase';
 import {
   AnnotateLocationEntityProcessor,
@@ -289,6 +286,7 @@ export class NextCatalogBuilder {
    */
   async build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
+    /** @deprecated This will be removed */
     locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;

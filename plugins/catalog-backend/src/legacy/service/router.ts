@@ -26,7 +26,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
+import { EntitiesCatalog } from '../../catalog';
+import { LocationsCatalog } from '../catalog';
 import { LocationAnalyzer } from '../../ingestion/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import {
@@ -124,7 +125,7 @@ export async function createRouter(
         disallowReadonlyMode(readonlyEnabled);
 
         const body = await requireRequestBody(req);
-        const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
+        const [result] = await entitiesCatalog.batchAddOrUpdateEntities!([
           { entity: body as Entity, relations: [] },
         ]);
         const response = await entitiesCatalog.entities({

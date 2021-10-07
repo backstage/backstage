@@ -596,7 +596,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
 // Warning: (ae-missing-release-tag) "DatabaseLocationsCatalog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(database: Database);
   // (undocumented)
@@ -1157,7 +1157,7 @@ export class LocationReaders implements LocationReader {
 
 // Warning: (ae-missing-release-tag) "LocationResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationResponse = {
   data: Location_2;
   currentStatus: LocationUpdateStatus;
@@ -1165,7 +1165,7 @@ export type LocationResponse = {
 
 // Warning: (ae-missing-release-tag) "LocationsCatalog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationsCatalog = {
   addLocation(location: Location_2): Promise<Location_2>;
   removeLocation(id: string): Promise<void>;
@@ -1220,7 +1220,7 @@ export interface LocationStore {
 
 // Warning: (ae-missing-release-tag) "LocationUpdateLogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationUpdateLogEvent = {
   id: string;
   status: 'fail' | 'success';
@@ -1232,7 +1232,7 @@ export type LocationUpdateLogEvent = {
 
 // Warning: (ae-missing-release-tag) "LocationUpdateStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationUpdateStatus = {
   timestamp: string | null;
   status: string | null;

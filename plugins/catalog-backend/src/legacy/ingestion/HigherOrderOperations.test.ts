@@ -16,14 +16,15 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
-import { LocationUpdateStatus } from '../../catalog/types';
+import { EntitiesCatalog } from '../../catalog';
+import { LocationsCatalog } from '../catalog';
+import { LocationUpdateStatus } from '../catalog/types';
 import { DatabaseLocationUpdateLogStatus } from '../../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
 import { LocationReader } from './types';
 
 describe('HigherOrderOperations', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let entitiesCatalog: jest.Mocked<Required<EntitiesCatalog>>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let locationReader: jest.Mocked<LocationReader>;
   let higherOrderOperation: HigherOrderOperations;
