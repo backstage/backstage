@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
 const BITBUCKET_HOST = 'bitbucket.org';
