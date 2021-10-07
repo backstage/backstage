@@ -6,7 +6,7 @@ description: How to write your own actions
 
 If you're wanting to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used along side our
-[built-in actions](./builtin-actions.md)
+[built-in actions](./builtin-actions.md).
 
 ### Writing your Custom Action
 
@@ -60,7 +60,7 @@ close over the `TemplateAction`. Take a look at our
 [built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
 for reference.
 
-We set the type generic to `{ contents: string, filename: string}` which is
+We set the type generic to `{ contents: string, filename: string }` which is
 there to set the type on the handler `ctx` `inputs` property so we get good type
 checking. This could be generated from the next part of this guide, the `input`
 schema, but it's not supported right now. Feel free to contribute 🚀 👍.
@@ -68,12 +68,12 @@ schema, but it's not supported right now. Feel free to contribute 🚀 👍.
 The `createTemplateAction` takes an object which specifies the following:
 
 - `id` - a unique ID for your custom action. We encourage you to namespace these
-  in someway so they wont collide with future built-in actions that we may ship
+  in someway so they won't collide with future built-in actions that we may ship
   with the `scaffolder-backend` plugin.
 - `schema.input` - A JSON schema for input values to your function
 - `schema.output` - A JSON schema for values which are outputted from the
   function using `ctx.output`
-- `handler` the actual code which is run part of the action, with a context.
+- `handler` the actual code which is run part of the action, with a context
 
 #### The context object
 
@@ -81,7 +81,7 @@ When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
-- `ctx.logger` - a winston logger for additional logging inside your action
+- `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
 - `ctx.input` - an object which should match the JSON schema provided in the
