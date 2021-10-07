@@ -110,6 +110,7 @@ nav:
       - Plugin Development: 'plugins/plugin-development.md'
       - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
       - Composability System: 'plugins/composability.md'
+      - Plugin Analytics: 'plugins/analytics.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'

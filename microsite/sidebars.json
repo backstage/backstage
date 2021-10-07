@@ -165,6 +165,7 @@
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
+      "plugins/analytics",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
