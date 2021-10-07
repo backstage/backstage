@@ -1,5 +1,5 @@
 ---
-'@tutu/backstage-plugin-auth-backend': patch
+'@backstage/plugin-auth-backend': patch
 ---
 
 Added extra configuration params for saml adfs identity
