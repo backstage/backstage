@@ -1,5 +1,21 @@
 # @backstage/plugin-user-settings
 
+## 0.3.8
+
+### Patch Changes
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
 ## 0.3.7
 
 ### Patch Changes

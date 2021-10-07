@@ -1,5 +1,16 @@
 # @backstage/plugin-kafka
 
+## 0.2.18
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
 ## 0.2.17
 
 ### Patch Changes

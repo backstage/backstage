@@ -1,5 +1,12 @@
 # @backstage/integration
 
+## 0.6.7
+
+### Patch Changes
+
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+
 ## 0.6.6
 
 ### Patch Changes

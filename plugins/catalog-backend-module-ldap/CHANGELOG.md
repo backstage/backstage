@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.3
+
+### Patch Changes
+
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.16.0
+  - @backstage/catalog-model@0.9.4
+
 ## 0.3.2
 
 ### Patch Changes

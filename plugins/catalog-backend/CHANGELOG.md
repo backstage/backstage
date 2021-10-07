@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend
 
+## 0.16.0
+
+### Minor Changes
+
+- 2c5bab2f82: Errors emitted from processors are now considered a failure during entity processing and will prevent entities from being updated. The impact of this change is that when errors are emitted while for example reading a location, then ingestion effectively stops there. If you emit a number of entities along with just one error, then the error will be persisted on the current entity but the emitted entities will _not_ be stored. This fixes [a bug](https://github.com/backstage/backstage/issues/6973) where entities would get marked as orphaned rather than put in an error state when the catalog failed to read a location.
+
+  In previous versions of the catalog, an emitted error was treated as a less severe problem than an exception thrown by the processor. We are now ensuring that the behavior is consistent for these two cases. Even though both thrown and emitted errors are treated the same, emitted errors stay around as they allow you to highlight multiple errors related to an entity at once. An emitted error will also only prevent the writing of the processing result, while a thrown error will skip the rest of the processing steps.
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- f66c38148a: Avoid duplicate logging of entity processing errors.
+- 426d5031a6: A number of classes and types, that were part of the old catalog engine implementation, are now formally marked as deprecated. They will be removed entirely from the code base in a future release.
+
+  After upgrading to this version, it is recommended that you take a look inside your `packages/backend/src/plugins/catalog.ts` file (using a code editor), to see if you are using any functionality that it marks as deprecated. If you do, please migrate away from it at your earliest convenience.
+
+  Migrating to using the new engine implementation is typically a matter of calling `CatalogBuilder.create({ ... })` instead of `new CatalogBuilder({ ... })`.
+
+  If you are seeing deprecation warnings for `createRouter`, you can either use the `router` field from the return value from updated catalog builder, or temporarily call `createNextRouter`. The latter will however also be deprecated at a later time.
+
+- 7b78dd17e6: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
 ## 0.15.0
 
 ### Minor Changes

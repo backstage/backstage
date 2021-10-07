@@ -1,5 +1,15 @@
 # @backstage/techdocs-common
 
+## 0.10.3
+
+### Patch Changes
+
+- 156421c59a: Sets the default techdocs docker image to the [latest released version - v0.3.3](https://github.com/backstage/techdocs-container/releases/tag/v0.3.3).
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/integration@0.6.7
+
 ## 0.10.2
 
 ### Patch Changes
