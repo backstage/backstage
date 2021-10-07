@@ -73,7 +73,7 @@ The `createTemplateAction` takes an object which specifies the following:
 - `schema.input` - A JSON schema for input values to your function
 - `schema.output` - A JSON schema for values which are outputted from the
   function using `ctx.output`
-- `handler` the actual code which is run part of the action, with a context
+- `handler` - the actual code which is run part of the action, with a context
 
 #### The context object
 
