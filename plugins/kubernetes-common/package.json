@@ -7,17 +7,17 @@
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugin/kubernetes-common"
+    "directory": "plugins/kubernetes-common"
   },
   "keywords": [
-    "techdocs",
     "kubernetes"
   ],
   "files": [
