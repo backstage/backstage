@@ -42,15 +42,15 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.13",
-    "@backstage/core-app-api": "^0.1.14",
-    "@backstage/dev-utils": "^0.2.10",
+    "@backstage/cli": "^0.7.14",
+    "@backstage/core-app-api": "^0.1.15",
+    "@backstage/dev-utils": "^0.2.11",
     "@backstage/test-utils": "^0.1.17",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
-    "@types/jest": "*",
-    "@types/node": "*",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.14.32",
     "msw": "^0.29.0",
     "cross-fetch": "^3.0.6"
   },
