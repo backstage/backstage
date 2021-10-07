@@ -69,6 +69,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
     .option('--inspect', 'Enable debugger')
+    .option('--inspect-brk', 'Enable debugger with await to attach debugger')
     // We don't actually use the config in the CLI, just pass them on to the NodeJS process
     .option(...configOption)
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
