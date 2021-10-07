@@ -52,7 +52,7 @@ The wizard will ask you
 - The database type to use for the backend. For this guide, you'll be using the SQLite option.
 
 <p align='center'>
-  <img src='../assets/getting-started/bs-wizard.png' alt='Screenshot of the wizard asking for a name for the app, and a selection menu for the database.'>
+  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app, and a selection menu for the database.'>
 </p>
 
 ### Run the Backstage app
@@ -65,14 +65,14 @@ yarn dev
 ```
 
 <p align='center'>
-  <img src='../assets/getting-started/bs-getting-started-startup.png' alt='Screenshot of the command output, with the message webpack compiled successfully.'>
+  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message webpack compiled successfully.'>
 </p>
 
 It might take a little while, but as soon as the message `[0] webpack compiled successfully` appears, you can open a browser and directly navigate to
 your freshly installed Backstage portal at `http://localhost:3000`. You can start exploring the demo immediately.
 
 <p align='center'>
-  <img src='../assets/getting-started/bs-getting-started-portal.png' alt='Screenshot of the Backstage portal homescreen.'>
+  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal homescreen.'>
 </p>
 
 Congratulations! That should be it. Let us know how it went:
