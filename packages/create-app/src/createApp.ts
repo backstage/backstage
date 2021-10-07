@@ -147,7 +147,7 @@ export default async (cmd: Command): Promise<void> => {
   // Use `--path` argument as applicaiton directory when specified, otherwise
   // create a directory using `answers.name`
   const appDir = cmd.path
-    ? resolvePath(cmd.path)
+    ? resolvePath(paths.targetDir, cmd.path)
     : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
