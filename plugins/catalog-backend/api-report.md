@@ -435,7 +435,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 
 // Warning: (ae-missing-release-tag) "CommonDatabase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export class CommonDatabase implements Database {
   constructor(database: Knex, logger: Logger_2);
   // (undocumented)
@@ -499,7 +499,7 @@ export class CommonDatabase implements Database {
 
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CreateDatabaseOptions = {
   logger: Logger_2;
 };
@@ -528,7 +528,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // Warning: (ae-missing-release-tag) "Database" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export type Database = {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
   addEntities(
@@ -624,7 +624,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
 
 // Warning: (ae-missing-release-tag) "DatabaseLocationUpdateLogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DatabaseLocationUpdateLogEvent = {
   id: string;
   status: DatabaseLocationUpdateLogStatus;
@@ -646,7 +646,7 @@ export enum DatabaseLocationUpdateLogStatus {
 
 // Warning: (ae-missing-release-tag) "DatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class DatabaseManager {
   // (undocumented)
   static createDatabase(
@@ -665,7 +665,7 @@ export class DatabaseManager {
 
 // Warning: (ae-missing-release-tag) "DbEntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbEntitiesRequest = {
   filter?: EntityFilter;
   pagination?: EntityPagination;
@@ -673,7 +673,7 @@ export type DbEntitiesRequest = {
 
 // Warning: (ae-missing-release-tag) "DbEntitiesResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbEntitiesResponse = {
   entities: DbEntityResponse[];
   pageInfo: DbPageInfo;
@@ -681,7 +681,7 @@ export type DbEntitiesResponse = {
 
 // Warning: (ae-missing-release-tag) "DbEntityRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbEntityRequest = {
   locationId?: string;
   entity: Entity;
@@ -690,7 +690,7 @@ export type DbEntityRequest = {
 
 // Warning: (ae-missing-release-tag) "DbEntityResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
@@ -698,7 +698,7 @@ export type DbEntityResponse = {
 
 // Warning: (ae-missing-release-tag) "DbLocationsRow" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbLocationsRow = {
   id: string;
   type: string;
@@ -707,7 +707,7 @@ export type DbLocationsRow = {
 
 // Warning: (ae-missing-release-tag) "DbLocationsRowWithStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbLocationsRowWithStatus = DbLocationsRow & {
   status: string | null;
   timestamp: string | null;
@@ -716,7 +716,7 @@ export type DbLocationsRowWithStatus = DbLocationsRow & {
 
 // Warning: (ae-missing-release-tag) "DbPageInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DbPageInfo =
   | {
       hasNextPage: false;
@@ -812,7 +812,7 @@ export function durationText(startTimestamp: [number, number]): string;
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
   removeEntityByUid(uid: string): Promise<void>;
-  batchAddOrUpdateEntities(
+  batchAddOrUpdateEntities?(
     requests: EntityUpsertRequest[],
     options?: {
       locationId?: string;
@@ -943,7 +943,7 @@ export type EntityProviderMutation =
 
 // Warning: (ae-missing-release-tag) "EntityUpsertRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type EntityUpsertRequest = {
   entity: Entity;
   relations: EntityRelationSpec[];
@@ -951,7 +951,7 @@ export type EntityUpsertRequest = {
 
 // Warning: (ae-missing-release-tag) "EntityUpsertResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type EntityUpsertResponse = {
   entityId: string;
   entity?: Entity;
@@ -1487,7 +1487,7 @@ export class StaticLocationProcessor implements StaticLocationProcessor {
 
 // Warning: (ae-missing-release-tag) "Transaction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export type Transaction = {
   rollback(): Promise<unknown>;
 };
@@ -1512,20 +1512,20 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/catalog/types.d.ts:52:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:53:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:54:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/database/types.d.ts:125:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:131:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:132:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:146:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:147:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:148:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:150:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:163:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:164:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/database/types.d.ts:165:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/catalog/types.d.ts:97:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:98:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:99:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 // src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:104:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:105:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:119:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:120:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:121:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:123:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:136:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:137:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/legacy/database/types.d.ts:138:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/ingestion/types.d.ts:19:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 ```

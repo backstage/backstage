@@ -18,8 +18,7 @@ import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import knexFactory, { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-import { CommonDatabase } from '../../database/CommonDatabase';
-import { Database } from '../../database/types';
+import { CommonDatabase, Database } from '../../legacy';
 
 export type CreateDatabaseOptions = {
   logger: Logger;

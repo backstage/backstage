@@ -34,8 +34,12 @@ import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
 import { EntitiesCatalog } from '../catalog';
-import { DatabaseLocationsCatalog, LocationsCatalog } from '../legacy/catalog';
-import { CommonDatabase } from '../database/CommonDatabase';
+import {
+  DatabaseLocationsCatalog,
+  LocationsCatalog,
+  CommonDatabase,
+} from '../legacy';
+
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,

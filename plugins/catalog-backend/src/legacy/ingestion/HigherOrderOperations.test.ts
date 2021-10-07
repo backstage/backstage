@@ -19,7 +19,7 @@ import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { EntitiesCatalog } from '../../catalog';
 import { LocationsCatalog } from '../catalog';
 import { LocationUpdateStatus } from '../catalog/types';
-import { DatabaseLocationUpdateLogStatus } from '../../database/types';
+import { DatabaseLocationUpdateLogStatus } from '../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
 import { LocationReader } from './types';
 

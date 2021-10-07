@@ -26,6 +26,7 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+/** @deprecated This was part of the legacy catalog engine */
 export type CreateDatabaseOptions = {
   logger: Logger;
 };
@@ -34,6 +35,7 @@ const defaultOptions: CreateDatabaseOptions = {
   logger: getVoidLogger(),
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export class DatabaseManager {
   public static async createDatabase(
     knex: Knex,

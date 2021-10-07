@@ -15,11 +15,11 @@
  */
 
 import { Location } from '@backstage/catalog-model';
-import type { Database } from '../../database';
+import type { Database } from '../database';
 import {
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
-} from '../../database/types';
+} from '../database/types';
 import { LocationResponse, LocationsCatalog } from './types';
 
 /** @deprecated This was part of the legacy catalog engine */

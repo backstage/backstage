@@ -20,17 +20,8 @@ import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
-import { Transaction } from '../../database';
-import { DeferredEntity } from '../processing/types';
-import { RefreshIntervalFunction } from '../refresh';
-import { rethrowError, timestampToDateTime } from './conversion';
-import { initDatabaseMetrics } from './metrics';
 import {
-  DbRefreshStateReferencesRow,
-  DbRefreshStateRow,
-  DbRelationsRow,
-} from './tables';
-import {
+  Transaction,
   GetProcessableEntitiesResult,
   ProcessingDatabase,
   RefreshStateItem,
@@ -41,6 +32,16 @@ import {
   ListAncestorsResult,
   UpdateEntityCacheOptions,
 } from './types';
+import { DeferredEntity } from '../processing/types';
+import { RefreshIntervalFunction } from '../refresh';
+import { rethrowError, timestampToDateTime } from './conversion';
+import { initDatabaseMetrics } from './metrics';
+import {
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+  DbRelationsRow,
+} from './tables';
+
 import { generateStableHash } from './util';
 
 // The number of items that are sent per batch to the database layer, when

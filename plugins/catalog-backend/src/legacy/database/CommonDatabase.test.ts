@@ -16,7 +16,7 @@
 
 import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
-import { basicEntityFilter } from '../service/request';
+import { basicEntityFilter } from '../../service/request';
 import { DatabaseManager } from './DatabaseManager';
 import type {
   DbEntityRequest,

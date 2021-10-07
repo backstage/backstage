@@ -32,7 +32,7 @@ import {
   DatabaseLocationsCatalog,
   LocationsCatalog,
 } from '../catalog';
-import { DatabaseManager } from '../../database';
+import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,

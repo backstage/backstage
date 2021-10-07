@@ -22,4 +22,7 @@ export type {
   EntityUpsertRequest,
   EntityUpsertResponse,
   PageInfo,
+  EntitiesSearchFilter,
+  EntityFilter,
+  EntityPagination,
 } from './types';
