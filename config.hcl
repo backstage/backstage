@@ -245,7 +245,7 @@ upcase = false
 vault {
   # This is the address of the Vault leader. The protocol (http(s)) portion
   # of the address is required.
-  # address = "https://vault.service.consul:8200"
+  address = "https://vault.service.consul:8200"
 
   # This is the token to use when communicating with the Vault server.
   # Like other tools that integrate with Vault, Envconsul makes the
@@ -253,7 +253,7 @@ vault {
   # incorporated logic to generate tokens via Vault's auth methods.
   #
   # This value can also be specified via the environment variable VAULT_TOKEN.
-  # token = "abcd1234"
+  token = "abcd1234"
 
   # This tells Envconsul to load the Vault token from the contents of a file.
   # If this field is specified:
@@ -268,7 +268,7 @@ vault {
   # token that should be unwrapped using Vault's cubbyhole response wrapping
   # before being used. Please see Vault's cubbyhole response wrapping
   # documentation for more information.
-  # unwrap_token = true
+  unwrap_token = true
 
   # This option tells Envconsul to automatically renew the Vault token given.
   # If you are unfamiliar with Vault's architecture, Vault requires tokens be
@@ -280,7 +280,7 @@ vault {
   # Note that secrets specified as a prefix are always renewed, even if this
   # option is set to false. This option only applies to the top-level Vault
   # token itself.
-  # renew_token = true
+  renew_token = true
 
   # This section details the retry options for connecting to Vault. Please see
   # the retry options in the Consul section for more information (they are the
@@ -295,23 +295,24 @@ vault {
   ssl {
     # ...
   }
+}
 
 # This specifies a service in Consul to watch. This may be specified multiple
 # times to watch multiple prefixes, and the bottom-most service takes
 # precedence, should any values overlap.
-# service {
-#   # This is the query of the service in Consul from which to read data.
-#   query = "my-service"
+service {
+  # This is the query of the service in Consul from which to read data.
+  query = "my-service"
 
-#   # This tells Envconsul to use a custom formatter when printing the key. The
-#   # value between `{{ key }}` and `{{ service }}` will be replaced with the key
-#   # and service name. Default format `{{ service }}/{{ key }}`
-#   format_id = "pg/{{ key }}"
-#   format_name = "pg/{{ key }}"
-#   format_address = "pg/host"
-#   format_tag = "pg/{{ key }}"
-#   format_port = "pg/{{ key }}"
-# }
+  # This tells Envconsul to use a custom formatter when printing the key. The
+  # value between `{{ key }}` and `{{ service }}` will be replaced with the key
+  # and service name. Default format `{{ service }}/{{ key }}`
+  format_id = "pg/{{ key }}"
+  format_name = "pg/{{ key }}"
+  format_address = "pg/host"
+  format_tag = "pg/{{ key }}"
+  format_port = "pg/{{ key }}"
+}
 
 # This is the quiescence timers; it defines the minimum and maximum amount of
 # time to wait for the cluster to reach a consistent state before relaunching
