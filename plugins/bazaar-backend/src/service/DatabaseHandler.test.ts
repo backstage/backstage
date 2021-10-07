@@ -15,6 +15,7 @@
  */
 
 import { DatabaseHandler } from './DatabaseHandler';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 
 const members: Array<any> = [
   {
@@ -24,15 +25,24 @@ const members: Array<any> = [
 ];
 
 describe('DatabaseHandler', () => {
-  let database: DatabaseHandler;
-  beforeAll(async () => {
-    database = await DatabaseHandler.createTestDatabase();
-    await database.addMember(members[0].user_id, members[0].entity_ref);
+  const databases = TestDatabases.create({
+    ids: ['POSTGRES_13'],
   });
 
-  it("can get members that's in the database", async () => {
-    const cov: any[] = await database.getMembers('project1');
-    expect(cov[0].entity_ref).toEqual(members[0].entity_ref);
-    expect(cov[0].user_id).toEqual(members[0].user_id);
-  });
+  async function createDatabaseHandler(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    return await DatabaseHandler.create({ database: knex });
+  }
+
+  it.each(databases.eachSupportedId())(
+    'should do a full sync with the locations on connect, %p',
+    async databaseId => {
+      const db = await createDatabaseHandler(databaseId);
+      await db.addMember(members[0].user_id, members[0].entity_ref);
+      const cov: any[] = await db.getMembers('project1');
+      expect(cov[0].entity_ref).toEqual(members[0].entity_ref);
+      expect(cov[0].user_id).toEqual(members[0].user_id);
+    },
+    60_000,
+  );
 });

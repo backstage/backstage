@@ -32,7 +32,6 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@testing-library/jest-dom": "^5.14.1",
     "luxon": "^2.0.2",
-    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^7.13.0",

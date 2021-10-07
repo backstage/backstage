@@ -15,8 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-common';
-import knexFactory, { Knex } from 'knex';
-import { v4 as uuidv4 } from 'uuid';
+import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-bazaar-backend',
@@ -42,47 +41,6 @@ export class DatabaseHandler {
 
   private constructor(options: Options) {
     this.database = options.database;
-  }
-
-  public static async createTestDatabase(): Promise<DatabaseHandler> {
-    const knex = await this.createTestDatabaseConnection();
-    return await this.create({ database: knex });
-  }
-
-  public static async createTestDatabaseConnection(): Promise<Knex> {
-    const config: Knex.Config<any> = {
-      client: 'pg',
-      connection: {
-        host: 'localhost',
-        port: 5432,
-        user: 'postgres',
-        password: 'postgres',
-      },
-      /*
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-      */
-    };
-
-    let knex = knexFactory(config);
-    if (typeof config.connection !== 'string') {
-      const tempDbName = `d${uuidv4().replace(/-/g, '')}`;
-      await knex.raw(`CREATE DATABASE ${tempDbName};`);
-      knex = knexFactory({
-        ...config,
-        connection: {
-          ...config.connection,
-          database: tempDbName,
-        },
-      });
-    }
-
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-
-    return knex;
   }
 
   async getMembers(entityRef: any) {
