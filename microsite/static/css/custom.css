@@ -1097,7 +1097,7 @@ code {
 
   max-width: 1430px;
   height: 0;
-  margin: -14px auto 14px auto;
+  margin: calc(55px - 1vw) auto 14px auto;
 }
 
 .Banner__DismissButton {
