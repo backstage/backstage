@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import {
   Table,
   TableColumn,
@@ -56,7 +56,7 @@ const columns: TableColumn[] = [
     title: 'ID',
     field: 'id',
     highlight: false,
-    width: '80px',
+    width: '100px',
   },
   {
     title: 'Build',
@@ -99,7 +99,10 @@ const columns: TableColumn[] = [
   {
     title: 'Date',
     field: 'queueTime',
-    render: (row: Partial<RepoBuild>) => moment(row.queueTime).fromNow(),
+    render: (row: Partial<RepoBuild>) =>
+      DateTime.fromISO(
+        row.queueTime ? row.queueTime.toString() : new Date().toString(),
+      ).toRelative(),
   },
 ];
 

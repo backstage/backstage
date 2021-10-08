@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { useRepoBuilds } from '../../hooks/useRepoBuilds';
-import { BuildTable } from '../BuildTable/BuildTable';
-
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const EntityPageAzureDevOps = (_props: Props) => {
-  const { entity } = useEntity();
-  const { items, loading, error } = useRepoBuilds(entity);
-
-  return <BuildTable items={items} loading={loading} error={error} />;
-};
+export { EntityPageAzurePipelines } from './EntityPageAzurePipelines';
