@@ -7401,9 +7401,9 @@
     "@types/node" "*"
 
 "@types/regression@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/regression/-/regression-2.0.0.tgz#0677ea78d7bdb37039c02ebbccf062042f756ae3"
-  integrity sha512-Ch2FD53M1HpFLL6zSTc/sfuyqQcIPy+/PV3xFT6QYtk9EOiMI29XOYmLNxBb1Y0lfMOR/NNa86J1gRc/1jGLyw==
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@types/regression/-/regression-2.0.2.tgz#a1ad747fbcc6726643a8eb2c42bb804bbf34ce02"
+  integrity sha512-i7KOGl6xdkfpq5+p2ooC+/XFIRUMkYymZ29SD8p+Ko9lesKGUsh6860ey3YM7Y+ZG7kEDGcjzyLO3sOhozqEeA==
 
 "@types/request@^2.47.1":
   version "2.48.5"
