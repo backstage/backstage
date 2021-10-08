@@ -1,5 +1,107 @@
 # @backstage/create-app
 
+## 0.3.45
+
+### Patch Changes
+
+- 6c659a9525: Add CLI arguments to backstage-create-app package
+    
+  Add arguments --app-name and --db-type to create-app command.
+
+  packages/create-app/src/createApp.ts
+  ```diff
+  @@ -88,32 +88,43 @@ async function moveApp(tempDir: string, destination: string, id: string) {
+  export default async (cmd: Command): Promise<void> => {
+    /* eslint-disable-next-line no-restricted-syntax */
+    const paths = findPaths(__dirname);
+  -
+  -  const questions: Question[] = [
+  -    {
+  -      type: 'input',
+  -      name: 'name',
+  -      message: chalk.blue('Enter a name for the app [required]'),
+  -      validate: (value: any) => {
+  -        if (!value) {
+  -          return chalk.red('Please enter a name for the app');
+  -        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+  -          return chalk.red(
+  -            'App name must be lowercase and contain only letters, digits, and dashes.',
+  -          );
+  -        }
+  -        return true;
+  +  let answers: {
+  +    name: string;
+  +    dbType: string;
+  +    dbTypePG: boolean;
+  +    dbTypeSqlite: boolean;
+  +  } = { name: null, dbType: 'SQLite', dbTypePG: false, dbTypeSqlite: true };
+  +
+  +  if (cmd.appName != null && cmd.dbType != null) {
+  +    answers.name = cmd.appName;
+  +    answers.dbType = cmd.dbType;
+  +  } else {
+  +    const questions: Question[] = [
+  +      {
+  +        type: 'input',
+  +        name: 'name',
+  +        message: chalk.blue('Enter a name for the app [required]'),
+  +        validate: (value: any) => {
+  +          if (!value) {
+  +            return chalk.red('Please enter a name for the app');
+  +          } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+  +            return chalk.red(
+  +              'App name must be lowercase and contain only letters, digits, and dashes.',
+  +            );
+  +          }
+  +          return true;
+  +        },
+  +      },
+  +      {
+  +        type: 'list',
+  +        name: 'dbType',
+  +        message: chalk.blue('Select database for the backend [required]'),
+  +        // @ts-ignore
+  +        choices: ['SQLite', 'PostgreSQL'],
+        },
+  -    },
+  -    {
+  -      type: 'list',
+  -      name: 'dbType',
+  -      message: chalk.blue('Select database for the backend [required]'),
+  -      // @ts-ignore
+  -      choices: ['SQLite', 'PostgreSQL'],
+  -    },
+  -  ];
+  -  const answers: Answers = await inquirer.prompt(questions);
+  +    ];
+  +    answers = await inquirer.prompt(questions);
+  +  }
+    answers.dbTypePG = answers.dbType === 'PostgreSQL';
+    answers.dbTypeSqlite = answers.dbType === 'SQLite';
+  ```
+
+  packages/create-app/src/index.ts
+  ```diff
+  @@ -28,6 +28,17 @@ import createApp from './createApp';
+  const main = (argv: string[]) => {
+    program.name('backstage-create-app').version(version);
+  
+  +  program
+  +    .description('Creates a new app in a new directory')
+  +    .option('--app-name <name>', 'Name for the app');
+  +
+  +  program
+  +    .description('Creates a new app in a new directory')
+  +    .option(
+  +      '--db-type <type>',
+  +      'Database type for the app. Can be either PostgreSQL or SQLite',
+  +    );
+  +
+    program
+      .description('Creates a new app in a new directory')
+      .option(
+  ```
+
 ## 0.3.44
 
 ### Patch Changes
