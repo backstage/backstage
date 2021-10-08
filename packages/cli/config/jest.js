@@ -62,15 +62,15 @@ async function getProjectConfig(targetPath) {
   // called `transformModules`. It's a list of modules that we want to apply
   // our configured jest transformations for.
   // This is useful when packages are published in untranspiled ESM or TS form.
-  const transformModules = pkgJsonConfigs
-    .flatMap(conf => {
-      const modules = conf.transformModules || [];
-      delete conf.transformModules;
-      return modules;
-    })
-    .map(name => `${name}/`)
-    .join('|');
-  const transformModulePattern = transformModules && `(?!${transformModules})`;
+  // const transformModules = pkgJsonConfigs
+  //   .flatMap(conf => {
+  //     const modules = conf.transformModules || [];
+  //     delete conf.transformModules;
+  //     return modules;
+  //   })
+  //   .map(name => `${name}/`)
+  //   .join('|');
+  // const transformModulePattern = transformModules && `(?!${transformModules})`;
 
   const options = {
     rootDir: path.resolve(targetPath, 'src'),
