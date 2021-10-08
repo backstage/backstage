@@ -29,5 +29,5 @@ export const EntityPageAzureDevOps = (_props: Props) => {
   const { entity } = useEntity();
   const { items, loading, error } = useRepoBuilds(entity);
 
-  return <BuildTable items={items || []} loading={loading} error={error} />;
+  return <BuildTable items={items} loading={loading} error={error} />;
 };

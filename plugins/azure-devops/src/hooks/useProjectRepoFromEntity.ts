@@ -17,7 +17,10 @@
 import { Entity } from '@backstage/catalog-model';
 import { AZURE_DEVOPS_ANNOTATION } from '../constants';
 
-export function useProjectRepoFromEntity(entity: Entity) {
+export function useProjectRepoFromEntity(entity: Entity): {
+  project: string;
+  repo: string;
+} {
   const [project, repo] = (
     entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION] ?? ''
   ).split('/');

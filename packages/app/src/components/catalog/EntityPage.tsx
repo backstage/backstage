@@ -34,7 +34,7 @@ import {
   EntityProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
-  EntityAzureDevOpsContent,
+  EntityAzurePipelinesContent,
   isAzureDevOpsAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
@@ -188,7 +188,7 @@ export const cicdContent = (
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzureDevOpsContent />
+      <EntityAzurePipelinesContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>

@@ -20,12 +20,16 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { azureDevOpsApiRef } from '../api';
 import { RepoBuild } from '../api/types';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
+import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 
-const DEFAULT_TOP: number = 10;
-
-export function useRepoBuilds(entity: Entity) {
+export function useRepoBuilds(entity: Entity): {
+  items: RepoBuild[];
+  loading: boolean;
+  error: any;
+} {
   const config = useApi(configApiRef);
-  const top = config.getOptionalNumber('azureDevOps.top') ?? DEFAULT_TOP;
+  const top =
+    config.getOptionalNumber('azureDevOps.top') ?? AZURE_DEVOPS_DEFAULT_TOP;
   const api = useApi(azureDevOpsApiRef);
   const { project, repo } = useProjectRepoFromEntity(entity);
   const { value, loading, error } = useAsync(() => {

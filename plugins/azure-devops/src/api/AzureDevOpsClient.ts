@@ -17,6 +17,7 @@
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { RepoBuild } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { AzureDevOpsClientError } from './AzureDevOpsClientError';
 
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -39,7 +40,9 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   }
 
   private async get(path: string): Promise<any> {
-    const url = `${await this.discoveryApi.getBaseUrl('azure-devops')}${path}`;
+    const baseUrl = await this.discoveryApi.getBaseUrl('azure-devops');
+    const url = `${baseUrl}/${path}`;
+
     const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
       headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
@@ -47,8 +50,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
     if (!response.ok) {
       const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
+      throw new AzureDevOpsClientError(response, payload);
     }
 
     return await response.json();
