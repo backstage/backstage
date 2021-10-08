@@ -21,9 +21,8 @@
  */
 
 export * from './catalog';
-export * from './database';
 export * from './ingestion';
+export * from './legacy';
 export * from './search';
-export * from './service';
 export * from './util';
 export * from './next';

@@ -23,6 +23,7 @@ import {
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 
@@ -68,6 +69,11 @@ describe('systemEntityColumns', () => {
         emptyContent={<div>EMPTY</div>}
         columns={systemEntityColumns}
       />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -123,6 +129,11 @@ describe('componentEntityColumns', () => {
         emptyContent={<div>EMPTY</div>}
         columns={componentEntityColumns}
       />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {

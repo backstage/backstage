@@ -28,59 +28,64 @@ import { SidebarPinStateContext } from './Page';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    zIndex: 1000,
-    position: 'relative',
-    overflow: 'visible',
-    width: theme.spacing(7) + 1,
-  },
-  drawer: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    alignItems: 'flex-start',
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    padding: 0,
-    background: theme.palette.navigation.background,
-    overflowX: 'hidden',
-    msOverflowStyle: 'none',
-    scrollbarWidth: 'none',
-    width: sidebarConfig.drawerWidthClosed,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.shortest,
-    }),
-    '& > *': {
-      flexShrink: 0,
+export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      zIndex: 1000,
+      position: 'relative',
+      overflow: 'visible',
+      width: theme.spacing(7) + 1,
     },
-    '&::-webkit-scrollbar': {
-      display: 'none',
+    drawer: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      padding: 0,
+      background: theme.palette.navigation.background,
+      overflowX: 'hidden',
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+      width: sidebarConfig.drawerWidthClosed,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest,
+      }),
+      '& > *': {
+        flexShrink: 0,
+      },
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
     },
-  },
-  drawerOpen: {
-    width: sidebarConfig.drawerWidthOpen,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.shorter,
-    }),
-  },
-  expandButton: {
-    background: 'none',
-    border: 'none',
-    color: theme.palette.navigation.color,
-    width: '100%',
-    cursor: 'pointer',
-    position: 'relative',
-    height: 48,
-  },
-  arrows: {
-    position: 'absolute',
-    right: 10,
-  },
-}));
+    expandButton: {
+      background: 'none',
+      border: 'none',
+      color: theme.palette.navigation.color,
+      width: '100%',
+      cursor: 'pointer',
+      position: 'relative',
+      height: 48,
+    },
+    arrows: {
+      position: 'absolute',
+      right: 10,
+    },
+    drawerOpen: {
+      width: sidebarConfig.drawerWidthOpen,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shorter,
+      }),
+    },
+  }),
+  { name: 'BackstageSidebar' },
+);
 
 export function Sidebar({ children }: PropsWithChildren<{}>) {
   const classes = useStyles();

@@ -40,12 +40,17 @@ type SupportButtonProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = makeStyles({
-  popoverList: {
-    minWidth: 260,
-    maxWidth: 400,
+export type SupportButtonClassKey = 'popoverList';
+
+const useStyles = makeStyles(
+  {
+    popoverList: {
+      minWidth: 260,
+      maxWidth: 400,
+    },
   },
-});
+  { name: 'BackstageSupportButton' },
+);
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
   const app = useApp();

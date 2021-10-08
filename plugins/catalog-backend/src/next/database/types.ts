@@ -17,8 +17,14 @@
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { DateTime } from 'luxon';
-import { Transaction } from '../../database/types';
 import { DeferredEntity } from '../processing/types';
+
+/**
+ * An abstraction for transactions of the underlying database technology.
+ */
+export type Transaction = {
+  rollback(): Promise<unknown>;
+};
 
 export type AddUnprocessedEntitiesResult = {};
 

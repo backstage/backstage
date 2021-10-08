@@ -1,5 +1,33 @@
 # @backstage/codemods
 
+## 0.1.17
+
+### Patch Changes
+
+- 7dee4db0b0: build(deps): bump `jscodeshift` from 0.12.0 to 0.13.0
+- 903dbdeb7d: Added an `extension-names` codemod, which adds a `name` key to all extensions
+  provided by plugins. Extension names are used to provide richer context to
+  events captured by the new Analytics API, and may also appear in debug output
+  and other situations.
+
+  To apply this codemod, run `npx @backstage/codemods apply extension-names` in
+  the root of your Backstage monorepo.
+
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/cli-common@0.1.4
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.1.15
 
 ### Patch Changes

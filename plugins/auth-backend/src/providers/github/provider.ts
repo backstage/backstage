@@ -223,6 +223,7 @@ export const createGithubProvider = (
       const enterpriseInstanceUrl = envConfig.getOptionalString(
         'enterpriseInstanceUrl',
       );
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
       const authorizationUrl = enterpriseInstanceUrl
         ? `${enterpriseInstanceUrl}/login/oauth/authorize`
         : undefined;
@@ -232,7 +233,9 @@ export const createGithubProvider = (
       const userProfileUrl = enterpriseInstanceUrl
         ? `${enterpriseInstanceUrl}/api/v3/user`
         : undefined;
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,

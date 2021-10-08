@@ -54,6 +54,7 @@ export const searchPlugin = createPlugin({
 
 export const SearchPage = searchPlugin.provide(
   createRoutableExtension({
+    name: 'SearchPage',
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootRouteRef,
   }),
@@ -67,6 +68,7 @@ export const SearchPage = searchPlugin.provide(
  */
 export const SearchPageNext = searchPlugin.provide(
   createRoutableExtension({
+    name: 'SearchPageNext',
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootNextRouteRef,
   }),
@@ -74,6 +76,7 @@ export const SearchPageNext = searchPlugin.provide(
 
 export const SearchBar = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchBar',
     component: {
       lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
     },
@@ -88,6 +91,7 @@ export const SearchBar = searchPlugin.provide(
  */
 export const SearchBarNext = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchBarNext',
     component: {
       lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
     },
@@ -96,6 +100,7 @@ export const SearchBarNext = searchPlugin.provide(
 
 export const SearchResult = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchResult',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
     },
@@ -110,6 +115,7 @@ export const SearchResult = searchPlugin.provide(
  */
 export const SearchResultNext = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchResultNext',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
     },
@@ -118,6 +124,7 @@ export const SearchResultNext = searchPlugin.provide(
 
 export const DefaultResultListItem = searchPlugin.provide(
   createComponentExtension({
+    name: 'DefaultResultListItem',
     component: {
       lazy: () =>
         import('./components/DefaultResultListItem').then(
@@ -129,6 +136,7 @@ export const DefaultResultListItem = searchPlugin.provide(
 
 export const HomePageSearchBar = searchPlugin.provide(
   createComponentExtension({
+    name: 'HomePageSearchBar',
     component: {
       lazy: () =>
         import('./components/HomePageComponent').then(m => m.HomePageSearchBar),

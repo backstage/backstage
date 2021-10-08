@@ -111,7 +111,7 @@ nav:
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
-      - Composability System Migration: 'plugins/composability.md'
+      - Composability System: 'plugins/composability.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
@@ -140,6 +140,7 @@ nav:
           - Google: 'auth/google/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
+          - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
@@ -165,6 +166,7 @@ nav:
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
+      - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'
   - Architecture Decision Records (ADRs):
       - Overview: 'architecture-decisions/index.md'
       - ADR001 - Architecture Decision Record (ADR) log: 'architecture-decisions/adr001-add-adr-log.md'

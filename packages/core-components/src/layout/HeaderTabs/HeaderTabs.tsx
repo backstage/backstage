@@ -20,29 +20,38 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles, Tabs, Tab as TabUI, TabProps } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-  tabsWrapper: {
-    gridArea: 'pageSubheader',
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: theme.spacing(3),
-  },
-  defaultTab: {
-    padding: theme.spacing(3, 3),
-    ...theme.typography.caption,
-    textTransform: 'uppercase',
-    fontWeight: 'bold',
-    color: theme.palette.text.secondary,
-  },
-  selected: {
-    color: theme.palette.text.primary,
-  },
-  tabRoot: {
-    '&:hover': {
-      backgroundColor: theme.palette.background.default,
+export type HeaderTabsClassKey =
+  | 'tabsWrapper'
+  | 'defaultTab'
+  | 'selected'
+  | 'tabRoot';
+
+const useStyles = makeStyles(
+  theme => ({
+    tabsWrapper: {
+      gridArea: 'pageSubheader',
+      backgroundColor: theme.palette.background.paper,
+      paddingLeft: theme.spacing(3),
+    },
+    defaultTab: {
+      padding: theme.spacing(3, 3),
+      ...theme.typography.caption,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+      color: theme.palette.text.secondary,
+    },
+    selected: {
       color: theme.palette.text.primary,
     },
-  },
-}));
+    tabRoot: {
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+      },
+    },
+  }),
+  { name: 'BackstageHeaderTabs' },
+);
 
 export type Tab = {
   id: string;
@@ -88,6 +97,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         {tabs.map((tab, index) => (
           <TabUI
             {...tab.tabProps}
+            data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
             value={index}

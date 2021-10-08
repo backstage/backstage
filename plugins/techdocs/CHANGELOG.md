@@ -1,5 +1,48 @@
 # @backstage/plugin-techdocs
 
+## 0.12.1
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog@0.7.0
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/integration@0.6.7
+  - @backstage/plugin-search@0.4.14
+
+## 0.12.0
+
+### Minor Changes
+
+- 82bb0842a3: Adds support for being able to customize and compose your TechDocs reader page in the App.
+
+  You can likely upgrade to this version without issue. If, however, you have
+  imported the `<Reader />` component in your custom code, the name of a property
+  has changed. You will need to make the following change anywhere you use it:
+
+  ```diff
+  -<Reader entityId={value} />
+  +<Reader entityRef={value} />
+  ```
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- 3df2e8532b: Fixed the URL for the "Click to copy documentation link to clipboard" action
+- 0a8bec0877: Added a check for the TechDocs annotation on the entity
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog@0.6.17
+  - @backstage/plugin-catalog-react@0.5.1
+  - @backstage/plugin-search@0.4.13
+
 ## 0.11.3
 
 ### Patch Changes

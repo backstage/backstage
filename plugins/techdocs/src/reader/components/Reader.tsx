@@ -48,7 +48,7 @@ import { TechDocsSearch } from './TechDocsSearch';
 import { useReaderState } from './useReaderState';
 
 type Props = {
-  entityId: EntityName;
+  entityRef: EntityName;
   onReady?: () => void;
   withSearch?: boolean;
 };
@@ -71,8 +71,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Reader = ({ entityId, onReady, withSearch = true }: Props) => {
-  const { kind, namespace, name } = entityId;
+export const Reader = ({ entityRef, onReady, withSearch = true }: Props) => {
+  const { kind, namespace, name } = entityRef;
   const theme = useTheme<BackstageTheme>();
   const classes = useStyles();
 
@@ -448,7 +448,7 @@ export const Reader = ({ entityId, onReady, withSearch = true }: Props) => {
 
       {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
         <Grid container className={classes.searchBar}>
-          <TechDocsSearch entityId={entityId} />
+          <TechDocsSearch entityId={entityRef} />
         </Grid>
       )}
       <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />

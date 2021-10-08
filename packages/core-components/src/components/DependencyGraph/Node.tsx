@@ -20,11 +20,16 @@ import { DefaultNode } from './DefaultNode';
 import { RenderNodeFunction, RenderNodeProps, GraphNode } from './types';
 import { NODE_TEST_ID } from './constants';
 
-const useStyles = makeStyles(theme => ({
-  node: {
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-}));
+export type DependencyGraphNodeClassKey = 'node';
+
+const useStyles = makeStyles(
+  theme => ({
+    node: {
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+  }),
+  { name: 'BackstageDependencyGraphNode' },
+);
 
 export type NodeComponentProps<T = any> = {
   node: GraphNode<T>;

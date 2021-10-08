@@ -29,6 +29,8 @@ const PARAM_PATTERN = /^\w+$/;
 export class SubRouteRefImpl<Params extends AnyParams>
   implements SubRouteRef<Params>
 {
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'sub';
   readonly [routeRefType] = 'sub';
 
   constructor(

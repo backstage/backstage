@@ -17,7 +17,7 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
-import { DatabaseManager } from '../database/DatabaseManager';
+import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
@@ -37,7 +37,7 @@ describe('Stitcher', () => {
     'runs the happy path for %p',
     async databaseId => {
       const db = await databases.init(databaseId);
-      await DatabaseManager.createDatabase(db);
+      await applyDatabaseMigrations(db);
 
       const stitcher = new Stitcher(db, logger);
       let entities: DbFinalEntitiesRow[];

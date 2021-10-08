@@ -18,6 +18,7 @@ import { errorHandler } from '@backstage/backend-common';
 import {
   analyzeLocationSchema,
   locationSpecSchema,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
@@ -124,7 +125,16 @@ export async function createNextRouter(
           );
         }
         res.status(200).json(entities[0]);
-      });
+      })
+      .get(
+        '/entities/by-name/:kind/:namespace/:name/ancestry',
+        async (req, res) => {
+          const { kind, namespace, name } = req.params;
+          const entityRef = stringifyEntityRef({ kind, namespace, name });
+          const response = await entitiesCatalog.entityAncestry(entityRef);
+          res.status(200).json(response);
+        },
+      );
   }
 
   if (locationService) {

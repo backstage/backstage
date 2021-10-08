@@ -51,109 +51,126 @@ import {
 } from './config';
 import { Submenu } from './Submenu';
 
-const useStyles = makeStyles<BackstageTheme>(theme => {
-  const {
-    selectedIndicatorWidth,
-    drawerWidthClosed,
-    drawerWidthOpen,
-    iconContainerWidth,
-  } = sidebarConfig;
-  return {
-    root: {
-      color: theme.palette.navigation.color,
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-      height: 48,
-      cursor: 'pointer',
-    },
-    buttonItem: {
-      background: 'none',
-      border: 'none',
-      width: 'auto',
-      margin: 0,
-      padding: 0,
-      textAlign: 'inherit',
-      font: 'inherit',
-    },
-    highlightable: {
-      '&:hover': {
+export type SidebarItemClassKey =
+  | 'root'
+  | 'buttonItem'
+  | 'closed'
+  | 'open'
+  | 'label'
+  | 'iconContainer'
+  | 'searchRoot'
+  | 'searchField'
+  | 'searchFieldHTMLInput'
+  | 'searchContainer'
+  | 'secondaryAction'
+  | 'selected';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => {
+    const {
+      selectedIndicatorWidth,
+      drawerWidthClosed,
+      drawerWidthOpen,
+      iconContainerWidth,
+    } = sidebarConfig;
+    return {
+      root: {
+        color: theme.palette.navigation.color,
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        alignItems: 'center',
+        height: 48,
+        cursor: 'pointer',
+      },
+      buttonItem: {
+        background: 'none',
+        border: 'none',
+        width: 'auto',
+        margin: 0,
+        padding: 0,
+        textAlign: 'inherit',
+        font: 'inherit',
+      },
+      closed: {
+        width: drawerWidthClosed,
+        justifyContent: 'center',
+      },
+      open: {
+        width: drawerWidthOpen,
+      },
+      highlightable: {
+        '&:hover': {
+          background: theme.palette.navigation.navItem.hoverBackground, // TODO: consider
+        },
+      },
+      highlighted: {
         background: theme.palette.navigation.navItem.hoverBackground, // TODO: consider
       },
-    },
-    highlighted: {
-      background: theme.palette.navigation.navItem.hoverBackground, // TODO: consider
-    },
-    closed: {
-      width: drawerWidthClosed,
-      justifyContent: 'center',
-    },
-    open: {
-      width: drawerWidthOpen,
-    },
-    label: {
-      // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-      fontWeight: 'bold',
-      whiteSpace: 'nowrap',
-      lineHeight: 'auto',
-      flex: '3 1 auto',
-      width: '110px',
-      overflow: 'hidden',
-      'text-overflow': 'ellipsis',
-    },
-    iconContainer: {
-      boxSizing: 'border-box',
-      height: '100%',
-      width: iconContainerWidth,
-      marginRight: -theme.spacing(2),
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    searchRoot: {
-      marginBottom: 12,
-    },
-    searchField: {
-      color: '#b5b5b5',
-      fontWeight: 'bold',
-      fontSize: theme.typography.fontSize,
-    },
-    searchFieldHTMLInput: {
-      padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
-    },
-    searchContainer: {
-      width: drawerWidthOpen - iconContainerWidth,
-    },
-    secondaryAction: {
-      width: theme.spacing(6),
-      textAlign: 'center',
-      marginRight: theme.spacing(1),
-    },
-    closedItemIcon: {
-      width: '100%',
-      justifyContent: 'center',
-    },
-    selected: {
-      '&$root': {
-        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-        color: theme.palette.navigation.selectedColor,
+      label: {
+        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+        fontWeight: 'bold',
+        whiteSpace: 'nowrap',
+        lineHeight: 'auto',
+        flex: '3 1 auto',
+        width: '110px',
+        overflow: 'hidden',
+        'text-overflow': 'ellipsis',
       },
-      '&$closed': {
-        width: drawerWidthClosed,
+      iconContainer: {
+        boxSizing: 'border-box',
+        height: '100%',
+        width: iconContainerWidth,
+        marginRight: -theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       },
-      '& $closedItemIcon': {
-        paddingRight: selectedIndicatorWidth,
+      searchRoot: {
+        marginBottom: 12,
       },
-      '& $iconContainer': {
-        marginLeft: -selectedIndicatorWidth,
+      searchField: {
+        color: '#b5b5b5',
+        fontWeight: 'bold',
+        fontSize: theme.typography.fontSize,
       },
-    },
-    submenuArrow: {
-      position: 'absolute',
-      right: 0,
-    },
-  };
-});
+      searchFieldHTMLInput: {
+        padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+      },
+      searchContainer: {
+        width: drawerWidthOpen - iconContainerWidth,
+      },
+      secondaryAction: {
+        width: theme.spacing(6),
+        textAlign: 'center',
+        marginRight: theme.spacing(1),
+      },
+      closedItemIcon: {
+        width: '100%',
+        justifyContent: 'center',
+      },
+      submenuArrow: {
+        position: 'absolute',
+        right: 0,
+      },
+      selected: {
+        '&$root': {
+          borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+          color: theme.palette.navigation.selectedColor,
+        },
+        '&$closed': {
+          width: drawerWidthClosed,
+        },
+        '& $closedItemIcon': {
+          paddingRight: selectedIndicatorWidth,
+        },
+        '& $iconContainer': {
+          marginLeft: -selectedIndicatorWidth,
+        },
+      },
+    };
+  },
+  { name: 'BackstageSidebarItem' },
+);
 
 type ItemWithSubmenuProps = {
   label?: string;
@@ -311,8 +328,8 @@ export const WorkaroundNavLink = React.forwardRef<
   let { pathname: toPathname } = useResolvedPath(to);
 
   if (!caseSensitive) {
-    locationPathname = locationPathname.toLowerCase();
-    toPathname = toPathname.toLowerCase();
+    locationPathname = locationPathname.toLocaleLowerCase('en-US');
+    toPathname = toPathname.toLocaleLowerCase('en-US');
   }
 
   let isActive = locationPathname === toPathname;

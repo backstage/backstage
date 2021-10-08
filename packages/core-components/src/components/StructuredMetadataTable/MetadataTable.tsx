@@ -26,6 +26,8 @@ import {
   Theme,
 } from '@material-ui/core';
 
+export type MetadataTableTitleCellClassKey = 'root';
+
 const tableTitleCellStyles = (theme: Theme) =>
   createStyles({
     root: {
@@ -37,12 +39,16 @@ const tableTitleCellStyles = (theme: Theme) =>
     },
   });
 
+export type MetadataTableCellClassKey = 'root';
+
 const tableContentCellStyles = {
   root: {
     border: '0',
     verticalAlign: 'top',
   },
 };
+
+export type MetadataTableListClassKey = 'root';
 
 const listStyles = (theme: Theme) =>
   createStyles({
@@ -53,6 +59,8 @@ const listStyles = (theme: Theme) =>
     },
   });
 
+export type MetadataTableListItemClassKey = 'root' | 'random';
+
 const listItemStyles = (theme: Theme) =>
   createStyles({
     root: {
@@ -61,8 +69,12 @@ const listItemStyles = (theme: Theme) =>
     random: {},
   });
 
-const TitleCell = withStyles(tableTitleCellStyles)(TableCell);
-const ContentCell = withStyles(tableContentCellStyles)(TableCell);
+const TitleCell = withStyles(tableTitleCellStyles, {
+  name: 'BackstageMetadataTableTitleCell',
+})(TableCell);
+const ContentCell = withStyles(tableContentCellStyles, {
+  name: 'BackstageMetadataTableCell',
+})(TableCell);
 
 export const MetadataTable = ({
   dense,
@@ -96,14 +108,14 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 
-export const MetadataList = withStyles(listStyles)(
-  ({ classes, children }: StyleProps) => (
-    <ul className={classes.root}>{children}</ul>
-  ),
-);
+export const MetadataList = withStyles(listStyles, {
+  name: 'BackstageMetadataTableList',
+})(({ classes, children }: StyleProps) => (
+  <ul className={classes.root}>{children}</ul>
+));
 
-export const MetadataListItem = withStyles(listItemStyles)(
-  ({ classes, children }: StyleProps) => (
-    <li className={classes.root}>{children}</li>
-  ),
-);
+export const MetadataListItem = withStyles(listItemStyles, {
+  name: 'BackstageMetadataTableListItem',
+})(({ classes, children }: StyleProps) => (
+  <li className={classes.root}>{children}</li>
+));

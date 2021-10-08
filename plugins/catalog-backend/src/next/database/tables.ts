@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+export type DbPageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
+
 export type DbLocationsRow = {
   id: string;
   type: string;
@@ -24,6 +33,7 @@ export type DbRefreshStateRow = {
   entity_id: string;
   entity_ref: string;
   unprocessed_entity: string;
+  unprocessed_hash?: string;
   processed_entity?: string;
   result_hash?: string;
   cache?: string;

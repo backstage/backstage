@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-kafka",
   "description": "A Backstage plugin that integrates towards Kafka",
-  "version": "0.2.16",
+  "version": "0.2.18",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,10 +21,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.9.3",
-    "@backstage/core-components": "^0.5.0",
-    "@backstage/core-plugin-api": "^0.1.8",
-    "@backstage/plugin-catalog-react": "^0.5.0",
+    "@backstage/catalog-model": "^0.9.4",
+    "@backstage/core-components": "^0.6.1",
+    "@backstage/core-plugin-api": "^0.1.10",
+    "@backstage/plugin-catalog-react": "^0.5.2",
     "@backstage/theme": "^0.2.10",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -35,13 +35,13 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.13",
-    "@backstage/core-app-api": "^0.1.14",
-    "@backstage/dev-utils": "^0.2.10",
-    "@backstage/test-utils": "^0.1.17",
+    "@backstage/cli": "^0.7.15",
+    "@backstage/core-app-api": "^0.1.16",
+    "@backstage/dev-utils": "^0.2.11",
+    "@backstage/test-utils": "^0.1.18",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/react-hooks": "^3.4.2",
+    "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",

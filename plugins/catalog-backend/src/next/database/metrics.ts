@@ -15,9 +15,8 @@
  */
 
 import { Knex } from 'knex';
-import { DbLocationsRow } from '../../database/types';
 import { createGaugeMetric } from '../metrics';
-import { DbRefreshStateRow, DbRelationsRow } from './tables';
+import { DbRefreshStateRow, DbRelationsRow, DbLocationsRow } from './tables';
 
 export function initDatabaseMetrics(knex: Knex) {
   const seen = new Set<string>();

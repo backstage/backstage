@@ -16,14 +16,18 @@
 import React from 'react';
 import { SvgIcon, makeStyles, createStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    icon: {
-      position: 'absolute',
-      right: '4px',
-      pointerEvents: 'none',
-    },
-  }),
+export type OpenedDropdownClassKey = 'icon';
+
+const useStyles = makeStyles(
+  () =>
+    createStyles({
+      icon: {
+        position: 'absolute',
+        right: '4px',
+        pointerEvents: 'none',
+      },
+    }),
+  { name: 'BackstageOpenedDropdown' },
 );
 
 const OpenedDropdown = () => {

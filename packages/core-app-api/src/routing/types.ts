@@ -18,6 +18,7 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
@@ -53,6 +54,7 @@ export interface BackstageRouteObject {
   element: React.ReactNode;
   path: string;
   routeRefs: Set<RouteRef>;
+  plugin?: BackstagePlugin;
 }
 
 export function isRouteRef<Params extends AnyParams>(

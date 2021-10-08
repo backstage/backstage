@@ -53,6 +53,7 @@ export const todoPlugin = createPlugin({
  */
 export const EntityTodoContent = todoPlugin.provide(
   createComponentExtension({
+    name: 'EntityTodoContent',
     component: {
       lazy: () => import('./components/TodoList').then(m => m.TodoList),
     },

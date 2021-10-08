@@ -36,6 +36,11 @@ const Component: ProviderComponent = ({ config, onResult }) => {
       const identity = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
+      if (!identity) {
+        throw new Error(
+          `The ${title} provider is not configured to support sign-in`,
+        );
+      }
 
       const profile = await authApi.getProfile();
       onResult({

@@ -25,7 +25,7 @@ describe('<TechDocsPageHeader />', () => {
     await act(async () => {
       const rendered = await renderInTestApp(
         <TechDocsPageHeader
-          entityId={{
+          entityRef={{
             kind: 'test',
             name: 'test-name',
             namespace: 'test-namespace',
@@ -67,7 +67,7 @@ describe('<TechDocsPageHeader />', () => {
     await act(async () => {
       const rendered = await renderInTestApp(
         <TechDocsPageHeader
-          entityId={{
+          entityRef={{
             kind: 'test',
             name: 'test-name',
             namespace: 'test-namespace',
@@ -89,7 +89,7 @@ describe('<TechDocsPageHeader />', () => {
     await act(async () => {
       const rendered = await renderInTestApp(
         <TechDocsPageHeader
-          entityId={{
+          entityRef={{
             kind: 'test',
             name: 'test-name',
             namespace: 'test-namespace',

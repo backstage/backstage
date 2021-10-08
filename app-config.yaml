@@ -262,7 +262,9 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
-
+    # Backstage end-to-end tests of TechDocs
+    - type: file
+      target: ../../cypress/e2e-fixture.catalog.info.yaml
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:
@@ -358,6 +360,10 @@ auth:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}
         clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
         issuer: ${AUTH_ONELOGIN_ISSUER}
+    bitbucket:
+      development:
+        clientId: ${AUTH_BITBUCKET_CLIENT_ID}
+        clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
 costInsights:
   engineerCost: 200000
   products:
@@ -382,6 +388,31 @@ costInsights:
       default: true
     MSC:
       name: Monthly Subscribers
+  currencies:
+    engineers:
+      label: 'Engineers 🛠'
+      unit: 'engineer'
+    usd:
+      label: 'US Dollars 💵'
+      kind: 'USD'
+      unit: 'dollar'
+      prefix: '$'
+      rate: 1
+    carbonOffsetTons:
+      label: 'Carbon Offset Tons ♻️⚖️s'
+      kind: 'CARBON_OFFSET_TONS'
+      unit: 'carbon offset ton'
+      rate: 3.5
+    beers:
+      label: 'Beers 🍺'
+      kind: 'BEERS'
+      unit: 'beer'
+      rate: 4.5
+    pintsIceCream:
+      label: 'Pints of Ice Cream 🍦'
+      kind: 'PINTS_OF_ICE_CREAM'
+      unit: 'ice cream pint'
+      rate: 5.5
 homepage:
   clocks:
     - label: UTC
@@ -400,3 +431,8 @@ jenkins:
       baseUrl: https://jenkins.example.com
       username: backstage-bot
       apiKey: 123456789abcdef0123456789abcedf012
+
+azureDevOps:
+  host: dev.azure.com
+  token: my-token
+  organization: my-company

@@ -29,20 +29,29 @@ import { useObservable } from 'react-use';
 import LoginRequestListItem from './LoginRequestListItem';
 import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles<Theme>(theme => ({
-  dialog: {
-    paddingTop: theme.spacing(1),
-  },
-  title: {
-    minWidth: 0,
-  },
-  contentList: {
-    padding: 0,
-  },
-  actionButtons: {
-    padding: theme.spacing(2, 0),
-  },
-}));
+export type OAuthRequestDialogClassKey =
+  | 'dialog'
+  | 'title'
+  | 'contentList'
+  | 'actionButtons';
+
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    dialog: {
+      paddingTop: theme.spacing(1),
+    },
+    title: {
+      minWidth: 0,
+    },
+    contentList: {
+      padding: 0,
+    },
+    actionButtons: {
+      padding: theme.spacing(2, 0),
+    },
+  }),
+  { name: 'OAuthRequestDialog' },
+);
 
 export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();

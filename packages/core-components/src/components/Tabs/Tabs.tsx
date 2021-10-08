@@ -42,21 +42,26 @@ export interface TabsProps {
   tabs: TabProps[];
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    flexGrow: 1,
-    width: '100%',
-  },
-  styledTabs: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  appbar: {
-    boxShadow: 'none',
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: '10px',
-    paddingRight: '10px',
-  },
-}));
+export type TabsClassKey = 'root' | 'styledTabs' | 'appbar';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      flexGrow: 1,
+      width: '100%',
+    },
+    styledTabs: {
+      backgroundColor: theme.palette.background.paper,
+    },
+    appbar: {
+      boxShadow: 'none',
+      backgroundColor: theme.palette.background.paper,
+      paddingLeft: '10px',
+      paddingRight: '10px',
+    },
+  }),
+  { name: 'BackstageTabs' },
+);
 
 export function Tabs(props: TabsProps) {
   const { tabs } = props;

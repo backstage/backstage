@@ -37,6 +37,7 @@ import {
   ReadUrlResponse,
   ReadUrlOptions,
 } from './types';
+import { trimEnd } from 'lodash';
 
 /** @public */
 export class GitlabUrlReader implements UrlReader {
@@ -186,7 +187,7 @@ export class GitlabUrlReader implements UrlReader {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,

@@ -1,5 +1,24 @@
 # @backstage/plugin-tech-radar
 
+## 0.4.10
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.4.9
+
+### Patch Changes
+
+- c1ef701395: Added `SearchBar` to allow filtering and a scroll bar to display hidden tech
+- 3c47ece3c3: Added documentation for exported symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.4.8
 
 ### Patch Changes

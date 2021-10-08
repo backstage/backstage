@@ -50,6 +50,10 @@ The GitHub provider is a structure with three configuration keys:
 - `clientSecret`: The client secret tied to the generated client ID.
 - `enterpriseInstanceUrl` (optional): The base URL for a GitHub Enterprise
   instance, e.g. `https://ghe.<company>.com`. Only needed for GitHub Enterprise.
+- `callbackUrl` (optional): The callback url that GitHub will use when
+  initiating an OAuth flow, e.g.
+  `https://your-intermediate-service.com/handler`. Only needed if Backstage is
+  not the immediate receiver (e.g. one OAuth app for many backstage instances).
 
 ## Adding the provider to the Backstage frontend
 

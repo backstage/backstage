@@ -1,5 +1,16 @@
 # @backstage/test-utils
 
+## 0.1.18
+
+### Patch Changes
+
+- e749a38e89: Added a mock implementation of the `AnalyticsApi`, which can be used to make
+  assertions about captured analytics events.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/test-utils-core@0.1.3
+
 ## 0.1.17
 
 ### Patch Changes

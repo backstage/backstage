@@ -24,6 +24,7 @@ import {
   oneloginAuthApiRef,
   oauth2ApiRef,
   oidcAuthApiRef,
+  bitbucketAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const providers = [
@@ -80,5 +81,11 @@ export const providers = [
     title: 'OneLogin',
     message: 'Sign In using OneLogin',
     apiRef: oneloginAuthApiRef,
+  },
+  {
+    id: 'bitbucket-auth-provider',
+    title: 'Bitbucket',
+    message: 'Sign In using Bitbucket',
+    apiRef: bitbucketAuthApiRef,
   },
 ];

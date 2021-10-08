@@ -10,12 +10,9 @@ import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
 // @public @deprecated (undocumented)
-export const analyzeLocationSchema: yup.ObjectSchema<
-  {
-    location: LocationSpec;
-  },
-  object
->;
+export const analyzeLocationSchema: yup.SchemaOf<{
+  location: LocationSpec;
+}>;
 
 // @public (undocumented)
 interface ApiEntityV1alpha1 extends Entity {
@@ -337,7 +334,7 @@ export { LocationEntityV1alpha1 };
 export const locationEntityV1alpha1Validator: KindValidator;
 
 // @public @deprecated (undocumented)
-export const locationSchema: yup.ObjectSchema<Location_2, object>;
+export const locationSchema: yup.SchemaOf<Location_2>;
 
 // @public (undocumented)
 export type LocationSpec = {
@@ -347,7 +344,7 @@ export type LocationSpec = {
 };
 
 // @public @deprecated (undocumented)
-export const locationSpecSchema: yup.ObjectSchema<LocationSpec, object>;
+export const locationSpecSchema: yup.SchemaOf<LocationSpec>;
 
 // @public (undocumented)
 export function makeValidator(overrides?: Partial<Validators>): Validators;

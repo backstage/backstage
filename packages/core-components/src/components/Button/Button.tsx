@@ -21,17 +21,33 @@ import {
 import React from 'react';
 import { Link, LinkProps } from '../Link';
 
-type Props = MaterialButtonProps & Omit<LinkProps, 'variant' | 'color'>;
-
-declare function ButtonType(props: Props): JSX.Element;
+/**
+ * Properties for {@link Button}
+ *
+ * @remarks
+ *
+ * See {@link https://v4.mui.com/api/button/#props | Material-UI Button Props} for all properties
+ */
+export type ButtonProps = MaterialButtonProps &
+  Omit<LinkProps, 'variant' | 'color'>;
 
 /**
- * Thin wrapper on top of material-ui's Button component
+ * Thin wrapper on top of material-ui's {@link https://v4.mui.com/components/buttons/ | Button} component
+ *
+ * @remarks
+ *
  * Makes the Button to utilise react-router
  */
-const ActualButton = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialButton ref={ref} component={Link} {...props} />
-)) as { (props: Props): JSX.Element };
+declare function ButtonType(props: ButtonProps): JSX.Element;
+
+/**
+ * This wrapper is here to reset the color of the Link and make typescript happy.
+ */
+const LinkWrapper = (props: LinkProps) => <Link {...props} color="initial" />;
+
+const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
+  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
+)) as { (props: ButtonProps): JSX.Element };
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
 //               function, which makes our API reference docs much nicer.

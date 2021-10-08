@@ -39,6 +39,7 @@ export const firehydrantPlugin = createPlugin({
 
 export const FirehydrantCard = firehydrantPlugin.provide(
   createComponentExtension({
+    name: 'FirehydrantCard',
     component: {
       lazy: () =>
         import('./components/ServiceDetailsCard').then(

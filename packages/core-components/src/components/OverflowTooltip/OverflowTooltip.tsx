@@ -26,11 +26,16 @@ type Props = {
   placement?: TooltipProps['placement'];
 };
 
-const useStyles = makeStyles({
-  container: {
-    overflow: 'visible !important',
+export type OverflowTooltipClassKey = 'container';
+
+const useStyles = makeStyles(
+  {
+    container: {
+      overflow: 'visible !important',
+    },
   },
-});
+  { name: 'BackstageOverflowTooltip' },
+);
 
 export function OverflowTooltip(props: Props) {
   const [hover, setHover] = useState(false);

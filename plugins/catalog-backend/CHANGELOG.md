@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend
 
+## 0.16.0
+
+### Minor Changes
+
+- 2c5bab2f82: Errors emitted from processors are now considered a failure during entity processing and will prevent entities from being updated. The impact of this change is that when errors are emitted while for example reading a location, then ingestion effectively stops there. If you emit a number of entities along with just one error, then the error will be persisted on the current entity but the emitted entities will _not_ be stored. This fixes [a bug](https://github.com/backstage/backstage/issues/6973) where entities would get marked as orphaned rather than put in an error state when the catalog failed to read a location.
+
+  In previous versions of the catalog, an emitted error was treated as a less severe problem than an exception thrown by the processor. We are now ensuring that the behavior is consistent for these two cases. Even though both thrown and emitted errors are treated the same, emitted errors stay around as they allow you to highlight multiple errors related to an entity at once. An emitted error will also only prevent the writing of the processing result, while a thrown error will skip the rest of the processing steps.
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- f66c38148a: Avoid duplicate logging of entity processing errors.
+- 426d5031a6: A number of classes and types, that were part of the old catalog engine implementation, are now formally marked as deprecated. They will be removed entirely from the code base in a future release.
+
+  After upgrading to this version, it is recommended that you take a look inside your `packages/backend/src/plugins/catalog.ts` file (using a code editor), to see if you are using any functionality that it marks as deprecated. If you do, please migrate away from it at your earliest convenience.
+
+  Migrating to using the new engine implementation is typically a matter of calling `CatalogBuilder.create({ ... })` instead of `new CatalogBuilder({ ... })`.
+
+  If you are seeing deprecation warnings for `createRouter`, you can either use the `router` field from the return value from updated catalog builder, or temporarily call `createNextRouter`. The latter will however also be deprecated at a later time.
+
+- 7b78dd17e6: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.0
+
+### Minor Changes
+
+- 1572d02b63: Introduced a new `CatalogProcessorCache` that is available to catalog processors. It allows arbitrary values to be saved that will then be visible during the next run. The cache is scoped to each individual processor and entity, but is shared across processing steps in a single processor.
+
+  The cache is available as a new argument to each of the processing steps, except for `validateEntityKind` and `handleError`.
+
+  This also introduces an optional `getProcessorName` to the `CatalogProcessor` interface, which is used to provide a stable identifier for the processor. While it is currently optional it will move to be required in the future.
+
+  The breaking part of this change is the modification of the `state` field in the `EntityProcessingRequest` and `EntityProcessingResult` types. This is unlikely to have any impact as the `state` field was previously unused, but could require some minor updates.
+
+- c1836728e0: Add `/entities/by-name/:kind/:namespace/:name/ancestry` to get the "processing parents" lineage of an entity.
+
+  This involves a breaking change of adding the method `entityAncestry` to `EntitiesCatalog`.
+
+### Patch Changes
+
+- 3d10360c82: When issuing a `full` update from an entity provider, entities with updates are now properly persisted.
+- 9ea4565b00: Fixed a bug where internal references within the catalog were broken when new entities where added through entity providers, such as registering a new location or adding one in configuration. These broken references then caused some entities to be incorrectly marked as orphaned and prevented refresh from working properly.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
 ## 0.14.0
 
 ### Minor Changes

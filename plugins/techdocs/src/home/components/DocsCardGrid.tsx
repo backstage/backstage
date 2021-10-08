@@ -62,6 +62,7 @@ export const DocsCardGrid = ({
                     name: toLowerMaybe(entity.metadata.name),
                   })}
                   color="primary"
+                  data-testid="read_docs"
                 >
                   Read Docs
                 </Button>

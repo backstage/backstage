@@ -22,6 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Button, Grid, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
+import { useMount } from 'react-use';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -93,7 +94,6 @@ export const SingleSignInPage = ({
   const configApi = useApi(configApiRef);
 
   const [error, setError] = useState<Error>();
-  const [loginCount, setLoginCount] = useState(0);
 
   // The SignIn component takes some time to decide whether the user is logged-in or not.
   // showLoginPage is used to prevent a glitch-like experience where the sign-in page is
@@ -102,7 +102,6 @@ export const SingleSignInPage = ({
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
-    setLoginCount(prev => prev + 1);
     try {
       let identity: BackstageIdentity | undefined;
       if (checkExisting) {
@@ -120,6 +119,11 @@ export const SingleSignInPage = ({
         identity = await authApi.getBackstageIdentity({
           instantPopup: true,
         });
+        if (!identity) {
+          throw new Error(
+            `The ${provider.title} provider is not configured to support sign-in`,
+          );
+        }
       }
 
       if (!identity) {
@@ -146,9 +150,8 @@ export const SingleSignInPage = ({
       setShowLoginPage(true);
     }
   };
-  if (loginCount === 0) {
-    login({ checkExisting: true });
-  }
+
+  useMount(() => login({ checkExisting: true }));
 
   return showLoginPage ? (
     <Page themeId="home">
