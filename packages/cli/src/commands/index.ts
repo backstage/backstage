@@ -232,7 +232,11 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./info').then(m => m.default)));
 
   program
-    .command('install <plugin-id>', { hidden: true })
+    .command('install [plugin-id]', { hidden: true })
+    .option(
+      '--from <packageJsonFilePath>',
+      'Install from a local package.json containing the installation recipe',
+    )
     .description('Install a Backstage plugin [EXPERIMENTAL]')
     .action(lazy(() => import('./install/install').then(m => m.default)));
 }
