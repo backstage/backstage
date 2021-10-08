@@ -23,6 +23,8 @@ import {
   StatusOK,
   StatusWarning,
   StatusAborted,
+  StatusRunning,
+  StatusPending,
 } from '@backstage/core-components';
 import { Link, Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
@@ -32,22 +34,80 @@ import {
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
-const getBuildResultComponent = (
-  result: number | undefined = BuildResult.None,
-) => {
+const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
-    case BuildResult.None:
-      return <StatusError />;
     case BuildResult.Succeeded:
-      return <StatusOK />;
+      return (
+        <span>
+          <StatusOK /> Succeeded{' '}
+        </span>
+      );
     case BuildResult.PartiallySucceeded:
-      return <StatusWarning />;
+      return (
+        <span>
+          <StatusWarning /> Partially Succeeded{' '}
+        </span>
+      );
     case BuildResult.Failed:
-      return <StatusError />;
+      return (
+        <span>
+          <StatusError /> Failed{' '}
+        </span>
+      );
     case BuildResult.Canceled:
-      return <StatusAborted />;
+      return (
+        <span>
+          <StatusAborted /> Canceled{' '}
+        </span>
+      );
+    case BuildResult.None:
     default:
-      return <StatusWarning />;
+      return (
+        <span>
+          <StatusWarning /> Unknown
+        </span>
+      );
+  }
+};
+
+const getBuildStateComponent = (
+  status: number | undefined,
+  result: number | undefined,
+) => {
+  switch (status) {
+    case BuildStatus.InProgress:
+      return (
+        <span>
+          <StatusRunning /> In Progress
+        </span>
+      );
+    case BuildStatus.Completed:
+      return getBuildResultComponent(result);
+    case BuildStatus.Cancelling:
+      return (
+        <span>
+          <StatusAborted /> Cancelling
+        </span>
+      );
+    case BuildStatus.Postponed:
+      return (
+        <span>
+          <StatusPending /> Postponed
+        </span>
+      );
+    case BuildStatus.NotStarted:
+      return (
+        <span>
+          <StatusAborted /> Not Started
+        </span>
+      );
+    case BuildStatus.None:
+    default:
+      return (
+        <span>
+          <StatusWarning /> Unknown
+        </span>
+      );
   }
 };
 
@@ -74,28 +134,12 @@ const columns: TableColumn[] = [
     width: 'auto',
   },
   {
-    title: 'Status',
-    field: 'status',
+    title: 'State',
     width: 'auto',
     render: (row: Partial<RepoBuild>) => (
       <Box display="flex" alignItems="center">
-        <Box mr={1} />
         <Typography variant="button">
-          {BuildStatus[row.status || BuildStatus.None]}
-        </Typography>
-      </Box>
-    ),
-  },
-  {
-    title: 'Result',
-    field: 'result',
-    width: 'auto',
-    render: (row: Partial<RepoBuild>) => (
-      <Box display="flex" alignItems="center">
-        {getBuildResultComponent(row.result)}
-        <Box mr={1} />
-        <Typography variant="button">
-          {BuildResult[row.result || BuildResult.None]}
+          {getBuildStateComponent(row.status, row.result)}
         </Typography>
       </Box>
     ),
