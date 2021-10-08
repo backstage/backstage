@@ -201,7 +201,7 @@ describe('AzureBlobStoragePublish', () => {
       let error;
       try {
         await publisher.publish({ entity, directory });
-      } catch (e) {
+      } catch (e: any) {
         error = e;
       }
 
@@ -305,7 +305,7 @@ describe('AzureBlobStoragePublish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed, The file ${techDocsMetadaFilePath} does not exist!`,
+        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadaFilePath} does not exist!`,
       });
     });
   });

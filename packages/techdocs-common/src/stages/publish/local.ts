@@ -37,6 +37,7 @@ import {
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
+import { assertError } from '@backstage/errors';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -134,6 +135,7 @@ export class LocalPublish implements PublisherBase {
     try {
       return await fs.readJson(metadataPath);
     } catch (err) {
+      assertError(err);
       this.logger.error(
         `Unable to read techdocs_metadata.json at ${metadataPath}. Error: ${err}`,
       );

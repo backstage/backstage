@@ -19,7 +19,7 @@ import {
   entityEnvelopeSchemaValidator,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { serializeError } from '@backstage/errors';
+import { assertError, serializeError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
@@ -257,6 +257,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           track.markSuccessfulWithChanges(setOfThingsToStitch.size);
         } catch (error) {
+          assertError(error);
           track.markFailed(error);
         }
       },

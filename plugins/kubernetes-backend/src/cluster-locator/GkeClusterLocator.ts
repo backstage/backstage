@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
 import { GKEClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
@@ -65,8 +66,9 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         skipTLSVerify,
       }));
     } catch (e) {
-      throw new Error(
-        `There was an error retrieving clusters from GKE for projectId=${projectId} region=${region} : [${e.message}]`,
+      throw new ForwardedError(
+        `There was an error retrieving clusters from GKE for projectId=${projectId} region=${region}`,
+        e,
       );
     }
   }

@@ -16,6 +16,7 @@
 
 import { isChildPath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
@@ -155,8 +156,9 @@ export const getMkdocsYml = async (
       mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
       mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
     } catch (error) {
-      throw new Error(
-        `Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation: ${error.message}`,
+      throw new ForwardedError(
+        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation',
+        error,
       );
     }
   }
@@ -225,6 +227,7 @@ export const patchMkdocsYmlPreBuild = async (
   try {
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
+    assertError(error);
     logger.warn(
       `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${error.message}`,
     );
@@ -241,6 +244,7 @@ export const patchMkdocsYmlPreBuild = async (
       throw new Error('Bad YAML format.');
     }
   } catch (error) {
+    assertError(error);
     logger.warn(
       `Error in parsing YAML at ${mkdocsYmlPath} before running the generator. ${error.message}`,
     );
@@ -279,6 +283,7 @@ export const patchMkdocsYmlPreBuild = async (
       );
     }
   } catch (error) {
+    assertError(error);
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
     );
@@ -307,6 +312,7 @@ export const addBuildTimestampMetadata = async (
   try {
     json = await fs.readJson(techdocsMetadataPath);
   } catch (err) {
+    assertError(err);
     const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
     logger.error(message);
     throw new Error(message);

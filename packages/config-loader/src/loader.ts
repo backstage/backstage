@@ -19,6 +19,7 @@ import yaml from 'yaml';
 import chokidar from 'chokidar';
 import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
 import { AppConfig } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import {
   applyConfigTransforms,
   readEnvConfig,
@@ -114,9 +115,7 @@ export async function loadConfig(
   try {
     fileConfigs = await loadConfigFiles();
   } catch (error) {
-    throw new Error(
-      `Failed to read static configuration file, ${error.message}`,
-    );
+    throw new ForwardedError('Failed to read static configuration file', error);
   }
 
   const envConfigs = await readEnvConfig(process.env);

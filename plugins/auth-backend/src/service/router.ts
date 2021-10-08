@@ -26,7 +26,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { NotFoundError } from '@backstage/errors';
+import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
@@ -121,6 +121,7 @@ export async function createRouter({
 
         router.use(`/${providerId}`, r);
       } catch (e) {
+        assertError(e);
         if (process.env.NODE_ENV !== 'development') {
           throw new Error(
             `Failed to initialize ${providerId} auth provider, ${e.message}`,

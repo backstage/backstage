@@ -36,6 +36,7 @@ import {
   GeneratorRunInType,
   GeneratorRunOptions,
 } from './types';
+import { ForwardedError } from '@backstage/errors';
 
 export class TechdocsGenerator implements GeneratorBase {
   /**
@@ -151,8 +152,9 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      throw new Error(
-        `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
+      throw new ForwardedError(
+        'Failed to generate docs from ${inputDir} into ${outputDir}',
+        error,
       );
     }
 
