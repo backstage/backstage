@@ -31,12 +31,12 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     this.identityApi = options.identityApi;
   }
 
-  async getRepoBuilds(
+  getRepoBuilds(
     projectName: string,
     repoName: string,
     top: number,
   ): Promise<RepoBuild[]> {
-    return await this.get(`repo-builds/${projectName}/${repoName}?top=${top}`);
+    return this.get(`repo-builds/${projectName}/${repoName}?top=${top}`);
   }
 
   private async get(path: string): Promise<any> {
@@ -53,6 +53,6 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
       throw new AzureDevOpsClientError(response, payload);
     }
 
-    return await response.json();
+    return response.json() as Promise<any>;
   }
 }
