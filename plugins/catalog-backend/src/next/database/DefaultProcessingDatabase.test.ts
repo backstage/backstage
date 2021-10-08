@@ -21,7 +21,7 @@ import { Knex } from 'knex';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
-import { DatabaseManager } from './DatabaseManager';
+import { applyDatabaseMigrations } from './migrations';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
   DbRefreshStateReferencesRow,
@@ -43,7 +43,7 @@ describe('Default Processing Database', () => {
     logger: Logger = defaultLogger,
   ) {
     const knex = await databases.init(databaseId);
-    await DatabaseManager.createDatabase(knex);
+    await applyDatabaseMigrations(knex);
     return {
       knex,
       db: new DefaultProcessingDatabase({

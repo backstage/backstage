@@ -26,8 +26,8 @@ import { ConflictError } from '@backstage/errors';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
-import type { Database, DbEntityResponse, Transaction } from '../../database';
-import { DbEntitiesRequest } from '../../database/types';
+import type { Database, DbEntityResponse, Transaction } from '../database';
+import { DbEntitiesRequest } from '../database/types';
 import { basicEntityFilter } from '../../service/request';
 import { durationText } from '../../util/timing';
 import type {

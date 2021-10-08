@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
+import { resolvePackagePath } from '@backstage/backend-common';
+import { Knex } from 'knex';
 
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './next';
+export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
+  const migrationsDir = resolvePackagePath(
+    '@backstage/plugin-catalog-backend',
+    'migrations',
+  );
+
+  await knex.migrate.latest({
+    directory: migrationsDir,
+  });
+}

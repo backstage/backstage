@@ -44,9 +44,9 @@ import {
   DbLocationsRow,
   DbLocationsRowWithStatus,
   DbPageInfo,
-  EntityPagination,
   Transaction,
 } from './types';
+import { EntityPagination } from '../../catalog/types';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -55,7 +55,8 @@ import {
 const BATCH_SIZE = 50;
 
 /**
- * The core database implementation.
+ * The core database implementation..
+ * @deprecated This was part of the legacy catalog engin
  */
 export class CommonDatabase implements Database {
   constructor(

@@ -22,13 +22,14 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
+  EntityPagination,
 } from '../catalog/types';
-import { DbPageInfo, EntityPagination } from '../database/types';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbSearchRow,
+  DbPageInfo,
 } from './database/tables';
 
 function parsePagination(input?: EntityPagination): {

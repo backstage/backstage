@@ -22,6 +22,7 @@ import {
 } from '../database/types';
 import { LocationResponse, LocationsCatalog } from './types';
 
+/** @deprecated This was part of the legacy catalog engine */
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(private readonly database: Database) {}
 

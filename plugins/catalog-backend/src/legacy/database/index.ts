@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
-
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './next';
+export { CommonDatabase } from './CommonDatabase';
+export { DatabaseManager } from './DatabaseManager';
+export type { CreateDatabaseOptions } from './DatabaseManager';
+export type {
+  Database,
+  DbEntityRequest,
+  DbEntityResponse,
+  Transaction,
+  DbEntitiesRequest,
+  DbEntitiesResponse,
+  DbLocationsRowWithStatus,
+  DatabaseLocationUpdateLogEvent,
+  DbLocationsRow,
+  DatabaseLocationUpdateLogStatus,
+  DbPageInfo,
+} from './types';

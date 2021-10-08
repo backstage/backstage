@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -33,12 +29,13 @@ import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
+import { EntitiesCatalog } from '../catalog';
 import {
   DatabaseLocationsCatalog,
-  EntitiesCatalog,
   LocationsCatalog,
-} from '../catalog';
-import { CommonDatabase } from '../database/CommonDatabase';
+  CommonDatabase,
+} from '../legacy';
+
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -69,6 +66,7 @@ import {
 } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from './database/migrations';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
@@ -289,6 +287,7 @@ export class NextCatalogBuilder {
    */
   async build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
+    /** @deprecated This will be removed */
     locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
@@ -302,12 +301,7 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    await dbClient.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-catalog-backend',
-        'migrations',
-      ),
-    });
+    await applyDatabaseMigrations(dbClient);
 
     const db = new CommonDatabase(dbClient, logger);
 

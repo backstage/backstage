@@ -19,7 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
-import { DatabaseManager } from './database/DatabaseManager';
+import { applyDatabaseMigrations } from './database/migrations';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import {
   DbRefreshStateReferencesRow,
@@ -44,7 +44,7 @@ describe('Refresh integration', () => {
     logger: Logger = defaultLogger,
   ) {
     const knex = await databases.init(databaseId);
-    await DatabaseManager.createDatabase(knex);
+    await applyDatabaseMigrations(knex);
     return {
       knex,
       db: new DefaultProcessingDatabase({
