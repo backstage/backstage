@@ -17,7 +17,8 @@ azureDevOps:
   host: dev.azure.com
   token: ${AZURE_TOKEN}
   organization: my-company
-  top: 50
+  azurePipelines:
+    top: 50
 ```
 
 Configuration Details:
@@ -25,7 +26,7 @@ Configuration Details:
 - `host` and `token` can be the same as the ones used for the `integration` section
 - `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
 - `organization` is your Azure DevOps Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
-- `top` is strictly used by the frontend to limit the number of items returned, currently only used for Builds
+- `top` is strictly used by the frontend to limit the number of items returned, if not provided it defaults to 10. Currently only used for Builds
 
 ### Backend
 
@@ -39,7 +40,7 @@ Here's how to get the backend up and running:
    yarn add @backstage/plugin-azure-devops-backend
    ```
 
-2. Then we will create a new file named `packages/backend/src/plugins/azuredevops.ts`, and add the
+2. Then we will create a new file named `packages/backend/src/plugins/azure-devops.ts`, and add the
    following to it:
 
    ```ts
@@ -83,23 +84,23 @@ To get the frontend working you'll need to do the following two steps:
 
 2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app:
 
-```tsx
-// In packages/app/src/components/catalog/EntityPage.tsx
-import {
-  EntityAzurePipelinesContent,
-  isAzureDevOpsAvailable,
-} from '@backstage/plugin-azure-devops';
+   ```tsx
+   // In packages/app/src/components/catalog/EntityPage.tsx
+   import {
+     EntityAzurePipelinesContent,
+     isAzureDevOpsAvailable,
+   } from '@backstage/plugin-azure-devops';
 
-// For example in the CI/CD section
-const cicdContent = (
-  <EntitySwitch>
-    // ...
-    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzurePipelinesContent />
-    </EntitySwitch.Case>
-    // ...
-  </EntitySwitch>
-```
+   // For example in the CI/CD section
+   const cicdContent = (
+     <EntitySwitch>
+       // ...
+       <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+         <EntityAzurePipelinesContent />
+       </EntitySwitch.Case>
+       // ...
+     </EntitySwitch>
+   ```
 
 ### Entity Annotation
 

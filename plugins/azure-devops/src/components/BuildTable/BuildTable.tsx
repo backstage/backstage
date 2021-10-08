@@ -56,11 +56,12 @@ const columns: TableColumn[] = [
     title: 'ID',
     field: 'id',
     highlight: false,
-    width: '100px',
+    width: 'auto',
   },
   {
     title: 'Build',
     field: 'title',
+    width: 'auto',
     render: (row: Partial<RepoBuild>) => (
       <Link href={row.link} target="_blank">
         {row.title}
@@ -70,10 +71,12 @@ const columns: TableColumn[] = [
   {
     title: 'Source',
     field: 'source',
+    width: 'auto',
   },
   {
     title: 'Status',
     field: 'status',
+    width: 'auto',
     render: (row: Partial<RepoBuild>) => (
       <Box display="flex" alignItems="center">
         <Box mr={1} />
@@ -86,6 +89,7 @@ const columns: TableColumn[] = [
   {
     title: 'Result',
     field: 'result',
+    width: 'auto',
     render: (row: Partial<RepoBuild>) => (
       <Box display="flex" alignItems="center">
         {getBuildResultComponent(row.result)}
@@ -97,8 +101,9 @@ const columns: TableColumn[] = [
     ),
   },
   {
-    title: 'Date',
+    title: 'Age',
     field: 'queueTime',
+    width: 'auto',
     render: (row: Partial<RepoBuild>) =>
       DateTime.fromISO(
         row.queueTime ? row.queueTime.toString() : new Date().toString(),

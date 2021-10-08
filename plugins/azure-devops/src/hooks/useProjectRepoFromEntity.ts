@@ -24,5 +24,24 @@ export function useProjectRepoFromEntity(entity: Entity): {
   const [project, repo] = (
     entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION] ?? ''
   ).split('/');
+
+  if (!project && !repo) {
+    throw new Error(
+      'Value for annotation dev.azure.com/project-repo was not in the correct format: <project-name>/<repo-name>',
+    );
+  }
+
+  if (!project) {
+    throw new Error(
+      'Project Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+    );
+  }
+
+  if (!repo) {
+    throw new Error(
+      'Repo Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+    );
+  }
+
   return { project, repo };
 }
