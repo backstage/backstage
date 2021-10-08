@@ -11,6 +11,9 @@ consul {
     backoff = "250ms"
     max_backoff = "1m"
   }
+
+  token = ${CONSUL_ADDR}
+  address = ${CONSUL_TOKEN}
 }
 
 exec {
@@ -20,7 +23,7 @@ exec {
   env {
     pristine = false
   }
-  
+
   kill_signal = "SIGTERM"
   kill_timeout = "2s"
 }
