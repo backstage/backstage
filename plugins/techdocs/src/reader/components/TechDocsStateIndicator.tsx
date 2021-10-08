@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { makeStyles, Button } from '@material-ui/core';
+import { Progress } from '@backstage/core-components';
+import { Box, Button, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
@@ -41,7 +42,8 @@ const useStyles = makeStyles(() => ({
  * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
  * @internal
  */
-export const TechDocsAlert = () => {
+export const TechDocsStateIndicator = () => {
+  let StateAlert: JSX.Element | null = null;
   const { namespace = '', kind = '', name = '', '*': params } = useParams();
   const classes = useStyles();
 
@@ -53,8 +55,16 @@ export const TechDocsAlert = () => {
     buildLog,
   } = useReaderState(kind, namespace, name, params);
 
+  const ReaderProgress = ['INITIAL_BUILD', 'CONTENT_STALE_REFRESHING'].includes(
+    state,
+  ) ? (
+    <Box mb={3}>
+      <Progress />
+    </Box>
+  ) : null;
+
   if (state === 'INITIAL_BUILD') {
-    return (
+    StateAlert = (
       <Alert
         variant="outlined"
         severity="info"
@@ -67,7 +77,7 @@ export const TechDocsAlert = () => {
   }
 
   if (state === 'CONTENT_STALE_REFRESHING') {
-    return (
+    StateAlert = (
       <Alert
         variant="outlined"
         severity="info"
@@ -80,7 +90,7 @@ export const TechDocsAlert = () => {
   }
 
   if (state === 'CONTENT_STALE_READY') {
-    return (
+    StateAlert = (
       <Alert
         variant="outlined"
         severity="success"
@@ -97,7 +107,7 @@ export const TechDocsAlert = () => {
   }
 
   if (state === 'CONTENT_STALE_ERROR') {
-    return (
+    StateAlert = (
       <Alert
         variant="outlined"
         severity="error"
@@ -111,7 +121,7 @@ export const TechDocsAlert = () => {
   }
 
   if (state === 'CONTENT_NOT_FOUND') {
-    return (
+    StateAlert = (
       <>
         {syncErrorMessage && (
           <Alert
@@ -129,5 +139,10 @@ export const TechDocsAlert = () => {
     );
   }
 
-  return null;
+  return (
+    <>
+      {ReaderProgress}
+      {StateAlert}
+    </>
+  );
 };

@@ -17,8 +17,7 @@
 export * from './Reader';
 export * from './TechDocsPage';
 export * from './TechDocsPageHeader';
-export * from './TechDocsProgress';
-export * from './TechDocsAlert';
+export * from './TechDocsStateIndicator';
 
 /**
  * Note: this component is currently being exported so that we can rapidly

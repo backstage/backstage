@@ -39,9 +39,8 @@ import {
   transform as transformer,
 } from '../transformers';
 
-import { TechDocsProgress } from './TechDocsProgress';
-import { TechDocsAlert } from './TechDocsAlert';
 import { TechDocsSearch } from './TechDocsSearch';
+import { TechDocsStateIndicator } from './TechDocsStateIndicator';
 import { useReaderState } from './useReaderState';
 
 type Props = {
@@ -310,8 +309,8 @@ export const useTechDocsReaderDom = (): Element | null => {
     let shouldReplaceContent = true;
 
     // Pre-render
-    preRender(rawPage, path).then(async transformedElement => {
-      if (!transformedElement?.innerHTML) {
+    preRender(rawPage, path).then(async preTransformedDomElement => {
+      if (!preTransformedDomElement?.innerHTML) {
         return; // An unexpected error occurred
       }
 
@@ -324,8 +323,10 @@ export const useTechDocsReaderDom = (): Element | null => {
       window.scroll({ top: 0 });
 
       // Post-render
-      const renderedElement = await postRender(transformedElement);
-      setDom(renderedElement as HTMLElement);
+      const postTransformedDomElement = await postRender(
+        preTransformedDomElement,
+      );
+      setDom(postTransformedDomElement as HTMLElement);
     });
 
     // cancel this execution
@@ -360,8 +361,7 @@ export const Reader = ({
 
   return (
     <>
-      <TechDocsProgress />
-      <TechDocsAlert />
+      <TechDocsStateIndicator />
       {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
         <Grid container className={classes.searchBar}>
           <TechDocsSearch entityId={entityRef} />
