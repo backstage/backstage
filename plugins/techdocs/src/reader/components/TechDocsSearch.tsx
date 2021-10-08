@@ -61,7 +61,7 @@ export const buildInitialFilters = (
   return legacyPaths
     ? entityId
     : Object.entries(entityId).reduce((acc, [key, value]) => {
-        return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
+        return { ...acc, [key]: value?.toLocaleLowerCase('en-US') };
       }, {});
 };
 
