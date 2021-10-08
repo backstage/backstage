@@ -45,11 +45,4 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-ENTRYPOINT ["/bin/envconsul", \
-    "-consul-addr=${CONSUL_ADDR}", \
-    "-consul-token=${CONSUL_TOKEN}", \
-    "-prefix=config/bih/development", \
-    "node packages/backend --config app-config.yaml" \
-]
-
-
+ENTRYPOINT ["entrypoint.sh"]
