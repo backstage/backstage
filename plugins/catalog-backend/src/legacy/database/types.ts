@@ -20,7 +20,9 @@ import type {
   EntityRelationSpec,
   Location,
 } from '@backstage/catalog-model';
+import { EntityFilter, EntityPagination } from '../../catalog/types';
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
@@ -30,22 +32,26 @@ export type DbEntitiesRow = {
   data: string;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntityRequest = {
   locationId?: string;
   entity: Entity;
   relations: EntityRelationSpec[];
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntitiesRequest = {
   filter?: EntityFilter;
   pagination?: EntityPagination;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntitiesResponse = {
   entities: DbEntityResponse[];
   pageInfo: DbPageInfo;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbPageInfo =
   | {
       hasNextPage: false;
@@ -55,11 +61,13 @@ export type DbPageInfo =
       endCursor: string;
     };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntitiesRelationsRow = {
   originating_entity_id: string;
   source_full_name: string;
@@ -67,18 +75,21 @@ export type DbEntitiesRelationsRow = {
   target_full_name: string;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbEntitiesSearchRow = {
   entity_id: string;
   key: string;
   value: string | null;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbLocationsRow = {
   id: string;
   type: string;
   target: string;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DbLocationsRowWithStatus = DbLocationsRow & {
   status: string | null;
   timestamp: string | null;
@@ -90,6 +101,7 @@ export enum DatabaseLocationUpdateLogStatus {
   SUCCESS = 'success',
 }
 
+/** @deprecated This was part of the legacy catalog engine */
 export type DatabaseLocationUpdateLogEvent = {
   id: string;
   status: DatabaseLocationUpdateLogStatus;
@@ -100,52 +112,9 @@ export type DatabaseLocationUpdateLogEvent = {
 };
 
 /**
- * Matches rows in the entities_search table.
- */
-export type EntitiesSearchFilter = {
-  /**
-   * The key to match on.
-   *
-   * Matches are always case insensitive.
-   */
-  key: string;
-
-  /**
-   * Match on plain equality of values.
-   *
-   * If undefined, this factor is not taken into account. Otherwise, match on
-   * values that are equal to any of the given array items. Matches are always
-   * case insensitive.
-   */
-  matchValueIn?: string[];
-
-  /**
-   * Match on existence of key.
-   */
-  matchValueExists?: boolean;
-};
-
-/**
- * A filter expression for entities.
- *
- * Any (at least one) of the outer sets must match, within which all of the
- * individual filters must match.
- */
-export type EntityFilter = {
-  anyOf: { allOf: EntitiesSearchFilter[] }[];
-};
-
-/**
- * A pagination rule for entities.
- */
-export type EntityPagination = {
-  limit?: number;
-  offset?: number;
-  after?: string;
-};
-
-/**
  * An abstraction for transactions of the underlying database technology.
+ *
+ * @deprecated This was part of the legacy catalog engine
  */
 export type Transaction = {
   rollback(): Promise<unknown>;
@@ -154,6 +123,7 @@ export type Transaction = {
 /**
  * An abstraction on top of the underlying database, wrapping the basic CRUD
  * needs.
+ * @deprecated This was part of the legacy catalog engine
  */
 export type Database = {
   /**

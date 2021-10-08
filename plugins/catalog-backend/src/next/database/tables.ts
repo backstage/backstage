@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+export type DbPageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
+
 export type DbLocationsRow = {
   id: string;
   type: string;

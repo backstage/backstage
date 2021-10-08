@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { DatabaseManager } from '../database';
+import { DatabaseManager } from '../legacy/database';
 import { CatalogBuilder } from '../legacy/service/CatalogBuilder';
 import { createRouter } from '../legacy/service';
 

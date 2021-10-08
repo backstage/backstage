@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 export type {
   EntitiesCatalog,
   EntitiesRequest,
@@ -22,9 +21,8 @@ export type {
   EntityAncestryResponse,
   EntityUpsertRequest,
   EntityUpsertResponse,
-  LocationResponse,
-  LocationsCatalog,
-  LocationUpdateLogEvent,
-  LocationUpdateStatus,
   PageInfo,
+  EntitiesSearchFilter,
+  EntityFilter,
+  EntityPagination,
 } from './types';

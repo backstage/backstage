@@ -16,11 +16,17 @@
 
 import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import knexFactory, { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
-import { CommonDatabase } from '../../database/CommonDatabase';
-import { Database } from '../../database/types';
+import { CommonDatabase } from './CommonDatabase';
+import { Database } from './types';
 
+const migrationsDir = resolvePackagePath(
+  '@backstage/plugin-catalog-backend',
+  'migrations',
+);
+
+/** @deprecated This was part of the legacy catalog engine */
 export type CreateDatabaseOptions = {
   logger: Logger;
 };
@@ -29,16 +35,12 @@ const defaultOptions: CreateDatabaseOptions = {
   logger: getVoidLogger(),
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export class DatabaseManager {
   public static async createDatabase(
     knex: Knex,
     options: Partial<CreateDatabaseOptions> = {},
   ): Promise<Database> {
-    const migrationsDir = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrations',
-    );
-
     await knex.migrate.latest({
       directory: migrationsDir,
     });
@@ -72,6 +74,14 @@ export class DatabaseManager {
 
   public static async createTestDatabaseConnection(): Promise<Knex> {
     const config: Knex.Config<any> = {
+      /*
+      client: 'pg',
+      connection: {
+        host: 'localhost',
+        user: 'postgres',
+        password: 'postgres',
+      },
+      */
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
@@ -79,7 +89,7 @@ export class DatabaseManager {
 
     let knex = knexFactory(config);
     if (typeof config.connection !== 'string') {
-      const tempDbName = `d${uuid().replace(/-/g, '')}`;
+      const tempDbName = `d${uuidv4().replace(/-/g, '')}`;
       await knex.raw(`CREATE DATABASE ${tempDbName};`);
       knex = knexFactory({
         ...config,

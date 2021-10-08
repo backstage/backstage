@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
 import yaml from 'yaml';
-import { DatabaseManager } from '../../database';
+import { DatabaseManager } from '../database';
 import { CatalogProcessorParser } from '../../ingestion';
 import * as result from '../../ingestion/processors/results';
 import { CatalogBuilder } from './CatalogBuilder';

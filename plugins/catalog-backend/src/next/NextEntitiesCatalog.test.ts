@@ -18,7 +18,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { DatabaseManager } from './database/DatabaseManager';
+import { applyDatabaseMigrations } from './database/migrations';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
@@ -33,7 +33,7 @@ describe('NextEntitiesCatalog', () => {
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    await DatabaseManager.createDatabase(knex);
+    await applyDatabaseMigrations(knex);
     return { knex };
   }
 
