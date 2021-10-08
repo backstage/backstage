@@ -22,7 +22,15 @@ import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 
-export const EntityTypePicker = () => {
+type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
+export const EntityTypePicker = ({
+  hidden,
+  initialFilter,
+}: EntityTypeFilterProps) => {
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
@@ -34,7 +42,10 @@ export const EntityTypePicker = () => {
         severity: 'error',
       });
     }
-  }, [error, alertApi]);
+    if (initialFilter) {
+      setSelectedTypes([initialFilter]);
+    }
+  }, [error, alertApi, initialFilter, setSelectedTypes]);
 
   if (availableTypes.length === 0 || error) return null;
 
@@ -46,7 +57,7 @@ export const EntityTypePicker = () => {
     })),
   ];
 
-  return (
+  return !hidden ? (
     <Box pb={1} pt={1}>
       <Select
         label="Type"
@@ -57,5 +68,5 @@ export const EntityTypePicker = () => {
         }
       />
     </Box>
-  );
+  ) : null;
 };
