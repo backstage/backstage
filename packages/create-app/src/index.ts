@@ -30,6 +30,17 @@ const main = (argv: string[]) => {
 
   program
     .description('Creates a new app in a new directory')
+    .option('--app-name <name>', 'Name for the app');
+
+  program
+    .description('Creates a new app in a new directory')
+    .option(
+      '--db-type <type>',
+      'Database type for the app. Can be either PostgreSQL or SQLite',
+    );
+
+  program
+    .description('Creates a new app in a new directory')
     .option(
       '--skip-install',
       'Skip the install and builds steps after creating the app',

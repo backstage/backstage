@@ -88,32 +88,43 @@ async function moveApp(tempDir: string, destination: string, id: string) {
 export default async (cmd: Command): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
+  let answers: {
+    name: string;
+    dbType: string;
+    dbTypePG: boolean;
+    dbTypeSqlite: boolean;
+  } = { name: null, dbType: 'SQLite', dbTypePG: false, dbTypeSqlite: true };
 
-  const questions: Question[] = [
-    {
-      type: 'input',
-      name: 'name',
-      message: chalk.blue('Enter a name for the app [required]'),
-      validate: (value: any) => {
-        if (!value) {
-          return chalk.red('Please enter a name for the app');
-        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
-          return chalk.red(
-            'App name must be lowercase and contain only letters, digits, and dashes.',
-          );
-        }
-        return true;
+  if (cmd.appName != null && cmd.dbType != null) {
+    answers.name = cmd.appName;
+    answers.dbType = cmd.dbType;
+  } else {
+    const questions: Question[] = [
+      {
+        type: 'input',
+        name: 'name',
+        message: chalk.blue('Enter a name for the app [required]'),
+        validate: (value: any) => {
+          if (!value) {
+            return chalk.red('Please enter a name for the app');
+          } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+            return chalk.red(
+              'App name must be lowercase and contain only letters, digits, and dashes.',
+            );
+          }
+          return true;
+        },
       },
-    },
-    {
-      type: 'list',
-      name: 'dbType',
-      message: chalk.blue('Select database for the backend [required]'),
-      // @ts-ignore
-      choices: ['SQLite', 'PostgreSQL'],
-    },
-  ];
-  const answers: Answers = await inquirer.prompt(questions);
+      {
+        type: 'list',
+        name: 'dbType',
+        message: chalk.blue('Select database for the backend [required]'),
+        // @ts-ignore
+        choices: ['SQLite', 'PostgreSQL'],
+      },
+    ];
+    answers = await inquirer.prompt(questions);
+  }
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
   answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
