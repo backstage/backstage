@@ -22,7 +22,7 @@ import { Progress } from '@backstage/core-components';
 
 import { useReaderState } from './useReaderState';
 
-const states = ['CHECKING', 'INITIAL_BUILD', 'CONTENT_STALE_REFRESHING'];
+const states = ['INITIAL_BUILD', 'CONTENT_STALE_REFRESHING'];
 
 /**
  * Note: this component is currently being exported so that we can rapidly
