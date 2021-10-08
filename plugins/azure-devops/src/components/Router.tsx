@@ -16,7 +16,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router';
 import { azureDevOpsRouteRef } from '../routes';
-import { EntityPageAzureDevOps } from './EntityPageAzureDevOps';
+import { EntityPageAzurePipelines } from './EntityPageAzurePipelines';
 import { AZURE_DEVOPS_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -41,7 +41,7 @@ export const Router = (_props: Props) => {
     <Routes>
       <Route
         path={`/${azureDevOpsRouteRef.path}`}
-        element={<EntityPageAzureDevOps />}
+        element={<EntityPageAzurePipelines />}
       />
     </Routes>
   );

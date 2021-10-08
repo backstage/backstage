@@ -36,15 +36,15 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     repoName: string,
     top: number,
   ): Promise<RepoBuild[]> {
-    return await this.get(`/repo-builds/${projectName}/${repoName}?top=${top}`);
+    return await this.get(`repo-builds/${projectName}/${repoName}?top=${top}`);
   }
 
   private async get(path: string): Promise<any> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('azure-devops');
-    const url = `${baseUrl}/${path}`;
+    const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
+    const url = new URL(path, baseUrl);
 
     const idToken = await this.identityApi.getIdToken();
-    const response = await fetch(url, {
+    const response = await fetch(url.toString(), {
       headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
     });
 

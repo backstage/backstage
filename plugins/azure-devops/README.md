@@ -81,12 +81,12 @@ To get the frontend working you'll need to do the following two steps:
    yarn add @backstage/plugin-azure-devops
    ```
 
-2. Second we need to add the `EntityAzureDevOpsContent` extension to the entity page in your app:
+2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app:
 
 ```tsx
 // In packages/app/src/components/catalog/EntityPage.tsx
 import {
-  EntityAzureDevOpsContent,
+  EntityAzurePipelinesContent,
   isAzureDevOpsAvailable,
 } from '@backstage/plugin-azure-devops';
 
@@ -95,7 +95,7 @@ const cicdContent = (
   <EntitySwitch>
     // ...
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzureDevOpsContent />
+      <EntityAzurePipelinesContent />
     </EntitySwitch.Case>
     // ...
   </EntitySwitch>

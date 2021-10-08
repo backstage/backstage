@@ -42,7 +42,7 @@ export const azureDevOpsPlugin = createPlugin({
 
 export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
-    name: 'EntityAzureDevOpsContent',
+    name: 'EntityAzurePipelinesContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: azureDevOpsRouteRef,
   }),
