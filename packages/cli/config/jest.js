@@ -81,7 +81,7 @@ async function getProjectConfig(targetPath) {
     },
 
     transform: {
-      '\\.esm\\.js$': require.resolve('./jestEsmTransform.js'), // See jestEsmTransform.js
+      // '\\.esm\\.js$': require.resolve('./jestEsmTransform.js'), // See jestEsmTransform.js
       '\\.(js|jsx|ts|tsx)$': require.resolve('@sucrase/jest-plugin'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
@@ -94,7 +94,11 @@ async function getProjectConfig(targetPath) {
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
     transformIgnorePatterns: [
-      `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
+      '/node_modules/react/',
+      '/node_modules/react-dom/',
+      '/node_modules/lodash/',
+      '/node_modules/@material-ui/',
+      // `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
     ],
   };
 
