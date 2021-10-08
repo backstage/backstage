@@ -18,6 +18,8 @@ import { Step, PackageWithInstallRecipe } from './types';
 import { fetchPackageInfo } from '../../lib/versioning';
 import { NotFoundError } from '../../lib/errors';
 import * as stepDefinitionMap from './steps';
+import { Command } from 'commander';
+import fs from 'fs-extra';
 
 const stepDefinitions = Object.values(stepDefinitionMap);
 
@@ -95,11 +97,21 @@ class PluginInstaller {
   }
 }
 
-export default async (pluginId: string) => {
+export default async (pluginId?: string, cmd?: Command) => {
   // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
-  // TODO(himanshu): Add a way to test your install recipe. Maybe a --from-local-package=/path/to/package.json
 
-  const pkg = await fetchPluginPackage(pluginId);
+  let pkg: PackageWithInstallRecipe;
+  if (pluginId) {
+    pkg = await fetchPluginPackage(pluginId);
+  } else if (cmd?.from) {
+    // TODO(himanshu): Also support reading directly from url
+    pkg = await fs.readJson(cmd.from);
+  } else {
+    throw new Error(
+      'Missing both <plugin-id> or a package.json file path in the --from flag.',
+    );
+  }
+
   const steps = await PluginInstaller.resolveSteps(pkg);
   const installer = new PluginInstaller(steps);
   await installer.run();
