@@ -48,11 +48,11 @@ Here's how to get the backend up and running:
    import { Router } from 'express';
    import type { PluginEnvironment } from '../types';
 
-   export default async function createPlugin({
+   export default function createPlugin({
      logger,
      config,
    }: PluginEnvironment): Promise<Router> {
-     return await createRouter({ logger, config });
+     return createRouter({ logger, config });
    }
    ```
 
