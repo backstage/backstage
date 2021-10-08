@@ -48,6 +48,15 @@ type PaletteAdditions = {
     indicator: string;
     color: string;
     selectedColor: string;
+    navItem: {
+      hoverBackground: string;
+    };
+    submenu: {
+      background: string;
+      indicator: string;
+      color: string;
+      selectedColor: string;
+    };
   };
   tabbar: {
     indicator: string;

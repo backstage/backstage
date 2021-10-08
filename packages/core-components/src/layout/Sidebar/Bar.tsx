@@ -16,10 +16,17 @@
 
 import { makeStyles, useMediaQuery } from '@material-ui/core';
 import clsx from 'clsx';
-import React, { useRef, useState, useContext, PropsWithChildren } from 'react';
+import React, {
+  useState,
+  useContext,
+  PropsWithChildren,
+  useEffect,
+} from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
+import DoubleArrowRight from './icons/DoubleArrowRight';
+import DoubleArrowLeft from './icons/DoubleArrowLeft';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -42,7 +49,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
-    borderRight: `1px solid #383838`,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
@@ -61,83 +67,39 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       duration: theme.transitions.duration.shorter,
     }),
   },
+  expandButton: {
+    background: 'none',
+    border: 'none',
+    color: theme.palette.navigation.color,
+    width: '100%',
+    cursor: 'pointer',
+    position: 'relative',
+    height: 48,
+  },
+  arrows: {
+    position: 'absolute',
+    right: 10,
+  },
 }));
 
-enum State {
-  Closed,
-  Idle,
-  Open,
-}
-
-type Props = {
-  openDelayMs?: number;
-  closeDelayMs?: number;
-};
-
-export function Sidebar(props: PropsWithChildren<Props>) {
-  const {
-    openDelayMs = sidebarConfig.defaultOpenDelayMs,
-    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-    children,
-  } = props;
+export function Sidebar({ children }: PropsWithChildren<{}>) {
   const classes = useStyles();
-  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('md'),
-  );
-  const [state, setState] = useState(State.Closed);
-  const hoverTimerRef = useRef<number>();
+
   const { isPinned } = useContext(SidebarPinStateContext);
+  const [isOpen, setIsOpen] = useState(isPinned);
 
-  const handleOpen = () => {
+  useEffect(() => {
     if (isPinned) {
-      return;
+      setIsOpen(true);
     }
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = undefined;
-    }
-    if (state !== State.Open && !isSmallScreen) {
-      hoverTimerRef.current = window.setTimeout(() => {
-        hoverTimerRef.current = undefined;
-        setState(State.Open);
-      }, openDelayMs);
-
-      setState(State.Idle);
-    }
-  };
-
-  const handleClose = () => {
-    if (isPinned) {
-      return;
-    }
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = undefined;
-    }
-    if (state === State.Idle) {
-      setState(State.Closed);
-    } else if (state === State.Open) {
-      hoverTimerRef.current = window.setTimeout(() => {
-        hoverTimerRef.current = undefined;
-        setState(State.Closed);
-      }, closeDelayMs);
-    }
-  };
-
-  const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
+  }, [isPinned]);
 
   return (
-    <div
-      className={classes.root}
-      onMouseEnter={handleOpen}
-      onFocus={handleOpen}
-      onMouseLeave={handleClose}
-      onBlur={handleClose}
-      data-testid="sidebar-root"
-    >
+    <div className={classes.root} data-testid="sidebar-root">
       <SidebarContext.Provider
         value={{
           isOpen,
+          setIsOpen,
         }}
       >
         <div
@@ -151,3 +113,37 @@ export function Sidebar(props: PropsWithChildren<Props>) {
     </div>
   );
 }
+
+export const SidebarExpandButton = () => {
+  const classes = useStyles();
+  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('md'),
+  );
+  const { isPinned } = useContext(SidebarPinStateContext);
+  const { isOpen, setIsOpen } = useContext(SidebarContext);
+
+  const openDelayMs = sidebarConfig.defaultOpenDelayMs;
+  const closeDelayMs = sidebarConfig.defaultCloseDelayMs;
+
+  const handleClick = () => {
+    if (isPinned || isSmallScreen) {
+      return;
+    }
+    const delayMs = isOpen ? openDelayMs : closeDelayMs;
+    setTimeout(async () => {
+      setIsOpen(!isOpen);
+    }, delayMs);
+  };
+
+  if (isSmallScreen || isPinned) {
+    return null;
+  }
+
+  return (
+    <button onClick={handleClick} className={classes.expandButton}>
+      <div className={classes.arrows}>
+        {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
+      </div>
+    </button>
+  );
+};
