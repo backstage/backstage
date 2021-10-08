@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-export interface Config {
-  /** Configuration options for the azure-devops-backend plugin */
-  azureDevOps: {
-    /**
-     * The max number of items to return - applies to builds
-     * @visibility frontend
-     */
-    top: number;
-  };
+export class AzureDevOpsClientError extends Error {
+  public constructor({ status, statusText }: Response, payload: string) {
+    super(`Request failed with ${status} ${statusText}, ${payload}`);
+  }
 }

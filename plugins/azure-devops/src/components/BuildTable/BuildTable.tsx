@@ -32,17 +32,19 @@ import {
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
-const getBuildResultComponent = (result: number | undefined = 0) => {
+const getBuildResultComponent = (
+  result: number | undefined = BuildResult.None,
+) => {
   switch (result) {
-    case 0: // None
+    case BuildResult.None:
       return <StatusError />;
-    case 2: // Succeeded
+    case BuildResult.Succeeded:
       return <StatusOK />;
-    case 4: // PartiallySucceeded
+    case BuildResult.PartiallySucceeded:
       return <StatusWarning />;
-    case 8: // Failed
+    case BuildResult.Failed:
       return <StatusError />;
-    case 32: // Canceled
+    case BuildResult.Canceled:
       return <StatusAborted />;
     default:
       return <StatusWarning />;
@@ -75,7 +77,9 @@ const columns: TableColumn[] = [
     render: (row: Partial<RepoBuild>) => (
       <Box display="flex" alignItems="center">
         <Box mr={1} />
-        <Typography variant="button">{BuildStatus[row.status || 0]}</Typography>
+        <Typography variant="button">
+          {BuildStatus[row.status || BuildStatus.None]}
+        </Typography>
       </Box>
     ),
   },
@@ -86,7 +90,9 @@ const columns: TableColumn[] = [
       <Box display="flex" alignItems="center">
         {getBuildResultComponent(row.result)}
         <Box mr={1} />
-        <Typography variant="button">{BuildResult[row.result || 0]}</Typography>
+        <Typography variant="button">
+          {BuildResult[row.result || BuildResult.None]}
+        </Typography>
       </Box>
     ),
   },
@@ -98,7 +104,7 @@ const columns: TableColumn[] = [
 ];
 
 type Props = {
-  items: RepoBuild[];
+  items?: RepoBuild[];
   loading: boolean;
   error?: any;
 };
@@ -125,8 +131,8 @@ export const BuildTable = ({ items, loading, error }: Props) => {
         pageSize: 5,
         showEmptyDataSourceMessage: !loading,
       }}
-      title={`Builds (${(items && items.length) || 0})`}
-      data={items}
+      title={`Builds (${items ? items.length : 0})`}
+      data={items || []}
     />
   );
 };

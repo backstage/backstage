@@ -20,15 +20,10 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
-  createRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-
-export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'AzureDevOps',
-});
+import { azureDevOpsRouteRef } from './routes';
 
 export const azureDevOpsPlugin = createPlugin({
   id: 'azureDevOps',
@@ -41,14 +36,14 @@ export const azureDevOpsPlugin = createPlugin({
     }),
   ],
   routes: {
-    entityContent: rootRouteRef,
+    entityContent: azureDevOpsRouteRef,
   },
 });
 
-export const EntityAzureDevOpsContent = azureDevOpsPlugin.provide(
+export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'EntityAzureDevOpsContent',
     component: () => import('./components/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    mountPoint: azureDevOpsRouteRef,
   }),
 );

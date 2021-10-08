@@ -15,3 +15,4 @@
  */
 
 export const AZURE_DEVOPS_ANNOTATION = 'dev.azure.com/project-repo';
+export const AZURE_DEVOPS_DEFAULT_TOP: number = 10;

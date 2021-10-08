@@ -2,7 +2,7 @@
 
 Website: [https://dev.azure.com/](https://dev.azure.com/)
 
-![Azure DevOps Builds Example](./doc/azure-devops-builds.png)
+![Azure DevOps Builds Example](./docs/azure-devops-builds.png)
 
 ## Setup
 
