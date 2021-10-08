@@ -364,5 +364,21 @@ describe('OpenStackSwiftPublish', () => {
         'content-type': 'text/plain; charset=utf-8',
       });
     });
+
+    it('should return 404 if file is not found', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const response = await request(app).get(
+        `/${namespace}/${kind}/${name}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
+    });
   });
 });

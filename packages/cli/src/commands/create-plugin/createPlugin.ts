@@ -239,7 +239,10 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
+  const pluginId =
+    cmd.backend && !answers.id.endsWith('-backend')
+      ? `${answers.id}-backend`
+      : answers.id;
 
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`

@@ -17,6 +17,7 @@
 import { withLogCollector } from '@backstage/test-utils-core';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';
 import { createRouteRef } from '../routing';
@@ -84,6 +85,7 @@ describe('extensions', () => {
   it('should wrap extended component with error boundary', async () => {
     const BrokenComponent = plugin.provide(
       createComponentExtension({
+        name: 'BrokenComponent',
         component: {
           sync: () => {
             throw new Error('Test error');
@@ -106,5 +108,33 @@ describe('extensions', () => {
     });
     screen.getByText('Error in my-plugin');
     expect(errors[0]).toMatch('Test error');
+  });
+
+  it('should wrap extended component with analytics context', async () => {
+    const AnalyticsSpyExtension = plugin.provide(
+      createReactExtension({
+        name: 'AnalyticsSpy',
+        component: {
+          sync: () => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const context = useAnalyticsContext();
+            return (
+              <>
+                <div data-testid="plugin-id">{context.pluginId}</div>
+                <div data-testid="route-ref">{context.routeRef}</div>
+                <div data-testid="extension">{context.extension}</div>
+              </>
+            );
+          },
+        },
+        data: { 'core.mountPoint': { id: 'some-ref' } },
+      }),
+    );
+
+    const result = render(<AnalyticsSpyExtension />);
+
+    expect(result.getByTestId('plugin-id')).toHaveTextContent('my-plugin');
+    expect(result.getByTestId('route-ref')).toHaveTextContent('some-ref');
+    expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
   });
 });

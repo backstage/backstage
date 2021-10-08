@@ -182,7 +182,7 @@ export function usePromoteRc({
           updatedTagUrl: promotedReleaseRes.value.htmlUrl,
         });
       } catch (error) {
-        asyncCatcher(error);
+        asyncCatcher(error as Error);
       }
 
       addStepToResponseSteps({

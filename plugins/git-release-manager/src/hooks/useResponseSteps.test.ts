@@ -72,7 +72,16 @@ describe('useResponseSteps', () => {
         Array [
           Object {
             "icon": "failure",
-            "message": "Something went wrong 🔥",
+            "message": <b>
+              Something went wrong
+               
+              <span
+                aria-label="fire"
+                role="img"
+              >
+                🔥
+              </span>
+            </b>,
             "secondaryMessage": "Error message: :(",
           },
         ]
@@ -96,7 +105,16 @@ describe('useResponseSteps', () => {
         Array [
           Object {
             "icon": "failure",
-            "message": "Something went wrong 🔥",
+            "message": <b>
+              Something went wrong
+               
+              <span
+                aria-label="fire"
+                role="img"
+              >
+                🔥
+              </span>
+            </b>,
             "secondaryMessage": "Error message: unknown",
           },
         ]
@@ -105,29 +123,6 @@ describe('useResponseSteps', () => {
   });
 
   describe('abortIfError', () => {
-    it('should throw if Error and add a failure step', async () => {
-      const { result } = renderHook(() => useResponseSteps());
-
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
-
-      act(() => {
-        try {
-          result.current.abortIfError(new Error('Das kaboom'));
-        } catch (error) {
-          //
-        }
-      });
-
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "icon": "failure",
-            "message": "Skipped due to error in previous step",
-          },
-        ]
-      `);
-    });
-
     it('should do nothing if not Error', async () => {
       const { result } = renderHook(() => useResponseSteps());
 

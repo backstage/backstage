@@ -58,7 +58,11 @@ export function createEntityRefColumn<T extends Entity>({
       return formatContent(entity1).localeCompare(formatContent(entity2));
     },
     render: entity => (
-      <EntityRefLink entityRef={entity} defaultKind={defaultKind} />
+      <EntityRefLink
+        entityRef={entity}
+        defaultKind={defaultKind}
+        title={entity.metadata?.title}
+      />
     ),
   };
 }

@@ -34,6 +34,7 @@ export const userSettingsPlugin = createPlugin({
 
 export const UserSettingsPage = userSettingsPlugin.provide(
   createRoutableExtension({
+    name: 'UserSettingsPage',
     component: () =>
       import('./components/SettingsPage').then(m => m.SettingsPage),
     mountPoint: settingsRouteRef,

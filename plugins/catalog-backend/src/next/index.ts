@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export type { CatalogEnvironment } from './NextCatalogBuilder';
 export { NextCatalogBuilder } from './NextCatalogBuilder';
 export { createNextRouter } from './NextRouter';
 export type { NextRouterOptions } from './NextRouter';

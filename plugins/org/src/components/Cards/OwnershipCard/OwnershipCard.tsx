@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, UserEntity } from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
@@ -109,13 +109,18 @@ const getQueryParams = (
 ): string => {
   const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
+  const filters = {
+    kind,
+    type,
+    owners: [ownerName],
+    user: 'all',
+  };
+  if (owner.kind === 'User') {
+    const user = owner as UserEntity;
+    filters.owners = [...filters.owners, ...user.spec.memberOf];
+  }
   const queryParams = qs.stringify({
-    filters: {
-      kind,
-      type,
-      owners: ownerName,
-      user: 'all',
-    },
+    filters,
   });
 
   return queryParams;

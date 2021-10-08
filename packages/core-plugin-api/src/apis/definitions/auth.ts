@@ -340,3 +340,15 @@ export const oneloginAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.onelogin',
 });
+
+/**
+ * Provides authentication towards Bitbucket APIs.
+ *
+ * See https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
+ * for a full list of supported scopes.
+ */
+export const bitbucketAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.bitbucket',
+});

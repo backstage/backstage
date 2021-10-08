@@ -15,6 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
+import { trimEnd } from 'lodash';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
 /** Checks whether the given argument is a valid URL hostname */
@@ -83,9 +84,10 @@ export function defaultScmResolveUrl(options: {
     // If it is an absolute path, move relative to the repo root
     const { filepath } = parseGitUrl(base);
     updated = new URL(base);
-    const repoRootPath = updated.pathname
-      .substring(0, updated.pathname.length - filepath.length)
-      .replace(/\/+$/, '');
+    const repoRootPath = trimEnd(
+      updated.pathname.substring(0, updated.pathname.length - filepath.length),
+      '/',
+    );
     updated.pathname = `${repoRootPath}${url}`;
   } else {
     // For relative URLs, just let the default URL constructor handle the

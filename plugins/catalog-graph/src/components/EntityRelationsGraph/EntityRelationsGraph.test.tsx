@@ -156,6 +156,7 @@ describe('<EntityRelationsGraph/>', () => {
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
+      getEntityAncestors: jest.fn(),
     };
     const apis = ApiRegistry.with(catalogApiRef, catalog);
 

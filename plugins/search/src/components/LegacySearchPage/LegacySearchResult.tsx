@@ -155,8 +155,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
           ? entity.spec?.lifecycle
           : undefined,
       url: `/catalog/${
-        entity.metadata.namespace?.toLowerCase() || ENTITY_DEFAULT_NAMESPACE
-      }/${entity.kind.toLowerCase()}/${entity.metadata.name}`,
+        entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
+        ENTITY_DEFAULT_NAMESPACE
+      }/${entity.kind.toLocaleLowerCase('en-US')}/${entity.metadata.name}`,
     }));
   }, []);
 

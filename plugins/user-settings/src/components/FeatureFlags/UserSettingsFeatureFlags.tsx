@@ -77,12 +77,12 @@ export const UserSettingsFeatureFlags = () => {
 
   const filterInputParts = filterInput
     .split(/\s/)
-    .map(part => part.trim().toLowerCase());
+    .map(part => part.trim().toLocaleLowerCase('en-US'));
 
   filterInputParts.forEach(
     part =>
       (filteredFeatureFlags = filteredFeatureFlags.filter(featureFlag =>
-        featureFlag.name.toLowerCase().includes(part),
+        featureFlag.name.toLocaleLowerCase('en-US').includes(part),
       )),
   );
 

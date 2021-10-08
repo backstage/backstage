@@ -57,6 +57,7 @@ describe('<CatalogGraphCard/>', () => {
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
+      getEntityAncestors: jest.fn(),
     };
     apis = ApiRegistry.with(catalogApiRef, catalog);
 

@@ -18,45 +18,46 @@ import React, { useEffect, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { Button, makeStyles } from '@material-ui/core';
 import { Select } from '../Select';
-import { CheckboxTree } from '../CheckboxTree';
-import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 
-const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    height: '100%',
-    width: '315px',
-    display: 'flex',
-    flexDirection: 'column',
-    marginRight: theme.spacing(3),
-  },
-  value: {
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '60px',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  filters: {
-    display: 'flex',
-    flexDirection: 'column',
-    '& > *': {
-      marginTop: theme.spacing(2),
+export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+
+const useFilterStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      height: '100%',
+      width: '315px',
+      display: 'flex',
+      flexDirection: 'column',
+      marginRight: theme.spacing(3),
     },
-  },
-}));
+    value: {
+      fontWeight: 'bold',
+      fontSize: 18,
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      height: '60px',
+      justifyContent: 'space-between',
+      borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    },
+    filters: {
+      display: 'flex',
+      flexDirection: 'column',
+      '& > *': {
+        marginTop: theme.spacing(2),
+      },
+    },
+  }),
+  { name: 'BackstageTableFilters' },
+);
 
 export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 export type Filter = {
-  type: 'select' | /** @deprecated */ 'checkbox-tree' | 'multiple-select';
-  element:
-    | Without<CheckboxTreeProps, 'onChange'>
-    | Without<SelectProps, 'onChange'>;
+  type: 'select' | 'multiple-select';
+  element: Without<SelectProps, 'onChange'>;
 };
 
 export type SelectedFilters = {
@@ -70,7 +71,7 @@ type Props = {
 };
 
 export const Filters = (props: Props) => {
-  const classes = useSubvalueCellStyles();
+  const classes = useFilterStyles();
 
   const { onChangeFilters } = props;
 
@@ -100,57 +101,20 @@ export const Filters = (props: Props) => {
       </div>
       <div className={classes.filters}>
         {props.filters?.length &&
-          props.filters.map(filter =>
-            filter.type === 'checkbox-tree' ? (
-              <CheckboxTree
-                triggerReset={reset}
-                key={filter.element.label}
-                {...(filter.element as CheckboxTreeProps)}
-                selected={
-                  selectedFilters[filter.element.label]
-                    ? (selectedFilters[filter.element.label] as string[]).map(
-                        s => ({
-                          category: s,
-                        }),
-                      )
-                    : undefined
-                }
-                onChange={el =>
-                  setSelectedFilters({
-                    ...selectedFilters,
-                    [filter.element.label]: el
-                      .filter(
-                        (checkboxFilter: any) =>
-                          checkboxFilter.category ||
-                          checkboxFilter.selectedChildren.length,
-                      )
-                      .map((checkboxFilter: any) =>
-                        checkboxFilter.category
-                          ? [
-                              ...checkboxFilter.selectedChildren,
-                              checkboxFilter.category,
-                            ]
-                          : checkboxFilter.selectedChildren,
-                      )
-                      .flat(),
-                  })
-                }
-              />
-            ) : (
-              <Select
-                triggerReset={reset}
-                key={filter.element.label}
-                {...(filter.element as SelectProps)}
-                selected={selectedFilters[filter.element.label]}
-                onChange={el =>
-                  setSelectedFilters({
-                    ...selectedFilters,
-                    [filter.element.label]: el as any,
-                  })
-                }
-              />
-            ),
-          )}
+          props.filters.map(filter => (
+            <Select
+              triggerReset={reset}
+              key={filter.element.label}
+              {...(filter.element as SelectProps)}
+              selected={selectedFilters[filter.element.label]}
+              onChange={el =>
+                setSelectedFilters({
+                  ...selectedFilters,
+                  [filter.element.label]: el as any,
+                })
+              }
+            />
+          ))}
       </div>
     </div>
   );

@@ -125,6 +125,89 @@ export async function readMicrosoftGraphUsers(
   return { users };
 }
 
+export async function readMicrosoftGraphUsersInGroups(
+  client: MicrosoftGraphClient,
+  options: {
+    userGroupMemberFilter?: string;
+    transformer?: UserTransformer;
+    logger: Logger;
+  },
+): Promise<{
+  users: UserEntity[]; // With all relations empty
+}> {
+  const users: UserEntity[] = [];
+
+  const limiter = limiterFactory(10);
+
+  const transformer = options?.transformer ?? defaultUserTransformer;
+  const userGroupMemberPromises: Promise<void>[] = [];
+  const userPromises: Promise<void>[] = [];
+
+  const groupMemberUsers: Set<string> = new Set();
+
+  for await (const group of client.getGroups({
+    filter: options?.userGroupMemberFilter,
+  })) {
+    // Process all groups in parallel, otherwise it can take quite some time
+    userGroupMemberPromises.push(
+      limiter(async () => {
+        for await (const member of client.getGroupMembers(group.id!)) {
+          if (!member.id) {
+            continue;
+          }
+
+          if (member['@odata.type'] === '#microsoft.graph.user') {
+            groupMemberUsers.add(member.id);
+          }
+        }
+      }),
+    );
+  }
+
+  // Wait for all group members
+  await Promise.all(userGroupMemberPromises);
+
+  options.logger.info(`groupMemberUsers ${groupMemberUsers.size}`);
+  for (const userId of groupMemberUsers) {
+    // Process all users in parallel, otherwise it can take quite some time
+    userPromises.push(
+      limiter(async () => {
+        let user;
+        let userPhoto;
+        try {
+          user = await client.getUserProfile(userId);
+        } catch (e) {
+          options.logger.warn(`Unable to load user for ${userId}`);
+        }
+        if (user) {
+          try {
+            userPhoto = await client.getUserPhotoWithSizeLimit(
+              user.id!,
+              // We are limiting the photo size, as users with full resolution photos
+              // can make the Backstage API slow
+              120,
+            );
+          } catch (e) {
+            options.logger.warn(`Unable to load userphoto for ${userId}`);
+          }
+
+          const entity = await transformer(user, userPhoto);
+
+          if (!entity) {
+            return;
+          }
+          users.push(entity);
+        }
+      }),
+    );
+  }
+
+  // Wait for all users and photos to be downloaded
+  await Promise.all(userPromises);
+
+  return { users };
+}
+
 export async function defaultOrganizationTransformer(
   organization: MicrosoftGraph.Organization,
 ): Promise<GroupEntity | undefined> {
@@ -387,6 +470,7 @@ export async function readMicrosoftGraphOrg(
   tenantId: string,
   options: {
     userFilter?: string;
+    userGroupMemberFilter?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
@@ -394,11 +478,26 @@ export async function readMicrosoftGraphOrg(
     logger: Logger;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  const { users } = await readMicrosoftGraphUsers(client, {
-    userFilter: options.userFilter,
-    transformer: options.userTransformer,
-    logger: options.logger,
-  });
+  const users: UserEntity[] = [];
+
+  if (options.userGroupMemberFilter) {
+    const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
+      client,
+      {
+        userGroupMemberFilter: options.userGroupMemberFilter,
+        transformer: options.userTransformer,
+        logger: options.logger,
+      },
+    );
+    users.push(...usersInGroups);
+  } else {
+    const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
+      userFilter: options.userFilter,
+      transformer: options.userTransformer,
+      logger: options.logger,
+    });
+    users.push(...usersWithFilter);
+  }
   const { groups, rootGroup, groupMember, groupMemberOf } =
     await readMicrosoftGraphGroups(client, tenantId, {
       groupFilter: options?.groupFilter,

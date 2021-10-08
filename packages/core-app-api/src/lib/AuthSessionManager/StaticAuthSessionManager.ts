@@ -71,9 +71,14 @@ export class StaticAuthSessionManager<T> implements MutableSessionManager<T> {
     return this.currentSession;
   }
 
+  /**
+   * We don't call this.connector.removeSession here, since this session manager
+   * is intended to be static. As such there's no need to hit the remote logout
+   * endpoint - simply discarding the local session state when signing out is
+   * enough.
+   */
   async removeSession() {
     this.currentSession = undefined;
-    await this.connector.removeSession();
     this.stateTracker.setIsSignedIn(false);
   }
 

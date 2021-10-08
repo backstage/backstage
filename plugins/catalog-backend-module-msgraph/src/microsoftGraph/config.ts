@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 
 /**
  * The configuration parameters for a single Microsoft Graph provider.
@@ -52,6 +53,12 @@ export type MicrosoftGraphProviderConfig = {
    */
   userFilter?: string;
   /**
+   * The filter to apply to extract users by groups memberships.
+   *
+   * E.g. "displayName eq 'Backstage Users'"
+   */
+  userGroupMemberFilter?: string;
+  /**
    * The filter to apply to extract groups.
    *
    * E.g. "securityEnabled eq false and mailEnabled eq true"
@@ -66,14 +73,18 @@ export function readMicrosoftGraphConfig(
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
 
   for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
-    const authority =
-      providerConfig.getOptionalString('authority')?.replace(/\/+$/, '') ||
-      'https://login.microsoftonline.com';
+    const target = trimEnd(providerConfig.getString('target'), '/');
+
+    const authority = providerConfig.getOptionalString('authority')
+      ? trimEnd(providerConfig.getOptionalString('authority'), '/')
+      : 'https://login.microsoftonline.com';
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
     const userFilter = providerConfig.getOptionalString('userFilter');
+    const userGroupMemberFilter = providerConfig.getOptionalString(
+      'userGroupMemberFilter',
+    );
     const groupFilter = providerConfig.getOptionalString('groupFilter');
 
     providers.push({
@@ -83,6 +94,7 @@ export function readMicrosoftGraphConfig(
       clientId,
       clientSecret,
       userFilter,
+      userGroupMemberFilter,
       groupFilter,
     });
   }

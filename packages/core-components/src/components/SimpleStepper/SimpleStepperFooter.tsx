@@ -18,14 +18,19 @@ import { Button, makeStyles } from '@material-ui/core';
 import { StepActions } from './types';
 import { VerticalStepperContext } from './SimpleStepper';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    marginTop: theme.spacing(3),
-    '& button': {
-      marginRight: theme.spacing(1),
+export type SimpleStepperFooterClassKey = 'root';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      marginTop: theme.spacing(3),
+      '& button': {
+        marginRight: theme.spacing(1),
+      },
     },
-  },
-}));
+  }),
+  { name: 'BackstageSimpleStepperFooter' },
+);
 
 interface CommonBtnProps {
   text?: string;

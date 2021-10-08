@@ -21,11 +21,11 @@ import { LocationSpec, Location } from './types';
  * @public
  * @deprecated Use JSONSchema or validators instead.
  */
-export const locationSpecSchema = yup
-  .object<LocationSpec>({
+export const locationSpecSchema: yup.SchemaOf<LocationSpec> = yup
+  .object({
     type: yup.string().required(),
     target: yup.string().required(),
-    presence: yup.string(),
+    presence: yup.mixed().oneOf(['required', 'optional']),
   })
   .noUnknown()
   .required();
@@ -34,11 +34,12 @@ export const locationSpecSchema = yup
  * @public
  * @deprecated Use JSONSchema or validators instead.
  */
-export const locationSchema = yup
-  .object<Location>({
+export const locationSchema: yup.SchemaOf<Location> = yup
+  .object({
     id: yup.string().required(),
     type: yup.string().required(),
     target: yup.string().required(),
+    presence: yup.mixed().oneOf(['required', 'optional']),
   })
   .noUnknown()
   .required();
@@ -47,9 +48,10 @@ export const locationSchema = yup
  * @public
  * @deprecated Use JSONSchema or validators instead.
  */
-export const analyzeLocationSchema = yup
-  .object<{ location: LocationSpec }>({
-    location: locationSpecSchema,
-  })
-  .noUnknown()
-  .required();
+export const analyzeLocationSchema: yup.SchemaOf<{ location: LocationSpec }> =
+  yup
+    .object({
+      location: locationSpecSchema,
+    })
+    .noUnknown()
+    .required();

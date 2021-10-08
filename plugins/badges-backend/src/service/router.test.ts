@@ -67,6 +67,7 @@ describe('createRouter', () => {
       removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
       refreshEntity: jest.fn(),
+      getEntityAncestors: jest.fn(),
     };
 
     config = new ConfigReader({

@@ -34,6 +34,8 @@ export type RouteRefConfig<Params extends AnyParams> = {
 export class RouteRefImpl<Params extends AnyParams>
   implements RouteRef<Params>
 {
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'absolute';
   readonly [routeRefType] = 'absolute';
 
   constructor(

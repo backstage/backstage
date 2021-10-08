@@ -1,5 +1,55 @@
 # @backstage/core-components
 
+## 0.6.1
+
+### Patch Changes
+
+- f139fed1ac: The `<Link />` component now automatically instruments all link clicks using
+  the new Analytics API. Each click triggers a `click` event, containing the
+  text of the link the user clicked on, as well as the location to which the user
+  clicked. In addition, these events inherit plugin/extension-level metadata,
+  allowing clicks to be attributed to the plugin/extension/route containing the
+  link:
+
+  ```json
+  {
+    "action": "click",
+    "subject": "Text content of the link that was clicked",
+    "attributes": {
+      "to": "/value/of-the/to-prop/passed-to-the-link"
+    },
+    "context": {
+      "extension": "ExtensionInWhichTheLinkWasClicked",
+      "pluginId": "plugin-in-which-link-was-clicked",
+      "routeRef": "route-ref-in-which-the-link-was-clicked"
+    }
+  }
+  ```
+
+- 666e1f478e: Provide a clearer error message when a authentication provider used by the `SignInPage` has not been configured to support sign-in.
+- 63d426bfeb: Wrap up the `Link` component in a component to reset the color so that we can actually see the button text
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 162e1eee65: SignInPage: move the initial invocation of `login` away from the render method
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.6.0
+
+### Minor Changes
+
+- 21767b08ca: Checkbox tree filters are no longer available in the Table component:
+
+  - Deleted the `CheckboxTree` component
+  - Removed the filter type `'checkbox-tree'` from the `TableFilter` types.
+
+### Patch Changes
+
+- 9c3cb8d4e2: Stop forcing `target="_blank"` in the `SupportButton` but instead use the default logic of the `Link` component, that opens external targets in a new window and relative targets in the same window.
+- d21e39e303: Support `material-ui` overrides in Backstage internal components
+- c4e77bb34a: Added documentation for exported symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+
 ## 0.5.0
 
 ### Minor Changes

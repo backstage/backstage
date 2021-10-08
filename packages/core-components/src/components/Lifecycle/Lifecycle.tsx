@@ -23,20 +23,25 @@ type Props = CSS.Properties & {
   alpha?: boolean;
 };
 
-const useStyles = makeStyles({
-  alpha: {
-    color: '#ffffff',
-    fontFamily: 'serif',
-    fontWeight: 'normal',
-    fontStyle: 'italic',
+export type LifecycleClassKey = 'alpha' | 'beta';
+
+const useStyles = makeStyles(
+  {
+    alpha: {
+      color: '#ffffff',
+      fontFamily: 'serif',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    beta: {
+      color: '#4d65cc',
+      fontFamily: 'serif',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
   },
-  beta: {
-    color: '#4d65cc',
-    fontFamily: 'serif',
-    fontWeight: 'normal',
-    fontStyle: 'italic',
-  },
-});
+  { name: 'BackstageLifecycle' },
+);
 
 export function Lifecycle(props: Props) {
   const classes = useStyles(props);

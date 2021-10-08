@@ -3,7 +3,7 @@ title: Harbor
 author: BESTSELLER
 authorUrl: bestsellerit.com
 category: Discovery
-description: This plugin will show you information about docker images within harbor.
+description: This plugin will show you information about Docker images within the Harbor cloud native registry.
 documentation: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master/README.md
 iconUrl: https://bestsellerit.com/img/terraform-harbor/goharbor.jpeg
 npmPackageName: '@bestsellerit/backstage-plugin-harbor'

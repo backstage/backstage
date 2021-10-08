@@ -61,9 +61,10 @@ export class BadgesClient implements BadgesApi {
 
   private getEntityRouteParams(entity: Entity) {
     return {
-      kind: entity.kind.toLowerCase(),
+      kind: entity.kind.toLocaleLowerCase('en-US'),
       namespace:
-        entity.metadata.namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
+        entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
+        ENTITY_DEFAULT_NAMESPACE,
       name: entity.metadata.name,
     };
   }

@@ -21,16 +21,53 @@ import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
 
-type Props = {
+/**
+ * Properties for {@link CodeSnippet}
+ */
+export interface CodeSnippetProps {
+  /**
+   * Code Snippet text
+   */
   text: string;
+  /**
+   * Language used by {@link .text}
+   */
   language: string;
+  /**
+   * Whether to show line number
+   *
+   * @remarks
+   *
+   * Default: false
+   */
   showLineNumbers?: boolean;
+  /**
+   * Whether to show button to copy code snippet
+   *
+   * @remarks
+   *
+   * Default: false
+   */
   showCopyCodeButton?: boolean;
+  /**
+   * Array of line numbers to highlight
+   */
   highlightedNumbers?: number[];
+  /**
+   * Custom styles applied to code
+   *
+   * @remarks
+   *
+   * Passed to {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
+   */
   customStyle?: any;
-};
+}
 
-export const CodeSnippet = (props: Props) => {
+/**
+ * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
+ * providing consistent theming and copy code button
+ */
+export function CodeSnippet(props: CodeSnippetProps) {
   const {
     text,
     language,
@@ -70,4 +107,4 @@ export const CodeSnippet = (props: Props) => {
       )}
     </div>
   );
-};
+}

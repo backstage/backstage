@@ -279,7 +279,7 @@ export function useCreateReleaseCandidate({
           previousTag: latestRelease?.tagName,
         });
       } catch (error) {
-        asyncCatcher(error);
+        asyncCatcher(error as Error);
       }
 
       addStepToResponseSteps({

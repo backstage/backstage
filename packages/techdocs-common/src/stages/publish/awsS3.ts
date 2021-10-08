@@ -351,8 +351,10 @@ export class AwsS3Publish implements PublisherBase {
 
         res.send(await streamToBuffer(stream));
       } catch (err) {
-        this.logger.warn(err.message);
-        res.status(404).json(err.message);
+        this.logger.warn(
+          `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+        );
+        res.status(404).send('File Not Found');
       }
     };
   }

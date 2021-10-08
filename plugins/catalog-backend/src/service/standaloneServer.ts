@@ -23,8 +23,8 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { DatabaseManager } from '../database';
-import { CatalogBuilder } from './CatalogBuilder';
-import { createRouter } from './router';
+import { CatalogBuilder } from '../legacy/service/CatalogBuilder';
+import { createRouter } from '../legacy/service';
 
 export interface ServerOptions {
   port: number;
@@ -32,6 +32,7 @@ export interface ServerOptions {
   logger: Logger;
 }
 
+// TODO(freben): Migrate to the next catalog when it's in place
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {

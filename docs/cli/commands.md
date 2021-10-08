@@ -57,6 +57,7 @@ postpack                 Restores the changes made by the prepack command
 
 create-github-app        Create new GitHub App in your organization (experimental)
 
+info                     Show helpful information for debugging and reporting bugs
 help [command]           display help for command
 ```
 
@@ -423,7 +424,10 @@ This command uses a default Jest configuration that is included in the CLI,
 which is set up with similar goals for speed, scale, and working within a
 monorepo. The configuration sets the `src` as the root directory, enforces the
 `.test.` infix for tests, and uses `src/setupTests.ts` as the test setup
-location.
+location. The included configuration also supports test execution at the root of
+a yarn workspaces monorepo by automatically creating one grouped configuration
+that includes all packages that have `backstage-cli test` in their package
+`test` script.
 
 If needed, the configuration can be extended using a `"jest"` field in
 `package.json`, both within the target package and the monorepo root, with
@@ -646,4 +650,16 @@ YAML file that can be referenced in the GitHub integration configuration.
 
 ```text
 Usage: backstage-cli create-github-app &lt;github-org&gt;
+```
+
+## info
+
+Scope: `root`
+
+Outputs debug information which is useful when opening an issue. Outputs system
+information, node.js and npm versions, CLI version and type (inside backstage
+repo or a created app), all `@backstage/*` package dependency versions.
+
+```text
+Usage: backstage-cli info
 ```

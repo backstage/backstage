@@ -87,7 +87,7 @@ export class Keyboard {
     const attrs = [...element.attributes]
       .map(attr => `${attr.name}="${attr.value}"`)
       .join(' ');
-    return `<${element.nodeName.toLowerCase()} ${attrs}>`;
+    return `<${element.nodeName.toLocaleLowerCase('en-US')} ${attrs}>`;
   }
 
   get focused() {
