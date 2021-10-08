@@ -63,8 +63,17 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 /**
+ * Hook that encapsulates the behavior of getting raw HTML and applying
+ * transforms to it in order to make it function at a basic level in the
+ * Backstage UI.
+ *
+ * Note: this hook is currently being exported so that we can rapidly iterate
+ * on alternative <Reader /> implementations that extend core functionality.
+ * There is no guarantee that this hook will continue to be exported by the
+ * package in the future!
+ *
+ * todo: Make public or stop exporting (see others: "altReaderExperiments")
  * @internal
- * Hook the behavior of getting the raw HTML from the storage and applying transforms before rendering
  */
 export const useTechDocsReaderDom = (): Element | null => {
   const navigate = useNavigate();
@@ -330,8 +339,8 @@ export const useTechDocsReaderDom = (): Element | null => {
 
 export const Reader = ({
   entityRef,
-  withSearch = true,
   onReady = () => {},
+  withSearch = true,
 }: Props) => {
   const classes = useStyles();
   const dom = useTechDocsReaderDom();

@@ -32,6 +32,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/**
+ * Note: this component is currently being exported so that we can rapidly
+ * iterate on alternative <Reader /> implementations that extend core
+ * functionality. There is no guarantee that this component will continue to be
+ * exported by the package in the future!
+ *
+ * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
+ * @internal
+ */
 export const TechDocsAlert = () => {
   const { namespace = '', kind = '', name = '', '*': params } = useParams();
   const classes = useStyles();

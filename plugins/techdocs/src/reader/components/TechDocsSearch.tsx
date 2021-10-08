@@ -175,7 +175,7 @@ const TechDocsSearchBar = ({
   );
 };
 
-const TechDocsSearch = (props: TechDocsSearchProps) => {
+export const TechDocsSearch = (props: TechDocsSearchProps) => {
   const configApi = useApi(configApiRef);
   const legacyPaths = configApi.getOptionalBoolean(
     'techdocs.legacyUseCaseSensitiveTripletPaths',
@@ -192,4 +192,3 @@ const TechDocsSearch = (props: TechDocsSearchProps) => {
     </SearchContextProvider>
   );
 };
-export { TechDocsSearch };

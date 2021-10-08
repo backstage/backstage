@@ -19,4 +19,17 @@ export * from './TechDocsPage';
 export * from './TechDocsPageHeader';
 export * from './TechDocsProgress';
 export * from './TechDocsAlert';
-export * from './TechDocsSearch';
+
+/**
+ * Note: this component is currently being exported so that we can rapidly
+ * iterate on alternative <Reader /> implementations that extend core
+ * functionality. There is no guarantee that this component will continue to be
+ * exported by the package in the future!
+ *
+ * Why is this comment here instead of above the component itself? It's a
+ * workaround for some kind of bug in @microsoft/api-extractor.
+ *
+ * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
+ * @internal
+ */
+export { TechDocsSearch } from './TechDocsSearch';
