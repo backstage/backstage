@@ -45,7 +45,6 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-# ENTRYPOINT ["entrypoint.sh"]
-CMD ["/bin/envconsul","-consul-addr=${CONSUL_ADDR}", "-consul-token=${CONSUL_TOKEN}", "-config", "config.hcl"]
+ENTRYPOINT ["/bin/envconsul", "-config", "config.hcl"]
 
 
