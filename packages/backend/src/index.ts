@@ -38,7 +38,7 @@ import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
-import azureDevOps from './plugins/azuredevops';
+import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
 import kubernetes from './plugins/kubernetes';

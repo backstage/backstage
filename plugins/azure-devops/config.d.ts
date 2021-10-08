@@ -17,10 +17,12 @@
 export interface Config {
   /** Configuration options for the azure-devops-backend plugin */
   azureDevOps: {
-    /**
-     * The max number of items to return - applies to builds
-     * @visibility frontend
-     */
-    top: number;
+    azurePipelines: {
+      /**
+       * The max number of items to return - applies to builds
+       * @visibility frontend
+       */
+      top: number;
+    };
   };
 }

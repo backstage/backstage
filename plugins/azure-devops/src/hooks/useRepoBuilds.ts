@@ -29,7 +29,8 @@ export function useRepoBuilds(entity: Entity): {
 } {
   const config = useApi(configApiRef);
   const top =
-    config.getOptionalNumber('azureDevOps.top') ?? AZURE_DEVOPS_DEFAULT_TOP;
+    config.getOptionalNumber('azureDevOps.azurePipelines.top') ??
+    AZURE_DEVOPS_DEFAULT_TOP;
   const api = useApi(azureDevOpsApiRef);
   const { project, repo } = useProjectRepoFromEntity(entity);
   const { value, loading, error } = useAsync(() => {
