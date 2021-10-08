@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
+export { Sidebar, SidebarExpandButton } from './Bar';
+export { SubmenuItem } from './SubmenuItem';
 export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
