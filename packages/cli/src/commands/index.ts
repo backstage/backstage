@@ -230,6 +230,11 @@ export function registerCommands(program: CommanderStatic) {
     .command('info')
     .description('Show helpful information for debugging and reporting bugs')
     .action(lazy(() => import('./info').then(m => m.default)));
+
+  program
+    .command('install <plugin-id>', { hidden: true })
+    .description('Install a Backstage plugin [EXPERIMENTAL]')
+    .action(lazy(() => import('./install/install').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors

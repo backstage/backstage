@@ -60,5 +60,22 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "experimentalInstallationRecipe": {
+    "type": "frontend-plugin",
+    "steps": [
+      {
+        "type": "app-route",
+        "path": "/graphiql",
+        "element": "<GraphiQLPage />"
+      },
+      {
+        "type": "message",
+        "message": [
+          "The GraphiQL plugin has been installed, but you still need to add API endpoints. ",
+          "See https://github.com/backstage/backstage/tree/master/plugins/graphiql#adding-graphql-endpoints"
+        ]
+      }
+    ]
+  }
 }
