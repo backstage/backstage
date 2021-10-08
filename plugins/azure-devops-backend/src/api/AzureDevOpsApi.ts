@@ -17,7 +17,11 @@
 import { Logger } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
 import { RepoBuild } from './types';
-import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
+  Build,
+  BuildResult,
+  BuildStatus,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
 export class AzureDevOpsApi {
   constructor(
@@ -97,9 +101,9 @@ export function repoBuildFromBuild(build: Build) {
     title: [build.definition?.name, build.buildNumber]
       .filter(Boolean)
       .join(' - '),
-    link: build._links?.web.href,
-    status: build.status,
-    result: build.result,
+    link: build._links?.web.href ? build._links?.web.href : '',
+    status: build.status ? build.status : BuildStatus.None,
+    result: build.result ? build.result : BuildResult.None,
     queueTime: build.queueTime,
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
   };
