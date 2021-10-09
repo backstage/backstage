@@ -42,6 +42,7 @@ describe('KubernetesFetcher', () => {
     jest.resetAllMocks();
     clientMock = {
       listClusterCustomObject: jest.fn(),
+      addInterceptor: jest.fn(),
     };
 
     kubernetesClientProvider = {
@@ -99,6 +100,26 @@ describe('KubernetesFetcher', () => {
     });
 
     expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      '',
+      'v1',
+      'pods',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      '',
+      'v1',
+      'services',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
 
     expect(
       kubernetesClientProvider.getCustomObjectsClient.mock.calls.length,
@@ -171,9 +192,158 @@ describe('KubernetesFetcher', () => {
 
     expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
 
+    expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      '',
+      'v1',
+      'pods',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      '',
+      'v1',
+      'services',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
     expect(
       kubernetesClientProvider.getCustomObjectsClient.mock.calls.length,
     ).toBe(2);
+  });
+  it('should return pods, services and customobjects', async () => {
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'pod-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'service-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'something-else',
+            },
+          },
+        ],
+      },
+    });
+
+    const result = await sut.fetchObjectsForService({
+      serviceId: 'some-service',
+      clusterDetails: {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
+      },
+      objectTypesToFetch: OBJECTS_TO_FETCH,
+      labelSelector: '',
+      customResources: [
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'things',
+        },
+      ],
+    });
+
+    expect(result).toStrictEqual({
+      errors: [],
+      responses: [
+        {
+          type: 'pods',
+          resources: [
+            {
+              metadata: {
+                name: 'pod-name',
+              },
+            },
+          ],
+        },
+        {
+          type: 'services',
+          resources: [
+            {
+              metadata: {
+                name: 'service-name',
+              },
+            },
+          ],
+        },
+        {
+          type: 'customresources',
+          resources: [
+            {
+              metadata: {
+                name: 'something-else',
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(3);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      '',
+      'v1',
+      'pods',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      '',
+      'v1',
+      'services',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
+    expect(clientMock.listClusterCustomObject.mock.calls[2]).toEqual([
+      'some-group',
+      'v2',
+      'things',
+      '',
+      '',
+      '',
+      'backstage.io/kubernetes-id=some-service',
+    ]);
+
+    expect(
+      kubernetesClientProvider.getCustomObjectsClient.mock.calls.length,
+    ).toBe(3);
   });
   // they're in testErrorResponse
   // eslint-disable-next-line jest/expect-expect

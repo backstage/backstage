@@ -104,7 +104,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           params.labelSelector ||
             `backstage.io/kubernetes-id=${params.serviceId}`,
           toFetch.objectType,
-        ).catch(this.captureKubernetesErrorsRethrowOthers);
+        ).catch(this.captureKubernetesErrorsRethrowOthers.bind(this));
       });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);

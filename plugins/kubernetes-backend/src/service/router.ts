@@ -141,9 +141,13 @@ export async function createRouter(
     'kubernetes.objectTypes',
   ) as KubernetesObjectTypes[];
 
-  const objectTypesToFetch = DEFAULT_OBJECTS.filter(obj =>
-    objectTypesToFetchStrings.includes(obj.objectType),
-  );
+  let objectTypesToFetch;
+
+  if (objectTypesToFetchStrings) {
+    objectTypesToFetch = DEFAULT_OBJECTS.filter(obj =>
+      objectTypesToFetchStrings.includes(obj.objectType),
+    );
+  }
 
   const kubernetesFanOutHandler = new KubernetesFanOutHandler({
     logger,
