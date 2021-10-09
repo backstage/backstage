@@ -205,6 +205,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
       };
 
       const inputPullRequest: GitPullRequest = {
@@ -226,6 +227,7 @@ describe('AzureDevOpsApi', () => {
         pullRequestId: 7181,
         repoName: 'super-feature-repo',
         title: 'My Awesome New Feature',
+        uniqueName: 'DOMAINjdoe',
         createdBy: 'Jane Doe',
         creationDate: new Date('2020-09-12T06:10:23.9325232Z'),
         sourceRefName: 'refs/heads/topic/super-awesome-feature',

@@ -155,6 +155,7 @@ export function mappedPullRequest(
     pullRequestId: pullRequest.pullRequestId,
     repoName: pullRequest.repository?.name,
     title: pullRequest.title,
+    uniqueName: pullRequest.createdBy?.uniqueName,
     createdBy: pullRequest.createdBy?.displayName,
     creationDate: pullRequest.creationDate,
     sourceRefName: pullRequest.sourceRefName,

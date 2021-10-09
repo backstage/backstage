@@ -34,6 +34,7 @@ export type PullRequest = {
   pullRequestId?: number;
   repoName?: string;
   title?: string;
+  uniqueName?: string;
   createdBy?: string;
   creationDate?: Date;
   sourceRefName?: string;
