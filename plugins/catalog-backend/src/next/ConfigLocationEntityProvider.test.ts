@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import path from 'path';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
@@ -44,10 +43,7 @@ describe('ConfigLocationEntityProvider', () => {
         {
           entity: expect.objectContaining({
             spec: {
-              target: path.join(
-                resolvePackagePath('@backstage/plugin-catalog-backend'),
-                './lols.yaml',
-              ),
+              target: path.join(process.cwd(), 'lols.yaml'),
               type: 'file',
             },
           }),
