@@ -44,19 +44,15 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // Warning: (ae-missing-release-tag) "CustomResource" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface CustomResource {
+export interface CustomResource extends ObjectToFetch {
   // (undocumented)
-  apiVersion: string;
-  // (undocumented)
-  group: string;
-  // (undocumented)
-  plural: string;
+  objectType: 'customresources';
 }
 
 // Warning: (ae-missing-release-tag) "DEFAULT_OBJECTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const DEFAULT_OBJECTS: KubernetesObjectTypes[];
+export const DEFAULT_OBJECTS: ObjectToFetch[];
 
 // Warning: (ae-missing-release-tag) "FetchResponseWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -137,9 +133,23 @@ export interface ObjectFetchParams {
   // (undocumented)
   labelSelector: string;
   // (undocumented)
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  objectTypesToFetch: Set<ObjectToFetch>;
   // (undocumented)
   serviceId: string;
+}
+
+// Warning: (ae-missing-release-tag) "ObjectToFetch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ObjectToFetch {
+  // (undocumented)
+  apiVersion: string;
+  // (undocumented)
+  group: string;
+  // (undocumented)
+  objectType: KubernetesObjectTypes;
+  // (undocumented)
+  plural: string;
 }
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
