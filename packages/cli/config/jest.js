@@ -17,6 +17,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const glob = require('util').promisify(require('glob'));
+const { version } = require('../package.json');
+
+const projectCacheKey = `backstage_cli_${version.replace(/\./g, '_')}`;
 
 async function getProjectConfig(targetPath, displayName) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
@@ -62,17 +65,18 @@ async function getProjectConfig(targetPath, displayName) {
   // called `transformModules`. It's a list of modules that we want to apply
   // our configured jest transformations for.
   // This is useful when packages are published in untranspiled ESM or TS form.
-  const transformModules = pkgJsonConfigs
-    .flatMap(conf => {
-      const modules = conf.transformModules || [];
-      delete conf.transformModules;
-      return modules;
-    })
-    .map(name => `${name}/`)
-    .join('|');
-  const transformModulePattern = transformModules && `(?!${transformModules})`;
+  // const transformModules = pkgJsonConfigs
+  //   .flatMap(conf => {
+  //     const modules = conf.transformModules || [];
+  //     delete conf.transformModules;
+  //     return modules;
+  //   })
+  //   .map(name => `${name}/`)
+  //   .join('|');
+  // const transformModulePattern = transformModules && `(?!${transformModules})`;
 
   const options = {
+    name: projectCacheKey,
     displayName,
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
@@ -82,8 +86,8 @@ async function getProjectConfig(targetPath, displayName) {
     },
 
     transform: {
-      '\\.esm\\.js$': require.resolve('./jestEsmTransform.js'), // See jestEsmTransform.js
-      '\\.(js|jsx|ts|tsx)$': require.resolve('@sucrase/jest-plugin'),
+      // '\\.esm\\.js$': require.resolve('@sucrase/jest-plugin'), // See jestEsmTransform.js
+      '\\.(js|jsx|ts|tsx)$': require.resolve('./sucraseTransform.js'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('jest-transform-yaml'),
@@ -95,7 +99,8 @@ async function getProjectConfig(targetPath, displayName) {
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
     transformIgnorePatterns: [
-      `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
+      // tests ran in 14:12m 16:14m before disabling this
+      // `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
     ],
   };
 

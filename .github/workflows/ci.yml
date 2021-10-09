@@ -49,7 +49,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=6144
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
@@ -100,64 +100,65 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
-      - name: check for yarn.lock changes
-        id: yarn-lock
-        run: git diff --quiet origin/master HEAD -- yarn.lock
-        continue-on-error: true
+      # - name: check for yarn.lock changes
+      #   id: yarn-lock
+      #   run: git diff --quiet origin/master HEAD -- yarn.lock
+      #   continue-on-error: true
 
-      - name: prettier
-        run: yarn prettier:check '!ADOPTERS.md'
+      # - name: prettier
+      #   run: yarn prettier:check '!ADOPTERS.md'
 
-      - name: lock
-        run: yarn lock:check
+      # - name: lock
+      #   run: yarn lock:check
 
-      - name: validate config
-        run: yarn backstage-cli config:check --lax
+      # - name: validate config
+      #   run: yarn backstage-cli config:check --lax
 
-      - name: lint
-        run: yarn lerna -- run lint --since origin/master
+      # - name: lint
+      #   run: yarn lerna -- run lint --since origin/master
 
       - name: type checking and declarations
         run: yarn tsc:full
 
-        # We need to generate the API references as well, so that we can verify the doc links
-      - name: check api reports and generate API reference
-        run: yarn build:api-reports:only --ci --docs
+      #   # We need to generate the API references as well, so that we can verify the doc links
+      # - name: check api reports and generate API reference
+      #   run: yarn build:api-reports:only --ci --docs
 
-      - name: verify doc links
-        run: node scripts/verify-links.js
+      # - name: verify doc links
+      #   run: node scripts/verify-links.js
 
-      - name: build changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run build --since origin/master --include-dependencies
+      # - name: build changed packages
+      #   if: ${{ steps.yarn-lock.outcome == 'success' }}
+      #   run: yarn lerna -- run build --since origin/master --include-dependencies
 
       - name: build all packages
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
+        # if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: yarn lerna -- run build
 
-      - name: verify type dependencies
-        run: yarn lint:type-deps
+      # - name: verify type dependencies
+      #   run: yarn lint:type-deps
 
       - name: test changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run test --since origin/master -- --coverage
+        # if: ${{ steps.yarn-lock.outcome == 'success' }}
+        # run: yarn test --coverage --maxWorkers=1
+        run: yarn lerna -- run test -- --coverage
         env:
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
-      - name: test all packages (and upload coverage)
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: |
-          yarn lerna -- run test -- --coverage
-          bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
-        env:
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+      # - name: test all packages (and upload coverage)
+      #   if: ${{ steps.yarn-lock.outcome == 'failure' }}
+      #   run: |
+      #     yarn lerna -- run test -- --coverage
+      #     bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
+      #   env:
+      #     BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+      #     BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+      #     BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
-      - name: verify plugin template
-        run: yarn lerna -- run diff -- --check
+      # - name: verify plugin template
+      #   run: yarn lerna -- run diff -- --check
 
       - name: ensure clean working directory
         run: |
