@@ -96,6 +96,6 @@ you have, and feel free to
 The most common next steps are to configure Backstage, add a plugin and moving
 to a more persistent database:
 
-- [Setting up Authentication](https://github.com/backstage/backstage/tree/master/plugins/auth-backend#github)
+- [Setting up Authentication](https://backstage.io/docs/auth/)
 - [Switching from SQLite to PostgresQL](https://backstage.io/docs/tutorials/switching-sqlite-postgres)
 - [Adding a plugin](https://backstage.io/docs/getting-started/configure-app-with-plugins)
