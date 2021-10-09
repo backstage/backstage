@@ -22,7 +22,7 @@ import {
 export type RepoBuild = {
   id?: number;
   title: string;
-  link: string;
+  link?: string;
   status?: BuildStatus;
   result?: BuildResult;
   queueTime?: Date;
