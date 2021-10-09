@@ -28,5 +28,5 @@ export function stringToColor(str: string) {
 }
 
 export function extractInitials(value: string) {
-  return (value.match(/\b\w/g)! || []).join('').substring(0, 2);
+  return value.match(/\b\w/g)?.join('').substring(0, 2);
 }
