@@ -10,6 +10,14 @@ import { Extension } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "ClockConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ClockConfig = {
+  label: string;
+  timeZone: string;
+};
+
 // Warning: (ae-missing-release-tag) "ComponentAccordion" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -96,6 +104,15 @@ export const HomePageRandomJoke: ({
 } & {
   defaultCategory?: 'any' | 'programming' | undefined;
 }) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "HomepageTimer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HomepageTimer: ({
+  clockConfigs,
+}: {
+  clockConfigs: ClockConfig[];
+}) => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

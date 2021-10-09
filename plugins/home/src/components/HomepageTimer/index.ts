@@ -13,8 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { HomepageCompositionRoot } from './HomepageCompositionRoot';
-export { SettingsModal } from './SettingsModal';
 export { HomepageTimer } from './HomepageTimer';
 export type { ClockConfig } from './HomepageTimer';

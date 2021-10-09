@@ -17,7 +17,6 @@
 import {
   Content,
   Header,
-  HomepageTimer,
   Page,
 } from '@backstage/core-components';
 import {
@@ -27,14 +26,44 @@ import {
   HomePageRandomJoke,
   WelcomeTitle,
 } from '@backstage/plugin-home';
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import {
+  HomePageRandomJoke,
+  ComponentAccordion,
+  ComponentTabs,
+  ComponentTab,
+  HomepageTimer,
+  ClockConfig,
+} from '@backstage/plugin-home';
+import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
+const clockConfigs: ClockConfig[] = [
+  {
+    label: 'NYC',
+    timeZone: 'America/New_York',
+  },
+  {
+    label: 'UTC',
+    timeZone: 'UTC',
+  },
+  {
+    label: 'STO',
+    timeZone: 'Europe/Stockholm',
+  },
+  {
+    label: 'TYO',
+    timeZone: 'Asia/Tokyo',
+  },
+];
+
 export const HomePage = () => (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HomepageTimer />
+      <HomepageTimer clockConfigs={clockConfigs} />
     </Header>
     <Content>
       <Grid container spacing={3}>

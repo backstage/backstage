@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { HeaderLabel } from '../HeaderLabel';
-import { ConfigApi, useApi, configApiRef } from '@backstage/core-plugin-api';
+import { HeaderLabel } from '@backstage/core-components';
 
 const timeFormat: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
@@ -28,66 +27,66 @@ type TimeObj = {
   label: string;
 };
 
-function getTimes(configApi: ConfigApi) {
+export type ClockConfig = {
+  label: string;
+  timeZone: string;
+};
+
+function getTimes(clockConfigs: ClockConfig[]) {
   const d = new Date();
   const lang = window.navigator.language;
 
   const clocks: TimeObj[] = [];
 
-  if (!configApi.has('homepage.clocks')) {
+  if (!clockConfigs) {
     return clocks;
   }
 
-  const clockConfigs = configApi.getConfigArray('homepage.clocks');
+  for (const clockConfig of clockConfigs) {
+    let label = clockConfig.label;
 
-  for (const clock of clockConfigs) {
-    if (clock.has('label') && clock.has('timezone')) {
-      let label = clock.getString('label');
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: clockConfig.timeZone,
+      ...timeFormat,
+    };
 
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: clock.getString('timezone'),
-        ...timeFormat,
-      };
-
-      try {
-        new Date().toLocaleString(lang, options);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `The timezone ${options.timeZone} is invalid. Defaulting to GMT`,
-        );
-        options.timeZone = 'GMT';
-        label = 'GMT';
-      }
-
-      const time = d.toLocaleTimeString(lang, options);
-      clocks.push({ time, label });
+    try {
+      new Date().toLocaleString(lang, options);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `The timezone ${options.timeZone} is invalid. Defaulting to GMT`,
+      );
+      options.timeZone = 'GMT';
+      label = 'GMT';
     }
+
+    const time = d.toLocaleTimeString(lang, options);
+    clocks.push({ time, label });
   }
+
   return clocks;
 }
 
-/**
- * This component has been moved to the home plugin, please use that version
- * @deprecated Moved to home plugin
- */
-export function HomepageTimer(_props: {}) {
-  const configApi = useApi(configApiRef);
-
+export const HomepageTimer = ({
+  clockConfigs,
+}: {
+  clockConfigs: ClockConfig[];
+}) => {
   const defaultTimes: TimeObj[] = [];
   const [clocks, setTimes] = React.useState(defaultTimes);
 
   React.useEffect(() => {
-    setTimes(getTimes(configApi));
+    setTimes(getTimes(clockConfigs));
 
     const intervalId = setInterval(() => {
-      setTimes(getTimes(configApi));
+      setTimes(getTimes(clockConfigs));
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [configApi]);
+  }, [clockConfigs]);
 
   if (clocks.length !== 0) {
     return (
@@ -103,4 +102,4 @@ export function HomepageTimer(_props: {}) {
     );
   }
   return null;
-}
+};
