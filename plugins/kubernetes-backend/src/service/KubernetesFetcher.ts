@@ -80,17 +80,6 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
   }
 };
 
-const captureKubernetesErrorsRethrowOthers = (e: any): KubernetesFetchError => {
-  if (e.response && e.response.statusCode) {
-    return {
-      errorType: statusCodeToErrorType(e.response.statusCode),
-      statusCode: e.response.statusCode,
-      resourcePath: e.response.request.uri.pathname,
-    };
-  }
-  throw e;
-};
-
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly kubernetesClientProvider: KubernetesClientProvider;
   private readonly logger: Logger;
@@ -115,10 +104,24 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           params.labelSelector ||
             `backstage.io/kubernetes-id=${params.serviceId}`,
           toFetch.objectType,
-        ).catch(captureKubernetesErrorsRethrowOthers);
+        ).catch(this.captureKubernetesErrorsRethrowOthers);
       });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+  }
+
+  private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {
+    if (e.response && e.response.statusCode) {
+      this.logger.info(
+        `statusCode=${e.response.statusCode} for resource ${e.response.request.uri.pathname}`,
+      );
+      return {
+        errorType: statusCodeToErrorType(e.response.statusCode),
+        statusCode: e.response.statusCode,
+        resourcePath: e.response.request.uri.pathname,
+      };
+    }
+    throw e;
   }
 
   private fetchResource(

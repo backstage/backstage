@@ -30,7 +30,10 @@ import {
 } from '../types/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
-import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import {
+  KubernetesFanOutHandler,
+  DEFAULT_OBJECTS,
+} from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 export interface RouterOptions {
@@ -134,9 +137,13 @@ export async function createRouter(
   );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
-  const objectTypesToFetch = options.config.getOptionalStringArray(
+  const objectTypesToFetchStrings = options.config.getOptionalStringArray(
     'kubernetes.objectTypes',
   ) as KubernetesObjectTypes[];
+
+  const objectTypesToFetch = DEFAULT_OBJECTS.filter(obj =>
+    objectTypesToFetchStrings.includes(obj.objectType),
+  );
 
   const kubernetesFanOutHandler = new KubernetesFanOutHandler({
     logger,

@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  AppsV1Api,
-  AutoscalingV1Api,
-  CoreV1Api,
-  ExtensionsV1beta1Ingress,
-  NetworkingV1beta1Api,
-  V1ConfigMap,
-  V1Deployment,
-  V1HorizontalPodAutoscaler,
-  V1Pod,
-  V1ReplicaSet,
-} from '@kubernetes/client-node';
 import type {
   FetchResponse,
   KubernetesFetchError,
