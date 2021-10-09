@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { Logger as Logger_2 } from 'winston';
+import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { WebApi } from 'azure-devops-node-api';
 
 // Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -29,6 +30,13 @@ export class AzureDevOpsApi {
     repoName: string,
   ): Promise<GitRepository>;
   // (undocumented)
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    top: number,
+    status: PullRequestStatus,
+  ): Promise<PullRequest[]>;
+  // (undocumented)
   getRepoBuilds(
     projectName: string,
     repoName: string,
@@ -40,6 +48,22 @@ export class AzureDevOpsApi {
 //
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// Warning: (ae-missing-release-tag) "PullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PullRequest = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  createdBy?: string;
+  creationDate?: Date;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
+};
 
 // Warning: (ae-missing-release-tag) "RepoBuild" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

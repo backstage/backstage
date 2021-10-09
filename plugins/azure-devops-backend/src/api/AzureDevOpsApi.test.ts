@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { repoBuildFromBuild } from './AzureDevOpsApi';
-import { RepoBuild } from './types';
+import { mappedPullRequest, mappedRepoBuild } from './AzureDevOpsApi';
+import { PullRequest, RepoBuild } from './types';
 import {
   Build,
   BuildResult,
   BuildStatus,
   DefinitionReference,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
+  GitPullRequest,
+  PullRequestStatus,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { GitRepository } from 'azure-devops-node-api/interfaces/TfvcInterfaces';
+import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
 describe('AzureDevOpsApi', () => {
-  describe('repoBuildFromBuild', () => {
+  describe('mappedRepoBuild', () => {
     it('should return RepoBuild from Build', () => {
       const inputBuildDefinition: DefinitionReference = {
         name: 'My Build Definition',
@@ -57,11 +63,11 @@ describe('AzureDevOpsApi', () => {
         source: 'refs/heads/develop (f4f78b31)',
       };
 
-      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+      expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
     });
   });
 
-  describe('repoBuildFromBuild with no Build definition name', () => {
+  describe('mappedRepoBuild with no Build definition name', () => {
     it('should return RepoBuild with only Build Number for title', () => {
       const inputLinks: any = {
         web: {
@@ -91,11 +97,11 @@ describe('AzureDevOpsApi', () => {
         source: 'refs/heads/develop (f4f78b31)',
       };
 
-      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+      expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
     });
   });
 
-  describe('repoBuildFromBuild with undefined status', () => {
+  describe('mappedRepoBuild with undefined status', () => {
     it('should return BuildStatus of None for status', () => {
       const inputLinks: any = {
         web: {
@@ -125,11 +131,11 @@ describe('AzureDevOpsApi', () => {
         source: 'refs/heads/develop (f4f78b31)',
       };
 
-      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+      expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
     });
   });
 
-  describe('repoBuildFromBuild with undefined result', () => {
+  describe('mappedRepoBuild with undefined result', () => {
     it('should return BuildResult of None for result', () => {
       const inputLinks: any = {
         web: {
@@ -159,11 +165,11 @@ describe('AzureDevOpsApi', () => {
         source: 'refs/heads/develop (f4f78b31)',
       };
 
-      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+      expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
     });
   });
 
-  describe('repoBuildFromBuild with undefined link', () => {
+  describe('mappedRepoBuild with undefined link', () => {
     it('should return empty string for link', () => {
       const inputBuild: Build = {
         id: 1,
@@ -187,7 +193,51 @@ describe('AzureDevOpsApi', () => {
         source: 'refs/heads/develop (f4f78b31)',
       };
 
-      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+      expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
+    });
+  });
+
+  describe('mappedPullRequest', () => {
+    it('should return PullRequest from GitPullRequest', () => {
+      const inputGitRepository: GitRepository = {
+        name: 'super-feature-repo',
+      };
+
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+      };
+
+      const inputPullRequest: GitPullRequest = {
+        pullRequestId: 7181,
+        repository: inputGitRepository,
+        title: 'My Awesome New Feature',
+        createdBy: inputIdentityRef,
+        creationDate: new Date('2020-09-12T06:10:23.9325232Z'),
+        sourceRefName: 'refs/heads/topic/super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+      };
+
+      const inputBaseUrl =
+        'https://host.com/myOrg/_git/super-feature-repo/pullrequest';
+
+      const outputPullRequest: PullRequest = {
+        pullRequestId: 7181,
+        repoName: 'super-feature-repo',
+        title: 'My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: new Date('2020-09-12T06:10:23.9325232Z'),
+        sourceRefName: 'refs/heads/topic/super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7181',
+      };
+
+      expect(mappedPullRequest(inputPullRequest, inputBaseUrl)).toEqual(
+        outputPullRequest,
+      );
     });
   });
 });

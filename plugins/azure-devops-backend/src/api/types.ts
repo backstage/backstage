@@ -18,6 +18,7 @@ import {
   BuildResult,
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 
 export type RepoBuild = {
   id?: number;
@@ -27,4 +28,17 @@ export type RepoBuild = {
   result?: BuildResult;
   queueTime?: Date;
   source: string;
+};
+
+export type PullRequest = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  createdBy?: string;
+  creationDate?: Date;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
 };
