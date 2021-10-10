@@ -116,7 +116,10 @@ engines.
 | Plugin   | Support Status |
 | -------- | -------------- |
 | Catalog  | ✅             |
-| TechDocs | Not yet ❌     |
+| TechDocs | ✅             |
+
+[Reach out to us](#feedback) if you want to chat about support for more plugins
+integrated to search.
 
 ## Tech Stack
 
