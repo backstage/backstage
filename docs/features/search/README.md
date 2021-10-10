@@ -108,8 +108,8 @@ the search engines are used.
 | [ElasticSearch](./search-engines#elasticsearch) | ✅             |
 | [Postgres](./search-engines#postgres)           | ✅             |
 
-[Reach out to us](#feedback) if you want to chat about support for more search
-engines.
+[Reach out to us](#get-involved) if you want to chat about support for more
+search engines.
 
 ## Plugins Integrated with Search
 
@@ -118,8 +118,8 @@ engines.
 | Catalog  | ✅             |
 | TechDocs | ✅             |
 
-[Reach out to us](#feedback) if you want to chat about support for more plugins
-integrated to search.
+[Reach out to us](#get-involved) if you want to chat about support for more
+plugins integrated to search.
 
 ## Tech Stack
 
