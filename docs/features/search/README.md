@@ -102,10 +102,11 @@ more to come...
 See [Backstage Search Architecture](architecture.md) to get an overview of how
 the search engines are used.
 
-| Search Engine | Support Status |
-| ------------- | -------------- |
-| Basic (lunr)  | ✅             |
-| ElasticSearch | Not yet ❌     |
+| Search Engines                                  | Support Status |
+| ----------------------------------------------- | -------------- |
+| [Lunr](./search-engines#lunr)                   | ✅             |
+| [ElasticSearch](./search-engines#elasticsearch) | ✅             |
+| [Postgres](./search-engines#postgres)           | ✅             |
 
 [Reach out to us](#feedback) if you want to chat about support for more search
 engines.
