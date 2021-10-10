@@ -275,6 +275,10 @@ export const createOktaProvider = (
       const audience = envConfig.getString('audience');
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
+      if (!audience.startsWith('https')) {
+        throw new Error("URL for 'audience' must start with 'https'.");
+      }
+
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
         tokenIssuer,
