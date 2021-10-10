@@ -41,6 +41,24 @@ export type BatchSearchEngineOptions = {
   batchSize: number;
 };
 
+// Warning: (ae-missing-release-tag) "DecoratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export abstract class DecoratorBase extends Transform {
+  constructor();
+  abstract decorate(
+    document: IndexableDocument,
+  ): Promise<IndexableDocument | IndexableDocument[] | undefined>;
+  _final(done: (error?: Error | null) => void): Promise<void>;
+  abstract finalize(): Promise<void>;
+  abstract initialize(): Promise<void>;
+  _transform(
+    document: IndexableDocument,
+    _: any,
+    done: (error?: Error | null) => void,
+  ): Promise<void>;
+}
+
 // Warning: (ae-missing-release-tag) "IndexBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
