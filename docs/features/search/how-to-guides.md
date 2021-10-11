@@ -12,9 +12,9 @@ The Search plugin provides implementation of one primary API by default: the
 which is responsible for talking to the search-backend to query search results.
 
 There may be occasions where you need to implement this API yourself, to
-customize it to your own needs - for example if you have your own search backend that you
-want to talk to. The purpose of this guide is to walk you through how to do that
-in two steps.
+customize it to your own needs - for example if you have your own search backend
+that you want to talk to. The purpose of this guide is to walk you through how
+to do that in two steps.
 
 1. Implement the `SearchApi`
    [interface](https://github.com/backstage/backstage/blob/db2666b980853c281b8fe77905d7639c5d255f13/plugins/search/src/apis.ts#L31)
