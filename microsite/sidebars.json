@@ -29,7 +29,14 @@
       "getting-started/contributors",
       "getting-started/project-structure"
     ],
-    "CLI": ["cli/index", "cli/commands"],
+    "Local Development": [
+      {
+        "type": "subcategory",
+        "label": "CLI",
+        "ids": ["local-dev/cli-overview", "local-dev/cli-commands"]
+      },
+      "local-dev/linking-local-packages"
+    ],
     "Core Features": [
       {
         "type": "subcategory",
@@ -210,6 +217,7 @@
         "label": "Included providers",
         "ids": [
           "auth/auth0/provider",
+          "auth/bitbucket/provider",
           "auth/microsoft/provider",
           "auth/github/provider",
           "auth/gitlab/provider",

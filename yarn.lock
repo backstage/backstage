@@ -4405,11 +4405,6 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
-"@material-icons/font@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.3.tgz#f722e5a69a03f20ef47d015cb69420bebeeaabe5"
-  integrity sha512-aIRd0Z9b/HJ/O24KOaP7dNsXypMnXhpWrpLVYvQB/JesVqXYSbioYND200sR+C14a0LSCp+qWnWCnSXmN1hWGw==
-
 "@material-table/core@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@material-table/core/-/core-3.1.0.tgz#4fc3bd1553359e628413437a4102d8469852c253"

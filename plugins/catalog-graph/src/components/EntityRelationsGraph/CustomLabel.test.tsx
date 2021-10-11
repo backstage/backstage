@@ -31,12 +31,6 @@ describe('<CustomLabel />', () => {
             relations: [RELATION_PARENT_OF],
             from: 'from-id',
             to: 'to-id',
-            id: 'id',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
-            points: [],
           }}
         />
       </svg>,
@@ -54,12 +48,6 @@ describe('<CustomLabel />', () => {
             relations: [RELATION_PARENT_OF, RELATION_CHILD_OF],
             from: 'from-id',
             to: 'to-id',
-            id: 'id',
-            x: 111,
-            y: 222,
-            width: 100,
-            height: 25,
-            points: [],
           }}
         />
       </svg>,
