@@ -4406,9 +4406,9 @@
     tar "^6.1.0"
 
 "@material-icons/font@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.3.tgz#f722e5a69a03f20ef47d015cb69420bebeeaabe5"
-  integrity sha512-aIRd0Z9b/HJ/O24KOaP7dNsXypMnXhpWrpLVYvQB/JesVqXYSbioYND200sR+C14a0LSCp+qWnWCnSXmN1hWGw==
+  version "1.0.16"
+  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.16.tgz#be54bf6e93b4f3d91dced3a7ddbbf350c82b2dfb"
+  integrity sha512-6JstKiTTd0BzL9u1vU2meffGoT5kCCwtVe0Y2sSDpGfaLLE8wFHW1M2n/OGv2qm5kBbWarFqKGb6eqszvACbhA==
 
 "@material-table/core@^3.1.0":
   version "3.1.0"
