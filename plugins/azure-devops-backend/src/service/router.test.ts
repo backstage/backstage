@@ -254,8 +254,7 @@ describe('createRouter', () => {
       expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
-        50,
-        1,
+        { status: 1, top: 50 },
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(pullRequests);

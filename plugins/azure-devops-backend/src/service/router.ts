@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { AzureDevOpsApi } from '../api';
 import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequestOptions } from '../api/types';
 
 const DEFAULT_TOP: number = 10;
 
@@ -91,11 +92,14 @@ export async function createRouter(
     const status = req.query.status
       ? Number(req.query.status)
       : PullRequestStatus.Active;
+    const pullRequestOptions: PullRequestOptions = {
+      top: top,
+      status: status,
+    };
     const gitPullRequest = await azureDevOpsApi.getPullRequests(
       projectName,
       repoName,
-      top,
-      status,
+      pullRequestOptions,
     );
     res.status(200).json(gitPullRequest);
   });

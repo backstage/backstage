@@ -24,9 +24,8 @@ import {
 import {
   GitPullRequest,
   GitPullRequestSearchCriteria,
-  PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { PullRequest, RepoBuild } from './types';
+import { PullRequest, PullRequestOptions, RepoBuild } from './types';
 
 export class AzureDevOpsApi {
   constructor(
@@ -102,8 +101,7 @@ export class AzureDevOpsApi {
   async getPullRequests(
     projectName: string,
     repoName: string,
-    top: number,
-    status: PullRequestStatus,
+    options: PullRequestOptions,
   ) {
     if (this.logger) {
       this.logger.debug(
@@ -114,7 +112,7 @@ export class AzureDevOpsApi {
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const client = await this.webApi.getGitApi();
     const searchCriteria: GitPullRequestSearchCriteria = {
-      status: status,
+      status: options.status,
     };
     const gitPullRequests = await client.getPullRequests(
       gitRepository.id as string,
@@ -122,9 +120,11 @@ export class AzureDevOpsApi {
       projectName,
       undefined,
       undefined,
-      top,
+      options.top,
     );
-    const linkBaseUrl = `${this.webApi.serverUrl}/${projectName}/_git/${repoName}/pullrequest`;
+    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
     const pullRequests: PullRequest[] = gitPullRequests.map(gitPullRequest => {
       return mappedPullRequest(gitPullRequest, linkBaseUrl);
     });

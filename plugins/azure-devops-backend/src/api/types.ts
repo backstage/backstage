@@ -43,3 +43,8 @@ export type PullRequest = {
   isDraft?: boolean;
   link: string;
 };
+
+export type PullRequestOptions = {
+  top: number;
+  status: PullRequestStatus;
+};

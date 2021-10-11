@@ -29,12 +29,13 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
   ): Promise<GitRepository>;
+  // Warning: (ae-forgotten-export) The symbol "PullRequestOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   getPullRequests(
     projectName: string,
     repoName: string,
-    top: number,
-    status: PullRequestStatus,
+    options: PullRequestOptions,
   ): Promise<PullRequest[]>;
   // (undocumented)
   getRepoBuilds(
