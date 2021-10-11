@@ -60,6 +60,11 @@ export const ComponentTab = homePlugin.provide(
   }),
 );
 
+/**
+ * A component to display a playful greeting for the user.
+ *
+ * @public
+ */
 export const WelcomeTitle = homePlugin.provide(
   createComponentExtension({
     component: {
