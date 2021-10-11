@@ -15,7 +15,10 @@
  */
 
 import { ResponseError } from '@backstage/errors';
-import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import React from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { CopyTextButton } from '../CopyTextButton';

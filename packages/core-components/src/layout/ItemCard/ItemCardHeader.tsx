@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createStyles,
-  makeStyles,
-  Typography,
-  WithStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles, WithStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 

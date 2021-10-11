@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 import React, { CSSProperties } from 'react';
-import {
-  Avatar as MaterialAvatar,
-  createStyles,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import MaterialAvatar from '@material-ui/core/Avatar';
 import { extractInitials, stringToColor } from './utils';
 
 export type AvatarClassKey = 'avatar';

@@ -18,7 +18,9 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles, Tabs, Tab as TabUI, TabProps } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import TabUI, { TabProps } from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
 export type HeaderTabsClassKey =
   | 'tabsWrapper'

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
 export type SignInPageClassKey = 'container' | 'item';
 

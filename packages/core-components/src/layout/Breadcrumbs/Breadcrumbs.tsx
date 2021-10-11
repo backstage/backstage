@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Box,
-  Breadcrumbs as MaterialBreadcrumbs,
-  List,
-  ListItem,
-  Popover,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
+import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import React, { ComponentProps, Fragment } from 'react';
 
 type Props = ComponentProps<typeof MaterialBreadcrumbs>;

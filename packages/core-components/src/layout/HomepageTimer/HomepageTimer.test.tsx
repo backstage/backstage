@@ -18,7 +18,7 @@ import { renderWithEffects } from '@backstage/test-utils';
 import { HomepageTimer } from './HomepageTimer';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core/styles';
 import {
   ApiProvider,
   ApiRegistry,

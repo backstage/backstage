@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ClickAwayListener, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Typography from '@material-ui/core/Typography';
 import React, {
   PropsWithChildren,
   useCallback,

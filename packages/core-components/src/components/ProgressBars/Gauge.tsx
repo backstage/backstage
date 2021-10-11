@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles, useTheme } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';

@@ -18,7 +18,9 @@ import React, { PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { Grid, IconButton, makeStyles, Theme } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 
 const generateGradientStops = (themeType: 'dark' | 'light') => {
   // 97% corresponds to the theme.palette.background.default for the light theme

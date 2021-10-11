@@ -17,15 +17,13 @@ import React, { ComponentType } from 'react';
 import { Button } from './Button';
 import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  Divider,
-  Link,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Button as MaterialButton,
-} from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import Link from '@material-ui/core/Link';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import MaterialButton from '@material-ui/core/Button';
 import { wrapInTestApp } from '@backstage/test-utils';
 
 const routeRef = createRouteRef({
