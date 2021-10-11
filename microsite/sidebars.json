@@ -217,6 +217,7 @@
         "label": "Included providers",
         "ids": [
           "auth/auth0/provider",
+          "auth/bitbucket/provider",
           "auth/microsoft/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
