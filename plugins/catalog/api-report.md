@@ -57,9 +57,6 @@ export const AboutField: ({
   children,
 }: Props_2) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "PluginCatalogComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "BackstageOverrides" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof PluginCatalogComponentsNameToClassKey]?: Partial<
@@ -335,6 +332,9 @@ export const EntityLinksCard: ({
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
+// @public (undocumented)
+export type EntityLinksEmptyStateClassKey = 'code';
+
 // Warning: (ae-missing-release-tag) "EntityListContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -436,6 +436,12 @@ export function isNamespace(namespace: string): (entity: Entity) => boolean;
 // @public (undocumented)
 export const isOrphan: (entity: Entity) => boolean;
 
+// @public (undocumented)
+export type PluginCatalogComponentsNameToClassKey = {
+  PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
+  PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+};
+
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -444,6 +450,14 @@ export const Router: ({
 }: {
   EntityPage?: React_2.ComponentType<{}> | undefined;
 }) => JSX.Element;
+
+// @public (undocumented)
+export type SystemDiagramCardClassKey =
+  | 'domainNode'
+  | 'systemNode'
+  | 'componentNode'
+  | 'apiNode'
+  | 'resourceNode';
 
 // Warnings were encountered during analysis:
 //

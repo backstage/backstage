@@ -51,3 +51,6 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
+
+export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
+export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';

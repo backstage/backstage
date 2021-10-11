@@ -26,6 +26,7 @@ const ENTITY_YAML = `metadata:
       title: My Dashboard
       icon: dashboard`;
 
+/** @public */
 export type EntityLinksEmptyStateClassKey = 'code';
 
 const useStyles = makeStyles<BackstageTheme>(

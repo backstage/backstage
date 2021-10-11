@@ -46,6 +46,7 @@ import {
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export type SystemDiagramCardClassKey =
   | 'domainNode'
   | 'systemNode'
