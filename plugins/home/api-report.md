@@ -84,6 +84,15 @@ export function createCardExtension<T>({
   } & T) => JSX.Element
 >;
 
+// Warning: (ae-missing-release-tag) "HeaderWorldClock" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HeaderWorldClock: ({
+  clockConfigs,
+}: {
+  clockConfigs: ClockConfig[];
+}) => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "HomepageCompositionRoot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -104,15 +113,6 @@ export const HomePageRandomJoke: ({
 } & {
   defaultCategory?: 'any' | 'programming' | undefined;
 }) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "HomepageTimer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const HomepageTimer: ({
-  clockConfigs,
-}: {
-  clockConfigs: ClockConfig[];
-}) => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

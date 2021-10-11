@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderWorldClock, ClockConfig } from './HeaderWorldClock';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
