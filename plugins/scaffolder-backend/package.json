@@ -36,7 +36,7 @@
     "@backstage/config": "^0.1.10",
     "@backstage/errors": "^0.1.2",
     "@backstage/integration": "^0.6.7",
-    "@backstage/plugin-catalog-backend": "^0.15.0",
+    "@backstage/plugin-catalog-backend": "^0.16.0",
     "@backstage/plugin-scaffolder-common": "^0.1.0",
     "@backstage/plugin-scaffolder-backend-module-cookiecutter": "^0.1.2",
     "@gitbeaker/core": "^30.2.0",
