@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AppComponents } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
@@ -258,6 +259,9 @@ export type CustomProviderClassKey = 'form' | 'button';
 //
 // @public (undocumented)
 export function DashboardIcon(props: IconComponentProps): JSX.Element;
+
+// @public
+export function defaultAppComponents(): Omit<AppComponents, 'Router'>;
 
 // Warning: (ae-missing-release-tag) "DependencyEdge" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

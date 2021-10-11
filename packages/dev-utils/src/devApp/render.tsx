@@ -27,6 +27,7 @@ import { Route } from 'react-router';
 
 import {
   AlertDisplay,
+  defaultAppComponents,
   OAuthRequestDialog,
   Sidebar,
   SidebarItem,
@@ -177,6 +178,7 @@ export class DevAppBuilder {
       apis,
       plugins: this.plugins,
       themes: this.themes,
+      components: defaultAppComponents(),
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
