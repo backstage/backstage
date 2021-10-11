@@ -96,6 +96,44 @@ describe('config', () => {
       expect(mockCallback.mock.calls[3][1]).toBe(false);
     });
 
+    it('allows missing origin header if is `allowMissingOriginHeader` is enabled', () => {
+      const mockCallback = jest.fn();
+      const config = new ConfigReader({
+        cors: {
+          origin: ['http?(s)://*.value?(-+([0-9])).com', 'http://*.value'],
+          allowMissingOriginHeader: true,
+        },
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(Function),
+        }),
+      );
+      const origin = cors?.origin as Function;
+      origin(undefined, mockCallback);
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[0][1]).toBe(true);
+    });
+    it("don't allow missing origin header if is `allowMissingOriginHeader` is disabled", () => {
+      const mockCallback = jest.fn();
+      const config = new ConfigReader({
+        cors: {
+          origin: ['http?(s)://*.value?(-+([0-9])).com', 'http://*.value'],
+          allowMissingOriginHeader: false,
+        },
+      });
+      const cors = readCorsOptions(config);
+      expect(cors).toEqual(
+        expect.objectContaining({
+          origin: expect.any(Function),
+        }),
+      );
+      const origin = cors?.origin as Function;
+      origin(undefined, mockCallback);
+      expect(mockCallback.mock.calls[0][0]).toBe(null);
+      expect(mockCallback.mock.calls[0][1]).toBe(false);
+    });
     it('reads undefined origin', () => {
       const config = new ConfigReader({
         cors: {},

@@ -120,7 +120,10 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
   }
 
   return removeUnknown({
-    origin: createCorsOriginMatcher(getOptionalStringOrStrings(cc, 'origin')),
+    origin: createCorsOriginMatcher(
+      getOptionalStringOrStrings(cc, 'origin'),
+      cc.getOptionalBoolean('allowMissingOriginHeader'),
+    ),
     methods: getOptionalStringOrStrings(cc, 'methods'),
     allowedHeaders: getOptionalStringOrStrings(cc, 'allowedHeaders'),
     exposedHeaders: getOptionalStringOrStrings(cc, 'exposedHeaders'),
@@ -223,6 +226,7 @@ function getOptionalStringOrStrings(
 
 function createCorsOriginMatcher(
   originValue: string | string[] | undefined,
+  allowMissingOriginHeader: boolean = false,
 ): CustomOrigin | undefined {
   if (originValue === undefined) {
     return originValue;
@@ -243,10 +247,10 @@ function createCorsOriginMatcher(
     ) ?? [];
 
   return (origin, callback) => {
-    return callback(
-      null,
-      allowedOriginPatterns.some(pattern => pattern.match(origin ?? '')),
-    );
+    const isOriginAllowed =
+      allowedOriginPatterns.some(pattern => pattern.match(origin ?? '')) ||
+      (allowMissingOriginHeader && !origin);
+    return callback(null, isOriginAllowed);
   };
 }
 
