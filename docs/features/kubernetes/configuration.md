@@ -29,6 +29,7 @@ kubernetes:
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
+          caData: ${K8S_CONFIG_CA_DATA}
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -134,6 +135,10 @@ clusterLinksFormatters.myDashboard = (options) => ...;
 See also
 https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters
 for real examples.
+
+##### `clusters.\*.caData` (optional)
+
+PEM-encoded bytes (typically read from a client certificate file).
 
 #### `gke`
 
