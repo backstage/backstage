@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { Tooltip } from '@material-ui/core';
+import React, { useMemo } from 'react';
+import { getTimeBasedGreeting } from './timeUtil';
 
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
+export const WelcomeTitle = () => {
+  const identityApi = useApi(identityApiRef);
+  const profile = identityApi.getProfile();
+  const userId = identityApi.getUserId();
+  const greeting = useMemo(() => getTimeBasedGreeting(), []);
 
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-} from './plugin';
-export { SettingsModal } from './components';
-export { createCardExtension } from './extensions';
+  return (
+    <Tooltip title={greeting.language}>
+      <span>{`${greeting.greeting}, ${profile.displayName || userId}!`}</span>
+    </Tooltip>
+  );
+};

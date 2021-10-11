@@ -60,6 +60,15 @@ export const ComponentTab = homePlugin.provide(
   }),
 );
 
+export const WelcomeTitle = homePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./homePageComponents/WelcomeTitle').then(m => m.WelcomeTitle),
+    },
+  }),
+);
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     title: 'Random Joke',
