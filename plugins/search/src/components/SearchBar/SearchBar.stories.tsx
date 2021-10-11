@@ -45,3 +45,20 @@ export const Default = () => {
     </MemoryRouter>
   );
 };
+
+export const CustomPlaceholder = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              <SearchBar placeholder="This is a custom placeholder" />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};

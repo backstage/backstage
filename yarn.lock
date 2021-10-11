@@ -4405,11 +4405,6 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
-"@material-icons/font@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.3.tgz#f722e5a69a03f20ef47d015cb69420bebeeaabe5"
-  integrity sha512-aIRd0Z9b/HJ/O24KOaP7dNsXypMnXhpWrpLVYvQB/JesVqXYSbioYND200sR+C14a0LSCp+qWnWCnSXmN1hWGw==
-
 "@material-table/core@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@material-table/core/-/core-3.1.0.tgz#4fc3bd1553359e628413437a4102d8469852c253"
@@ -7401,9 +7396,9 @@
     "@types/node" "*"
 
 "@types/regression@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/regression/-/regression-2.0.0.tgz#0677ea78d7bdb37039c02ebbccf062042f756ae3"
-  integrity sha512-Ch2FD53M1HpFLL6zSTc/sfuyqQcIPy+/PV3xFT6QYtk9EOiMI29XOYmLNxBb1Y0lfMOR/NNa86J1gRc/1jGLyw==
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@types/regression/-/regression-2.0.2.tgz#a1ad747fbcc6726643a8eb2c42bb804bbf34ce02"
+  integrity sha512-i7KOGl6xdkfpq5+p2ooC+/XFIRUMkYymZ29SD8p+Ko9lesKGUsh6860ey3YM7Y+ZG7kEDGcjzyLO3sOhozqEeA==
 
 "@types/request@^2.47.1":
   version "2.48.5"

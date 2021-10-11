@@ -43,7 +43,9 @@ declare function ButtonType(props: ButtonProps): JSX.Element;
 /**
  * This wrapper is here to reset the color of the Link and make typescript happy.
  */
-const LinkWrapper = (props: LinkProps) => <Link {...props} color="initial" />;
+const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
+  <Link ref={ref} {...props} color="initial" />
+));
 
 const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
   <MaterialButton ref={ref} component={LinkWrapper} {...props} />

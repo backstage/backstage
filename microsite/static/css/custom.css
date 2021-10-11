@@ -1217,3 +1217,7 @@ code {
 .medium-zoom-image {
   z-index: 10000;
 }
+
+h3.collapsible span.arrow {
+  margin-right: 4px;
+}

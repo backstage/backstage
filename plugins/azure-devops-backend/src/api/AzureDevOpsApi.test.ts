@@ -94,4 +94,100 @@ describe('AzureDevOpsApi', () => {
       expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
     });
   });
+
+  describe('repoBuildFromBuild with undefined status', () => {
+    it('should return BuildStatus of None for status', () => {
+      const inputLinks: any = {
+        web: {
+          href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
+        },
+      };
+
+      const inputBuild: Build = {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: undefined,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        sourceBranch: 'refs/heads/develop',
+        sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
+        definition: undefined,
+        _links: inputLinks,
+      };
+
+      const outputRepoBuild: RepoBuild = {
+        id: 1,
+        title: 'Build-1',
+        link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
+        status: BuildStatus.None,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        source: 'refs/heads/develop (f4f78b31)',
+      };
+
+      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+    });
+  });
+
+  describe('repoBuildFromBuild with undefined result', () => {
+    it('should return BuildResult of None for result', () => {
+      const inputLinks: any = {
+        web: {
+          href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
+        },
+      };
+
+      const inputBuild: Build = {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: BuildStatus.InProgress,
+        result: undefined,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        sourceBranch: 'refs/heads/develop',
+        sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
+        definition: undefined,
+        _links: inputLinks,
+      };
+
+      const outputRepoBuild: RepoBuild = {
+        id: 1,
+        title: 'Build-1',
+        link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
+        status: BuildStatus.InProgress,
+        result: BuildResult.None,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        source: 'refs/heads/develop (f4f78b31)',
+      };
+
+      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+    });
+  });
+
+  describe('repoBuildFromBuild with undefined link', () => {
+    it('should return empty string for link', () => {
+      const inputBuild: Build = {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: BuildStatus.InProgress,
+        result: undefined,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        sourceBranch: 'refs/heads/develop',
+        sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
+        definition: undefined,
+        _links: undefined,
+      };
+
+      const outputRepoBuild: RepoBuild = {
+        id: 1,
+        title: 'Build-1',
+        link: '',
+        status: BuildStatus.InProgress,
+        result: BuildResult.None,
+        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        source: 'refs/heads/develop (f4f78b31)',
+      };
+
+      expect(repoBuildFromBuild(inputBuild)).toEqual(outputRepoBuild);
+    });
+  });
 });

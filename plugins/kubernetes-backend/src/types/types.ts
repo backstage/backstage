@@ -19,12 +19,6 @@ import type {
   KubernetesFetchError,
 } from '@backstage/plugin-kubernetes-common';
 
-export interface CustomResource {
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
-
 export interface ObjectFetchParams {
   serviceId: string;
   clusterDetails:
@@ -32,7 +26,7 @@ export interface ObjectFetchParams {
     | GKEClusterDetails
     | ServiceAccountClusterDetails
     | ClusterDetails;
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
 }
@@ -51,6 +45,17 @@ export interface FetchResponseWrapper {
 }
 
 // TODO fairly sure there's a easier way to do this
+
+export interface ObjectToFetch {
+  objectType: KubernetesObjectTypes;
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+export interface CustomResource extends ObjectToFetch {
+  objectType: 'customresources';
+}
 
 export type KubernetesObjectTypes =
   | 'pods'

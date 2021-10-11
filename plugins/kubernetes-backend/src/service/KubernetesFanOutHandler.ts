@@ -19,8 +19,8 @@ import {
   ClusterDetails,
   CustomResource,
   KubernetesFetcher,
-  KubernetesObjectTypes,
   KubernetesServiceLocator,
+  ObjectToFetch,
 } from '../types/types';
 import {
   ClusterObjects,
@@ -29,14 +29,49 @@ import {
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
-export const DEFAULT_OBJECTS: KubernetesObjectTypes[] = [
-  'pods',
-  'services',
-  'configmaps',
-  'deployments',
-  'replicasets',
-  'horizontalpodautoscalers',
-  'ingresses',
+export const DEFAULT_OBJECTS: ObjectToFetch[] = [
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'pods',
+    objectType: 'pods',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'services',
+    objectType: 'services',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'configmaps',
+    objectType: 'configmaps',
+  },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'deployments',
+    objectType: 'deployments',
+  },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'replicasets',
+    objectType: 'replicasets',
+  },
+  {
+    group: 'autoscaling',
+    apiVersion: 'v1',
+    plural: 'horizontalpodautoscalers',
+    objectType: 'horizontalpodautoscalers',
+  },
+  {
+    group: 'networking.k8s.io',
+    apiVersion: 'v1',
+    plural: 'ingresses',
+    objectType: 'ingresses',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions {
@@ -44,7 +79,7 @@ export interface KubernetesFanOutHandlerOptions {
   fetcher: KubernetesFetcher;
   serviceLocator: KubernetesServiceLocator;
   customResources: CustomResource[];
-  objectTypesToFetch?: KubernetesObjectTypes[];
+  objectTypesToFetch?: ObjectToFetch[];
 }
 
 export class KubernetesFanOutHandler {
@@ -52,7 +87,7 @@ export class KubernetesFanOutHandler {
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
-  private readonly objectTypesToFetch: KubernetesObjectTypes[];
+  private readonly objectTypesToFetch: Set<ObjectToFetch>;
 
   constructor({
     logger,
@@ -65,7 +100,7 @@ export class KubernetesFanOutHandler {
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
-    this.objectTypesToFetch = objectTypesToFetch;
+    this.objectTypesToFetch = new Set(objectTypesToFetch);
   }
 
   async getKubernetesObjectsByEntity(requestBody: KubernetesRequestBody) {
@@ -109,7 +144,7 @@ export class KubernetesFanOutHandler {
           .fetchObjectsForService({
             serviceId: entityName,
             clusterDetails: clusterDetailsItem,
-            objectTypesToFetch: new Set(this.objectTypesToFetch),
+            objectTypesToFetch: this.objectTypesToFetch,
             labelSelector,
             customResources: this.customResources,
           })

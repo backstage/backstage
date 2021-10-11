@@ -93,13 +93,23 @@ export const EntityCatalogGraphCard: ({
 }) => JSX.Element;
 
 // @public
-export type EntityEdge = DependencyGraphTypes.DependencyEdge<{
+export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
+
+// Warning: (ae-missing-release-tag) "EntityEdgeData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type EntityEdgeData = {
   relations: string[];
   label: 'visible';
-}>;
+};
 
 // @public
-export type EntityNode = DependencyGraphTypes.DependencyNode<{
+export type EntityNode = DependencyGraphTypes.DependencyNode<EntityNodeData>;
+
+// Warning: (ae-missing-release-tag) "EntityNodeData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type EntityNodeData = {
   name: string;
   kind?: string;
   title?: string;
@@ -107,7 +117,7 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<{
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
   onClick?: MouseEventHandler<unknown>;
-}>;
+};
 
 // @public
 export const EntityRelationsGraph: ({
