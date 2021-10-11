@@ -388,34 +388,50 @@ export const useTechDocsReaderDom = (): Element | null => {
   return dom;
 };
 
-export const Reader = withTechDocsReaderProvider(
-  ({ entityRef, onReady = () => {}, withSearch = true }: Props) => {
-    const classes = useStyles();
-    const dom = useTechDocsReaderDom();
-    const shadowDomRef = useRef<HTMLDivElement>(null);
+const TheReader = ({
+  entityRef,
+  onReady = () => {},
+  withSearch = true,
+}: Props) => {
+  const classes = useStyles();
+  const dom = useTechDocsReaderDom();
+  const shadowDomRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-      if (!dom || !shadowDomRef.current) return;
-      const shadowDiv = shadowDomRef.current;
-      const shadowRoot =
-        shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
-      Array.from(shadowRoot.children).forEach(child =>
-        shadowRoot.removeChild(child),
-      );
-      shadowRoot.appendChild(dom);
-      onReady();
-    }, [dom, onReady]);
-
-    return (
-      <>
-        <TechDocsStateIndicator />
-        {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
-          <Grid container className={classes.searchBar}>
-            <TechDocsSearch entityId={entityRef} />
-          </Grid>
-        )}
-        <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
-      </>
+  useEffect(() => {
+    if (!dom || !shadowDomRef.current) return;
+    const shadowDiv = shadowDomRef.current;
+    const shadowRoot =
+      shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+    Array.from(shadowRoot.children).forEach(child =>
+      shadowRoot.removeChild(child),
     );
-  },
+    shadowRoot.appendChild(dom);
+    onReady();
+  }, [dom, onReady]);
+
+  return (
+    <>
+      <TechDocsStateIndicator />
+      {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
+        <Grid container className={classes.searchBar}>
+          <TechDocsSearch entityId={entityRef} />
+        </Grid>
+      )}
+      <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
+    </>
+  );
+};
+
+export const Reader = ({
+  entityRef,
+  onReady = () => {},
+  withSearch = true,
+}: Props) => (
+  <TechDocsReaderProvider>
+    <TheReader
+      entityRef={entityRef}
+      onReady={onReady}
+      withSearch={withSearch}
+    />
+  </TechDocsReaderProvider>
 );
