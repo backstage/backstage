@@ -88,6 +88,7 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  caData?: string | undefined;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks
