@@ -103,7 +103,7 @@ async function moveApp(tempDir: string, destination: string, id: string) {
         });
       })
       .catch(error => {
-        throw new Error(`Failed to read temporary directory: ${error.message}`);
+        throw new Error(`Failed to read temporary directory, ${error}`);
       });
 
     for (const relativeTempFile of relativeTempFiles) {
