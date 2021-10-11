@@ -17,11 +17,9 @@ import { DependencyGraphTypes } from '@backstage/core-components';
 import { MouseEventHandler } from 'react';
 
 /**
- * Edge between two entities.
- *
- * @public
+ * Additional Data for entities
  */
-export type EntityEdge = DependencyGraphTypes.DependencyEdge<{
+export type EntityEdgeData = {
   /**
    * Up to two relations that are connecting an entity.
    */
@@ -31,14 +29,19 @@ export type EntityEdge = DependencyGraphTypes.DependencyEdge<{
    */
   // Not used, but has to be non empty to draw a label at all!
   label: 'visible';
-}>;
+};
 
 /**
- * Node representing an entity.
+ * Edge between two entities.
  *
  * @public
  */
-export type EntityNode = DependencyGraphTypes.DependencyNode<{
+export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
+
+/**
+ * Additional data for Entity Node
+ */
+export type EntityNodeData = {
   /**
    * Name of the entity.
    */
@@ -68,11 +71,14 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<{
    * Optional click handler.
    */
   onClick?: MouseEventHandler<unknown>;
-}>;
+};
 
-export type GraphEdge = DependencyGraphTypes.GraphEdge<EntityEdge>;
-
-export type GraphNode = DependencyGraphTypes.GraphNode<EntityNode>;
+/**
+ * Node representing an entity.
+ *
+ * @public
+ */
+export type EntityNode = DependencyGraphTypes.DependencyNode<EntityNodeData>;
 
 /**
  * Render direction of the graph.
