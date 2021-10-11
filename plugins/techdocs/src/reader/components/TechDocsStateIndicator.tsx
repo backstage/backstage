@@ -15,14 +15,13 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { Progress } from '@backstage/core-components';
 import { Box, Button, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { useReaderState } from './useReaderState';
+import { useTechDocsReader } from './Reader';
 
 const useStyles = makeStyles(() => ({
   message: {
@@ -44,7 +43,6 @@ const useStyles = makeStyles(() => ({
  */
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
-  const { namespace = '', kind = '', name = '', '*': params } = useParams();
   const classes = useStyles();
 
   const {
@@ -53,7 +51,7 @@ export const TechDocsStateIndicator = () => {
     contentErrorMessage,
     syncErrorMessage,
     buildLog,
-  } = useReaderState(kind, namespace, name, params);
+  } = useTechDocsReader();
 
   const ReaderProgress = ['INITIAL_BUILD', 'CONTENT_STALE_REFRESHING'].includes(
     state,

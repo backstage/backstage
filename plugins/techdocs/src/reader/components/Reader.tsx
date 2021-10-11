@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  ComponentType,
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Grid, makeStyles, useTheme } from '@material-ui/core';
 
@@ -61,6 +70,39 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
+type TechDocsReaderValue = ReturnType<typeof useReaderState>;
+
+const TechDocsReaderContext = createContext<TechDocsReaderValue>(
+  {} as TechDocsReaderValue,
+);
+
+const TechDocsReaderProvider = ({ children }: PropsWithChildren<{}>) => {
+  const { namespace = '', kind = '', name = '', '*': path } = useParams();
+  const value = useReaderState(kind, namespace, name, path);
+  return (
+    <TechDocsReaderContext.Provider value={value}>
+      {children}
+    </TechDocsReaderContext.Provider>
+  );
+};
+
+/**
+ * @internal
+ */
+export const withTechDocsReaderProvider =
+  <T extends {}>(Component: ComponentType<T>) =>
+  (props: T) =>
+    (
+      <TechDocsReaderProvider>
+        <Component {...props} />
+      </TechDocsReaderProvider>
+    );
+
+/**
+ * @internal
+ */
+export const useTechDocsReader = () => useContext(TechDocsReaderContext);
+
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
@@ -79,12 +121,8 @@ export const useTechDocsReaderDom = (): Element | null => {
   const theme = useTheme<BackstageTheme>();
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const { namespace = '', kind = '', name = '', '*': params } = useParams();
-  const {
-    state,
-    path,
-    content: rawPage,
-  } = useReaderState(kind, namespace, name, params);
+  const { namespace = '', kind = '', name = '' } = useParams();
+  const { state, path, content: rawPage } = useTechDocsReader();
 
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const [dom, setDom] = useState<HTMLElement | null>(null);
@@ -338,36 +376,34 @@ export const useTechDocsReaderDom = (): Element | null => {
   return dom;
 };
 
-export const Reader = ({
-  entityRef,
-  onReady = () => {},
-  withSearch = true,
-}: Props) => {
-  const classes = useStyles();
-  const dom = useTechDocsReaderDom();
-  const shadowDomRef = useRef<HTMLDivElement>(null);
+export const Reader = withTechDocsReaderProvider(
+  ({ entityRef, onReady = () => {}, withSearch = true }: Props) => {
+    const classes = useStyles();
+    const dom = useTechDocsReaderDom();
+    const shadowDomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!dom || !shadowDomRef.current) return;
-    const shadowDiv = shadowDomRef.current;
-    const shadowRoot =
-      shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
-    Array.from(shadowRoot.children).forEach(child =>
-      shadowRoot.removeChild(child),
+    useEffect(() => {
+      if (!dom || !shadowDomRef.current) return;
+      const shadowDiv = shadowDomRef.current;
+      const shadowRoot =
+        shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+      Array.from(shadowRoot.children).forEach(child =>
+        shadowRoot.removeChild(child),
+      );
+      shadowRoot.appendChild(dom);
+      onReady();
+    }, [dom, onReady]);
+
+    return (
+      <>
+        <TechDocsStateIndicator />
+        {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
+          <Grid container className={classes.searchBar}>
+            <TechDocsSearch entityId={entityRef} />
+          </Grid>
+        )}
+        <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
+      </>
     );
-    shadowRoot.appendChild(dom);
-    onReady();
-  }, [dom, onReady]);
-
-  return (
-    <>
-      <TechDocsStateIndicator />
-      {withSearch && shadowDomRef?.current?.shadowRoot?.innerHTML && (
-        <Grid container className={classes.searchBar}>
-          <TechDocsSearch entityId={entityRef} />
-        </Grid>
-      )}
-      <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
-    </>
-  );
-};
+  },
+);
