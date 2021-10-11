@@ -25,12 +25,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isAzureDevOpsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const Router = (_props: Props) => {
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isAzureDevOpsAvailable(entity)) {

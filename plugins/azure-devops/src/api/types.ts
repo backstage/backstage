@@ -28,3 +28,7 @@ export type RepoBuild = {
   queueTime?: Date;
   source: string;
 };
+
+export type RepoBuildOptions = {
+  top?: number;
+};

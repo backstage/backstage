@@ -32,7 +32,7 @@ Configuration Details:
 
 Here's how to get the backend up and running:
 
-1. First we need to add the @backstage/plugin-azure-devops-backend package to your backend:
+1. First we need to add the `@backstage/plugin-azure-devops-backend` package to your backend:
 
    ```sh
    # From the Backstage root directory

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RepoBuild } from './types';
+import { RepoBuild, RepoBuildOptions } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export const azureDevOpsApiRef = createApiRef<AzureDevOpsApi>({
@@ -27,6 +27,6 @@ export interface AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
-    top: number,
-  ): Promise<RepoBuild[]>;
+    options?: RepoBuildOptions,
+  ): Promise<{ items: RepoBuild[] }>;
 }

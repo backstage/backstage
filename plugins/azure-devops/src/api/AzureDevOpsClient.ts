@@ -15,9 +15,9 @@
  */
 
 import { AzureDevOpsApi } from './AzureDevOpsApi';
-import { RepoBuild } from './types';
+import { RepoBuild, RepoBuildOptions } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { AzureDevOpsClientError } from './AzureDevOpsClientError';
+import { ResponseError } from '@backstage/errors';
 
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -34,12 +34,14 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
-    top: number,
-  ): Promise<RepoBuild[]> {
-    return this.get(`repo-builds/${projectName}/${repoName}?top=${top}`);
+    options?: RepoBuildOptions,
+  ): Promise<{ items: RepoBuild[] }> {
+    return this.get(
+      `repo-builds/${projectName}/${repoName}?top=${options?.top}`,
+    );
   }
 
-  private async get(path: string): Promise<any> {
+  private async get(path: string): Promise<{ items: any }> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
@@ -49,10 +51,9 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     });
 
     if (!response.ok) {
-      const payload = await response.text();
-      throw new AzureDevOpsClientError(response, payload);
+      throw await ResponseError.fromResponse(response);
     }
 
-    return response.json() as Promise<any>;
+    return response.json() as Promise<{ items: any }>;
   }
 }

@@ -17,6 +17,7 @@
 import React from 'react';
 import { DateTime } from 'luxon';
 import {
+  Link,
   Table,
   TableColumn,
   StatusError,
@@ -25,9 +26,9 @@ import {
   StatusAborted,
   StatusRunning,
   StatusPending,
+  ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Link, Box, Typography } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Box, Typography } from '@material-ui/core';
 import { RepoBuild } from '../../api/types';
 import {
   BuildResult,
@@ -39,25 +40,25 @@ const getBuildResultComponent = (result: number | undefined) => {
     case BuildResult.Succeeded:
       return (
         <span>
-          <StatusOK /> Succeeded{' '}
+          <StatusOK /> Succeeded
         </span>
       );
     case BuildResult.PartiallySucceeded:
       return (
         <span>
-          <StatusWarning /> Partially Succeeded{' '}
+          <StatusWarning /> Partially Succeeded
         </span>
       );
     case BuildResult.Failed:
       return (
         <span>
-          <StatusError /> Failed{' '}
+          <StatusError /> Failed
         </span>
       );
     case BuildResult.Canceled:
       return (
         <span>
-          <StatusAborted /> Canceled{' '}
+          <StatusAborted /> Canceled
         </span>
       );
     case BuildResult.None:
@@ -123,9 +124,7 @@ const columns: TableColumn[] = [
     field: 'title',
     width: 'auto',
     render: (row: Partial<RepoBuild>) => (
-      <Link href={row.link} target="_blank">
-        {row.title}
-      </Link>
+      <Link to={row.link || ''}>{row.title}</Link>
     ),
   },
   {
@@ -165,10 +164,7 @@ export const BuildTable = ({ items, loading, error }: Props) => {
   if (error) {
     return (
       <div>
-        <Alert severity="error">
-          Error encountered while fetching Azure DevOps builds.{' '}
-          {error.toString()}
-        </Alert>
+        <ResponseErrorPanel error={error} />
       </div>
     );
   }

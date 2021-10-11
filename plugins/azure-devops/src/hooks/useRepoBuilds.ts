@@ -18,7 +18,7 @@ import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { azureDevOpsApiRef } from '../api';
-import { RepoBuild } from '../api/types';
+import { RepoBuild, RepoBuildOptions } from '../api/types';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 
@@ -31,14 +31,17 @@ export function useRepoBuilds(entity: Entity): {
   const top =
     config.getOptionalNumber('azureDevOps.azurePipelines.top') ??
     AZURE_DEVOPS_DEFAULT_TOP;
+  const options: RepoBuildOptions = {
+    top: top,
+  };
   const api = useApi(azureDevOpsApiRef);
   const { project, repo } = useProjectRepoFromEntity(entity);
   const { value, loading, error } = useAsync(() => {
-    return api.getRepoBuilds(project, repo, top);
+    return api.getRepoBuilds(project, repo, options);
   }, [api, project, repo, entity]);
 
   return {
-    items: value as RepoBuild[],
+    items: value?.items as RepoBuild[],
     loading,
     error,
   };
