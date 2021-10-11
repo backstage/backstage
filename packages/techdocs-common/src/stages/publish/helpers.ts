@@ -140,6 +140,29 @@ export const lowerCaseEntityTripletInStoragePath = (
   return lowerCaseEntityTriplet(parts.join(path.posix.sep));
 };
 
+/**
+ * Take a posix path and return a path without leading and trailing
+ * separators
+ *
+ * @example
+ * normalizeExternalStorageRootPath('/backstage-data/techdocs/')
+ * // return backstage-data/techdocs
+ */
+export const normalizeExternalStorageRootPath = (posixPath: string): string => {
+  // remove leading slash
+  let normalizedPath = posixPath;
+  if (posixPath.startsWith(path.posix.sep)) {
+    normalizedPath = posixPath.slice(1);
+  }
+
+  // remove trailing slash
+  if (normalizedPath.endsWith(path.posix.sep)) {
+    normalizedPath = normalizedPath.slice(0, normalizedPath.length - 1);
+  }
+
+  return normalizedPath;
+};
+
 // Only returns the files that existed previously and are not present anymore.
 export const getStaleFiles = (
   newFiles: string[],
@@ -157,6 +180,7 @@ export const getCloudPathForLocalPath = (
   entity: Entity,
   localPath = '',
   useLegacyPathCasing = false,
+  externalStorageRootPath = '',
 ): string => {
   // Convert destination file path to a POSIX path for uploading.
   // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
@@ -169,11 +193,17 @@ export const getCloudPathForLocalPath = (
   }/${entity.kind}/${entity.metadata.name}`;
 
   const relativeFilePathTriplet = `${entityRootDir}/${relativeFilePathPosix}`;
+
   const destination = useLegacyPathCasing
     ? relativeFilePathTriplet
     : lowerCaseEntityTriplet(relativeFilePathTriplet);
 
-  return destination; // Remote storage file relative path
+  const destinationWithRoot = path.join(
+    ...externalStorageRootPath.split(path.posix.sep),
+    destination,
+  );
+
+  return destinationWithRoot; // Remote storage file relative path
 };
 
 // Perform rate limited generic operations by passing a function and a list of arguments
