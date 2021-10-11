@@ -34,16 +34,15 @@ import {
 } from '@backstage/backend-common';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  TemplateEntityV1beta2,
-  Entity,
-  TemplateEntityV1beta3,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
 import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
+import { TaskSpec } from '../scaffolder/tasks/types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -61,7 +60,7 @@ function isSupportedTemplate(
 ) {
   return (
     entity.apiVersion === 'backstage.io/v1beta2' ||
-    entity.apiVersion === 'backstage.io/v1beta3'
+    entity.apiVersion === 'scaffolder.backstage.io/v1beta3'
   );
 }
 
@@ -187,7 +186,7 @@ export async function createRouter(
         token,
       });
 
-      let taskSpec;
+      let taskSpec: TaskSpec;
 
       if (isSupportedTemplate(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {

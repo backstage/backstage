@@ -65,7 +65,7 @@ export interface TaskStep {
   if?: string | boolean;
 }
 export interface TaskSpecV1beta3 {
-  apiVersion: 'backstage.io/v1beta3';
+  apiVersion: 'scaffolder.backstage.io/v1beta3';
   baseUrl?: string;
   parameters: JsonObject;
   steps: TaskStep[];
