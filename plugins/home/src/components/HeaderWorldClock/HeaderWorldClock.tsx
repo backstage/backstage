@@ -68,7 +68,7 @@ function getTimes(clockConfigs: ClockConfig[]) {
   return clocks;
 }
 
-export const HomepageTimer = ({
+export const HeaderWorldClock = ({
   clockConfigs,
 }: {
   clockConfigs: ClockConfig[];

@@ -16,5 +16,5 @@
 
 export { HomepageCompositionRoot } from './HomepageCompositionRoot';
 export { SettingsModal } from './SettingsModal';
-export { HomepageTimer } from './HomepageTimer';
-export type { ClockConfig } from './HomepageTimer';
+export { HeaderWorldClock } from './HeaderWorldClock';
+export type { ClockConfig } from './HeaderWorldClock';

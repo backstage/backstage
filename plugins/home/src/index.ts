@@ -29,6 +29,6 @@ export {
   ComponentTab,
   WelcomeTitle,
 } from './plugin';
-export { SettingsModal, HomepageTimer } from './components';
+export { SettingsModal, HeaderWorldClock } from './components';
 export type { ClockConfig } from './components';
 export { createCardExtension } from './extensions';

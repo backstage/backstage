@@ -68,8 +68,8 @@ function getTimes(configApi: ConfigApi) {
 }
 
 /**
- * This component has been moved to the home plugin, please use that version
- * @deprecated Moved to home plugin
+ * Please use the HeaderWorldClock in the home plugin
+ * @deprecated in favor of the HeaderWorldClock which is found in the to home plugin
  */
 export function HomepageTimer(_props: {}) {
   const configApi = useApi(configApiRef);

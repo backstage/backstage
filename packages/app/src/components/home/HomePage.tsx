@@ -33,7 +33,7 @@ import {
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,
-  HomepageTimer,
+  HeaderWorldClock,
   ClockConfig,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
@@ -63,7 +63,7 @@ const clockConfigs: ClockConfig[] = [
 export const HomePage = () => (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HomepageTimer clockConfigs={clockConfigs} />
+      <HeaderWorldClock clockConfigs={clockConfigs} />
     </Header>
     <Content>
       <Grid container spacing={3}>

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { renderWithEffects } from '@backstage/test-utils';
-import { HomepageTimer, ClockConfig } from './HomepageTimer';
+import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
+import { HeaderWorldClock, ClockConfig } from './HeaderWorldClock';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 
-describe('HomepageTimer with valid Time Zones', () => {
+describe('HeaderWorldClock with valid Time Zones', () => {
   it('displays Time Zones as expected', async () => {
     const clockConfigs: ClockConfig[] = [
       {
@@ -41,9 +41,9 @@ describe('HomepageTimer with valid Time Zones', () => {
       },
     ];
 
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <HomepageTimer clockConfigs={clockConfigs} />
+        <HeaderWorldClock clockConfigs={clockConfigs} />
       </ThemeProvider>,
     );
 
@@ -54,13 +54,13 @@ describe('HomepageTimer with valid Time Zones', () => {
   });
 });
 
-describe('HomepageTimer with no Time Zones provided', () => {
+describe('HeaderWorldClock with no Time Zones provided', () => {
   it('should not appear in output', async () => {
     const clockConfigs: ClockConfig[] = [];
 
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <HomepageTimer clockConfigs={clockConfigs} />
+        <HeaderWorldClock clockConfigs={clockConfigs} />
       </ThemeProvider>,
     );
 
@@ -68,7 +68,7 @@ describe('HomepageTimer with no Time Zones provided', () => {
   });
 });
 
-describe('HomepageTimer with invalid Time Zone', () => {
+describe('HeaderWorldClock with invalid Time Zone', () => {
   it('uses GMT as fallback Time Zone', async () => {
     const clockConfigs: ClockConfig[] = [
       {
@@ -77,9 +77,9 @@ describe('HomepageTimer with invalid Time Zone', () => {
       },
     ];
 
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <HomepageTimer clockConfigs={clockConfigs} />
+        <HeaderWorldClock clockConfigs={clockConfigs} />
       </ThemeProvider>,
     );
 
