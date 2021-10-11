@@ -91,7 +91,7 @@ describe('DefaultWorkflowRunner', () => {
 
   it('should throw an error if the action does not exist', async () => {
     const task = createMockTaskWithSpec({
-      apiVersion: 'backstage.io/v1beta3',
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
       parameters: {},
       output: {},
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
@@ -105,7 +105,7 @@ describe('DefaultWorkflowRunner', () => {
   describe('validation', () => {
     it('should throw an error if the action has a schema and the input does not match', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         parameters: {},
         output: {},
         steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
@@ -118,7 +118,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should run the action when the validation passes', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         parameters: {},
         output: {},
         steps: [
@@ -140,7 +140,7 @@ describe('DefaultWorkflowRunner', () => {
   describe('conditionals', () => {
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -163,7 +163,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should skips steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -186,7 +186,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should skips steps using the negating equals operator', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -211,7 +211,7 @@ describe('DefaultWorkflowRunner', () => {
   describe('templating', () => {
     it('should template the input to an action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -237,7 +237,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should keep the original types for the input and not parse things that arent meant to be parsed', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -265,7 +265,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should template complex values into the action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -291,7 +291,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('supports really complex structures', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -320,7 +320,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('supports numbers as first class too', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -349,7 +349,7 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should template the output from simple actions', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -373,7 +373,7 @@ describe('DefaultWorkflowRunner', () => {
   describe('filters', () => {
     it('provides the parseRepoUrl filter', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'backstage.io/v1beta3',
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',

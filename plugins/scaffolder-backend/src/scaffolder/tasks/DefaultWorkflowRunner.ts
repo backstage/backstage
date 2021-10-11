@@ -49,7 +49,7 @@ type TemplateContext = {
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
-  return taskSpec.apiVersion === 'backstage.io/v1beta3';
+  return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
 
 const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {

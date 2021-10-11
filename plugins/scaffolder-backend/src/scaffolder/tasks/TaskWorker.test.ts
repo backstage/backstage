@@ -92,7 +92,7 @@ describe('TaskWorker', () => {
     });
 
     await broker.dispatch({
-      apiVersion: 'backstage.io/v1beta3',
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
       steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
       output: {
         result: '{{ steps.test.output.testOutput }}',
@@ -121,7 +121,7 @@ describe('TaskWorker', () => {
     });
 
     const { taskId } = await broker.dispatch({
-      apiVersion: 'backstage.io/v1beta3',
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
       steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
       output: {
         result: '{{ steps.test.output.testOutput }}',

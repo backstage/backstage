@@ -38,7 +38,7 @@ export class TaskWorker {
   async runOneTask(task: Task) {
     try {
       const { output } =
-        task.spec.apiVersion === 'backstage.io/v1beta3'
+        task.spec.apiVersion === 'scaffolder.backstage.io/v1beta3'
           ? await this.options.runners.workflowRunner.execute(task)
           : await this.options.runners.legacyWorkflowRunner.execute(task);
 
