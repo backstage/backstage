@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { Tooltip } from '@material-ui/core';
+import React, { useMemo } from 'react';
 import { getTimeBasedGreeting } from './timeUtil';
 
-it('has greeting and language', () => {
-  const greeting = getTimeBasedGreeting();
-  expect(greeting).toHaveProperty('greeting');
-  expect(greeting).toHaveProperty('language');
-});
+export const WelcomeTitle = () => {
+  const identityApi = useApi(identityApiRef);
+  const profile = identityApi.getProfile();
+  const userId = identityApi.getUserId();
+  const greeting = useMemo(() => getTimeBasedGreeting(), []);
 
-it('greets late at night', () => {
-  jest
-    .spyOn(global.Date, 'now')
-    .mockImplementationOnce(() => new Date('1970-01-01T23:00:00').valueOf());
-  const greeting = getTimeBasedGreeting();
-  expect(greeting.greeting).toBe('Get some rest');
-});
+  return (
+    <Tooltip title={greeting.language}>
+      <span>{`${greeting.greeting}, ${profile.displayName || userId}!`}</span>
+    </Tooltip>
+  );
+};

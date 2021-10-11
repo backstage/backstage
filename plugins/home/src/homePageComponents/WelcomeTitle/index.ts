@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
-
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-} from './plugin';
-export { SettingsModal } from './components';
-export { createCardExtension } from './extensions';
+export { WelcomeTitle } from './WelcomeTitle';

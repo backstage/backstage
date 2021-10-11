@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
+import { WelcomeTitle } from './WelcomeTitle';
 
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
+describe('<WelcomeTitle>', () => {
+  afterEach(() => jest.resetAllMocks());
 
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-} from './plugin';
-export { SettingsModal } from './components';
-export { createCardExtension } from './extensions';
+  test('should greet user', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
+
+    const { getByText } = await renderInTestApp(<WelcomeTitle />);
+
+    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
+  });
+});
