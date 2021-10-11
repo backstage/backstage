@@ -110,7 +110,7 @@ describe('DefaultStarredEntitiesApi', () => {
 
     beforeEach(async () => {
       await new Promise<void>(resolve => {
-        starredEntitiesApi.starredEntities$().subscribe({
+        starredEntitiesApi.starredEntitie$().subscribe({
           next: (...args) => {
             handler(...args);
 

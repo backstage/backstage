@@ -24,7 +24,7 @@ export const useStarredEntities = () => {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
   const { starredEntities, isStarred: isStarredEntity } = useObservable(
-    starredEntitiesApi.starredEntities$(),
+    starredEntitiesApi.starredEntitie$(),
     { starredEntities: new Set<string>(), isStarred: _ => false },
   );
 

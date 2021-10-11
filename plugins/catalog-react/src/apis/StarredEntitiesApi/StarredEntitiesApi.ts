@@ -50,22 +50,8 @@ export interface StarredEntitiesApi {
   toggleStarred(entity: Entity): Promise<void>;
 
   /**
-   * Star the entity
-   *
-   * @param entity - the entity to be starred
-   */
-  star(entity: Entity): Promise<void>;
-
-  /**
-   * Unstar the entity
-   *
-   * @param entity - the entity to be unstarred
-   */
-  unstar(entity: Entity): Promise<void>;
-
-  /**
    * Observe the state of starred entities and receive a handler
    * to check the star state of an entity.
    */
-  starredEntities$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
 }

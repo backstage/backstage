@@ -143,7 +143,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   star(entity: Entity): Promise<void>;
   // (undocumented)
-  starredEntities$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
   // (undocumented)
   toggleStarred(entity: Entity): Promise<void>;
   // (undocumented)
@@ -763,10 +763,8 @@ export const rootRoute: RouteRef<undefined>;
 
 // @public
 export interface StarredEntitiesApi {
-  star(entity: Entity): Promise<void>;
-  starredEntities$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
   toggleStarred(entity: Entity): Promise<void>;
-  unstar(entity: Entity): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "StarredEntitiesApiObservable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

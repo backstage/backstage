@@ -78,7 +78,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     );
   }
 
-  starredEntities$(): Observable<StarredEntitiesApiObservable> {
+  starredEntitie$(): Observable<StarredEntitiesApiObservable> {
     return this.observable;
   }
 
