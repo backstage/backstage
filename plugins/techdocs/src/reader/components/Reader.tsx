@@ -87,6 +87,12 @@ const TechDocsReaderProvider = ({ children }: PropsWithChildren<{}>) => {
 };
 
 /**
+ * Note: this HOC is currently being exported so that we can rapidly
+ * iterate on alternative <Reader /> implementations that extend core
+ * functionality. There is no guarantee that this HOC will continue to be
+ * exported by the package in the future!
+ *
+ * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
  * @internal
  */
 export const withTechDocsReaderProvider =
@@ -99,6 +105,12 @@ export const withTechDocsReaderProvider =
     );
 
 /**
+ * Note: this hook is currently being exported so that we can rapidly
+ * iterate on alternative <Reader /> implementations that extend core
+ * functionality. There is no guarantee that this hook will continue to be
+ * exported by the package in the future!
+ *
+ * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
  * @internal
  */
 export const useTechDocsReader = () => useContext(TechDocsReaderContext);
