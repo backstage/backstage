@@ -138,7 +138,7 @@ for real examples.
 
 ##### `clusters.\*.caData` (optional)
 
-PEM-encoded bytes (typically read from a client certificate file).
+PEM-encoded certificate authority certificates.
 
 #### `gke`
 
