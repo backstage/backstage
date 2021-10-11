@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that helps you create new things
- *
- * @packageDocumentation
- */
+import { JsonObject } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 
-export * from './scaffolder';
-export * from './service/router';
-export * from './lib/catalog';
-export * from './processor';
+/** @public */
+export interface TemplateEntityV1beta3 extends Entity {
+  apiVersion: 'scaffolder.backstage.io/v1beta3';
+  kind: 'Template';
+  spec: {
+    type: string;
+    parameters?: JsonObject | JsonObject[];
+    steps: Array<{
+      id?: string;
+      name?: string;
+      action: string;
+      input?: JsonObject;
+      if?: string | boolean;
+    }>;
+    output?: { [name: string]: string };
+    owner?: string;
+  };
+}

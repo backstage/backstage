@@ -15,12 +15,18 @@
  */
 
 /**
- * The Backstage backend plugin that helps you create new things
+ * Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin
  *
  * @packageDocumentation
  */
 
-export * from './scaffolder';
-export * from './service/router';
-export * from './lib/catalog';
-export * from './processor';
+import { JSONSchema } from '@backstage/catalog-model';
+import v1beta3Schema from './Template.v1beta3.schema.json';
+
+export type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';
+
+/** @public */
+export const templateEntityV1beta3Schema: JSONSchema = v1beta3Schema as Omit<
+  JSONSchema,
+  'examples'
+>;
