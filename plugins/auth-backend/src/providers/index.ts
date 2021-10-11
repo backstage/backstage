@@ -21,6 +21,7 @@ export * from './microsoft';
 export * from './oauth2';
 export * from './okta';
 export * from './bitbucket';
+export * from './atlassian';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 

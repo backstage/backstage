@@ -25,6 +25,7 @@ import {
   oauth2ApiRef,
   oidcAuthApiRef,
   bitbucketAuthApiRef,
+  atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const providers = [
@@ -87,5 +88,11 @@ export const providers = [
     title: 'Bitbucket',
     message: 'Sign In using Bitbucket',
     apiRef: bitbucketAuthApiRef,
+  },
+  {
+    id: 'atlassian-auth-provider',
+    title: 'Atlassian',
+    message: 'Sign In using Atlassian',
+    apiRef: atlassianAuthApiRef,
   },
 ];
