@@ -207,20 +207,24 @@ getEntity is now a function that returns a Promise.
 
 #### Good
 
-**BREAKING** The catalog createRouter now requires that a `FluxCapacitor` is
-passed to the router.
+    ---
+    '@backstage/catalog': patch
+    ---
 
-These changes are **required** to `packages/backend/src/plugins/catalog.ts`
+    **BREAKING** The catalog createRouter now requires that a `FluxCapacitor` is
+    passed to the router.
 
-```diff
-+ import { FluxCapacitor } from '@backstage/time';
-+ const fluxCapacitor = new FluxCapacitor();
-  return await createRouter({
-    entitiesCatalog,
-    locationAnalyzer,
-    locationService,
-+   fluxCapacitor,
-    logger: env.logger,
-    config: env.config,
-  });
-```
+    These changes are **required** to `packages/backend/src/plugins/catalog.ts`
+
+    ```diff
+    + import { FluxCapacitor } from '@backstage/time';
+    + const fluxCapacitor = new FluxCapacitor();
+      return await createRouter({
+        entitiesCatalog,
+        locationAnalyzer,
+        locationService,
+    +   fluxCapacitor,
+        logger: env.logger,
+        config: env.config,
+      });
+    ```
