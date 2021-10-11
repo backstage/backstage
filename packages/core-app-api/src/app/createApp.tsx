@@ -16,28 +16,25 @@
 
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { Button } from '@material-ui/core';
-import { ErrorPage, ErrorPanel, Progress } from '@backstage/core-components';
+import { defaultAppComponents } from '@backstage/core-components';
 import { darkTheme, lightTheme } from '@backstage/theme';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import LightIcon from '@material-ui/icons/WbSunny';
-import React, { PropsWithChildren } from 'react';
-import {
-  BrowserRouter,
-  MemoryRouter,
-  useInRouterContext,
-} from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { PrivateAppImpl } from './App';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultApis } from './defaultApis';
 import { defaultAppIcons } from './icons';
-import {
-  AppConfigLoader,
-  AppOptions,
-  BootErrorPageProps,
-  ErrorBoundaryFallbackProps,
-} from './types';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { AppConfigLoader, AppOptions } from './types';
+import { AppComponents, BackstagePlugin } from '@backstage/core-plugin-api';
+
+const REQUIRED_APP_COMPONENTS: Array<keyof AppComponents> = [
+  'Progress',
+  'NotFoundErrorPage',
+  'BootErrorPage',
+  'ErrorBoundaryFallback',
+];
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -93,63 +90,34 @@ export const defaultConfigLoader: AppConfigLoader = async (
   return configs;
 };
 
-export function OptionallyWrapInRouter({ children }: PropsWithChildren<{}>) {
-  if (useInRouterContext()) {
-    return <>{children}</>;
-  }
-  return <MemoryRouter>{children}</MemoryRouter>;
-}
-
 /**
  * Creates a new Backstage App.
  *
  * @public
  */
 export function createApp(options?: AppOptions) {
-  const DefaultNotFoundPage = () => (
-    <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+  const missingRequiredComponents = REQUIRED_APP_COMPONENTS.filter(
+    name => !options?.components?.[name],
   );
-  const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {
-    let message = '';
-    if (step === 'load-config') {
-      message = `The configuration failed to load, someone should have a look at this error: ${error.message}`;
-    } else if (step === 'load-chunk') {
-      message = `Lazy loaded chunk failed to load, try to reload the page: ${error.message}`;
-    }
-    // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
-    return (
-      <OptionallyWrapInRouter>
-        <ErrorPage status="501" statusMessage={message} />
-      </OptionallyWrapInRouter>
+  if (missingRequiredComponents.length > 0) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'DEPRECATION WARNING: The createApp options will soon require a minimal set of ' +
+        'components to be provided in the components option. These components can be ' +
+        'created using defaultAppComponents from @backstage/core-components and ' +
+        'passed along like this: createApp({ components: defaultAppComponents() }). ' +
+        `The following components are missing: ${missingRequiredComponents.join(
+          ', ',
+        )}`,
     );
-  };
-  const DefaultErrorBoundaryFallback = ({
-    error,
-    resetError,
-    plugin,
-  }: ErrorBoundaryFallbackProps) => {
-    return (
-      <ErrorPanel
-        title={`Error in ${plugin?.getId()}`}
-        defaultExpanded
-        error={error}
-      >
-        <Button variant="outlined" onClick={resetError}>
-          Retry
-        </Button>
-      </ErrorPanel>
-    );
-  };
+  }
 
   const apis = options?.apis ?? [];
   const icons = { ...defaultAppIcons, ...options?.icons };
   const plugins = options?.plugins ?? [];
   const components = {
-    NotFoundErrorPage: DefaultNotFoundPage,
-    BootErrorPage: DefaultBootErrorPage,
-    Progress: Progress,
+    ...defaultAppComponents(),
     Router: BrowserRouter,
-    ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
     ThemeProvider: AppThemeProvider,
     ...options?.components,
   };

@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import {
-  defaultConfigLoader,
-  OptionallyWrapInRouter,
-  createApp,
-} from './createApp';
+import { defaultConfigLoader, createApp } from './createApp';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
@@ -98,26 +94,6 @@ describe('defaultConfigLoader', () => {
       ...anyEnv.APP_CONFIG,
       { context: 'window', data: windowConfig },
     ]);
-  });
-});
-
-describe('OptionallyWrapInRouter', () => {
-  it('should wrap with router if not yet inside a router', async () => {
-    const { getByText } = render(
-      <OptionallyWrapInRouter>Test</OptionallyWrapInRouter>,
-    );
-
-    expect(getByText('Test')).toBeInTheDocument();
-  });
-
-  it('should not wrap with router if already inside a router', async () => {
-    const { getByText } = render(
-      <MemoryRouter>
-        <OptionallyWrapInRouter>Test</OptionallyWrapInRouter>
-      </MemoryRouter>,
-    );
-
-    expect(getByText('Test')).toBeInTheDocument();
   });
 });
 

@@ -31,6 +31,7 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
+  defaultAppComponents,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -95,6 +96,7 @@ const app = createApp({
   },
 
   components: {
+    ...defaultAppComponents(),
     SignInPage: props => {
       return (
         <SignInPage
