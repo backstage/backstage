@@ -193,6 +193,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('versions:bump')
     .description('Bump Backstage packages to the latest versions')
+    .option('--prefix <prefix>', 'npm packages prefix to bump, defaults to @backstage')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
   program

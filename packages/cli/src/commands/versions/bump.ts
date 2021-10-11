@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
 import { resolve as resolvePath } from 'path';
+import { Command } from 'commander';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
 import {
@@ -41,14 +42,14 @@ type PkgVersionInfo = {
   location: string;
 };
 
-export default async () => {
+export default async (cmd: Command) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
 
   const findTargetVersion = createVersionFinder();
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir);
+  const dependencyMap = await mapDependencies(paths.targetDir, cmd.prefix);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();

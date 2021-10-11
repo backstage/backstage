@@ -111,4 +111,44 @@ describe('mapDependencies', () => {
       ],
     ]);
   });
+
+  it('should read dependencies with prefix', async () => {
+    // Make sure all modules involved in package discovery are in the module cache before we mock fs
+    const { Project } = require('@lerna/project');
+    const project = new Project(paths.targetDir);
+    await project.getPackages();
+
+    mockFs({
+      'lerna.json': JSON.stringify({
+        packages: ['pkgs/*'],
+      }),
+      'pkgs/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '1 || 2',
+        },
+      }),
+      'pkgs/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '3',
+          '@someprefix/somepackage': '^0',
+        },
+      }),
+    });
+
+    const dependencyMap = await mapDependencies(paths.targetDir, '@someprefix');
+    expect(Array.from(dependencyMap)).toEqual([
+      [
+        '@someprefix/somepackage',
+        [
+          {
+            name: 'b',
+            range: '^0',
+            location: path.resolve('pkgs', 'b'),
+          },
+        ],
+      ],
+    ]);
+  });
 });
