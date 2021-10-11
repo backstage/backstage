@@ -112,7 +112,7 @@ async function moveApp(tempDir: string, destination: string, id: string) {
 
       await fs.copy(tempFile, destFile).catch(error => {
         throw new Error(
-          `Failed to move file from ${tempFile} to ${destFile}: ${error.message}`,
+          `Failed to move file from ${tempFile} to ${destFile}, ${error}`,
         );
       });
     }
