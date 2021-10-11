@@ -29,7 +29,7 @@ interface AtlassianStrategyOptions {
   clientID: string;
   clientSecret: string;
   callbackURL: string;
-  scope: string[];
+  scope: string;
 }
 
 const defaultScopes = ['offline_access', 'read:me'];
@@ -45,11 +45,13 @@ export default class AtlassianStrategy extends OAuth2Strategy {
       throw new TypeError('Atlassian requires a scope option');
     }
 
+    const scopes = options.scope.split(' ');
+
     const optionsWithURLs = {
       ...options,
       authorizationURL: `https://auth.atlassian.com/authorize`,
       tokenURL: `https://auth.atlassian.com/oauth/token`,
-      scope: Array.from(new Set([...defaultScopes, ...options.scope])),
+      scope: Array.from(new Set([...defaultScopes, ...scopes])),
     };
 
     super(optionsWithURLs, verify);

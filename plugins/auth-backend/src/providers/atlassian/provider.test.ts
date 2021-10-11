@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { AtlassianAuthProvider } from './provider';
+import {
+  AtlassianAuthProvider,
+  atlassianDefaultSignInResolver,
+} from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { OAuthResult } from '../../lib/oauth';
+import { PassportProfile } from '../../lib/passport/types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -27,33 +31,34 @@ const mockFrameHandler = jest.spyOn(
 ) as unknown as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('createAtlassianProvider', () => {
+  const tokenIssuer = {
+    issueToken: jest.fn(),
+    listPublicKeys: jest.fn(),
+  };
+  const catalogIdentityClient = {
+    findUser: jest.fn(),
+  };
+
+  const provider = new AtlassianAuthProvider({
+    logger: getVoidLogger(),
+    catalogIdentityClient:
+      catalogIdentityClient as unknown as CatalogIdentityClient,
+    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+    authHandler: async ({ fullProfile }) => ({
+      profile: {
+        email: fullProfile.emails![0]!.value,
+        displayName: fullProfile.displayName,
+        picture: 'http://google.com/lols',
+      },
+    }),
+    clientId: 'mock',
+    clientSecret: 'mock',
+    callbackUrl: 'mock',
+    scopes: [],
+    signInResolver: atlassianDefaultSignInResolver,
+  });
+
   it('should auth', async () => {
-    const tokenIssuer = {
-      issueToken: jest.fn(),
-      listPublicKeys: jest.fn(),
-    };
-    const catalogIdentityClient = {
-      findUser: jest.fn(),
-    };
-
-    const provider = new AtlassianAuthProvider({
-      logger: getVoidLogger(),
-      catalogIdentityClient:
-        catalogIdentityClient as unknown as CatalogIdentityClient,
-      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
-      authHandler: async ({ fullProfile }) => ({
-        profile: {
-          email: fullProfile.emails![0]!.value,
-          displayName: fullProfile.displayName,
-          picture: 'http://google.com/lols',
-        },
-      }),
-      clientId: 'mock',
-      clientSecret: 'mock',
-      callbackUrl: 'mock',
-      scopes: [],
-    });
-
     mockFrameHandler.mockResolvedValueOnce({
       result: {
         fullProfile: {
@@ -79,6 +84,9 @@ describe('createAtlassianProvider', () => {
     });
     const { response } = await provider.handler({} as any);
     expect(response).toEqual({
+      backstageIdentity: {
+        id: 'conrad',
+      },
       providerInfo: {
         accessToken: 'accessToken',
         expiresInSeconds: 123,
@@ -90,6 +98,58 @@ describe('createAtlassianProvider', () => {
         email: 'conrad@example.com',
         displayName: 'Conrad',
         picture: 'http://google.com/lols',
+      },
+    });
+  });
+
+  it('should forward a new refresh token on refresh', async () => {
+    const mockRefreshToken = jest.spyOn(
+      helpers,
+      'executeRefreshTokenStrategy',
+    ) as unknown as jest.MockedFunction<() => Promise<{}>>;
+
+    mockRefreshToken.mockResolvedValueOnce({
+      accessToken: 'a.b.c',
+      refreshToken: 'dont-forget-to-send-refresh',
+      params: {
+        id_token: 'my-id',
+        scope: 'read_user',
+      },
+    });
+
+    const mockUserProfile = jest.spyOn(
+      helpers,
+      'executeFetchUserProfileStrategy',
+    ) as unknown as jest.MockedFunction<() => Promise<PassportProfile>>;
+
+    mockUserProfile.mockResolvedValueOnce({
+      id: 'uid-my-id',
+      username: 'mockuser',
+      provider: 'atlassian',
+      displayName: 'Mocked User',
+      emails: [
+        {
+          value: 'mockuser@gmail.com',
+        },
+      ],
+    });
+
+    const response = await provider.refresh({} as any);
+
+    expect(response).toEqual({
+      backstageIdentity: {
+        id: 'mockuser',
+      },
+      profile: {
+        displayName: 'Mocked User',
+        email: 'mockuser@gmail.com',
+        picture: 'http://google.com/lols',
+      },
+      providerInfo: {
+        accessToken: 'a.b.c',
+        idToken: 'my-id',
+        refreshToken: 'dont-forget-to-send-refresh',
+        scope: 'read_user',
       },
     });
   });

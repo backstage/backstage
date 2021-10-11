@@ -145,7 +145,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
       providerInfo: {
         idToken: result.params.id_token,
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken, // GitLab expires the old refresh token when used
+        refreshToken: result.refreshToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
       },
@@ -229,7 +229,7 @@ export const createAtlassianProvider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const scopes = envConfig.getStringArray('scopes');
+      const scopes = envConfig.getString('scopes');
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
@@ -253,7 +253,7 @@ export const createAtlassianProvider = (
       const provider = new AtlassianAuthProvider({
         clientId,
         clientSecret,
-        scopes,
+        scopes: [scopes],
         callbackUrl,
         authHandler,
         signInResolver,
