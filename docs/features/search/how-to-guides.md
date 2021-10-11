@@ -12,7 +12,7 @@ The Search plugin provides implementation of one primary API by default: the
 which is responsible for talking to the search-backend to query search results.
 
 There may be occasions where you need to implement this API yourself, to
-customize it to your own needs. Lets say you have your own search backend you
+customize it to your own needs - for example if you have your own search backend that you
 want to talk to. The purpose of this guide is to walk you through how to do that
 in two steps.
 
