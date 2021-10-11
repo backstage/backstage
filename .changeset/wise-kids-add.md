@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-added sorting by `metadata.title` if present
+added sorting in entity `Name` column by `metadata.title` if present
