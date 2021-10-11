@@ -18,12 +18,12 @@ import goodMorning from './locales/goodMorning.locales.json';
 import goodAfternoon from './locales/goodAfternoon.locales.json';
 import goodEvening from './locales/goodEvening.locales.json';
 
-// Select a large random integer at startup, to prevent the greetings to change every time the user
-// navigates.
+// Select a large random integer at startup, to prevent the greetings to change
+// every time the user navigates.
 const greetingRandomSeed = Math.floor(Math.random() * 1000000);
 
-export function getTimeBasedGreeting() {
-  const random = array => array[greetingRandomSeed % array.length];
+export function getTimeBasedGreeting(): { language: string; greeting: string } {
+  const random = (array: string[]) => array[greetingRandomSeed % array.length];
 
   const currentHour = new Date(Date.now()).getHours();
   if (currentHour >= 23) {
@@ -32,7 +32,7 @@ export function getTimeBasedGreeting() {
       greeting: 'Get some rest',
     };
   }
-  const timeOfDay = hour => {
+  const timeOfDay = (hour: number): { [language: string]: string } => {
     if (hour < 12) return goodMorning;
     if (hour < 17) return goodAfternoon;
     return goodEvening;

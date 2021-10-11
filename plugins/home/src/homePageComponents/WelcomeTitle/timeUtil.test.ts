@@ -16,16 +16,20 @@
 
 import { getTimeBasedGreeting } from './timeUtil';
 
-it('has greeting and language', () => {
-  const greeting = getTimeBasedGreeting();
-  expect(greeting).toHaveProperty('greeting');
-  expect(greeting).toHaveProperty('language');
-});
+describe('getTimeBasedGreeting', () => {
+  afterEach(() => jest.resetAllMocks());
 
-it('greets late at night', () => {
-  jest
-    .spyOn(global.Date, 'now')
-    .mockImplementationOnce(() => new Date('1970-01-01T23:00:00').valueOf());
-  const greeting = getTimeBasedGreeting();
-  expect(greeting.greeting).toBe('Get some rest');
+  it('has greeting and language', () => {
+    const greeting = getTimeBasedGreeting();
+    expect(greeting).toHaveProperty('greeting');
+    expect(greeting).toHaveProperty('language');
+  });
+
+  it('greets late at night', () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementationOnce(() => new Date('1970-01-01T23:00:00').valueOf());
+    const greeting = getTimeBasedGreeting();
+    expect(greeting.greeting).toBe('Get some rest');
+  });
 });
