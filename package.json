@@ -61,7 +61,6 @@
   "devDependencies": {
     "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
-    "@octokit/openapi-types": "^2.2.0",
     "@spotify/prettier-config": "^11.0.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
