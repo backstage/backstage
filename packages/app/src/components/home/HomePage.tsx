@@ -15,24 +15,11 @@
  */
 
 import {
-  Content,
-  Header,
-  Page,
-} from '@backstage/core-components';
-import {
-  ComponentAccordion,
-  ComponentTab,
-  ComponentTabs,
   HomePageRandomJoke,
+  ComponentAccordion,
+  ComponentTabs,
+  ComponentTab,
   WelcomeTitle,
-} from '@backstage/plugin-home';
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import {
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
   HeaderWorldClock,
   ClockConfig,
 } from '@backstage/plugin-home';
