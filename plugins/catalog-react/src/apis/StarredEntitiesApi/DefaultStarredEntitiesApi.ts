@@ -32,13 +32,13 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   private starredEntities: Set<string>;
 
   constructor(opts: { storageApi: StorageApi }) {
-    this.settingsStore = opts.storageApi.forBucket('settings');
+    this.settingsStore = opts.storageApi.forBucket('starredEntities');
 
     this.starredEntities = new Set(
-      this.settingsStore.get<string[]>('starredEntities') ?? [],
+      this.settingsStore.get<string[]>('entityRefs') ?? [],
     );
 
-    this.settingsStore.observe$<string[]>('starredEntities').subscribe({
+    this.settingsStore.observe$<string[]>('entityRefs').subscribe({
       next: next => {
         this.starredEntities = new Set(next.newValue ?? []);
         this.notifyChanges();
@@ -56,7 +56,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     }
 
     await this.settingsStore.set(
-      'starredEntities',
+      'entityRefs',
       Array.from(this.starredEntities),
     );
   }

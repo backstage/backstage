@@ -71,8 +71,8 @@ describe('useStarredEntities', () => {
 
   it('should return a set with the current items when there are items in storage', async () => {
     const expectedIds = ['i', 'am', 'some', 'test', 'ids'];
-    const store = mockStorage?.forBucket('settings');
-    await store?.set('starredEntities', expectedIds);
+    const store = mockStorage?.forBucket('starredEntities');
+    await store?.set('entityRefs', expectedIds);
 
     const { result, waitForNextUpdate } = renderHook(
       () => useStarredEntities(),

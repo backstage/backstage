@@ -52,8 +52,8 @@ describe('DefaultStarredEntitiesApi', () => {
     });
 
     it('should unstar starred entity', async () => {
-      const bucket = mockStorage.forBucket('settings');
-      await bucket.set('starredEntities', ['component:default/mock']);
+      const bucket = mockStorage.forBucket('starredEntities');
+      await bucket.set('entityRefs', ['component:default/mock']);
 
       expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
 
@@ -78,8 +78,8 @@ describe('DefaultStarredEntitiesApi', () => {
           },
         });
 
-        const bucket = mockStorage.forBucket('settings');
-        bucket.set('starredEntities', ['component:default/mock']).then();
+        const bucket = mockStorage.forBucket('starredEntities');
+        bucket.set('entityRefs', ['component:default/mock']).then();
       });
     });
 
