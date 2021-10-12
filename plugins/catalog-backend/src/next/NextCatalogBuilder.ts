@@ -65,7 +65,7 @@ import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityP
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
-import { DefaultLocationService } from './DefaultLocationService';
+import { DefaultLocationService } from '../service/DefaultLocationService';
 import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
@@ -74,12 +74,12 @@ import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from './refresh';
-import { createNextRouter } from './NextRouter';
-import { DefaultRefreshService } from './DefaultRefreshService';
+import { createNextRouter } from '../service/NextRouter';
+import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { LocationService } from './types';
+import { LocationService } from '../service/types';
 
 export type CatalogEnvironment = {
   logger: Logger;

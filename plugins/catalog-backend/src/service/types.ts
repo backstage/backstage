@@ -14,11 +14,36 @@
  * limitations under the License.
  */
 
-import { Location, LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationSpec, Location } from '@backstage/catalog-model';
 
-export interface LocationStore {
-  createLocation(spec: LocationSpec): Promise<Location>;
+export interface LocationService {
+  createLocation(
+    spec: LocationSpec,
+    dryRun: boolean,
+  ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
+}
+
+/**
+ * Options for requesting a refresh of entities in the catalog.
+ *
+ * @public
+ */
+export type RefreshOptions = {
+  /** The reference to a single entity that should be refreshed */
+  entityRef: string;
+};
+
+/**
+ * A service that manages refreshes of entities in the catalog.
+ *
+ * @public
+ */
+export interface RefreshService {
+  /**
+   * Request a refresh of entities in the catalog.
+   */
+  refresh(options: RefreshOptions): Promise<void>;
 }

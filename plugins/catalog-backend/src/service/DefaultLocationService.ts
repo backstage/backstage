@@ -24,8 +24,9 @@ import {
   CatalogProcessingOrchestrator,
   DeferredEntity,
 } from '../processing/types';
-import { LocationService, LocationStore } from './types';
-import { locationSpecToMetadataName } from './util';
+import { LocationService } from './types';
+import { LocationStore } from '../next/types';
+import { locationSpecToMetadataName } from '../next/util';
 
 export class DefaultLocationService implements LocationService {
   constructor(

@@ -22,7 +22,7 @@ import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
 import { LocationService, RefreshService } from './types';
-import { basicEntityFilter } from '../service/request';
+import { basicEntityFilter } from './request';
 import { createNextRouter } from './NextRouter';
 
 describe('createNextRouter readonly disabled', () => {

@@ -16,7 +16,7 @@
 
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
-import { LocationStore } from './types';
+import { LocationStore } from '../next/types';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
