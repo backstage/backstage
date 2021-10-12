@@ -133,9 +133,7 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
 };
 
-// Warning: (ae-missing-release-tag) "DefaultStarredEntitiesApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   constructor(opts: { storageApi: StorageApi });
   // (undocumented)

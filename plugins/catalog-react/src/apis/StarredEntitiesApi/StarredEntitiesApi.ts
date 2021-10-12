@@ -23,7 +23,7 @@ export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi> = createApiRef({
 
 export type StarredEntitiesApiObservable = {
   /**
-   * A set of starred entities
+   * A set of entity references that are starred
    */
   starredEntities: Set<string>;
 

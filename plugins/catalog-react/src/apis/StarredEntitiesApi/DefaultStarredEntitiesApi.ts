@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Observable, StorageApi } from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
 import {
@@ -22,11 +22,11 @@ import {
   StarredEntitiesApiObservable,
 } from './StarredEntitiesApi';
 
-const buildEntityKey = (component: Entity) =>
-  `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
-    component.metadata.name
-  }`;
-
+/**
+ * Default implementation of the StarredEntitiesApi that is backed by the StorageApi.
+ *
+ * @public
+ */
 export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   private readonly settingsStore: StorageApi;
   private starredEntities: Set<string>;
@@ -47,7 +47,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   }
 
   async toggleStarred(entity: Entity): Promise<void> {
-    const entityKey = buildEntityKey(entity);
+    const entityKey = stringifyEntityRef(entity);
 
     if (this.starredEntities.has(entityKey)) {
       this.starredEntities.delete(entityKey);
@@ -66,7 +66,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   }
 
   isStarred(entity: Entity): boolean {
-    const entityKey = buildEntityKey(entity);
+    const entityKey = stringifyEntityRef(entity);
     return this.starredEntities.has(entityKey);
   }
 
