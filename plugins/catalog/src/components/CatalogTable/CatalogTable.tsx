@@ -163,6 +163,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
       title={`${titlePreamble} (${entities.length})`}
       data={rows}
       actions={actions || defaultActions}
+      localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
     />
   );
 };
