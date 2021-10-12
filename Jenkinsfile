@@ -9,6 +9,13 @@ yarnGitflowPipeline {
     //credentials = "docker-registry"
 
     /*************************************************************************
+    * Docker Build Configuration
+    *************************************************************************/
+
+    //arguemnts to pass to docker build command
+    docker_build_args = "-f packages/backend/Dockerfile"
+
+    /*************************************************************************
     * Docker Build Image Tag Configuration
     *************************************************************************/
     //Note: The resulting image is always tagged with the branch name.
@@ -31,14 +38,17 @@ yarnGitflowPipeline {
     //command to run npm install
     install_script = "install"
 
+    //tests run in the jenkins pipeline
+    test_script = "test:all"
+
     //command to run npm build
     build_script = "build"
 
     //number of builds to keep in jenkins
     buildsToKeep = "30"
 
-    //tests run in the jenkins pipeline
-    test_script = "test-CI"
+    // skip accessibility tests
+    skipAccessibilityTests = true
 
     /*************************************************************************
     * Not yet implemented Configuration variables (These items can be requested and implementation effort can then begin)
@@ -48,7 +58,7 @@ yarnGitflowPipeline {
     node_image = "node:lts"
 
     //whether or not to include node modules in the stash from build stage to the deploy stage
-    //stash_node_modules = true
+    stash_node_modules = true
 
     //directory of artifacts which should be archived and attached to this build
     build_artifacts = "dist/**"
@@ -57,10 +67,10 @@ yarnGitflowPipeline {
     version = "0.0.1"
 
     //Testing and skipping section
-    skipTests = true
-    //skipPrismaCloud = false
-    //safePrismaCloudScan = true
-    skipSelenium = true
-    //skip508Tests = true
+    // skipTests = false
+    // skipPrismaCloud = false
+    // safePrismaCloudScan = true
+    // skipSelenium = true
+    // skip508Tests = true
 
 }
