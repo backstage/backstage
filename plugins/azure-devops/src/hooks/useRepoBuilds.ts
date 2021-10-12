@@ -26,7 +26,7 @@ export function useRepoBuilds(
   entity: Entity,
   defaultLimit?: number,
 ): {
-  items: RepoBuild[];
+  items: RepoBuild[] | undefined;
   loading: boolean;
   error: any;
 } {
@@ -41,7 +41,7 @@ export function useRepoBuilds(
   }, [api, project, repo, entity]);
 
   return {
-    items: value?.items as RepoBuild[],
+    items: value?.items,
     loading,
     error,
   };
