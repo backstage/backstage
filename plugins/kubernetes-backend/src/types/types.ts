@@ -15,7 +15,6 @@
  */
 
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import type {
   FetchResponse,
   KubernetesFetchError,
@@ -140,27 +139,4 @@ export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
     request: ObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
-}
-
-export interface KubernetesFactory {
-  createKubernetesClustersSupplier(config: Config): KubernetesClustersSupplier;
-
-  createKubernetesObjectsProvider(
-    options: KubernetesObjectsProviderOptions,
-  ): KubernetesObjectsProvider;
-
-  createKubernetesFetcher(logger: Logger): KubernetesFetcher;
-
-  createServiceLocator(
-    method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
-
-  createMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
-
-  createHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
 }
