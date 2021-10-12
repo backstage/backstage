@@ -23,10 +23,6 @@ export { createRandomRefreshInterval } from './refresh';
 export type { RefreshIntervalFunction } from './refresh';
 export * from '../stitching';
 export type {
-  EntityProvider,
-  EntityProviderConnection,
-  EntityProviderMutation,
-  CatalogProcessingEngine,
   LocationService,
   LocationStore,
   RefreshOptions,

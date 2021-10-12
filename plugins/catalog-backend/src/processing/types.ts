@@ -44,3 +44,8 @@ export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
 };
+
+export interface CatalogProcessingEngine {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+}

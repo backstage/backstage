@@ -24,19 +24,19 @@ import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
-import { createCounterMetric, createSummaryMetric } from './metrics';
+import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
+  CatalogProcessingEngine,
   CatalogProcessingOrchestrator,
   EntityProcessingResult,
 } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
 import {
-  CatalogProcessingEngine,
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-} from './types';
+} from '../providers/types';
 
 const CACHE_TTL = 5;
 

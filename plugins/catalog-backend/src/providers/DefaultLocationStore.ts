@@ -20,12 +20,10 @@ import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { DbLocationsRow } from '../database/tables';
 import { getEntityLocationRef } from '../processing/util';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-  LocationStore,
-} from '../next/types';
+import { EntityProvider, EntityProviderConnection } from './types';
+
 import { locationSpecToLocationEntity } from '../next/util';
+import { LocationStore } from '../next';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;

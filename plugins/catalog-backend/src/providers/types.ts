@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
+import { DeferredEntity } from '../processing';
 
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './next';
-export * from './processing';
-export * from './providers';
+export type EntityProviderMutation =
+  | { type: 'full'; entities: DeferredEntity[] }
+  | { type: 'delta'; added: DeferredEntity[]; removed: DeferredEntity[] };
+
+export interface EntityProviderConnection {
+  applyMutation(mutation: EntityProviderMutation): Promise<void>;
+}
+
+export interface EntityProvider {
+  getProviderName(): string;
+  connect(connection: EntityProviderConnection): Promise<void>;
+}

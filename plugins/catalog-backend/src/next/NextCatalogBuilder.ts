@@ -59,15 +59,12 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import {
-  CatalogProcessingEngine,
-  EntityProvider,
-  LocationService,
-} from '../next/types';
+import { EntityProvider } from '../providers/types';
+import { CatalogProcessingEngine } from '../processing/types';
 import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
-import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
+import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
@@ -82,6 +79,7 @@ import { DefaultRefreshService } from './DefaultRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
+import { LocationService } from './types';
 
 export type CatalogEnvironment = {
   logger: Logger;

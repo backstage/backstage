@@ -15,7 +15,6 @@
  */
 
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { DeferredEntity } from '../processing/types';
 
 export interface LocationService {
   createLocation(
@@ -32,11 +31,6 @@ export interface LocationStore {
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
-}
-
-export interface CatalogProcessingEngine {
-  start(): Promise<void>;
-  stop(): Promise<void>;
 }
 
 /**
@@ -59,17 +53,4 @@ export interface RefreshService {
    * Request a refresh of entities in the catalog.
    */
   refresh(options: RefreshOptions): Promise<void>;
-}
-
-export type EntityProviderMutation =
-  | { type: 'full'; entities: DeferredEntity[] }
-  | { type: 'delta'; added: DeferredEntity[]; removed: DeferredEntity[] };
-
-export interface EntityProviderConnection {
-  applyMutation(mutation: EntityProviderMutation): Promise<void>;
-}
-
-export interface EntityProvider {
-  getProviderName(): string;
-  connect(connection: EntityProviderConnection): Promise<void>;
 }

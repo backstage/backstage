@@ -16,6 +16,7 @@
 
 export type {
   CatalogProcessingOrchestrator,
+  CatalogProcessingEngine,
   EntityProcessingRequest,
   EntityProcessingResult,
   DeferredEntity,

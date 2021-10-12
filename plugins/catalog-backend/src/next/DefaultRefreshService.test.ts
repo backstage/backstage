@@ -26,7 +26,7 @@ import {
   DbRefreshStateRow,
 } from '../database/tables';
 import { ProcessingDatabase } from '../database/types';
-import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
+import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { EntityProcessingRequest } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';

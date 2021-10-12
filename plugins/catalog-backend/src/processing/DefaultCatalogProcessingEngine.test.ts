@@ -20,7 +20,7 @@ import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
-import { CatalogProcessingOrchestrator } from '../processing/types';
+import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/Stitcher';
 
 describe('DefaultCatalogProcessingEngine', () => {

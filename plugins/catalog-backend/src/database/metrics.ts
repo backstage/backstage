@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { createGaugeMetric } from '../next/metrics';
+import { createGaugeMetric } from '../util/metrics';
 import { DbRefreshStateRow, DbRelationsRow, DbLocationsRow } from './tables';
 
 export function initDatabaseMetrics(knex: Knex) {
