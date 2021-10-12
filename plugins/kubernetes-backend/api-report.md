@@ -154,33 +154,6 @@ export interface KubernetesEnvironment {
   logger: Logger_2;
 }
 
-// Warning: (ae-missing-release-tag) "KubernetesFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface KubernetesFactory {
-  // (undocumented)
-  createHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
-  // (undocumented)
-  createKubernetesClustersSupplier(config: Config): KubernetesClustersSupplier;
-  // (undocumented)
-  createKubernetesFetcher(logger: Logger_2): KubernetesFetcher;
-  // (undocumented)
-  createKubernetesObjectsProvider(
-    options: KubernetesObjectsProviderOptions,
-  ): KubernetesObjectsProvider;
-  // (undocumented)
-  createMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
-  // (undocumented)
-  createServiceLocator(
-    method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
-  ): KubernetesServiceLocator;
-}
-
 // Warning: (ae-missing-release-tag) "KubernetesFetcher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
