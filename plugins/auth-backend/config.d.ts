@@ -31,6 +31,24 @@ export interface Config {
       secret?: string;
     };
 
+    /** To control how to store JWK data in auth-backend */
+    keyStore?: {
+      provider?: 'postgres' | 'memory' | 'firestore';
+      firestore?: {
+        /** The Google Cloud Project ID */
+        projectId?: string;
+        /**
+         * Local file containing the Service Account credentials.
+         * You can omit this value to automatically read from
+         * GOOGLE_APPLICATION_CREDENTIALS env which is useful for local
+         * development.
+         */
+        keyFilename?: string;
+        /** The path to use for the collection. Defaults to 'sessions' */
+        path?: string;
+      };
+    };
+
     /**
      * The available auth-provider options and attributes
      */
