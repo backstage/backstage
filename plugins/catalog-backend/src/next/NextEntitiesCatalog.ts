@@ -30,7 +30,7 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
   DbPageInfo,
-} from './database/tables';
+} from '../database/tables';
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;

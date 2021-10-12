@@ -22,8 +22,8 @@ import {
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
-import { CatalogProcessorResult } from '../../ingestion';
-import { locationSpecToLocationEntity } from '../util';
+import { CatalogProcessorResult } from '../ingestion';
+import { locationSpecToLocationEntity } from '../next/util';
 import { DeferredEntity } from './types';
 import {
   getEntityLocationRef,

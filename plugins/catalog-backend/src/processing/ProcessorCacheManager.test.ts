@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogProcessor } from '../../ingestion/processors';
+import { CatalogProcessor } from '../ingestion/processors';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 class MyProcessor implements CatalogProcessor {

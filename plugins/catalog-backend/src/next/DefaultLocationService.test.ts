@@ -15,7 +15,7 @@
  */
 
 import { DefaultLocationService } from './DefaultLocationService';
-import { CatalogProcessingOrchestrator } from './processing/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
 
 describe('DefaultLocationServiceTest', () => {

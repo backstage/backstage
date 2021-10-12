@@ -15,7 +15,7 @@
  */
 
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { DeferredEntity } from './processing/types';
+import { DeferredEntity } from '../processing/types';
 
 export interface LocationService {
   createLocation(

@@ -18,10 +18,10 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { Hash } from 'crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
-import { CatalogProcessingOrchestrator } from './processing/types';
-import { Stitcher } from './stitching/Stitcher';
+import { CatalogProcessingOrchestrator } from '../processing/types';
+import { Stitcher } from '../stitching/Stitcher';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {

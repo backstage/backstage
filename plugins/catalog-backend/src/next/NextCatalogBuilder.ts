@@ -65,14 +65,14 @@ import {
   LocationService,
 } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
-import { applyDatabaseMigrations } from './database/migrations';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
-import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
-import { Stitcher } from './stitching/Stitcher';
+import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
+import { Stitcher } from '../stitching/Stitcher';
 import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,

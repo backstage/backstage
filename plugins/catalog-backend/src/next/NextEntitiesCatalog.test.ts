@@ -18,12 +18,12 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { applyDatabaseMigrations } from './database/migrations';
+import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
-} from './database/tables';
+} from '../database/tables';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 
 describe('NextEntitiesCatalog', () => {

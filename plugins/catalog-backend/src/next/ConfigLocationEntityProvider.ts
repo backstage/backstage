@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import path from 'path';
-import { getEntityLocationRef } from './processing/util';
+import { getEntityLocationRef } from '../processing/util';
 import { EntityProvider, EntityProviderConnection } from './types';
 import { locationSpecToLocationEntity } from './util';
 

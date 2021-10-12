@@ -23,7 +23,7 @@ import {
 import {
   CatalogProcessingOrchestrator,
   DeferredEntity,
-} from './processing/types';
+} from '../processing/types';
 import { LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from './util';
 

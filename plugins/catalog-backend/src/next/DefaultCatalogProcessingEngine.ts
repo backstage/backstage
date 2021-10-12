@@ -23,13 +23,13 @@ import { serializeError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
-import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from './metrics';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingResult,
-} from './processing/types';
-import { Stitcher } from './stitching/Stitcher';
+} from '../processing/types';
+import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
 import {
   CatalogProcessingEngine,

@@ -19,16 +19,16 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
-import { applyDatabaseMigrations } from './database/migrations';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
-} from './database/tables';
-import { ProcessingDatabase } from './database/types';
+} from '../database/tables';
+import { ProcessingDatabase } from '../database/types';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
-import { EntityProcessingRequest } from './processing/types';
-import { Stitcher } from './stitching/Stitcher';
+import { EntityProcessingRequest } from '../processing/types';
+import { Stitcher } from '../stitching/Stitcher';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 import { DefaultRefreshService } from './DefaultRefreshService';

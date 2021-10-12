@@ -31,8 +31,8 @@ import { Logger } from 'winston';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-} from '../../ingestion/processors';
-import * as results from '../../ingestion/processors/results';
+} from '../ingestion/processors';
+import * as results from '../ingestion/processors/results';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -48,7 +48,7 @@ import {
   validateEntityEnvelope,
   isObject,
 } from './util';
-import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 type Context = {

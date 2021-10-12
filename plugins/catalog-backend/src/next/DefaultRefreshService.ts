@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { RefreshOptions, RefreshService } from './types';
 
 export class DefaultRefreshService implements RefreshService {

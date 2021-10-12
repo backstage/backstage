@@ -30,10 +30,10 @@ import {
   CatalogProcessorEmit,
   CatalogProcessorParser,
   results,
-} from '../../ingestion';
-import { CatalogRulesEnforcer } from '../../ingestion/CatalogRules';
+} from '../ingestion';
+import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
-import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
+import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { ConfigReader } from '@backstage/config';
 
 class FooBarProcessor implements CatalogProcessor {

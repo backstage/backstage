@@ -28,7 +28,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-import { createRandomRefreshInterval } from '../refresh';
+import { createRandomRefreshInterval } from '../next/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 

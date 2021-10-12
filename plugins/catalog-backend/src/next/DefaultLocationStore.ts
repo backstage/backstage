@@ -18,8 +18,8 @@ import { Location, LocationSpec } from '@backstage/catalog-model';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { DbLocationsRow } from './database/tables';
-import { getEntityLocationRef } from './processing/util';
+import { DbLocationsRow } from '../database/tables';
+import { getEntityLocationRef } from '../processing/util';
 import {
   EntityProvider,
   EntityProviderConnection,

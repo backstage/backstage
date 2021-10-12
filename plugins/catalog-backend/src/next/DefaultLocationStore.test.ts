@@ -15,7 +15,7 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { v4 as uuid } from 'uuid';
-import { applyDatabaseMigrations } from './database/migrations';
+import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
 describe('DefaultLocationStore', () => {
