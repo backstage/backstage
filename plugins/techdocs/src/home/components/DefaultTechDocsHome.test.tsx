@@ -72,7 +72,7 @@ describe('TechDocs Home', () => {
   const apiRegistry = ApiRegistry.from([
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
-    [storageApiRef, MockStorageApi.create()],
+    [storageApiRef, storageApi],
     [starredEntitiesApiRef, new DefaultStarredEntitiesApi({ storageApi })],
   ]);
 
