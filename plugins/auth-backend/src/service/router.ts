@@ -29,7 +29,7 @@ import {
 import { NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
+import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';
@@ -38,7 +38,7 @@ type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 export interface RouterOptions {
   logger: Logger;
-  database: PluginDatabaseManager;
+  database?: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
   providerFactories?: ProviderFactories;
@@ -56,11 +56,9 @@ export async function createRouter({
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
+  const keyStore = await KeyStores.fromConfig(config, { logger, database });
   const keyDurationSeconds = 3600;
 
-  const keyStore = await DatabaseKeyStore.create({
-    database: await database.getClient(),
-  });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
