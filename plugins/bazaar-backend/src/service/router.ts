@@ -40,10 +40,9 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  router.get('/members', async (request, response) => {
-    const entityRef = request.headers.entity_ref;
-
-    const data = await dbHandler.getMembers(entityRef);
+  router.get('/members/:ref', async (request, response) => {
+    const entity_ref = decodeURIComponent(request.params.ref);
+    const data = await dbHandler.getMembers(entity_ref);
 
     if (data?.length) {
       response.json({ status: 'ok', data: data });
@@ -53,21 +52,18 @@ export async function createRouter(
   });
 
   router.put('/member', async (request, response) => {
-    const userId = request.headers.user_id;
-    const entityRef = request.headers.entity_ref;
-
-    await dbHandler.addMember(userId, entityRef);
+    const { user_id, entity_ref } = request.body;
+    await dbHandler.addMember(user_id, entity_ref);
 
     response.json({ status: 'ok' });
   });
 
-  router.delete('/member', async (request, response) => {
-    const userId = request.headers.user_id;
-    const entityRef = request.headers.entity_ref;
+  router.delete('/member/:ref/:id', async (request, response) => {
+    const { ref, id } = request.params;
 
     const count = await db('public.members')
-      .where({ entity_ref: entityRef })
-      .andWhere('user_id', userId)
+      .where({ entity_ref: decodeURIComponent(ref) })
+      .andWhere('user_id', id)
       .del();
 
     if (count) {
@@ -77,12 +73,9 @@ export async function createRouter(
     }
   });
 
-  router.delete('/members', async (request, response) => {
-    const entityRef = request.headers.entity_ref;
-
-    const count = await db('public.members')
-      .where({ entity_ref: entityRef })
-      .del();
+  router.delete('/members/:ref', async (request, response) => {
+    const ref = decodeURIComponent(request.params.ref);
+    const count = await db('public.members').where({ entity_ref: ref }).del();
 
     if (count) {
       response.json({ status: 'ok' });
@@ -91,8 +84,8 @@ export async function createRouter(
     }
   });
 
-  router.get('/metadata', async (request, response) => {
-    const entityRef = request.headers.entity_ref;
+  router.get('/metadata/:ref', async (request, response) => {
+    const entity_ref = decodeURIComponent(request.params.ref);
 
     const coalesce = db.raw(
       'coalesce(count(members.entity_ref), 0) as members_count',
@@ -105,11 +98,12 @@ export async function createRouter(
       'metadata.announcement',
       'metadata.status',
       'metadata.updated_at',
+      'metadata.community',
     ];
 
     const data = await db('public.members as members')
       .select([...columns, coalesce])
-      .where({ 'metadata.entity_ref': entityRef })
+      .where({ 'metadata.entity_ref': entity_ref })
       .groupBy(columns)
       .rightJoin(
         'public.metadata as metadata',
@@ -133,6 +127,7 @@ export async function createRouter(
       'metadata.announcement',
       'metadata.status',
       'metadata.updated_at',
+      'metadata.community',
     ];
 
     const data = await db('public.members as members')
@@ -149,11 +144,10 @@ export async function createRouter(
   });
 
   router.put('/metadata', async (request, response) => {
-    const entityRef = request.headers.entity_ref;
-    const { name, announcement, status, community } = request.body;
+    const { name, announcement, status, community, entity_ref } = request.body;
 
     const count = await db('public.metadata')
-      .where({ entity_ref: entityRef })
+      .where({ entity_ref: entity_ref })
       .update({
         announcement: announcement,
         community: community,
@@ -166,7 +160,7 @@ export async function createRouter(
       await db
         .insert({
           name: name,
-          entity_ref: entityRef,
+          entity_ref: entity_ref,
           community: community,
           announcement: announcement,
           status: status,
@@ -176,11 +170,11 @@ export async function createRouter(
     }
   });
 
-  router.delete('/metadata', async (request, response) => {
-    const entityRef = request.headers.entity_ref;
+  router.delete('/metadata/:ref', async (request, response) => {
+    const entity_ref = decodeURIComponent(request.params.ref);
 
     const count = await db('public.metadata')
-      .where({ entity_ref: entityRef })
+      .where({ entity_ref: entity_ref })
       .del();
 
     if (count) {

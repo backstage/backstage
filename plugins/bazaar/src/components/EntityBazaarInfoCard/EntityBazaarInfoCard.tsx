@@ -183,7 +183,7 @@ export const EntityBazaarInfoCard = () => {
       label: 'Community',
       icon: <ChatIcon />,
       href: bazaarProject?.value?.community,
-      disabled: bazaarProject?.value?.community === '',
+      disabled: !bazaarProject?.value?.community || !isMember,
     },
   ];
 
