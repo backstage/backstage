@@ -50,27 +50,10 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     const entityKey = buildEntityKey(entity);
 
     if (this.starredEntities.has(entityKey)) {
-      await this.unstar(entity);
+      this.starredEntities.delete(entityKey);
     } else {
-      await this.star(entity);
+      this.starredEntities.add(entityKey);
     }
-  }
-
-  async star(entity: Entity): Promise<void> {
-    const entityKey = buildEntityKey(entity);
-
-    this.starredEntities.add(entityKey);
-
-    await this.settingsStore.set(
-      'starredEntities',
-      Array.from(this.starredEntities),
-    );
-  }
-
-  async unstar(entity: Entity): Promise<void> {
-    const entityKey = buildEntityKey(entity);
-
-    this.starredEntities.delete(entityKey);
 
     await this.settingsStore.set(
       'starredEntities',

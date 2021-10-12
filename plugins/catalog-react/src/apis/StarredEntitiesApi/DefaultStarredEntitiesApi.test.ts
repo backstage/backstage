@@ -63,48 +63,6 @@ describe('DefaultStarredEntitiesApi', () => {
     });
   });
 
-  describe('star', () => {
-    it('should star unstarred entity', async () => {
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
-
-      await starredEntitiesApi.star(mockEntity);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
-    });
-
-    it('should keep starred entity', async () => {
-      const bucket = mockStorage.forBucket('settings');
-      await bucket.set('starredEntities', ['entity:Component:default:mock']);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
-
-      await starredEntitiesApi.star(mockEntity);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
-    });
-  });
-
-  describe('unstar', () => {
-    it('should unstar starred entity', async () => {
-      const bucket = mockStorage.forBucket('settings');
-      await bucket.set('starredEntities', ['entity:Component:default:mock']);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
-
-      await starredEntitiesApi.unstar(mockEntity);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
-    });
-
-    it('should keep unstarred entity', async () => {
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
-
-      await starredEntitiesApi.unstar(mockEntity);
-
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
-    });
-  });
-
   describe('starredEntities$', () => {
     const handler = jest.fn();
 

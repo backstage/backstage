@@ -141,13 +141,9 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   isStarred(entity: Entity): boolean;
   // (undocumented)
-  star(entity: Entity): Promise<void>;
-  // (undocumented)
   starredEntitie$(): Observable<StarredEntitiesApiObservable>;
   // (undocumented)
   toggleStarred(entity: Entity): Promise<void>;
-  // (undocumented)
-  unstar(entity: Entity): Promise<void>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "EntityLoadingStatus" needs to be exported by the entry point index.d.ts
