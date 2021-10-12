@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { CatalogProcessorResult } from '../ingestion';
-import { locationSpecToLocationEntity } from '../next/util';
+import { locationSpecToLocationEntity } from '../util/conversion';
 import { DeferredEntity } from './types';
 import {
   getEntityLocationRef,

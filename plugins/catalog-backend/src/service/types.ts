@@ -47,3 +47,10 @@ export interface RefreshService {
    */
   refresh(options: RefreshOptions): Promise<void>;
 }
+
+export interface LocationStore {
+  createLocation(spec: LocationSpec): Promise<Location>;
+  listLocations(): Promise<Location[]>;
+  getLocation(id: string): Promise<Location>;
+  deleteLocation(id: string): Promise<void>;
+}
