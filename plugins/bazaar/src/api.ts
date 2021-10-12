@@ -122,6 +122,7 @@ export class BazaarClient implements BazaarApi {
       body: JSON.stringify({
         entity_ref: stringifyEntityRef(entity),
         user_id: this.identityApi.getUserId(),
+        picture: this.identityApi.getProfile()?.picture,
       }),
     });
   }

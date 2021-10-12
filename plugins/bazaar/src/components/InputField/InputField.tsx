@@ -36,7 +36,8 @@ export const InputField = ({
   placeholder,
   required,
 }: Props) => {
-  const label = inputType.charAt(0).toUpperCase() + inputType.slice(1);
+  const label =
+    inputType.charAt(0).toLocaleUpperCase('en-US') + inputType.slice(1);
 
   return (
     <Controller

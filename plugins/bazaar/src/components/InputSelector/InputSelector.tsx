@@ -30,7 +30,7 @@ type Props = {
 };
 
 export const InputSelector = ({ name, options, control, error }: Props) => {
-  const label = name.charAt(0).toUpperCase() + name.slice(1);
+  const label = name.charAt(0).toLocaleUpperCase('en-US') + name.slice(1);
 
   return (
     <Controller

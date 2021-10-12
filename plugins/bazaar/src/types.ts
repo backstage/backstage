@@ -20,6 +20,7 @@ export type Member = {
   entityRef: EntityRef;
   userId: string;
   joinDate?: string;
+  picture?: string;
 };
 
 export type Status = 'ongoing' | 'proposed';

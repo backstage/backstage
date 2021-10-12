@@ -51,6 +51,7 @@ exports.up = async function up(knex) {
       .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this member joined');
+    table.text('picture').comment('Link to profile picture');
   });
 };
 

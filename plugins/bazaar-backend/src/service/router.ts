@@ -52,8 +52,8 @@ export async function createRouter(
   });
 
   router.put('/member', async (request, response) => {
-    const { user_id, entity_ref } = request.body;
-    await dbHandler.addMember(user_id, entity_ref);
+    const { user_id, entity_ref, picture } = request.body;
+    await dbHandler.addMember(user_id, entity_ref, picture);
 
     response.json({ status: 'ok' });
   });

@@ -28,6 +28,7 @@ import {
   MenuList,
   MenuItem,
   ListItemText,
+  Link,
 } from '@material-ui/core';
 import {
   Progress,
@@ -35,7 +36,6 @@ import {
   IconLinkVerticalProps,
   Avatar,
 } from '@backstage/core-components';
-import { Link } from 'react-router-dom';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { AboutField } from '@backstage/plugin-catalog';
 import { StatusTag } from '../StatusTag';
@@ -95,6 +95,7 @@ export const EntityBazaarInfoCard = () => {
         userId: obj.user_id,
         entityRef: obj.entity_ref,
         joinDate: obj.join_date,
+        picture: obj.picture,
       };
 
       return member;
@@ -299,10 +300,12 @@ export const EntityBazaarInfoCard = () => {
                           float: 'left',
                           marginRight: '0.3rem',
                         }}
+                        picture={member.picture}
                       />
                       <Link
                         className={classes.memberLink}
-                        to={`http://github.com/${member.userId}`}
+                        href={`http://github.com/${member.userId}`}
+                        target="_blank"
                       >
                         {member?.userId}
                       </Link>

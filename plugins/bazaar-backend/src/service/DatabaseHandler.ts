@@ -50,11 +50,12 @@ export class DatabaseHandler {
       .where({ entity_ref: entityRef });
   }
 
-  async addMember(userId: any, entityRef: any) {
+  async addMember(userId: any, entityRef: any, picture?: string) {
     await this.database
       .insert({
         entity_ref: entityRef,
         user_id: userId,
+        picture: picture,
       })
       .into('public.members');
   }

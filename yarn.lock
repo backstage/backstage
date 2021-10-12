@@ -2209,16 +2209,6 @@
     "@backstage/errors" "^0.1.2"
     cross-fetch "^3.0.6"
 
-"@backstage/catalog-client@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-0.4.0.tgz#eb0aff31bdce8f2c12de8fbce558557b18452a00"
-  integrity sha512-Y2lBhsZTSKU2gbMAB0/RZ/jmFGUPdhScsDINsRIVwfLKjtTJjSgJ8iaLdsYxQS4oZq2HAT5l7fsflnVEDS6IRQ==
-  dependencies:
-    "@backstage/catalog-model" "^0.9.3"
-    "@backstage/config" "^0.1.10"
-    "@backstage/errors" "^0.1.2"
-    cross-fetch "^3.0.6"
-
 "@backstage/core-api@^0.2.23":
   version "0.2.23"
   resolved "https://registry.npmjs.org/@backstage/core-api/-/core-api-0.2.23.tgz#c0ec13407ff7c78d376eb18e9d8e1490d54d995b"
@@ -2440,29 +2430,6 @@
     react "^16.13.1"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-
-"@backstage/plugin-catalog@^0.6.6":
-  version "0.6.17"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-0.6.17.tgz#4a5b434b52cdd5170d459f40ec69ba5dd68de987"
-  integrity sha512-Ec1Nn7IdISrTjeG2sgZzBUc2G9iyUzF4NOBzQwsObIDukDv+pSYgiVDmH+2wV8Jv4Sl6sC8R9a3qfc9OkPPT7w==
-  dependencies:
-    "@backstage/catalog-client" "^0.4.0"
-    "@backstage/catalog-model" "^0.9.3"
-    "@backstage/core-components" "^0.6.0"
-    "@backstage/core-plugin-api" "^0.1.9"
-    "@backstage/integration-react" "^0.1.11"
-    "@backstage/plugin-catalog-react" "^0.5.1"
-    "@backstage/theme" "^0.2.10"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@types/react" "*"
-    lodash "^4.17.21"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
 "@bcoe/v8-coverage@^0.2.3":
@@ -22979,9 +22946,9 @@ react-hook-form@^7.12.2:
   integrity sha512-kcLDmSmlyLUFx2UU5bG/o4+3NeK753fhKodJa8gkplXohGkpAq0/p+TR24OWjZmkEc3ES7ppC5v5d6KUk+fJTA==
 
 react-hook-form@^7.13.0:
-  version "7.17.1"
-  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.17.1.tgz#dc257a5e34b3c353460ecdbbba5236e066cf80b1"
-  integrity sha512-9nQ+qKFHFpnWzQHdDh6F4Egxa8iJkue1KU921F8qqeyUVbPPjgQZDXaQyNHABEYjRh0ndjTI24GDA+lwm2lQdg==
+  version "7.17.2"
+  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.17.2.tgz#235f15bb65c13e7a1198d33f2db24bcc9e27b303"
+  integrity sha512-oBaHwlYnbpzSFdNrs43QpcM+K2A0kUeNjV86ECYkCimlR1Ctl+tz4oQQd9plfGYkO7PJGLVMOVpUtL5EHjAcYQ==
 
 react-hot-loader@^4.12.21:
   version "4.13.0"
