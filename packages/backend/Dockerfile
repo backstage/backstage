@@ -10,6 +10,9 @@
 
 FROM container-registry.dev8.bip.va.gov/ironbank/opensource/nodejs/nodejs14:14.17.6
 
+# debugging packages
+RUN yum -y update && yum -y install procps
+
 # Change into app working directory.
 WORKDIR /app
 
