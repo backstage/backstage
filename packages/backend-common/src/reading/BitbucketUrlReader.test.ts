@@ -104,20 +104,13 @@ describe('BitbucketUrlReader', () => {
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'bitbucket-repo-with-commit-hash.tar.gz',
+        __dirname,
+        '__fixtures__/bitbucket-repo-with-commit-hash.tar.gz',
       ),
     );
 
     const privateBitbucketRepoBuffer = fs.readFileSync(
-      path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'bitbucket-server-repo.tar.gz',
-      ),
+      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
     );
 
     beforeEach(() => {
@@ -298,10 +291,8 @@ describe('BitbucketUrlReader', () => {
   describe('search hosted', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'bitbucket-repo-with-commit-hash.tar.gz',
+        __dirname,
+        '__fixtures__/bitbucket-repo-with-commit-hash.tar.gz',
       ),
     );
 
@@ -386,12 +377,7 @@ describe('BitbucketUrlReader', () => {
 
   describe('search private', () => {
     const privateBitbucketRepoBuffer = fs.readFileSync(
-      path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'bitbucket-server-repo.tar.gz',
-      ),
+      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
     );
 
     beforeEach(() => {

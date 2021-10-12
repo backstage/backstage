@@ -23,13 +23,7 @@ import {
 import path from 'path';
 
 describe('FileReaderProcessor', () => {
-  const fixturesRoot = path.join(
-    'src',
-    'ingestion',
-    'processors',
-    '__fixtures__',
-    'fileReaderProcessor',
-  );
+  const fixturesRoot = path.join(__dirname, '__fixtures__/fileReaderProcessor');
 
   it('should load from file', async () => {
     const processor = new FileReaderProcessor();
