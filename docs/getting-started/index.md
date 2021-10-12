@@ -21,7 +21,8 @@ guide to do a repository-based installation.
 
 ### Prerequisites
 
-- Access to a Linux-based operating system, such as Linux, MacOS or [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- Access to a Linux-based operating system, such as Linux, MacOS or
+  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
 - An account with elevated rights
 - `curl` or `wget` installed
 - Node.js Active LTS Release installed (currently v14) using one of these
