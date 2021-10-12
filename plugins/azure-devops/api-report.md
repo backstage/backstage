@@ -22,7 +22,11 @@ export const azureDevOpsPlugin: BackstagePlugin<
 // Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityAzurePipelinesContent: () => JSX.Element;
+export const EntityAzurePipelinesContent: ({
+  defaultLimit,
+}: {
+  defaultLimit?: number | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isAzureDevOpsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
