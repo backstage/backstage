@@ -47,7 +47,7 @@ import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
 
 export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
-  scopes: string[];
+  scopes: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   tokenIssuer: TokenIssuer;
@@ -253,7 +253,7 @@ export const createAtlassianProvider = (
       const provider = new AtlassianAuthProvider({
         clientId,
         clientSecret,
-        scopes: [scopes],
+        scopes,
         callbackUrl,
         authHandler,
         signInResolver,
