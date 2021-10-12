@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -25,14 +26,16 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
+import { createHash } from 'crypto';
+import { Router } from 'express';
 import lodash from 'lodash';
-import { EntitiesCatalog } from '../../catalog';
+import { EntitiesCatalog } from '../catalog';
 import {
-  DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
   LocationsCatalog,
-} from '../catalog';
-import { DatabaseManager } from '../database';
+  CommonDatabase,
+} from '../legacy';
+
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -44,27 +47,46 @@ import {
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   GitLabDiscoveryProcessor,
-  LocationEntityProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
-  StaticLocationProcessor,
   UrlReaderProcessor,
-} from '../../ingestion';
-import {
-  HigherOrderOperation,
-  HigherOrderOperations,
-  LocationReaders,
 } from '../ingestion';
-import { DefaultCatalogRulesEnforcer } from '../../ingestion/CatalogRules';
-import { RepoLocationAnalyzer } from '../../ingestion/LocationAnalyzer';
+import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
-} from '../../ingestion/processors/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
-import { LocationAnalyzer } from '../../ingestion/types';
-import { CatalogEnvironment, NextCatalogBuilder } from '../../service';
+} from '../ingestion/processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
+import { LocationAnalyzer } from '../ingestion/types';
+import { EntityProvider } from '../providers/types';
+import { CatalogProcessingEngine } from '../processing/types';
+import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
+import { DefaultLocationService } from './DefaultLocationService';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
+import { NextEntitiesCatalog } from './NextEntitiesCatalog';
+import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
+import { Stitcher } from '../stitching/Stitcher';
+import {
+  createRandomRefreshInterval,
+  RefreshIntervalFunction,
+} from '../processing/refresh';
+import { createNextRouter } from './NextRouter';
+import { DefaultRefreshService } from './DefaultRefreshService';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import { LocationService } from './types';
+
+export type CatalogEnvironment = {
+  logger: Logger;
+  database: PluginDatabaseManager;
+  config: Config;
+  reader: UrlReader;
+};
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -84,39 +106,33 @@ import { CatalogEnvironment, NextCatalogBuilder } from '../../service';
  * - Processors can be added or replaced. These implement the functionality of
  *   reading, parsing, validating, and processing the entity data before it is
  *   persisted in the catalog.
- *
- * NOTE(freben): Not actually marking the class as deprecated formally, since
- * it would appear to end users that even using `create` is deprecated. We will
- * instead hot-swap the entire exported class when we are ready.
  */
-export class CatalogBuilder {
+export class NextCatalogBuilder {
   private readonly env: CatalogEnvironment;
   private entityPolicies: EntityPolicy[];
   private entityPoliciesReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
   private fieldFormatValidators: Partial<Validators>;
+  private entityProviders: EntityProvider[];
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
+  private refreshInterval: RefreshIntervalFunction =
+    createRandomRefreshInterval({
+      minSeconds: 100,
+      maxSeconds: 150,
+    });
 
-  static async create(env: CatalogEnvironment): Promise<NextCatalogBuilder> {
-    return new NextCatalogBuilder(env);
-  }
-
-  /** @deprecated Please use CatalogBuilder.create() instead */
   constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];
     this.entityPoliciesReplace = false;
     this.placeholderResolvers = {};
     this.fieldFormatValidators = {};
+    this.entityProviders = [];
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
-
-    env.logger.warn(
-      "Creating the catalog with 'new CatalogBuilder(env)' is deprecated! Use CatalogBuilder.create(env) instead",
-    );
   }
 
   /**
@@ -126,12 +142,37 @@ export class CatalogBuilder {
    *
    * If what you want to do is to replace the rules for what format is allowed
    * in various core entity fields (such as metadata.name), you may want to use
-   * {@link CatalogBuilder#setFieldFormatValidators} instead.
+   * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
    *
    * @param policies One or more policies
    */
-  addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder {
+  addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies.push(...policies);
+    return this;
+  }
+
+  /**
+   * Refresh interval determines how often entities should be refreshed.
+   * Seconds provided will be multiplied by 1.5
+   * The default refresh duration is 100-150 seconds.
+   * setting this too low will potentially deplete request quotas to upstream services.
+   */
+  setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder {
+    this.refreshInterval = createRandomRefreshInterval({
+      minSeconds: seconds,
+      maxSeconds: seconds * 1.5,
+    });
+    return this;
+  }
+
+  /**
+   * Overwrites the default refresh interval function used to spread
+   * entity updates in the catalog.
+   */
+  setRefreshInterval(
+    refreshInterval: RefreshIntervalFunction,
+  ): NextCatalogBuilder {
+    this.refreshInterval = refreshInterval;
     return this;
   }
 
@@ -142,13 +183,13 @@ export class CatalogBuilder {
    *
    * If what you want to do is to replace the rules for what format is allowed
    * in various core entity fields (such as metadata.name), you may want to use
-   * {@link CatalogBuilder#setFieldFormatValidators} instead.
+   * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
    *
    * This function replaces the default set of policies; use with care.
    *
    * @param policies One or more policies
    */
-  replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder {
+  replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies = [...policies];
     this.entityPoliciesReplace = true;
     return this;
@@ -164,7 +205,7 @@ export class CatalogBuilder {
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
-  ): CatalogBuilder {
+  ): NextCatalogBuilder {
     this.placeholderResolvers[key] = resolver;
     return this;
   }
@@ -175,12 +216,28 @@ export class CatalogBuilder {
    * not sufficient.
    *
    * This function has no effect if used together with
-   * {@link CatalogBuilder#replaceEntityPolicies}.
+   * {@link NextCatalogBuilder#replaceEntityPolicies}.
    *
    * @param validators The (subset of) validators to set
    */
-  setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder {
+  setFieldFormatValidators(
+    validators: Partial<Validators>,
+  ): NextCatalogBuilder {
     lodash.merge(this.fieldFormatValidators, validators);
+    return this;
+  }
+
+  /**
+   * Adds or replaces entity providers. These are responsible for bootstrapping
+   * the list of entities out of original data sources. For example, there is
+   * one entity source for the config locations, and one for the database
+   * stored locations. If you ingest entities out of a third party system, you
+   * may want to implement that in terms of an entity provider as well.
+   *
+   * @param providers One or more entity providers
+   */
+  addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder {
+    this.entityProviders.push(...providers);
     return this;
   }
 
@@ -190,7 +247,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  addProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
+  addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors.push(...processors);
     return this;
   }
@@ -203,7 +260,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder {
+  replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors = [...processors];
     this.processorsReplace = true;
     return this;
@@ -218,7 +275,7 @@ export class CatalogBuilder {
    *
    * @param parser The custom parser
    */
-  setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder {
+  setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder {
     this.parser = parser;
     return this;
   }
@@ -228,46 +285,83 @@ export class CatalogBuilder {
    */
   async build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
+    /** @deprecated This will be removed */
     locationsCatalog: LocationsCatalog;
-    higherOrderOperation: HigherOrderOperation;
     locationAnalyzer: LocationAnalyzer;
+    processingEngine: CatalogProcessingEngine;
+    locationService: LocationService;
+    router: Router;
   }> {
     const { config, database, logger } = this.env;
-    const integrations = ScmIntegrations.fromConfig(config);
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
-    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const parser = this.parser || defaultEntityDataParser;
 
-    const locationReader = new LocationReaders({
-      ...this.env,
-      parser,
+    const dbClient = await database.getClient();
+    await applyDatabaseMigrations(dbClient);
+
+    const db = new CommonDatabase(dbClient, logger);
+
+    const processingDatabase = new DefaultProcessingDatabase({
+      database: dbClient,
+      logger,
+      refreshInterval: this.refreshInterval,
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+    const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
+      integrations,
       rulesEnforcer,
+      logger,
+      parser,
       policy,
     });
+    const entitiesCatalog = new NextEntitiesCatalog(dbClient);
+    const stitcher = new Stitcher(dbClient, logger);
 
-    const db = await DatabaseManager.createDatabase(
-      await database.getClient(),
-      { logger },
+    const locationStore = new DefaultLocationStore(dbClient);
+    const configLocationProvider = new ConfigLocationEntityProvider(config);
+    const entityProviders = lodash.uniqBy(
+      [...this.entityProviders, locationStore, configLocationProvider],
+      provider => provider.getProviderName(),
     );
 
-    const entitiesCatalog = new DatabaseEntitiesCatalog(db, this.env.logger);
-    const locationsCatalog = new DatabaseLocationsCatalog(db);
-    const higherOrderOperation = new HigherOrderOperations(
-      entitiesCatalog,
-      locationsCatalog,
-      locationReader,
+    const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
+      entityProviders,
+      processingDatabase,
+      orchestrator,
+      stitcher,
+      () => createHash('sha1'),
     );
+
+    const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer = new RepoLocationAnalyzer(logger, integrations);
+    const locationService = new DefaultLocationService(
+      locationStore,
+      orchestrator,
+    );
+    const refreshService = new DefaultRefreshService({
+      database: processingDatabase,
+    });
+    const router = await createNextRouter({
+      entitiesCatalog,
+      locationAnalyzer,
+      locationService,
+      refreshService,
+      logger,
+      config,
+    });
 
     return {
       entitiesCatalog,
       locationsCatalog,
-      higherOrderOperation,
       locationAnalyzer,
+      processingEngine,
+      locationService,
+      router,
     };
   }
 
@@ -302,7 +396,6 @@ export class CatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({
         resolvers: placeholderResolvers,
         reader,
@@ -321,7 +414,6 @@ export class CatalogBuilder {
         GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor({ integrations }),
       );
     }

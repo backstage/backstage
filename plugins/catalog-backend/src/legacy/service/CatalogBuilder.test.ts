@@ -23,7 +23,7 @@ import { DatabaseManager } from '../database';
 import { CatalogProcessorParser } from '../../ingestion';
 import * as result from '../../ingestion/processors/results';
 import { CatalogBuilder } from './CatalogBuilder';
-import { CatalogEnvironment } from '../../next';
+import { CatalogEnvironment } from '../../service';
 
 const dummyEntity = {
   apiVersion: 'backstage.io/v1alpha1',

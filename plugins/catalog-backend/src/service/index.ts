@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
-
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './processing';
-export * from './providers';
-export * from './service';
+export type {
+  LocationService,
+  RefreshService,
+  RefreshOptions,
+  LocationStore,
+} from './types';
+export { createNextRouter } from './NextRouter';
+export type { NextRouterOptions } from './NextRouter';
+export type { CatalogEnvironment } from './NextCatalogBuilder';
+export { NextCatalogBuilder } from './NextCatalogBuilder';

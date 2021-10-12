@@ -34,7 +34,7 @@ import {
   RefreshService,
   LocationService,
   RefreshOptions,
-} from '../../next/types';
+} from '../../service/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
