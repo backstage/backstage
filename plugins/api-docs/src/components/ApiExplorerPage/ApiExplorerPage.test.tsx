@@ -53,14 +53,6 @@ describe('ApiCatalogPage', () => {
             },
             spec: { type: 'openapi' },
           },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity2',
-            },
-            spec: { type: 'openapi' },
-          },
         ] as Entity[],
       }),
     getLocationByEntity: () =>
@@ -120,7 +112,7 @@ describe('ApiCatalogPage', () => {
   });
 
   it('should render the default column of the grid', async () => {
-    const { getAllByRole } = await renderWrapped(<ApiExplorerPage />);
+    const { getAllByRole } = renderWrapped(<ApiExplorerPage />);
 
     const columnHeader = getAllByRole('button').filter(
       c => c.tagName === 'SPAN',
@@ -145,7 +137,7 @@ describe('ApiCatalogPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    const { getAllByRole } = await renderWrapped(
+    const { getAllByRole } = renderWrapped(
       <ApiExplorerPage columns={columns} />,
     );
 
@@ -161,7 +153,7 @@ describe('ApiCatalogPage', () => {
     const { findByTitle, findByText } = await renderWrapped(
       <ApiExplorerPage />,
     );
-    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
+    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/Edit/)).toBeInTheDocument();
@@ -191,7 +183,7 @@ describe('ApiCatalogPage', () => {
     const { findByTitle, findByText } = await renderWrapped(
       <ApiExplorerPage actions={actions} />,
     );
-    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
+    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
     expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
