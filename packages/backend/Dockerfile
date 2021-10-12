@@ -45,4 +45,4 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-ENTRYPOINT ["entrypoint.sh"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml"]
