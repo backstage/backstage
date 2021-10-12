@@ -22,3 +22,6 @@ export type {
   DeferredEntity,
 } from './types';
 export { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
+
+export { createRandomRefreshInterval } from './refresh';
+export type { RefreshIntervalFunction } from './refresh';

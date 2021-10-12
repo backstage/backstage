@@ -33,7 +33,7 @@ import {
   UpdateEntityCacheOptions,
 } from './types';
 import { DeferredEntity } from '../processing/types';
-import { RefreshIntervalFunction } from '../next/refresh';
+import { RefreshIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {

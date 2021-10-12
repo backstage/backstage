@@ -16,6 +16,4 @@
 
 export type { CatalogEnvironment } from './NextCatalogBuilder';
 export { NextCatalogBuilder } from './NextCatalogBuilder';
-export { createRandomRefreshInterval } from './refresh';
-export type { RefreshIntervalFunction } from './refresh';
 export type { LocationStore } from './types';

@@ -73,7 +73,7 @@ import { Stitcher } from '../stitching/Stitcher';
 import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
-} from './refresh';
+} from '../processing/refresh';
 import { createNextRouter } from '../service/NextRouter';
 import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
