@@ -14,12 +14,52 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
-import { EntityFilter, EntityPagination } from '../database/types';
+import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 
-//
-// Entities
-//
+/**
+ * A filter expression for entities.
+ *
+ * Any (at least one) of the outer sets must match, within which all of the
+ * individual filters must match.
+ */
+export type EntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
+
+/**
+ * A pagination rule for entities.
+ */
+export type EntityPagination = {
+  limit?: number;
+  offset?: number;
+  after?: string;
+};
+
+/**
+ * Matches rows in the entities_search table.
+ */
+export type EntitiesSearchFilter = {
+  /**
+   * The key to match on.
+   *
+   * Matches are always case insensitive.
+   */
+  key: string;
+
+  /**
+   * Match on plain equality of values.
+   *
+   * If undefined, this factor is not taken into account. Otherwise, match on
+   * values that are equal to any of the given array items. Matches are always
+   * case insensitive.
+   */
+  matchValueIn?: string[];
+
+  /**
+   * Match on existence of key.
+   */
+  matchValueExists?: boolean;
+};
 
 export type PageInfo =
   | {
@@ -41,11 +81,13 @@ export type EntitiesResponse = {
   pageInfo: PageInfo;
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type EntityUpsertRequest = {
   entity: Entity;
   relations: EntityRelationSpec[];
 };
 
+/** @deprecated This was part of the legacy catalog engine */
 export type EntityUpsertResponse = {
   entityId: string;
   entity?: Entity;
@@ -79,12 +121,14 @@ export type EntitiesCatalog = {
   /**
    * Writes a number of entities efficiently to storage.
    *
+   * @deprecated This method was part of the legacy catalog engine an will be removed.
+   *
    * @param requests - The entities and their relations
    * @param options.locationId - The location that they all belong to (default none)
    * @param options.dryRun - Whether to throw away the results (default false)
    * @param options.outputEntities - Whether to return the resulting entities (default false)
    */
-  batchAddOrUpdateEntities(
+  batchAddOrUpdateEntities?(
     requests: EntityUpsertRequest[],
     options?: {
       locationId?: string;
@@ -99,45 +143,4 @@ export type EntitiesCatalog = {
    * @param entityRef - An entity reference to the root of the tree
    */
   entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
-};
-
-//
-// Locations
-//
-
-export type LocationUpdateStatus = {
-  timestamp: string | null;
-  status: string | null;
-  message: string | null;
-};
-
-export type LocationUpdateLogEvent = {
-  id: string;
-  status: 'fail' | 'success';
-  location_id: string;
-  entity_name: string;
-  created_at?: string;
-  message?: string;
-};
-
-export type LocationResponse = {
-  data: Location;
-  currentStatus: LocationUpdateStatus;
-};
-
-export type LocationsCatalog = {
-  addLocation(location: Location): Promise<Location>;
-  removeLocation(id: string): Promise<void>;
-  locations(): Promise<LocationResponse[]>;
-  location(id: string): Promise<LocationResponse>;
-  locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
-  logUpdateSuccess(
-    locationId: string,
-    entityName?: string | string[],
-  ): Promise<void>;
-  logUpdateFailure(
-    locationId: string,
-    error?: Error,
-    entityName?: string,
-  ): Promise<void>;
 };

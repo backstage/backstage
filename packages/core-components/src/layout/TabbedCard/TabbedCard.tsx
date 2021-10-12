@@ -20,17 +20,13 @@ import React, {
   ReactNode,
   PropsWithChildren,
 } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  withStyles,
-  makeStyles,
-  Tabs,
-  Tab,
-  TabProps,
-} from '@material-ui/core';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import Tabs from '@material-ui/core/Tabs';
+import Tab, { TabProps } from '@material-ui/core/Tab';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 

@@ -27,6 +27,7 @@ export {
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,
+  WelcomeTitle,
 } from './plugin';
 export { SettingsModal } from './components';
 export { createCardExtension } from './extensions';

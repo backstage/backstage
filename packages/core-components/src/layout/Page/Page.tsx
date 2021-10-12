@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 
 export type PageClassKey = 'root';
 

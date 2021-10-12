@@ -16,14 +16,12 @@
 
 import React from 'react';
 import { useForm, UseFormRegisterReturn } from 'react-hook-form';
-import {
-  Typography,
-  Button,
-  FormControl,
-  TextField,
-  FormHelperText,
-  makeStyles,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';

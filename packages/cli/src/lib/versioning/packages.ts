@@ -27,7 +27,7 @@ const DEP_TYPES = [
 ];
 
 // Package data as returned by `yarn info`
-type YarnInfoInspectData = {
+export type YarnInfoInspectData = {
   name: string;
   'dist-tags': { latest: string };
   versions: string[];

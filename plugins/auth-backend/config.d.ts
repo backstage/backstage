@@ -50,6 +50,8 @@ export interface Config {
         issuer: string;
         cert: string;
         privateKey?: string;
+        authnContext?: string[];
+        identifierFormat?: string;
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;

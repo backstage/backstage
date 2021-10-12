@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Button as MaterialButton,
+import MaterialButton, {
   ButtonProps as MaterialButtonProps,
-} from '@material-ui/core';
+} from '@material-ui/core/Button';
 import React from 'react';
 import { Link, LinkProps } from '../Link';
 
@@ -43,7 +42,9 @@ declare function ButtonType(props: ButtonProps): JSX.Element;
 /**
  * This wrapper is here to reset the color of the Link and make typescript happy.
  */
-const LinkWrapper = (props: LinkProps) => <Link {...props} color="initial" />;
+const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
+  <Link ref={ref} {...props} color="initial" />
+));
 
 const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
   <MaterialButton ref={ref} component={LinkWrapper} {...props} />

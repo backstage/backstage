@@ -27,9 +27,11 @@ nav:
       - Key Concepts: 'getting-started/concepts.md'
       - Contributors: 'getting-started/contributors.md'
       - Project Structure: 'getting-started/project-structure.md'
-  - CLI:
-      - Overview: 'cli/index.md'
-      - Commands: 'cli/commands.md'
+  - Local Development:
+      - CLI:
+          - Overview: 'local-dev/cli-overview.md'
+          - Commands: 'local-dev/cli-commands.md'
+      - Linking in Local Packages: 'local-dev/linking-local-packages.md'
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
@@ -66,6 +68,7 @@ nav:
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
+          - HOW TO guides: 'features/search/how-to-guides.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'

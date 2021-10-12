@@ -43,29 +43,34 @@ import {
 import { UserListFilterKind } from '../../types';
 import { reduceEntityFilters } from '../../utils';
 
-const useStyles = makeStyles<Theme>(theme => ({
-  root: {
-    backgroundColor: 'rgba(0, 0, 0, .11)',
-    boxShadow: 'none',
-    margin: theme.spacing(1, 0, 1, 0),
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    root: {
+      backgroundColor: 'rgba(0, 0, 0, .11)',
+      boxShadow: 'none',
+      margin: theme.spacing(1, 0, 1, 0),
+    },
+    title: {
+      margin: theme.spacing(1, 0, 0, 1),
+      textTransform: 'uppercase',
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+    listIcon: {
+      minWidth: 30,
+      color: theme.palette.text.primary,
+    },
+    menuItem: {
+      minHeight: theme.spacing(6),
+    },
+    groupWrapper: {
+      margin: theme.spacing(1, 1, 2, 1),
+    },
+  }),
+  {
+    name: 'CatalogReactUserListPicker',
   },
-  title: {
-    margin: theme.spacing(1, 0, 0, 1),
-    textTransform: 'uppercase',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  listIcon: {
-    minWidth: 30,
-    color: theme.palette.text.primary,
-  },
-  menuItem: {
-    minHeight: theme.spacing(6),
-  },
-  groupWrapper: {
-    margin: theme.spacing(1, 1, 2, 1),
-  },
-}));
+);
 
 export type ButtonGroup = {
   name: string;

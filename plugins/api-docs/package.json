@@ -37,7 +37,6 @@
     "@backstage/plugin-catalog": "^0.7.0",
     "@backstage/plugin-catalog-react": "^0.5.2",
     "@backstage/theme": "^0.2.10",
-    "@material-icons/font": "^1.0.2",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -50,7 +49,7 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "swagger-ui-react": "^3.37.2"
+    "swagger-ui-react": "^4.0.0-rc.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.15",

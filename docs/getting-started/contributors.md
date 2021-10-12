@@ -139,3 +139,92 @@ default app configs.
 
 You can learn more about the local configuration in
 [Static Configuration in Backstage](../conf/) section.
+
+## Writing changesets
+
+Changesets are an important part of the development process. They are used to
+generate Changelog entries for all changes to the project. Ultimately they are
+read by the end users to learn about important changes and fixes to the project.
+Some of these fixes might require manual intervention from users so it's
+important to write changesets that users understand and can take action on.
+
+Here are some important do's and don'ts when writing changesets:
+
+### Changeset should give a clear description to what has changed
+
+#### Bad
+
+```
+---
+'@backstage/catalog': patch
+---
+Fixed table layout
+```
+
+#### Good
+
+```
+---
+'@backstage/catalog': patch
+---
+
+Fixed bug in EntityTable component where table layout did not readjust properly below 1080x768 pixels.
+```
+
+### Breaking changes not caught by the type checker should be clearly marked with bold **BREAKING** text
+
+#### Bad
+
+```
+---
+'@backstage/catalog': minor
+---
+
+getEntity is now a function that returns a Promise.
+```
+
+#### Good
+
+```
+---
+'@backstage/catalog': minor
+---
+
+**BREAKING** The getEntity function now returns a Promise and **must** be awaited from now on.
+```
+
+### Changes to code should include a diff of the files that need updating
+
+#### Bad
+
+```
+---
+'@backstage/catalog': patch
+---
+
+**BREAKING** The catalogEngine now requires a flux capacitor to be passed.
+```
+
+#### Good
+
+    ---
+    '@backstage/catalog': patch
+    ---
+
+    **BREAKING** The catalog createRouter now requires that a `FluxCapacitor` is
+    passed to the router.
+
+    These changes are **required** to `packages/backend/src/plugins/catalog.ts`
+
+    ```diff
+    + import { FluxCapacitor } from '@backstage/time';
+    + const fluxCapacitor = new FluxCapacitor();
+      return await createRouter({
+        entitiesCatalog,
+        locationAnalyzer,
+        locationService,
+    +   fluxCapacitor,
+        logger: env.logger,
+        config: env.config,
+      });
+    ```

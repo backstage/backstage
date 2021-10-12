@@ -46,7 +46,7 @@ const entities: Entity[] = [
 
 describe('<PreviewCatalogInfoComponent />', () => {
   it('renders without exploding', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <PreviewCatalogInfoComponent
         repositoryUrl="http://my-repository/a/"
         entities={entities}
@@ -54,7 +54,7 @@ describe('<PreviewCatalogInfoComponent />', () => {
     );
 
     const repositoryUrl = getByText('http://my-repository/a/catalog-info.yaml');
-    const kindText = getByText('Kind_2');
+    const kindText = await findByText('Kind_2');
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();

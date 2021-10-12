@@ -21,7 +21,8 @@ import {
 } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
-import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
+import { EntitiesCatalog } from '../../catalog';
+import { LocationsCatalog } from '../catalog';
 import { durationText } from '../../util';
 import {
   AddLocationResult,
@@ -95,14 +96,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
       return { location, entities: [] };
     }
 
-    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
-      readerOutput.entities,
-      {
-        locationId: dryRun ? undefined : location.id,
-        dryRun,
-        outputEntities: true,
-      },
-    );
+    const writtenEntities = await this.entitiesCatalog
+      .batchAddOrUpdateEntities!(readerOutput.entities, {
+      locationId: dryRun ? undefined : location.id,
+      dryRun,
+      outputEntities: true,
+    });
 
     const entities = writtenEntities.map(e => e.entity!);
 
@@ -186,7 +185,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     startTimestamp = process.hrtime();
 
     try {
-      await this.entitiesCatalog.batchAddOrUpdateEntities(
+      await this.entitiesCatalog.batchAddOrUpdateEntities!(
         readerOutput.entities,
         { locationId: location.id },
       );

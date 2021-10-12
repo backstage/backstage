@@ -20,15 +20,15 @@ import { NotFoundError } from '@backstage/errors';
 import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog, LocationsCatalog } from '../../catalog';
-import { LocationResponse } from '../../catalog/types';
+import { EntitiesCatalog } from '../../catalog';
+import { LocationResponse, LocationsCatalog } from '../catalog/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from '../../service/request';
-import { RefreshService } from '../../next';
+import { RefreshService } from '../../service';
 
 describe('createRouter readonly disabled', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let entitiesCatalog: jest.Mocked<Required<EntitiesCatalog>>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
   let app: express.Express;

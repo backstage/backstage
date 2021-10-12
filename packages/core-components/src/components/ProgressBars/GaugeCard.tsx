@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { Gauge } from './Gauge';

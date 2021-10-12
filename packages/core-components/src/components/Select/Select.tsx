@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  Checkbox,
-  Chip,
-  ClickAwayListener,
-  FormControl,
-  InputBase,
-  MenuItem,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import FormControl from '@material-ui/core/FormControl';
+import InputBase from '@material-ui/core/InputBase';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   makeStyles,

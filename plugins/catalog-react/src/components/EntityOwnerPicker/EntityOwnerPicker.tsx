@@ -19,6 +19,7 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  makeStyles,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -32,10 +33,20 @@ import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import { formatEntityRefTitle } from '../EntityRefLink';
 
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityOwnerPicker',
+  },
+);
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityOwnerPicker = () => {
+  const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =
     useEntityListProvider();
 
@@ -95,7 +106,9 @@ export const EntityOwnerPicker = () => {
         )}
         size="small"
         popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => (
+          <TextField {...params} className={classes.input} variant="outlined" />
+        )}
       />
     </Box>
   );

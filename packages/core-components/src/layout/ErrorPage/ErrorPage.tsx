@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Typography, Link, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { MicDrop } from './MicDrop';

@@ -16,15 +16,15 @@
 
 import React from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
   withStyles,
   createStyles,
   WithStyles,
   Theme,
-} from '@material-ui/core';
+} from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
