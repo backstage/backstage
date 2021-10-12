@@ -25,7 +25,7 @@ import { LocationResponse, LocationsCatalog } from '../catalog/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from '../../service/request';
-import { RefreshService } from '../../next';
+import { RefreshService } from '../../service';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<Required<EntitiesCatalog>>;

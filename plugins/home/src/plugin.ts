@@ -64,6 +64,20 @@ export const ComponentTab = homePlugin.provide(
   }),
 );
 
+/**
+ * A component to display a playful greeting for the user.
+ *
+ * @public
+ */
+export const WelcomeTitle = homePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./homePageComponents/WelcomeTitle').then(m => m.WelcomeTitle),
+    },
+  }),
+);
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     title: 'Random Joke',

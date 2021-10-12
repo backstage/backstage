@@ -90,7 +90,8 @@
           "features/search/getting-started",
           "features/search/concepts",
           "features/search/architecture",
-          "features/search/search-engines"
+          "features/search/search-engines",
+          "features/search/how-to-guides"
         ]
       },
       {
@@ -155,11 +156,6 @@
       },
       {
         "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
-      },
-      {
-        "type": "subcategory",
         "label": "Google GCS",
         "ids": ["integrations/google-cloud-storage/locations"]
       },
@@ -177,6 +173,7 @@
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
+      "plugins/analytics",
       {
         "type": "subcategory",
         "label": "Backends and APIs",

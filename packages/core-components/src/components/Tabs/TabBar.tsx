@@ -15,7 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Tabs, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tabs from '@material-ui/core/Tabs';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledTabsProps {

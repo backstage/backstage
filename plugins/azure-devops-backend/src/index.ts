@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 export { AzureDevOpsApi } from './api';
-export type { RepoBuild } from './api';
+export type { RepoBuild, PullRequest } from './api';
 export * from './service/router';

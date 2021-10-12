@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Tooltip, useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';

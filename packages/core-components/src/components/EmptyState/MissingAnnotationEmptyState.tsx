@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Button, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { BackstageTheme } from '@backstage/theme';
 import { Link } from '../Link';
 import { EmptyState } from './EmptyState';

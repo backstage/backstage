@@ -15,10 +15,14 @@
  */
 
 import os from 'os';
-import { join as joinPath, resolve as resolvePath } from 'path';
+import { join as joinPath } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  resolvePackagePath,
+  UrlReader,
+} from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
 import { fetchContents } from './helpers';
@@ -30,9 +34,9 @@ jest.mock('./helpers', () => ({
 }));
 
 const aBinaryFile = fs.readFileSync(
-  resolvePath(
-    'src',
-    '../fixtures/test-nested-template/public/react-logo192.png',
+  resolvePackagePath(
+    '@backstage/plugin-scaffolder-backend',
+    'fixtures/test-nested-template/public/react-logo192.png',
   ),
 );
 

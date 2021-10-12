@@ -21,6 +21,8 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { AzureDevOpsApi } from '../api';
+import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequestOptions } from '../api/types';
 
 const DEFAULT_TOP: number = 10;
 
@@ -82,6 +84,24 @@ export async function createRouter(
       top,
     );
     res.status(200).json(gitRepository);
+  });
+
+  router.get('/pull-requests/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const status = req.query.status
+      ? Number(req.query.status)
+      : PullRequestStatus.Active;
+    const pullRequestOptions: PullRequestOptions = {
+      top: top,
+      status: status,
+    };
+    const gitPullRequest = await azureDevOpsApi.getPullRequests(
+      projectName,
+      repoName,
+      pullRequestOptions,
+    );
+    res.status(200).json(gitPullRequest);
   });
 
   router.use(errorHandler());

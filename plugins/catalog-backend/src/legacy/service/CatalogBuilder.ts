@@ -64,7 +64,7 @@ import {
 } from '../../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../../ingestion/types';
-import { CatalogEnvironment, NextCatalogBuilder } from '../../next';
+import { CatalogEnvironment, NextCatalogBuilder } from '../../service';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.

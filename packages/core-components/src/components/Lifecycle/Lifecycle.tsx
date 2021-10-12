@@ -16,7 +16,7 @@
 
 import React from 'react';
 import CSS from 'csstype';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = CSS.Properties & {
   shorthand?: boolean;

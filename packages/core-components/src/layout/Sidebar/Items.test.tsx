@@ -16,14 +16,14 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
-import { SidebarItem } from './Items';
+import { SidebarItem, SidebarSearchField } from './Items';
 import { renderHook } from '@testing-library/react-hooks';
-import { hexToRgb, makeStyles } from '@material-ui/core';
+import { hexToRgb, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   spotlight: {
@@ -36,6 +36,7 @@ async function renderSidebar() {
 
   await renderInTestApp(
     <Sidebar>
+      <SidebarSearchField onSearch={() => {}} to="/search" />
       <SidebarItem text="Home" icon={HomeIcon} to="./" />
       <SidebarItem
         icon={CreateComponentIcon}
@@ -70,6 +71,16 @@ describe('Items', () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
       ).toHaveStyle(`background-color: ${hexToRgb('2b2a2a')}`);
+    });
+  });
+  describe('SidebarSearchField', () => {
+    it('should be defaultPrevented when enter is pressed', async () => {
+      const searchEvent = createEvent.keyDown(
+        await screen.findByPlaceholderText('Search'),
+        { key: 'Enter', code: 'Enter', charCode: 13 },
+      );
+      fireEvent(await screen.findByPlaceholderText('Search'), searchEvent);
+      expect(searchEvent.defaultPrevented).toBeTruthy();
     });
   });
 });

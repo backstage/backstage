@@ -18,7 +18,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('util').promisify(require('glob'));
 
-async function getProjectConfig(targetPath) {
+async function getProjectConfig(targetPath, displayName) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
   // If the package has it's own jest config, we use that instead.
@@ -73,6 +73,7 @@ async function getProjectConfig(targetPath) {
   const transformModulePattern = transformModules && `(?!${transformModules})`;
 
   const options = {
+    displayName,
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
@@ -143,7 +144,7 @@ async function getRootConfig() {
       const packageData = await fs.readJson(packagePath);
       const testScript = packageData.scripts && packageData.scripts.test;
       if (testScript && testScript.includes('backstage-cli test')) {
-        return await getProjectConfig(projectPath);
+        return await getProjectConfig(projectPath, packageData.name);
       }
 
       return undefined;

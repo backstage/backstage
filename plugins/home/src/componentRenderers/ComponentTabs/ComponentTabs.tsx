@@ -44,7 +44,10 @@ export const ComponentTabs = ({
         ))}
       </Tabs>
       {tabs.map(({ Component }, idx) => (
-        <div {...(idx === value ? { style: { display: 'none' } } : {})}>
+        <div
+          key={idx}
+          {...(idx !== value ? { style: { display: 'none' } } : {})}
+        >
           <Component />
         </div>
       ))}
