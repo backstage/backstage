@@ -12,32 +12,43 @@ Well then, here we are! 🚀
 Backstage has had many forms of templating languages throughout different
 plugins and different systems. We've had `cookiecutter` syntax in templates, and
 we also had `handlebars` templating in the `kind: Template`. Then we wanted to
-remove the additional dependency on `cookiecutter` for `Software Templates` out
-of the box, so we introduced `nunjucks` as an alternative in `fetch:template`
+remove the additional dependency on `cookiecutter` for Software Templates out of
+the box, so we introduced `nunjucks` as an alternative in `fetch:template`
 action which is based on the `jinja2` syntax so they're pretty similar. In an
 effort to reduce confusion and unify on to one templating language, we're
 officially deprecating support for `handlebars` templating in the
-`kind: Template` entities with version `backstage.io/v1beta3` and moving to
-using `nunjucks` instead.
+`kind: Template` entities with `apiVersion` `scaffolder.backstage.io/v1beta3`
+and moving to using `nunjucks` instead.
 
 This provides us a lot of built in `filters` (`handlebars` helpers), that as
 Template authors will give you much more flexibility out of the box, and also
-open up sharing of filters in the `entity` and the actual `skeleton` too, and
+open up sharing of filters in the Entity and the actual `skeleton` too, and
 removing the slight differences between the two languages.
 
 We've also removed a lot of the built in helpers that we shipped with
 `handlebars`, as they're now supported as first class citizens by either
-`nunjucks` or the new `scaffolder` when using `backstage.io/v1beta3`
+`nunjucks` or the new `scaffolder` when using `scaffolder.backstage.io/v1beta3`
 `apiVersion`
 
 The migration path is pretty simple, and we've removed some of the pain points
 from writing the `handlebars` templates too. Let's go through what's new and how
 to upgrade.
 
+## `backstage.io/v1beta2` -> `scaffolder.backstage.io/v1beta3`
+
+The most important change is that you'll need to switch over the `apiVersion` in
+your templates to the new one.
+
+```diff
+  kind: Template
+- apiVersion: backstage.io/v1beta2
++ apiVersion: scaffolder.backstage.io/v1beta3
+```
+
 ## `${{ }}` instead of `"{{ }}"`
 
 One really big readability issue and cause for confusion was the fact that with
-`handlebars` and `yaml`you always had to wrap your templating strings in quotes
+`handlebars` and `yaml` you always had to wrap your templating strings in quotes
 in `yaml` so that it didn't try to parse it as a `json` object and fail. This
 was pretty annoying, as it also meant that all things look like strings. Now
 that's no longer the case, you can now remove the `""` and take advantage of
@@ -67,7 +78,6 @@ style operators.
 -         if: '{{ eq parameters.value "backstage" }}'
 +         if: ${{ parameters.value === "backstage" }}
           ...
-
 ```
 
 And then for the `not`
@@ -79,7 +89,6 @@ And then for the `not`
 -         if: '{{ not parameters.value "backstage" }}'
 +         if: ${{ parameters.value !== "backstage" }}
           ...
-
 ```
 
 Much better right? ✨
@@ -118,7 +127,6 @@ input schema.
 +         address: ${{ parameters.address }}
 -         number: '{{ parameters.number }}'
 +         number: ${{ parameters.number }} # this will now make sure that the type of number is a number 🙏
-
 ```
 
 ## `parseRepoUrl` is now a `filter`
