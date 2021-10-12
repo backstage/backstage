@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import type {
   FetchResponse,
   KubernetesFetchError,
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 
 export interface ObjectFetchParams {
@@ -120,4 +123,20 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
   externalId?: string;
+}
+
+export interface KubernetesObjectsProviderOptions {
+  logger: Logger;
+  fetcher: KubernetesFetcher;
+  serviceLocator: KubernetesServiceLocator;
+  customResources: CustomResource[];
+  objectTypesToFetch?: ObjectToFetch[];
+}
+
+export type ObjectsByEntityRequest = KubernetesRequestBody;
+
+export interface KubernetesObjectsProvider {
+  getKubernetesObjectsByEntity(
+    request: ObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
 }
