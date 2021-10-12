@@ -16,21 +16,21 @@
 
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { azureDevOpsApiRef } from '../api';
 import { RepoBuild, RepoBuildOptions } from '../api/types';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 
-export function useRepoBuilds(entity: Entity): {
+export function useRepoBuilds(
+  entity: Entity,
+  defaultLimit?: number,
+): {
   items: RepoBuild[];
   loading: boolean;
   error: any;
 } {
-  const config = useApi(configApiRef);
-  const top =
-    config.getOptionalNumber('azureDevOps.azurePipelines.top') ??
-    AZURE_DEVOPS_DEFAULT_TOP;
+  const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
   const options: RepoBuildOptions = {
     top: top,
   };

@@ -188,7 +188,7 @@ export const cicdContent = (
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzurePipelinesContent />
+      <EntityAzurePipelinesContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>

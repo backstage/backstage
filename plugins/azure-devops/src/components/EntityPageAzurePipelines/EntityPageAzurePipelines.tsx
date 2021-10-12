@@ -19,9 +19,13 @@ import React from 'react';
 import { useRepoBuilds } from '../../hooks/useRepoBuilds';
 import { BuildTable } from '../BuildTable/BuildTable';
 
-export const EntityPageAzurePipelines = () => {
+export const EntityPageAzurePipelines = ({
+  defaultLimit,
+}: {
+  defaultLimit?: number;
+}) => {
   const { entity } = useEntity();
-  const { items, loading, error } = useRepoBuilds(entity);
+  const { items, loading, error } = useRepoBuilds(entity, defaultLimit);
 
   return <BuildTable items={items} loading={loading} error={error} />;
 };

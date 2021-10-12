@@ -25,7 +25,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isAzureDevOpsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION]);
 
-export const Router = () => {
+export const Router = ({ defaultLimit }: { defaultLimit?: number }) => {
   const { entity } = useEntity();
 
   if (!isAzureDevOpsAvailable(entity)) {
@@ -36,7 +36,7 @@ export const Router = () => {
     <Routes>
       <Route
         path={`/${azureDevOpsRouteRef.path}`}
-        element={<EntityPageAzurePipelines />}
+        element={<EntityPageAzurePipelines defaultLimit={defaultLimit} />}
       />
     </Routes>
   );

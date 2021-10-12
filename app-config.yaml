@@ -436,5 +436,3 @@ azureDevOps:
   host: dev.azure.com
   token: my-token
   organization: my-company
-  azurePipelines:
-    top: 25

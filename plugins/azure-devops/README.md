@@ -17,8 +17,6 @@ azureDevOps:
   host: dev.azure.com
   token: ${AZURE_TOKEN}
   organization: my-company
-  azurePipelines:
-    top: 50
 ```
 
 Configuration Details:
@@ -26,7 +24,6 @@ Configuration Details:
 - `host` and `token` can be the same as the ones used for the `integration` section
 - `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
 - `organization` is your Azure DevOps Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
-- `top` is strictly used by the frontend to limit the number of items returned, if not provided it defaults to 10. Currently only used for Builds
 
 ### Backend
 
@@ -96,7 +93,9 @@ To get the frontend working you'll need to do the following two steps:
      <EntitySwitch>
        // ...
        <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-         <EntityAzurePipelinesContent />
+          // Set defaultLimit to the max number of builds you would like to be able to see
+          // the default if not set is 10
+          <EntityAzurePipelinesContent defaultLimit={25} />
        </EntitySwitch.Case>
        // ...
      </EntitySwitch>

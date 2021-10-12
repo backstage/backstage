@@ -31,17 +31,18 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     this.identityApi = options.identityApi;
   }
 
-  getRepoBuilds(
+  async getRepoBuilds(
     projectName: string,
     repoName: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }> {
-    return this.get(
+    const items = await this.get<RepoBuild[]>(
       `repo-builds/${projectName}/${repoName}?top=${options?.top}`,
     );
+    return { items };
   }
 
-  private async get(path: string): Promise<{ items: any }> {
+  private async get<T>(path: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
@@ -54,6 +55,6 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return response.json() as Promise<{ items: any }>;
+    return response.json() as Promise<T>;
   }
 }
