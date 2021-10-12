@@ -28,7 +28,7 @@ type EntityTypeFilterProps = {
 };
 
 export const EntityTypePicker = ({
-  hidden,
+  hidden = false,
   initialFilter,
 }: EntityTypeFilterProps) => {
   const alertApi = useApi(alertApiRef);
