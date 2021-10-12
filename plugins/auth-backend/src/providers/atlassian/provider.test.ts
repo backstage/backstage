@@ -54,7 +54,7 @@ describe('createAtlassianProvider', () => {
     clientId: 'mock',
     clientSecret: 'mock',
     callbackUrl: 'mock',
-    scopes: [],
+    scopes: 'scope',
     signInResolver: atlassianDefaultSignInResolver,
   });
 
