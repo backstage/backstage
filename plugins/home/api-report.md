@@ -122,6 +122,9 @@ export const SettingsModal: ({
   children: JSX.Element;
 }) => JSX.Element;
 
+// @public
+export const WelcomeTitle: () => JSX.Element;
+
 // Warnings were encountered during analysis:
 //
 // src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts

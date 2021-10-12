@@ -33,6 +33,7 @@ export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
+export * from './overridableComponents';
 export { Router } from './components/Router';
 export {
   CatalogEntityPage,
@@ -50,3 +51,6 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
+
+export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
+export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';

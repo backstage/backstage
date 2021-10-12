@@ -8,9 +8,8 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
-import { ButtonProps as ButtonProps_2 } from '@material-ui/core';
-import { CardHeaderProps } from '@material-ui/core';
+import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
+import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
@@ -20,9 +19,10 @@ import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { LinearProgressProps } from '@material-ui/core';
-import { LinkProps as LinkProps_2 } from '@material-ui/core';
+import { LinearProgressProps } from '@material-ui/core/LinearProgress';
+import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
+import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Overrides } from '@material-ui/core/styles/overrides';
@@ -36,14 +36,14 @@ import { SessionApi } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
 import { SparklinesProps } from 'react-sparklines';
-import { StyledComponentProps } from '@material-ui/core';
+import { StyledComponentProps } from '@material-ui/core/styles';
 import { StyleRules } from '@material-ui/styles';
 import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 import { TextTruncateProps } from 'react-text-truncate';
-import { Theme } from '@material-ui/core';
-import { TooltipProps } from '@material-ui/core';
-import { WithStyles } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles';
+import { TooltipProps } from '@material-ui/core/Tooltip';
+import { WithStyles } from '@material-ui/core/styles';
 
 // Warning: (ae-missing-release-tag) "AlertDisplay" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -8,11 +8,6 @@ description: Adding Observability to Your Plugin
 This article briefly describes the observability options that are available to a
 Backstage integrator.
 
-## Google Analytics
-
-See how to install Google Analytics in your app
-[here](../integrations/google-analytics/installation.md)
-
 ## Datadog RUM Events
 
 See how to install Datadog Events in your app

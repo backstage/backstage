@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import {
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-} from '@backstage/plugin-home';
 import {
   Content,
   Header,
-  Page,
   HomepageTimer,
+  Page,
 } from '@backstage/core-components';
+import {
+  ComponentAccordion,
+  ComponentTab,
+  ComponentTabs,
+  HomePageRandomJoke,
+  WelcomeTitle,
+} from '@backstage/plugin-home';
 import { HomePageSearchBar } from '@backstage/plugin-search';
+import Grid from '@material-ui/core/Grid';
+import React from 'react';
 
 export const HomePage = () => (
   <Page themeId="home">
-    <Header title="Home">
+    <Header title={<WelcomeTitle />} pageTitleOverride="Home">
       <HomepageTimer />
     </Header>
     <Content>

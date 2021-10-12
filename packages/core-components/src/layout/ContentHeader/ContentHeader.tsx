@@ -19,7 +19,8 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { Helmet } from 'react-helmet';
 
 export type ContentHeaderClassKey =

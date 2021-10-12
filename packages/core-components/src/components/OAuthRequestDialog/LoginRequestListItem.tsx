@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  makeStyles,
-  Typography,
-  Theme,
-  Button,
-} from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 

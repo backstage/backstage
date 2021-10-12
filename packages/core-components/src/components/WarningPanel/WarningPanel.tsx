@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Grid,
-  makeStyles,
-  Typography,
-  darken,
-  lighten,
-} from '@material-ui/core';
+import { makeStyles, darken, lighten } from '@material-ui/core/styles';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';

@@ -15,10 +15,9 @@
  */
 
 import { useAnalytics } from '@backstage/core-plugin-api';
-import {
-  Link as MaterialLink,
+import MaterialLink, {
   LinkProps as MaterialLinkProps,
-} from '@material-ui/core';
+} from '@material-ui/core/Link';
 import React, { ElementType } from 'react';
 import {
   Link as RouterLink,

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { useContext, ReactNode, PropsWithChildren } from 'react';
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import { StepActions } from './types';
 import { VerticalStepperContext } from './SimpleStepper';
 

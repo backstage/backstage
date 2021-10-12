@@ -254,12 +254,7 @@ describe('GithubUrlReader', () => {
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'backstage-mock-etag123.tar.gz',
-      ),
+      path.resolve(__dirname, '__fixtures__/backstage-mock-etag123.tar.gz'),
     );
 
     const reposGithubApiResponse = {
@@ -540,12 +535,7 @@ describe('GithubUrlReader', () => {
 
   describe('search', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve(
-        'src',
-        'reading',
-        '__fixtures__',
-        'backstage-mock-etag123.tar.gz',
-      ),
+      path.resolve(__dirname, '__fixtures__/backstage-mock-etag123.tar.gz'),
     );
 
     const githubTreeContents: GhTreeResponse['tree'] = [

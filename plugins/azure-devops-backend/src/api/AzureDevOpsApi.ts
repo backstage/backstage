@@ -16,12 +16,16 @@
 
 import { Logger } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
-import { RepoBuild } from './types';
 import {
   Build,
   BuildResult,
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequest, PullRequestOptions, RepoBuild } from './types';
 
 export class AzureDevOpsApi {
   constructor(
@@ -88,14 +92,48 @@ export class AzureDevOpsApi {
     );
 
     const repoBuilds: RepoBuild[] = buildList.map(build => {
-      return repoBuildFromBuild(build);
+      return mappedRepoBuild(build);
     });
 
     return repoBuilds;
   }
+
+  async getPullRequests(
+    projectName: string,
+    repoName: string,
+    options: PullRequestOptions,
+  ) {
+    if (this.logger) {
+      this.logger.debug(
+        `Calling Azure DevOps REST API, getting up to ${top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
+      );
+    }
+
+    const gitRepository = await this.getGitRepository(projectName, repoName);
+    const client = await this.webApi.getGitApi();
+    const searchCriteria: GitPullRequestSearchCriteria = {
+      status: options.status,
+    };
+    const gitPullRequests = await client.getPullRequests(
+      gitRepository.id as string,
+      searchCriteria,
+      projectName,
+      undefined,
+      undefined,
+      options.top,
+    );
+    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
+    const pullRequests: PullRequest[] = gitPullRequests.map(gitPullRequest => {
+      return mappedPullRequest(gitPullRequest, linkBaseUrl);
+    });
+
+    return pullRequests;
+  }
 }
 
-export function repoBuildFromBuild(build: Build) {
+export function mappedRepoBuild(build: Build) {
   return {
     id: build.id,
     title: [build.definition?.name, build.buildNumber]
@@ -106,5 +144,24 @@ export function repoBuildFromBuild(build: Build) {
     result: build.result ? build.result : BuildResult.None,
     queueTime: build.queueTime,
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+  };
+}
+
+export function mappedPullRequest(
+  pullRequest: GitPullRequest,
+  linkBaseUrl: string,
+) {
+  return {
+    pullRequestId: pullRequest.pullRequestId,
+    repoName: pullRequest.repository?.name,
+    title: pullRequest.title,
+    uniqueName: pullRequest.createdBy?.uniqueName,
+    createdBy: pullRequest.createdBy?.displayName,
+    creationDate: pullRequest.creationDate,
+    sourceRefName: pullRequest.sourceRefName,
+    targetRefName: pullRequest.targetRefName,
+    status: pullRequest.status,
+    isDraft: pullRequest.isDraft,
+    link: `${linkBaseUrl}/${pullRequest.pullRequestId}`,
   };
 }
