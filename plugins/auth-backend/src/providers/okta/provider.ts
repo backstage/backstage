@@ -275,8 +275,11 @@ export const createOktaProvider = (
       const audience = envConfig.getString('audience');
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      if (!audience.startsWith('https')) {
-        throw new Error("URL for 'audience' must start with 'https'.");
+      // This is a safe assumption as `passport-okta-oauth` uses the audience
+      // as the base for building the authorization, token, and user info URLs.
+      // https://github.com/fischerdan/passport-okta-oauth/blob/ea9ac42d/lib/passport-okta-oauth/oauth2.js#L12-L14
+      if (!audience.startsWith('https://')) {
+        throw new Error("URL for 'audience' must start with 'https://'.");
       }
 
       const catalogIdentityClient = new CatalogIdentityClient({
