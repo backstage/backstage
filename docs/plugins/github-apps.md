@@ -60,7 +60,7 @@ The YAML file must include the following information. Please note that the
 indentation for the `privateKey` is required.
 
 ```yaml
-appId: 1
+appId: app id
 clientId: client id
 clientSecret: client secret
 webhookSecret: webhook secret
@@ -95,7 +95,7 @@ If you want to limit the GitHub app installations visible to backstage you may
 optionally include the `allowedInstallationOwners` option.
 
 ```yaml
-appId: 1
+appId: app id
 allowedInstallationOwners: ['GlobexCorp']
 clientId: client id
 clientSecret: client secret
