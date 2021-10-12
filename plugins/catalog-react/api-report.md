@@ -761,17 +761,13 @@ export interface StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "StarredEntitiesApiObservable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type StarredEntitiesApiObservable = {
   starredEntities: Set<string>;
   isStarred: (entityRef: string) => boolean;
 };
 
-// Warning: (ae-missing-release-tag) "starredEntitiesApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi>;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts

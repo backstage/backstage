@@ -16,10 +16,18 @@
 
 import { ApiRef, createApiRef, Observable } from '@backstage/core-plugin-api';
 
+/**
+ * An API to store starred entities
+ *
+ * @public
+ */
 export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi> = createApiRef({
   id: 'catalog-react.starred-entities',
 });
 
+/**
+ * @public
+ */
 export type StarredEntitiesApiObservable = {
   /**
    * A set of entity references that are starred
