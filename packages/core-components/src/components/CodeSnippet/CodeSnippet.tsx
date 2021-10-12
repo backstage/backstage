@@ -15,7 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
 import { Progress } from '../Progress';

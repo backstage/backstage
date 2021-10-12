@@ -15,7 +15,12 @@
  */
 
 import React, { Fragment, ReactElement } from 'react';
-import { withStyles, createStyles, WithStyles, Theme } from '@material-ui/core';
+import {
+  withStyles,
+  createStyles,
+  WithStyles,
+  Theme,
+} from '@material-ui/core/styles';
 import startCase from 'lodash/startCase';
 
 import {

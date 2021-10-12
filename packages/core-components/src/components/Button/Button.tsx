@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Button as MaterialButton,
+import MaterialButton, {
   ButtonProps as MaterialButtonProps,
-} from '@material-ui/core';
+} from '@material-ui/core/Button';
 import React from 'react';
 import { Link, LinkProps } from '../Link';
 

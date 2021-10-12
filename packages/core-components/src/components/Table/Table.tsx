@@ -15,13 +15,9 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import {
-  IconButton,
-  makeStyles,
-  Typography,
-  useTheme,
-  withStyles,
-} from '@material-ui/core';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';

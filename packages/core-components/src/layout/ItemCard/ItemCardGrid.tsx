@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { createStyles, makeStyles, Theme, WithStyles } from '@material-ui/core';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import React from 'react';
 
 export type ItemCardGridClassKey = 'root';

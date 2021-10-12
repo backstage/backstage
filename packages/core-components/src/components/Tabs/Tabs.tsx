@@ -16,7 +16,7 @@
 
 import React, { useRef, useEffect, MutableRefObject, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { AppBar } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';

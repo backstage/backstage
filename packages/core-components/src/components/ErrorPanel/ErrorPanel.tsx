@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import React, { PropsWithChildren } from 'react';
 import { CopyTextButton } from '../CopyTextButton';
 import { WarningPanel } from '../WarningPanel';

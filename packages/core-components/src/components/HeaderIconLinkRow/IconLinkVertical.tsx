@@ -15,7 +15,8 @@
  */
 import React from 'react';
 import classnames from 'classnames';
-import { makeStyles, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
 import LinkIcon from '@material-ui/icons/Link';
 import { Link as RouterLink } from '../Link';
 
