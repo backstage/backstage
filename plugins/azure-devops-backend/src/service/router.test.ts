@@ -20,8 +20,11 @@ import express from 'express';
 import request from 'supertest';
 import { AzureDevOpsApi } from '../api';
 import { createRouter } from './router';
-import { RepoBuild } from '../api/types';
-import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequest, RepoBuild } from '../api/types';
+import {
+  GitRepository,
+  PullRequestStatus,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
   Build,
   BuildResult,
@@ -37,6 +40,7 @@ describe('createRouter', () => {
       getGitRepository: jest.fn(),
       getBuildList: jest.fn(),
       getRepoBuilds: jest.fn(),
+      getPullRequests: jest.fn(),
     } as any;
     const router = await createRouter({
       azureDevOpsApi,
@@ -191,6 +195,69 @@ describe('createRouter', () => {
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);
+    });
+  });
+
+  describe('GET /pull-requests/:projectName/:repoName', () => {
+    it('fetches a list of pull requests', async () => {
+      const firstPullRequest: PullRequest = {
+        pullRequestId: 7181,
+        repoName: 'super-feature-repo',
+        title: 'My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: undefined,
+        sourceRefName: 'refs/heads/topic/super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7181',
+      };
+
+      const secondPullRequest: PullRequest = {
+        pullRequestId: 7182,
+        repoName: 'super-feature-repo',
+        title: 'Refactoring My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: undefined,
+        sourceRefName: 'refs/heads/topic/refactor-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7182',
+      };
+
+      const thirdPullRequest: PullRequest = {
+        pullRequestId: 7183,
+        repoName: 'super-feature-repo',
+        title: 'Bug Fix for My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: undefined,
+        sourceRefName: 'refs/heads/topic/fix-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7183',
+      };
+
+      const pullRequests: PullRequest[] = [
+        firstPullRequest,
+        secondPullRequest,
+        thirdPullRequest,
+      ];
+
+      azureDevOpsApi.getPullRequests.mockResolvedValueOnce(pullRequests);
+
+      const response = await request(app)
+        .get('/pull-requests/myProject/myRepo')
+        .query({ top: '50', status: 1 });
+
+      expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
+        'myProject',
+        'myRepo',
+        { status: 1, top: 50 },
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(pullRequests);
     });
   });
 });
