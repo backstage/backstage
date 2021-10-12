@@ -24,8 +24,8 @@ import {
   EntityProvider,
   EntityProviderConnection,
   LocationStore,
-} from './types';
-import { locationSpecToLocationEntity } from './util';
+} from '../next/types';
+import { locationSpecToLocationEntity } from '../next/util';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;

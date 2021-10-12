@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import path from 'path';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
-import { EntityProviderConnection } from './types';
+import { EntityProviderConnection } from '../next/types';
 
 describe('ConfigLocationEntityProvider', () => {
   it('should apply mutation with the correct paths in the config', async () => {

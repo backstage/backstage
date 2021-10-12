@@ -17,8 +17,8 @@
 import { Config } from '@backstage/config';
 import path from 'path';
 import { getEntityLocationRef } from '../processing/util';
-import { EntityProvider, EntityProviderConnection } from './types';
-import { locationSpecToLocationEntity } from './util';
+import { EntityProvider, EntityProviderConnection } from '../next/types';
+import { locationSpecToLocationEntity } from '../next/util';
 
 export class ConfigLocationEntityProvider implements EntityProvider {
   constructor(private readonly config: Config) {}
