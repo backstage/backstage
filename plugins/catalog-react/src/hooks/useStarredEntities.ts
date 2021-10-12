@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { useCallback } from 'react';
 import { useObservable } from 'react-use';
@@ -23,14 +23,19 @@ import { starredEntitiesApiRef } from '../apis';
 export const useStarredEntities = () => {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
-  const { starredEntities, isStarred: isStarredEntity } = useObservable(
+  const { starredEntities, isStarred } = useObservable(
     starredEntitiesApi.starredEntitie$(),
     { starredEntities: new Set<string>(), isStarred: _ => false },
   );
 
+  const isStarredEntity = useCallback(
+    (entity: Entity) => isStarred(stringifyEntityRef(entity)),
+    [isStarred],
+  );
+
   const toggleStarredEntity = useCallback(
     (entity: Entity) => {
-      starredEntitiesApi.toggleStarred(entity).then();
+      starredEntitiesApi.toggleStarred(stringifyEntityRef(entity)).then();
     },
     [starredEntitiesApi],
   );

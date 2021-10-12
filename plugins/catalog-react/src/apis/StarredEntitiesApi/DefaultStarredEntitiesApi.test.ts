@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { MockStorageApi } from '@backstage/test-utils';
 import { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
@@ -23,13 +23,13 @@ describe('DefaultStarredEntitiesApi', () => {
   let mockStorage: StorageApi;
   let starredEntitiesApi: DefaultStarredEntitiesApi;
 
-  const mockEntity: Entity = {
+  const mockEntityRef = stringifyEntityRef({
     apiVersion: '1',
     kind: 'Component',
     metadata: {
       name: 'mock',
     },
-  };
+  });
 
   beforeEach(() => {
     mockStorage = MockStorageApi.create();
@@ -44,22 +44,22 @@ describe('DefaultStarredEntitiesApi', () => {
 
   describe('toggleStarred', () => {
     it('should star unstarred entity', async () => {
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
+      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(false);
 
-      await starredEntitiesApi.toggleStarred(mockEntity);
+      await starredEntitiesApi.toggleStarred(mockEntityRef);
 
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
+      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(true);
     });
 
     it('should unstar starred entity', async () => {
       const bucket = mockStorage.forBucket('starredEntities');
       await bucket.set('entityRefs', ['component:default/mock']);
 
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(true);
+      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(true);
 
-      await starredEntitiesApi.toggleStarred(mockEntity);
+      await starredEntitiesApi.toggleStarred(mockEntityRef);
 
-      expect(starredEntitiesApi.isStarred(mockEntity)).toBe(false);
+      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(false);
     });
   });
 
@@ -96,8 +96,8 @@ describe('DefaultStarredEntitiesApi', () => {
     });
 
     it('should receive isStarred function that operates on the latest state', async () => {
-      expect(handler.mock.calls[0][0].isStarred(mockEntity)).toBe(true);
-      expect(handler.mock.calls[1][0].isStarred(mockEntity)).toBe(true);
+      expect(handler.mock.calls[0][0].isStarred(mockEntityRef)).toBe(true);
+      expect(handler.mock.calls[1][0].isStarred(mockEntityRef)).toBe(true);
     });
   });
 });

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { ApiRef, createApiRef, Observable } from '@backstage/core-plugin-api';
 
 export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi> = createApiRef({
@@ -30,10 +29,10 @@ export type StarredEntitiesApiObservable = {
   /**
    * A function to check if an entity is starred.
    *
-   * @param entity - the entity to check
+   * @param entityRef - an entity reference to check
    * @returns true, if the entity is starred.
    */
-  isStarred: (entity: Entity) => boolean;
+  isStarred: (entityRef: string) => boolean;
 };
 
 /**
@@ -45,9 +44,9 @@ export interface StarredEntitiesApi {
   /**
    * Toggle the star state of the entity
    *
-   * @param entity - the entity to be toggled
+   * @param entityRef - an entity reference to toggle
    */
-  toggleStarred(entity: Entity): Promise<void>;
+  toggleStarred(entityRef: string): Promise<void>;
 
   /**
    * Observe the state of starred entities and receive a handler

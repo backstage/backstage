@@ -137,11 +137,11 @@ export type DefaultEntityFilters = {
 export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   constructor(opts: { storageApi: StorageApi });
   // (undocumented)
-  isStarred(entity: Entity): boolean;
+  isStarred(entityRef: string): boolean;
   // (undocumented)
   starredEntitie$(): Observable<StarredEntitiesApiObservable>;
   // (undocumented)
-  toggleStarred(entity: Entity): Promise<void>;
+  toggleStarred(entityRef: string): Promise<void>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "EntityLoadingStatus" needs to be exported by the entry point index.d.ts
@@ -758,7 +758,7 @@ export const rootRoute: RouteRef<undefined>;
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<StarredEntitiesApiObservable>;
-  toggleStarred(entity: Entity): Promise<void>;
+  toggleStarred(entityRef: string): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "StarredEntitiesApiObservable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -766,7 +766,7 @@ export interface StarredEntitiesApi {
 // @public (undocumented)
 export type StarredEntitiesApiObservable = {
   starredEntities: Set<string>;
-  isStarred: (entity: Entity) => boolean;
+  isStarred: (entityRef: string) => boolean;
 };
 
 // Warning: (ae-missing-release-tag) "starredEntitiesApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

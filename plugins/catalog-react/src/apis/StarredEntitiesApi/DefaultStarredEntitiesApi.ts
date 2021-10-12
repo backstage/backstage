@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Observable, StorageApi } from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
 import {
@@ -46,13 +45,11 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     });
   }
 
-  async toggleStarred(entity: Entity): Promise<void> {
-    const entityKey = stringifyEntityRef(entity);
-
-    if (this.starredEntities.has(entityKey)) {
-      this.starredEntities.delete(entityKey);
+  async toggleStarred(entityRef: string): Promise<void> {
+    if (this.starredEntities.has(entityRef)) {
+      this.starredEntities.delete(entityRef);
     } else {
-      this.starredEntities.add(entityKey);
+      this.starredEntities.add(entityRef);
     }
 
     await this.settingsStore.set(
@@ -65,9 +62,8 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     return this.observable;
   }
 
-  isStarred(entity: Entity): boolean {
-    const entityKey = stringifyEntityRef(entity);
-    return this.starredEntities.has(entityKey);
+  isStarred(entityRef: string): boolean {
+    return this.starredEntities.has(entityRef);
   }
 
   private readonly subscribers = new Set<
