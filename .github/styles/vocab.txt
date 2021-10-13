@@ -310,3 +310,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Firestore
