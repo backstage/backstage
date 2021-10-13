@@ -40,6 +40,8 @@ If you have created software templates that do not include documentation by
 default, we highly recommend you to set that up. Follow our how-to guide
 [How to add documentation setup to my software templates](link) to get started.
 
+<!-- TODO: Write above how to guide in how-to-guides.md -->
+
 ### Use the documentation template
 
 There could be _some_ situations where you don't want to keep your docs close to
