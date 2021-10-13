@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { getVoidLogger, loadBackendConfig } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-import { makeRouter } from './router';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import {
+  ClusterDetails,
+  FetchResponseWrapper,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesServiceLocator,
+  ObjectFetchParams,
+} from '../types/types';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { KubernetesBuilder } from './KubernetesBuilder';
 
-describe('router', () => {
+describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
+  let config: Config;
 
   beforeAll(async () => {
-    kubernetesFanOutHandler = {
-      getKubernetesObjectsByEntity: jest.fn(),
-    } as any;
+    const logger = getVoidLogger();
+    config = await loadBackendConfig({ logger, argv: [] });
 
-    const router = makeRouter(getVoidLogger(), kubernetesFanOutHandler, [
+    const clusters: ClusterDetails[] = [
       {
         name: 'some-cluster',
         authProvider: 'serviceAccount',
@@ -41,7 +51,22 @@ describe('router', () => {
         url: 'https://localhost:1235',
         authProvider: 'google',
       },
-    ]);
+    ];
+    const clusterSupplier: KubernetesClustersSupplier = {
+      async getClusters() {
+        return clusters;
+      },
+    };
+
+    kubernetesFanOutHandler = {
+      getKubernetesObjectsByEntity: jest.fn(),
+    } as any;
+
+    const { router } = await KubernetesBuilder.createBuilder({ config, logger })
+      .setObjectsProvider(kubernetesFanOutHandler)
+      .setClusterSupplier(clusterSupplier)
+      .build();
+
     app = express().use(router);
   });
 
@@ -129,6 +154,87 @@ describe('router', () => {
 
       expect(response.status).toEqual(500);
       expect(response.body).toEqual({ error: 'some internal error' });
+    });
+
+    it('custom service locator', async () => {
+      const logger = getVoidLogger();
+      const someCluster: ClusterDetails = {
+        name: 'some-cluster',
+        authProvider: 'serviceAccount',
+        url: 'https://localhost:1234',
+        serviceAccountToken: 'someToken',
+      };
+      const clusters: ClusterDetails[] = [
+        someCluster,
+        {
+          name: 'some-other-cluster',
+          url: 'https://localhost:1235',
+          authProvider: 'google',
+        },
+      ];
+      const clusterSupplier: KubernetesClustersSupplier = {
+        async getClusters() {
+          return clusters;
+        },
+      };
+      const pod = {
+        metadata: {
+          name: 'pod1',
+        },
+      };
+      const result: ObjectsByEntityResponse = {
+        items: [
+          {
+            cluster: {
+              name: someCluster.name,
+            },
+            errors: [],
+            resources: [
+              {
+                type: 'pods',
+                resources: [pod],
+              },
+            ],
+          },
+        ],
+      };
+
+      const serviceLocator: KubernetesServiceLocator = {
+        getClustersByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
+          return Promise.resolve([someCluster]);
+        },
+      };
+
+      const fetcher: KubernetesFetcher = {
+        fetchObjectsForService(
+          _params: ObjectFetchParams,
+        ): Promise<FetchResponseWrapper> {
+          return Promise.resolve({
+            errors: [],
+            responses: [
+              {
+                type: 'pods',
+                resources: [pod],
+              },
+            ],
+          });
+        },
+      };
+
+      const { router } = await KubernetesBuilder.createBuilder({
+        logger,
+        config,
+      })
+        .setClusterSupplier(clusterSupplier)
+        .setServiceLocator(serviceLocator)
+        .setFetcher(fetcher)
+        .build();
+      app = express().use(router);
+
+      const response = await request(app).post('/services/test-service');
+
+      expect(response.body).toEqual(result);
+      expect(response.status).toEqual(200);
     });
   });
 });

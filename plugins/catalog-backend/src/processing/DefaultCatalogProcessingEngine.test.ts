@@ -29,6 +29,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     getProcessableEntities: jest.fn(),
     updateProcessedEntity: jest.fn(),
     updateEntityCache: jest.fn(),
+    listParents: jest.fn(),
   } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
@@ -209,18 +210,19 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
+    db.listParents.mockResolvedValue({ entityRefs: [] });
     db.getProcessableEntities
       .mockResolvedValueOnce({
         items: [{ ...refreshState, resultHash: 'NOT RIGHT' }],
       })
       .mockResolvedValue({ items: [] });
-
     await engine.start();
 
     await waitForExpect(() => {
       expect(orchestrator.process).toBeCalledTimes(1);
       expect(hash.digest).toBeCalledTimes(1);
       expect(db.updateProcessedEntity).toBeCalledTimes(1);
+      expect(db.listParents).toBeCalledTimes(1);
     });
     expect(db.updateEntityCache).not.toHaveBeenCalled();
 
@@ -236,6 +238,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect(hash.digest).toBeCalledTimes(2);
       expect(db.updateProcessedEntity).toBeCalledTimes(1);
       expect(db.updateEntityCache).toBeCalledTimes(1);
+      expect(db.listParents).toBeCalledTimes(2);
     });
     expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
       id: '',

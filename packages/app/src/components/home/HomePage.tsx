@@ -15,26 +15,42 @@
  */
 
 import {
-  Content,
-  Header,
-  HomepageTimer,
-  Page,
-} from '@backstage/core-components';
-import {
-  ComponentAccordion,
-  ComponentTab,
-  ComponentTabs,
   HomePageRandomJoke,
+  ComponentAccordion,
+  ComponentTabs,
+  ComponentTab,
   WelcomeTitle,
+  HeaderWorldClock,
+  ClockConfig,
 } from '@backstage/plugin-home';
+import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
+const clockConfigs: ClockConfig[] = [
+  {
+    label: 'NYC',
+    timeZone: 'America/New_York',
+  },
+  {
+    label: 'UTC',
+    timeZone: 'UTC',
+  },
+  {
+    label: 'STO',
+    timeZone: 'Europe/Stockholm',
+  },
+  {
+    label: 'TYO',
+    timeZone: 'Asia/Tokyo',
+  },
+];
+
 export const HomePage = () => (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HomepageTimer />
+      <HeaderWorldClock clockConfigs={clockConfigs} />
     </Header>
     <Content>
       <Grid container spacing={3}>

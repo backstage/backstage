@@ -13,14 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createRouter } from '@backstage/plugin-azure-devops-backend';
-import { Router } from 'express';
-import type { PluginEnvironment } from '../types';
-
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
-  return await createRouter({ logger, config });
-}
+export { HeaderWorldClock } from './HeaderWorldClock';
+export type { ClockConfig } from './HeaderWorldClock';

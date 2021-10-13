@@ -15,7 +15,11 @@
  */
 
 import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
@@ -32,6 +36,9 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core-plugin-api';
+import { TableColumn, TableProps } from '@backstage/core-components';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import { CatalogTableRow } from '@backstage/plugin-catalog';
 
 describe('ApiCatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -43,14 +50,6 @@ describe('ApiCatalogPage', () => {
             kind: 'API',
             metadata: {
               name: 'Entity1',
-            },
-            spec: { type: 'openapi' },
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity2',
             },
             spec: { type: 'openapi' },
           },
@@ -96,6 +95,11 @@ describe('ApiCatalogPage', () => {
         >
           {children}
         </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       ),
     );
 
@@ -105,5 +109,83 @@ describe('ApiCatalogPage', () => {
   it('should render', async () => {
     const { findByText } = renderWrapped(<ApiExplorerPage />);
     expect(await findByText(/My Company API Explorer/)).toBeInTheDocument();
+  });
+
+  it('should render the default column of the grid', async () => {
+    const { getAllByRole } = renderWrapped(<ApiExplorerPage />);
+
+    const columnHeader = getAllByRole('button').filter(
+      c => c.tagName === 'SPAN',
+    );
+    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+
+    expect(columnHeaderLabels).toEqual([
+      'Name',
+      'System',
+      'Owner',
+      'Type',
+      'Lifecycle',
+      'Description',
+      'Tags',
+      'Actions',
+    ]);
+  });
+
+  it('should render the custom column passed as prop', async () => {
+    const columns: TableColumn<CatalogTableRow>[] = [
+      { title: 'Foo', field: 'entity.foo' },
+      { title: 'Bar', field: 'entity.bar' },
+      { title: 'Baz', field: 'entity.spec.lifecycle' },
+    ];
+    const { getAllByRole } = renderWrapped(
+      <ApiExplorerPage columns={columns} />,
+    );
+
+    const columnHeader = getAllByRole('button').filter(
+      c => c.tagName === 'SPAN',
+    );
+    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+
+    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+  });
+
+  it('should render the default actions of an item in the grid', async () => {
+    const { findByTitle, findByText } = await renderWrapped(
+      <ApiExplorerPage />,
+    );
+    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
+    expect(await findByTitle(/View/)).toBeInTheDocument();
+    expect(await findByTitle(/View/)).toBeInTheDocument();
+    expect(await findByTitle(/Edit/)).toBeInTheDocument();
+    expect(await findByTitle(/Add to favorites/)).toBeInTheDocument();
+  });
+
+  it('should render the custom actions of an item passed as prop', async () => {
+    const actions: TableProps<CatalogTableRow>['actions'] = [
+      () => {
+        return {
+          icon: () => <DashboardIcon fontSize="small" />,
+          tooltip: 'Foo Action',
+          disabled: false,
+          onClick: () => jest.fn(),
+        };
+      },
+      () => {
+        return {
+          icon: () => <DashboardIcon fontSize="small" />,
+          tooltip: 'Bar Action',
+          disabled: true,
+          onClick: () => jest.fn(),
+        };
+      },
+    ];
+
+    const { findByTitle, findByText } = await renderWrapped(
+      <ApiExplorerPage actions={actions} />,
+    );
+    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
+    expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
+    expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
+    expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
   });
 });

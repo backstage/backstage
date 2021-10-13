@@ -569,7 +569,7 @@ export function HelpIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "HomepageTimer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export function HomepageTimer(_props: {}): JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts

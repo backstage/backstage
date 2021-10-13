@@ -11,6 +11,7 @@
     "@backstage/core-plugin-api": "^0.1.10",
     "@backstage/integration-react": "^0.1.11",
     "@backstage/plugin-api-docs": "^0.6.11",
+    "@backstage/plugin-azure-devops": "^0.1.0",
     "@backstage/plugin-badges": "^0.2.12",
     "@backstage/plugin-catalog": "^0.7.0",
     "@backstage/plugin-catalog-graph": "^0.1.3",
