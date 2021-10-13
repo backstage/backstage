@@ -290,12 +290,10 @@ export type GithubOAuthResult = {
 // @public (undocumented)
 export type GithubProviderOptions = {
   authHandler?: AuthHandler<GithubOAuthResult>;
-  extraState?: {
-    [key: string]: string;
-  };
   signIn?: {
     resolver?: SignInResolver<GithubOAuthResult>;
   };
+  stateHandler?: StateHandler;
 };
 
 // Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -491,7 +489,7 @@ export type OAuthStartRequest = express.Request<{}> & {
 export type OAuthState = {
   nonce: string;
   env: string;
-  [key: string]: string;
+  origin?: string;
 };
 
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -585,6 +583,7 @@ export type WebMessageResponse =
 // src/providers/atlassian/provider.d.ts:37:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/atlassian/provider.d.ts:42:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:65:5 - (ae-forgotten-export) The symbol "StateHandler" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:99:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:121:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 ```

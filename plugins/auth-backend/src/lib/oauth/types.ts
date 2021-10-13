@@ -77,7 +77,7 @@ export type OAuthState = {
    */
   nonce: string;
   env: string;
-  [key: string]: string;
+  origin?: string;
 };
 
 export type OAuthStartRequest = express.Request<{}> & {

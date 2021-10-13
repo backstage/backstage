@@ -223,3 +223,5 @@ export type AuthHandlerResult = { profile: ProfileInfo };
 export type AuthHandler<AuthResult> = (
   input: AuthResult,
 ) => Promise<AuthHandlerResult>;
+
+export type StateHandler = (input: any) => Promise<string>;

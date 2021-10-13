@@ -31,6 +31,7 @@ import {
   AuthProviderFactory,
   AuthHandler,
   SignInResolver,
+  StateHandler,
 } from '../types';
 import {
   OAuthAdapter,
@@ -64,9 +65,9 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
   userProfileUrl?: string;
   authorizationUrl?: string;
-  extraState?: { [key: string]: string };
   signInResolver?: SignInResolver<GithubOAuthResult>;
   authHandler: AuthHandler<GithubOAuthResult>;
+  stateHandler: StateHandler;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -79,14 +80,14 @@ export class GithubAuthProvider implements OAuthHandlers {
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
-  private readonly extraState: { [key: string]: string };
+  private readonly stateHandler: StateHandler;
 
   constructor(options: GithubAuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
+    this.stateHandler = options.stateHandler;
     this.tokenIssuer = options.tokenIssuer;
     this.catalogIdentityClient = options.catalogIdentityClient;
-    this.extraState = options.extraState || {};
     this.logger = options.logger;
     this._strategy = new GithubStrategy(
       {
@@ -112,7 +113,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
-      state: encodeState({ ...this.extraState, ...req.state }),
+      state: await this.stateHandler(req.state),
     });
   }
 
@@ -204,11 +205,6 @@ export type GithubProviderOptions = {
   authHandler?: AuthHandler<GithubOAuthResult>;
 
   /**
-   * The extra state you would like to pass into the OAuth state
-   */
-  extraState?: { [key: string]: string };
-
-  /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
   signIn?: {
@@ -217,6 +213,11 @@ export type GithubProviderOptions = {
      */
     resolver?: SignInResolver<GithubOAuthResult>;
   };
+
+  /**
+   * The state handler that sets the uri query param 'state'
+   */
+  stateHandler?: StateHandler;
 };
 
 export const createGithubProvider = (
@@ -271,7 +272,11 @@ export const createGithubProvider = (
           logger,
         });
 
-      const extraState = options?.extraState ? options.extraState : undefined;
+      const stateHandler: StateHandler = options?.stateHandler
+        ? options.stateHandler
+        : async (req: OAuthStartRequest) => {
+            return encodeState(req.state);
+          };
 
       const provider = new GithubAuthProvider({
         clientId,
@@ -284,7 +289,7 @@ export const createGithubProvider = (
         authHandler,
         tokenIssuer,
         catalogIdentityClient,
-        extraState,
+        stateHandler,
         logger,
       });
 

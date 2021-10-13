@@ -23,28 +23,13 @@ describe('OAuthProvider Utils', () => {
       const state = {
         nonce: '123',
         env: 'development',
-      };
-
-      const encoded = encodeState(state);
-      expect(encoded).toBe(
-        Buffer.from('nonce=123&env=development').toString('hex'),
-      );
-
-      expect(readState(encoded)).toEqual(state);
-    });
-
-    it('should serialized values with extra values', () => {
-      const state = {
-        nonce: '123',
-        env: 'development',
         origin: 'https://example.com',
-        redirect_url: 'https://someurl.com/foo/bar',
       };
 
       const encoded = encodeState(state);
       expect(encoded).toBe(
         Buffer.from(
-          'nonce=123&env=development&origin=https%3A%2F%2Fexample.com&redirect_url=https%3A%2F%2Fsomeurl.com%2Ffoo%2Fbar',
+          'nonce=123&env=development&origin=https%3A%2F%2Fexample.com',
         ).toString('hex'),
       );
 
@@ -52,12 +37,9 @@ describe('OAuthProvider Utils', () => {
     });
 
     it('should not include undefined values', () => {
-      const state = {
-        nonce: '123',
-        env: 'development',
-      };
-      // @ts-ignore
-      const encoded = encodeState({ test: undefined, ...state });
+      const state = { nonce: '123', env: 'development', origin: undefined };
+
+      const encoded = encodeState(state);
       expect(encoded).toBe(
         Buffer.from('nonce=123&env=development').toString('hex'),
       );
