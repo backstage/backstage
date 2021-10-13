@@ -144,16 +144,23 @@ export const ProjectDialog = ({
           <InputField
             error={errors.announcement}
             control={control}
-            required
+            rules={{
+              required: true,
+            }}
             inputType="announcement"
             helperText="please enter an announcement"
             placeholder="Describe who you are and what skills you are looking for"
           />
 
           <InputField
+            error={errors.community}
             control={control}
-            required={false}
+            rules={{
+              required: false,
+              pattern: RegExp('^(https?)://[^s$.?#].[^s]*$'),
+            }}
             inputType="community"
+            helperText="please enter a link starting with http/https"
             placeholder="Community link to e.g. Teams or Discord"
           />
 

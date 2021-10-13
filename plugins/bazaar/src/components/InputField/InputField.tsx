@@ -25,7 +25,7 @@ type Props = {
   control: Control<FormValues, object>;
   helperText?: string;
   placeholder?: string;
-  required: boolean;
+  rules?: Object;
 };
 
 export const InputField = ({
@@ -34,7 +34,7 @@ export const InputField = ({
   control,
   helperText,
   placeholder,
-  required,
+  rules,
 }: Props) => {
   const label =
     inputType.charAt(0).toLocaleUpperCase('en-US') + inputType.slice(1);
@@ -43,9 +43,7 @@ export const InputField = ({
     <Controller
       name={inputType}
       control={control}
-      rules={{
-        required: required,
-      }}
+      rules={rules}
       render={({ field }) => (
         <TextField
           {...field}
