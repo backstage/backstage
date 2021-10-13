@@ -894,6 +894,14 @@ export function useStarredEntities(): {
   isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
 };
 
+// Warning: (ae-missing-release-tag) "useStarredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+  toggleStarredEntity: () => void;
+  isStarredEntity: boolean;
+};
+
 // Warnings were encountered during analysis:
 //
 // src/types.d.ts:6:49 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
