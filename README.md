@@ -4,27 +4,27 @@
 
 Things you'll need to install:
 
-- ![Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
-- ![Docker](https://www.docker.com/get-started)
+- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
+- [Docker](https://www.docker.com/get-started)
 
 Things you'll need to add:
 
 - Full access to the Department of Veterans Affairs Organization (for access, navigate to https://vaww.oit.va.gov/services/github/#23gethelp and fill out the form (requires an existing GitHub account and you'll have to be on the VA network to access the link.)
 - If you have access, pull the BIH branch code. `https://github.com/department-of-veterans-affairs/bih.git`
-- ![Github Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- ![Github Oauth App](https://backstage.io/docs/auth/github/provider) Follow the directions under the heading `Create an OAuth App on GitHub`
+- [Github Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- [Github Oauth App](https://backstage.io/docs/auth/github/provider) Follow the directions under the heading `Create an OAuth App on GitHub`
 
 Things you'll need to change:
 
-- If you have pulled the BIH code change the file name of example.env to .env
+- If you have pulled the BIH code change the file name of `example.env` to `.env`
 - In the .env file add in the values for:
-  `GITHUB_TOKEN`
-  `AUTH_GITHUB_CLIENT_ID`
+  `GITHUB_TOKEN`,
+  `AUTH_GITHUB_CLIENT_ID`,
   `AUTH_GITHUB_CLIENT_SECRET`
 
 ---
 
-from one terminal instance:
+Create two terminal instances, from one terminal instance:
 
 run:
 
@@ -71,4 +71,3 @@ yarn start
 ![va-color-logo](https://user-images.githubusercontent.com/12993587/125843344-a41587e3-2d0d-49bc-ab51-a0cffbe8ed0b.png)
 
 Material UI theming can be found in `packages/app/src/theme.tsx`
-
