@@ -32,8 +32,8 @@ import {
   catalogApiRef,
   DefaultStarredEntitiesApi,
   entityRouteRef,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { starredEntitiesApiRef } from '@backstage/plugin-catalog-react/src/apis';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { render } from '@testing-library/react';
