@@ -58,25 +58,32 @@ export const AddProjectDialog = ({
     setSelectedEntity(entity);
   };
 
+  const handleCloseDialog = () => {
+    setSelectedEntity(catalogEntities ? catalogEntities[0] : null);
+    handleClose();
+  };
+
   const handleSave: SubmitHandler<FormValues> = async (
     getValues: any,
     reset: any,
   ) => {
     const formValues = getValues();
 
-    await bazaarApi.updateMetadata(
-      selectedEntity!,
-      selectedEntity!.metadata.name,
-      formValues.community,
-      formValues.announcement,
-      formValues.status,
-    );
+    if (selectedEntity) {
+      await bazaarApi.updateMetadata(
+        selectedEntity,
+        selectedEntity.metadata.name,
+        formValues.community,
+        formValues.announcement,
+        formValues.status,
+      );
 
-    fetchBazaarProjects();
-    fetchCatalogEntities();
+      fetchBazaarProjects();
+      fetchCatalogEntities();
 
-    handleClose();
-    reset(defaultValues);
+      handleClose();
+      reset(defaultValues);
+    }
   };
 
   return (
@@ -88,13 +95,13 @@ export const AddProjectDialog = ({
       open={open}
       projectSelector={
         <ProjectSelector
-          value={selectedEntity?.metadata.name || ''}
+          value={selectedEntity?.metadata?.name || ''}
           onChange={handleListItemClick}
-          isFormInvalid={false}
+          isFormInvalid={selectedEntity === null}
           entities={catalogEntities || []}
         />
       }
-      handleClose={handleClose}
+      handleClose={handleCloseDialog}
     />
   );
 };

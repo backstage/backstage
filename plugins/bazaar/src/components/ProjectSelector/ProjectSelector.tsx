@@ -15,11 +15,9 @@
  */
 
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import { Entity } from '@backstage/catalog-model';
+import { Autocomplete } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
 
 type Props = {
   entities: Entity[];
@@ -35,32 +33,22 @@ export const ProjectSelector = ({
   isFormInvalid,
 }: Props) => {
   return (
-    <FormControl fullWidth>
-      <InputLabel id="demo-simple-select-outlined-label">
-        Select a project
-      </InputLabel>
-      <Select
-        required
-        labelId="demo-simple-select-outlined-label"
-        id="demo-simple-select-outlined"
-        value={value}
-        error={isFormInvalid && value === ''}
-        label="Project"
-      >
-        {entities?.map(entity => {
-          const projectName = entity.metadata.name;
-          return (
-            <MenuItem
-              button
-              onClick={() => onChange(entity)}
-              key={projectName}
-              value={projectName}
-            >
-              {projectName}
-            </MenuItem>
-          );
-        })}
-      </Select>
-    </FormControl>
+    <Autocomplete
+      defaultValue={entities[0]}
+      options={entities}
+      getOptionLabel={option => option?.metadata?.name}
+      renderOption={option => <span>{option?.metadata?.name}</span>}
+      renderInput={params => (
+        <TextField
+          error={isFormInvalid && value === ''}
+          helperText={
+            isFormInvalid && value === '' ? 'Please select a project' : ''
+          }
+          {...params}
+          label="Select a project"
+        />
+      )}
+      onChange={(_, data) => onChange(data!)}
+    />
   );
 };
