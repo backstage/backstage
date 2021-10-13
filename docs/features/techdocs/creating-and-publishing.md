@@ -57,11 +57,11 @@ empty.
 Create an entity from the documentation template and you will get the needed
 setup for free.
 
-### Manually add documentation setup to already existing repository
+### Enable documentation for a already existing entity
 
 Prerequisites:
 
-- An existing component
+- An existing entity
   [registered in backstage](../software-catalog/index.md#adding-components-to-the-catalog)
   (e.g. via a `catalog-info.yaml` file).
 
@@ -90,11 +90,11 @@ metadata:
 The
 [`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
 is used by TechDocs to download the documentation source files for generating an
-Entity's TechDocs site.
+entity's TechDocs site.
 
-Create a `/docs` folder in the root of the project with at least an `index.md`
-file. _(If you add more markdown files, make sure to update the nav in the
-mkdocs.yml file to get a proper navigation for your documentation.)_
+Create a `/docs` folder in the root of your repository with at least an
+`index.md` file in it. _(If you add more markdown files, make sure to update the
+nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
 
 > Note - Although `docs` is a popular directory name for storing documentation,
 > it can be renamed to something else and can be configured by `mkdocs.yml`. See
