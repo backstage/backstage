@@ -113,9 +113,10 @@ updated documentation next time you run Backstage!
 
 ## Writing and previewing your documentation
 
-Using the `techdocs-cli` you can preview your docs inside a local Backstage
-instance and get live reload on changes. This is useful when you want to preview
-your documentation while writing.
+Using the [techdocs-cli](https://github.com/backstage/techdocs-cli) you can
+preview your docs inside a local Backstage instance and get live reload on
+changes. This is useful when you want to preview your documentation while
+writing.
 
 To do this you can run:
 
