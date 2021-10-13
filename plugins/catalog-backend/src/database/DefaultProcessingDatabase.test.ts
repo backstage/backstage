@@ -1203,7 +1203,7 @@ describe('Default Processing Database', () => {
     }
 
     it.each(databases.eachSupportedId())(
-      'should return entities to process, %p',
+      'should return ancestors, %p',
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
 
@@ -1261,7 +1261,7 @@ describe('Default Processing Database', () => {
     }
 
     it.each(databases.eachSupportedId())(
-      'should return entities to process, %p',
+      'should return parents, %p',
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
 
