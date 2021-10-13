@@ -501,7 +501,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  database: PluginDatabaseManager;
+  database?: PluginDatabaseManager;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
