@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-azure-devops-backend';
-import { Router } from 'express';
-import type { PluginEnvironment } from '../types';
+import {
+  BuildResult,
+  BuildStatus,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
-  return await createRouter({ logger, config });
-}
+export type RepoBuild = {
+  id?: number;
+  title: string;
+  link?: string;
+  status?: BuildStatus;
+  result?: BuildResult;
+  queueTime?: Date;
+  source: string;
+};
+
+export type RepoBuildOptions = {
+  top?: number;
+};
