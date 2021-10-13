@@ -32,7 +32,6 @@ import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
 import MTable, {
@@ -73,7 +72,7 @@ const tableIcons: Icons = {
     <ChevronLeft {...props} ref={ref} />
   )),
   ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
@@ -497,6 +496,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
+        localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
         {...restProps}
       />
     </div>
