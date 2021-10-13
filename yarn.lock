@@ -22944,9 +22944,9 @@ react-hook-form@^7.12.2:
   integrity sha512-kcLDmSmlyLUFx2UU5bG/o4+3NeK753fhKodJa8gkplXohGkpAq0/p+TR24OWjZmkEc3ES7ppC5v5d6KUk+fJTA==
 
 react-hook-form@^7.13.0:
-  version "7.17.2"
-  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.17.2.tgz#235f15bb65c13e7a1198d33f2db24bcc9e27b303"
-  integrity sha512-oBaHwlYnbpzSFdNrs43QpcM+K2A0kUeNjV86ECYkCimlR1Ctl+tz4oQQd9plfGYkO7PJGLVMOVpUtL5EHjAcYQ==
+  version "7.17.3"
+  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.17.3.tgz#3ed85bed3a6aa4d013e0027a93799d668064c201"
+  integrity sha512-hUKOVtz6Wb319VJRl6OKV8vAhLo5P5raOQEG8lJZt/VXBMv6n2adgpIl1e+36rjX126Wq351ipM0goCgj4UUzQ==
 
 react-hot-loader@^4.12.21:
   version "4.13.0"
