@@ -8,7 +8,7 @@ description: Guidance on how to create and publish documentation
 This section will guide you through:
 
 - [Create a basic documentation setup](#create-a-basic-documentation-setup)
-  - [Use any software template](#use-the-documentation-template)
+  - [Use any software template](#use-any-software-template)
   - [Manually add documentation setup to already existing repository](#manually-add-documentation-setup-to-already-existing-repository)
   - [Use the documentation template](#use-the-documentation-template)
 - [Writing and previewing your documentation](#writing-and-previewing-your-documentation)
