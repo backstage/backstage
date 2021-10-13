@@ -63,7 +63,7 @@ export class KeyStores {
     }
 
     if (provider === 'firestore') {
-      return FirestoreKeyStore.create({
+      return await FirestoreKeyStore.create({
         projectId: providerConfig?.getOptionalString('projectId'),
         keyFilename: providerConfig?.getOptionalString('keyFilename'),
         path: providerConfig?.getOptionalString('path'),

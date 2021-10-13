@@ -53,14 +53,14 @@ describe('FirestoreKeyStore', () => {
     process.env = OLD_ENV;
   });
 
-  it('can create an instance without settings', () => {
-    const keyStore = FirestoreKeyStore.create();
+  it('can create an instance without settings', async () => {
+    const keyStore = await FirestoreKeyStore.create();
 
     expect(keyStore).toBeInstanceOf(FirestoreKeyStore);
   });
 
   it('can set the project id', async () => {
-    FirestoreKeyStore.create({ projectId: 'my-project' });
+    await FirestoreKeyStore.create({ projectId: 'my-project' });
 
     expect(Firestore).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -70,7 +70,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can handle keyfile file', async () => {
-    FirestoreKeyStore.create({ keyFilename: 'keyFile.json' });
+    await FirestoreKeyStore.create({ keyFilename: 'keyFile.json' });
 
     expect(Firestore).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -79,9 +79,9 @@ describe('FirestoreKeyStore', () => {
     );
   });
 
-  it('can use default google credentials', () => {
+  it('can use default google credentials', async () => {
     process.env.GOOGLE_APPLICATION_CREDENTIALS = 'cred.json';
-    FirestoreKeyStore.create();
+    await FirestoreKeyStore.create();
 
     expect(Firestore).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -91,14 +91,14 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can uses a default path', async () => {
-    const keyStore = FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');
   });
 
   it('can set the path', async () => {
-    const keyStore = FirestoreKeyStore.create({
+    const keyStore = await FirestoreKeyStore.create({
       path: 'my-path',
     });
     await keyStore.addKey(key);
@@ -107,7 +107,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can add keys', async () => {
-    const keyStore = FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');
@@ -119,7 +119,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can delete a single key', async () => {
-    const keyStore = FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create();
     await keyStore.removeKeys(['123']);
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');
@@ -128,7 +128,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can delete a multiple keys', async () => {
-    const keyStore = FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create();
     await keyStore.removeKeys(['123', '456']);
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');
@@ -138,7 +138,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can list keys', async () => {
-    const keyStore = FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create();
     const items = await keyStore.listKeys();
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');

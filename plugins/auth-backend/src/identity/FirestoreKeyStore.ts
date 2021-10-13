@@ -23,7 +23,9 @@ type FirestoreSettings = Settings & {
 };
 
 export class FirestoreKeyStore implements KeyStore {
-  static create(settings?: FirestoreSettings): FirestoreKeyStore {
+  static async create(
+    settings?: FirestoreSettings,
+  ): Promise<FirestoreKeyStore> {
     const { projectId, keyFilename, path } = settings ?? {};
     const database = new Firestore({
       projectId,
