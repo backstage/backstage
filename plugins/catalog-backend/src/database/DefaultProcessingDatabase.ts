@@ -31,6 +31,8 @@ import {
   ListAncestorsOptions,
   ListAncestorsResult,
   UpdateEntityCacheOptions,
+  ListParentsOptions,
+  ListParentsResult,
 } from './types';
 import { DeferredEntity } from '../processing/types';
 import { RefreshIntervalFunction } from '../processing/refresh';
@@ -417,6 +419,23 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     throw new Error(
       `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
     );
+  }
+
+  async listParents(
+    txOpaque: Transaction,
+    options: ListParentsOptions,
+  ): Promise<ListParentsResult> {
+    const tx = txOpaque as Knex.Transaction;
+
+    const rows = await tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
+      .where({ target_entity_ref: options.entityRef })
+      .select();
+
+    const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
+
+    return { entityRefs };
   }
 
   async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {

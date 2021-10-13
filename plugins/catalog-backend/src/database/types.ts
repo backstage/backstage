@@ -91,6 +91,14 @@ export type ListAncestorsResult = {
   entityRefs: string[];
 };
 
+export type ListParentsOptions = {
+  entityRef: string;
+};
+
+export type ListParentsResult = {
+  entityRefs: string[];
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
@@ -148,4 +156,9 @@ export interface ProcessingDatabase {
     txOpaque: Transaction,
     options: ListAncestorsOptions,
   ): Promise<ListAncestorsResult>;
+
+  listParents(
+    txOpaque: Transaction,
+    options: ListParentsOptions,
+  ): Promise<ListParentsResult>;
 }
