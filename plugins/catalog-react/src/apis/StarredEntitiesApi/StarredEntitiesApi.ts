@@ -26,24 +26,6 @@ export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi> = createApiRef({
 });
 
 /**
- * @public
- */
-export type StarredEntitiesApiObservable = {
-  /**
-   * A set of entity references that are starred
-   */
-  starredEntities: Set<string>;
-
-  /**
-   * A function to check if an entity is starred.
-   *
-   * @param entityRef - an entity reference to check
-   * @returns true, if the entity is starred.
-   */
-  isStarred: (entityRef: string) => boolean;
-};
-
-/**
  * An API to store and retrieve starred entities
  *
  * @public
@@ -57,8 +39,7 @@ export interface StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 
   /**
-   * Observe the state of starred entities and receive a handler
-   * to check the star state of an entity.
+   * Observe the set of starred entity references.
    */
-  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<Set<string>>;
 }

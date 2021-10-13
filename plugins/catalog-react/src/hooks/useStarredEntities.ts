@@ -14,29 +14,43 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { useCallback } from 'react';
 import { useObservable } from 'react-use';
 import { starredEntitiesApiRef } from '../apis';
 
-export const useStarredEntities = () => {
+function getEntityRef(entityOrRef: Entity | EntityName | string): string {
+  return typeof entityOrRef === 'string'
+    ? entityOrRef
+    : stringifyEntityRef(entityOrRef);
+}
+
+export function useStarredEntities(): {
+  starredEntities: Set<string>;
+  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
+  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+} {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
-  const { starredEntities, isStarred } = useObservable(
+  const starredEntities = useObservable(
     starredEntitiesApi.starredEntitie$(),
-    { starredEntities: new Set<string>(), isStarred: _ => false },
+    new Set<string>(),
   );
 
   const isStarredEntity = useCallback(
-    (entity: Entity) => isStarred(stringifyEntityRef(entity)),
-    [isStarred],
+    (entityOrRef: Entity | EntityName | string) =>
+      starredEntities.has(getEntityRef(entityOrRef)),
+    [starredEntities],
   );
 
   const toggleStarredEntity = useCallback(
-    (entity: Entity) => {
-      starredEntitiesApi.toggleStarred(stringifyEntityRef(entity)).then();
-    },
+    (entityOrRef: Entity | EntityName | string) =>
+      starredEntitiesApi.toggleStarred(getEntityRef(entityOrRef)).then(),
     [starredEntitiesApi],
   );
 
@@ -45,4 +59,4 @@ export const useStarredEntities = () => {
     toggleStarredEntity,
     isStarredEntity,
   };
-};
+}

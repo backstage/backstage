@@ -139,7 +139,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   isStarred(entityRef: string): boolean;
   // (undocumented)
-  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<Set<string>>;
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }
@@ -757,15 +757,9 @@ export const rootRoute: RouteRef<undefined>;
 
 // @public
 export interface StarredEntitiesApi {
-  starredEntitie$(): Observable<StarredEntitiesApiObservable>;
+  starredEntitie$(): Observable<Set<string>>;
   toggleStarred(entityRef: string): Promise<void>;
 }
-
-// @public (undocumented)
-export type StarredEntitiesApiObservable = {
-  starredEntities: Set<string>;
-  isStarred: (entityRef: string) => boolean;
-};
 
 // @public
 export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi>;
@@ -894,10 +888,10 @@ export const UserListPicker: ({
 // Warning: (ae-missing-release-tag) "useStarredEntities" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const useStarredEntities: () => {
+export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entity: Entity) => void;
-  isStarredEntity: (entity: Entity) => boolean;
+  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
+  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
 };
 
 // Warnings were encountered during analysis:

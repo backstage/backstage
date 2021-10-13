@@ -85,19 +85,8 @@ describe('DefaultStarredEntitiesApi', () => {
 
     it('should receive updates', async () => {
       expect(handler).toBeCalledTimes(2);
-      expect(handler).toBeCalledWith({
-        starredEntities: new Set(),
-        isStarred: expect.any(Function),
-      });
-      expect(handler).toBeCalledWith({
-        starredEntities: new Set(['component:default/mock']),
-        isStarred: expect.any(Function),
-      });
-    });
-
-    it('should receive isStarred function that operates on the latest state', async () => {
-      expect(handler.mock.calls[0][0].isStarred(mockEntityRef)).toBe(true);
-      expect(handler.mock.calls[1][0].isStarred(mockEntityRef)).toBe(true);
+      expect(handler).toBeCalledWith(new Set());
+      expect(handler).toBeCalledWith(new Set(['component:default/mock']));
     });
   });
 });

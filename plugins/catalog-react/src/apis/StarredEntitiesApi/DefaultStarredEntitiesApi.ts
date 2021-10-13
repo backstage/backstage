@@ -16,10 +16,7 @@
 
 import { Observable, StorageApi } from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
-import {
-  StarredEntitiesApi,
-  StarredEntitiesApiObservable,
-} from './StarredEntitiesApi';
+import { StarredEntitiesApi } from './StarredEntitiesApi';
 
 /**
  * Default implementation of the StarredEntitiesApi that is backed by the StorageApi.
@@ -58,7 +55,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     );
   }
 
-  starredEntitie$(): Observable<StarredEntitiesApiObservable> {
+  starredEntitie$(): Observable<Set<string>> {
     return this.observable;
   }
 
@@ -67,29 +64,22 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   }
 
   private readonly subscribers = new Set<
-    ZenObservable.SubscriptionObserver<StarredEntitiesApiObservable>
+    ZenObservable.SubscriptionObserver<Set<string>>
   >();
 
-  private readonly observable =
-    new ObservableImpl<StarredEntitiesApiObservable>(subscriber => {
-      // forward the the latest value
-      subscriber.next({
-        starredEntities: this.starredEntities,
-        isStarred: e => this.isStarred(e),
-      });
+  private readonly observable = new ObservableImpl<Set<string>>(subscriber => {
+    // forward the the latest value
+    subscriber.next(this.starredEntities);
 
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    });
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
 
   private notifyChanges() {
     for (const subscription of this.subscribers) {
-      subscription.next({
-        starredEntities: this.starredEntities,
-        isStarred: e => this.isStarred(e),
-      });
+      subscription.next(this.starredEntities);
     }
   }
 }

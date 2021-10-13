@@ -16,7 +16,4 @@
 
 export { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
 export { starredEntitiesApiRef } from './StarredEntitiesApi';
-export type {
-  StarredEntitiesApi,
-  StarredEntitiesApiObservable,
-} from './StarredEntitiesApi';
+export type { StarredEntitiesApi } from './StarredEntitiesApi';
