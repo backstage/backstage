@@ -10,6 +10,14 @@ import { Extension } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "ClockConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ClockConfig = {
+  label: string;
+  timeZone: string;
+};
+
 // Warning: (ae-missing-release-tag) "ComponentAccordion" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -75,6 +83,15 @@ export function createCardExtension<T>({
     title?: string;
   } & T) => JSX.Element
 >;
+
+// Warning: (ae-missing-release-tag) "HeaderWorldClock" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HeaderWorldClock: ({
+  clockConfigs,
+}: {
+  clockConfigs: ClockConfig[];
+}) => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "HomepageCompositionRoot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

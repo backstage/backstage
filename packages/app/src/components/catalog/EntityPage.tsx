@@ -33,6 +33,10 @@ import {
   EntityProvidedApisCard,
   EntityProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
+import {
+  EntityAzurePipelinesContent,
+  isAzureDevOpsAvailable,
+} from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
@@ -181,6 +185,10 @@ export const cicdContent = (
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+      <EntityAzurePipelinesContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>

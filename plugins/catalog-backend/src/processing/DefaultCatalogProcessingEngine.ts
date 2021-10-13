@@ -189,10 +189,18 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           let hashBuilder = this.createHash().update(errorsString);
           if (result.ok) {
+            const { entityRefs: parents } =
+              await this.processingDatabase.transaction(tx =>
+                this.processingDatabase.listParents(tx, {
+                  entityRef,
+                }),
+              );
+
             hashBuilder = hashBuilder
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
-              .update(stableStringify([...result.relations]));
+              .update(stableStringify([...result.relations]))
+              .update(stableStringify([...parents]));
           }
 
           const resultHash = hashBuilder.digest('hex');

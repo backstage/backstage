@@ -19,15 +19,17 @@ import {
   ClusterDetails,
   CustomResource,
   KubernetesFetcher,
+  KubernetesObjectsProviderOptions,
   KubernetesServiceLocator,
+  ObjectsByEntityRequest,
   ObjectToFetch,
 } from '../types/types';
-import {
-  ClusterObjects,
-  KubernetesRequestBody,
-} from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
+import {
+  ClusterObjects,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
 
 export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
@@ -74,13 +76,10 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   },
 ];
 
-export interface KubernetesFanOutHandlerOptions {
-  logger: Logger;
-  fetcher: KubernetesFetcher;
-  serviceLocator: KubernetesServiceLocator;
-  customResources: CustomResource[];
-  objectTypesToFetch?: ObjectToFetch[];
-}
+export interface KubernetesFanOutHandlerOptions
+  extends KubernetesObjectsProviderOptions {}
+
+export interface KubernetesRequestBody extends ObjectsByEntityRequest {}
 
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
@@ -103,7 +102,9 @@ export class KubernetesFanOutHandler {
     this.objectTypesToFetch = new Set(objectTypesToFetch);
   }
 
-  async getKubernetesObjectsByEntity(requestBody: KubernetesRequestBody) {
+  async getKubernetesObjectsByEntity(
+    requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse> {
     const entityName =
       requestBody.entity?.metadata?.annotations?.[
         'backstage.io/kubernetes-id'

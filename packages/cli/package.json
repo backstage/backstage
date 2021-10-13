@@ -85,7 +85,7 @@
     "json-schema": "^0.3.0",
     "jest-transform-yaml": "^0.1.1",
     "lodash": "^4.17.21",
-    "mini-css-extract-plugin": "^1.4.1",
+    "mini-css-extract-plugin": "^2.4.2",
     "node-libs-browser": "^2.2.1",
     "ora": "^5.3.0",
     "postcss": "^8.1.0",

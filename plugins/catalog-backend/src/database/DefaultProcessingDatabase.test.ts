@@ -1182,4 +1182,134 @@ describe('Default Processing Database', () => {
       60_000,
     );
   });
+
+  describe('listAncestors', () => {
+    let nextId = 1;
+    function makeEntity(ref: string) {
+      return {
+        entity_id: String(nextId++),
+        entity_ref: ref,
+        unprocessed_entity: JSON.stringify({
+          kind: 'Location',
+          apiVersion: '1.0.0',
+          metadata: {
+            name: 'xyz',
+          },
+        }),
+        errors: '[]',
+        next_update_at: '2019-01-01 23:00:00',
+        last_discovery_at: '2021-04-01 13:37:00',
+      };
+    }
+
+    it.each(databases.eachSupportedId())(
+      'should return ancestors, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('location:default/root-1'),
+        );
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('location:default/root-2'),
+        );
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('component:default/foobar'),
+        );
+
+        await insertRefRow(knex, {
+          source_key: 'source',
+          target_entity_ref: 'location:default/root-2',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/root-2',
+          target_entity_ref: 'location:default/root-1',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/root-1',
+          target_entity_ref: 'component:default/foobar',
+        });
+
+        const result = await db.transaction(async tx =>
+          db.listAncestors(tx, { entityRef: 'component:default/foobar' }),
+        );
+        expect(result.entityRefs).toEqual([
+          'location:default/root-1',
+          'location:default/root-2',
+        ]);
+      },
+    );
+  });
+
+  describe('listParents', () => {
+    let nextId = 1;
+    function makeEntity(ref: string) {
+      return {
+        entity_id: String(nextId++),
+        entity_ref: ref,
+        unprocessed_entity: JSON.stringify({
+          kind: 'Location',
+          apiVersion: '1.0.0',
+          metadata: {
+            name: 'xyz',
+          },
+        }),
+        errors: '[]',
+        next_update_at: '2019-01-01 23:00:00',
+        last_discovery_at: '2021-04-01 13:37:00',
+      };
+    }
+
+    it.each(databases.eachSupportedId())(
+      'should return parents, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('location:default/root-1'),
+        );
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('location:default/root-2'),
+        );
+        await knex<DbRefreshStateRow>('refresh_state').insert(
+          makeEntity('component:default/foobar'),
+        );
+
+        await insertRefRow(knex, {
+          source_key: 'source',
+          target_entity_ref: 'location:default/root-2',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/root-2',
+          target_entity_ref: 'location:default/root-1',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/root-1',
+          target_entity_ref: 'component:default/foobar',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'location:default/root-2',
+          target_entity_ref: 'component:default/foobar',
+        });
+
+        const result1 = await db.transaction(async tx =>
+          db.listParents(tx, { entityRef: 'component:default/foobar' }),
+        );
+        expect(result1.entityRefs).toEqual([
+          'location:default/root-1',
+          'location:default/root-2',
+        ]);
+
+        const result2 = await db.transaction(async tx =>
+          db.listParents(tx, { entityRef: 'location:default/root-1' }),
+        );
+        expect(result2.entityRefs).toEqual(['location:default/root-2']);
+
+        const result3 = await db.transaction(async tx =>
+          db.listParents(tx, { entityRef: 'location:default/root-2' }),
+        );
+        expect(result3.entityRefs).toEqual([]);
+      },
+    );
+  });
 });
