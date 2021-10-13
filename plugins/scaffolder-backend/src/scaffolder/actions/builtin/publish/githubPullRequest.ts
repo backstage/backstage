@@ -28,6 +28,7 @@ import { Octokit } from '@octokit/rest';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 
 class GithubResponseError extends CustomErrorBase {}
 
@@ -183,7 +184,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath
-        ? path.resolve(ctx.workspacePath, sourcePath)
+        ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
       const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
