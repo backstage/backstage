@@ -23,8 +23,22 @@ This section will guide you through:
 If you have an existing repository that you'd like to add documentation to, skip
 to the
 [Manually add documentation setup](#manually-add-documentation-setup-to-already-existing-repository)
-section below. Otherwise, continue reading to start a documentation repo from
-scratch.
+section below. Otherwise, continue reading to create a new software entity
+including documentation from scratch.
+
+### Use any software template
+
+TechDocs is built on top of the
+[docs like code approach](https://www.docslikecode.com/about/). This, in short,
+means that you should keep documentation close to the code.
+
+Your Backstage app should by default have a set of software templates added, all
+of these software templates include everything you need to get your TechDocs
+site up and running and to start write your documentation.
+
+If you have created software templates that do not include documentation by
+default, we highly recommend you to set that up. Follow our how-to guide
+[How to add documentation setup to my software templates](link) to get started.
 
 ### Use the documentation template
 
