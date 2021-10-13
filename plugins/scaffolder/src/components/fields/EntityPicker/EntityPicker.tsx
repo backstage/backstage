@@ -36,11 +36,14 @@ export const EntityPicker = ({
 }: FieldProps<string>) => {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
   const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
+  const allowedTypes = uiSchema['ui:options']?.allowedTypes as string[];
   const catalogApi = useApi(catalogApiRef);
 
   const { value: entities, loading } = useAsync(() =>
     catalogApi.getEntities(
-      allowedKinds ? { filter: { kind: allowedKinds } } : undefined,
+      allowedKinds
+        ? { filter: { kind: allowedKinds, 'spec.type': allowedTypes } }
+        : undefined,
     ),
   );
 

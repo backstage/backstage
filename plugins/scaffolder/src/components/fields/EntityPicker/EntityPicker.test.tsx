@@ -34,7 +34,11 @@ describe('<EntityPicker />', () => {
   const schema = {};
   const required = false;
   let uiSchema: {
-    'ui:options': { allowedKinds?: string[]; defaultKind?: string };
+    'ui:options': {
+      allowedKinds?: string[];
+      defaultKind?: string;
+      allowedTypes?: string[];
+    };
   };
   const rawErrors: string[] = [];
   const formData = undefined;
@@ -131,6 +135,39 @@ describe('<EntityPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
         filter: {
           kind: ['User'],
+        },
+      });
+    });
+  });
+
+  describe('with allowedKinds and allowedTypes', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': { allowedKinds: ['Group'], allowedTypes: ['team'] },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('searches for users and groups', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: ['Group'],
+          type: ['team'],
         },
       });
     });
