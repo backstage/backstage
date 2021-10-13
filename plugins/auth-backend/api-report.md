@@ -16,6 +16,25 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
 import { UserEntity } from '@backstage/catalog-model';
 
+// Warning: (ae-missing-release-tag) "AtlassianAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AtlassianAuthProvider implements OAuthHandlers {
+  // Warning: (ae-forgotten-export) The symbol "AtlassianAuthProviderOptions" needs to be exported by the entry point index.d.ts
+  constructor(options: AtlassianAuthProviderOptions);
+  // (undocumented)
+  handler(req: express.Request): Promise<{
+    response: OAuthResponse;
+    refreshToken: string;
+  }>;
+  // (undocumented)
+  refresh(req: OAuthRefreshRequest): Promise<OAuthResponse>;
+  // Warning: (ae-forgotten-export) The symbol "RedirectInfo" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  start(req: OAuthStartRequest): Promise<RedirectInfo>;
+}
+
 // Warning: (ae-missing-release-tag) "AuthProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -145,6 +164,14 @@ export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult>
 //
 // @public (undocumented)
 export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResult>;
+
+// Warning: (ae-forgotten-export) The symbol "AtlassianProviderOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createAtlassianProvider: (
+  options?: AtlassianProviderOptions | undefined,
+) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createAwsAlbProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -388,7 +415,6 @@ export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-forgotten-export) The symbol "RedirectInfo" needs to be exported by the entry point index.d.ts
   start(req: OAuthStartRequest): Promise<RedirectInfo>;
 }
 
