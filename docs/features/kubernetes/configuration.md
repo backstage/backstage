@@ -140,6 +140,20 @@ for real examples.
 
 PEM-encoded certificate authority certificates.
 
+This values could be obtained via inspecting the kube config file under
+`clusters.cluster.certificate-authority-data`. For GKE, execute the following
+command to obtain the value
+
+```
+gcloud container clusters describe <YOUR_CLUSTER_NAME> \
+    --zone=<YOUR_COMPUTE_ZONE> \
+    --format="value(masterAuth.clusterCaCertificate)"
+```
+
+See also
+https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
+for complete docs about GKE without gcloud.
+
 #### `gke`
 
 This cluster locator is designed to work with Kubernetes clusters running in
