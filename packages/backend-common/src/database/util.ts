@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
-import { resolvePackagePath } from '../paths';
-import { DB_MIGRATIONS_TABLE } from './tables';
+/**
+ * Tries to deduce whether a thrown error is a database conflict.
+ *
+ * @public
+ * @param e - A thrown error
+ * @returns True if the error looks like it was a conflict error thrown by a
+ *          known database engine
+ */
+export function isDatabaseConflictError(e: unknown) {
+  const message = (e as any)?.message;
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/backend-common',
-  'migrations',
-);
-
-export async function migrateBackendCommon(knex: Knex): Promise<void> {
-  await knex.migrate.latest({
-    directory: migrationsDir,
-    tableName: DB_MIGRATIONS_TABLE,
-  });
+  return (
+    typeof message === 'string' &&
+    (/SQLITE_CONSTRAINT: UNIQUE/.test(message) ||
+      /unique constraint/.test(message))
+  );
 }

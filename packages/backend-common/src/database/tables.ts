@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_common__knex_migrations';
 export const DB_MUTEXES_TABLE = 'backstage_backend_common__mutexes';
 export const DB_TASKS_TABLE = 'backstage_backend_common__tasks';
 

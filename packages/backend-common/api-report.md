@@ -376,6 +376,9 @@ export class GitlabUrlReader implements UrlReader {
 export { isChildPath };
 
 // @public
+export function isDatabaseConflictError(e: unknown): boolean;
+
+// @public
 export function loadBackendConfig(options: {
   logger: Logger_2;
   argv: string[];
