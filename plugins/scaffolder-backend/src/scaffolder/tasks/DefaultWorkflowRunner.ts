@@ -222,11 +222,6 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
           const tmpDirs = new Array<string>();
           const stepOutput: { [outputName: string]: JsonValue } = {};
 
-          await task.emitLog(`Beginning step ${step.name}`, {
-            stepId: step.id,
-            status: 'processing',
-          });
-
           await action.handler({
             baseUrl: task.spec.baseUrl,
             input,
