@@ -6,25 +6,47 @@ Things you'll need to install:
 
 - [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
 - [Docker](https://www.docker.com/get-started)
+- [Node](https://nodejs.org/en/download/) (version 12 or 14)
 
 Things you'll need to add:
 
 - Full access to the Department of Veterans Affairs Organization (for access, navigate to https://vaww.oit.va.gov/services/github/#23gethelp and fill out the form (requires an existing GitHub account and you'll have to be on the VA network to access the link.)
-- If you have access, pull the BIH branch code. `https://github.com/department-of-veterans-affairs/bih.git`
-- [Github Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- [Github Oauth App](https://backstage.io/docs/auth/github/provider) Follow the directions under the heading `Create an OAuth App on GitHub`
+- If you have access, clone the BIH branch code. ```git clone https://github.com/department-of-veterans-affairs/bih.git```
+- [Github Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)(You'll need this value later for your `GITHUB_TOKEN`) 
+- [Github Oauth App](https://backstage.io/docs/auth/github/provider) Follow the directions under the heading `Create an OAuth App on GitHub`(You'll need these values later for your   `AUTH_GITHUB_CLIENT_ID` and `AUTH_GITHUB_CLIENT_SECRET`)
 
 Things you'll need to change:
 
-- If you have pulled the BIH code change the file name of `example.env` to `.env`
+- If you have cloned the BIH repo change the file name of `example.env` to `.env`
 - In the .env file add in the values for:
   `GITHUB_TOKEN`,
   `AUTH_GITHUB_CLIENT_ID`,
   `AUTH_GITHUB_CLIENT_SECRET`
-
+- In the file "app-config.yaml" replace: 
+```yml
+techdocs:
+  builder: 'external'
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: ${AWS_BUCKET_NAME}
+      region: ${AWS_BUCKET_REGION}
+      credentials:
+        accessKeyId: ${AWS_ACCESS_KEY_ID}
+        secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
+```
+With this: 
+```yml
+techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
+  generator:
+    techdocs: local
+```
 ---
 
-Create two terminal instances, from one terminal instance:
+From one terminal instance:
 
 run:
 
@@ -32,11 +54,7 @@ run:
 yarn docker-local
 ```
 
-from the other run:
-
-```sh
-yarn start
-```
+Once you observe 'Listening on :7000' in the log you can see the app by navigating to http://localhost:7000
 
 ## Documentation
 
