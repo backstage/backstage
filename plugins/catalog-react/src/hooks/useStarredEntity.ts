@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { useCallback } from 'react';
-import { useObservable } from 'react-use';
+import { useCallback, useEffect, useState } from 'react';
 import { starredEntitiesApiRef } from '../apis';
 
 function getEntityRef(entityOrRef: Entity | EntityName | string): string {
@@ -30,32 +29,32 @@ function getEntityRef(entityOrRef: Entity | EntityName | string): string {
     : stringifyEntityRef(entityOrRef);
 }
 
-export function useStarredEntities(): {
-  starredEntities: Set<string>;
-  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
-  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+  toggleStarredEntity: () => void;
+  isStarredEntity: boolean;
 } {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
-  const starredEntities = useObservable(
-    starredEntitiesApi.starredEntitie$(),
-    new Set<string>(),
-  );
+  const [isStarredEntity, setIsStarredEntity] = useState(false);
 
-  const isStarredEntity = useCallback(
-    (entityOrRef: Entity | EntityName | string) =>
-      starredEntities.has(getEntityRef(entityOrRef)),
-    [starredEntities],
-  );
+  useEffect(() => {
+    const subscription = starredEntitiesApi.starredEntitie$().subscribe({
+      next(starredEntities: Set<string>) {
+        setIsStarredEntity(starredEntities.has(getEntityRef(entityOrRef)));
+      },
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [entityOrRef, starredEntitiesApi]);
 
   const toggleStarredEntity = useCallback(
-    (entityOrRef: Entity | EntityName | string) =>
-      starredEntitiesApi.toggleStarred(getEntityRef(entityOrRef)).then(),
-    [starredEntitiesApi],
+    () => starredEntitiesApi.toggleStarred(getEntityRef(entityOrRef)).then(),
+    [entityOrRef, starredEntitiesApi],
   );
 
   return {
-    starredEntities,
     toggleStarredEntity,
     isStarredEntity,
   };
