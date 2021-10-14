@@ -17,29 +17,38 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
-import { RenderNodeFunction, RenderNodeProps, GraphNode } from './types';
+import { RenderNodeFunction, RenderNodeProps, DependencyNode } from './types';
 import { NODE_TEST_ID } from './constants';
+import dagre from 'dagre';
 
-const useStyles = makeStyles(theme => ({
-  node: {
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-}));
+export type DependencyGraphNodeClassKey = 'node';
 
-export type NodeComponentProps<T = any> = {
+const useStyles = makeStyles(
+  theme => ({
+    node: {
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+  }),
+  { name: 'BackstageDependencyGraphNode' },
+);
+
+export type GraphNode<T> = dagre.Node<DependencyNode<T>>;
+
+export type NodeComponentProps<T> = {
   node: GraphNode<T>;
-  render?: RenderNodeFunction;
+  render?: RenderNodeFunction<T>;
   setNode: dagre.graphlib.Graph['setNode'];
 };
 
 const renderDefault = (props: RenderNodeProps) => <DefaultNode {...props} />;
 
-export function Node({
+export function Node<T>({
   render = renderDefault,
   setNode,
   node,
-}: NodeComponentProps) {
-  const { width, height, x = 0, y = 0, ...nodeProps } = node;
+}: NodeComponentProps<T>) {
+  const { width, height, x = 0, y = 0 } = node;
+  const nodeProps: DependencyNode<T> = node;
   const classes = useStyles();
   const nodeRef = React.useRef<SVGGElement | null>(null);
 

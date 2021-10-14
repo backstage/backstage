@@ -1,5 +1,25 @@
 # @backstage/test-utils
 
+## 0.1.19
+
+### Patch Changes
+
+- 54bbe25c34: Store the namespaced bucket storage for each instance that was created with `MockStorage.create()` instead of global variable.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.17
+  - @backstage/theme@0.2.11
+
+## 0.1.18
+
+### Patch Changes
+
+- e749a38e89: Added a mock implementation of the `AnalyticsApi`, which can be used to make
+  assertions about captured analytics events.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/test-utils-core@0.1.3
+
 ## 0.1.17
 
 ### Patch Changes

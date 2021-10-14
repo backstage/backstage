@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  createStyles,
-  makeStyles,
-  Typography,
-  WithStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles, WithStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
+
+export type ItemCardHeaderClassKey = 'root';
 
 const styles = (theme: BackstageTheme) =>
   createStyles({
@@ -34,7 +32,7 @@ const styles = (theme: BackstageTheme) =>
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**

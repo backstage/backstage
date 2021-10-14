@@ -29,7 +29,14 @@
       "getting-started/contributors",
       "getting-started/project-structure"
     ],
-    "CLI": ["cli/index", "cli/commands"],
+    "Local Development": [
+      {
+        "type": "subcategory",
+        "label": "CLI",
+        "ids": ["local-dev/cli-overview", "local-dev/cli-commands"]
+      },
+      "local-dev/linking-local-packages"
+    ],
     "Core Features": [
       {
         "type": "subcategory",
@@ -71,8 +78,7 @@
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
-          "features/software-templates/template-legacy",
-          "features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
       {
@@ -83,7 +89,8 @@
           "features/search/getting-started",
           "features/search/concepts",
           "features/search/architecture",
-          "features/search/search-engines"
+          "features/search/search-engines",
+          "features/search/how-to-guides"
         ]
       },
       {
@@ -148,11 +155,6 @@
       },
       {
         "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
-      },
-      {
-        "type": "subcategory",
         "label": "Google GCS",
         "ids": ["integrations/google-cloud-storage/locations"]
       },
@@ -170,6 +172,7 @@
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
+      "plugins/analytics",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -210,6 +213,7 @@
         "label": "Included providers",
         "ids": [
           "auth/auth0/provider",
+          "auth/bitbucket/provider",
           "auth/microsoft/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
@@ -255,7 +259,8 @@
       "tutorials/quickstart-app-plugin",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
-      "tutorials/switching-sqlite-postgres"
+      "tutorials/switching-sqlite-postgres",
+      "tutorials/using-backstage-proxy-within-plugin"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

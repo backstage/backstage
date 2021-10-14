@@ -14,61 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRelationSpec,
-  Location,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { RecursivePartial } from '../util/RecursivePartial';
-
-//
-// HigherOrderOperation
-//
-
-export type HigherOrderOperation = {
-  addLocation(
-    spec: LocationSpec,
-    options?: { dryRun?: boolean },
-  ): Promise<AddLocationResult>;
-  refreshAllLocations(): Promise<void>;
-};
-
-export type AddLocationResult = {
-  location: Location;
-  entities: Entity[];
-};
-
-//
-// LocationReader
-//
-
-export type LocationReader = {
-  /**
-   * Reads the contents of a location.
-   *
-   * @param location The location to read
-   * @throws An error if the location was handled by this reader, but could not
-   *         be read
-   */
-  read(location: LocationSpec): Promise<ReadLocationResult>;
-};
-
-export type ReadLocationResult = {
-  entities: ReadLocationEntity[];
-  errors: ReadLocationError[];
-};
-
-export type ReadLocationEntity = {
-  location: LocationSpec;
-  entity: Entity;
-  relations: EntityRelationSpec[];
-};
-
-export type ReadLocationError = {
-  location: LocationSpec;
-  error: Error;
-};
 
 //
 // LocationAnalyzer

@@ -99,4 +99,19 @@ describe('clusterLinks - rancher formatter', () => {
       'https://k8s.foo.com/explorer/autoscaling.horizontalpodautoscaler/bar/foobar',
     );
   });
+  it('should support subpaths in dashboardUrl', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/dashboard/c/c-28a4b/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/dashboard/c/c-28a4b/explorer/apps.deployment/bar/foobar',
+    );
+  });
 });

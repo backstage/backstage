@@ -16,37 +16,43 @@
 
 import React, { useEffect, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';
 
-const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    height: '100%',
-    width: '315px',
-    display: 'flex',
-    flexDirection: 'column',
-    marginRight: theme.spacing(3),
-  },
-  value: {
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '60px',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  filters: {
-    display: 'flex',
-    flexDirection: 'column',
-    '& > *': {
-      marginTop: theme.spacing(2),
+export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+
+const useFilterStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      height: '100%',
+      width: '315px',
+      display: 'flex',
+      flexDirection: 'column',
+      marginRight: theme.spacing(3),
     },
-  },
-}));
+    value: {
+      fontWeight: 'bold',
+      fontSize: 18,
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      height: '60px',
+      justifyContent: 'space-between',
+      borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    },
+    filters: {
+      display: 'flex',
+      flexDirection: 'column',
+      '& > *': {
+        marginTop: theme.spacing(2),
+      },
+    },
+  }),
+  { name: 'BackstageTableFilters' },
+);
 
 export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
@@ -66,7 +72,7 @@ type Props = {
 };
 
 export const Filters = (props: Props) => {
-  const classes = useSubvalueCellStyles();
+  const classes = useFilterStyles();
 
   const { onChangeFilters } = props;
 

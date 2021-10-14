@@ -20,36 +20,42 @@ import React, {
   ReactNode,
   PropsWithChildren,
 } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  withStyles,
-  makeStyles,
-  Tabs,
-  Tab,
-  TabProps,
-} from '@material-ui/core';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import Tabs from '@material-ui/core/Tabs';
+import Tab, { TabProps } from '@material-ui/core/Tab';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
-const useTabsStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(0, 2, 0, 2.5),
-    minHeight: theme.spacing(3),
-  },
-  indicator: {
-    backgroundColor: theme.palette.info.main,
-    height: theme.spacing(0.3),
-  },
-}));
+export type TabbedCardClassKey = 'root' | 'indicator';
 
-const BoldHeader = withStyles(theme => ({
-  root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
-  title: { fontWeight: 700 },
-  subheader: { paddingTop: theme.spacing(1) },
-}))(CardHeader);
+const useTabsStyles = makeStyles(
+  theme => ({
+    root: {
+      padding: theme.spacing(0, 2, 0, 2.5),
+      minHeight: theme.spacing(3),
+    },
+    indicator: {
+      backgroundColor: theme.palette.info.main,
+      height: theme.spacing(0.3),
+    },
+  }),
+  { name: 'BackstageTabbedCard' },
+);
+
+export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
+
+const BoldHeader = withStyles(
+  theme => ({
+    root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
+    title: { fontWeight: 700 },
+    subheader: { paddingTop: theme.spacing(1) },
+  }),
+  { name: 'BackstageTabbedCardBoldHeader' },
+)(CardHeader);
 
 type Props = {
   /** @deprecated Use errorBoundaryProps instead */
@@ -114,23 +120,28 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
   );
 }
 
-const useCardTabStyles = makeStyles(theme => ({
-  root: {
-    minWidth: theme.spacing(6),
-    minHeight: theme.spacing(3),
-    margin: theme.spacing(0, 2, 0, 0),
-    padding: theme.spacing(0.5, 0, 0.5, 0),
-    textTransform: 'none',
-    '&:hover': {
-      opacity: 1,
-      backgroundColor: 'transparent',
-      color: theme.palette.text.primary,
+export type CardTabClassKey = 'root' | 'selected';
+
+const useCardTabStyles = makeStyles(
+  theme => ({
+    root: {
+      minWidth: theme.spacing(6),
+      minHeight: theme.spacing(3),
+      margin: theme.spacing(0, 2, 0, 0),
+      padding: theme.spacing(0.5, 0, 0.5, 0),
+      textTransform: 'none',
+      '&:hover': {
+        opacity: 1,
+        backgroundColor: 'transparent',
+        color: theme.palette.text.primary,
+      },
     },
-  },
-  selected: {
-    fontWeight: 'bold',
-  },
-}));
+    selected: {
+      fontWeight: 'bold',
+    },
+  }),
+  { name: 'BackstageCardTab' },
+);
 
 type CardTabProps = TabProps & {
   children: ReactNode;

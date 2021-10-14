@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import {
@@ -33,6 +35,11 @@ const Component: ProviderComponent = ({ onResult }) => {
       const identity = await auth0AuthApi.getBackstageIdentity({
         instantPopup: true,
       });
+      if (!identity) {
+        throw new Error(
+          'The Auth0 provider is not configured to support sign-in',
+        );
+      }
 
       const profile = await auth0AuthApi.getProfile();
 

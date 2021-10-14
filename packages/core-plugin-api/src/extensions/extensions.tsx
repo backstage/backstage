@@ -15,6 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
@@ -37,6 +38,7 @@ export function createRoutableExtension<
 >(options: {
   component: () => Promise<T>;
   mountPoint: RouteRef;
+  name?: string;
 }): Extension<T> {
   const { component, mountPoint } = options;
   return createReactExtension({
@@ -62,6 +64,7 @@ export function createRoutableExtension<
             };
 
             const componentName =
+              options.name ||
               (InnerComponent as { displayName?: string }).displayName ||
               InnerComponent.name ||
               'LazyComponent';
@@ -84,6 +87,7 @@ export function createRoutableExtension<
     data: {
       'core.mountPoint': mountPoint,
     },
+    name: options.name,
   });
 }
 
@@ -92,9 +96,9 @@ export function createRoutableExtension<
 // making it impossible to make the usage of children type safe.
 export function createComponentExtension<
   T extends (props: any) => JSX.Element | null,
->(options: { component: ComponentLoader<T> }): Extension<T> {
-  const { component } = options;
-  return createReactExtension({ component });
+>(options: { component: ComponentLoader<T>; name?: string }): Extension<T> {
+  const { component, name } = options;
+  return createReactExtension({ component, name });
 }
 
 // We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
@@ -105,6 +109,7 @@ export function createReactExtension<
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
+  name?: string;
 }): Extension<T> {
   const { data = {} } = options;
 
@@ -118,6 +123,7 @@ export function createReactExtension<
     Component = options.component.sync;
   }
   const componentName =
+    options.name ||
     (Component as { displayName?: string }).displayName ||
     Component.name ||
     'Component';
@@ -127,11 +133,24 @@ export function createReactExtension<
       const Result: any = (props: any) => {
         const app = useApp();
         const { Progress } = app.getComponents();
+        // todo(iamEAP): Account for situations where this is attached via
+        // separate calls to attachComponentData().
+        const mountPoint = data?.['core.mountPoint'] as
+          | { id?: string }
+          | undefined;
 
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
-              <Component {...props} />
+              <AnalyticsContext
+                attributes={{
+                  pluginId: plugin.getId(),
+                  ...(options.name && { extension: options.name }),
+                  ...(mountPoint && { routeRef: mountPoint.id }),
+                }}
+              >
+                <Component {...props} />
+              </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>
         );

@@ -15,13 +15,9 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import {
-  IconButton,
-  makeStyles,
-  Typography,
-  useTheme,
-  withStyles,
-} from '@material-ui/core';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -36,7 +32,6 @@ import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
 import MTable, {
@@ -77,7 +72,7 @@ const tableIcons: Icons = {
     <ChevronLeft {...props} ref={ref} />
   )),
   ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
@@ -100,52 +95,72 @@ function extractValueByField(data: any, field: string): any | undefined {
   return value;
 }
 
-const StyledMTableHeader = withStyles(theme => ({
-  header: {
-    padding: theme.spacing(1, 2, 1, 2.5),
-    borderTop: `1px solid ${theme.palette.grey.A100}`,
-    borderBottom: `1px solid ${theme.palette.grey.A100}`,
-    // withStyles hasn't a generic overload for theme
-    color: (theme as BackstageTheme).palette.textSubtle,
-    fontWeight: theme.typography.fontWeightBold,
-    position: 'static',
-    wordBreak: 'normal',
-  },
-}))(MTableHeader);
+export type TableHeaderClassKey = 'header';
 
-const StyledMTableToolbar = withStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 0, 2.5, 2.5),
-  },
-  title: {
-    '& > h6': {
-      fontWeight: 'bold',
+const StyledMTableHeader = withStyles(
+  theme => ({
+    header: {
+      padding: theme.spacing(1, 2, 1, 2.5),
+      borderTop: `1px solid ${theme.palette.grey.A100}`,
+      borderBottom: `1px solid ${theme.palette.grey.A100}`,
+      // withStyles hasn't a generic overload for theme
+      color: (theme as BackstageTheme).palette.textSubtle,
+      fontWeight: theme.typography.fontWeightBold,
+      position: 'static',
+      wordBreak: 'normal',
     },
-  },
-  searchField: {
-    paddingRight: theme.spacing(2),
-  },
-}))(MTableToolbar);
+  }),
+  { name: 'BackstageTableHeader' },
+)(MTableHeader);
 
-const useFilterStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    whiteSpace: 'nowrap',
-  },
-}));
+export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
 
-const useTableStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    display: 'flex',
-    alignItems: 'start',
-  },
-}));
+const StyledMTableToolbar = withStyles(
+  theme => ({
+    root: {
+      padding: theme.spacing(3, 0, 2.5, 2.5),
+    },
+    title: {
+      '& > h6': {
+        fontWeight: 'bold',
+      },
+    },
+    searchField: {
+      paddingRight: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageTableToolbar' },
+)(MTableToolbar);
+
+export type FiltersContainerClassKey = 'root' | 'title';
+
+const useFilterStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    title: {
+      fontWeight: 'bold',
+      fontSize: 18,
+      whiteSpace: 'nowrap',
+    },
+  }),
+  { name: 'BackstageTableFiltersContainer' },
+);
+
+export type TableClassKey = 'root';
+
+const useTableStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      display: 'flex',
+      alignItems: 'start',
+    },
+  }),
+  { name: 'BackstageTable' },
+);
 
 function convertColumns<T extends object>(
   columns: TableColumn<T>[],
@@ -481,6 +496,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
+        localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
         {...restProps}
       />
     </div>

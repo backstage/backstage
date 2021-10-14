@@ -1094,10 +1094,27 @@ code {
   position: relative;
   overflow: visible;
   z-index: 100;
-
+  margin: 25px auto 0 auto;
   max-width: 1430px;
   height: 0;
-  margin: -14px auto 14px auto;
+}
+
+@media only screen and (max-width: 1024px) {
+  .Banner__Container {
+    margin-top: 20px;
+  }
+}
+
+@media only screen and (max-width: 645px) {
+  .Banner__Container {
+    margin-top: 60px;
+  }
+}
+
+@media only screen and (max-width: 335px) {
+  .Banner__Container {
+    margin-top: 90px;
+  }
 }
 
 .Banner__DismissButton {
@@ -1199,4 +1216,8 @@ code {
 /* Zoomed images using the medium-zoom library should be on top of screen. */
 .medium-zoom-image {
   z-index: 10000;
+}
+
+h3.collapsible span.arrow {
+  margin-right: 4px;
 }

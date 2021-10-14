@@ -1,5 +1,20 @@
 # @backstage/config-loader
 
+## 0.6.10
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.6.9
+
+### Patch Changes
+
+- ee7a1a4b64: Add option to collect configuration schemas from explicit package paths in addition to by package name.
+- e68bd978e2: Allow collection of configuration schemas from multiple versions of the same package.
+
 ## 0.6.8
 
 ### Patch Changes

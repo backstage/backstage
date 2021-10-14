@@ -25,4 +25,9 @@ export const codemods: Codemod[] = [
     description:
       'Updates @backstage/core imports to use @backstage/core-* imports instead.',
   },
+  {
+    name: 'extension-names',
+    description:
+      'Adds a "name" property to all core extensions provided by plugins.',
+  },
 ];

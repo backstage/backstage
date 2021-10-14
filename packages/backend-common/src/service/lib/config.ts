@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
+import { Minimatch } from 'minimatch';
 
 export type BaseOptions = {
   listenPort?: string | number;
@@ -45,6 +46,13 @@ export type CertificateAttributes = {
  * Added here since helmet doesn't export this type publicly.
  */
 export type CspOptions = Record<string, string[]>;
+
+type StaticOrigin = boolean | string | RegExp | (boolean | string | RegExp)[];
+
+type CustomOrigin = (
+  requestOrigin: string | undefined,
+  callback: (err: Error | null, origin?: StaticOrigin) => void,
+) => void;
 
 /**
  * Reads some base options out of a config object.
@@ -78,7 +86,7 @@ export function readBaseOptions(config: Config): BaseOptions {
     typeof port !== 'string'
   ) {
     throw new Error(
-      `Invalid type in config for key 'backend.listen.post', got ${typeof port}, wanted string or number`,
+      `Invalid type in config for key 'backend.listen.port', got ${typeof port}, wanted string or number`,
     );
   }
 
@@ -112,7 +120,7 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
   }
 
   return removeUnknown({
-    origin: getOptionalStringOrStrings(cc, 'origin'),
+    origin: createCorsOriginMatcher(getOptionalStringOrStrings(cc, 'origin')),
     methods: getOptionalStringOrStrings(cc, 'methods'),
     allowedHeaders: getOptionalStringOrStrings(cc, 'allowedHeaders'),
     exposedHeaders: getOptionalStringOrStrings(cc, 'exposedHeaders'),
@@ -207,14 +215,43 @@ function getOptionalStringOrStrings(
   key: string,
 ): string | string[] | undefined {
   const value = config.getOptional(key);
-  if (
-    value === undefined ||
-    typeof value === 'string' ||
-    isStringArray(value)
-  ) {
+  if (value === undefined || isStringOrStrings(value)) {
     return value;
   }
   throw new Error(`Expected string or array of strings, got ${typeof value}`);
+}
+
+function createCorsOriginMatcher(
+  originValue: string | string[] | undefined,
+): CustomOrigin | undefined {
+  if (originValue === undefined) {
+    return originValue;
+  }
+
+  if (!isStringOrStrings(originValue)) {
+    throw new Error(
+      `Expected string or array of strings, got ${typeof originValue}`,
+    );
+  }
+
+  const allowedOrigin =
+    typeof originValue === 'string' ? [originValue] : originValue;
+
+  const allowedOriginPatterns =
+    allowedOrigin?.map(
+      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+    ) ?? [];
+
+  return (origin, callback) => {
+    return callback(
+      null,
+      allowedOriginPatterns.some(pattern => pattern.match(origin ?? '')),
+    );
+  };
+}
+
+function isStringOrStrings(value: any): value is string | string[] {
+  return typeof value === 'string' || isStringArray(value);
 }
 
 function isStringArray(value: any): value is string[] {

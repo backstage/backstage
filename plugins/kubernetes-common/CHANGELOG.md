@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.5
+
+### Patch Changes
+
+- 193a999a80: Fixed incorrect keyword, repository directory path and entrypoints in `package.json`.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+
 ## 0.1.4
 
 ### Patch Changes

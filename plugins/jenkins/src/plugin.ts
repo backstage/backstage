@@ -53,12 +53,14 @@ export const jenkinsPlugin = createPlugin({
 
 export const EntityJenkinsContent = jenkinsPlugin.provide(
   createRoutableExtension({
+    name: 'EntityJenkinsContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
 export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
   createComponentExtension({
+    name: 'EntityLatestJenkinsRunCard',
     component: {
       lazy: () => import('./components/Cards').then(m => m.LatestRunCard),
     },

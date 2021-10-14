@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { Action } from '@material-table/core';
 import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -58,9 +59,20 @@ export { apiDocsPlugin as plugin };
 export const ApiExplorerPage: ({
   initiallySelectedFilter,
   columns,
+  actions,
 }: {
   initiallySelectedFilter?: UserListFilterKind | undefined;
   columns?: TableColumn<CatalogTableRow>[] | undefined;
+  actions?:
+    | (
+        | Action<CatalogTableRow>
+        | {
+            action: (rowData: CatalogTableRow) => Action<CatalogTableRow>;
+            position: string;
+          }
+        | ((rowData: CatalogTableRow) => Action<CatalogTableRow>)
+      )[]
+    | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ApiTypeTitle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

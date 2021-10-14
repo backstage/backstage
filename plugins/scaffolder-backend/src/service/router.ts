@@ -35,9 +35,14 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
+import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
+import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
+import { TaskSpec } from '../scaffolder/tasks/types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -50,10 +55,13 @@ export interface RouterOptions {
   containerRunner: ContainerRunner;
 }
 
-function isBeta2Template(
-  entity: TemplateEntityV1beta2,
-): entity is TemplateEntityV1beta2 {
-  return entity.apiVersion === 'backstage.io/v1beta2';
+function isSupportedTemplate(
+  entity: TemplateEntityV1beta2 | TemplateEntityV1beta3,
+) {
+  return (
+    entity.apiVersion === 'backstage.io/v1beta2' ||
+    entity.apiVersion === 'scaffolder.backstage.io/v1beta3'
+  );
 }
 
 export async function createRouter(
@@ -83,14 +91,28 @@ export async function createRouter(
   );
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
+  const legacyWorkflowRunner = new LegacyWorkflowRunner({
+    logger,
+    actionRegistry,
+    integrations,
+    workingDirectory,
+  });
+
+  const workflowRunner = new DefaultWorkflowRunner({
+    actionRegistry,
+    integrations,
+    logger,
+    workingDirectory,
+  });
+
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
     const worker = new TaskWorker({
-      logger,
       taskBroker,
-      actionRegistry,
-      workingDirectory,
-      integrations,
+      runners: {
+        legacyWorkflowRunner,
+        workflowRunner,
+      },
     });
     workers.push(worker);
   }
@@ -128,7 +150,7 @@ export async function createRouter(
         const template = await entityClient.findTemplate(name, {
           token: getBearerToken(req.headers.authorization),
         });
-        if (isBeta2Template(template)) {
+        if (isSupportedTemplate(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
@@ -164,9 +186,9 @@ export async function createRouter(
         token,
       });
 
-      let taskSpec;
+      let taskSpec: TaskSpec;
 
-      if (isBeta2Template(template)) {
+      if (isSupportedTemplate(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
 
@@ -178,16 +200,30 @@ export async function createRouter(
 
         const baseUrl = getEntityBaseUrl(template);
 
-        taskSpec = {
-          baseUrl,
-          values,
-          steps: template.spec.steps.map((step, index) => ({
-            ...step,
-            id: step.id ?? `step-${index + 1}`,
-            name: step.name ?? step.action,
-          })),
-          output: template.spec.output ?? {},
-        };
+        taskSpec =
+          template.apiVersion === 'backstage.io/v1beta2'
+            ? {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+              }
+            : {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                parameters: values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+              };
       } else {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${

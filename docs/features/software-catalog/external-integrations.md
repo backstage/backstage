@@ -90,8 +90,7 @@ does so!
 ## Creating a Catalog Data Reader Processor
 
 The recommended way of instantiating the catalog backend classes is to use the
-[`CatalogBuilder`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/service/CatalogBuilder.ts),
-as illustrated in the
+`CatalogBuilder`, as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/ingestion/processors/types.ts)

@@ -41,8 +41,10 @@ const useStyles = makeStyles({
 const getIconText = (title: string) =>
   title.split(' ').length === 1
     ? // If there's only one word, keep the first two characters
+      // eslint-disable-next-line no-restricted-syntax
       title[0].toUpperCase() + title[1].toLowerCase()
     : // If there's more than one word, take the first character of the first two words
+      // eslint-disable-next-line no-restricted-syntax
       title
         .replace(/\B\W/g, '')
         .split(' ')

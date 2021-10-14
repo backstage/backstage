@@ -1,5 +1,39 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.0
+
+### Minor Changes
+
+- 6c318336b4: Errors caused while patching can leave the release branch in a broken state. Most commonly caused due to merge errors.
+
+  This has been solved by introducing a dry run prior to patching the release branch. The dry run will attempt to cherry pick the selected patch commit onto a temporary branch created off of the release branch. If it succeeds, the temporary branch is deleted and the patch is applied on the release branch
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/integration@0.6.7
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.2.7
 
 ### Patch Changes

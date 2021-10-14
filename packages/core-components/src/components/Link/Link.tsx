@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  Link as MaterialLink,
+import { useAnalytics } from '@backstage/core-plugin-api';
+import MaterialLink, {
   LinkProps as MaterialLinkProps,
-} from '@material-ui/core';
+} from '@material-ui/core/Link';
 import React, { ElementType } from 'react';
 import {
   Link as RouterLink,
@@ -34,26 +34,66 @@ export type LinkProps = MaterialLinkProps &
 declare function LinkType(props: LinkProps): JSX.Element;
 
 /**
- * Thin wrapper on top of material-ui's Link component
- * Makes the Link to utilise react-router
+ * Given a react node, try to retrieve its text content.
  */
-const ActualLink = React.forwardRef<any, LinkProps>((props, ref) => {
-  const to = String(props.to);
-  const external = isExternalUri(to);
-  const newWindow = external && !!/^https?:/.exec(to);
-  return external ? (
-    // External links
-    <MaterialLink
-      ref={ref}
-      href={to}
-      {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-      {...props}
-    />
-  ) : (
-    // Interact with React Router for internal links
-    <MaterialLink ref={ref} component={RouterLink} {...props} />
-  );
-});
+const getNodeText = (node: React.ReactNode): string => {
+  // If the node is an array of children, recurse and join.
+  if (node instanceof Array) {
+    return node.map(getNodeText).join(' ').trim();
+  }
+
+  // If the node is a react element, recurse on its children.
+  if (typeof node === 'object' && node) {
+    return getNodeText((node as React.ReactElement)?.props?.children);
+  }
+
+  // Base case: the node is just text. Return it.
+  if (['string', 'number'].includes(typeof node)) {
+    return String(node);
+  }
+
+  // Base case: just return an empty string.
+  return '';
+};
+
+/**
+ * Thin wrapper on top of material-ui's Link component, which...
+ * - Makes the Link use react-router
+ * - Captures Link clicks as analytics events.
+ */
+const ActualLink = React.forwardRef<any, LinkProps>(
+  ({ onClick, ...props }, ref) => {
+    const analytics = useAnalytics();
+    const to = String(props.to);
+    const linkText = getNodeText(props.children) || to;
+    const external = isExternalUri(to);
+    const newWindow = external && !!/^https?:/.exec(to);
+
+    const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
+      onClick?.(event);
+      analytics.captureEvent('click', linkText, { attributes: { to } });
+    };
+
+    return external ? (
+      // External links
+      <MaterialLink
+        ref={ref}
+        href={to}
+        onClick={handleClick}
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
+      />
+    ) : (
+      // Interact with React Router for internal links
+      <MaterialLink
+        ref={ref}
+        component={RouterLink}
+        onClick={handleClick}
+        {...props}
+      />
+    );
+  },
+);
 
 // TODO(Rugvip): We use this as a workaround to make the exported type be a
 //               function, which makes our API reference docs much nicer.

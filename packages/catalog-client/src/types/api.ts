@@ -37,6 +37,25 @@ export type CatalogEntitiesRequest = {
 };
 
 /**
+ * A request type for Catalog Entity Ancestor information.
+ *
+ * @public
+ */
+export type CatalogEntityAncestorsRequest = {
+  entityRef: string;
+};
+
+/**
+ * A response type for Catalog Entity Ancestor information.
+ *
+ * @public
+ */
+export type CatalogEntityAncestorsResponse = {
+  root: EntityName;
+  items: { entity: Entity; parents: EntityName[] }[];
+};
+
+/**
  * A response type for the result of a catalog operation in list form.
  *
  * @public
@@ -72,6 +91,18 @@ export interface CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  /**
+   * Gets the Entity ancestor information from the catalog based on your request and options.
+   *
+   * @param request - An object with your filters and fields.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A CatalogEntityAncestorsResponse.
+   */
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
   /**
    * Gets a single Entity from the catalog by Entity name.
    *

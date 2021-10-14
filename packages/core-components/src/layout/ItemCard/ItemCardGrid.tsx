@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { createStyles, makeStyles, Theme, WithStyles } from '@material-ui/core';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import React from 'react';
+
+export type ItemCardGridClassKey = 'root';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -27,7 +34,7 @@ const styles = (theme: Theme) =>
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
 
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**

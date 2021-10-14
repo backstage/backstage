@@ -79,6 +79,11 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
   // (undocumented)
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
+  // (undocumented)
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,

@@ -48,6 +48,7 @@ export const techRadarPlugin = createPlugin({
  */
 export const TechRadarPage = techRadarPlugin.provide(
   createRoutableExtension({
+    name: 'TechRadarPage',
     component: () => import('./components/RadarPage').then(m => m.RadarPage),
     mountPoint: rootRouteRef,
   }),

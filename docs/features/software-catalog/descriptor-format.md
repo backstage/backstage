@@ -620,9 +620,6 @@ The following describes the following entity kind:
 | `apiVersion` | `backstage.io/v1beta2` |
 | `kind`       | `Template`             |
 
-If you're looking for docs on `v1alpha1` you can find them
-[here](../software-templates/legacy.md)
-
 A template definition describes both the parameters that are rendered in the
 frontend part of the scaffolding wizard, and the steps that are executed when
 scaffolding that component.

@@ -1,5 +1,82 @@
 # @backstage/create-app
 
+## 0.3.45
+
+### Patch Changes
+
+- eaca0f53fb: The scaffolder plugin has just released the beta 3 version of software templates, which replaces the handlebars templating syntax. As part of this change, the template entity schema is no longer included in the core catalog-model as with previous versions. The decoupling of the template entities version will allow us to more easily make updates in the future.
+
+  In order to use the new beta 3 templates, the following changes are **required** for any existing installation, inside `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+  ...
+
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(new ScaffolderEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+  ```
+
+  If you're interested in learning more about creating custom kinds, please check out the [extending the model](https://backstage.io/docs/features/software-catalog/extending-the-model) documentation.
+
+## 0.3.44
+
+### Patch Changes
+
+- e254368371: Switched the default `test` script in the package root to use `backstage-cli test` rather than `lerna run test`. This is thanks to the `@backstage/cli` now supporting running the test command from the project root.
+
+  To apply this change to an existing project, apply the following change to your root `package.json`:
+
+  ```diff
+  -    "test": "lerna run test --since origin/master -- --coverage",
+  +    "test": "backstage-cli test",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.3.43
+
+### Patch Changes
+
+- 9325075eea: Added the default `ScmAuth` implementation to the app.
+
+  To apply this change to an existing app, head to `packages/app/apis.ts`, import `ScmAuth` from `@backstage/integration-react`, and add a `ScmAuth.createDefaultApiFactory()` to your list of APIs:
+
+  ```diff
+   import {
+     ScmIntegrationsApi,
+     scmIntegrationsApiRef,
+  +   ScmAuth,
+   } from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  ...
+  +  ScmAuth.createDefaultApiFactory(),
+  ...
+   ];
+  ```
+
+  If you have integrations towards SCM providers other than the default ones (github.com, gitlab.com, etc.), you will want to create a custom `ScmAuth` factory instead, for example like this:
+
+  ```ts
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ```
+
 ## 0.3.42
 
 ### Patch Changes

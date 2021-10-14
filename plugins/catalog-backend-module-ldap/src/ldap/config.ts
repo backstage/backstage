@@ -18,6 +18,7 @@ import { Config, JsonValue } from '@backstage/config';
 import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
 import { RecursivePartial } from '@backstage/plugin-catalog-backend';
+import { trimEnd } from 'lodash';
 
 /**
  * The configuration parameters for a single LDAP provider.
@@ -286,7 +287,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
   return providerConfigs.map(c => {
     const newConfig = {
-      target: c.getString('target').replace(/\/+$/, ''),
+      target: trimEnd(c.getString('target'), '/'),
       bind: readBindConfig(c.getOptionalConfig('bind')),
       users: readUserConfig(c.getConfig('users')),
       groups: readGroupConfig(c.getConfig('groups')),

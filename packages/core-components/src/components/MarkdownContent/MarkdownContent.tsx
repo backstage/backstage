@@ -14,50 +14,55 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  markdown: {
-    '& table': {
-      borderCollapse: 'collapse',
-      border: `1px solid ${theme.palette.border}`,
-    },
-    '& th, & td': {
-      border: `1px solid ${theme.palette.border}`,
-      padding: theme.spacing(1),
-    },
-    '& td': {
-      wordBreak: 'break-word',
-      overflow: 'hidden',
-      verticalAlign: 'middle',
-      lineHeight: '1',
-      margin: 0,
-      padding: theme.spacing(3, 2, 3, 2.5),
-      borderBottom: 0,
-    },
-    '& th': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& tr': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& tr:nth-child(odd)': {
-      backgroundColor: theme.palette.background.default,
-    },
+export type MarkdownContentClassKey = 'markdown';
 
-    '& a': {
-      color: theme.palette.link,
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    markdown: {
+      '& table': {
+        borderCollapse: 'collapse',
+        border: `1px solid ${theme.palette.border}`,
+      },
+      '& th, & td': {
+        border: `1px solid ${theme.palette.border}`,
+        padding: theme.spacing(1),
+      },
+      '& td': {
+        wordBreak: 'break-word',
+        overflow: 'hidden',
+        verticalAlign: 'middle',
+        lineHeight: '1',
+        margin: 0,
+        padding: theme.spacing(3, 2, 3, 2.5),
+        borderBottom: 0,
+      },
+      '& th': {
+        backgroundColor: theme.palette.background.paper,
+      },
+      '& tr': {
+        backgroundColor: theme.palette.background.paper,
+      },
+      '& tr:nth-child(odd)': {
+        backgroundColor: theme.palette.background.default,
+      },
+
+      '& a': {
+        color: theme.palette.link,
+      },
+      '& img': {
+        maxWidth: '100%',
+      },
     },
-    '& img': {
-      maxWidth: '100%',
-    },
-  },
-}));
+  }),
+  { name: 'BackstageMarkdownContent' },
+);
 
 type Props = {
   content: string;
