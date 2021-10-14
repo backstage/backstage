@@ -16,10 +16,18 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
-/** @public */
+/**
+ * A Symbol to define if a catalog filter exists or not.
+ *
+ * @public
+ */
 export const CATALOG_FILTER_EXISTS = Symbol('CATALOG_FILTER_EXISTS');
 
-/** @public */
+/**
+ * A request type for retrieving catalog Entities.
+ *
+ * @public
+ */
 export type CatalogEntitiesRequest = {
   filter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -28,60 +36,144 @@ export type CatalogEntitiesRequest = {
   fields?: string[] | undefined;
 };
 
-/** @public */
+/**
+ * A response type for the result of a catalog operation in list form.
+ *
+ * @public
+ */
 export type CatalogListResponse<T> = {
   items: T[];
 };
 
-/** @public */
+/**
+ * Options you can pass into a catalog request for additional information.
+ *
+ * @public
+ */
 export type CatalogRequestOptions = {
   token?: string;
 };
 
-/** @public */
+/**
+ * Public functions for interacting with the Catalog API.
+ *
+ * @public
+ */
 export interface CatalogApi {
-  // Entities
+  /**
+   * Gets the Entities from the catalog based on your request and options.
+   *
+   * @param request - An object with your filters and fields.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A CatalogListResponse with items typed Catalog Model Entity.
+   */
   getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  /**
+   * Gets a single Entity from the catalog by Entity name.
+   *
+   * @param name - A complete Entity name, with the full kind-namespace-name triplet.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A {@link catalog-model#Entity}.
+   */
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
+  /**
+   * Removes a single Entity from the catalog by Entity UID.
+   *
+   * @param uid - A string of the Entity UID.
+   * @param options - An object with your perferred options.
+   *
+   */
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  /**
+   * Refreshes an Entity in the catalog.
+   *
+   * @param entityRef - A string in the form of 'Kind/default:foo'.
+   * @param options - An object with your perferred options.
+   *
+   */
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 
   // Locations
+  /**
+   * Gets a Location object by ID from the catalog.
+   *
+   * @param id - A string in of the Location Id.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
+  /**
+   * Gets origin location by Entity.
+   *
+   * @param entity - A {@link catalog-model#Entity}.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
+  /**
+   * Gets Location by Entity.
+   *
+   * @param entity - A {@link catalog-model#Entity}.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
+  /**
+   * Adds a Location.
+   *
+   * @param location - A request type for adding a Location to the catalog.
+   * @param options - An object with your perferred options.
+   *
+   * @returns A AddLocationResponse.
+   */
   addLocation(
     location: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
+  /**
+   * Removes a Location by Id.
+   *
+   * @param id - A string in of the Location Id.
+   * @param options - An object with your perferred options.
+   *
+   */
   removeLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 }
 
-/** @public */
+/**
+ * A request type for adding a Location to the catalog.
+ *
+ * @public
+ */
 export type AddLocationRequest = {
   type?: string;
   target: string;
@@ -89,7 +181,11 @@ export type AddLocationRequest = {
   presence?: 'optional' | 'required';
 };
 
-/** @public */
+/**
+ * A response type for adding a Location to the catalog.
+ *
+ * @public
+ */
 export type AddLocationResponse = {
   location: Location;
   entities: Entity[];
