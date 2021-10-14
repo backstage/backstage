@@ -16,7 +16,10 @@
 
 import { Firestore } from '@google-cloud/firestore';
 
-import { FirestoreKeyStore } from './FirestoreKeyStore';
+import {
+  FirestoreKeyStore,
+  FirestoreKeyStoreSettings,
+} from './FirestoreKeyStore';
 import { AnyJWK } from './types';
 
 const data = jest.fn().mockReturnValue('data');
@@ -37,7 +40,6 @@ jest.mock('@google-cloud/firestore', () => ({
 }));
 
 describe('FirestoreKeyStore', () => {
-  const OLD_ENV = process.env;
   const key = {
     kid: '123',
     use: 'sig',
@@ -45,72 +47,45 @@ describe('FirestoreKeyStore', () => {
     alg: 'Base64',
   } as AnyJWK;
 
+  const settings = {
+    projectId: 'my-project',
+    host: 'my-host',
+    port: 8080,
+    ssl: false,
+    keyFilename: 'cred.json',
+  };
+  const path = 'my-path';
+  const firestoreSettings = { ...settings, path } as FirestoreKeyStoreSettings;
+
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterAll(() => {
-    process.env = OLD_ENV;
   });
 
   it('can create an instance without settings', async () => {
     const keyStore = await FirestoreKeyStore.create();
 
     expect(keyStore).toBeInstanceOf(FirestoreKeyStore);
+    expect(Firestore).toHaveBeenCalledWith({});
   });
 
-  it('can set the project id', async () => {
-    await FirestoreKeyStore.create({ projectId: 'my-project' });
+  it('can create an instance with settings', async () => {
+    await FirestoreKeyStore.create(firestoreSettings);
 
-    expect(Firestore).toHaveBeenCalledWith(
-      expect.objectContaining({
-        projectId: 'my-project',
-      }),
-    );
+    expect(Firestore).toHaveBeenCalledWith(settings);
   });
 
-  it('can handle keyfile file', async () => {
-    await FirestoreKeyStore.create({ keyFilename: 'keyFile.json' });
-
-    expect(Firestore).toHaveBeenCalledWith(
-      expect.objectContaining({
-        keyFilename: 'keyFile.json',
-      }),
-    );
-  });
-
-  it('can use default google credentials', async () => {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = 'cred.json';
-    await FirestoreKeyStore.create();
-
-    expect(Firestore).toHaveBeenCalledWith(
-      expect.objectContaining({
-        keyFilename: 'cred.json',
-      }),
-    );
-  });
-
-  it('can uses a default path', async () => {
+  it('can use a default path', async () => {
     const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
     expect(firestoreMock.collection).toBeCalledWith('sessions');
-  });
-
-  it('can set the path', async () => {
-    const keyStore = await FirestoreKeyStore.create({
-      path: 'my-path',
-    });
-    await keyStore.addKey(key);
-
-    expect(firestoreMock.collection).toBeCalledWith('my-path');
   });
 
   it('can add keys', async () => {
-    const keyStore = await FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.addKey(key);
 
-    expect(firestoreMock.collection).toBeCalledWith('sessions');
+    expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith(key.kid);
     expect(firestoreMock.set).toHaveBeenCalledWith({
       kid: key.kid,
@@ -119,29 +94,29 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can delete a single key', async () => {
-    const keyStore = await FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
-    expect(firestoreMock.collection).toBeCalledWith('sessions');
+    expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith('123');
     expect(firestoreMock.delete).toBeCalledTimes(1);
   });
 
   it('can delete a multiple keys', async () => {
-    const keyStore = await FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
-    expect(firestoreMock.collection).toBeCalledWith('sessions');
+    expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith('123');
     expect(firestoreMock.doc).toBeCalledWith('456');
     expect(firestoreMock.delete).toBeCalledTimes(2);
   });
 
   it('can list keys', async () => {
-    const keyStore = await FirestoreKeyStore.create();
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const items = await keyStore.listKeys();
 
-    expect(firestoreMock.collection).toBeCalledWith('sessions');
+    expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.get).toBeCalledTimes(1);
     expect(data).toBeCalledTimes(1);
     expect(toDate).toBeCalledTimes(1);

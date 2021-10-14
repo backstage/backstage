@@ -21,7 +21,10 @@ import { Config } from '@backstage/config';
 
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { MemoryKeyStore } from './MemoryKeyStore';
-import { FirestoreKeyStore } from './FirestoreKeyStore';
+import {
+  FirestoreKeyStore,
+  FirestoreKeyStoreSettings,
+} from './FirestoreKeyStore';
 import { KeyStore } from './types';
 
 type Options = {
@@ -44,7 +47,6 @@ export class KeyStores {
 
     const ks = config.getOptionalConfig('auth.keyStore');
     const provider = ks?.getOptionalString('provider') ?? 'postgres';
-    const providerConfig = ks?.getOptionalConfig(provider);
 
     logger?.info(`Configuring "${provider}" as KeyStore provider`);
 
@@ -63,11 +65,9 @@ export class KeyStores {
     }
 
     if (provider === 'firestore') {
-      return await FirestoreKeyStore.create({
-        projectId: providerConfig?.getOptionalString('projectId'),
-        keyFilename: providerConfig?.getOptionalString('keyFilename'),
-        path: providerConfig?.getOptionalString('path'),
-      });
+      const settings = ks?.getOptional(provider) as FirestoreKeyStoreSettings;
+
+      return await FirestoreKeyStore.create(settings);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);

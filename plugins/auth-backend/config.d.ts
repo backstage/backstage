@@ -35,6 +35,12 @@ export interface Config {
     keyStore?: {
       provider?: 'postgres' | 'memory' | 'firestore';
       firestore?: {
+        /** The host to connect to */
+        host?: string;
+        /** The port to connect to */
+        port?: number;
+        /** Whether to use SSL when connecting. */
+        ssl?: boolean;
         /** The Google Cloud Project ID */
         projectId?: string;
         /**

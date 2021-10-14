@@ -18,19 +18,16 @@ import { Firestore, Settings } from '@google-cloud/firestore';
 
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
-type FirestoreSettings = Settings & {
+export type FirestoreKeyStoreSettings = Settings & {
   path?: string;
 };
 
 export class FirestoreKeyStore implements KeyStore {
   static async create(
-    settings?: FirestoreSettings,
+    settings?: FirestoreKeyStoreSettings,
   ): Promise<FirestoreKeyStore> {
-    const { projectId, keyFilename, path } = settings ?? {};
-    const database = new Firestore({
-      projectId,
-      keyFilename: keyFilename ?? process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    });
+    const { path, ...firestoreSettings } = settings ?? {};
+    const database = new Firestore(firestoreSettings);
 
     return new FirestoreKeyStore(database, path ?? 'sessions');
   }
