@@ -21,7 +21,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import { formatEntityRefTitle } from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -31,11 +31,11 @@ import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { catalogEntityRouteRef } from '../../routes';
 import {
+  ALL_RELATION_PAIRS,
   Direction,
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
-  ALL_RELATION_PAIRS,
 } from '../EntityRelationsGraph';
 import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
@@ -133,6 +133,7 @@ export const CatalogGraphPage = ({
     showFilters,
     toggleShowFilters,
   } = useCatalogGraphPage({ initialState });
+  const analytics = useAnalytics();
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
@@ -143,12 +144,22 @@ export const CatalogGraphPage = ({
           namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
           name: nodeEntityName.name,
         });
+
+        analytics.captureEvent(
+          'click',
+          node.title ?? formatEntityRefTitle(nodeEntityName),
+          { attributes: { to: path } },
+        );
         navigate(path);
       } else {
+        analytics.captureEvent(
+          'click',
+          node.title ?? formatEntityRefTitle(nodeEntityName),
+        );
         setRootEntityNames([nodeEntityName]);
       }
     },
-    [catalogEntityRoute, navigate, setRootEntityNames],
+    [catalogEntityRoute, navigate, setRootEntityNames, analytics],
   );
 
   return (
