@@ -540,9 +540,6 @@ export type ServiceBuilder = {
 };
 
 // @public (undocumented)
-export function setRedactionList(redactionList: string[]): void;
-
-// @public (undocumented)
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated

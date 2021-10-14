@@ -19,7 +19,7 @@ import {
   createRootLogger,
   getRootLogger,
   setRootLogger,
-  setRedactionList,
+  setRootLoggerRedactionList,
 } from './rootLogger';
 
 describe('rootLogger', () => {
@@ -38,17 +38,17 @@ describe('rootLogger', () => {
   it('redacts given secrets', () => {
     const logger = createRootLogger();
     jest.spyOn(logger, 'write');
-    setRedactionList(['SECRET_1', 'SECRET_2']);
-    logger.info('Logging SECRET_1 and SECRET_2 but not SECRET_3');
+    setRootLoggerRedactionList(['SECRET-1', 'SECRET_2', 'SECRET.3']);
+    logger.info('Logging SECRET-1 and SECRET_2 and SECRET.3');
 
     expect(logger.write).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Logging [REDACTED] and [REDACTED] but not SECRET_3',
+        message: 'Logging [REDACTED] and [REDACTED] and [REDACTED]',
       }),
     );
   });
 
-  describe('createRootLoger', () => {
+  describe('createRootLogger', () => {
     it('creates a new logger', () => {
       const oldLogger = getRootLogger();
       const newLogger = createRootLogger();

@@ -23,12 +23,13 @@ import {
   loadConfig,
   ConfigSchema,
 } from '@backstage/config-loader';
-import { AppConfig, Config, ConfigReader, JsonValue } from '@backstage/config';
+import { AppConfig, Config, ConfigReader } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
-import { setRedactionList } from './logging';
+import { setRootLoggerRedactionList } from './logging/rootLogger';
 
 // Fetch the schema and get all the secrets to pass to the rootLogger for redaction
-const updateRedactionMap = (
+const updateRedactionList = (
   schema: ConfigSchema,
   configs: AppConfig[],
   logger: Logger,
@@ -219,8 +220,8 @@ export async function loadBackendConfig(options: {
   config.setConfig(ConfigReader.fromConfigs(configs));
 
   // Subscribe to config changes and update the redaction list for logging
-  updateRedactionMap(schema, configs, options.logger);
-  config.subscribe(() => updateRedactionMap(schema, configs, options.logger));
+  updateRedactionList(schema, configs, options.logger);
+  config.subscribe(() => updateRedactionList(schema, configs, options.logger));
 
   return config;
 }

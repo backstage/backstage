@@ -18,8 +18,8 @@ import { merge } from 'lodash';
 import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
+import { escapeRegExp } from '../util/escapeRegExp';
 
-/** @public */
 let rootLogger: winston.Logger;
 let redactionRegExp: RegExp;
 
@@ -33,9 +33,11 @@ export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
 
-/** @public */
-export function setRedactionList(redactionList: string[]) {
-  redactionRegExp = new RegExp(`(${redactionList.join('|')})`, 'g');
+export function setRootLoggerRedactionList(redactionList: string[]) {
+  redactionRegExp = new RegExp(
+    `(${redactionList.map(escapeRegExp).join('|')})`,
+    'g',
+  );
 }
 
 /**
