@@ -24,6 +24,10 @@ type Options = {
   };
 };
 
+/**
+ * TaskWorker
+ * @public
+ */
 export class TaskWorker {
   constructor(private readonly options: Options) {}
   start() {

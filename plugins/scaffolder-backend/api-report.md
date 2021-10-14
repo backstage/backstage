@@ -16,6 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
+import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Octokit } from '@octokit/rest';
@@ -25,6 +26,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
+import * as winston from 'winston';
 import { Writable } from 'stream';
 
 // Warning: (ae-forgotten-export) The symbol "InputBase" needs to be exported by the entry point index.d.ts
@@ -189,6 +191,78 @@ export const createTemplateAction: <
   templateAction: TemplateAction<Input>,
 ) => TemplateAction<any>;
 
+// @public
+export class DatabaseTaskStore implements TaskStore {
+  constructor(db: Knex);
+  // (undocumented)
+  claimTask(): Promise<DbTaskRow | undefined>;
+  // (undocumented)
+  completeTask({
+    taskId,
+    status,
+    eventBody,
+  }: {
+    taskId: string;
+    status: Status;
+    eventBody: JsonObject;
+  }): Promise<void>;
+  // (undocumented)
+  static create(knex: Knex): Promise<DatabaseTaskStore>;
+  // (undocumented)
+  createTask(
+    spec: TaskSpec,
+    secrets?: TaskSecrets,
+  ): Promise<{
+    taskId: string;
+  }>;
+  // (undocumented)
+  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  // (undocumented)
+  getTask(taskId: string): Promise<DbTaskRow>;
+  // (undocumented)
+  heartbeatTask(taskId: string): Promise<void>;
+  // Warning: (ae-forgotten-export) The symbol "TaskStoreGetEventsOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  listEvents({ taskId, after }: TaskStoreGetEventsOptions): Promise<{
+    events: DbTaskEventRow[];
+  }>;
+  // (undocumented)
+  listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+    tasks: {
+      taskId: string;
+    }[];
+  }>;
+}
+
+// @public
+export type DbTaskRow = {
+  id: string;
+  spec: TaskSpec;
+  status: Status;
+  createdAt: string;
+  lastHeartbeatAt?: string;
+  secrets?: TaskSecrets;
+};
+
+// Warning: (ae-forgotten-export) The symbol "WorkflowRunner" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "DefaultWorkflowRunner" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class DefaultWorkflowRunner implements WorkflowRunner {
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+  constructor(options: Options_3);
+  // Warning: (ae-forgotten-export) The symbol "WorkflowResponse" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  execute(task: Task): Promise<WorkflowResponse>;
+}
+
+// @public
+export type DispatchResult = {
+  taskId: string;
+};
+
 // Warning: (ae-missing-release-tag) "fetchContents" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -206,6 +280,14 @@ export function fetchContents({
   outputPath: string;
 }): Promise<void>;
 
+// @public
+export class LegacyWorkflowRunner implements WorkflowRunner {
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+  constructor(options: Options_2);
+  // (undocumented)
+  execute(task: Task): Promise<WorkflowResponse>;
+}
+
 // Warning: (ae-missing-release-tag) "OctokitProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -215,6 +297,15 @@ export class OctokitProvider {
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
   getOctokit(repoUrl: string): Promise<OctokitIntegration>;
 }
+
+// @public
+export type RawDbTaskEventRow = {
+  id: number;
+  task_id: string;
+  body: string;
+  event_type: TaskEventType;
+  created_at: string;
+};
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -234,6 +325,8 @@ export interface RouterOptions {
   logger: Logger_2;
   // (undocumented)
   reader: UrlReader;
+  // (undocumented)
+  taskBroker?: TaskBroker;
   // (undocumented)
   taskWorkers?: number;
 }
@@ -258,6 +351,218 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   ): Promise<Entity>;
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
+}
+
+// @public
+export type Status =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'cancelled'
+  | 'completed';
+
+// @public
+export class StorageTaskBroker implements TaskBroker {
+  constructor(storage: TaskStore, logger: Logger_2);
+  // (undocumented)
+  claim(): Promise<Task>;
+  // (undocumented)
+  dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
+  // (undocumented)
+  get(taskId: string): Promise<DbTaskRow>;
+  // (undocumented)
+  protected readonly logger: Logger_2;
+  // (undocumented)
+  observe(
+    options: {
+      taskId: string;
+      after: number | undefined;
+    },
+    callback: (
+      error: Error | undefined,
+      result: {
+        events: DbTaskEventRow[];
+      },
+    ) => void,
+  ): () => void;
+  // (undocumented)
+  protected readonly storage: TaskStore;
+  // (undocumented)
+  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+}
+
+// @public
+export interface Task {
+  // Warning: (ae-forgotten-export) The symbol "CompletedTaskState" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
+  // (undocumented)
+  done: boolean;
+  // (undocumented)
+  emitLog(message: string, metadata?: JsonValue): Promise<void>;
+  // (undocumented)
+  getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  secrets?: TaskSecrets;
+  // (undocumented)
+  spec: TaskSpec;
+}
+
+// Warning: (ae-missing-release-tag) "TaskAgent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class TaskAgent implements Task {
+  // (undocumented)
+  complete(result: CompletedTaskState, metadata?: JsonObject): Promise<void>;
+  // Warning: (ae-forgotten-export) The symbol "TaskState" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static create(
+    state: TaskState,
+    storage: TaskStore,
+    logger: Logger_2,
+  ): TaskAgent;
+  // (undocumented)
+  get done(): boolean;
+  // (undocumented)
+  emitLog(message: string, metadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  get secrets(): TaskSecrets | undefined;
+  // (undocumented)
+  get spec(): TaskSpec;
+}
+
+// @public
+export interface TaskBroker {
+  // (undocumented)
+  claim(): Promise<Task>;
+  // (undocumented)
+  dispatch(
+    spec: TaskSpec,
+    secretTaskSecretss?: TaskSecrets,
+  ): Promise<DispatchResult>;
+  // (undocumented)
+  get(taskId: string): Promise<DbTaskRow>;
+  // (undocumented)
+  observe(
+    options: {
+      taskId: string;
+      after: number | undefined;
+    },
+    callback: (
+      error: Error | undefined,
+      result: {
+        events: DbTaskEventRow[];
+      },
+    ) => void,
+  ): () => void;
+  // (undocumented)
+  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+}
+
+// @public
+export type TaskEventType = 'completion' | 'log';
+
+// @public
+export type TaskSecrets = {
+  token: string | undefined;
+};
+
+// @public
+export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
+
+// @public
+export interface TaskSpecV1beta2 {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1beta2';
+  // (undocumented)
+  baseUrl?: string;
+  // (undocumented)
+  output: {
+    [name: string]: string;
+  };
+  // (undocumented)
+  steps: Array<{
+    id: string;
+    name: string;
+    action: string;
+    input?: JsonObject;
+    if?: string | boolean;
+  }>;
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public
+export interface TaskSpecV1beta3 {
+  // (undocumented)
+  apiVersion: 'scaffolder.backstage.io/v1beta3';
+  // (undocumented)
+  baseUrl?: string;
+  // (undocumented)
+  output: {
+    [name: string]: JsonValue;
+  };
+  // (undocumented)
+  parameters: JsonObject;
+  // Warning: (ae-forgotten-export) The symbol "TaskStep" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  steps: TaskStep[];
+}
+
+// @public
+export interface TaskStore {
+  // (undocumented)
+  claimTask(): Promise<DbTaskRow | undefined>;
+  // (undocumented)
+  completeTask(options: {
+    taskId: string;
+    status: Status;
+    eventBody: JsonObject;
+  }): Promise<void>;
+  // (undocumented)
+  createTask(
+    task: TaskSpec,
+    secrets?: TaskSecrets,
+  ): Promise<{
+    taskId: string;
+  }>;
+  // (undocumented)
+  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  // (undocumented)
+  getTask(taskId: string): Promise<DbTaskRow>;
+  // (undocumented)
+  heartbeatTask(taskId: string): Promise<void>;
+  // (undocumented)
+  listEvents({ taskId, after }: TaskStoreGetEventsOptions): Promise<{
+    events: DbTaskEventRow[];
+  }>;
+  // (undocumented)
+  listStaleTasks(options: { timeoutS: number }): Promise<{
+    tasks: {
+      taskId: string;
+    }[];
+  }>;
+}
+
+// @public
+export type TaskStoreEmitOptions = {
+  taskId: string;
+  body: JsonObject;
+};
+
+// @public
+export class TaskWorker {
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+  constructor(options: Options);
+  // (undocumented)
+  runOneTask(task: Task): Promise<void>;
+  // (undocumented)
+  start(): void;
 }
 
 // Warning: (ae-missing-release-tag) "TemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -286,4 +591,8 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
+
+// Warnings were encountered during analysis:
+//
+// src/scaffolder/tasks/DatabaseTaskStore.d.ts:51:9 - (ae-forgotten-export) The symbol "DbTaskEventRow" needs to be exported by the entry point index.d.ts
 ```

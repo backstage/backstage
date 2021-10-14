@@ -43,9 +43,13 @@ type Options = {
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta2 =>
   taskSpec.apiVersion === 'backstage.io/v1beta2';
+
 /**
  * This is the legacy workflow runner, which supports handlebars. This entire implementation will be replaced
  * with the default workflow runner interface in the future so this entire thing can go bye bye.
+ *
+ * LegacyWorkflowRunner
+ * @public
  */
 export class LegacyWorkflowRunner implements WorkflowRunner {
   private readonly handlebars: typeof Handlebars;

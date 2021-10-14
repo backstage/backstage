@@ -25,7 +25,13 @@ import {
   StorageTaskBroker,
   TaskWorker,
 } from '../scaffolder/tasks';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
+import {
+  TemplateActionRegistry,
+  TemplateAction,
+  createBuiltinActions,
+  TaskBroker,
+  TaskSpec,
+} from '../scaffolder';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
@@ -38,11 +44,9 @@ import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../scaffolder/actions';
-import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
+
 import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
 import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
-import { TaskSpec } from '../scaffolder/tasks/types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -53,6 +57,7 @@ export interface RouterOptions {
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   containerRunner: ContainerRunner;
+  taskBroker?: TaskBroker;
 }
 
 function isSupportedTemplate(
@@ -89,7 +94,8 @@ export async function createRouter(
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),
   );
-  const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  const taskBroker =
+    options.taskBroker || new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
   const legacyWorkflowRunner = new LegacyWorkflowRunner({
     logger,

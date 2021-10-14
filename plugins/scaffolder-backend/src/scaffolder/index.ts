@@ -14,3 +14,27 @@
  * limitations under the License.
  */
 export * from './actions';
+export {
+  TaskAgent,
+  DatabaseTaskStore,
+  StorageTaskBroker,
+  TaskWorker,
+  LegacyWorkflowRunner,
+  DefaultWorkflowRunner,
+} from './tasks';
+export type {
+  Task,
+  TaskBroker,
+  TaskSpec,
+  TaskSecrets,
+  DispatchResult,
+  TaskStore,
+  TaskStoreEmitOptions,
+  DbTaskRow,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+  Status,
+  TaskEventType,
+} from './tasks/types';
+
+export type { RawDbTaskEventRow } from './tasks/DatabaseTaskStore';

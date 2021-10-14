@@ -77,6 +77,10 @@ const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
   return { taskLogger, streamLogger };
 };
 
+/*
+ * DefaultWorkflowRunner
+ * @public
+ */
 export class DefaultWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 

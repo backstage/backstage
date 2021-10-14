@@ -27,6 +27,9 @@ import {
   DbTaskRow,
 } from './types';
 
+/*
+ * @public
+ */
 export class TaskAgent implements Task {
   private isDone = false;
 
@@ -117,10 +120,14 @@ function defer() {
   return { promise, resolve };
 }
 
+/**
+ * StorageTaskBroker
+ * @public
+ */
 export class StorageTaskBroker implements TaskBroker {
   constructor(
-    private readonly storage: TaskStore,
-    private readonly logger: Logger,
+    protected readonly storage: TaskStore,
+    protected readonly logger: Logger,
   ) {}
   private deferredDispatch = defer();
 

@@ -46,6 +46,10 @@ export type RawDbTaskRow = {
   secrets?: string;
 };
 
+/**
+ * RawDbTaskEventRow
+ * @public
+ */
 export type RawDbTaskEventRow = {
   id: number;
   task_id: string;
@@ -54,6 +58,10 @@ export type RawDbTaskEventRow = {
   created_at: string;
 };
 
+/**
+ * DatabaseTaskStore
+ * @public
+ */
 export class DatabaseTaskStore implements TaskStore {
   static async create(knex: Knex): Promise<DatabaseTaskStore> {
     await knex.migrate.latest({
