@@ -167,12 +167,12 @@ function trackProgress(logger: Logger) {
 
 // Makes sure that emitted entities have a proper location based on their uuid
 function withLocations(providerId: string, entity: Entity): Entity {
-  const dn =
+  const uuid =
     entity.metadata.annotations?.[MICROSOFT_GRAPH_USER_ID_ANNOTATION] ||
     entity.metadata.annotations?.[MICROSOFT_GRAPH_GROUP_ID_ANNOTATION] ||
     entity.metadata.annotations?.[MICROSOFT_GRAPH_TENANT_ID_ANNOTATION] ||
     entity.metadata.name;
-  const location = `msgraph:${providerId}/${encodeURIComponent(dn)}`;
+  const location = `msgraph:${providerId}/${encodeURIComponent(uuid)}`;
   return merge(
     {
       metadata: {

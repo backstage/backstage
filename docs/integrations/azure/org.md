@@ -7,7 +7,7 @@ description: Importing users and groups from a Microsoft Azure Active Directory 
 ---
 
 The Backstage catalog can be set up to ingest organizational data - users and
-teams - directly from an tenant in Microsoft Azure Active Directory via the
+teams - directly from a tenant in Microsoft Azure Active Directory via the
 Microsoft Graph API.
 
 More details on this are available in the
