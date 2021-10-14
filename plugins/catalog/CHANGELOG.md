@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog
 
+## 0.7.1
+
+### Patch Changes
+
+- 82fbda923e: Introduce a new `StarredEntitiesApi` that is used in the `useStarredEntities` hook.
+  The `@backstage/plugin-catalog` installs a default implementation that is backed by the `StorageApi`, but one can also override the `starredEntitiesApiRef`.
+
+  This change also updates the storage format from a custom string to an entity reference and moves the location in the local storage.
+  A migration will convert the previously starred entities to the location on the first load of Backstage.
+
+- 93a13dfb42: Support `material-ui` overrides in SystemDiagramCard and EmptityLinksEmptyState components
+- b03b9f19e0: added sorting in entity `Name` column by `metadata.title` if present
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/integration-react@0.1.12
+
 ## 0.7.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs
 
+## 0.12.2
+
+### Patch Changes
+
+- 76fef740fe: Refactored `<Reader />` component internals to support future extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/plugin-search@0.4.15
+  - @backstage/integration-react@0.1.12
+
 ## 0.12.1
 
 ### Patch Changes
