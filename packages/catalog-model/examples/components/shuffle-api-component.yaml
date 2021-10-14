@@ -5,6 +5,8 @@ metadata:
   description: Shuffle API
   tags:
     - go
+  annotations:
+    backstage.io/techdocs-ref:
 spec:
   type: service
   lifecycle: production
