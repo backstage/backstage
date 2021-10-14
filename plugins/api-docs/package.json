@@ -49,7 +49,8 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "swagger-ui-react": "^4.0.0-rc.3"
+    "swagger-ui-react": "^4.0.0-rc.3",
+    "swagger-client": "3.16.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.15",
