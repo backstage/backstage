@@ -16,6 +16,7 @@
 
 import { Observable, StorageApi } from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
+import { performMigrationToTheNewBucket } from './migration';
 import { StarredEntitiesApi } from './StarredEntitiesApi';
 
 /**
@@ -28,6 +29,9 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   private starredEntities: Set<string>;
 
   constructor(opts: { storageApi: StorageApi }) {
+    // no need to await. The updated content will be caught by the observe$
+    performMigrationToTheNewBucket(opts).then();
+
     this.settingsStore = opts.storageApi.forBucket('starredEntities');
 
     this.starredEntities = new Set(

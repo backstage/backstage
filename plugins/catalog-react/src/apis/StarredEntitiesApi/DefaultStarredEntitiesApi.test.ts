@@ -18,6 +18,9 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { MockStorageApi } from '@backstage/test-utils';
 import { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
+import { performMigrationToTheNewBucket } from './migration';
+
+jest.mock('./migration');
 
 describe('DefaultStarredEntitiesApi', () => {
   let mockStorage: StorageApi;
@@ -32,6 +35,8 @@ describe('DefaultStarredEntitiesApi', () => {
   });
 
   beforeEach(() => {
+    (performMigrationToTheNewBucket as jest.Mock).mockResolvedValue(undefined);
+
     mockStorage = MockStorageApi.create();
     starredEntitiesApi = new DefaultStarredEntitiesApi({
       storageApi: mockStorage,
@@ -40,6 +45,12 @@ describe('DefaultStarredEntitiesApi', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+  });
+
+  describe('constructor', () => {
+    it('should call migration', () => {
+      expect(performMigrationToTheNewBucket).toBeCalledTimes(1);
+    });
   });
 
   describe('toggleStarred', () => {
