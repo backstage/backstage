@@ -10,7 +10,7 @@ This section will guide you through:
 - [Create a basic documentation setup](#create-a-basic-documentation-setup)
   - [Use any software template](#use-any-software-template)
   - [Use the documentation template](#use-the-documentation-template)
-  - [Enable documentation for a already existing entity](#enable-documentation-for-a-already-existing-entity)
+  - [Enable documentation for an already existing entity](#enable-documentation-for-an-already-existing-entity)
 - [Writing and previewing your documentation](#writing-and-previewing-your-documentation)
 
 ## Prerequisites
@@ -22,7 +22,7 @@ This section will guide you through:
 
 If you have an existing repository that you'd like to add documentation to, skip
 to the
-[Enable documentation for a already existing entity setup](#enable-documentation-for-a-already-existing-entity)
+[Enable documentation for an already existing entity setup](#enable-documentation-for-an-already-existing-entity)
 section below. Otherwise, continue reading to create a new software entity
 including documentation from scratch.
 
@@ -59,7 +59,7 @@ empty.
 Create an entity from the documentation template and you will get the needed
 setup for free.
 
-### Enable documentation for a already existing entity
+### Enable documentation for an already existing entity
 
 Prerequisites:
 
