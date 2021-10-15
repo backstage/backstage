@@ -21,6 +21,7 @@ import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
+import { PluginProvider } from './PluginProvider';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -188,19 +189,25 @@ export function createReactExtension<
           | undefined;
 
         return (
-          <Suspense fallback={<Progress />}>
-            <PluginErrorBoundary app={app} plugin={plugin}>
-              <AnalyticsContext
-                attributes={{
-                  pluginId: plugin.getId(),
-                  ...(name && { extension: name }),
-                  ...(mountPoint && { routeRef: mountPoint.id }),
-                }}
-              >
-                <Component {...props} />
-              </AnalyticsContext>
-            </PluginErrorBoundary>
-          </Suspense>
+          <PluginProvider
+            plugin={plugin}
+            extensionName={name}
+            routeRef={mountPoint?.id}
+          >
+            <Suspense fallback={<Progress />}>
+              <PluginErrorBoundary app={app} plugin={plugin}>
+                <AnalyticsContext
+                  attributes={{
+                    pluginId: plugin.getId(),
+                    ...(name && { extension: name }),
+                    ...(mountPoint && { routeRef: mountPoint.id }),
+                  }}
+                >
+                  <Component {...props} />
+                </AnalyticsContext>
+              </PluginErrorBoundary>
+            </Suspense>
+          </PluginProvider>
         );
       };
 
