@@ -43,20 +43,103 @@ export class DatabaseHandler {
     this.database = options.database;
   }
 
-  async getMembers(entityRef: any) {
+  async getMembers(entityRef: string) {
     return await this.database
       .select('*')
-      .from('public.members')
+      .from('members')
       .where({ entity_ref: entityRef });
   }
 
-  async addMember(userId: any, entityRef: any, picture?: string) {
+  async addMember(userId: string, entityRef: string, picture?: string) {
     await this.database
       .insert({
         entity_ref: entityRef,
         user_id: userId,
         picture: picture,
       })
-      .into('public.members');
+      .into('members');
+  }
+
+  async deleteMember(userId: string, entityRef: string) {
+    return await this.database('members')
+      .where({ entity_ref: decodeURIComponent(entityRef) })
+      .andWhere('user_id', userId)
+      .del();
+  }
+
+  async getMetadata(entityRef: string) {
+    const coalesce = this.database.raw(
+      'coalesce(count(members.entity_ref), 0) as members_count',
+    );
+
+    const columns = [
+      'members.entity_ref',
+      'metadata.entity_ref',
+      'metadata.name',
+      'metadata.announcement',
+      'metadata.status',
+      'metadata.updated_at',
+      'metadata.community',
+    ];
+
+    return await this.database('metadata')
+      .select([...columns, coalesce])
+      .where({ 'metadata.entity_ref': entityRef })
+      .groupBy(columns)
+      .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
+  }
+
+  async insertMetadata(bazaarProject: any) {
+    const { name, entityRef, community, announcement, status } = bazaarProject;
+
+    await this.database
+      .insert({
+        name: name,
+        entity_ref: entityRef,
+        community: community,
+        announcement: announcement,
+        status: status,
+        updated_at: new Date().toISOString(),
+      })
+      .into('metadata');
+  }
+
+  async updateMetadata(bazaarProject: any) {
+    const { entityRef, community, announcement, status } = bazaarProject;
+
+    return await this.database('metadata')
+      .where({ entity_ref: entityRef })
+      .update({
+        announcement: announcement,
+        community: community,
+        status: status,
+        updated_at: new Date().toISOString(),
+      });
+  }
+
+  async deleteMetadata(entityRef: string) {
+    return await this.database('metadata')
+      .where({ entity_ref: entityRef })
+      .del();
+  }
+
+  async getEntities() {
+    const coalesce = this.database.raw(
+      'coalesce(count(members.entity_ref), 0) as members_count',
+    );
+
+    const columns = [
+      'members.entity_ref',
+      'metadata.entity_ref',
+      'metadata.name',
+      'metadata.announcement',
+      'metadata.status',
+      'metadata.updated_at',
+      'metadata.community',
+    ];
+    return await this.database('metadata')
+      .select([...columns, coalesce])
+      .groupBy(columns)
+      .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
   }
 }

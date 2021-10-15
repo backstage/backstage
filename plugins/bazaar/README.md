@@ -101,6 +101,10 @@ The metadata related to the Bazaar is stored in a database. Right now there are 
 
 ## Future work and ideas
 
+- Workflow
+
+  - Make it possible to add a Bazaar project without linking it to a Backstage entity, this would make it easier to just add an idea to the Bazaar.
+
 - Bazaar landing page
 
   - Add a tab 'My page', where your personal data is displayed. For example: your projects and its latest activities, projects or tags you are following etc.
@@ -117,7 +121,7 @@ The metadata related to the Bazaar is stored in a database. Right now there are 
 
 - Dialogues
 
-  - Extend the dialogue for adding a project with more fields, e.g. chat link and the possibility to add images
+  - Extend the dialogue for adding a project with more fields, e.g. the possibility to add images
 
 - Testing
   - Add tests to all the components

@@ -73,7 +73,9 @@ export const ProjectCard = ({ bazaarProject }: Props) => {
       >
         <ItemCardHeader
           title={name}
-          subtitle={`updated ${DateTime.fromISO(updatedAt!).toRelative({
+          subtitle={`updated ${DateTime.fromISO(
+            new Date(updatedAt!).toISOString(),
+          ).toRelative({
             base: DateTime.now(),
           })}`}
         />

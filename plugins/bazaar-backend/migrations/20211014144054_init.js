@@ -17,8 +17,12 @@
 exports.up = async function up(knex) {
   await knex.schema.createTable('metadata', table => {
     table.comment('The table of Bazaar metadata');
+    table
+      .text('entity_ref')
+      .notNullable()
+      .unique()
+      .comment('The ref of the entity');
     table.text('name').notNullable().comment('The name of the entity');
-    table.text('entity_ref').notNullable().comment('The ref of the entity');
     table
       .text('community')
       .comment('Link to where the community can discuss ideas');
@@ -31,20 +35,20 @@ exports.up = async function up(knex) {
       .defaultTo('proposed')
       .notNullable()
       .comment('The status of the Bazaar project');
-    table.timestamps(true, true);
+    table
+      .text('updated_at')
+      .notNullable()
+      .comment('Timestamp on ISO 8601 format when entity was last updated');
   });
-
-  await knex.raw(`
-    CREATE TRIGGER update_timestamp
-    BEFORE UPDATE
-    ON metadata
-    FOR EACH ROW
-    EXECUTE PROCEDURE update_timestamp();
-  `);
 
   await knex.schema.createTable('members', table => {
     table.comment('The table of Bazaar members');
-    table.text('entity_ref').notNullable().comment('The ref of the entity');
+    table
+      .text('entity_ref')
+      .notNullable()
+      .references('metadata.entity_ref')
+      .onDelete('CASCADE')
+      .comment('The ref of the entity');
     table.text('user_id').notNullable().comment('The user id of the member');
     table
       .dateTime('join_date')

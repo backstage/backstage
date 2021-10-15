@@ -17,12 +17,14 @@
 import { DatabaseHandler } from './DatabaseHandler';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 
-const members: Array<any> = [
-  {
-    entity_ref: 'project1',
-    user_id: 'member1',
-  },
-];
+const bazaarProject: any = {
+  name: 'name',
+  entityRef: 'ref',
+  community: '',
+  status: 'proposed',
+  announcement: 'a',
+  membersCount: 0,
+};
 
 describe('DatabaseHandler', () => {
   const databases = TestDatabases.create({
@@ -38,10 +40,11 @@ describe('DatabaseHandler', () => {
     'should do a full sync with the locations on connect, %p',
     async databaseId => {
       const db = await createDatabaseHandler(databaseId);
-      await db.addMember(members[0].user_id, members[0].entity_ref);
-      const cov: any[] = await db.getMembers('project1');
-      expect(cov[0].entity_ref).toEqual(members[0].entity_ref);
-      expect(cov[0].user_id).toEqual(members[0].user_id);
+      await db.insertMetadata(bazaarProject);
+
+      const entities = await db.getEntities();
+      expect(entities.length).toEqual(1);
+      expect(entities[0].entity_ref).toEqual(bazaarProject.entityRef);
     },
     60_000,
   );

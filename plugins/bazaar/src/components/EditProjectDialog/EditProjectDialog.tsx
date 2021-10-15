@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { BazaarProject, FormValues } from '../../types';
@@ -56,13 +56,14 @@ export const EditProjectDialog = ({
   const handleSave: any = async (getValues: any, _: any) => {
     const formValues = getValues();
 
-    const updateResponse = await bazaarApi.updateMetadata(
-      entity!,
-      entity.metadata.name,
-      formValues.community,
-      formValues.announcement,
-      formValues.status,
-    );
+    const updateResponse = await bazaarApi.updateMetadata({
+      name: entity.metadata.name,
+      entityRef: stringifyEntityRef(entity),
+      announcement: formValues.announcement,
+      status: formValues.status,
+      community: formValues.community,
+      membersCount: bazaarProject.membersCount,
+    });
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleClose();

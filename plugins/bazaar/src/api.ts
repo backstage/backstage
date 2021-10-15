@@ -20,7 +20,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { BazaarProject, Status } from './types';
+import { BazaarProject } from './types';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -28,13 +28,7 @@ export const bazaarApiRef = createApiRef<BazaarApi>({
 });
 
 export interface BazaarApi {
-  updateMetadata(
-    entity: Entity,
-    name: string,
-    community: string,
-    announcement: string,
-    status: Status,
-  ): Promise<any>;
+  updateMetadata(bazaarProject: BazaarProject): Promise<any>;
 
   getMetadata(entity: Entity): Promise<any>;
 
@@ -61,13 +55,7 @@ export class BazaarClient implements BazaarApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async updateMetadata(
-    entity: Entity,
-    name: string,
-    community: string,
-    announcement: string,
-    status: Status,
-  ): Promise<any> {
+  async updateMetadata(bazaarProject: BazaarProject): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
     return await fetch(`${baseUrl}/metadata`, {
@@ -76,13 +64,7 @@ export class BazaarClient implements BazaarApi {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        entity_ref: stringifyEntityRef(entity),
-        name: name,
-        announcement: announcement,
-        community: community,
-        status: status,
-      }),
+      body: JSON.stringify(bazaarProject),
     }).then(resp => resp.json());
   }
 
@@ -155,11 +137,5 @@ export class BazaarClient implements BazaarApi {
     await fetch(`${baseUrl}/metadata/${encodeURIComponent(entityRef)}`, {
       method: 'DELETE',
     });
-
-    if (bazaarProject.membersCount > 0) {
-      await fetch(`${baseUrl}/members/${encodeURIComponent(entityRef)}`, {
-        method: 'DELETE',
-      });
-    }
   }
 }

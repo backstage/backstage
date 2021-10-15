@@ -39,12 +39,15 @@ const useStyles = makeStyles({
   },
 });
 
-const filterCatalogEntities = (bazaarProjects: any, catalogEntities: any) => {
-  const bazaarProjectRefs = bazaarProjects?.value?.map(
+const filterCatalogEntities = (
+  bazaarProjects: BazaarProject[],
+  catalogEntities: Entity[],
+) => {
+  const bazaarProjectRefs = bazaarProjects.map(
     (project: BazaarProject) => project.entityRef,
   );
 
-  const filtered = catalogEntities?.value?.filter((entity: Entity) => {
+  const filtered = catalogEntities.filter((entity: Entity) => {
     return !bazaarProjectRefs?.includes(stringifyEntityRef(entity));
   });
 
@@ -110,8 +113,8 @@ export const SortView = () => {
 
   useEffect(() => {
     const filteredCatalogEntities = filterCatalogEntities(
-      bazaarProjects,
-      catalogEntities,
+      bazaarProjects.value || [],
+      catalogEntities.value || [],
     );
 
     if (filteredCatalogEntities) {

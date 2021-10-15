@@ -61,21 +61,7 @@ export async function createRouter(
   router.delete('/member/:ref/:id', async (request, response) => {
     const { ref, id } = request.params;
 
-    const count = await db('public.members')
-      .where({ entity_ref: decodeURIComponent(ref) })
-      .andWhere('user_id', id)
-      .del();
-
-    if (count) {
-      response.json({ status: 'ok' });
-    } else {
-      response.status(404).json({ message: 'Record not found' });
-    }
-  });
-
-  router.delete('/members/:ref', async (request, response) => {
-    const ref = decodeURIComponent(request.params.ref);
-    const count = await db('public.members').where({ entity_ref: ref }).del();
+    const count = await dbHandler.deleteMember(id, ref);
 
     if (count) {
       response.json({ status: 'ok' });
@@ -85,97 +71,35 @@ export async function createRouter(
   });
 
   router.get('/metadata/:ref', async (request, response) => {
-    const entity_ref = decodeURIComponent(request.params.ref);
+    const ref = decodeURIComponent(request.params.ref);
 
-    const coalesce = db.raw(
-      'coalesce(count(members.entity_ref), 0) as members_count',
-    );
-
-    const columns = [
-      'members.entity_ref',
-      'metadata.entity_ref',
-      'metadata.name',
-      'metadata.announcement',
-      'metadata.status',
-      'metadata.updated_at',
-      'metadata.community',
-    ];
-
-    const data = await db('public.members as members')
-      .select([...columns, coalesce])
-      .where({ 'metadata.entity_ref': entity_ref })
-      .groupBy(columns)
-      .rightJoin(
-        'public.metadata as metadata',
-        'metadata.entity_ref',
-        '=',
-        'members.entity_ref',
-      );
-
+    const data = await dbHandler.getMetadata(ref);
     response.json({ status: 'ok', data: data });
   });
 
   router.get('/entities', async (_, response) => {
-    const coalesce = db.raw(
-      'coalesce(count(members.entity_ref), 0) as members_count',
-    );
-
-    const columns = [
-      'members.entity_ref',
-      'metadata.entity_ref',
-      'metadata.name',
-      'metadata.announcement',
-      'metadata.status',
-      'metadata.updated_at',
-      'metadata.community',
-    ];
-
-    const data = await db('public.members as members')
-      .select([...columns, coalesce])
-      .groupBy(columns)
-      .rightJoin(
-        'public.metadata as metadata',
-        'metadata.entity_ref',
-        '=',
-        'members.entity_ref',
-      );
+    const data = await dbHandler.getEntities();
 
     response.json({ status: 'ok', data: data });
   });
 
   router.put('/metadata', async (request, response) => {
-    const { name, announcement, status, community, entity_ref } = request.body;
+    const bazaarProject = request.body;
 
-    const count = await db('public.metadata')
-      .where({ entity_ref: entity_ref })
-      .update({
-        announcement: announcement,
-        community: community,
-        status: status,
-      });
+    const count = await dbHandler.updateMetadata(bazaarProject);
 
     if (count) {
       response.json({ status: 'ok' });
     } else {
-      await db
-        .insert({
-          name: name,
-          entity_ref: entity_ref,
-          community: community,
-          announcement: announcement,
-          status: status,
-        })
-        .into('public.metadata');
+      await dbHandler.insertMetadata(bazaarProject);
       response.json({ status: 'ok' });
     }
   });
 
   router.delete('/metadata/:ref', async (request, response) => {
-    const entity_ref = decodeURIComponent(request.params.ref);
+    const ref = decodeURIComponent(request.params.ref);
 
-    const count = await db('public.metadata')
-      .where({ entity_ref: entity_ref })
-      .del();
+    const count = await dbHandler.deleteMetadata(ref);
 
     if (count) {
       response.json({ status: 'ok' });

@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { SubmitHandler } from 'react-hook-form';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
@@ -70,13 +70,14 @@ export const AddProjectDialog = ({
     const formValues = getValues();
 
     if (selectedEntity) {
-      await bazaarApi.updateMetadata(
-        selectedEntity,
-        selectedEntity.metadata.name,
-        formValues.community,
-        formValues.announcement,
-        formValues.status,
-      );
+      await bazaarApi.updateMetadata({
+        name: selectedEntity.metadata.name,
+        entityRef: stringifyEntityRef(selectedEntity),
+        announcement: formValues.announcement,
+        status: formValues.status,
+        community: formValues.community,
+        membersCount: 0,
+      } as BazaarProject);
 
       fetchBazaarProjects();
       fetchCatalogEntities();
