@@ -50,7 +50,14 @@ export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
 /**
  * An explanation of a configuration validation error.
  */
-type ValidationError = string;
+export type ValidationError = {
+  keyword: string;
+  dataPath: string;
+  schemaPath: string;
+  params: Record<string, any>;
+  propertyName?: string;
+  message?: string;
+};
 
 /**
  * The result of validating configuration data using a schema.
@@ -65,7 +72,14 @@ type ValidationResult = {
    *
    * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
    */
-  visibilityByPath: Map<string, ConfigVisibility>;
+  visibilityByDataPath: Map<string, ConfigVisibility>;
+
+  /**
+   * The configuration visibilities that were discovered during validation.
+   *
+   * The path in the key uses the form `/properties/<key>/items/additionalProperties/<leaf-key>`
+   */
+  visibilityBySchemaPath: Map<string, ConfigVisibility>;
 };
 
 /**
