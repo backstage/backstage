@@ -142,4 +142,38 @@ describe('<FossaPage />', () => {
     expect(getByText(/0 Issues/i)).toBeInTheDocument();
     expect(getByText(/10 Issues/i)).toBeInTheDocument();
   });
+
+  it('has configurable entity filter', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'API',
+      metadata: {
+        name: 'my-name-0',
+        annotations: {
+          'fossa.io/project-name': 'my-name-0',
+        },
+      },
+    };
+
+    fossaApi.getFindingSummaries.mockResolvedValue(new Map());
+    catalogApi.getEntities.mockResolvedValue({ items: [entity] });
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <FossaPage entitiesFilter={{ kind: 'API' }} />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    expect(catalogApi.getEntities).toBeCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'API' },
+      }),
+    );
+    expect(getByText(/my-name-0/i)).toBeInTheDocument();
+  });
 });

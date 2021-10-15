@@ -18,10 +18,11 @@ export const EntityFossaCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "FossaPageProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FossaPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const FossaPage: () => JSX.Element;
+export const FossaPage: ({ entitiesFilter }: FossaPageProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "fossaPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
