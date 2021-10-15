@@ -689,6 +689,20 @@ export type PluginHooks = {
   featureFlags: FeatureFlagsHooks;
 };
 
+// Warning: (ae-missing-release-tag) "PluginInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface PluginInfo {
+  // (undocumented)
+  extensionName?: string;
+  // (undocumented)
+  plugin: BackstagePlugin<any, any>;
+  // (undocumented)
+  routeRef?: string;
+}
+
+// Warning: (ae-missing-release-tag) "PluginOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export type PluginOutput = FeatureFlagOutput;
 
@@ -802,6 +816,20 @@ export function useElementFilter<T>(
   dependencies?: any[],
 ): T;
 
+// Warning: (ae-missing-release-tag) "usePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function usePlugin(): PluginInfo | undefined;
+
+// Warning: (ae-missing-release-tag) "UserFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type UserFlags = {};
+
+// Warning: (ae-forgotten-export) The symbol "RouteFunc" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
