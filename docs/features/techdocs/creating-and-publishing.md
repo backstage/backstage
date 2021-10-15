@@ -38,9 +38,8 @@ site up and running and to start write your documentation.
 
 If you have created software templates that do not include documentation by
 default, we highly recommend you to set that up. Follow our how-to guide
-[How to add documentation setup to my software templates](link) to get started.
-
-<!-- TODO: Write above how to guide in how-to-guides.md -->
+[How to add documentation setup to your software templates](./how-to-guides#how-to-add-documentation-setup-to-your-software-templates)
+to get started.
 
 ### Use the documentation template
 
