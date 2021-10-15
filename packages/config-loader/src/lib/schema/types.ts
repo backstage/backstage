@@ -65,7 +65,14 @@ type ValidationResult = {
    *
    * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
    */
-  visibilityByPath: Map<string, ConfigVisibility>;
+  visibilityByDataPath: Map<string, ConfigVisibility>;
+
+  /**
+   * The configuration visibilities that were discovered during validation.
+   *
+   * The path in the key uses the form `/properties/<key>/items/additionalProperties/<leaf-key>`
+   */
+  visibilityBySchemaPath: Map<string, ConfigVisibility>;
 };
 
 /**

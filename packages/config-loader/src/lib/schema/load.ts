@@ -83,7 +83,7 @@ export async function loadConfigSchema(
           ...filterByVisibility(
             data,
             visibility,
-            result.visibilityByPath,
+            result.visibilityByDataPath,
             valueTransform,
             withFilteredKeys,
           ),
@@ -94,7 +94,7 @@ export async function loadConfigSchema(
           ...filterByVisibility(
             data,
             Array.from(CONFIG_VISIBILITIES),
-            result.visibilityByPath,
+            result.visibilityByDataPath,
             valueTransform,
             withFilteredKeys,
           ),

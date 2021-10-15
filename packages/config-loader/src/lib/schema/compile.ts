@@ -17,6 +17,7 @@
 import Ajv from 'ajv';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import mergeAllOf, { Resolvers } from 'json-schema-merge-allof';
+import traverse from 'json-schema-traverse';
 import { ConfigReader } from '@backstage/config';
 import {
   ConfigSchemaPackageEntry,
@@ -38,7 +39,7 @@ export function compileConfigSchemas(
   // The ajv instance below is stateful and doesn't really allow for additional
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.
-  const visibilityByPath = new Map<string, ConfigVisibility>();
+  const visibilityByDataPath = new Map<string, ConfigVisibility>();
 
   const ajv = new Ajv({
     allErrors: true,
@@ -62,7 +63,7 @@ export function compileConfigSchemas(
             /\['?(.*?)'?\]/g,
             (_, segment) => `/${segment}`,
           );
-          visibilityByPath.set(normalizedPath, visibility);
+          visibilityByDataPath.set(normalizedPath, visibility);
         }
         return true;
       };
@@ -80,10 +81,17 @@ export function compileConfigSchemas(
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
   const validate = ajv.compile(merged);
 
+  const visibilityBySchemaPath = new Map<string, ConfigVisibility>();
+  traverse(merged, (schema, path) => {
+    if (schema.visibility && schema.visibility !== 'backend') {
+      visibilityBySchemaPath.set(path, schema.visibility);
+    }
+  });
+
   return configs => {
     const config = ConfigReader.fromConfigs(configs).get();
 
-    visibilityByPath.clear();
+    visibilityByDataPath.clear();
 
     const valid = validate(config);
     if (!valid) {
@@ -95,12 +103,14 @@ export function compileConfigSchemas(
             .join(' ');
           return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
         }),
-        visibilityByPath: new Map(),
+        visibilityByDataPath: new Map(),
+        visibilityBySchemaPath: new Map(),
       };
     }
 
     return {
-      visibilityByPath: new Map(visibilityByPath),
+      visibilityByDataPath: new Map(visibilityByDataPath),
+      visibilityBySchemaPath,
     };
   };
 }

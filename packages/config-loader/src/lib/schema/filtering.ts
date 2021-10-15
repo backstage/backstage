@@ -28,7 +28,7 @@ import {
 export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],
-  visibilityByPath: Map<string, ConfigVisibility>,
+  visibilityByDataPath: Map<string, ConfigVisibility>,
   transformFunc?: TransformFunc<number | string | boolean>,
   withFilteredKeys?: boolean,
 ): { data: JsonObject; filteredKeys?: string[] } {
@@ -40,7 +40,7 @@ export function filterByVisibility(
     filterPath: string, // Matches the format of the ConfigReader
   ): JsonValue | undefined {
     const visibility =
-      visibilityByPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
+      visibilityByDataPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
     const isVisible = includeVisibilities.includes(visibility);
 
     if (typeof jsonVal !== 'object') {
