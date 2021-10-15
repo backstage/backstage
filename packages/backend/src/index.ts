@@ -22,39 +22,38 @@
  * Happy hacking!
  */
 
+import Router from 'express-promise-router';
 import {
   CacheManager,
   createServiceBuilder,
-  DatabaseManager,
   getRootLogger,
   loadBackendConfig,
   notFoundHandler,
+  DatabaseManager,
   SingleHostDiscovery,
-  TaskManager,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import Router from 'express-promise-router';
-import { metricsHandler, metricsInit } from './metrics';
-import app from './plugins/app';
+import healthcheck from './plugins/healthcheck';
+import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
-import badges from './plugins/badges';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
-import graphql from './plugins/graphql';
-import healthcheck from './plugins/healthcheck';
-import jenkins from './plugins/jenkins';
-import kafka from './plugins/kafka';
 import kubernetes from './plugins/kubernetes';
-import proxy from './plugins/proxy';
+import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
+import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
 import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
+import graphql from './plugins/graphql';
+import app from './plugins/app';
+import badges from './plugins/badges';
+import jenkins from './plugins/jenkins';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -65,15 +64,13 @@ function makeCreateEnv(config: Config) {
   root.info(`Created UrlReader ${reader}`);
 
   const databaseManager = DatabaseManager.fromConfig(config);
-  const taskManager = TaskManager.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
-    const tasks = taskManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, tasks, config, reader, discovery };
+    return { logger, cache, database, config, reader, discovery };
   };
 }
 
