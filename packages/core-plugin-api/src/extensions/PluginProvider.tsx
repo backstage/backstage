@@ -43,6 +43,10 @@ export function PluginProvider(props: PropsWithChildren<PluginProviderProps>) {
   return <context.Provider value={value} children={children} />;
 }
 
+/**
+ * Gets information about the plugin the current component is part of.
+ * May be `undefined` if the component is mounted outside a plugin scope.
+ */
 export function usePlugin(): PluginInfo | undefined {
   return useContext(context);
 }
