@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export type { PluginTaskManager } from './types';
 export { TaskManager } from './TaskManager';
+export type { LockOptions, PluginTaskManager, TaskOptions } from './types';

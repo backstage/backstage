@@ -51,6 +51,12 @@ export class TaskManager {
     private readonly logger: Logger,
   ) {}
 
+  /**
+   * Instantiates a task manager instance for the given plugin.
+   *
+   * @param pluginId - The unique ID of the plugin, for example "catalog"
+   * @returns A {@link PluginTaskManager} instance
+   */
   forPlugin(pluginId: string): PluginTaskManager {
     const databaseFactory = memoize(async () => {
       const knex = await this.databaseManager.forPlugin(pluginId).getClient();

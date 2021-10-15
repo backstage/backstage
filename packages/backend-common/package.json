@@ -90,6 +90,7 @@
     "@types/concat-stream": "^1.6.0",
     "@types/fs-extra": "^9.0.3",
     "@types/http-errors": "^1.6.3",
+    "@types/luxon": "^2.0.4",
     "@types/minimist": "^1.2.0",
     "@types/mock-fs": "^4.13.0",
     "@types/morgan": "^1.9.0",

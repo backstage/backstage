@@ -15,13 +15,12 @@
  */
 
 import { Knex } from 'knex';
-import { Duration } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { isDatabaseConflictError } from '../database';
 import { DbMutexesRow, DB_MUTEXES_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskManager } from './types';
+import { LockOptions, PluginTaskManager, TaskOptions } from './types';
 import { nowPlus, validateId } from './util';
 
 /**
@@ -35,12 +34,9 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
 
   async acquireLock(
     id: string,
-    options: {
-      timeout: Duration;
-    },
+    options: LockOptions,
   ): Promise<
-    | { acquired: false }
-    | { acquired: true; release: () => void | Promise<void> }
+    { acquired: false } | { acquired: true; release(): Promise<void> }
   > {
     validateId(id);
 
@@ -90,11 +86,7 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
 
   async scheduleTask(
     id: string,
-    options: {
-      timeout?: Duration;
-      frequency?: Duration;
-      initialDelay?: Duration;
-    },
+    options: TaskOptions,
     fn: () => void | Promise<void>,
   ): Promise<{ unschedule: () => Promise<void> }> {
     validateId(id);
