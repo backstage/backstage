@@ -85,10 +85,5 @@
     "*.md": [
       "node ./scripts/check-docs-quality"
     ]
-  },
-  "jest": {
-    "transformModules": [
-      "@asyncapi/react-component"
-    ]
   }
 }

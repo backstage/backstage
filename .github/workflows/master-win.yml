@@ -58,7 +58,7 @@ jobs:
         run: lerna run --scope @backstage/core-* build
 
       - name: test
-        run: yarn lerna -- run test
+        run: yarn lerna -- run test --runInBand
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 

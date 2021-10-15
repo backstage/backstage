@@ -140,7 +140,7 @@ jobs:
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run test --since origin/master -- --coverage
+        run: yarn lerna -- run test --since origin/master -- --coverage --runInBand
         env:
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
@@ -149,7 +149,7 @@ jobs:
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn lerna -- run test -- --coverage
+          yarn lerna -- run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}

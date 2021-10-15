@@ -16,7 +16,25 @@
 
 const fs = require('fs-extra');
 const path = require('path');
+const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
+const { version } = require('../package.json');
+
+const transformIgnorePattern = [
+  '@material-ui',
+  '@rjsf',
+  'ajv',
+  'core-js',
+  'jest-.*',
+  'jsdom',
+  'knex',
+  'react',
+  'react-dom',
+  'highlight\\.js',
+  'prismjs',
+  'react-use',
+  'typescript',
+].join('|');
 
 async function getProjectConfig(targetPath, displayName) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
@@ -58,10 +76,7 @@ async function getProjectConfig(targetPath, displayName) {
     currentPath = newPath;
   }
 
-  // We add an additional Jest config parameter only known by the Backstage CLI
-  // called `transformModules`. It's a list of modules that we want to apply
-  // our configured jest transformations for.
-  // This is useful when packages are published in untranspiled ESM or TS form.
+  // This is an old deprecated option that is no longer used.
   const transformModules = pkgJsonConfigs
     .flatMap(conf => {
       const modules = conf.transformModules || [];
@@ -70,10 +85,14 @@ async function getProjectConfig(targetPath, displayName) {
     })
     .map(name => `${name}/`)
     .join('|');
-  const transformModulePattern = transformModules && `(?!${transformModules})`;
+  if (transformModules.length > 0) {
+    console.warn(
+      'The Backstage CLI jest transformModules option is no longer used and will be ignored. All modules are now always transformed.',
+    );
+  }
 
   const options = {
-    displayName,
+    ...(displayName && { displayName }),
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
@@ -82,8 +101,7 @@ async function getProjectConfig(targetPath, displayName) {
     },
 
     transform: {
-      '\\.esm\\.js$': require.resolve('./jestEsmTransform.js'), // See jestEsmTransform.js
-      '\\.(js|jsx|ts|tsx)$': require.resolve('@sucrase/jest-plugin'),
+      '\\.(js|jsx|ts|tsx)$': require.resolve('./jestSucraseTransform.js'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('jest-transform-yaml'),
@@ -92,11 +110,7 @@ async function getProjectConfig(targetPath, displayName) {
     // A bit more opinionated
     testMatch: ['**/?(*.)test.{js,jsx,mjs,ts,tsx}'],
 
-    // Default behaviour is to not apply transforms for node_modules, but we still want
-    // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
-    transformIgnorePatterns: [
-      `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
-    ],
+    transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
   };
 
   // Use src/setupTests.ts as the default location for configuring test env
@@ -104,7 +118,21 @@ async function getProjectConfig(targetPath, displayName) {
     options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
   }
 
-  return Object.assign(options, ...pkgJsonConfigs);
+  const config = Object.assign(options, ...pkgJsonConfigs);
+
+  // The config name is a cache key that lets us share the jest cache across projects.
+  // If no explicit name was configured, generated one based on the configuration.
+  if (!config.name) {
+    const configHash = crypto
+      .createHash('md5')
+      .update(version)
+      .update(Buffer.alloc(1))
+      .update(JSON.stringify(config.transform))
+      .digest('hex');
+    config.name = `backstage_cli_${configHash}`;
+  }
+
+  return config;
 }
 
 // This loads the root jest config, which in turn will either refer to a single
