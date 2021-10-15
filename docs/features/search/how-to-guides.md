@@ -56,9 +56,7 @@ in your App, so that you can get TechDocs documents indexed.
 
 If you have been through the
 [Getting Started with Search](https://backstage.io/docs/features/search/getting-started)
-guide, you should have the `packages/backend/src/plugins/search.ts` file
-available. If so, you can go ahead and follow this guide - if
-not, start by going through the getting started guide.
+guide, you should have the `packages/backend/src/plugins/search.ts` file available. If so, you can go ahead and follow this guide - if not, start by going through the getting started guide.
 
 1. Import the DefaultTechDocsCollator from `@backstage/plugin-techdocs-backend`.
 
