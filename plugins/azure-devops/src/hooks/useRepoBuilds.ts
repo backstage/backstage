@@ -14,35 +14,38 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
-import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
-import { azureDevOpsApiRef } from '../api';
 import { RepoBuild, RepoBuildOptions } from '../api/types';
-import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
+
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
+import { Entity } from '@backstage/catalog-model';
+import { azureDevOpsApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
+import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 
 export function useRepoBuilds(
   entity: Entity,
   defaultLimit?: number,
 ): {
-  items: RepoBuild[] | undefined;
+  items: RepoBuild[] | null;
   loading: boolean;
-  error: any;
+  error: Error | null;
 } {
   const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
   const options: RepoBuildOptions = {
     top: top,
   };
+
   const api = useApi(azureDevOpsApiRef);
   const { project, repo } = useProjectRepoFromEntity(entity);
+
   const { value, loading, error } = useAsync(() => {
     return api.getRepoBuilds(project, repo, options);
   }, [api, project, repo, entity]);
 
   return {
-    items: value?.items,
+    items: value?.items ?? null,
     loading,
-    error,
+    error: error ?? null,
   };
 }

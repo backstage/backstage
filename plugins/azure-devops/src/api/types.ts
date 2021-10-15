@@ -17,7 +17,7 @@
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+} from '@backstage/plugin-azure-devops-backend';
 
 export type RepoBuild = {
   id?: number;

@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { DateTime } from 'luxon';
-import {
-  Link,
-  Table,
-  TableColumn,
-  StatusError,
-  StatusOK,
-  StatusWarning,
-  StatusAborted,
-  StatusRunning,
-  StatusPending,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
 import { Box, Typography } from '@material-ui/core';
-import { RepoBuild } from '../../api/types';
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+} from '@backstage/plugin-azure-devops-backend';
+import {
+  Link,
+  ResponseErrorPanel,
+  StatusAborted,
+  StatusError,
+  StatusOK,
+  StatusPending,
+  StatusRunning,
+  StatusWarning,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
+
+import { DateTime } from 'luxon';
+import React from 'react';
+import { RepoBuild } from '../../api/types';
 
 const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
@@ -154,13 +155,13 @@ const columns: TableColumn[] = [
   },
 ];
 
-type Props = {
-  items?: RepoBuild[];
+type BuildTableProps = {
+  items: RepoBuild[] | null;
   loading: boolean;
-  error?: any;
+  error: Error | null;
 };
 
-export const BuildTable = ({ items, loading, error }: Props) => {
+export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
   if (error) {
     return (
       <div>
@@ -180,7 +181,7 @@ export const BuildTable = ({ items, loading, error }: Props) => {
         showEmptyDataSourceMessage: !loading,
       }}
       title={`Builds (${items ? items.length : 0})`}
-      data={items || []}
+      data={items ?? []}
     />
   );
 };
