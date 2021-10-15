@@ -77,3 +77,22 @@ indexBuilder.addCollator({
   }),
 });
 ```
+
+You should now have your TechDocs documents indexed to your search engine of
+choice!
+
+If you want your users to be able to filter down to the techdocs type when
+searching. You can update your `SearchPage.tsx` file in
+`packages/app/src/components/search` by adding `techdocs` to the list of values
+of the `SearchType` component.
+
+```tsx
+<Paper className={classes.filters}>
+  <SearchType
+    values={['techdocs', 'software-catalog']}
+    name="type"
+    defaultValue="software-catalog"
+  />
+  ...
+</Paper>
+```
