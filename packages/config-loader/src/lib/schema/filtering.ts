@@ -144,16 +144,16 @@ export function filterErrorsByVisibility(
     // and doesn't require us to properly trim the schema path.
     if (error.keyword === 'required') {
       const trimmedPath = error.schemaPath.slice(1, -'/required'.length);
+      const fullPath = `${trimmedPath}/properties/${error.params.missingProperty}`;
       if (
-        visibleSchemaPaths.some(visiblePath =>
-          visiblePath.startsWith(trimmedPath),
-        )
+        visibleSchemaPaths.some(visiblePath => visiblePath.startsWith(fullPath))
       ) {
         return true;
       }
     }
 
-    const vis = visibilityByDataPath.get(error.dataPath);
+    const vis =
+      visibilityByDataPath.get(error.dataPath) ?? DEFAULT_CONFIG_VISIBILITY;
     return vis && includeVisibilities.includes(vis);
   });
 }
