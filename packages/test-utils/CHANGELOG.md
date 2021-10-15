@@ -1,5 +1,14 @@
 # @backstage/test-utils
 
+## 0.1.19
+
+### Patch Changes
+
+- 54bbe25c34: Store the namespaced bucket storage for each instance that was created with `MockStorage.create()` instead of global variable.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.17
+  - @backstage/theme@0.2.11
+
 ## 0.1.18
 
 ### Patch Changes

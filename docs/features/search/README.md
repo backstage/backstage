@@ -113,10 +113,10 @@ search engines.
 
 ## Plugins Integrated with Search
 
-| Plugin   | Support Status |
-| -------- | -------------- |
-| Catalog  | ✅             |
-| TechDocs | ✅             |
+| Plugin                                                         | Support Status |
+| -------------------------------------------------------------- | -------------- |
+| Catalog                                                        | ✅             |
+| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents) | ✅             |
 
 [Reach out to us](#get-involved) if you want to chat about support for more
 plugins integrated to search.

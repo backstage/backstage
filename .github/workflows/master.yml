@@ -116,7 +116,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn lerna -- run test -- --coverage
+          yarn lerna -- run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash)
           # Upload code coverage for some specific flags. Also see .codecov.yml
           bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api

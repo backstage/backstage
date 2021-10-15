@@ -16,29 +16,30 @@
 
 import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
-import React from 'react';
-import { apiDocsConfigRef } from '../../config';
-import { ApiExplorerPage } from './ApiExplorerPage';
-
-import {
   ApiProvider,
   ApiRegistry,
   ConfigReader,
 } from '@backstage/core-app-api';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import {
-  storageApiRef,
   ConfigApi,
   configApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
-import { TableColumn, TableProps } from '@backstage/core-components';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  DefaultStarredEntitiesApi,
+  entityRouteRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
+import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { apiDocsConfigRef } from '../../config';
+import { ApiExplorerPage } from './ApiExplorerPage';
 
 describe('ApiCatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -82,6 +83,8 @@ describe('ApiCatalogPage', () => {
     getApiDefinitionWidget: () => undefined,
   };
 
+  const storageApi = MockStorageApi.create();
+
   const renderWrapped = (children: React.ReactNode) =>
     render(
       wrapInTestApp(
@@ -89,7 +92,11 @@ describe('ApiCatalogPage', () => {
           apis={ApiRegistry.from([
             [catalogApiRef, catalogApi],
             [configApiRef, configApi],
-            [storageApiRef, MockStorageApi.create()],
+            [storageApiRef, storageApi],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({ storageApi }),
+            ],
             [apiDocsConfigRef, apiDocsConfig],
           ])}
         >

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.15",
+  "version": "0.7.16",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,8 +28,6 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@backstage/cli-common": "^0.1.4",
     "@backstage/config": "^0.1.10",
     "@backstage/config-loader": "^0.6.10",
@@ -54,7 +52,6 @@
     "@typescript-eslint/eslint-plugin": "^v4.30.0",
     "@typescript-eslint/parser": "^v4.28.3",
     "@yarnpkg/lockfile": "^1.1.0",
-    "babel-plugin-dynamic-import-node": "^2.3.3",
     "bfj": "^7.0.2",
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
@@ -120,12 +117,12 @@
   "devDependencies": {
     "@backstage/backend-common": "^0.9.6",
     "@backstage/config": "^0.1.10",
-    "@backstage/core-components": "^0.6.1",
+    "@backstage/core-components": "^0.7.0",
     "@backstage/core-plugin-api": "^0.1.10",
-    "@backstage/core-app-api": "^0.1.16",
-    "@backstage/dev-utils": "^0.2.11",
-    "@backstage/test-utils": "^0.1.18",
-    "@backstage/theme": "^0.2.10",
+    "@backstage/core-app-api": "^0.1.17",
+    "@backstage/dev-utils": "^0.2.12",
+    "@backstage/test-utils": "^0.1.19",
+    "@backstage/theme": "^0.2.11",
     "@types/diff": "^5.0.0",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^9.0.1",

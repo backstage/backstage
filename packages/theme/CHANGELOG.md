@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.11
+
+### Patch Changes
+
+- 75bc878221: Internal refactor to avoid importing all of `@material-ui/core`.
+
 ## 0.2.10
 
 ### Patch Changes
