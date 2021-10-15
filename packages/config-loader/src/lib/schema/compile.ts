@@ -95,16 +95,10 @@ export function compileConfigSchemas(
 
     const valid = validate(config);
     if (!valid) {
-      const errors = validate.errors ?? [];
       return {
-        errors: errors.map(({ dataPath, message, params }) => {
-          const paramStr = Object.entries(params)
-            .map(([name, value]) => `${name}=${value}`)
-            .join(' ');
-          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
-        }),
-        visibilityByDataPath: new Map(),
-        visibilityBySchemaPath: new Map(),
+        errors: validate.errors ?? [],
+        visibilityByDataPath: new Map(visibilityByDataPath),
+        visibilityBySchemaPath,
       };
     }
 

@@ -50,7 +50,14 @@ export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
 /**
  * An explanation of a configuration validation error.
  */
-type ValidationError = string;
+export type ValidationError = {
+  keyword: string;
+  dataPath: string;
+  schemaPath: string;
+  params: Record<string, any>;
+  propertyName?: string;
+  message?: string;
+};
 
 /**
  * The result of validating configuration data using a schema.

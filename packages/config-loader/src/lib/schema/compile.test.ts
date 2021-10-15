@@ -29,12 +29,28 @@ describe('compileConfigSchemas', () => {
       },
     ]);
     expect(validate([{ data: { a: 1 }, context: 'test' }])).toEqual({
-      errors: ['Config should be string { type=string } at /a'],
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/a',
+          schemaPath: '#/properties/a/type',
+          message: 'should be string',
+          params: { type: 'string' },
+        },
+      ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
     });
     expect(validate([{ data: { b: 'b' }, context: 'test' }])).toEqual({
-      errors: ['Config should be number { type=number } at /b'],
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/b',
+          schemaPath: '#/properties/b/type',
+          message: 'should be number',
+          params: { type: 'number' },
+        },
+      ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
     });
