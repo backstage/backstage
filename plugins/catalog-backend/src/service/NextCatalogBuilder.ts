@@ -25,17 +25,18 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
+import { Knex } from 'knex';
 import lodash from 'lodash';
+import { Logger } from 'winston';
+import { AnyCatalogBundle } from '../bundles';
 import { EntitiesCatalog } from '../catalog';
-import {
-  DatabaseLocationsCatalog,
-  LocationsCatalog,
-  CommonDatabase,
-} from '../legacy';
-
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -51,6 +52,7 @@ import {
   PlaceholderResolver,
   UrlReaderProcessor,
 } from '../ingestion';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
@@ -59,26 +61,26 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { EntityProvider } from '../providers/types';
-import { CatalogProcessingEngine } from '../processing/types';
-import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
-import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
-import { applyDatabaseMigrations } from '../database/migrations';
+import {
+  CommonDatabase,
+  DatabaseLocationsCatalog,
+  LocationsCatalog,
+} from '../legacy';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
-import { DefaultLocationService } from './DefaultLocationService';
-import { DefaultLocationStore } from '../providers/DefaultLocationStore';
-import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
-import { Stitcher } from '../stitching/Stitcher';
 import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from '../processing/refresh';
-import { createNextRouter } from './NextRouter';
+import { CatalogProcessingEngine } from '../processing/types';
+import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
+import { EntityProvider } from '../providers/types';
+import { Stitcher } from '../stitching/Stitcher';
+import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
-import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { Config } from '@backstage/config';
-import { Logger } from 'winston';
+import { NextEntitiesCatalog } from './NextEntitiesCatalog';
+import { createNextRouter } from './NextRouter';
 import { LocationService } from './types';
 
 export type CatalogEnvironment = {
@@ -109,6 +111,7 @@ export type CatalogEnvironment = {
  */
 export class NextCatalogBuilder {
   private readonly env: CatalogEnvironment;
+  private readonly bundles: AnyCatalogBundle[];
   private entityPolicies: EntityPolicy[];
   private entityPoliciesReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
@@ -126,6 +129,7 @@ export class NextCatalogBuilder {
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
+    this.bundles = [];
     this.entityPolicies = [];
     this.entityPoliciesReplace = false;
     this.placeholderResolvers = {};
@@ -134,6 +138,11 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+  }
+
+  register(bundle: AnyCatalogBundle): NextCatalogBuilder {
+    this.bundles.push(bundle);
+    return this;
   }
 
   /**
@@ -145,7 +154,7 @@ export class NextCatalogBuilder {
    * in various core entity fields (such as metadata.name), you may want to use
    * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies.push(...policies);
@@ -196,7 +205,7 @@ export class NextCatalogBuilder {
    *
    * This function replaces the default set of policies; use with care.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies = [...policies];
@@ -208,8 +217,8 @@ export class NextCatalogBuilder {
    * Adds, or overwrites, a handler for placeholders (e.g. $file) in entity
    * definition files.
    *
-   * @param key The key that identifies the placeholder, e.g. "file"
-   * @param resolver The resolver that gets values for this placeholder
+   * @param key - The key that identifies the placeholder, e.g. "file"
+   * @param resolver - The resolver that gets values for this placeholder
    */
   setPlaceholderResolver(
     key: string,
@@ -227,7 +236,7 @@ export class NextCatalogBuilder {
    * This function has no effect if used together with
    * {@link NextCatalogBuilder#replaceEntityPolicies}.
    *
-   * @param validators The (subset of) validators to set
+   * @param validators - The (subset of) validators to set
    */
   setFieldFormatValidators(
     validators: Partial<Validators>,
@@ -243,7 +252,7 @@ export class NextCatalogBuilder {
    * stored locations. If you ingest entities out of a third party system, you
    * may want to implement that in terms of an entity provider as well.
    *
-   * @param providers One or more entity providers
+   * @param providers - One or more entity providers
    */
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder {
     this.entityProviders.push(...providers);
@@ -254,7 +263,7 @@ export class NextCatalogBuilder {
    * Adds entity processors. These are responsible for reading, parsing, and
    * processing entities before they are persisted in the catalog.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors.push(...processors);
@@ -267,7 +276,7 @@ export class NextCatalogBuilder {
    *
    * This function replaces the default set of processors; use with care.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors = [...processors];
@@ -282,7 +291,7 @@ export class NextCatalogBuilder {
    * specification data has been read from a remote source, and needs to be
    * parsed and emitted as structured data.
    *
-   * @param parser The custom parser
+   * @param parser - The custom parser
    */
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder {
     this.parser = parser;
@@ -303,12 +312,19 @@ export class NextCatalogBuilder {
   }> {
     const { config, database, logger } = this.env;
 
+    const dbClient = await database.getClient();
+    await applyDatabaseMigrations(dbClient);
+
+    for (const bundle of this.bundles) {
+      await this.initBundle(bundle, {
+        database: dbClient,
+        logger: logger,
+      });
+    }
+
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const parser = this.parser || defaultEntityDataParser;
-
-    const dbClient = await database.getClient();
-    await applyDatabaseMigrations(dbClient);
 
     const db = new CommonDatabase(dbClient, logger);
 
@@ -456,6 +472,41 @@ export class NextCatalogBuilder {
     if (pc?.has('azureApi')) {
       throw new Error(
         `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
+      );
+    }
+  }
+
+  private async initBundle(
+    bundle: AnyCatalogBundle,
+    dependencies: {
+      database: Knex;
+      logger: Logger;
+    },
+  ) {
+    this.env.logger.info(`Initializing bundle ${bundle.name}...`);
+
+    if (bundle.version === 1) {
+      await bundle.init({
+        environment: {
+          database: dependencies.database,
+          logger: dependencies.logger,
+        },
+        hooks: {
+          addEntityPolicy: this.addEntityPolicy.bind(this),
+          setRefreshIntervalSeconds: this.setRefreshIntervalSeconds.bind(this),
+          setRefreshInterval: this.setRefreshInterval.bind(this),
+          replaceEntityPolicies: this.replaceEntityPolicies.bind(this),
+          setPlaceholderResolver: this.setPlaceholderResolver.bind(this),
+          setFieldFormatValidators: this.setFieldFormatValidators.bind(this),
+          addEntityProvider: this.addEntityProvider.bind(this),
+          addProcessor: this.addProcessor.bind(this),
+          replaceProcessors: this.replaceProcessors.bind(this),
+          setEntityDataParser: this.setEntityDataParser.bind(this),
+        },
+      });
+    } else {
+      throw new InputError(
+        `Catalog bundle ${bundle.name} was of unsupported version ${bundle.version}`,
       );
     }
   }
