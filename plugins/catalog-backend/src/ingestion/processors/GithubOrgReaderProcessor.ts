@@ -23,7 +23,11 @@ import {
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
-import { getOrganizationTeams, getOrganizationUsers } from './github';
+import {
+  getOrganizationTeams,
+  getOrganizationUsers,
+  parseGitHubOrgUrl,
+} from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { buildOrgHierarchy } from './util/org';
@@ -61,7 +65,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     const { client, tokenType } = await this.createClient(location.target);
-    const { org } = parseUrl(location.target);
+    const { org } = parseGitHubOrgUrl(location.target);
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
@@ -125,19 +129,4 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
     return { client, tokenType };
   }
-}
-
-/*
- * Helpers
- */
-
-export function parseUrl(urlString: string): { org: string } {
-  const path = new URL(urlString).pathname.substr(1).split('/');
-
-  // /backstage
-  if (path.length === 1 && path[0].length) {
-    return { org: decodeURIComponent(path[0]) };
-  }
-
-  throw new Error(`Expected a URL pointing to /<org>`);
 }

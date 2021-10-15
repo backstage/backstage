@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
 export { DefaultCatalogRulesEnforcer } from './CatalogRules';
+export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
+export * from './processors';
+export * from './providers';
 export type {
-  AnalyzeLocationRequest,
-  AnalyzeLocationResponse,
-  LocationAnalyzer,
   AnalyzeLocationEntityField,
   AnalyzeLocationExistingEntity,
   AnalyzeLocationGenerateEntity,
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+  LocationAnalyzer,
 } from './types';
-export * from './processors';

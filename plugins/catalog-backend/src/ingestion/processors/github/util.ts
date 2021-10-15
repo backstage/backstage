@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export function parseGitHubOrgUrl(urlString: string): { org: string } {
+  const path = new URL(urlString).pathname.substr(1).split('/');
 
-export { readGithubConfig, readGithubMultiOrgConfig } from './config';
-export type { GithubMultiOrgConfig, ProviderConfig } from './config';
-export {
-  getOrganizationRepositories,
-  getOrganizationTeams,
-  getOrganizationUsers,
-} from './github';
-export { parseGitHubOrgUrl } from './util';
+  // /backstage
+  if (path.length === 1 && path[0].length) {
+    return { org: decodeURIComponent(path[0]) };
+  }
+
+  throw new Error(`Expected a URL pointing to /<org>`);
+}

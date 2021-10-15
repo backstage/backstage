@@ -16,24 +16,15 @@
 jest.mock('@octokit/graphql');
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
-import {
-  ScmIntegrations,
-  GithubCredentialsProvider,
-} from '@backstage/integration';
-import { GithubOrgReaderProcessor, parseUrl } from './GithubOrgReaderProcessor';
-import { graphql } from '@octokit/graphql';
 import { ConfigReader } from '@backstage/config';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { graphql } from '@octokit/graphql';
+import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 
 describe('GithubOrgReaderProcessor', () => {
-  describe('parseUrl', () => {
-    it('only supports clean org urls, and decodes them', () => {
-      expect(() => parseUrl('https://github.com')).toThrow();
-      expect(() => parseUrl('https://github.com/org/foo')).toThrow();
-      expect(() => parseUrl('https://github.com/org/foo/teams')).toThrow();
-      expect(parseUrl('https://github.com/foo%32')).toEqual({ org: 'foo2' });
-    });
-  });
-
   describe('implementation', () => {
     const logger = getVoidLogger();
     const integrations = ScmIntegrations.fromConfig(
