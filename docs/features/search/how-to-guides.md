@@ -44,3 +44,36 @@ const app = createApp({
   ],
 });
 ```
+
+## How to index TechDocs documents
+
+The techdocs-plugin has supported integrations to Search, meaning that it
+provides a default collator ready to be used.
+
+The purpose of this how-to guide is to walk you through how to register the
+[DefaultTechDocsCollator](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/src/search/DefaultTechDocsCollator.ts)
+in your App in two steps, so that you can get TechDocs documents indexed.
+
+If you have been through the
+[getting started guide](https://backstage.io/docs/features/search/getting-started)
+already, you should have the `packages/backend/src/plugins/search.ts` file
+available. If you have that, you can jump to the first step of this guide, if
+not - start by go through the getting started guide.
+
+1. Import the DefaultTechDocsCollator from `@backstage/plugin-techdocs-backend`.
+
+```typescript
+import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+```
+
+2. Register the DefaultTechDocsCollator with the IndexBuilder.
+
+```typescript
+indexBuilder.addCollator({
+  defaultRefreshIntervalSeconds: 600,
+  collator: DefaultTechDocsCollator.fromConfig(config, {
+    discovery,
+    logger,
+  }),
+});
+```
