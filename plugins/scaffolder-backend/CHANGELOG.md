@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.9
+
+### Patch Changes
+
+- 0f99f1170e: Make sure `sourcePath` of `publish:github:pull-request` can only be used to
+  retrieve files from the workspace.
+
 ## 0.15.8
 
 ### Patch Changes
