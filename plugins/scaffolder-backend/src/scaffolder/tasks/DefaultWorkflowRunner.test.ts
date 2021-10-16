@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
+
+import mockFs from 'mock-fs';
+import * as winston from 'winston';
+
 import { getVoidLogger } from '@backstage/backend-common';
 import { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
@@ -22,7 +25,6 @@ import { ConfigReader } from '@backstage/config';
 import { Task, TaskSpec } from './types';
 
 describe('DefaultWorkflowRunner', () => {
-  const workingDirectory = os.tmpdir();
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
   let runner: DefaultWorkflowRunner;
@@ -45,6 +47,11 @@ describe('DefaultWorkflowRunner', () => {
   });
 
   beforeEach(() => {
+    winston.format.simple(); // put logform the require cache before mocking fs
+    mockFs({
+      '/tmp': mockFs.directory(),
+    });
+
     jest.resetAllMocks();
     actionRegistry = new TemplateActionRegistry();
     fakeActionHandler = jest.fn();
@@ -84,9 +91,13 @@ describe('DefaultWorkflowRunner', () => {
     runner = new DefaultWorkflowRunner({
       actionRegistry,
       integrations,
-      workingDirectory,
+      workingDirectory: '/tmp',
       logger,
     });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
   });
 
   it('should throw an error if the action does not exist', async () => {
