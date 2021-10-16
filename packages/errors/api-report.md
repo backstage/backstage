@@ -5,10 +5,8 @@
 ```ts
 import { JsonObject } from '@backstage/config';
 
-// Warning: (ae-missing-release-tag) "assertError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function assertError(val: unknown): asserts val is ErrorLike;
+// @public
+export function assertError(value: unknown): asserts value is ErrorLike;
 
 // @public
 export class AuthenticationError extends CustomErrorBase {}
@@ -18,7 +16,7 @@ export class ConflictError extends CustomErrorBase {}
 
 // @public (undocumented)
 export class CustomErrorBase extends Error {
-  constructor(message?: string, cause?: Error);
+  constructor(message?: string, cause?: Error | unknown);
   // (undocumented)
   readonly cause?: Error;
 }
@@ -28,13 +26,12 @@ export function deserializeError<T extends Error = Error>(
   data: SerializedError,
 ): T;
 
-// Warning: (ae-missing-release-tag) "ErrorLike" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ErrorLike = {
   name: string;
   message: string;
   stack?: string;
+  [unknownKeys: string]: unknown;
 };
 
 // @public
@@ -50,12 +47,15 @@ export type ErrorResponse = {
 };
 
 // @public
+export class ForwardedError extends CustomErrorBase {
+  constructor(message: string, cause: Error | unknown);
+}
+
+// @public
 export class InputError extends CustomErrorBase {}
 
-// Warning: (ae-missing-release-tag) "isError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function isError(val: unknown): val is ErrorLike;
+// @public
+export function isError(value: unknown): value is ErrorLike;
 
 // @public
 export class NotAllowedError extends CustomErrorBase {}

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * An object that is shaped like an `Error`.
+ *
+ * @public
+ */
 export type ErrorLike = {
   name: string;
   message: string;
@@ -21,11 +26,19 @@ export type ErrorLike = {
   [unknownKeys: string]: unknown;
 };
 
-export function isError(val: unknown): val is ErrorLike {
-  if (typeof val !== 'object' || val === null || Array.isArray(val)) {
+/**
+ * Checks whether an unknown value is an {@link ErrorLike} object, which guarantees that it's
+ * an object that has at least two string properties: a non-empty `name` and `message`.
+ *
+ * @public
+ * @param value - an unknown value
+ * @returns true if the value is an {@link ErrorLike} object, false otherwise
+ */
+export function isError(value: unknown): value is ErrorLike {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
-  const maybe = val as Partial<ErrorLike>;
+  const maybe = value as Partial<ErrorLike>;
   if (typeof maybe.name !== 'string' || maybe.name === '') {
     return false;
   }
@@ -35,15 +48,26 @@ export function isError(val: unknown): val is ErrorLike {
   return true;
 }
 
-export function assertError(val: unknown): asserts val is ErrorLike {
-  if (typeof val !== 'object' || val === null || Array.isArray(val)) {
-    throw new Error(`Encountered invalid error, not an object, got '${val}'`);
+/**
+ * Asserts that an unknown value is an {@link ErrorLike} object, which guarantees that it's
+ * an object that has at least two string properties: a non-empty `name` and `message`.
+ *
+ * If the value is not an {@link ErrorLike} object, an error is thrown.
+ *
+ * @public
+ * @param value - an unknown value
+ */
+export function assertError(value: unknown): asserts value is ErrorLike {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error(`Encountered invalid error, not an object, got '${value}'`);
   }
-  const maybe = val as Partial<ErrorLike>;
+  const maybe = value as Partial<ErrorLike>;
   if (typeof maybe.name !== 'string' || maybe.name === '') {
-    throw new Error(`Encountered error object without a name, got '${val}'`);
+    throw new Error(`Encountered error object without a name, got '${value}'`);
   }
   if (typeof maybe.message !== 'string') {
-    throw new Error(`Encountered error object without a message, got '${val}'`);
+    throw new Error(
+      `Encountered error object without a message, got '${value}'`,
+    );
   }
 }
