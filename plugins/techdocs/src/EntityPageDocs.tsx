@@ -17,16 +17,15 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
+import { getTechdocsEntityRef } from '@backstage/plugin-catalog-react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
-  return (
-    <Reader
-      withSearch={false}
-      entityRef={{
-        kind: entity.kind,
-        namespace: entity.metadata.namespace ?? 'default',
-        name: entity.metadata.name,
-      }}
-    />
+  const configApi = useApi(configApiRef);
+  const caseSensitive = configApi.getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
   );
+  const entityRef = getTechdocsEntityRef(entity, caseSensitive);
+
+  return <Reader withSearch={false} entityRef={entityRef} />;
 };

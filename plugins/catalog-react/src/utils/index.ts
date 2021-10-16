@@ -21,4 +21,5 @@ export {
 export { getEntityRelations } from './getEntityRelations';
 export { getEntitySourceLocation } from './getEntitySourceLocation';
 export type { EntitySourceLocation } from './getEntitySourceLocation';
+export { getTechdocsEntityRef } from './getTechdocsEntityRef';
 export { isOwnerOf } from './isOwnerOf';

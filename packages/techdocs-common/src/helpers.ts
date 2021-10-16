@@ -115,6 +115,8 @@ export const getLocationForEntity = (
       return annotation;
     case 'dir':
       return transformDirLocation(entity, annotation, scmIntegration);
+    // TODO: Determine if catalog: refs will cause issues with building techdocs sites
+    case 'catalog':
     default:
       throw new Error(`Invalid reference annotation ${annotation.type}`);
   }

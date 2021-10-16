@@ -16,7 +16,6 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   LOCATION_ANNOTATION,
   RELATION_CONSUMES_API,
   RELATION_PROVIDES_API,
@@ -38,6 +37,7 @@ import {
   getEntityMetadataEditUrl,
   getEntityRelations,
   getEntitySourceLocation,
+  getTechdocsEntityRef,
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
@@ -118,13 +118,7 @@ export function AboutCard({ variant }: AboutCardProps) {
       !entity.metadata.annotations?.['backstage.io/techdocs-ref'] ||
       !viewTechdocLink,
     icon: <DocsIcon />,
-    href:
-      viewTechdocLink &&
-      viewTechdocLink({
-        namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
-        kind: entity.kind,
-        name: entity.metadata.name,
-      }),
+    href: viewTechdocLink && viewTechdocLink(getTechdocsEntityRef(entity)),
   };
   const viewApi: IconLinkVerticalProps = {
     title: hasApis ? '' : 'No APIs available',

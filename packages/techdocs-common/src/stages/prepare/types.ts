@@ -48,4 +48,4 @@ export type PreparerBuilder = {
   get(entity: Entity): PreparerBase;
 };
 
-export type RemoteProtocol = 'url' | 'dir';
+export type RemoteProtocol = 'url' | 'dir' | 'catalog';
