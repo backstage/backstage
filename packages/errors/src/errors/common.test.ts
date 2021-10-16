@@ -31,12 +31,26 @@ describe('common', () => {
 
   it('supports causes', () => {
     const cause = new Error('hello');
-    for (const [name, E] of Object.entries(errors)) {
+    const { ForwardedError, ...otherErrors } = { ...errors };
+    for (const [name, E] of Object.entries(otherErrors)) {
       const error = new E('abcdef', cause);
       expect(error.cause).toBe(cause);
       expect(error.toString()).toContain(
         `${name}: abcdef; caused by Error: hello`,
       );
     }
+
+    const error = new ForwardedError('abcdef', cause);
+    expect(error.cause).toBe(cause);
+    expect(error.toString()).toContain('Error: abcdef; caused by Error: hello');
+  });
+
+  it('avoids [object Object]', () => {
+    const cause = { name: 'SillyError', message: 'oh no' };
+    const error = new errors.ForwardedError('abcdef', cause);
+    expect(error.cause).toBe(cause);
+    expect(String(error)).toBe(
+      'SillyError: abcdef; caused by SillyError: oh no',
+    );
   });
 });

@@ -29,6 +29,11 @@ export class CustomErrorBase extends Error {
       if (isError(cause)) {
         assignedCause = cause;
         causeStr = String(cause);
+
+        // Prefer the cause.toString, but if it's not implemented we use a nicer fallback
+        if (causeStr === '[object Object]') {
+          causeStr = `${cause.name}: ${cause.message}`;
+        }
       } else {
         causeStr = `unknown error '${cause}'`;
       }

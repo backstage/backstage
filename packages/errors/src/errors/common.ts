@@ -86,6 +86,6 @@ export class ForwardedError extends CustomErrorBase {
   constructor(message: string, cause: Error | unknown) {
     super(message, cause);
 
-    this.name = isError(cause) ? this.constructor.name : 'Error';
+    this.name = isError(cause) ? cause.name : 'Error';
   }
 }
