@@ -76,6 +76,24 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
 
   program
+    .command('create')
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .action(lazy(() => import('./create/create').then(m => m.default)));
+
+  program
     .command('create-plugin')
     .option(
       '--backend',
