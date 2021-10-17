@@ -397,6 +397,11 @@ const TheReader = ({
   const dom = useTechDocsReaderDom();
   const shadowDomRef = useRef<HTMLDivElement>(null);
 
+  const onReadyRef = useRef<() => void>(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
   useEffect(() => {
     if (!dom || !shadowDomRef.current) return;
     const shadowDiv = shadowDomRef.current;
@@ -406,8 +411,10 @@ const TheReader = ({
       shadowRoot.removeChild(child),
     );
     shadowRoot.appendChild(dom);
-    onReady();
-  }, [dom, onReady]);
+    onReadyRef.current();
+
+    // this hook must ONLY be triggered by a changed dom
+  }, [dom]);
 
   return (
     <>
