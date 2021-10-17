@@ -15,6 +15,7 @@
  */
 
 import { Command } from 'commander';
+import { FactoryRegistry } from './FactoryRegistry';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -34,9 +35,13 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
 }
 
 export default async (cmd: Command) => {
-  const selected = cmd.opts().select;
-  console.log('DEBUG: selected =', selected);
+  const factory = await FactoryRegistry.interactiveSelect(cmd.opts().select);
 
-  const options = parseOptions(cmd.opts().option);
-  console.log('DEBUG: options =', options);
+  const providedOptions = parseOptions(cmd.opts().option);
+  const options = await FactoryRegistry.populateOptions(
+    factory,
+    providedOptions,
+  );
+
+  await factory.create(options);
 };
