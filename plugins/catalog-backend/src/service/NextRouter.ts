@@ -29,6 +29,7 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog } from '../catalog';
 import { LocationAnalyzer } from '../ingestion/types';
+import { createPermissionIntegrationRouter } from '../permissions';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -78,6 +79,7 @@ export async function createNextRouter(
 
   if (entitiesCatalog) {
     router
+      .use(createPermissionIntegrationRouter(entitiesCatalog))
       .get('/entities', async (req, res) => {
         const { entities, pageInfo } = await entitiesCatalog.entities({
           authorizationToken: IdentityClient.getBearerToken(
