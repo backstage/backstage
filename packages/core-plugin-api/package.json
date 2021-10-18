@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.11",
+    "@backstage/permission-common": "^0.1.0",
     "@backstage/theme": "^0.2.13",
     "@backstage/types": "^0.1.1",
     "@backstage/version-bridge": "^0.1.0",
