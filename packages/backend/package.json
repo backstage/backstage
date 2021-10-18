@@ -41,6 +41,7 @@
     "@backstage/plugin-kubernetes-backend": "^0.3.19",
     "@backstage/plugin-kafka-backend": "^0.2.12",
     "@backstage/plugin-permission-backend": "^0.1.0",
+    "@backstage/plugin-permission-handler-simple": "^0.1.0",
     "@backstage/plugin-permission-node": "^0.1.0",
     "@backstage/plugin-proxy-backend": "^0.2.14",
     "@backstage/plugin-rollbar-backend": "^0.1.16",
