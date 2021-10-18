@@ -271,6 +271,11 @@ export const encodeState: (state: OAuthState) => string;
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
+// Warning: (ae-missing-release-tag) "getIdentityClaims" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function getIdentityClaims(identity: BackstageIdentity): string[];
+
 // Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
