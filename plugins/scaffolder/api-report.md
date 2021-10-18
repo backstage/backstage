@@ -23,6 +23,7 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { Permission } from '@backstage/permission-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -220,6 +221,14 @@ export const ScaffolderPage: ({
       }>
     | undefined;
 }) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ScaffolderPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ScaffolderPermission: Record<'ROUTES', Permission> & {
+  get: (key: 'ROUTES') => Permission;
+  includes: (permission: Permission) => boolean;
+};
 
 // Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

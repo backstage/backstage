@@ -47,3 +47,4 @@ export { FavouriteTemplate } from './components/FavouriteTemplate';
 export { TemplateList } from './components/TemplateList';
 export type { TemplateListProps } from './components/TemplateList';
 export { TemplateTypePicker } from './components/TemplateTypePicker';
+export { ScaffolderPermission } from './permissions';
