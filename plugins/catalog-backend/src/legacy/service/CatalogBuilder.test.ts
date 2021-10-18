@@ -15,8 +15,10 @@
  */
 
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { DiscoveryApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import { PermissionClient } from '@backstage/permission-common';
 import { Knex } from 'knex';
 import yaml from 'yaml';
 import { DatabaseManager } from '../database';
@@ -40,6 +42,11 @@ const dummyEntity = {
 
 const dummyEntityYaml = yaml.stringify(dummyEntity);
 
+const discoveryApi: DiscoveryApi = {
+  async getBaseUrl(_pluginId) {
+    return 'http://example.com';
+  },
+};
 describe('CatalogBuilder', () => {
   let db: Knex<any, unknown[]>;
   const reader: jest.Mocked<UrlReader> = {
@@ -52,6 +59,7 @@ describe('CatalogBuilder', () => {
     database: { getClient: async () => db },
     config: new ConfigReader({}),
     reader,
+    permissions: new PermissionClient({ discoveryApi }),
   };
 
   beforeEach(async () => {
