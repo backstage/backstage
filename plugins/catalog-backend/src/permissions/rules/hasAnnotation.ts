@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
+import { Entity } from '@backstage/catalog-model';
+import { EntitiesSearchFilter } from '../../catalog/types';
 
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './processing';
-export * from './providers';
-export * from './service';
-
-export {
-  conditions,
-  createConditions,
-  registerPermissionRule,
-} from './permissions';
+export const hasAnnotation = {
+  name: 'HAS_ANNOTATION',
+  description:
+    'Allow entities which are annotated with the specified annotation',
+  apply: (resource: Entity, annotation: string) =>
+    !!resource.metadata.annotations?.hasOwnProperty(annotation[0]),
+  toQuery: (annotation: string): EntitiesSearchFilter => ({
+    key: annotation,
+    matchValueExists: true,
+  }),
+};
