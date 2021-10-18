@@ -59,23 +59,27 @@ export const groupByPath = (files: CoverageTableRow[]) => {
     const pathArray = filename?.split('/').filter(
       el => el !== ''
     );
-    if (!acc.hasOwnProperty(pathArray[0])) {
-      acc[pathArray[0]] = [];
+    if (pathArray) {
+      if (!acc.hasOwnProperty(pathArray[0])) {
+        acc[pathArray[0]] = [];
+      }
+      acc[pathArray[0]].push(file);
     }
-    acc[pathArray[0]].push(file);
   });
   return acc;
 };
 
-const trimFileNamesAsYouGo = (files: CoverageTableRow[], pathGroup: string) => {
+const removeVisitedPathGroup = (files: CoverageTableRow[], pathGroup: string) => {
   return files.map(file => {
     return {
       ...file,
-      filename: file.filename ? file.filename.substring(
-        file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
-      ) : file.filename,
+      filename: file.filename 
+        ? file.filename.substring(
+            file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
+          )
+        : file.filename,
     };
-  })
+  });
 };
 
 const buildFileStructure = (row: CoverageTableRow) => {
@@ -84,8 +88,8 @@ const buildFileStructure = (row: CoverageTableRow) => {
     return buildFileStructure({
       path: pathGroup,
       files: dataGroupedByPath.hasOwnProperty('files')
-        ? trimFileNamesAsYouGo(dataGroupedByPath.files, pathGroup)
-        : trimFileNamesAsYouGo(dataGroupedByPath[pathGroup], pathGroup),
+        ? removeVisitedPathGroup(dataGroupedByPath.files, pathGroup)
+        : removeVisitedPathGroup(dataGroupedByPath[pathGroup], pathGroup),
       coverage:
         dataGroupedByPath[pathGroup].reduce(
           (acc: number, cur: CoverageTableRow) => acc + cur.coverage,
