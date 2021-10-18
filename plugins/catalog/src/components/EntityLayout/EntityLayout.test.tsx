@@ -33,6 +33,13 @@ import { act } from 'react-dom/test-utils';
 import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  ...jest.requireActual('@backstage/plugin-catalog-react'),
+  useEntityPermission: jest
+    .fn()
+    .mockReturnValue({ isAllowed: jest.fn().mockReturnValue(true) }),
+}));
+
 const mockEntity = {
   kind: 'MyKind',
   metadata: {
