@@ -67,6 +67,7 @@ export type PageInfo =
     };
 
 export type EntitiesRequest = {
+  authorizationToken?: string;
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
   pagination?: EntityPagination;
