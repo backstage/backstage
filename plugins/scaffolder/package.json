@@ -39,6 +39,7 @@
     "@backstage/errors": "^0.1.5",
     "@backstage/integration": "^0.6.9",
     "@backstage/integration-react": "^0.1.14",
+    "@backstage/permission-common": "^0.1.0",
     "@backstage/plugin-catalog-react": "^0.6.4",
     "@backstage/theme": "^0.2.13",
     "@backstage/types": "^0.1.1",
