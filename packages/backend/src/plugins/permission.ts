@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  UrlReader,
-} from '@backstage/backend-common';
-import { PermissionClient } from '@backstage/permission-common';
+import { createRouter } from '@backstage/plugin-permission-backend';
+import { AllowAllPermissionHandler } from '@backstage/plugin-permission-node';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  permissions: PermissionClient;
-};
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const { logger, config } = env;
+  return await createRouter({
+    logger,
+    config,
+    permissionHandler: new AllowAllPermissionHandler(),
+  });
+}
