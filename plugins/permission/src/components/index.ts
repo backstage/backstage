@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './components';
-export * from './hooks';
+export { PermissionedRoute } from './PermissionedRoute';
+export { WithPermission } from './WithPermission';
