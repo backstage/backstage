@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import { AllowAllPermissionHandler } from '@backstage/plugin-permission-node';
 import { createRouter } from './router';
 
 export interface ServerOptions {
@@ -28,12 +32,13 @@ export interface ServerOptions {
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
-  const logger = options.logger.child({
-    service: '@backstage/plugin-permission-backend',
-  });
+  const logger = options.logger.child({ service: 'permission-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    config,
+    permissionHandler: new AllowAllPermissionHandler(),
   });
 
   let service = createServiceBuilder(module)
