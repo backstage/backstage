@@ -5,7 +5,7 @@ sidebar_label: Creating and Publishing Documentation
 description: Guidance on how to create and publish documentation
 ---
 
-This section will guide you through:
+This section will guide you through how to:
 
 - [Create a basic documentation setup](#create-a-basic-documentation-setup)
   - [Use any software template](#use-any-software-template)
