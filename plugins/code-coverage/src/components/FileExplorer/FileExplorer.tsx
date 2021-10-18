@@ -51,36 +51,41 @@ type CoverageTableRow = {
   tableData?: { id: number };
 };
 
+export const groupByPath = (files: CoverageTableRow[]) => {
+  const acc: FileStructureObject = {};
+  files.forEach (file => {
+    const filename = file.filename;
+    if (!file.filename) return;
+    const pathArray = filename?.split('/').filter(
+      el => el !== ''
+    );
+    if (!acc.hasOwnProperty(pathArray[0])) {
+      acc[pathArray[0]] = [];
+    }
+    acc[pathArray[0]].push(file);
+  });
+  return acc;
+};
+
+const trimFileNamesAsYouGo = (files: CoverageTableRow[], pathGroup: string) => {
+  return files.map(file => {
+    return {
+      ...file,
+      filename: file.filename ? file.filename.substring(
+        file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
+      ) : file.filename,
+    };
+  })
+};
+
 const buildFileStructure = (row: CoverageTableRow) => {
-  const dataGroupedByPath: FileStructureObject = row.files.reduce(
-    (acc: FileStructureObject, cur: CoverageTableRow) => {
-      let path = cur.filename;
-      if (row.path) {
-        if (path) {
-          path = '/' + path;
-        }
-        path = path?.split(`/${row.path}/`)[1];
-      }
-      const pathArray = path?.split('/').filter(el => el!=='');
-
-      if (!pathArray) {
-        return acc;
-      }
-      if (!acc.hasOwnProperty(pathArray[0])) {
-        acc[pathArray[0]] = [];
-      }
-      acc[pathArray[0]].push(cur);
-      return acc;
-    },
-    {},
-  );
-
+  const dataGroupedByPath: FileStructureObject = groupByPath(row.files);
   row.files = Object.keys(dataGroupedByPath).map(pathGroup => {
     return buildFileStructure({
       path: pathGroup,
       files: dataGroupedByPath.hasOwnProperty('files')
-        ? dataGroupedByPath.files
-        : dataGroupedByPath[pathGroup],
+        ? trimFileNamesAsYouGo(dataGroupedByPath.files, pathGroup)
+        : trimFileNamesAsYouGo(dataGroupedByPath[pathGroup], pathGroup),
       coverage:
         dataGroupedByPath[pathGroup].reduce(
           (acc: number, cur: CoverageTableRow) => acc + cur.coverage,
