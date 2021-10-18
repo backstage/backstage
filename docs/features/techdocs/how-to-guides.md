@@ -357,10 +357,7 @@ already configured templates. It comes with a set of default templates to use,
 but you can also
 [add your own templates](https://backstage.io/docs/features/software-templates/adding-templates).
 
-If you have your own templates set up, we highly recommend you to include the
-required setup for TechDocs in these templates so that you users, when creating
-a new component, can get a TechDocs site up and running automatically. Ready for
-them to start write technical documentation.
+If you have your own templates set up, we highly recommend that you include the required setup for TechDocs in those templates. When creating a new component, your users will then get a TechDocs site up and running automatically, ready for them to start writing technical documentation.
 
 The purpose of this how-to guide is to walk you through how to add the required
 configuration and some default markdown files to your new template. You can use
