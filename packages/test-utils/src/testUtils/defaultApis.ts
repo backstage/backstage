@@ -34,6 +34,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  IdentityPermissionApi,
 } from '@backstage/core-app-api';
 
 import {
@@ -57,6 +58,8 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  identityApiRef,
+  permissionApiRef,
 } from '@backstage/core-plugin-api';
 
 // TODO(Rugvip): This is just a copy of the createApp default APIs for now, but
@@ -260,5 +263,11 @@ export const defaultApis = [
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
+  }),
+  createApiFactory({
+    api: permissionApiRef,
+    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    factory: ({ discoveryApi, identityApi }) =>
+      new IdentityPermissionApi(discoveryApi, identityApi),
   }),
 ];
