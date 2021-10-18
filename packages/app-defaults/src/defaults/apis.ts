@@ -36,6 +36,7 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  IdentityPermissionApi,
 } from '@backstage/core-app-api';
 
 import {
@@ -61,6 +62,8 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  permissionApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const apis = [
@@ -295,5 +298,11 @@ export const apis = [
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
+  }),
+  createApiFactory({
+    api: permissionApiRef,
+    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    factory: ({ discoveryApi, identityApi }) =>
+      new IdentityPermissionApi(discoveryApi, identityApi),
   }),
 ];
