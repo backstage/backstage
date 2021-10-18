@@ -180,14 +180,20 @@ export async function loadBackendConfig(options: {
   const args = parseArgs(options.argv);
   const configPaths: string[] = [args.config ?? []].flat();
 
-  const schema = await loadConfigSchema({
-    dependencies: ['@backstage/backend-common'],
-  });
-  const config = new ObservableConfigProxy(options.logger);
-
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
+  // TODO(hhogg): This is fetching _all_ of the packages of the monorepo
+  // in order to find the secrets for redactions, however we only care about
+  // the backend ones, we need to find a way to exclude the frontend packages.
+  const { Project } = require('@lerna/project');
+  const project = new Project(paths.targetDir);
+  const packages = await project.getPackages();
+  const schema = await loadConfigSchema({
+    dependencies: packages.map((p: any) => p.name),
+  });
+
+  const config = new ObservableConfigProxy(options.logger);
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
     configPaths: configPaths.map(opt => resolvePath(opt)),
