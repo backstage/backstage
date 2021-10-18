@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 
-const useStyles = makeStyles({
-  flex: {
-    display: 'flex',
-  },
-});
-
 export const UserSettingsGeneral = () => {
-  const classes = useStyles();
   return (
-    <Grid container direction="row" spacing={3} alignItems="stretch">
-      <Grid item sm={12} md={6} className={classes.flex}>
+    <Grid container direction="row" spacing={3}>
+      <Grid item sm={12} md={6}>
         <UserSettingsProfileCard />
       </Grid>
-      <Grid item sm={12} md={6} className={classes.flex}>
+      <Grid item sm={12} md={6}>
         <UserSettingsAppearanceCard />
       </Grid>
     </Grid>

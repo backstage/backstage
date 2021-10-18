@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { List, makeStyles } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
-const useStyles = makeStyles({
-  fullWidth: {
-    width: '100%',
-  },
-});
-
-export const UserSettingsAppearanceCard = () => {
-  const classes = useStyles();
-  return (
-    <InfoCard title="Appearance" className={classes.fullWidth}>
-      <List dense>
-        <UserSettingsThemeToggle />
-        <UserSettingsPinToggle />
-      </List>
-    </InfoCard>
-  );
-};
+export const UserSettingsAppearanceCard = () => (
+  <InfoCard title="Appearance" variant="gridItem">
+    <List dense>
+      <UserSettingsThemeToggle />
+      <UserSettingsPinToggle />
+    </List>
+  </InfoCard>
+);

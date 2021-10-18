@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, makeStyles, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
-const useStyles = makeStyles({
-  fullWidth: {
-    width: '100%',
-  },
-});
-
 export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
-  const classes = useStyles();
 
   return (
-    <InfoCard title="Profile" className={classes.fullWidth}>
+    <InfoCard title="Profile" variant="gridItem">
       <Grid container spacing={6}>
         <Grid item>
           <UserSettingsSignInAvatar size={96} />
