@@ -106,7 +106,11 @@ export type EntitiesCatalog = {
    *
    * @param request - Request options
    */
-  entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
+  entities(
+    request?: EntitiesRequest,
+    // TODO(authorization-framework - this should be based on whether the request originates from a backend.
+    authorize?: boolean,
+  ): Promise<EntitiesResponse>;
 
   /**
    * Removes a single entity.
