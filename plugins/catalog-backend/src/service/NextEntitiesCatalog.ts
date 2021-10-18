@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CatalogPermission,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import {
+  AuthorizeResult,
+  PermissionClient,
+} from '@backstage/permission-common';
 import { Knex } from 'knex';
 import {
   EntitiesCatalog,
@@ -26,6 +34,7 @@ import {
   EntityFilter,
   EntitiesSearchFilter,
 } from '../catalog/types';
+import { toQuery } from '../permissions';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
@@ -156,12 +165,44 @@ function parseFilter(
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  constructor(
+    private readonly database: Knex,
+    private readonly permissionApi: PermissionClient,
+  ) {}
 
-  async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
+  async entities(
+    request?: EntitiesRequest,
+    // TODO(authorization-framework - this should be based on whether the request originates from a backend.
+    authorize: boolean = true,
+  ): Promise<EntitiesResponse> {
     const db = this.database;
 
     let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
+
+    if (authorize) {
+      const authorizeResponse = (
+        await this.permissionApi.authorize(
+          [{ permission: CatalogPermission.ENTITY_READ }],
+          {
+            token: request?.authorizationToken,
+          },
+        )
+      )[0];
+
+      if (authorizeResponse.result === AuthorizeResult.DENY) {
+        return {
+          entities: [],
+          pageInfo: { hasNextPage: false },
+        };
+      } else if (authorizeResponse.result === AuthorizeResult.MAYBE) {
+        entitiesQuery = parseFilter(
+          toQuery(authorizeResponse.conditions),
+          entitiesQuery,
+          db,
+        );
+      }
+    }
+
     if (request?.filter) {
       entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
     }
