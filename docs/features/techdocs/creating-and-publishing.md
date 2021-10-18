@@ -32,9 +32,9 @@ TechDocs is built on top of the
 [docs like code approach](https://www.docslikecode.com/about/). This, in short,
 means that you should keep documentation close to the code.
 
-Your Backstage app should by default have a set of software templates added, all
+Your Backstage app has a set of software templates added by default. All
 of these software templates include everything you need to get your TechDocs
-site up and running and to start write your documentation.
+site up and running and to start writing your documentation.
 
 If you have created software templates that do not include documentation by
 default, we highly recommend you to set that up. Follow our how-to guide
