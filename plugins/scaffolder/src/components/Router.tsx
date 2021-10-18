@@ -29,6 +29,8 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import { PermissionedRoute } from '@backstage/plugin-permission';
+import { ScaffolderPermission } from '../permissions';
 
 type RouterProps = {
   TemplateCardComponent?:
@@ -61,8 +63,9 @@ export const Router = ({ TemplateCardComponent }: RouterProps) => {
 
   return (
     <Routes>
-      <Route
+      <PermissionedRoute
         path="/"
+        permission={ScaffolderPermission.ROUTES}
         element={
           <ScaffolderPage TemplateCardComponent={TemplateCardComponent} />
         }
