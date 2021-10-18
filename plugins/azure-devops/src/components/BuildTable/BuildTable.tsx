@@ -148,9 +148,7 @@ const columns: TableColumn[] = [
     field: 'queueTime',
     width: 'auto',
     render: (row: Partial<RepoBuild>) =>
-      DateTime.fromISO(
-        row.queueTime ? row.queueTime.toString() : new Date().toString(),
-      ).toRelative(),
+      DateTime.fromJSDate(row.queueTime ?? new Date()).toRelative(),
   },
 ];
 
