@@ -34,10 +34,12 @@ export function setRootLogger(newLogger: winston.Logger) {
 }
 
 export function setRootLoggerRedactionList(redactionList: string[]) {
-  redactionRegExp = new RegExp(
-    `(${redactionList.map(escapeRegExp).join('|')})`,
-    'g',
-  );
+  if (redactionList.length) {
+    redactionRegExp = new RegExp(
+      `(${redactionList.map(escapeRegExp).join('|')})`,
+      'g',
+    );
+  }
 }
 
 /**
