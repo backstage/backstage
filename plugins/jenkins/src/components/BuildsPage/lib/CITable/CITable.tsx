@@ -81,6 +81,12 @@ const FailSkippedWidget = ({
 
 const generatedColumns: TableColumn[] = [
   {
+    title: 'Timestamp',
+    defaultSort: 'desc',
+    hidden: true,
+    field: 'lastBuild.timestamp',
+  },
+  {
     title: 'Build',
     field: 'fullName',
     highlight: true,
