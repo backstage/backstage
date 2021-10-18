@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './components';
-export * from './hooks';
+export * from './usePermission';

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export {};
+import '@testing-library/jest-dom';
