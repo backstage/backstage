@@ -46,6 +46,7 @@ import {
   requireRequestBody,
   validateRequestBody,
 } from '../../service/util';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 /** @deprecated This was part of the legacy catalog engine */
 export interface RouterOptions {
@@ -95,6 +96,9 @@ export async function createRouter(
     router
       .get('/entities', async (req, res) => {
         const { entities, pageInfo } = await entitiesCatalog.entities({
+          authorizationToken: IdentityClient.getBearerToken(
+            req.header('authorization'),
+          ),
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
