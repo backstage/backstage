@@ -15,6 +15,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LocationSpec } from '@backstage/catalog-model';
+import { PermissionClient } from '@backstage/permission-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
@@ -427,6 +428,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   getStorageUrl(): Promise<string>;
   // (undocumented)
   identityApi: IdentityApi;
+  // (undocumented)
+  permissionApi: PermissionClient;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
