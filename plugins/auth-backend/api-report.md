@@ -291,6 +291,11 @@ export const ensuresXRequestedWith: (req: express.Request) => boolean;
 // @public (undocumented)
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'];
 
+// Warning: (ae-missing-release-tag) "getIdentityClaims" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function getIdentityClaims(identity: BackstageIdentity): string[];
+
 // Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
