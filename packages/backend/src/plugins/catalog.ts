@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import {
+  CatalogBuilder,
+  registerPermissionRule,
+} from '@backstage/plugin-catalog-backend';
+import { isComponentType } from '@backstage/plugin-permission-handler-simple';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -22,6 +26,8 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  registerPermissionRule(isComponentType);
+
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   const { processingEngine, router } = await builder.build();
