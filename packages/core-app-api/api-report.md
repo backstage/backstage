@@ -426,6 +426,17 @@ export class GoogleAuth {
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
 }
 
+// Warning: (ae-missing-release-tag) "IdentityPermissionApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class IdentityPermissionApi implements PermissionApi {
+  constructor(discoveryApi: DiscoveryApi, identityApi: IdentityApi);
+  // (undocumented)
+  authorize(
+    requests: Array<AuthorizeRequest>,
+  ): Promise<Array<AuthorizeResponse>>;
+}
+
 // @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
