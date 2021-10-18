@@ -134,6 +134,17 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           }
         });
 
+        // add org group to member users
+        const orgUserNames: string[] = [];
+        groupMemberUsers.set(
+          orgConfig.groupNamespace || orgConfig.name,
+          orgUserNames,
+        );
+
+        users.forEach(user => {
+          orgUserNames.push(user.metadata.name);
+        });
+
         for (const [groupName, userNames] of groupMemberUsers.entries()) {
           for (const userName of userNames) {
             const user = allUsersMap.get(prefix + userName);
@@ -145,7 +156,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
             const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
             const org = groupsByName.get(
               orgConfig.groupNamespace
-                ? orgConfig.groupNamespace
+                ? `${orgConfig.groupNamespace}/${orgConfig.name}`
                 : orgConfig.name,
             );
             if (

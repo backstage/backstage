@@ -267,7 +267,7 @@ export async function getOrganizationTeams(
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
-      name: orgNamespace ? orgNamespace : org,
+      name: orgNamespace || org,
       namespace: 'default',
       description: orgDescription,
       annotations: {
