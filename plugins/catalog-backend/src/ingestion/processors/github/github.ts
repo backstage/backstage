@@ -221,12 +221,10 @@ export async function getOrganizationTeams(
       entity.spec.profile!.picture = team.avatarUrl;
     }
     if (team.parentTeam) {
-      entity.spec.parent = orgNamespace + '/' + team.parentTeam.slug;
+      entity.spec.parent = `${orgNamespace}/${team.parentTeam.slug}`;
     } else {
       // Add parent org if no parent
-      entity.spec.parent = orgNamespace
-        ? 'default/' + orgNamespace
-        : 'default/' + org;
+      entity.spec.parent = `default/${orgNamespace || org}`;
     }
     if (team.organization) {
       // Set organization name and description if not already defined
