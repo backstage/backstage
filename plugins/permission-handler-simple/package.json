@@ -20,14 +20,11 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.6",
-    "@backstage/config": "^0.1.10",
-    "@types/express": "*",
-    "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
-    "winston": "^3.2.1",
-    "cross-fetch": "^3.0.6",
-    "yn": "^4.0.0"
+    "@backstage/catalog-model": "^0.9.4",
+    "@backstage/permission-common": "^0.1.0",
+    "@backstage/plugin-auth-backend": "^0.4.3",
+    "@backstage/plugin-catalog-backend": "^0.17.0",
+    "@backstage/plugin-permission-node": "^0.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.0",
