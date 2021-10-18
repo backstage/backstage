@@ -22,6 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -79,6 +80,9 @@ export async function createNextRouter(
     router
       .get('/entities', async (req, res) => {
         const { entities, pageInfo } = await entitiesCatalog.entities({
+          authorizationToken: IdentityClient.getBearerToken(
+            req.header('authorization'),
+          ),
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
@@ -113,6 +117,9 @@ export async function createNextRouter(
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
         const { entities } = await entitiesCatalog.entities({
+          authorizationToken: IdentityClient.getBearerToken(
+            req.header('authorization'),
+          ),
           filter: basicEntityFilter({
             kind: kind,
             'metadata.namespace': namespace,
