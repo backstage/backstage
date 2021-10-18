@@ -349,7 +349,7 @@ const app = createApp({
 });
 ```
 
-## How to add documentation setup to your software templates
+## How to add the documentation setup to your software templates
 
 [Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
 in Backstage is a tool that can help your users to create new components out of
@@ -362,16 +362,16 @@ required setup for TechDocs in these templates so that you users, when creating
 a new component, can get a TechDocs site up and running automatically. Ready for
 them to start write technical documentation.
 
-The purpose of this how-to guide is therefore to walk you through how to add the
-required configuration and some default markdown files to your new template. You
-can use the
+The purpose of this how-to guide is to walk you through how to add the required
+configuration and some default markdown files to your new template. You can use
+the
 [react-ssr-template](https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template)
 as a reference when walking through the steps.
 
 Prerequisites:
 
 - An existing software template including a `template.yaml` together with a
-  skeleton folder including at least an `catalog-info.yaml`.
+  skeleton folder including at least a `catalog-info.yaml`.
 
 1. Update your component's entity description by adding the following lines to
    the `catalog-info.yaml` in your skeleton folder.
@@ -419,4 +419,4 @@ folder (/docs) or replace the content in this file.
 > Note: The values of `site_name`, `component_id` and `site_description` depends
 > on how you have configured your `template.yaml`
 
-Done! You should now have support for TechDocs in your own software template!
+Done! You now have support for TechDocs in your own software template!

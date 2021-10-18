@@ -44,7 +44,7 @@ to get started.
 ### Use the documentation template
 
 There could be _some_ situations where you don't want to keep your docs close to
-your code, but still want to publish documentation - for example, a onboarding
+your code, but still want to publish documentation - for example, an onboarding
 tutorial. For this use case, we have put together a documentation template. Your
 Backstage instance should by default have a documentation template added. If
 not, copy the catalog locations from the
