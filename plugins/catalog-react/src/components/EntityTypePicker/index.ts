@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { EntityTypePicker } from './EntityTypePicker';
+export * from './EntityTypePicker';

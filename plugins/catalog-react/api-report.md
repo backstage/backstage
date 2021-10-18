@@ -645,10 +645,21 @@ export class EntityTypeFilter implements EntityFilter {
   readonly value: string | string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTypeFilterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
 // Warning: (ae-missing-release-tag) "EntityTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityTypePicker: () => JSX.Element | null;
+export const EntityTypePicker: ({
+  hidden,
+  initialFilter,
+}: EntityTypeFilterProps) => JSX.Element | null;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts

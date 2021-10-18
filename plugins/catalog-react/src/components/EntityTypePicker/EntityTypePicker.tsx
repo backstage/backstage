@@ -22,7 +22,7 @@ import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 
-type EntityTypeFilterProps = {
+export type EntityTypeFilterProps = {
   initialFilter?: string;
   hidden?: boolean;
 };
@@ -57,7 +57,7 @@ export const EntityTypePicker = ({
     })),
   ];
 
-  return !hidden ? (
+  return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
         label="Type"
@@ -68,5 +68,5 @@ export const EntityTypePicker = ({
         }
       />
     </Box>
-  ) : null;
+  );
 };
