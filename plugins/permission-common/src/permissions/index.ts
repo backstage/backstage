@@ -15,3 +15,4 @@
  */
 
 export * from './util';
+export * from './techdocs';
