@@ -56,7 +56,7 @@ Here's how to get the backend up and running:
 3. Next we wire this into the overall backend router, edit `packages/backend/src/index.ts`:
 
    ```ts
-   import azureDevOps from './plugins/azuredevops';
+   import azureDevOps from './plugins/azure-devops';
    // ...
    async function main() {
      // ...
