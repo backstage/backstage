@@ -16,6 +16,10 @@
 import { escapeRegExp } from './escapeRegExp';
 
 describe('escapeRegExp', () => {
+  test('does not escape non-regex characters', () => {
+    expect(escapeRegExp('Backstage Backstage')).toBe('Backstage Backstage');
+  });
+
   test('all the characters', () => {
     expect(escapeRegExp('^$\\.*+?()[]{}|')).toBe(
       '\\^\\$\\\\\\.\\*\\+\\?\\(\\)\\[\\]\\{\\}\\|',

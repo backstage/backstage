@@ -20,5 +20,5 @@
  * Taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
  */
 export const escapeRegExp = (text: string) => {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(/[.*+?^${}(\)|[\]\\]/g, '\\$&');
 };
