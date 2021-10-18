@@ -4,7 +4,7 @@ Simple plugin that proxies requests to the [Azure DevOps](https://docs.microsoft
 
 ## Setup
 
-The following sections will help you get the Azure DevOps Backend plugin setup and running
+The following sections will help you get the Azure DevOps Backend plugin setup and running.
 
 ### Configuration
 
@@ -54,7 +54,7 @@ Here's how to get the backend up and running:
 3. Next we wire this into the overall backend router, edit `packages/backend/src/index.ts`:
 
    ```ts
-   import azureDevOps from './plugins/azuredevops';
+   import azureDevOps from './plugins/azure-devops';
    // ...
    async function main() {
      // ...
