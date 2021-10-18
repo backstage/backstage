@@ -20,6 +20,12 @@ import { fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntityPermission: jest.fn().mockReturnValue({
+    isAllowed: jest.fn().mockReturnValue(true),
+  }),
+}));
+
 describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
     const mockCallback = jest.fn();
