@@ -2,4 +2,4 @@
 '@backstage/plugin-jenkins': patch
 ---
 
-Sort Jenkins biuld by timestemp in CITable
+Sort Jenkins build by timestamp in `CITable`
