@@ -130,7 +130,7 @@ export async function getOrganizationUsers(
     if (user.avatarUrl) entity.spec.profile!.picture = user.avatarUrl;
 
     // Add user to org
-    entity.spec.memberOf.push(orgNamespace ? orgNamespace : org);
+    entity.spec.memberOf.push(orgNamespace || org);
 
     return entity;
   };

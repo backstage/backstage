@@ -151,21 +151,6 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
             if (user && !user.spec.memberOf.includes(groupName)) {
               user.spec.memberOf.push(groupName);
             }
-
-            // Ensure all users are added to org
-            const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
-            const org = groupsByName.get(
-              orgConfig.groupNamespace
-                ? `${orgConfig.groupNamespace}/${orgConfig.name}`
-                : orgConfig.name,
-            );
-            if (
-              user &&
-              org &&
-              !org?.spec.members?.includes(prefix + userName)
-            ) {
-              org?.spec.members?.push(prefix + userName);
-            }
           }
         }
         buildOrgHierarchy(groups);

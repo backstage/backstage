@@ -25,13 +25,11 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
 
   for (const group of groups) {
     const selfName = group.metadata.name;
-    const selfNamespace = group.metadata.namespace;
-    const selfSlug = selfNamespace ? `${selfNamespace}/${selfName}` : selfName;
     const parentName = group.spec.parent;
     if (parentName) {
       const parent = groupsByName.get(parentName);
-      if (parent && !parent.spec.children.includes(selfSlug)) {
-        parent.spec.children.push(selfSlug);
+      if (parent && !parent.spec.children.includes(selfName)) {
+        parent.spec.children.push(selfName);
       }
     }
   }
@@ -42,12 +40,10 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
 
   for (const group of groups) {
     const selfName = group.metadata.name;
-    const selfNamespace = group.metadata.namespace;
-    const selfSlug = selfNamespace ? `${selfNamespace}/${selfName}` : selfName;
     for (const childName of group.spec.children) {
       const child = groupsByName.get(childName);
       if (child && !child.spec.parent) {
-        child.spec.parent = selfSlug;
+        child.spec.parent = selfName;
       }
     }
   }
