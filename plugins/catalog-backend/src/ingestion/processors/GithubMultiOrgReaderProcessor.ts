@@ -112,6 +112,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           orgConfig.name,
           tokenType,
           orgConfig.userNamespace,
+          orgConfig.groupNamespace,
         );
         const { groups, groupMemberUsers } = await getOrganizationTeams(
           client,
@@ -138,6 +139,21 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
             const user = allUsersMap.get(prefix + userName);
             if (user && !user.spec.memberOf.includes(groupName)) {
               user.spec.memberOf.push(groupName);
+            }
+
+            // Ensure all users are added to org
+            const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
+            const org = groupsByName.get(
+              orgConfig.groupNamespace
+                ? orgConfig.groupNamespace
+                : orgConfig.name,
+            );
+            if (
+              user &&
+              org &&
+              !org?.spec.members?.includes(prefix + userName)
+            ) {
+              org?.spec.members?.push(prefix + userName);
             }
           }
         }

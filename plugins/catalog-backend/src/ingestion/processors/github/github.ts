@@ -53,6 +53,10 @@ export type Team = {
   description?: string;
   avatarUrl?: string;
   parentTeam?: Team;
+  organization?: {
+    name?: string;
+    description?: string;
+  };
   members: Connection<User>;
 };
 
@@ -83,6 +87,7 @@ export async function getOrganizationUsers(
   org: string,
   tokenType: GithubCredentialType,
   userNamespace?: string,
+  orgNamespace?: string,
 ): Promise<{ users: UserEntity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
@@ -123,6 +128,9 @@ export async function getOrganizationUsers(
     if (user.name) entity.spec.profile!.displayName = user.name;
     if (user.email) entity.spec.profile!.email = user.email;
     if (user.avatarUrl) entity.spec.profile!.picture = user.avatarUrl;
+
+    // Add user to org
+    entity.spec.memberOf.push(orgNamespace ? orgNamespace : org);
 
     return entity;
   };
@@ -166,6 +174,7 @@ export async function getOrganizationTeams(
             description
             avatarUrl
             parentTeam { slug }
+            organization { name, description }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
               nodes { login }
@@ -177,6 +186,9 @@ export async function getOrganizationTeams(
 
   // Gets populated inside the mapper below
   const groupMemberUsers = new Map<string, string[]>();
+
+  let orgName: string | undefined;
+  let orgDescription: string | undefined;
 
   const mapper = async (team: Team) => {
     const entity: GroupEntity = {
@@ -209,7 +221,17 @@ export async function getOrganizationTeams(
       entity.spec.profile!.picture = team.avatarUrl;
     }
     if (team.parentTeam) {
-      entity.spec.parent = team.parentTeam.slug;
+      entity.spec.parent = orgNamespace + '/' + team.parentTeam.slug;
+    } else {
+      // Add parent org if no parent
+      entity.spec.parent = orgNamespace
+        ? 'default/' + orgNamespace
+        : 'default/' + org;
+    }
+    if (team.organization) {
+      // Set organization name and description if not already defined
+      if (!orgName) orgName = team.organization?.name;
+      if (!orgDescription) orgDescription = team.organization?.description;
     }
 
     const memberNames: string[] = [];
@@ -240,6 +262,29 @@ export async function getOrganizationTeams(
     mapper,
     { org },
   );
+
+  const organizationEntity: GroupEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: orgNamespace ? orgNamespace : org,
+      namespace: 'default',
+      description: orgDescription,
+      annotations: {
+        'github.com/organization-slug': org,
+      },
+    },
+    spec: {
+      type: 'organization',
+      profile: {
+        displayName: orgName || orgNamespace || org,
+      },
+      children: [],
+    },
+  };
+
+  // Add organization group
+  groups.push(organizationEntity);
 
   return { groups, groupMemberUsers };
 }
