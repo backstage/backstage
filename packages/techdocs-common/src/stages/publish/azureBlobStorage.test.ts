@@ -26,7 +26,7 @@ import { AzureBlobStoragePublish } from './azureBlobStorage';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Azure client library
 
-const rootDir = global.rootDir;
+const rootDir = (global as any).rootDir; // Set by setupTests.ts
 
 const getEntityRootDir = (entity: Entity) => {
   const {
