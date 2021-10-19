@@ -103,24 +103,35 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       const project_branch = branch === '*' ? project.default_branch : branch;
 
       // try to fetch the desired object before emitting a result
-      if (!client.fileExists(project.web_url, project_branch, catalogPath)) {
+      /*
+      if (!await client.fileExists(project.web_url, project_branch, catalogPath)) {
         continue;
       }
-      emit(
-        results.location(
-          {
-            type: 'url',
-            // The format expected by the GitLabUrlReader:
-            // https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-            //
-            // This unfortunately will trigger another API call in `getGitLabFileFetchUrl` to get the project ID.
-            // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
-            // URL here won't work either.
-            target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
-          },
-          true,
-        ),
-      );
+      */
+      client
+        .fileExists(project.web_url, project_branch, catalogPath)
+        .then(() =>
+          emit(
+            results.location(
+              {
+                type: 'url',
+                // The format expected by the GitLabUrlReader:
+                // https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
+                //
+                // This unfortunately will trigger another API call in `getGitLabFileFetchUrl` to get the project ID.
+                // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
+                // URL here won't work either.
+                target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+              },
+              true,
+            ),
+          ),
+        )
+        .catch(() =>
+          this.logger.debug(
+            `gitlab-discovery: skipping project ${project.web_url}`,
+          ),
+        );
     }
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);

@@ -47,16 +47,20 @@ export class GitLabClient {
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
   }
 
-  public fileExists(
+  async fileExists(
     project_weburl: string,
     project_branch: string,
     catalog_path: string,
-  ): boolean {
-    const fileUrl = getGitLabFileFetchUrl(
-      `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+  ): Promise<any> {
+    const fileUrl = await getGitLabFileFetchUrl(
+      `${project_weburl}/-/blob/${project_branch}/${catalog_path}`,
+      this.config,
     );
-    const response = fetch(fileUrl);
-    return response.ok;
+    const response = await fetch(fileUrl);
+    if (response.ok) {
+      return response;
+    }
+    throw new Error(response.status);
   }
 
   private async pagedRequest(
