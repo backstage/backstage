@@ -3,6 +3,7 @@ site_name: 'Benefits Innovation Hub Documentation'
 nav:
   - Overview: index.md
   - Local Development: 'local-development.md'
+  - API Documentation: 'api-documentation.md'
   - Tech Docs:
       - Overview: 'techdocs/README.md'
       - Getting Started: 'techdocs/getting-started.md'
