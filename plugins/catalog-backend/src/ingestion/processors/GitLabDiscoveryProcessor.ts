@@ -103,11 +103,6 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       const project_branch = branch === '*' ? project.default_branch : branch;
 
       // try to fetch the desired object before emitting a result
-      /*
-      if (!await client.fileExists(project.web_url, project_branch, catalogPath)) {
-        continue;
-      }
-      */
       client
         .fileExists(project.web_url, project_branch, catalogPath)
         .then(() =>
