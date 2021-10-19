@@ -28,20 +28,21 @@ import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
 import { Logger } from 'winston';
 import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '../../providers/types';
+import {
   getOrganizationTeams,
   getOrganizationUsers,
   parseGitHubOrgUrl,
 } from '../processors/github';
-import { buildOrgHierarchy } from '../processors/util/org';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '../../providers/types';
+import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 // TODO: Consider supporting an (optional) webhook that reacts on org changes
 
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
+  private readonly credentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
@@ -75,7 +76,11 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
     },
-  ) {}
+  ) {
+    this.credentialsProvider = GithubCredentialsProvider.create(
+      options.gitHubConfig,
+    );
+  }
 
   getProviderName() {
     return `GitHubOrgEntityProvider:${this.options.id}`;
@@ -92,11 +97,8 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 
     const { markReadComplete } = trackProgress(this.options.logger);
 
-    const credentialsProvider = GithubCredentialsProvider.create(
-      this.options.gitHubConfig,
-    );
     const { headers, type: tokenType } =
-      await credentialsProvider.getCredentials({
+      await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = graphql.defaults({
@@ -110,16 +112,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       client,
       org,
     );
-    // Fill out the hierarchy
-    const usersByName = new Map(users.map(u => [u.metadata.name, u]));
-    for (const [groupName, userNames] of groupMemberUsers.entries()) {
-      for (const userName of userNames) {
-        const user = usersByName.get(userName);
-        if (user && !user.spec.memberOf.includes(groupName)) {
-          user.spec.memberOf.push(groupName);
-        }
-      }
-    }
+    assignGroupsToUsers(users, groupMemberUsers);
     buildOrgHierarchy(groups);
 
     const { markCommitComplete } = markReadComplete({ users, groups });

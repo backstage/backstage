@@ -30,7 +30,7 @@ import {
 } from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { buildOrgHierarchy } from './util/org';
+import { assignGroupsToUsers, buildOrgHierarchy } from './util/org';
 
 type GraphQL = typeof graphql;
 
@@ -82,16 +82,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       `Read ${users.length} GitHub users and ${groups.length} GitHub groups in ${duration} seconds`,
     );
 
-    // Fill out the hierarchy
-    const usersByName = new Map(users.map(u => [u.metadata.name, u]));
-    for (const [groupName, userNames] of groupMemberUsers.entries()) {
-      for (const userName of userNames) {
-        const user = usersByName.get(userName);
-        if (user && !user.spec.memberOf.includes(groupName)) {
-          user.spec.memberOf.push(groupName);
-        }
-      }
-    }
+    assignGroupsToUsers(users, groupMemberUsers);
     buildOrgHierarchy(groups);
 
     // Done!

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('@octokit/graphql');
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -23,6 +22,8 @@ import {
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+
+jest.mock('@octokit/graphql');
 
 describe('GithubOrgReaderProcessor', () => {
   describe('implementation', () => {
