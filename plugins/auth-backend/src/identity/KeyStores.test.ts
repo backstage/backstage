@@ -62,6 +62,8 @@ describe('KeyStores', () => {
   });
 
   it('can handle additional provider config', async () => {
+    jest.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
+
     const configOptions = {
       auth: {
         keyStore: {

@@ -66,8 +66,10 @@ export class KeyStores {
 
     if (provider === 'firestore') {
       const settings = ks?.getOptional(provider) as FirestoreKeyStoreSettings;
+      const keyStore = await FirestoreKeyStore.create(settings);
+      await FirestoreKeyStore.verifyConnection(keyStore, logger);
 
-      return await FirestoreKeyStore.create(settings);
+      return keyStore;
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);

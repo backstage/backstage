@@ -14,45 +14,86 @@
  * limitations under the License.
  */
 
-import { Firestore, Settings } from '@google-cloud/firestore';
+import { Logger } from 'winston';
+import {
+  DocumentData,
+  Firestore,
+  QuerySnapshot,
+  Settings,
+  WriteResult,
+} from '@google-cloud/firestore';
 
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
-export type FirestoreKeyStoreSettings = Settings & {
+export type FirestoreKeyStoreSettings = Settings & Options;
+
+type Options = {
   path?: string;
+  timeout?: number;
 };
+
+export const DEFAULT_TIMEOUT_MS = 10000;
+export const DEFAULT_DOCUMENT_PATH = 'sessions';
 
 export class FirestoreKeyStore implements KeyStore {
   static async create(
     settings?: FirestoreKeyStoreSettings,
   ): Promise<FirestoreKeyStore> {
-    const { path, ...firestoreSettings } = settings ?? {};
+    const { path, timeout, ...firestoreSettings } = settings ?? {};
     const database = new Firestore(firestoreSettings);
 
-    return new FirestoreKeyStore(database, path ?? 'sessions');
+    return new FirestoreKeyStore(
+      database,
+      path ?? DEFAULT_DOCUMENT_PATH,
+      timeout ?? DEFAULT_TIMEOUT_MS,
+    );
   }
 
   private constructor(
     private readonly database: Firestore,
     private readonly path: string,
+    private readonly timeout: number,
   ) {}
 
+  static async verifyConnection(
+    keyStore: FirestoreKeyStore,
+    logger?: Logger,
+  ): Promise<void> {
+    try {
+      await keyStore.verify();
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to connect to database: ${(error as Error).message}`,
+        );
+      }
+      logger?.warn(
+        `Failed to connect to database: ${(error as Error).message}`,
+      );
+    }
+  }
+
   async addKey(key: AnyJWK): Promise<void> {
-    await this.database
-      .collection(this.path)
-      .doc(key.kid)
-      .set({
-        kid: key.kid,
-        key: JSON.stringify(key),
-      });
+    await this.withTimeout<WriteResult>(
+      this.database
+        .collection(this.path)
+        .doc(key.kid)
+        .set({
+          kid: key.kid,
+          key: JSON.stringify(key),
+        }),
+    );
   }
 
   async listKeys(): Promise<{ items: StoredKey[] }> {
-    const docs = await this.database.collection(this.path).get();
+    const keys = await this.withTimeout<QuerySnapshot<DocumentData>>(
+      this.database.collection(this.path).get(),
+    );
+
     return {
-      items: docs.docs.map(doc => ({
-        key: doc.data() as AnyJWK,
-        createdAt: doc.createTime.toDate(),
+      items: keys.docs.map(key => ({
+        key: key.data() as AnyJWK,
+        createdAt: key.createTime.toDate(),
       })),
     };
   }
@@ -60,7 +101,9 @@ export class FirestoreKeyStore implements KeyStore {
   async removeKeys(kids: string[]): Promise<void> {
     // This is probably really slow, but it's done async in the background
     for (const kid of kids) {
-      await this.database.collection(this.path).doc(kid).delete();
+      await this.withTimeout<WriteResult>(
+        this.database.collection(this.path).doc(kid).delete(),
+      );
     }
 
     /**
@@ -85,5 +128,30 @@ export class FirestoreKeyStore implements KeyStore {
      *  await batch.commit();
      *
      */
+  }
+
+  /**
+   * Helper function to allow us to modify the timeout used when
+   * performing Firestore database operations.
+   *
+   * The reason for this is that it seems that there's no other
+   * practical solution to change the default timeout of 10mins
+   * that Firestore has.
+   *
+   */
+  private async withTimeout<T>(operation: Promise<T>): Promise<T> {
+    const timer = new Promise<never>((_, reject) =>
+      setTimeout(() => {
+        reject(new Error(`Operation timed out after ${this.timeout}ms`));
+      }, this.timeout),
+    );
+    return Promise.race<T>([operation, timer]);
+  }
+
+  /**
+   * Used to verify that the database is reachable.
+   */
+  private async verify(): Promise<void> {
+    await this.withTimeout(this.database.collection(this.path).limit(1).get());
   }
 }

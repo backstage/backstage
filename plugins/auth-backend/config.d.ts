@@ -52,6 +52,8 @@ export interface Config {
         keyFilename?: string;
         /** The path to use for the collection. Defaults to 'sessions' */
         path?: string;
+        /** Timeout used for database operations. Defaults to 10000ms */
+        timeout?: number;
       };
     };
 

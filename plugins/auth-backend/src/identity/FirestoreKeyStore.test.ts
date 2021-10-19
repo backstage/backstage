@@ -17,6 +17,8 @@
 import { Firestore } from '@google-cloud/firestore';
 
 import {
+  DEFAULT_DOCUMENT_PATH,
+  DEFAULT_TIMEOUT_MS,
   FirestoreKeyStore,
   FirestoreKeyStoreSettings,
 } from './FirestoreKeyStore';
@@ -24,15 +26,18 @@ import { AnyJWK } from './types';
 
 const data = jest.fn().mockReturnValue('data');
 const toDate = jest.fn().mockReturnValue('date');
+const get = jest.fn().mockReturnValue({
+  docs: [{ data, createTime: { toDate } }],
+});
+const set = jest.fn();
 
 const firestoreMock = {
+  limit: jest.fn().mockReturnThis(),
   collection: jest.fn().mockReturnThis(),
   delete: jest.fn(),
   doc: jest.fn().mockReturnThis(),
-  get: jest.fn().mockReturnValue({
-    docs: [{ data, createTime: { toDate } }],
-  }),
-  set: jest.fn(),
+  set,
+  get,
 };
 
 jest.mock('@google-cloud/firestore', () => ({
@@ -55,10 +60,20 @@ describe('FirestoreKeyStore', () => {
     keyFilename: 'cred.json',
   };
   const path = 'my-path';
-  const firestoreSettings = { ...settings, path } as FirestoreKeyStoreSettings;
+  const timeout = 10;
+  const firestoreSettings = {
+    ...settings,
+    path,
+    timeout,
+  } as FirestoreKeyStoreSettings;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('can create an instance without settings', async () => {
@@ -74,17 +89,56 @@ describe('FirestoreKeyStore', () => {
     expect(Firestore).toHaveBeenCalledWith(settings);
   });
 
-  it('can use a default path', async () => {
+  it('can verify that is has a connection to the database', async () => {
+    const keyStore = await FirestoreKeyStore.create();
+
+    await expect(
+      FirestoreKeyStore.verifyConnection(keyStore),
+    ).resolves.not.toThrow();
+  });
+
+  it('can verify that it can not connect to the database', async () => {
+    const keyStore = await FirestoreKeyStore.create();
+    firestoreMock.get = jest.fn().mockRejectedValue(new Error());
+
+    await expect(
+      FirestoreKeyStore.verifyConnection(keyStore),
+    ).rejects.toThrow();
+
+    firestoreMock.get = get;
+  });
+
+  it('can use a default timeout and path', async () => {
     const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
-    expect(firestoreMock.collection).toBeCalledWith('sessions');
+    expect(setTimeout).toBeCalledWith(expect.any(Function), DEFAULT_TIMEOUT_MS);
+    expect(firestoreMock.collection).toBeCalledWith(DEFAULT_DOCUMENT_PATH);
+  });
+
+  it('can handle a timeout', async () => {
+    firestoreMock.set = jest
+      .fn()
+      .mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 20)),
+      );
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
+    const add = keyStore.addKey(key);
+
+    jest.advanceTimersByTime(50);
+
+    await expect(add).rejects.toEqual(
+      new Error(`Operation timed out after ${timeout}ms`),
+    );
+
+    firestoreMock.set = set;
   });
 
   it('can add keys', async () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.addKey(key);
 
+    expect(setTimeout).toBeCalledTimes(1);
     expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith(key.kid);
     expect(firestoreMock.set).toHaveBeenCalledWith({
@@ -97,6 +151,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
+    expect(setTimeout).toBeCalledTimes(1);
     expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith('123');
     expect(firestoreMock.delete).toBeCalledTimes(1);
@@ -106,6 +161,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
+    expect(setTimeout).toBeCalledTimes(2);
     expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.doc).toBeCalledWith('123');
     expect(firestoreMock.doc).toBeCalledWith('456');
@@ -116,6 +172,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const items = await keyStore.listKeys();
 
+    expect(setTimeout).toBeCalledTimes(1);
     expect(firestoreMock.collection).toBeCalledWith(path);
     expect(firestoreMock.get).toBeCalledTimes(1);
     expect(data).toBeCalledTimes(1);
