@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { DateTime } from 'luxon';
-import {
-  Link,
-  Table,
-  TableColumn,
-  StatusError,
-  StatusOK,
-  StatusWarning,
-  StatusAborted,
-  StatusRunning,
-  StatusPending,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
 import { Box, Typography } from '@material-ui/core';
-import { RepoBuild } from '../../api/types';
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+} from '@backstage/plugin-azure-devops-backend';
+import {
+  Link,
+  ResponseErrorPanel,
+  StatusAborted,
+  StatusError,
+  StatusOK,
+  StatusPending,
+  StatusRunning,
+  StatusWarning,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
+
+import { DateTime } from 'luxon';
+import React from 'react';
+import { RepoBuild } from '../../api/types';
 
 const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
