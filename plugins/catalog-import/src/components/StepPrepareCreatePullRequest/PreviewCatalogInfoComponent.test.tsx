@@ -45,7 +45,7 @@ const entities: Entity[] = [
 ];
 
 describe('<PreviewCatalogInfoComponent />', () => {
-  it('renders without exploding', async () => {
+  it('renders without exploding', () => {
     render(
       <PreviewCatalogInfoComponent
         repositoryUrl="http://my-repository/a/"
@@ -56,14 +56,14 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = await screen.findByText('Kind_2');
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();
     expect(kindText).toBeVisible();
   });
 
-  it('renders card with custom styles', async () => {
+  it('renders card with custom styles', () => {
     const { result } = renderHook(() => useStyles());
 
     render(
@@ -77,14 +77,14 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = await screen.findByText('Kind_2');
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).not.toBeVisible();
     expect(kindText).toBeInTheDocument();
     expect(kindText).not.toBeVisible();
   });
 
-  it('renders with custom styles', async () => {
+  it('renders with custom styles', () => {
     const { result } = renderHook(() => useStyles());
 
     render(
@@ -98,7 +98,7 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = await screen.findByText('Kind_2');
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();

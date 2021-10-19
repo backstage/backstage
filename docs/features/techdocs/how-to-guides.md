@@ -348,3 +348,75 @@ const app = createApp({
   ],
 });
 ```
+
+## How to add the documentation setup to your software templates
+
+[Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+in Backstage is a tool that can help your users to create new components out of
+already configured templates. It comes with a set of default templates to use,
+but you can also
+[add your own templates](https://backstage.io/docs/features/software-templates/adding-templates).
+
+If you have your own templates set up, we highly recommend that you include the
+required setup for TechDocs in those templates. When creating a new component,
+your users will then get a TechDocs site up and running automatically, ready for
+them to start writing technical documentation.
+
+The purpose of this how-to guide is to walk you through how to add the required
+configuration and some default markdown files to your new template. You can use
+the
+[react-ssr-template](https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template)
+as a reference when walking through the steps.
+
+Prerequisites:
+
+- An existing software template including a `template.yaml` together with a
+  skeleton folder including at least a `catalog-info.yaml`.
+
+1. Update your component's entity description by adding the following lines to
+   the `catalog-info.yaml` in your skeleton folder.
+
+```yaml
+annotations:
+  backstage.io/techdocs-ref: dir:.
+```
+
+The
+[`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+is used by TechDocs to download the documentation source files for generating an
+entity's TechDocs site.
+
+2. Create an `mkdocs.yml` file in the root of your skeleton folder with the
+   following content:
+
+```yaml
+site_name: ${{values.component_id}}
+site_description: ${{values.description}}
+
+nav:
+  - Introduction: index.md
+
+plugins:
+  - techdocs-core
+```
+
+3. Create a `/docs` folder in the skeleton folder with at least an `index.md`
+   file in it.
+
+The `docs/index.md` can for example have the following content:
+
+```md
+# ${{ values.component_id }}
+
+${{ values.description }}
+
+## Getting started
+
+Start writing your documentation by adding more markdown (.md) files to this
+folder (/docs) or replace the content in this file.
+```
+
+> Note: The values of `site_name`, `component_id` and `site_description` depends
+> on how you have configured your `template.yaml`
+
+Done! You now have support for TechDocs in your own software template!
