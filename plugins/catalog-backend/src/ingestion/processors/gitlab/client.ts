@@ -18,6 +18,7 @@ import fetch from 'cross-fetch';
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
+  getGitLabFileFetchUrl,
 } from '@backstage/integration';
 import { Logger } from 'winston';
 
@@ -44,6 +45,18 @@ export class GitLabClient {
     }
 
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
+  }
+
+  public fileExists(
+    project_weburl: string,
+    project_branch: string,
+    catalog_path: string,
+  ): boolean {
+    const fileUrl = getGitLabFileFetchUrl(
+      `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+    );
+    const response = fetch(fileUrl);
+    return response.ok;
   }
 
   private async pagedRequest(
