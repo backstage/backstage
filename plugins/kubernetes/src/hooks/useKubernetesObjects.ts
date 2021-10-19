@@ -30,7 +30,10 @@ export interface KubernetesObjects {
   error: string | undefined;
 }
 
-export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
+export const useKubernetesObjects = (
+  entity: Entity,
+  intervalMs: number = 10000,
+): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
   const [kubernetesObjects, setKubernetesObjects] = useState<
@@ -86,8 +89,7 @@ export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
 
   useInterval(() => {
     getObjects();
-    // TODO make configurable
-  }, 10000);
+  }, intervalMs);
 
   return {
     kubernetesObjects,
