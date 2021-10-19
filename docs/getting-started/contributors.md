@@ -96,7 +96,7 @@ yarn start # Start serving the example app, use --check to include type checks a
 
 yarn storybook # Start local storybook, useful for working on components in @backstage/core-components
 
-yarn workspace @backstage/plugin-welcome start # Serve welcome plugin only, also supports --check
+yarn workspace @backstage/plugin-api-docs start # Serve api-docs plugin only, also supports --check
 
 yarn tsc # Run typecheck, use --watch for watch mode
 yarn tsc:full # Run full type checking, for example without skipLibCheck, use in CI

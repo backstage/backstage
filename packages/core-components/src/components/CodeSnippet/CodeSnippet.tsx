@@ -14,56 +14,13 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
-import { Progress } from '../Progress';
-
-const LazySyntaxHighlighter = lazy(async () => {
-  const [{ default: SyntaxHighlighter }, { docco, dark }] = await Promise.all([
-    import('react-syntax-highlighter'),
-    import('react-syntax-highlighter/dist/cjs/styles/hljs'),
-  ]);
-
-  function LazyHighlighter(props: CodeSnippetProps) {
-    const {
-      text,
-      language,
-      showLineNumbers = false,
-      highlightedNumbers,
-      customStyle,
-    } = props;
-    const theme = useTheme<BackstageTheme>();
-    const mode = theme.palette.type === 'dark' ? dark : docco;
-    const highlightColor =
-      theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
-
-    return (
-      <SyntaxHighlighter
-        customStyle={customStyle}
-        language={language}
-        style={mode}
-        showLineNumbers={showLineNumbers}
-        wrapLines
-        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
-        lineProps={(lineNumber: number) =>
-          highlightedNumbers?.includes(lineNumber)
-            ? {
-                style: {
-                  backgroundColor: highlightColor,
-                },
-              }
-            : {}
-        }
-      >
-        {text}
-      </SyntaxHighlighter>
-    );
-  }
-
-  return { default: LazyHighlighter };
-});
+import { LightAsync } from 'react-syntax-highlighter';
+import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
+import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
 /**
  * Properties for {@link CodeSnippet}
@@ -112,12 +69,39 @@ export interface CodeSnippetProps {
  * providing consistent theming and copy code button
  */
 export function CodeSnippet(props: CodeSnippetProps) {
-  const { text, showCopyCodeButton = false } = props;
+  const {
+    text,
+    language,
+    showLineNumbers = false,
+    highlightedNumbers,
+    customStyle,
+    showCopyCodeButton = false,
+  } = props;
+  const theme = useTheme<BackstageTheme>();
+  const mode = theme.palette.type === 'dark' ? dark : docco;
+  const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
+
   return (
     <div style={{ position: 'relative' }}>
-      <Suspense fallback={<Progress />}>
-        <LazySyntaxHighlighter {...props} />
-      </Suspense>
+      <LightAsync
+        customStyle={customStyle}
+        language={language}
+        style={mode}
+        showLineNumbers={showLineNumbers}
+        wrapLines
+        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
+        lineProps={(lineNumber: number) =>
+          highlightedNumbers?.includes(lineNumber)
+            ? {
+                style: {
+                  backgroundColor: highlightColor,
+                },
+              }
+            : {}
+        }
+      >
+        {text}
+      </LightAsync>
       {showCopyCodeButton && (
         <div style={{ position: 'absolute', top: 0, right: 0 }}>
           <CopyTextButton text={text} />
