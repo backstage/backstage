@@ -56,14 +56,14 @@
     "react-dom": "^16.12.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
-    "react-markdown": "^5.0.2",
+    "react-markdown": "^7.0.1",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^15.4.3",
     "react-text-truncate": "^0.16.0",
     "react-use": "^17.2.4",
-    "remark-gfm": "^1.0.0",
+    "remark-gfm": "^2.0.0",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
