@@ -215,7 +215,7 @@ techdocs:
   publisher:
     type: 'local'
   generator:
-    techdocs: local
+    runIn: local
 ```
 
 Setting `generators.techdocs` to `local` means you will have to make sure your
