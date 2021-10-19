@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
 import { useEffect, useState } from 'react';
+import { useInterval } from 'react-use';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
@@ -38,50 +39,55 @@ export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
 
   const [error, setError] = useState<string | undefined>(undefined);
 
+  const getObjects = async () => {
+    let clusters = [];
+
+    try {
+      clusters = await kubernetesApi.getClusters();
+    } catch (e) {
+      setError(e.message);
+      return;
+    }
+
+    const authProviders: string[] = [
+      ...new Set(clusters.map(c => c.authProvider)),
+    ];
+    // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
+    let requestBody: KubernetesRequestBody = {
+      entity,
+    };
+    for (const authProviderStr of authProviders) {
+      // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
+      try {
+        requestBody =
+          await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+            authProviderStr,
+            requestBody,
+          );
+      } catch (e) {
+        setError(e.message);
+        return;
+      }
+    }
+
+    try {
+      setKubernetesObjects(await kubernetesApi.getObjectsByEntity(requestBody));
+    } catch (e) {
+      setError(e.message);
+      return;
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      let clusters = [];
-
-      try {
-        clusters = await kubernetesApi.getClusters();
-      } catch (e) {
-        setError(e.message);
-        return;
-      }
-
-      const authProviders: string[] = [
-        ...new Set(clusters.map(c => c.authProvider)),
-      ];
-      // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
-      let requestBody: KubernetesRequestBody = {
-        entity,
-      };
-      for (const authProviderStr of authProviders) {
-        // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
-        try {
-          requestBody =
-            await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-              authProviderStr,
-              requestBody,
-            );
-        } catch (e) {
-          setError(e.message);
-          return;
-        }
-      }
-
-      try {
-        setKubernetesObjects(
-          await kubernetesApi.getObjectsByEntity(requestBody),
-        );
-      } catch (e) {
-        setError(e.message);
-        return;
-      }
-    })();
+    getObjects();
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
   /* eslint-enable react-hooks/exhaustive-deps */
+
+  useInterval(() => {
+    getObjects();
+    // TODO make configurable
+  }, 10000);
 
   return {
     kubernetesObjects,
