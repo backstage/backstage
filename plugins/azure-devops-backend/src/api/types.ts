@@ -26,13 +26,12 @@ import {
   PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 
-export { BuildResult, BuildStatus };
+export { BuildResult, BuildStatus, PullRequestStatus };
 export type {
   Build,
   GitPullRequest,
   GitPullRequestSearchCriteria,
   GitRepository,
-  PullRequestStatus,
 };
 
 export type RepoBuild = {
