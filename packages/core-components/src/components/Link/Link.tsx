@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { useAnalytics } from '@backstage/core-plugin-api';
+import {
+  AnalyticsEventAttributes,
+  useAnalytics,
+} from '@backstage/core-plugin-api';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
@@ -26,10 +29,18 @@ import {
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
+type LinkOptions = {
+  action?: string;
+  subject?: string;
+  value?: number;
+  attributes?: AnalyticsEventAttributes;
+};
+
 export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {
-    component?: ElementType<any>;
-  };
+  component?: ElementType<any>;
+  options?: LinkOptions;
+};
 
 declare function LinkType(props: LinkProps): JSX.Element;
 
@@ -62,7 +73,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Captures Link clicks as analytics events.
  */
 const ActualLink = React.forwardRef<any, LinkProps>(
-  ({ onClick, ...props }, ref) => {
+  ({ onClick, options, ...props }, ref) => {
     const analytics = useAnalytics();
     const to = String(props.to);
     const linkText = getNodeText(props.children) || to;
@@ -71,7 +82,13 @@ const ActualLink = React.forwardRef<any, LinkProps>(
 
     const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
       onClick?.(event);
-      analytics.captureEvent('click', linkText, { attributes: { to } });
+      const attributes = options?.attributes || { to };
+      const value = options?.value;
+      analytics.captureEvent(
+        options?.action || 'click',
+        options?.subject || linkText,
+        { attributes, value },
+      );
     };
 
     return external ? (

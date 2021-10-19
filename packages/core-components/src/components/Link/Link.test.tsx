@@ -73,6 +73,48 @@ describe('<Link />', () => {
     });
   });
 
+  it('captures click using analytics api and custom action, subject, value and attributes', async () => {
+    const linkText = 'Navigate!';
+    const analyticsApi = new MockAnalyticsApi();
+    const customOnClick = jest.fn();
+
+    const { getByText } = render(
+      wrapInTestApp(
+        <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsApi]])}>
+          <Link
+            to="/test"
+            onClick={customOnClick}
+            options={{
+              action: 'custom:click',
+              subject: 'custom:subject',
+              value: 123,
+              attributes: { to: '/custom_link' },
+            }}
+          >
+            {linkText}
+          </Link>
+        </ApiProvider>,
+      ),
+    );
+
+    fireEvent.click(getByText(linkText));
+
+    // Analytics event should have been fired.
+    await waitFor(() => {
+      expect(analyticsApi.getEvents()[0]).toMatchObject({
+        action: 'custom:click',
+        subject: 'custom:subject',
+        attributes: {
+          to: '/custom_link',
+        },
+        value: 123,
+      });
+
+      // Custom onClick handler should have still been fired too.
+      expect(customOnClick).toHaveBeenCalled();
+    });
+  });
+
   describe('isExternalUri', () => {
     it.each([
       [true, 'http://'],
