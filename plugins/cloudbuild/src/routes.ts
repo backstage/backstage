@@ -16,11 +16,9 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Google Cloudbuild',
+  id: 'cloudbuild',
 });
 
 export const buildRouteRef = createRouteRef({
-  path: ':id',
-  title: 'Cloudbuild Run',
+  id: 'cloudbuild/run',
 });

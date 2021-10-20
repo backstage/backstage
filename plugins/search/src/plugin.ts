@@ -26,13 +26,11 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/search',
-  title: 'search',
+  id: 'search',
 });
 
 export const rootNextRouteRef = createRouteRef({
-  path: '/search-next',
-  title: 'search',
+  id: 'search-next',
 });
 
 export const searchPlugin = createPlugin({

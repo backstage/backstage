@@ -26,14 +26,12 @@ import {
 import { JenkinsClient, jenkinsApiRef } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Jenkins',
+  id: 'jenkins',
 });
 
 export const buildRouteRef = createRouteRef({
-  path: 'build/:jobFullName/:buildNumber',
+  id: 'jenkins/build',
   params: ['jobFullName', 'buildNumber'],
-  title: 'Jenkins build',
 });
 
 export const jenkinsPlugin = createPlugin({

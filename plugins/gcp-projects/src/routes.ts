@@ -17,14 +17,11 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/gcp-projects',
-  title: 'GCP Projects',
+  id: 'gcp-projects',
 });
 export const projectRouteRef = createRouteRef({
-  path: '/gcp-projects/project',
-  title: 'GCP Project Page',
+  id: 'gcp-projects/project',
 });
 export const newProjectRouteRef = createRouteRef({
-  path: '/gcp-projects/new',
-  title: 'GCP Project Page',
+  id: 'gcp-projects/new',
 });

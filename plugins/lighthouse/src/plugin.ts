@@ -25,22 +25,19 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Lighthouse',
+  id: 'lighthouse',
 });
 
 export const viewAuditRouteRef = createRouteRef({
-  path: 'audit/:id',
-  title: 'View Lighthouse Audit',
+  id: 'audit/:id',
 });
 
 export const createAuditRouteRef = createRouteRef({
-  path: 'create-audit',
-  title: 'Create Lighthouse Audit',
+  id: 'create-audit',
 });
 
 export const entityContentRouteRef = createRouteRef({
-  title: 'Lighthouse Entity Content',
+  id: 'entity-content',
 });
 
 export const lighthousePlugin = createPlugin({

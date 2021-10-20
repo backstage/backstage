@@ -23,7 +23,7 @@ import {
 import { AllureApiClient, allureApiRef } from './api';
 
 export const allureRouteRef = createRouteRef({
-  title: 'allure-report',
+  id: 'allure-report',
 });
 
 export const allurePlugin = createPlugin({

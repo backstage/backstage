@@ -17,12 +17,10 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'GitHub Actions',
+  id: 'github-actions',
 });
 
 export const buildRouteRef = createRouteRef({
-  path: ':id',
+  id: 'github-actions/build',
   params: ['id'],
-  title: 'GitHub Actions Workflow Run',
 });
