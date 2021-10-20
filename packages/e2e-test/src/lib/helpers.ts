@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import {
   spawn,
   execFile as execFileCb,
@@ -66,11 +67,12 @@ export async function runPlain(cmd: string[], options?: SpawnOptions) {
     });
     return stdout.trim();
   } catch (error) {
+    assertError(error);
     if (error.stdout) {
-      process.stdout.write(error.stdout);
+      process.stdout.write(error.stdout as Buffer);
     }
     if (error.stderr) {
-      process.stderr.write(error.stderr);
+      process.stderr.write(error.stderr as Buffer);
     }
     throw error;
   }
@@ -147,6 +149,7 @@ export async function waitForPageWithText(
       );
       break;
     } catch (error) {
+      assertError(error);
       if (error.message.match(EXPECTED_LOAD_ERRORS)) {
         loadAttempts++;
         if (loadAttempts >= maxLoadAttempts) {

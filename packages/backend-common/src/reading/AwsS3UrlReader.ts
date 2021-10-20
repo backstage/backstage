@@ -27,6 +27,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import { ForwardedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
@@ -162,7 +163,7 @@ export class AwsS3UrlReader implements UrlReader {
         etag: etag,
       };
     } catch (e) {
-      throw new Error(`Could not retrieve file from S3: ${e.message}`);
+      throw new ForwardedError('Could not retrieve file from S3', e);
     }
   }
 
@@ -203,7 +204,7 @@ export class AwsS3UrlReader implements UrlReader {
 
       return await this.deps.treeResponseFactory.fromReadableArray(responses);
     } catch (e) {
-      throw new Error(`Could not retrieve file tree from S3: ${e.message}`);
+      throw new ForwardedError('Could not retrieve file tree from S3', e);
     }
   }
 

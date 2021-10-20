@@ -15,6 +15,7 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 import { TransformFunc } from './types';
 import { isObject } from './utils';
 
@@ -46,6 +47,7 @@ export async function applyConfigTransforms(
           break;
         }
       } catch (error) {
+        assertError(error);
         throw new Error(`error at ${path}, ${error.message}`);
       }
     }

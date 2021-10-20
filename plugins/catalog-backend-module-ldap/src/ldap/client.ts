@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ForwardedError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { Logger } from 'winston';
 import { BindConfig } from './config';
@@ -120,7 +121,7 @@ export class LdapClient {
         clearInterval(logInterval);
       });
     } catch (e) {
-      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+      throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
     }
   }
 
@@ -167,7 +168,7 @@ export class LdapClient {
         });
       });
     } catch (e) {
-      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+      throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
     }
   }
 

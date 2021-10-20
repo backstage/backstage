@@ -45,9 +45,7 @@ async function createTemporaryAppFolder(tempDir: string) {
     try {
       await fs.mkdir(tempDir);
     } catch (error) {
-      throw new Error(
-        `Failed to create temporary app directory: ${error.message}`,
-      );
+      throw new Error(`Failed to create temporary app directory, ${error}`);
     }
   });
 }
@@ -156,7 +154,7 @@ export default async (cmd: Command): Promise<void> => {
     Task.log();
     Task.exit();
   } catch (error) {
-    Task.error(error.message);
+    Task.error(String(error));
 
     Task.log('It seems that something went wrong when creating the app 🤔');
     Task.log('We are going to clean up, and then you can try again.');

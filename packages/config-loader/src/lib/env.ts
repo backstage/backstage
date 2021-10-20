@@ -15,6 +15,7 @@
  */
 
 import { AppConfig, JsonObject } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 
 const ENV_PREFIX = 'APP_CONFIG_';
 
@@ -96,6 +97,7 @@ function safeJsonParse(str: string): [Error | null, any] {
   try {
     return [null, JSON.parse(str)];
   } catch (err) {
+    assertError(err);
     return [err, str];
   }
 }
