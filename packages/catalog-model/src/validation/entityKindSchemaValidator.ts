@@ -24,6 +24,8 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * schema apiVersion/kind didn't apply to that data, or throws a
  * {@link globals#TypeError} describing actual errors.
  *
+ * @remarks
+ *
  * This validator is highly specialized, in that it has special treatment of
  * the `kind` and `apiVersion` root keys. This only works if your schema has
  * their rule set to `"enum"`:
@@ -47,13 +49,16 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * The given schema may contain `$ref` references to the following, which are
  * resolved automatically for you:
  *
- * - EntityEnvelope
- * - Entity
- * - EntityMeta
- * - common#<id>
+ * - {@link Entity}
+ *
+ * - {@link EntityEnvelope}
+ *
+ * - {@link EntityMeta}
+ *
+ * - `common#<id>`
+ * @see {@link https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema}
  *
  * @public
- * @see https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema
  */
 export function entityKindSchemaValidator<T extends Entity>(
   schema: unknown,

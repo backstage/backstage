@@ -18,7 +18,15 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Domain.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
-/** @public */
+/**
+ * Backstage Domain kind Entity. Domains group Systems together.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/features/software-catalog/system-model}
+ *
+ * @public
+ */
 export interface DomainEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Domain';
@@ -27,6 +35,10 @@ export interface DomainEntityV1alpha1 extends Entity {
   };
 }
 
-/** @public */
+/**
+ * {@link KindValidator} for {@link DomainEntityV1alpha1}.
+ *
+ * @public
+ */
 export const domainEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
