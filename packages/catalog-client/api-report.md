@@ -35,6 +35,10 @@ export interface CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
@@ -65,55 +69,45 @@ export interface CatalogApi {
   ): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export class CatalogClient implements CatalogApi {
   constructor(options: { discoveryApi: DiscoveryApi });
-  // (undocumented)
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
-  // (undocumented)
   getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
-  // (undocumented)
   getEntityAncestors(
     request: CatalogEntityAncestorsRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogEntityAncestorsResponse>;
-  // (undocumented)
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  // (undocumented)
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeLocationById(
     id: string,
     options?: CatalogRequestOptions,
@@ -127,6 +121,20 @@ export type CatalogEntitiesRequest = {
     | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
+};
+
+// @public
+export type CatalogEntityAncestorsRequest = {
+  entityRef: string;
+};
+
+// @public
+export type CatalogEntityAncestorsResponse = {
+  root: EntityName;
+  items: {
+    entity: Entity;
+    parents: EntityName[];
+  }[];
 };
 
 // @public

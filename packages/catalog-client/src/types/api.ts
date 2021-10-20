@@ -83,7 +83,7 @@ export interface CatalogApi {
    * Gets the Entities from the catalog based on your request and options.
    *
    * @param request - An object with your filters and fields.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    * @returns A CatalogListResponse with items typed Catalog Model Entity.
    */
@@ -119,7 +119,7 @@ export interface CatalogApi {
    * Removes a single Entity from the catalog by Entity UID.
    *
    * @param uid - A string of the Entity UID.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    */
   removeEntityByUid(
@@ -130,7 +130,7 @@ export interface CatalogApi {
    * Refreshes an Entity in the catalog.
    *
    * @param entityRef - A string in the form of 'Kind/default:foo'.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    */
   refreshEntity(
@@ -143,7 +143,7 @@ export interface CatalogApi {
    * Gets a Location object by ID from the catalog.
    *
    * @param id - A string in of the Location Id.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
    */
@@ -154,8 +154,8 @@ export interface CatalogApi {
   /**
    * Gets origin location by Entity.
    *
-   * @param entity - A {@link catalog-model#Entity}.
-   * @param options - An object with your perferred options.
+   * @param entity - An {@link catalog-model#Entity}.
+   * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
    */
@@ -166,8 +166,8 @@ export interface CatalogApi {
   /**
    * Gets Location by Entity.
    *
-   * @param entity - A {@link catalog-model#Entity}.
-   * @param options - An object with your perferred options.
+   * @param entity - An {@link catalog-model#Entity}.
+   * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
    */
@@ -179,7 +179,7 @@ export interface CatalogApi {
    * Adds a Location.
    *
    * @param location - A request type for adding a Location to the catalog.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    * @returns A AddLocationResponse.
    */
@@ -191,7 +191,7 @@ export interface CatalogApi {
    * Removes a Location by Id.
    *
    * @param id - A string in of the Location Id.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    */
   removeLocationById(

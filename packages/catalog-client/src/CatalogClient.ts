@@ -39,7 +39,11 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
-/** @public */
+/**
+ * A frontend and backend compatible client for communicating with the Backstage Catalog.
+ *
+ * @public
+ * */
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
 
@@ -47,6 +51,15 @@ export class CatalogClient implements CatalogApi {
     this.discoveryApi = options.discoveryApi;
   }
 
+  /**
+   * Gets the Ancestors of an Entity.
+   * @public
+   *
+   * @param request - A request type for retrieving Entity ancestors.
+   * @param options - An object with your preferred options.
+   *
+   * @returns A CatalogEntityAncestorsResponse.
+   */
   async getEntityAncestors(
     request: CatalogEntityAncestorsRequest,
     options?: CatalogRequestOptions,
@@ -61,6 +74,15 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  /**
+   * Gets a Location by Id.
+   * @public
+   *
+   * @param id - A string containing the Id.
+   * @param options - An object with your preferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   async getLocationById(
     id: string,
     options?: CatalogRequestOptions,
@@ -72,6 +94,15 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  /**
+   * Gets a set of Entities.
+   * @public
+   *
+   * @param request - A request type for retrieving an Entity.
+   * @param options - An object with your preferred options.
+   *
+   * @returns A CatalogListResponse.
+   */
   async getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -139,6 +170,14 @@ export class CatalogClient implements CatalogApi {
     return { items: entities.sort(refCompare) };
   }
 
+  /**
+   * Gets a given Entity based on a provided name.
+   *
+   * @param compoundName - A string containing the name.
+   * @param options - An object with your preferred options.
+   *
+   * @returns An {@link catalog-model#Entity}.
+   */
   async getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
@@ -153,6 +192,13 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  /**
+   * Refreshes an Entity.
+   *
+   * @param entityRef - A string containing the entityREf
+   * @param options - An object with your preferred options.
+   *
+   */
   async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/refresh`,
@@ -171,6 +217,14 @@ export class CatalogClient implements CatalogApi {
     }
   }
 
+  /**
+   * Adds a location.
+   *
+   * @param options - An object with your preferred options.
+   * @param AddLocationRequest - A request object for adding locations.
+   *
+   * @returns An AddLocationResponse
+   */
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -206,6 +260,14 @@ export class CatalogClient implements CatalogApi {
     };
   }
 
+  /**
+   *  Gets an origin Location By Entity.
+   *
+   * @param entity - An Entity
+   * @param options - An object with your preferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   async getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -225,6 +287,14 @@ export class CatalogClient implements CatalogApi {
       .find(l => locationCompound === stringifyLocationReference(l));
   }
 
+  /**
+   * Gets a Location by Entity.
+   *
+   * @param entity - An Entity
+   * @param options - An object with your preferred options.
+   *
+   * @returns A {@link catalog-model#Location_2}.
+   */
   async getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -243,6 +313,13 @@ export class CatalogClient implements CatalogApi {
       .find(l => locationCompound === stringifyLocationReference(l));
   }
 
+  /**
+   * Removes a location as identified by Id.
+   *
+   * @param id - A string containing the Id
+   * @param options - An object with your preferred options.
+   *
+   */
   async removeLocationById(
     id: string,
     options?: CatalogRequestOptions,
@@ -254,6 +331,13 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  /**
+   * Removes an Entity as identified by Uid.
+   *
+   * @param uid - A string containing the Uid
+   * @param options - An object with your preferred options.
+   *
+   */
   async removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
