@@ -60,8 +60,8 @@ Once you observe 'Listening on :7000' in the log you can see the app by navigati
 
 Things you'll need:
   
-  [Techdocs-cli](https://github.com/backstage/techdocs-cli)
-  [S3 credentials](https://docs.aws.amazon.com/AmazonS3/latest/userguide/AuthUsingAcctOrUserCredentials.html)
+  - [Techdocs-cli](https://github.com/backstage/techdocs-cli)
+  - [S3 credentials](https://docs.aws.amazon.com/AmazonS3/latest/userguide/AuthUsingAcctOrUserCredentials.html)
   
 Things to do:
   - In your repo add a mkdocs.yml file similar to the one below.
@@ -83,6 +83,7 @@ plugins:
 yarn cli
 ```
   - Then push your credentials to s3
+ 
 ```sh
 techdocs-cli publish --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --entity <namespace/kind/name>
 ```
@@ -91,7 +92,6 @@ techdocs-cli publish --publisher-type <awsS3|googleGcs|azureBlobStorage> --stora
  ```yml
    annotations:
     backstage.io/techdocs-ref: url:s3://my-s3-name/default/api/name-of-techdoc/
-    
  ```
 
 
