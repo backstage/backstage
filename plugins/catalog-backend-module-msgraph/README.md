@@ -84,7 +84,7 @@ builder.addEntityProvider(msGraphOrgEntityProvider);
 // Trigger a read every 5 minutes
 useHotCleanup(
   module,
-  runPeriodically(async () => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
+  runPeriodically(() => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
 );
 ```
 

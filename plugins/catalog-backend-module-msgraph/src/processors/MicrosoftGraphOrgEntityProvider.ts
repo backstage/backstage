@@ -66,12 +66,6 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       );
     }
 
-    if (provider.userFilter && provider.userGroupMemberFilter) {
-      throw new Error(
-        `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
-      );
-    }
-
     const logger = options.logger.child({
       target: options.target,
     });
@@ -166,7 +160,7 @@ function trackProgress(logger: Logger) {
 }
 
 // Makes sure that emitted entities have a proper location based on their uuid
-function withLocations(providerId: string, entity: Entity): Entity {
+export function withLocations(providerId: string, entity: Entity): Entity {
   const uuid =
     entity.metadata.annotations?.[MICROSOFT_GRAPH_USER_ID_ANNOTATION] ||
     entity.metadata.annotations?.[MICROSOFT_GRAPH_GROUP_ID_ANNOTATION] ||
