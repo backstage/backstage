@@ -21,6 +21,7 @@ import {
   CatalogProcessorResult,
 } from './types';
 import path from 'path';
+import { defaultEntityDataParser } from './util/parse';
 
 describe('FileReaderProcessor', () => {
   const fixturesRoot = path.join(__dirname, '__fixtures__/fileReaderProcessor');
@@ -33,7 +34,7 @@ describe('FileReaderProcessor', () => {
     };
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit),
+      processor.readLocation(spec, false, emit, defaultEntityDataParser),
     )) as CatalogProcessorEntityResult;
 
     expect(generated.type).toBe('entity');
@@ -49,7 +50,7 @@ describe('FileReaderProcessor', () => {
     };
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit),
+      processor.readLocation(spec, false, emit, defaultEntityDataParser),
     )) as CatalogProcessorErrorResult;
 
     expect(generated.type).toBe('error');
@@ -69,6 +70,7 @@ describe('FileReaderProcessor', () => {
       { type: 'file', target: `${path.join(fixturesRoot, '**', '*.yaml')}` },
       false,
       emit,
+      defaultEntityDataParser,
     );
 
     expect(emit).toBeCalledTimes(2);
