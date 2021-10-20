@@ -16,6 +16,7 @@
 
 exports.up = async function up(knex) {
   await knex.schema.alterTable('metadata', table => {
+    table.renameColumn('entity_ref', 'ref');
     table
       .text('size')
       .defaultTo('medium')
@@ -32,6 +33,7 @@ exports.up = async function up(knex) {
 
 exports.down = async function down(knex) {
   await knex.schema.alterTable('metadata', table => {
+    table.renameColumn('ref', 'entity_ref');
     table.dropColumn('size').dropColumn('timeboxed').dropColumn('responsible');
   });
 };
