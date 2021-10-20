@@ -204,14 +204,8 @@ export type AtlassianProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
-   */
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
@@ -240,23 +234,13 @@ export const createAtlassianProvider = (
       const authHandler: AuthHandler<OAuthResult> =
         options?.authHandler ?? atlassianDefaultAuthHandler;
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? atlassianDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new AtlassianAuthProvider({
         clientId,
         clientSecret,
         scopes,
         callbackUrl,
         authHandler,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         catalogIdentityClient,
         logger,
         tokenIssuer,

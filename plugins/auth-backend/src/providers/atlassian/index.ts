@@ -15,4 +15,7 @@
  */
 
 export { createAtlassianProvider } from './provider';
-export type { AtlassianAuthProvider } from './provider';
+export type {
+  AtlassianAuthProvider,
+  AtlassianProviderOptions,
+} from './provider';
