@@ -93,6 +93,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
         'namespace',
         'metadata.annotations',
         'metadata.name',
+        'metadata.title',
         'metadata.namespace',
         'spec.type',
         'spec.lifecycle',
@@ -130,6 +131,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
               }),
               path: doc.location,
               ...entityInfo,
+              entityTitle: entity.metadata.title,
               componentType: entity.spec?.type?.toString() || 'other',
               lifecycle: (entity.spec?.lifecycle as string) || '',
               owner:
