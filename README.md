@@ -56,6 +56,45 @@ yarn docker-local
 
 Once you observe 'Listening on :7000' in the log you can see the app by navigating to http://localhost:7000
 
+## Adding Techdocs to your repository
+
+Things you'll need:
+  
+  [Techdocs-cli](https://github.com/backstage/techdocs-cli)
+  [S3 credentials](https://docs.aws.amazon.com/AmazonS3/latest/userguide/AuthUsingAcctOrUserCredentials.html)
+  
+Things to do:
+  - In your repo add a mkdocs.yml file similar to the one below.
+
+```yml
+site_name: 'My Repo docs name'
+
+nav:
+  - Home: index.md
+
+plugins:
+  - techdocs-core```
+  
+  - Once you have techdocs-cli installed
+  run the techdocs:
+
+```sh
+yarn cli
+```
+  - Then push your credentials to s3
+```sh
+techdocs-cli publish --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --entity <namespace/kind/name>
+```
+  - From the published tech docs add the the backstage.io/techdocs-ref value to the catalog-info.yaml file of your repo: 
+
+ ```yml
+   annotations:
+    backstage.io/techdocs-ref: url:s3://my-s3-name/default/api/name-of-techdoc/
+    
+ ```
+
+
+
 ## Documentation
 
 - [Main documentation](https://backstage.io/docs)
