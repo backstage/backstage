@@ -319,7 +319,9 @@ describe('helpers', () => {
       expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
         'docs/README.md content',
       );
-      expect(warn.mock.calls).toEqual([['docs/index.md not found.']]);
+      expect(warn.mock.calls).toEqual([
+        [`${path.normalize('docs/index.md')} not found.`],
+      ]);
       mockFs.restore();
     });
 
@@ -334,9 +336,9 @@ describe('helpers', () => {
         'main README.md content',
       );
       expect(warn.mock.calls).toEqual([
-        ['docs/index.md not found.'],
-        ['docs/README.md not found.'],
-        ['docs/readme.md not found.'],
+        [`${path.normalize('docs/index.md')} not found.`],
+        [`${path.normalize('docs/README.md')} not found.`],
+        [`${path.normalize('docs/readme.md')} not found.`],
       ]);
       mockFs.restore();
     });
@@ -347,14 +349,19 @@ describe('helpers', () => {
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
       expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
+      const paths = [
+        path.normalize('docs/index.md'),
+        path.normalize('docs/README.md'),
+        path.normalize('docs/readme.md'),
+        'README.md',
+        'readme.md',
+      ];
       expect(warn.mock.calls).toEqual([
-        ['docs/index.md not found.'],
-        ['docs/README.md not found.'],
-        ['docs/readme.md not found.'],
-        ['README.md not found.'],
-        ['readme.md not found.'],
+        ...paths.map(p => [`${p} not found.`]),
         [
-          "Could not find any techdocs' index file. Please make sure at least one of /docs/index.md /docs/README.md /docs/readme.md /README.md /readme.md exists.",
+          `Could not find any techdocs' index file. Please make sure at least one of ${paths
+            .map(p => path.sep + p)
+            .join(' ')} exists.`,
         ],
       ]);
       mockFs.restore();
