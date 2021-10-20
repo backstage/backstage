@@ -174,24 +174,31 @@ export const getMkdocsYml = async (
  * @param {string} inputDir base dir to be used as a docs_dir path validity check
  * @param {string} mkdocsYmlFileString The string contents of the loaded
  *   mkdocs.yml or equivalent of a docs site
+ * @returns the parsed docs_dir or undefined
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
   mkdocsYmlFileString: string,
-) => {
-  const mkdocsYml: any = yaml.load(mkdocsYmlFileString, {
+): Promise<string | undefined> => {
+  const mkdocsYml = yaml.load(mkdocsYmlFileString, {
     schema: MKDOCS_SCHEMA,
   });
 
+  if (mkdocsYml === null || typeof mkdocsYml !== 'object') {
+    return undefined;
+  }
+
+  const parsedMkdocsYml: Record<string, any> = mkdocsYml;
   if (
-    mkdocsYml.docs_dir &&
-    !isChildPath(inputDir, resolvePath(inputDir, mkdocsYml.docs_dir))
+    parsedMkdocsYml.docs_dir &&
+    !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
   ) {
     throw new Error(
       `docs_dir configuration value in mkdocs can't be an absolute directory or start with ../ for security reasons.
        Use relative paths instead which are resolved relative to your mkdocs.yml file location.`,
     );
   }
+  return parsedMkdocsYml.docs_dir;
 };
 
 /**
@@ -294,25 +301,27 @@ export const patchMkdocsYmlPreBuild = async (
 export const patchIndexPreBuild = async ({
   inputDir,
   logger,
+  docsDir = 'docs',
 }: {
   inputDir: string;
   logger: Logger;
+  docsDir?: string;
 }) => {
-  const docsPath = path.join(inputDir, 'docs');
+  const docsPath = path.join(inputDir, docsDir);
   const indexMdPath = path.join(docsPath, 'index.md');
 
-  try {
-    await fs.promises.access(indexMdPath);
+  if (await fs.pathExists(indexMdPath)) {
     return;
-  } catch {
-    logger.warn('docs/index.md not found.');
   }
+  logger.warn(`${path.join(docsDir, 'index.md')} not found.`);
   const fallbacks = [
     path.join(docsPath, 'README.md'),
+    path.join(docsPath, 'readme.md'),
     path.join(inputDir, 'README.md'),
+    path.join(inputDir, 'readme.md'),
   ];
 
-  await fs.promises.mkdir(docsPath, { recursive: true });
+  await fs.ensureDir(docsPath);
   for (const filePath of fallbacks) {
     try {
       await fs.copyFile(filePath, indexMdPath);
@@ -321,8 +330,12 @@ export const patchIndexPreBuild = async ({
       logger.warn(`${path.relative(inputDir, filePath)} not found.`);
     }
   }
+
   logger.warn(
-    `Could not find any techdocs' index file. Please make sure at least one of docs/index.md docs/README.md README.md exists.`,
+    `Could not find any techdocs' index file. Please make sure at least one of ${[
+      indexMdPath,
+      ...fallbacks,
+    ].join(' ')} exists.`,
   );
 };
 

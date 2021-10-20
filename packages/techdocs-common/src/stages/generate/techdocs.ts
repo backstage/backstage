@@ -94,7 +94,7 @@ export class TechdocsGenerator implements GeneratorBase {
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
 
     // validate the docs_dir first
-    await validateMkdocsYaml(inputDir, content);
+    const docsDir = await validateMkdocsYaml(inputDir, content);
 
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
@@ -103,7 +103,7 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
-      await patchIndexPreBuild({ inputDir, logger: childLogger });
+      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
     // Directories to bind on container
