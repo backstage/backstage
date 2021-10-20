@@ -26,9 +26,12 @@ import {
   createIncludeTransform,
   createSubstitutionTransform,
 } from './lib';
-import { EnvFunc } from './lib/transform/types';
 
-/** @public */
+/**
+ * Options that control the loading of configuration files in the backend.
+ *
+ * @public
+ */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
   configRoot: string;
@@ -44,7 +47,7 @@ export type LoadConfigOptions = {
    *
    * @experimental This API is not stable and may change at any point
    */
-  experimentalEnvFunc?: EnvFunc;
+  experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
 
   /**
    * An optional configuration that enables watching of config files.

@@ -16,7 +16,21 @@
 
 import { isError } from './assertion';
 
-/** @public */
+/**
+ * A base class that custom Error classes can inherit from.
+ *
+ * @public
+ * @example
+ *```ts
+ * class MyCustomError extends CustomErrorBase {}
+ *
+ * const e = new MyCustomError('Some message', cause);
+ * // e.name === 'MyCustomError'
+ * // e.message === 'Some message'
+ * // e.cause === cause
+ * // e.stack is set if the runtime supports it
+ * ```
+ */
 export class CustomErrorBase extends Error {
   readonly cause?: Error;
 
