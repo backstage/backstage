@@ -176,24 +176,31 @@ export const getMkdocsYml = async (
  * @param {string} inputDir base dir to be used as a docs_dir path validity check
  * @param {string} mkdocsYmlFileString The string contents of the loaded
  *   mkdocs.yml or equivalent of a docs site
+ * @returns the parsed docs_dir or undefined
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
   mkdocsYmlFileString: string,
-) => {
-  const mkdocsYml: any = yaml.load(mkdocsYmlFileString, {
+): Promise<string | undefined> => {
+  const mkdocsYml = yaml.load(mkdocsYmlFileString, {
     schema: MKDOCS_SCHEMA,
   });
 
+  if (mkdocsYml === null || typeof mkdocsYml !== 'object') {
+    return undefined;
+  }
+
+  const parsedMkdocsYml: Record<string, any> = mkdocsYml;
   if (
-    mkdocsYml.docs_dir &&
-    !isChildPath(inputDir, resolvePath(inputDir, mkdocsYml.docs_dir))
+    parsedMkdocsYml.docs_dir &&
+    !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
   ) {
     throw new Error(
       `docs_dir configuration value in mkdocs can't be an absolute directory or start with ../ for security reasons.
        Use relative paths instead which are resolved relative to your mkdocs.yml file location.`,
     );
   }
+  return parsedMkdocsYml.docs_dir;
 };
 
 /**
@@ -289,6 +296,52 @@ export const patchMkdocsYmlPreBuild = async (
     );
     return;
   }
+};
+
+/**
+ * Update docs/index.md file before TechDocs generator uses it to generate docs site,
+ * falling back to docs/README.md or README.md in case a default docs/index.md
+ * is not provided.
+ */
+export const patchIndexPreBuild = async ({
+  inputDir,
+  logger,
+  docsDir = 'docs',
+}: {
+  inputDir: string;
+  logger: Logger;
+  docsDir?: string;
+}) => {
+  const docsPath = path.join(inputDir, docsDir);
+  const indexMdPath = path.join(docsPath, 'index.md');
+
+  if (await fs.pathExists(indexMdPath)) {
+    return;
+  }
+  logger.warn(`${path.join(docsDir, 'index.md')} not found.`);
+  const fallbacks = [
+    path.join(docsPath, 'README.md'),
+    path.join(docsPath, 'readme.md'),
+    path.join(inputDir, 'README.md'),
+    path.join(inputDir, 'readme.md'),
+  ];
+
+  await fs.ensureDir(docsPath);
+  for (const filePath of fallbacks) {
+    try {
+      await fs.copyFile(filePath, indexMdPath);
+      return;
+    } catch (error) {
+      logger.warn(`${path.relative(inputDir, filePath)} not found.`);
+    }
+  }
+
+  logger.warn(
+    `Could not find any techdocs' index file. Please make sure at least one of ${[
+      indexMdPath,
+      ...fallbacks,
+    ].join(' ')} exists.`,
+  );
 };
 
 /**
