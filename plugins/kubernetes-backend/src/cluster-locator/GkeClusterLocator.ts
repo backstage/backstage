@@ -49,6 +49,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     );
   }
 
+  // TODO pass caData into the object
   async getClusters(): Promise<GKEClusterDetails[]> {
     const { projectId, region, skipTLSVerify } = this.options;
     const request = {
