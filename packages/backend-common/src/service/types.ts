@@ -88,6 +88,13 @@ export type ServiceBuilder = {
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
 
   /**
+   * Adds a middleware to the Express app.
+   *
+   * @param fnct - The function to add as a middleware, for example : setheader on response object
+   */
+  addMiddleware(fnct: Function): ServiceBuilder;
+
+  /**
    * Set the request logging handler
    *
    * If no handler is given the default one is used

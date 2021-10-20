@@ -65,6 +65,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
+  private middlewares: [];
   private requestLoggingHandler: RequestLoggingHandlerFactory | undefined;
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -72,6 +73,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
   constructor(moduleRef: NodeModule) {
     this.routers = [];
+    this.middlewares = [];
     this.module = moduleRef;
   }
 
@@ -145,6 +147,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  addMiddleware(fnct: Function) {
+    this.middlewares.push(fnct);
+    return this;
+  }
+
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ) {
@@ -165,6 +172,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     app.use(
       (this.requestLoggingHandler ?? defaultRequestLoggingHandler)(logger),
     );
+    for (const fnct of this.middlewares) {
+      app.use(fnct);
+    }
     for (const [root, route] of this.routers) {
       app.use(root, route);
     }
