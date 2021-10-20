@@ -45,4 +45,4 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+CMD ["envconsul", "-config", "config.hcl", "node", "packages/backend", "--config", "app-config.yaml"]
