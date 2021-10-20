@@ -18,7 +18,7 @@ export class ConflictError extends CustomErrorBase {}
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
   // (undocumented)
-  readonly cause?: Error;
+  readonly cause?: Error | undefined;
 }
 
 // @public
@@ -98,4 +98,7 @@ export function serializeError(
     includeStack?: boolean;
   },
 ): SerializedError;
+
+// @public
+export function stringifyError(error: unknown): string;
 ```
