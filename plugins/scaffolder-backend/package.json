@@ -64,7 +64,7 @@
     "luxon": "^2.0.2",
     "morgan": "^1.10.0",
     "nunjucks": "^3.2.3",
-    "octokit-plugin-create-pull-request": "^3.9.3",
+    "octokit-plugin-create-pull-request": "^3.10.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yaml": "^1.10.0"

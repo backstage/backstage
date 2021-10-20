@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readFile } from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 import { parseRepoUrl } from './util';
 
@@ -194,7 +194,20 @@ export const createPublishGithubPullRequestAction = ({
       });
 
       const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(path.resolve(fileRoot, p))),
+        localFilePaths.map(filePath => {
+          const absPath = path.resolve(fileRoot, filePath);
+          const content = fs.readFileSync(absPath).toString();
+          const fileStat = fs.statSync(absPath);
+          const isExecutable = fileStat.mode === 33277 // aka. 100755;
+          // See the properties of tree items
+          // in https://docs.github.com/en/rest/reference/git#trees
+          const githubTreeItemMode = isExecutable ? '100755' : '100644';
+          return {
+            encoding: 'utf-8',
+            content: content,
+            mode: githubTreeItemMode,
+          };
+        }),
       );
 
       const repoFilePaths = localFilePaths.map(repoFilePath => {
@@ -205,7 +218,7 @@ export const createPublishGithubPullRequestAction = ({
         {
           files: zipObject(
             repoFilePaths,
-            fileContents.map(buf => buf.toString()),
+            fileContents,
           ),
           commit: title,
         },
