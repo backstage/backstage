@@ -135,13 +135,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );
@@ -187,13 +181,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );
@@ -249,13 +237,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );

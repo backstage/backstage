@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.2.6
+
+### Patch Changes
+
+- ff7c6cec1a: Allow loading users using group membership
+- 95869261ed: Adding some documentation for the `msgraph` client
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.16.0
+  - @backstage/catalog-model@0.9.4
+
+## 0.2.5
+
+### Patch Changes
+
+- 664bba5c45: Bumped `@microsoft/microsoft-graph-types` to v2
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.15.0
+
+## 0.2.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.14.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+
 ## 0.2.3
 
 ### Patch Changes

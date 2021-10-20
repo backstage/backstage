@@ -127,6 +127,8 @@ export const createSamlProvider = (
       issuer: config.getString('issuer'),
       cert: config.getString('cert'),
       privateCert: config.getOptionalString('privateKey'),
+      authnContext: config.getOptionalStringArray('authnContext'),
+      identifierFormat: config.getOptionalString('identifierFormat'),
       decryptionPvk: config.getOptionalString('decryptionPvk'),
       signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
         | SignatureAlgorithm

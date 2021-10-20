@@ -16,9 +16,9 @@ import { EntityName } from '@backstage/catalog-model';
 import { FieldErrors } from 'react-hook-form';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
@@ -34,6 +34,7 @@ export type AnalyzeResult =
       type: 'locations';
       locations: Array<{
         target: string;
+        exists?: boolean;
         entities: EntityName[];
       }>;
     }
@@ -95,7 +96,7 @@ export const catalogImportApiRef: ApiRef<CatalogImportApi>;
 export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
+    scmAuthApi: ScmAuthApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
@@ -248,5 +249,5 @@ export const StepPrepareCreatePullRequest: ({
 
 // Warnings were encountered during analysis:
 //
-// src/api/CatalogImportApi.d.ts:14:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
+// src/api/CatalogImportApi.d.ts:15:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
 ```

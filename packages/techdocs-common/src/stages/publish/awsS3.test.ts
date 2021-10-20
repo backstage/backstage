@@ -26,7 +26,7 @@ import { AwsS3Publish } from './awsS3';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
 
-const rootDir = global.rootDir;
+const rootDir = (global as any).rootDir; // Set by setupTests.ts
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -351,6 +351,17 @@ describe('AwsS3Publish', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should return 404 if file is not found', async () => {
+      const response = await request(app).get(
+        `/${entityTripletPath}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
     });
   });
 });

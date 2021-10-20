@@ -15,36 +15,75 @@
  */
 
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
+import { LightAsync } from 'react-syntax-highlighter';
+import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
+import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
-type Props = {
+/**
+ * Properties for {@link CodeSnippet}
+ */
+export interface CodeSnippetProps {
+  /**
+   * Code Snippet text
+   */
   text: string;
+  /**
+   * Language used by {@link .text}
+   */
   language: string;
+  /**
+   * Whether to show line number
+   *
+   * @remarks
+   *
+   * Default: false
+   */
   showLineNumbers?: boolean;
+  /**
+   * Whether to show button to copy code snippet
+   *
+   * @remarks
+   *
+   * Default: false
+   */
   showCopyCodeButton?: boolean;
+  /**
+   * Array of line numbers to highlight
+   */
   highlightedNumbers?: number[];
+  /**
+   * Custom styles applied to code
+   *
+   * @remarks
+   *
+   * Passed to {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
+   */
   customStyle?: any;
-};
+}
 
-export const CodeSnippet = (props: Props) => {
+/**
+ * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
+ * providing consistent theming and copy code button
+ */
+export function CodeSnippet(props: CodeSnippetProps) {
   const {
     text,
     language,
     showLineNumbers = false,
-    showCopyCodeButton = false,
     highlightedNumbers,
     customStyle,
+    showCopyCodeButton = false,
   } = props;
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
+
   return (
     <div style={{ position: 'relative' }}>
-      <SyntaxHighlighter
+      <LightAsync
         customStyle={customStyle}
         language={language}
         style={mode}
@@ -62,7 +101,7 @@ export const CodeSnippet = (props: Props) => {
         }
       >
         {text}
-      </SyntaxHighlighter>
+      </LightAsync>
       {showCopyCodeButton && (
         <div style={{ position: 'absolute', top: 0, right: 0 }}>
           <CopyTextButton text={text} />
@@ -70,4 +109,4 @@ export const CodeSnippet = (props: Props) => {
       )}
     </div>
   );
-};
+}

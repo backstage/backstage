@@ -15,6 +15,7 @@
  */
 import { DateTime, Duration } from 'luxon';
 import { BuildStatus } from '../api';
+import upperFirst from 'lodash/upperFirst';
 
 export const formatDuration = (seconds: number) => {
   const duration = Duration.fromObject({
@@ -48,5 +49,4 @@ export const formatPercentage = (number: number) => {
   return `${Math.round(number * 100)} %`;
 };
 
-export const formatStatus = (status: BuildStatus) =>
-  status[0].toUpperCase() + status.slice(1);
+export const formatStatus = (status: BuildStatus) => upperFirst(status);

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketIntegration,
   getBitbucketDefaultBranch,
@@ -24,20 +25,19 @@ import {
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
-  ReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchOptions,
   SearchResponse,
   UrlReader,
-  ReadUrlResponse,
-  ReadUrlOptions,
 } from './types';
 
 /**
@@ -150,11 +150,11 @@ export class BitbucketUrlReader implements UrlReader {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      filter: path => matcher.match(path),
     });
     const files = await tree.files();
 

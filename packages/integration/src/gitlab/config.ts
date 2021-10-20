@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost, isValidUrl } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
@@ -67,13 +68,13 @@ export function readGitLabIntegrationConfig(
   let baseUrl = config.getOptionalString('baseUrl');
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === GITLAB_HOST) {
     apiBaseUrl = GITLAB_API_BASE_URL;
   }
 
   if (baseUrl) {
-    baseUrl = baseUrl.replace(/\/+$/, '');
+    baseUrl = trimEnd(baseUrl, '/');
   } else {
     baseUrl = `https://${host}`;
   }

@@ -142,6 +142,84 @@ const AppRoutes = () => {
 };
 ```
 
+## How to customize the TechDocs reader page?
+
+Similar to how it is possible to customize the TechDocs Home, it is also
+possible to customize the TechDocs Reader Page. It is done in your `app`
+package. By default, you might see something like this in your `App.tsx`:
+
+```tsx
+const AppRoutes = () => {
+  <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+    {techDocsPage}
+  </Route>;
+};
+```
+
+The `techDocsPage` is a default techdocs reader page which lives in
+`packages/app/src/components/techdocs`. It includes the following without you
+having to set anything up.
+
+```tsx
+<TechDocsPage>
+  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
+    <>
+      <TechDocsPageHeader
+        techDocsMetadata={techdocsMetadataValue}
+        entityMetadata={entityMetadataValue}
+        entityRef={entityRef}
+      />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+If you would like to compose your own `techDocsPage`, you can do so by replacing
+the children of TechDocsPage with something else. Maybe you are _just_
+interested in replacing the Header:
+
+```tsx
+<TechDocsPage>
+  {({ entityRef, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+Or maybe you want to disable the in-context search
+
+```tsx
+<TechDocsPage>
+  {({ entityRef, onReady }) => (
+    <>
+      <Header type="documentation" title="Custom Header" />
+      <Content data-testid="techdocs-content">
+        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
+      </Content>
+    </>
+  )}
+</TechDocsPage>
+```
+
+Or maybe you want to replace the entire TechDocs Page.
+
+```tsx
+<TechDocsPage>
+  <Header type="documentation" title="Custom Header" />
+  <Content data-testid="techdocs-content">
+    <p>my own content</p>
+  </Content>
+</TechDocsPage>
+```
+
 ## How to migrate from TechDocs Alpha to Beta
 
 > This guide only applies to the "recommended" TechDocs deployment method (where
@@ -217,3 +295,128 @@ techdocs:
 [beta-migrate-bug]:
 https://github.com/backstage/backstage/issues/new?assignees=&labels=bug&template=bug_template.md&title=[TechDocs]%20Unable%20to%20run%20beta%20migration
 [using-cloud-storage]: ./using-cloud-storage.md
+
+## How to implement your own TechDocs APIs
+
+The TechDocs plugin provides implementations of two primary APIs by default: the
+[TechDocsStorageApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L33),
+which is responsible for talking to TechDocs storage to fetch files to render,
+and
+[TechDocsApi](https://github.com/backstage/backstage/blob/55114cfeb7045e3e5eeeaf67546b58964f4adcc7/plugins/techdocs/src/api.ts#L49),
+which is responsible for talking to techdocs-backend.
+
+There may be occasions where you need to implement these two APIs yourself, to
+customize them to your own needs. The purpose of this guide is to walk you
+through how to do that in two steps.
+
+1. Implement the `TechDocsStorageApi` and `TechDocsApi` interfaces according to
+   your needs.
+
+```typescript
+export class TechDocsCustomStorageApi implements TechDocsStorageApi {
+  // your implementation
+}
+
+export class TechDocsCustomApiClient implements TechDocsApi {
+  // your implementation
+}
+```
+
+2. Override the API refs `techdocsStorageApiRef` and `techdocsApiRef` with your
+   new implemented APIs in the `App.tsx` using `ApiFactories`.
+   [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
+
+```typescript
+const app = createApp({
+  apis: [
+    // TechDocsStorageApi
+    createApiFactory({
+      api: techdocsStorageApiRef,
+      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      factory({ discoveryApi, configApi }) {
+        return new TechDocsCustomStorageApi({ discoveryApi, configApi });
+      },
+    }),
+    // TechDocsApi
+    createApiFactory({
+      api: techdocsApiRef,
+      deps: { discoveryApi: discoveryApiRef },
+      factory({ discoveryApi }) {
+        return new TechDocsCustomApiClient({ discoveryApi });
+      },
+    }),
+  ],
+});
+```
+
+## How to add the documentation setup to your software templates
+
+[Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+in Backstage is a tool that can help your users to create new components out of
+already configured templates. It comes with a set of default templates to use,
+but you can also
+[add your own templates](https://backstage.io/docs/features/software-templates/adding-templates).
+
+If you have your own templates set up, we highly recommend that you include the
+required setup for TechDocs in those templates. When creating a new component,
+your users will then get a TechDocs site up and running automatically, ready for
+them to start writing technical documentation.
+
+The purpose of this how-to guide is to walk you through how to add the required
+configuration and some default markdown files to your new template. You can use
+the
+[react-ssr-template](https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template)
+as a reference when walking through the steps.
+
+Prerequisites:
+
+- An existing software template including a `template.yaml` together with a
+  skeleton folder including at least a `catalog-info.yaml`.
+
+1. Update your component's entity description by adding the following lines to
+   the `catalog-info.yaml` in your skeleton folder.
+
+```yaml
+annotations:
+  backstage.io/techdocs-ref: dir:.
+```
+
+The
+[`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+is used by TechDocs to download the documentation source files for generating an
+entity's TechDocs site.
+
+2. Create an `mkdocs.yml` file in the root of your skeleton folder with the
+   following content:
+
+```yaml
+site_name: ${{values.component_id}}
+site_description: ${{values.description}}
+
+nav:
+  - Introduction: index.md
+
+plugins:
+  - techdocs-core
+```
+
+3. Create a `/docs` folder in the skeleton folder with at least an `index.md`
+   file in it.
+
+The `docs/index.md` can for example have the following content:
+
+```md
+# ${{ values.component_id }}
+
+${{ values.description }}
+
+## Getting started
+
+Start writing your documentation by adding more markdown (.md) files to this
+folder (/docs) or replace the content in this file.
+```
+
+> Note: The values of `site_name`, `component_id` and `site_description` depends
+> on how you have configured your `template.yaml`
+
+Done! You now have support for TechDocs in your own software template!

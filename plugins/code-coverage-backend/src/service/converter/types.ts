@@ -79,7 +79,7 @@ export type JacocoSourceFile = {
   $: {
     name: string;
   };
-  line: JacocoLine[];
+  line: JacocoLine[] | undefined;
 };
 export type JacocoLine = {
   $: {

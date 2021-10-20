@@ -372,6 +372,18 @@ async function buildDocs({
   // This is where we actually write the markdown and where we can hook
   // in the rendering of our own nodes.
   class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
+    // Until https://github.com/microsoft/rushstack/issues/2914 gets fixed or we change markdown renderer we need a fix
+    // to render pipe | character correctly.
+    protected getEscapedText(text: string): string {
+      return text
+        .replace(/\\/g, '\\\\') // first replace the escape character
+        .replace(/[*#[\]_`~]/g, x => `\\${x}`) // then escape any special characters
+        .replace(/---/g, '\\-\\-\\-') // hyphens only if it's 3 or more
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\|/g, '&#124;');
+    }
     /** @override */
     protected writeNode(
       docNode: DocNode,

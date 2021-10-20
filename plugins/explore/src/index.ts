@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-export { ExploreLayout } from './components';
+export * from './components';
 export * from './extensions';
 export { explorePlugin, explorePlugin as plugin } from './plugin';
 export * from './routes';

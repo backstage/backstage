@@ -10,7 +10,14 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// Warning: (ae-forgotten-export) The symbol "ClusterLinksFormatter" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "clusterLinksFormatters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -19,12 +26,57 @@ export const EntityKubernetesContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvidersApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function formatClusterLink(
+  options: FormatClusterLinkOptions,
+): string | undefined;
+
+// Warning: (ae-missing-release-tag) "isKubernetesAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const isKubernetesAvailable: (entity: Entity) => boolean;
+
+// Warning: (ae-missing-release-tag) "KubernetesApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesApi {
+  // (undocumented)
+  getClusters(): Promise<
+    {
+      name: string;
+      authProvider: string;
+    }[]
+  >;
+  // (undocumented)
+  getObjectsByEntity(
+    requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
+}
+
+// Warning: (ae-missing-release-tag) "kubernetesApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const kubernetesApiRef: ApiRef<KubernetesApi>;
+
 // Warning: (ae-missing-release-tag) "KubernetesAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: { googleAuthApi: OAuthApi });
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    authProvider: string,
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesAuthProvidersApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesAuthProvidersApi {
   // (undocumented)
   decorateRequestBodyForAuth(
     authProvider: string,

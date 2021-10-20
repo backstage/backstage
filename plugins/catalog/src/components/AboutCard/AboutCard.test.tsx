@@ -28,6 +28,7 @@ import {
   catalogApiRef,
   EntityProvider,
   CatalogApi,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
@@ -85,6 +86,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('service')).toBeInTheDocument();
@@ -132,6 +138,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
@@ -178,6 +189,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const editLink = getByTitle('Edit Metadata').closest('a');
@@ -211,6 +227,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
   });
@@ -220,6 +241,10 @@ describe('<AboutCard />', () => {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://backstage.io/catalog-info.yaml',
+        },
         name: 'software',
       },
       spec: {
@@ -239,6 +264,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(catalogApi.refreshEntity).not.toHaveBeenCalledWith(
@@ -250,6 +280,40 @@ describe('<AboutCard />', () => {
     expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
       'component:default/software',
     );
+  });
+
+  it('should not render refresh button if the location is not an url', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+    ).with(catalogApiRef, catalogApi);
+
+    const { queryByTitle } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTitle('Schedule entity refresh')).not.toBeInTheDocument();
   });
 
   it('renders techdocs link', async () => {
@@ -293,6 +357,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },
     );
@@ -338,6 +403,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
@@ -381,6 +451,11 @@ describe('<AboutCard />', () => {
           <AboutCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');

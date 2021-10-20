@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 0.1.10
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+
 ## 0.1.9
 
 ### Patch Changes

@@ -293,6 +293,19 @@ export class GitReleaseClient implements GitReleaseApi {
     };
   };
 
+  deleteRef: GitReleaseApi['deleteRef'] = async ({ owner, repo, ref }) => {
+    const { octokit } = await this.getOctokit();
+    const createRefResponse = await octokit.git.deleteRef({
+      owner,
+      repo,
+      ref,
+    });
+
+    return {
+      success: createRefResponse.status === 204,
+    };
+  };
+
   getComparison: GitReleaseApi['getComparison'] = async ({
     owner,
     repo,
@@ -649,6 +662,14 @@ export interface GitReleaseApi {
       ref: string;
       objectSha: string;
     };
+  }>;
+
+  deleteRef: (
+    args: {
+      ref: string;
+    } & OwnerRepo,
+  ) => Promise<{
+    success: boolean;
   }>;
 
   getComparison: (

@@ -167,6 +167,11 @@ export const EntityTechdocsContent: (_props: {
   entity?: Entity | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "isTechDocsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const isTechDocsAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-missing-release-tag) "PanelType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -177,7 +182,7 @@ export type PanelType = 'DocsCardGrid' | 'DocsTable';
 //
 // @public (undocumented)
 export const Reader: ({
-  entityId,
+  entityRef,
   onReady,
   withSearch,
 }: Props_3) => JSX.Element;
@@ -259,10 +264,54 @@ export const TechDocsCustomHome: ({
 // @public (undocumented)
 export const TechDocsIndexPage: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "TechDocsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TechDocsPage: ({ children }: TechDocsPageProps) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "TechdocsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const TechdocsPage: () => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TechDocsPageHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TechDocsPageHeader: ({
+  entityRef,
+  entityMetadata,
+  techDocsMetadata,
+}: TechDocsPageHeaderProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TechDocsPageHeaderProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsPageHeaderProps = {
+  entityRef: EntityName;
+  entityMetadata?: TechDocsEntityMetadata;
+  techDocsMetadata?: TechDocsMetadata;
+};
+
+// Warning: (ae-missing-release-tag) "TechDocsPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsPageProps = {
+  children?: TechDocsPageRenderFunction | React_2.ReactNode;
+};
+
+// Warning: (ae-missing-release-tag) "TechDocsPageRenderFunction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsPageRenderFunction = ({
+  techdocsMetadataValue,
+  entityMetadataValue,
+  entityRef,
+}: {
+  techdocsMetadataValue?: TechDocsMetadata | undefined;
+  entityMetadataValue?: TechDocsEntityMetadata | undefined;
+  entityRef: EntityName;
+  onReady: () => void;
+}) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "TechDocsPageWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -296,7 +345,9 @@ export { techdocsPlugin };
 // Warning: (ae-missing-release-tag) "TechDocsReaderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const TechDocsReaderPage: () => JSX.Element;
+export const TechDocsReaderPage: ({
+  children,
+}: TechDocsPageProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TechDocsStorageApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

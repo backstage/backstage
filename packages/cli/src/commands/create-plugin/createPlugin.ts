@@ -30,8 +30,9 @@ import {
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
-import { packageVersions } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
+import { Lockfile } from '../../lib/versioning';
+import { createPackageVersionProvider } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -238,7 +239,10 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
+  const pluginId =
+    cmd.backend && !answers.id.endsWith('-backend')
+      ? `${answers.id}-backend`
+      : answers.id;
 
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
@@ -261,6 +265,13 @@ export default async (cmd: Command) => {
   const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
+
+  let lockfile: Lockfile | undefined;
+  try {
+    lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+  } catch (error) {
+    console.warn(`No yarn.lock available, ${error}`);
+  }
 
   Task.log();
   Task.log('Creating the plugin...');
@@ -288,7 +299,7 @@ export default async (cmd: Command) => {
         privatePackage,
         npmRegistry,
       },
-      packageVersions,
+      createPackageVersionProvider(lockfile),
     );
 
     Task.section('Moving to final location');

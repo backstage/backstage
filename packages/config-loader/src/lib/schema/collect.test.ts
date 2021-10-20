@@ -49,7 +49,7 @@ describe('collectConfigSchemas', () => {
       }),
     });
 
-    await expect(collectConfigSchemas([])).resolves.toEqual([]);
+    await expect(collectConfigSchemas([], [])).resolves.toEqual([]);
   });
 
   it('should find schema in a local package', async () => {
@@ -64,7 +64,7 @@ describe('collectConfigSchemas', () => {
       },
     });
 
-    await expect(collectConfigSchemas(['a'])).resolves.toEqual([
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
       {
         path: path.join('node_modules', 'a', 'package.json'),
         value: mockSchema,
@@ -72,8 +72,34 @@ describe('collectConfigSchemas', () => {
     ]);
   });
 
-  it('should find schema in transitive dependencies', async () => {
+  it('should find schema at explicit package path', async () => {
     mockFs({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          configSchema: mockSchema,
+        }),
+      },
+    });
+
+    await expect(
+      collectConfigSchemas([], [path.join('root', 'package.json')]),
+    ).resolves.toEqual([
+      {
+        path: path.join('root', 'package.json'),
+        value: mockSchema,
+      },
+    ]);
+  });
+
+  it('should find schema in transitive dependencies and explicit path', async () => {
+    mockFs({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          configSchema: { ...mockSchema, title: 'root' },
+        }),
+      },
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -124,20 +150,28 @@ describe('collectConfigSchemas', () => {
       },
     });
 
-    await expect(collectConfigSchemas(['a'])).resolves.toEqual([
-      {
-        path: path.join('node_modules', 'b', 'package.json'),
-        value: { ...mockSchema, title: 'b' },
-      },
-      {
-        path: path.join('node_modules', 'c1', 'package.json'),
-        value: { ...mockSchema, title: 'c1' },
-      },
-      {
-        path: path.join('node_modules', 'd1', 'package.json'),
-        value: { ...mockSchema, title: 'd1' },
-      },
-    ]);
+    await expect(
+      collectConfigSchemas(['a'], [path.join('root', 'package.json')]),
+    ).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'b', 'package.json'),
+          value: { ...mockSchema, title: 'b' },
+        },
+        {
+          path: path.join('node_modules', 'c1', 'package.json'),
+          value: { ...mockSchema, title: 'c1' },
+        },
+        {
+          path: path.join('node_modules', 'd1', 'package.json'),
+          value: { ...mockSchema, title: 'd1' },
+        },
+        {
+          path: path.join('root', 'package.json'),
+          value: { ...mockSchema, title: 'root' },
+        },
+      ]),
+    );
   });
 
   it('should schema of different types', async () => {
@@ -171,7 +205,7 @@ describe('collectConfigSchemas', () => {
       [typescriptModuleDir]: (mockFs as any).load(typescriptModuleDir),
     });
 
-    await expect(collectConfigSchemas(['a', 'b', 'c'])).resolves.toEqual([
+    await expect(collectConfigSchemas(['a', 'b', 'c'], [])).resolves.toEqual([
       {
         path: path.join('node_modules', 'a', 'package.json'),
         value: { ...mockSchema, title: 'inline' },
@@ -197,6 +231,74 @@ describe('collectConfigSchemas', () => {
     ]);
   });
 
+  it('should load schema from different package versions', async () => {
+    mockFs({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              b: '1',
+              c: '1',
+            },
+            configSchema: mockSchema,
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1',
+            dependencies: {
+              c: '2',
+            },
+            configSchema: { ...mockSchema, title: 'b' },
+          }),
+          node_modules: {
+            c: {
+              'package.json': JSON.stringify({
+                name: 'c',
+                version: '2',
+                configSchema: { ...mockSchema, title: 'c2' },
+              }),
+            },
+          },
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            version: '1',
+            configSchema: { ...mockSchema, title: 'c1' },
+          }),
+        },
+      },
+    });
+
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
+      {
+        path: path.join('node_modules', 'a', 'package.json'),
+        value: mockSchema,
+      },
+      {
+        path: path.join('node_modules', 'b', 'package.json'),
+        value: { ...mockSchema, title: 'b' },
+      },
+      {
+        path: path.join('node_modules', 'c', 'package.json'),
+        value: { ...mockSchema, title: 'c1' },
+      },
+      {
+        path: path.join(
+          'node_modules',
+          'b',
+          'node_modules',
+          'c',
+          'package.json',
+        ),
+        value: { ...mockSchema, title: 'c2' },
+      },
+    ]);
+  });
+
   it('should not allow unknown schema file types', async () => {
     mockFs({
       node_modules: {
@@ -210,7 +312,7 @@ describe('collectConfigSchemas', () => {
       },
     });
 
-    await expect(collectConfigSchemas(['a'])).rejects.toThrow(
+    await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
       'Config schema files must be .json or .d.ts, got schema.yaml',
     );
   });
@@ -230,7 +332,7 @@ describe('collectConfigSchemas', () => {
       [typescriptModuleDir]: (mockFs as any).load(typescriptModuleDir),
     });
 
-    await expect(collectConfigSchemas(['a'])).rejects.toThrow(
+    await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
       `Invalid schema in ${path.join(
         'node_modules',
         'a',

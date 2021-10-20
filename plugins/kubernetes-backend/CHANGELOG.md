@@ -1,5 +1,44 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.17
+
+### Patch Changes
+
+- 89bcf90b66: Refactor kubernetes fetcher to reduce boilerplate code
+- a982e166c5: Enable customization of services used by the kubernetes backend plugin
+
+  The createRouter function has been deprecated in favor of a KubernetesBuilder object.
+  Here's how you should upgrade your projects when configuring the Kubernetes backend plugin.
+  in your `packages/backend/src/plugins/kubernetes.ts` file for instance:
+
+  ```typescript
+  import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    config,
+  }: PluginEnvironment) {
+    const { router } = await KubernetesBuilder.createBuilder({
+      logger,
+      config,
+    }).build();
+    return router;
+  }
+  ```
+
+## 0.3.16
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
 ## 0.3.15
 
 ### Patch Changes

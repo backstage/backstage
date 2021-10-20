@@ -163,6 +163,31 @@ describe('CommonValidatorFunctions', () => {
   });
 
   it.each([
+    // These are identical to isValidDnsLabel
+    [null, false],
+    [7, false],
+    ['', false],
+    ['a', true],
+    ['a-b', true],
+    ['-a-b', false],
+    ['a-b-', false],
+    ['a--b', false],
+    ['a_b', false],
+    [`${'a'.repeat(63)}`, true],
+    [`${'a'.repeat(64)}`, false],
+    // Tags can have other characters though
+    ['a+b', true],
+    ['+a+b', true],
+    ['a+b+', true],
+    ['a++b', true],
+    ['c++', true],
+    ['c#', true],
+    ['#c++', true],
+  ])(`isValidTag %p ? %p`, (value, result) => {
+    expect(CommonValidatorFunctions.isValidTag(value)).toBe(result);
+  });
+
+  it.each([
     [null, false],
     [7, false],
     ['', false],

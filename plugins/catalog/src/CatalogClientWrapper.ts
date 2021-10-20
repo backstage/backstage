@@ -23,6 +23,8 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
+  CatalogEntityAncestorsRequest,
+  CatalogEntityAncestorsResponse,
 } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/core-plugin-api';
 
@@ -115,6 +117,15 @@ export class CatalogClientWrapper implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void> {
     return await this.client.refreshEntity(entityRef, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
+
+  async getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse> {
+    return await this.client.getEntityAncestors(request, {
       token: options?.token ?? (await this.identityApi.getIdToken()),
     });
   }

@@ -1,5 +1,132 @@
 # @backstage/plugin-catalog-import
 
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/integration-react@0.1.12
+
+## 0.7.1
+
+### Patch Changes
+
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.7.0
+
+### Minor Changes
+
+- 6a6ec777ce: Switched to using the `ScmAuthApi` for authentication rather than GitHub auth. If you are instantiating your `CatalogImportClient` manually you now need to pass in an instance of `ScmAuthApi` instead.
+
+  Also be sure to register the `scmAuthApiRef` from the `@backstage/integration-react` in your app:
+
+  ```ts
+  import { ScmAuth } from '@backstage/integration-react';
+
+  // in packages/app/apis.ts
+
+  const apis = [
+  // ... other APIs
+
+  ScmAuth.createDefaultApiFactory();
+
+  // OR
+
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ]
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.6.0
+
+### Minor Changes
+
+- 690657799e: Add initial support for customizing the catalog import page.
+
+  It is now possible to pass a custom layout to the import page, as it's already
+  supported by the search page. If no custom layout is passed, the default layout
+  is used.
+
+  ```typescript
+  <Route path="/catalog-import" element={<CatalogImportPage />}>
+    <Page themeId="home">
+      <Header title="Register an existing component" />
+      <Content>
+        <ContentHeader title="Start tracking your components">
+          <SupportButton>
+            Start tracking your component in Backstage by adding it to the
+            software catalog.
+          </SupportButton>
+        </ContentHeader>
+
+        <Grid container spacing={2} direction="row-reverse">
+          <Grid item xs={12} md={4} lg={6} xl={8}>
+            Hello World
+          </Grid>
+
+          <Grid item xs={12} md={8} lg={6} xl={4}>
+            <ImportStepper />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  </Route>
+  ```
+
+  Previously it was possible to disable and customize the automatic pull request
+  feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+  `pullRequest.preparePullRequest`). This functionality is moved to the
+  `CatalogImportApi` which now provides an optional `preparePullRequest()`
+  function. The function can either be overridden to generate a different content
+  for the pull request, or removed to disable this feature.
+
+  The export of the long term deprecated legacy `<Router>` is removed, migrate to
+  `<CatalogImportPage>` instead.
+
+### Patch Changes
+
+- 9ef2987a83: The import form is now aware of locations that already exist. It lists them separately and shows a button for triggering a refresh.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/integration-react@0.1.10
+
 ## 0.5.21
 
 ### Patch Changes

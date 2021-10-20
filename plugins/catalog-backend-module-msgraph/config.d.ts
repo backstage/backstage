@@ -73,6 +73,12 @@ export interface Config {
            * E.g. "securityEnabled eq false and mailEnabled eq true"
            */
           groupFilter?: string;
+          /**
+           * The filter to apply to extract users by groups memberships.
+           *
+           * E.g. "displayName eq 'Backstage Users'"
+           */
+          userGroupMemberFilter?: string;
         }>;
       };
     };

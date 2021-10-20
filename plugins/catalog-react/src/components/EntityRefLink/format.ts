@@ -44,10 +44,13 @@ export function formatEntityRefTitle(
     namespace = undefined;
   }
 
-  kind = kind.toLowerCase();
+  kind = kind.toLocaleLowerCase('en-US');
 
   return `${serializeEntityRef({
-    kind: defaultKind && defaultKind.toLowerCase() === kind ? undefined : kind,
+    kind:
+      defaultKind && defaultKind.toLocaleLowerCase('en-US') === kind
+        ? undefined
+        : kind,
     name,
     namespace,
   })}`;

@@ -1,5 +1,143 @@
 # @backstage/create-app
 
+## 0.3.45
+
+### Patch Changes
+
+- eaca0f53fb: The scaffolder plugin has just released the beta 3 version of software templates, which replaces the handlebars templating syntax. As part of this change, the template entity schema is no longer included in the core catalog-model as with previous versions. The decoupling of the template entities version will allow us to more easily make updates in the future.
+
+  In order to use the new beta 3 templates, the following changes are **required** for any existing installation, inside `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+  ...
+
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(new ScaffolderEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+  ```
+
+  If you're interested in learning more about creating custom kinds, please check out the [extending the model](https://backstage.io/docs/features/software-catalog/extending-the-model) documentation.
+
+## 0.3.44
+
+### Patch Changes
+
+- e254368371: Switched the default `test` script in the package root to use `backstage-cli test` rather than `lerna run test`. This is thanks to the `@backstage/cli` now supporting running the test command from the project root.
+
+  To apply this change to an existing project, apply the following change to your root `package.json`:
+
+  ```diff
+  -    "test": "lerna run test --since origin/master -- --coverage",
+  +    "test": "backstage-cli test",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.3.43
+
+### Patch Changes
+
+- 9325075eea: Added the default `ScmAuth` implementation to the app.
+
+  To apply this change to an existing app, head to `packages/app/apis.ts`, import `ScmAuth` from `@backstage/integration-react`, and add a `ScmAuth.createDefaultApiFactory()` to your list of APIs:
+
+  ```diff
+   import {
+     ScmIntegrationsApi,
+     scmIntegrationsApiRef,
+  +   ScmAuth,
+   } from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  ...
+  +  ScmAuth.createDefaultApiFactory(),
+  ...
+   ];
+  ```
+
+  If you have integrations towards SCM providers other than the default ones (github.com, gitlab.com, etc.), you will want to create a custom `ScmAuth` factory instead, for example like this:
+
+  ```ts
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ```
+
+## 0.3.42
+
+### Patch Changes
+
+- 89fd81a1ab: This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+  The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
+
+  ```diff
+  -  import {
+  -    CatalogBuilder,
+  -    createRouter,
+  -  } from '@backstage/plugin-catalog-backend';
+  +  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+      const builder = await CatalogBuilder.create(env);
+  -    const {
+  -      entitiesCatalog,
+  -      locationAnalyzer,
+  -      processingEngine,
+  -      locationService,
+  -    } = await builder.build();
+  +   const { processingEngine, router } = await builder.build();
+      await processingEngine.start();
+
+  -   return await createRouter({
+  -     entitiesCatalog,
+  -     locationAnalyzer,
+  -     locationService,
+  -     logger: env.logger,
+  -     config: env.config,
+  -   });
+  +   return router;
+    }
+  ```
+
+- d0a47c8605: Switched required engine from Node.js 12 or 14, to 14 or 16.
+
+  To apply these changes to an existing app, switch out the following in the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "12 || 14"
+  +    "node": "14 || 16"
+     },
+  ```
+
+  Also get rid of the entire `engines` object in `packages/backend/package.json`, as it is redundant:
+
+  ```diff
+  -  "engines": {
+  -    "node": "12 || 14"
+  -  },
+  ```
+
+- df95665e4b: Bumped the default `@spotify/prettier-config` dependency to `^11.0.0`.
+
+  This is an optional upgrade, but you may be interested in doing the same, to get the most modern lint rules out there.
+
 ## 0.3.41
 
 ## 0.3.40

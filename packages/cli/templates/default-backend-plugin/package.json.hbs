@@ -23,20 +23,20 @@
       "clean": "backstage-cli clean"
     },
     "dependencies": {
-      "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
-      "@backstage/config": "^{{version '@backstage/config'}}",
-      "@types/express": "^4.17.6",
-      "express": "^4.17.1",
-      "express-promise-router": "^4.1.0",
-      "winston": "^3.2.1",
-      "cross-fetch": "^3.0.6",
-      "yn": "^4.0.0"
+      "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
+      "@backstage/config": "{{versionQuery '@backstage/config'}}",
+      "@types/express": "{{versionQuery '@types/express' '4.17.6'}}",
+      "express": "{{versionQuery 'express' '4.17.1'}}",
+      "express-promise-router": "{{versionQuery 'express-promise-router' '4.1.0'}}",
+      "winston": "{{versionQuery 'winston' '3.2.1'}}",
+      "cross-fetch": "{{versionQuery 'cross-fetch' '3.0.6'}}",
+      "yn": "{{versionQuery 'yn' '4.0.0'}}"
     },
     "devDependencies": {
-      "@backstage/cli": "^{{version '@backstage/cli'}}",
-      "@types/supertest": "^2.0.8",
-      "supertest": "^4.0.2",
-      "msw": "^0.29.0"
+      "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+      "@types/supertest": "{{versionQuery '@types/supertest' '2.0.8'}}",
+      "supertest": "{{versionQuery 'supertest' '4.0.2'}}",
+      "msw": "{{versionQuery 'msw' '0.29.0'}}"
     },
     "files": [
       "dist"

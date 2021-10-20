@@ -1,7 +1,7 @@
 {
   "name": "@backstage/integration",
   "description": "Helpers for managing integrations towards external systems",
-  "version": "0.6.4",
+  "version": "0.6.8",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -30,19 +30,20 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.8",
+    "@backstage/config": "^0.1.10",
     "cross-fetch": "^3.0.6",
     "git-url-parse": "^11.6.0",
     "@octokit/rest": "^18.5.3",
     "@octokit/auth-app": "^3.4.0",
-    "luxon": "^2.0.2"
+    "luxon": "^2.0.2",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.12",
-    "@backstage/config-loader": "^0.6.7",
-    "@backstage/test-utils": "^0.1.17",
+    "@backstage/cli": "^0.7.16",
+    "@backstage/config-loader": "^0.6.10",
+    "@backstage/test-utils": "^0.1.19",
     "@types/jest": "^26.0.7",
-    "@types/luxon": "^1.25.0",
+    "@types/luxon": "^2.0.4",
     "msw": "^0.29.0"
   },
   "files": [

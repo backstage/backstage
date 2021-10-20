@@ -19,6 +19,7 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { AboutContent } from './AboutContent';
@@ -75,6 +76,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -103,6 +109,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -162,6 +173,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -193,6 +209,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -265,6 +286,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -299,6 +325,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -351,6 +382,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -374,6 +410,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -414,6 +455,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -438,6 +484,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -498,6 +549,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -525,6 +581,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -585,6 +646,11 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();
@@ -610,6 +676,11 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <AboutContent entity={entity} />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
 
       expect(getByText('Description')).toBeInTheDocument();

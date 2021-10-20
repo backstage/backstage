@@ -44,6 +44,7 @@ export const newRelicPlugin = createPlugin({
 
 export const NewRelicPage = newRelicPlugin.provide(
   createRoutableExtension({
+    name: 'NewRelicPage',
     component: () =>
       import('./components/NewRelicComponent').then(m => m.default),
     mountPoint: rootRouteRef,

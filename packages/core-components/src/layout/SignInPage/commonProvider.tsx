@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import {
   ProviderComponent,
@@ -36,6 +37,11 @@ const Component: ProviderComponent = ({ config, onResult }) => {
       const identity = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
+      if (!identity) {
+        throw new Error(
+          `The ${title} provider is not configured to support sign-in`,
+        );
+      }
 
       const profile = await authApi.getProfile();
       onResult({

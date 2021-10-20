@@ -1,5 +1,34 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.13
+
+### Patch Changes
+
+- da9241530a: check for existence of lines property in files
+- Updated dependencies
+  - @backstage/integration@0.6.8
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
 ## 0.1.10
 
 ### Patch Changes

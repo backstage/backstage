@@ -15,12 +15,20 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Snackbar, IconButton } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import { AlertMessage, useApi, alertApiRef } from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
 
+/**
+ * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
+ *
+ * @remarks
+ *
+ * Shown as SnackBar at the top of the page
+ */
 // TODO: improve on this and promote to a shared component for use by all apps.
 export function AlertDisplay(_props: {}) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);

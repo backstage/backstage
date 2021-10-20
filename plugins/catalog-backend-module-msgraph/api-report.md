@@ -61,46 +61,35 @@ export const MICROSOFT_GRAPH_TENANT_ID_ANNOTATION =
 // @public
 export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 
-// Warning: (ae-missing-release-tag) "MicrosoftGraphClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class MicrosoftGraphClient {
   constructor(baseUrl: string, pca: msal.ConfidentialClientApplication);
-  // (undocumented)
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
   // Warning: (ae-forgotten-export) The symbol "GroupMember" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
-  // (undocumented)
   getGroupPhotoWithSizeLimit(
     groupId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group>;
-  // (undocumented)
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
-  // (undocumented)
   getUserPhotoWithSizeLimit(
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  // (undocumented)
   getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestApi(path: string, query?: ODataQuery): Promise<Response>;
   // Warning: (ae-forgotten-export) The symbol "ODataQuery" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  // (undocumented)
   requestRaw(url: string): Promise<Response>;
 }
 
@@ -143,6 +132,7 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   clientSecret: string;
   userFilter?: string;
+  userGroupMemberFilter?: string;
   groupFilter?: string;
 };
 
@@ -173,6 +163,7 @@ export function readMicrosoftGraphOrg(
   tenantId: string,
   options: {
     userFilter?: string;
+    userGroupMemberFilter?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;

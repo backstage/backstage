@@ -248,7 +248,9 @@ export function stringifyEntityRef(
     name = ref.name;
   }
 
-  return `${kind.toLowerCase()}:${namespace.toLowerCase()}/${name.toLowerCase()}`;
+  return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
+    'en-US',
+  )}/${name.toLocaleLowerCase('en-US')}`;
 }
 
 /**
@@ -296,8 +298,10 @@ export function compareEntityToRef(
   }
 
   return (
-    entityKind.toLowerCase() === refKind.toLowerCase() &&
-    entityNamespace.toLowerCase() === refNamespace.toLowerCase() &&
-    entityName.toLowerCase() === refName.toLowerCase()
+    entityKind.toLocaleLowerCase('en-US') ===
+      refKind.toLocaleLowerCase('en-US') &&
+    entityNamespace.toLocaleLowerCase('en-US') ===
+      refNamespace.toLocaleLowerCase('en-US') &&
+    entityName.toLocaleLowerCase('en-US') === refName.toLocaleLowerCase('en-US')
   );
 }

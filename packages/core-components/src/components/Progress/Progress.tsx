@@ -15,7 +15,9 @@
  */
 
 import React, { useState, useEffect, PropsWithChildren } from 'react';
-import { LinearProgress, LinearProgressProps } from '@material-ui/core';
+import LinearProgress, {
+  LinearProgressProps,
+} from '@material-ui/core/LinearProgress';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
   const [isVisible, setIsVisible] = useState(false);

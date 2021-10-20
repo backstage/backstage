@@ -64,15 +64,17 @@ const HEADERS = {
  */
 class GithubAppManager {
   private readonly appClient: Octokit;
+  private readonly baseUrl?: string;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly cache = new Cache();
   private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
     this.allowedInstallationOwners = config.allowedInstallationOwners;
+    this.baseUrl = baseUrl;
     this.baseAuthConfig = {
       appId: config.appId,
-      privateKey: config.privateKey,
+      privateKey: config.privateKey.replace(/\\n/gm, '\n'),
     };
     this.appClient = new Octokit({
       baseUrl,
@@ -108,6 +110,7 @@ class GithubAppManager {
       });
       if (repo && result.data.repository_selection === 'selected') {
         const installationClient = new Octokit({
+          baseUrl: this.baseUrl,
           auth: result.data.token,
         });
         const repos = await installationClient.paginate(
@@ -138,7 +141,9 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login?.toLowerCase() === owner.toLowerCase(),
+      inst =>
+        inst.account?.login?.toLocaleLowerCase('en-US') ===
+        owner.toLocaleLowerCase('en-US'),
     );
     if (installation) {
       return {

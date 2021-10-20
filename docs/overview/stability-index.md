@@ -27,7 +27,7 @@ point building on top of the previous one:
   and the new APIs can be used in parallel. This deprecation must have been
   released for at least two weeks before the deprecated API is removed in a
   minor version bump.
-- **3** - The time limit for the deprecation is 3 months instead of two weeks.
+- **3** - The time limit for the deprecation is 3 months instead of two days.
 
 TL;DR:
 
@@ -279,7 +279,7 @@ Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend/)
 
 A backend plugin that provides
 

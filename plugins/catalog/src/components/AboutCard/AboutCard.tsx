@@ -17,6 +17,7 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
+  LOCATION_ANNOTATION,
   RELATION_CONSUMES_API,
   RELATION_PROVIDES_API,
   stringifyEntityRef,
@@ -147,6 +148,8 @@ export function AboutCard({ variant }: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
+  const isUrl =
+    entity.metadata.annotations?.[LOCATION_ANNOTATION]?.startsWith('url:');
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(entity));
     alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
@@ -158,13 +161,15 @@ export function AboutCard({ variant }: AboutCardProps) {
         title="About"
         action={
           <>
-            <IconButton
-              aria-label="Refresh"
-              title="Schedule entity refresh"
-              onClick={refreshEntity}
-            >
-              <CachedIcon />
-            </IconButton>
+            {isUrl && (
+              <IconButton
+                aria-label="Refresh"
+                title="Schedule entity refresh"
+                onClick={refreshEntity}
+              >
+                <CachedIcon />
+              </IconButton>
+            )}
             <IconButton
               component={Link}
               aria-label="Edit"

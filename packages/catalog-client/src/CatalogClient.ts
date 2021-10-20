@@ -20,6 +20,7 @@ import {
   Location,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  parseEntityRef,
   stringifyEntityRef,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
@@ -33,6 +34,8 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
+  CatalogEntityAncestorsRequest,
+  CatalogEntityAncestorsResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
@@ -42,6 +45,20 @@ export class CatalogClient implements CatalogApi {
 
   constructor(options: { discoveryApi: DiscoveryApi }) {
     this.discoveryApi = options.discoveryApi;
+  }
+
+  async getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse> {
+    const { kind, namespace, name } = parseEntityRef(request.entityRef);
+    return await this.requestRequired(
+      'GET',
+      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
+        namespace,
+      )}/${encodeURIComponent(name)}/ancestry`,
+      options,
+    );
   }
 
   async getLocationById(
@@ -176,7 +193,7 @@ export class CatalogClient implements CatalogApi {
       throw new Error(await response.text());
     }
 
-    const { location, entities } = await response.json();
+    const { location, entities, exists } = await response.json();
 
     if (!location) {
       throw new Error(`Location wasn't added: ${target}`);
@@ -185,6 +202,7 @@ export class CatalogClient implements CatalogApi {
     return {
       location,
       entities,
+      exists,
     };
   }
 

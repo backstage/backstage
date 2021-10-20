@@ -23,3 +23,4 @@
 /.changeset/cost-insights-*                 @backstage/reviewers @backstage/silver-lining
 /.changeset/search-*                        @backstage/techdocs-core
 /.changeset/techdocs-*                      @backstage/techdocs-core
+/cypress/src/integration/plugins/techdocs.spec.ts   @backstage/techdocs-core

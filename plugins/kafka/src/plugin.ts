@@ -44,6 +44,7 @@ export const kafkaPlugin = createPlugin({
 
 export const EntityKafkaContent = kafkaPlugin.provide(
   createRoutableExtension({
+    name: 'EntityKafkaContent',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootCatalogKafkaRouteRef,
   }),

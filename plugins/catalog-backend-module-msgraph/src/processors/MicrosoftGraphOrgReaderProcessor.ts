@@ -90,6 +90,12 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
+    if (provider.userFilter && provider.userGroupMemberFilter) {
+      throw new Error(
+        `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
+      );
+    }
+
     // Read out all of the raw data
     const startTimestamp = Date.now();
     this.logger.info('Reading Microsoft Graph users and groups');
@@ -101,6 +107,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       provider.tenantId,
       {
         userFilter: provider.userFilter,
+        userGroupMemberFilter: provider.userGroupMemberFilter,
         groupFilter: provider.groupFilter,
         userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,

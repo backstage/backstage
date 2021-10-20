@@ -16,30 +16,35 @@
 
 import React, { PropsWithChildren } from 'react';
 import classNames from 'classnames';
-import { Theme, makeStyles } from '@material-ui/core';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    gridArea: 'pageContent',
-    minWidth: 0,
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
-      paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3),
+export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';
+
+const useStyles = makeStyles(
+  (theme: Theme) => ({
+    root: {
+      gridArea: 'pageContent',
+      minWidth: 0,
+      paddingTop: theme.spacing(3),
+      paddingBottom: theme.spacing(3),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
+      },
     },
-  },
-  stretch: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-  },
-  noPadding: {
-    padding: 0,
-  },
-}));
+    stretch: {
+      display: 'flex',
+      flexDirection: 'column',
+      flexGrow: 1,
+    },
+    noPadding: {
+      padding: 0,
+    },
+  }),
+  { name: 'BackstageContent' },
+);
 
 type Props = {
   stretch?: boolean;

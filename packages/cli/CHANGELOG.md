@@ -1,5 +1,54 @@
 # @backstage/cli
 
+## 0.7.16
+
+### Patch Changes
+
+- 53bdc66623: add a --from <location> option to the plugin install command
+- 84e24fcdaf: Bump sucrase to version 3.20.2
+- 6583c6ac40: Add semicolon in template to make prettier happy
+- c6f927d819: Bump mini-css-extract-plugin to v2
+- 16f044cb6b: Update default backend ESLint configuration to allow usage of `__dirname` in tests.
+- 1ef9e64901: Add an experimental `install <plugin>` command.
+
+  Given a `pluginId`, the command looks for NPM packages matching `@backstage/plugin-{pluginId}` or `backstage-plugin-{pluginId}` or `{pluginId}`. It looks for the `experimentalInstallationRecipe` in their `package.json` for the steps of installation. Detailed documentation and API Spec to follow (and to be decided as well).
+
+## 0.7.15
+
+### Patch Changes
+
+- ae4680b88d: The `create-plugin` command now passes the extension name via the `name` key
+  in `createRoutableExtension()` calls in newly created plugins.
+- df1242ffe4: Adding `--inspect-brk` as an option when debugging backend for development
+- c7f2a2307d: When creating a backend plugin with `--backend` flag, don't add `-backend` if it's already suffixed
+- 185fec5c0c: The default jest configuration used by the `test` command now supports yarn workspaces. By running `backstage-cli test` in the root of a monorepo, all packages will now automatically be included in the test suite and it will run just like it does within a package. Each package in the monorepo will still use its own local jest configuration, and only packages that have `backstage-cli test` in the `test` script within `package.json` will be included.
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/cli-common@0.1.4
+
+## 0.7.14
+
+### Patch Changes
+
+- 3a8704f16b: Only serve static assets if there is a public folder during `app:serve` and `plugin:serve`. This fixes a common bug that would break `plugin:serve` with an `EBUSY` error.
+- 40199b61d6: Configuration schema is now also collected from the root `package.json` if it exists.
+- 2a6c393c06: The `create-plugin` command now prefers dependency versions ranges that are already in the lockfile.
+- 58f91943ab: Improved ´plugin:diff´ check for the `package.json` `"files"` field.
+- 12e074a6e4: Fix duplication checks to stop looking for the old core packages, and to allow some explicitly
+- Updated dependencies
+  - @backstage/config-loader@0.6.9
+
+## 0.7.13
+
+### Patch Changes
+
+- c0c51c9710: Disabled ECMAScript transforms in app and backend builds in order to reduce bundle size and runtime performance. For the rationale and a full list of syntax that is no longer transformed, see https://github.com/alangpierce/sucrase#transforms. This also enables TypeScripts `useDefineForClassFields` flag by default, which in rare occasions could cause build failures. For instructions on how to mitigate issues due to the flag, see the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
+- e9f332a51c: Restrict imports on the form `../../plugins/x/src`
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 050797c5b3: Switched the Jest YAML transform from `yaml-jest` to `jest-transform-yaml`, which works with newer versions of Node.js.
+- Updated dependencies
+  - @backstage/config@0.1.10
+
 ## 0.7.12
 
 ### Patch Changes

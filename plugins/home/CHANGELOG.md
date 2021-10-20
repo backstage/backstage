@@ -1,5 +1,85 @@
 # @backstage/plugin-home
 
+## 0.4.4
+
+### Patch Changes
+
+- ef5bf4235a: Adds a `<WelcomeTitle>` component that shows a playful greeting on the home page.
+  To use it, pass it to the home page header:
+
+  ```typescript
+  <Page themeId="home">
+    <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+      <HomepageTimer />
+    </Header>
+    …
+  </Page>
+  ```
+
+- 87b2d5ad88: Fix `<ComponentTabs>` to display only the selected tab, not the other way around.
+- 2435d7a49b: Added HeaderWorldClock to the Home plugin which is a copy of the HomepageTimer from core-components that has been updated to use props over static config from app-config.yaml. To use HeaderWorldClock you'll need to create an array of ClockConfig like this:
+
+  ```ts
+  const clockConfigs: ClockConfig[] = [
+    {
+      label: 'NYC',
+      timeZone: 'America/New_York',
+    },
+    {
+      label: 'UTC',
+      timeZone: 'UTC',
+    },
+    {
+      label: 'STO',
+      timeZone: 'Europe/Stockholm',
+    },
+    {
+      label: 'TYO',
+      timeZone: 'Asia/Tokyo',
+    },
+  ];
+  ```
+
+  Then you can pass `clockConfigs` into the HeaderWorldClock like this:
+
+  ```ts
+  <Page themeId="home">
+    <Header title="Home">
+      <HeaderWorldClock clockConfigs={clockConfigs} />
+    </Header>
+    <Content>...</Content>
+  </Page>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.4.3
+
+### Patch Changes
+
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

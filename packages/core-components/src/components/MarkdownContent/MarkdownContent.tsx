@@ -14,59 +14,72 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
-import ReactMarkdown from 'react-markdown';
+import { makeStyles } from '@material-ui/core/styles';
+import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  markdown: {
-    '& table': {
-      borderCollapse: 'collapse',
-      border: `1px solid ${theme.palette.border}`,
-    },
-    '& th, & td': {
-      border: `1px solid ${theme.palette.border}`,
-      padding: theme.spacing(1),
-    },
-    '& td': {
-      wordBreak: 'break-word',
-      overflow: 'hidden',
-      verticalAlign: 'middle',
-      lineHeight: '1',
-      margin: 0,
-      padding: theme.spacing(3, 2, 3, 2.5),
-      borderBottom: 0,
-    },
-    '& th': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& tr': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& tr:nth-child(odd)': {
-      backgroundColor: theme.palette.background.default,
-    },
+export type MarkdownContentClassKey = 'markdown';
 
-    '& a': {
-      color: theme.palette.link,
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    markdown: {
+      '& table': {
+        borderCollapse: 'collapse',
+        border: `1px solid ${theme.palette.border}`,
+      },
+      '& th, & td': {
+        border: `1px solid ${theme.palette.border}`,
+        padding: theme.spacing(1),
+      },
+      '& td': {
+        wordBreak: 'break-word',
+        overflow: 'hidden',
+        verticalAlign: 'middle',
+        lineHeight: '1',
+        margin: 0,
+        padding: theme.spacing(3, 2, 3, 2.5),
+        borderBottom: 0,
+      },
+      '& th': {
+        backgroundColor: theme.palette.background.paper,
+      },
+      '& tr': {
+        backgroundColor: theme.palette.background.paper,
+      },
+      '& tr:nth-child(odd)': {
+        backgroundColor: theme.palette.background.default,
+      },
+
+      '& a': {
+        color: theme.palette.link,
+      },
+      '& img': {
+        maxWidth: '100%',
+      },
     },
-    '& img': {
-      maxWidth: '100%',
-    },
-  },
-}));
+  }),
+  { name: 'BackstageMarkdownContent' },
+);
 
 type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
 };
 
-const renderers = {
-  code: ({ language, value }: { language: string; value?: string }) => {
-    return <CodeSnippet language={language} text={value ?? ''} />;
+const components: Options['components'] = {
+  code: ({ inline, className, children, ...props }) => {
+    const text = String(children).replace(/\n+$/, '');
+    const match = /language-(\w+)/.exec(className || '');
+    return !inline && match ? (
+      <CodeSnippet language={match[1]} text={text} />
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
   },
 };
 
@@ -81,10 +94,10 @@ export function MarkdownContent(props: Props) {
   const classes = useStyles();
   return (
     <ReactMarkdown
-      plugins={dialect === 'gfm' ? [gfm] : []}
+      remarkPlugins={dialect === 'gfm' ? [gfm] : []}
       className={classes.markdown}
       children={content}
-      renderers={renderers}
+      components={components}
     />
   );
 }

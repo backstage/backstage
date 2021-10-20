@@ -90,11 +90,6 @@ export const defaultConfigLoader: AppConfigLoader = async (
   return configs;
 };
 
-// createApp is defined in core, and not core-api, since we need access
-// to the components inside core to provide defaults.
-// The actual implementation of the app class still lives in core-api,
-// as it needs to be used by dev- and test-utils.
-
 export function OptionallyWrapInRouter({ children }: PropsWithChildren<{}>) {
   if (useInRouterContext()) {
     return <>{children}</>;

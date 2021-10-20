@@ -1,5 +1,139 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.0
+
+### Minor Changes
+
+- 9fb9256e50: This continues the deprecation of classes used by the legacy catalog engine. New deprecations can be viewed in this [PR](https://github.com/backstage/backstage/pull/7500) or in the API reference documentation.
+
+  The `batchAddOrUpdateEntities` method of the `EntitiesCatalog` interface has been marked as optional and is being deprecated. It is still implemented and required to be implemented by the legacy catalog classes, but was never implemented in the new catalog.
+
+  This change is only relevant if you are consuming the `EntitiesCatalog` interface directly, in which case you will get a type error that you need to resolve. It can otherwise be ignored.
+
+### Patch Changes
+
+- 3b59bb915e: Fixes a bug in the catalog where entities were not being marked as orphaned.
+- 55ff928d50: This change refactors the internal package structure to remove the `next` catalog folder that was used during the implementation and testing phase of the new catalog engine. The implementation is now the default and is therefore restructured to no longer be packaged under `next/`. This refactor does not change catalog imports from other parts of the project.
+- Updated dependencies
+  - @backstage/integration@0.6.8
+
+## 0.16.0
+
+### Minor Changes
+
+- 2c5bab2f82: Errors emitted from processors are now considered a failure during entity processing and will prevent entities from being updated. The impact of this change is that when errors are emitted while for example reading a location, then ingestion effectively stops there. If you emit a number of entities along with just one error, then the error will be persisted on the current entity but the emitted entities will _not_ be stored. This fixes [a bug](https://github.com/backstage/backstage/issues/6973) where entities would get marked as orphaned rather than put in an error state when the catalog failed to read a location.
+
+  In previous versions of the catalog, an emitted error was treated as a less severe problem than an exception thrown by the processor. We are now ensuring that the behavior is consistent for these two cases. Even though both thrown and emitted errors are treated the same, emitted errors stay around as they allow you to highlight multiple errors related to an entity at once. An emitted error will also only prevent the writing of the processing result, while a thrown error will skip the rest of the processing steps.
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- f66c38148a: Avoid duplicate logging of entity processing errors.
+- 426d5031a6: A number of classes and types, that were part of the old catalog engine implementation, are now formally marked as deprecated. They will be removed entirely from the code base in a future release.
+
+  After upgrading to this version, it is recommended that you take a look inside your `packages/backend/src/plugins/catalog.ts` file (using a code editor), to see if you are using any functionality that it marks as deprecated. If you do, please migrate away from it at your earliest convenience.
+
+  Migrating to using the new engine implementation is typically a matter of calling `CatalogBuilder.create({ ... })` instead of `new CatalogBuilder({ ... })`.
+
+  If you are seeing deprecation warnings for `createRouter`, you can either use the `router` field from the return value from updated catalog builder, or temporarily call `createNextRouter`. The latter will however also be deprecated at a later time.
+
+- 7b78dd17e6: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.0
+
+### Minor Changes
+
+- 1572d02b63: Introduced a new `CatalogProcessorCache` that is available to catalog processors. It allows arbitrary values to be saved that will then be visible during the next run. The cache is scoped to each individual processor and entity, but is shared across processing steps in a single processor.
+
+  The cache is available as a new argument to each of the processing steps, except for `validateEntityKind` and `handleError`.
+
+  This also introduces an optional `getProcessorName` to the `CatalogProcessor` interface, which is used to provide a stable identifier for the processor. While it is currently optional it will move to be required in the future.
+
+  The breaking part of this change is the modification of the `state` field in the `EntityProcessingRequest` and `EntityProcessingResult` types. This is unlikely to have any impact as the `state` field was previously unused, but could require some minor updates.
+
+- c1836728e0: Add `/entities/by-name/:kind/:namespace/:name/ancestry` to get the "processing parents" lineage of an entity.
+
+  This involves a breaking change of adding the method `entityAncestry` to `EntitiesCatalog`.
+
+### Patch Changes
+
+- 3d10360c82: When issuing a `full` update from an entity provider, entities with updates are now properly persisted.
+- 9ea4565b00: Fixed a bug where internal references within the catalog were broken when new entities where added through entity providers, such as registering a new location or adding one in configuration. These broken references then caused some entities to be incorrectly marked as orphaned and prevented refresh from working properly.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
+## 0.14.0
+
+### Minor Changes
+
+- d6f90e934d: #### Enforcing catalog rules
+
+  Apply the catalog rules enforcer, based on origin location.
+
+  This is a breaking change, in the sense that this was not properly checked in earlier versions of the new catalog engine. You may see ingestion of certain entities start to be rejected after this update, if the following conditions apply to you:
+
+  - You are using the configuration key `catalog.rules.[].allow`, and
+  - Your registered locations point (directly or transitively) to entities whose kinds are not listed in `catalog.rules.[].allow`
+
+  and/or
+
+  - You are using the configuration key `catalog.locations.[].rules.[].allow`
+  - The config locations point (directly or transitively) to entities whose kinds are not listed neither `catalog.rules.[].allow`, nor in the corresponding `.rules.[].allow` of that config location
+
+  This is an example of what the configuration might look like:
+
+  ```yaml
+  catalog:
+    # These do not list Template as a valid kind; users are therefore unable to
+    # manually register entities of the Template kind
+    rules:
+      - allow:
+          - Component
+          - API
+          - Resource
+          - Group
+          - User
+          - System
+          - Domain
+          - Location
+    locations:
+      # This lists Template as valid only for that specific config location
+      - type: file
+        target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+        rules:
+          - allow: [Template]
+  ```
+
+  If you are not using any of those `rules` section, you should not be affected by this change.
+
+  If you do use any of those `rules` sections, make sure that they are complete and list all of the kinds that are in active use in your Backstage installation.
+
+  #### Other
+
+  Also, the class `CatalogRulesEnforcer` was renamed to `DefaultCatalogRulesEnforcer`, implementing the type `CatalogRulesEnforcer`.
+
+- 501ce92f9c: Bitbucket Cloud Discovery support
+- 89fd81a1ab: Add API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+
+  The new method is used to trigger a refresh of an entity in an as localized was as possible, usually by refreshing the parent location.
+
+### Patch Changes
+
+- 9ef2987a83: Update `createLocation` to optionally return `exists` to signal that the location already exists, this is only returned for dry runs.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
 ## 0.13.8
 
 ### Patch Changes

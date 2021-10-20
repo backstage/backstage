@@ -20,36 +20,59 @@ import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
 import {
-  GraphEdge,
   RenderLabelProps,
   RenderLabelFunction,
   DependencyEdge,
+  LabelPosition,
 } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
+import dagre from 'dagre';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  path: {
-    strokeWidth: 2,
-    stroke: theme.palette.textSubtle,
-    fill: 'none',
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-  label: {
-    transition: `${theme.transitions.duration.shortest}ms`,
-  },
-}));
+/* Based on: https://github.com/dagrejs/dagre/wiki#configuring-the-layout  */
+export type EdgeProperties = {
+  label?: string;
+  width?: number;
+  height?: number;
+  labeloffset?: number;
+  labelpos?: LabelPosition;
+  minlen?: number;
+  weight?: number;
+};
+export type GraphEdge<T> = DependencyEdge<T> & dagre.GraphEdge & EdgeProperties;
+
+export type DependencyGraphEdgeClassKey = 'path' | 'label';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    path: {
+      strokeWidth: 2,
+      stroke: theme.palette.textSubtle,
+      fill: 'none',
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+    label: {
+      transition: `${theme.transitions.duration.shortest}ms`,
+    },
+  }),
+  { name: 'BackstageDependencyGraphEdge' },
+);
 
 type EdgePoint = dagre.GraphEdge['points'][0];
 
-export type EdgeComponentProps<T = any> = {
+export type EdgeComponentProps<T = unknown> = {
   id: dagre.Edge;
   edge: GraphEdge<T>;
-  render?: RenderLabelFunction;
-  setEdge: (id: dagre.Edge, edge: DependencyEdge) => dagre.graphlib.Graph<{}>;
+  render?: RenderLabelFunction<T>;
+  setEdge: (
+    id: dagre.Edge,
+    edge: DependencyEdge<T>,
+  ) => dagre.graphlib.Graph<{}>;
 };
 
-const renderDefault = (props: RenderLabelProps) => <DefaultLabel {...props} />;
+const renderDefault = (props: RenderLabelProps<unknown>) => (
+  <DefaultLabel {...props} />
+);
 
 const createPath = d3Shape
   .line<EdgePoint>()
@@ -57,13 +80,14 @@ const createPath = d3Shape
   .y(d => d.y)
   .curve(d3Shape.curveMonotoneX);
 
-export function Edge({
+export function Edge<EdgeData>({
   render = renderDefault,
   setEdge,
   id,
   edge,
-}: EdgeComponentProps) {
-  const { x = 0, y = 0, width, height, points, ...labelProps } = edge;
+}: EdgeComponentProps<EdgeData>) {
+  const { x = 0, y = 0, width, height, points } = edge;
+  const labelProps: DependencyEdge<EdgeData> = edge;
   const classes = useStyles();
 
   const labelRef = React.useRef<SVGGElement>(null);

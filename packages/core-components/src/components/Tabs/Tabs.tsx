@@ -16,7 +16,7 @@
 
 import React, { useRef, useEffect, MutableRefObject, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { AppBar } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -42,21 +42,26 @@ export interface TabsProps {
   tabs: TabProps[];
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    flexGrow: 1,
-    width: '100%',
-  },
-  styledTabs: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  appbar: {
-    boxShadow: 'none',
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: '10px',
-    paddingRight: '10px',
-  },
-}));
+export type TabsClassKey = 'root' | 'styledTabs' | 'appbar';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      flexGrow: 1,
+      width: '100%',
+    },
+    styledTabs: {
+      backgroundColor: theme.palette.background.paper,
+    },
+    appbar: {
+      boxShadow: 'none',
+      backgroundColor: theme.palette.background.paper,
+      paddingLeft: '10px',
+      paddingRight: '10px',
+    },
+  }),
+  { name: 'BackstageTabs' },
+);
 
 export function Tabs(props: TabsProps) {
   const { tabs } = props;

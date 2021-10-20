@@ -1,5 +1,53 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.4
+
+### Patch Changes
+
+- 0cfeea8f8f: AWS-ALB: update provider to the latest changes described [here](https://backstage.io/docs/auth/identity-resolver).
+
+  This removes the `ExperimentalIdentityResolver` type in favor of `SignInResolver` and `AuthHandler`.
+  The AWS ALB provider can now be configured in the same way as the Google provider in the example.
+
+- defae8f579: Added extra configuration parameters for active directory file system identity
+- Updated dependencies
+  - @backstage/test-utils@0.1.19
+
+## 0.4.3
+
+### Patch Changes
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- Updated dependencies
+  - @backstage/test-utils@0.1.18
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 88622e6422: Allow users to override callback url of GitHub provider
+- c46396ebb0: Update OAuth refresh handler to pass updated refresh token to ensure cookie is updated with new value.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
 ## 0.4.0
 
 ### Minor Changes

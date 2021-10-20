@@ -20,6 +20,7 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
@@ -27,7 +28,6 @@ import {
   EntityRefLinks,
   formatEntityRefTitle,
 } from '../EntityRefLink';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 
 export function createEntityRefColumn<T extends Entity>({
   defaultKind,
@@ -35,9 +35,12 @@ export function createEntityRefColumn<T extends Entity>({
   defaultKind?: string;
 }): TableColumn<T> {
   function formatContent(entity: T): string {
-    return formatEntityRefTitle(entity, {
-      defaultKind,
-    });
+    return (
+      entity.metadata?.title ||
+      formatEntityRefTitle(entity, {
+        defaultKind,
+      })
+    );
   }
 
   return {
@@ -58,7 +61,11 @@ export function createEntityRefColumn<T extends Entity>({
       return formatContent(entity1).localeCompare(formatContent(entity2));
     },
     render: entity => (
-      <EntityRefLink entityRef={entity} defaultKind={defaultKind} />
+      <EntityRefLink
+        entityRef={entity}
+        defaultKind={defaultKind}
+        title={entity.metadata?.title}
+      />
     ),
   };
 }

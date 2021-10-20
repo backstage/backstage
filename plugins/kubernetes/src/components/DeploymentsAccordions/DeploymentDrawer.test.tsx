@@ -15,20 +15,17 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
 import * as deployments from '../../__fixtures__/2-deployments.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { DeploymentDrawer } from './DeploymentDrawer';
 
 describe('DeploymentDrawer', () => {
   it('should render deployment drawer', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(
-        <DeploymentDrawer
-          deployment={(deployments as any).deployments[0]}
-          expanded
-        />,
-      ),
+    const { getByText, getAllByText } = await renderInTestApp(
+      <DeploymentDrawer
+        deployment={(deployments as any).deployments[0]}
+        expanded
+      />,
     );
 
     expect(getAllByText('dice-roller')).toHaveLength(2);
@@ -45,6 +42,22 @@ describe('DeploymentDrawer', () => {
     expect(getByText('600')).toBeInTheDocument();
     expect(getByText('Progressing')).toBeInTheDocument();
     expect(getByText('Available')).toBeInTheDocument();
+    expect(getByText('namespace: default')).toBeInTheDocument();
     expect(getAllByText('True')).toHaveLength(2);
+  });
+
+  it('should render deployment drawer without namespace', async () => {
+    const deployment = (deployments as any).deployments[0];
+    const { queryByText } = await renderInTestApp(
+      <DeploymentDrawer
+        deployment={{
+          ...deployment,
+          metadata: { ...deployment.metadata, namespace: undefined },
+        }}
+        expanded
+      />,
+    );
+
+    expect(queryByText('namespace: default')).not.toBeInTheDocument();
   });
 });

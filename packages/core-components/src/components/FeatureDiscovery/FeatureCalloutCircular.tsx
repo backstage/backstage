@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ClickAwayListener, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Typography from '@material-ui/core/Typography';
 import React, {
   PropsWithChildren,
   useCallback,
@@ -27,55 +29,67 @@ import { createPortal } from 'react-dom';
 import { usePortal } from './lib/usePortal';
 import { useShowCallout } from './lib/useShowCallout';
 
-const useStyles = makeStyles({
-  '@keyframes pulsateSlightly': {
-    '0%': { transform: 'scale(1.0)' },
-    '100%': { transform: 'scale(1.1)' },
+export type FeatureCalloutCircleClassKey =
+  | '@keyframes pulsateSlightly'
+  | '@keyframes pulsateAndFade'
+  | 'featureWrapper'
+  | 'backdrop'
+  | 'dot'
+  | 'pulseCircle'
+  | 'text';
+
+const useStyles = makeStyles(
+  {
+    '@keyframes pulsateSlightly': {
+      '0%': { transform: 'scale(1.0)' },
+      '100%': { transform: 'scale(1.1)' },
+    },
+    '@keyframes pulsateAndFade': {
+      '0%': { transform: 'scale(1.0)', opacity: 0.9 },
+      '100%': { transform: 'scale(1.5)', opacity: 0 },
+    },
+    featureWrapper: {
+      position: 'relative',
+    },
+    backdrop: {
+      zIndex: 2000,
+      position: 'fixed',
+      overflow: 'hidden',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+    },
+    dot: {
+      position: 'absolute',
+      backgroundColor: 'transparent',
+      borderRadius: '100%',
+      border: '1px solid rgba(103, 146, 180, 0.98)',
+      boxShadow: '0px 0px 0px 20000px rgba(0, 0, 0, 0.5)',
+      zIndex: 2001,
+      transformOrigin: 'center center',
+      animation:
+        '$pulsateSlightly 1744ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) alternate infinite',
+    },
+    pulseCircle: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'transparent',
+      borderRadius: '100%',
+      border: '2px solid white',
+      zIndex: 2001,
+      transformOrigin: 'center center',
+      animation:
+        '$pulsateAndFade 872ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+    },
+    text: {
+      position: 'absolute',
+      color: 'white',
+      zIndex: 2003,
+    },
   },
-  '@keyframes pulsateAndFade': {
-    '0%': { transform: 'scale(1.0)', opacity: 0.9 },
-    '100%': { transform: 'scale(1.5)', opacity: 0 },
-  },
-  featureWrapper: {
-    position: 'relative',
-  },
-  backdrop: {
-    zIndex: 2000,
-    position: 'fixed',
-    overflow: 'hidden',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  dot: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    borderRadius: '100%',
-    border: '1px solid rgba(103, 146, 180, 0.98)',
-    boxShadow: '0px 0px 0px 20000px rgba(0, 0, 0, 0.5)',
-    zIndex: 2001,
-    transformOrigin: 'center center',
-    animation:
-      '$pulsateSlightly 1744ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) alternate infinite',
-  },
-  pulseCircle: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'transparent',
-    borderRadius: '100%',
-    border: '2px solid white',
-    zIndex: 2001,
-    transformOrigin: 'center center',
-    animation:
-      '$pulsateAndFade 872ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-  },
-  text: {
-    position: 'absolute',
-    color: 'white',
-    zIndex: 2003,
-  },
-});
+  { name: 'BackstageFeatureCalloutCircular' },
+);
 
 export type Props = {
   featureId: string;

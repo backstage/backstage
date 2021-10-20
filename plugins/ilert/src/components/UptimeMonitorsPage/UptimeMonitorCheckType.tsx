@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { UptimeMonitor } from '../../types';
 import Typography from '@material-ui/core/Typography';
@@ -27,12 +28,14 @@ export const UptimeMonitorCheckType = ({
       return (
         <Typography
           noWrap
+          // eslint-disable-next-line no-restricted-syntax
         >{`${uptimeMonitor.checkType.toUpperCase()} 🇩🇪`}</Typography>
       );
     default:
       return (
         <Typography
           noWrap
+          // eslint-disable-next-line no-restricted-syntax
         >{`${uptimeMonitor.checkType.toUpperCase()} 🇺🇸`}</Typography>
       );
   }

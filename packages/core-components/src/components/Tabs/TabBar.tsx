@@ -15,7 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Tabs, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tabs from '@material-ui/core/Tabs';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledTabsProps {
@@ -24,22 +25,27 @@ interface StyledTabsProps {
   onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  indicator: {
-    display: 'flex',
-    justifyContent: 'center',
-    backgroundColor: theme.palette.tabbar.indicator,
-    height: '4px',
-  },
-  flexContainer: {
-    alignItems: 'center',
-  },
-  root: {
-    '&:last-child': {
-      marginLeft: 'auto',
+export type TabBarClassKey = 'indicator' | 'flexContainer' | 'root';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    indicator: {
+      display: 'flex',
+      justifyContent: 'center',
+      backgroundColor: theme.palette.tabbar.indicator,
+      height: '4px',
     },
-  },
-}));
+    flexContainer: {
+      alignItems: 'center',
+    },
+    root: {
+      '&:last-child': {
+        marginLeft: 'auto',
+      },
+    },
+  }),
+  { name: 'BackstageTabBar' },
+);
 
 export const StyledTabs = (props: PropsWithChildren<StyledTabsProps>) => {
   const classes = useStyles(props);
