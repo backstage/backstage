@@ -110,7 +110,8 @@ TechDocs uses a composability pattern similar to the Search and Catalog plugins
 in Backstage. While a default table experience, similar to the one provided by
 the Catalog plugin, is made available for ease-of-use, it's possible for you to
 provide a completely custom experience, tailored to the needs of your
-organization.
+organization. For example, TechDocs comes with an alternative grid based layout
+(`<EntityListDocsGrid>`).
 
 This is done in your `app` package. By default, you might see something like
 this in your `App.tsx`:
