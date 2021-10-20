@@ -126,9 +126,12 @@ export async function templatingTask(
       });
     }
   }
-  const bsVersionFileName = '.bsversion';
-  await Task.forItem('creating', bsVersionFileName, () =>
-    fs.writeFile(join(destinationDir, bsVersionFileName), version),
+  const backstageVersionFileName = '.backstage-version';
+  await Task.forItem('creating', backstageVersionFileName, () =>
+    fs.writeFile(
+      join(destinationDir, backstageVersionFileName),
+      `${version}\n`,
+    ),
   );
 }
 
