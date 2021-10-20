@@ -73,7 +73,8 @@ nav:
   - Home: index.md
 
 plugins:
-  - techdocs-core```
+  - techdocs-core
+```
   
   - Once you have techdocs-cli installed
   run the techdocs:
