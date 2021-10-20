@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   content: {
     width: '100%',
     maxWidth: 'inherit',
+    flexWrap: 'nowrap',
   },
   message: {
     display: 'flex',
