@@ -30,7 +30,7 @@ import {
   templatingTask,
 } from './lib/tasks';
 
-export default async (cmd: Command): Promise<void> => {
+export default async (cmd: Command, version: string): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
@@ -82,7 +82,7 @@ export default async (cmd: Command): Promise<void> => {
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, cmd.path, answers);
+      await templatingTask(templateDir, cmd.path, answers, version);
     } else {
       // Template to temporary location, and then move files
 
@@ -93,7 +93,7 @@ export default async (cmd: Command): Promise<void> => {
       await createTemporaryAppFolderTask(tempDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, tempDir, answers);
+      await templatingTask(templateDir, tempDir, answers, version);
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);

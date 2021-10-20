@@ -38,7 +38,7 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
-    .action(createApp);
+    .action(cmd => createApp(cmd, version));
 
   program.parse(argv);
 };

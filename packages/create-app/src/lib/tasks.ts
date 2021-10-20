@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
 import recursive from 'recursive-readdir';
-import { basename, dirname, resolve as resolvePath } from 'path';
+import { basename, dirname, join, resolve as resolvePath } from 'path';
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
@@ -79,6 +79,7 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
+  version: string,
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -125,6 +126,10 @@ export async function templatingTask(
       });
     }
   }
+  const bsVersionFileName = '.bsversion';
+  await Task.forItem('creating', bsVersionFileName, () =>
+    fs.writeFile(join(destinationDir, bsVersionFileName), version),
+  );
 }
 
 /**
