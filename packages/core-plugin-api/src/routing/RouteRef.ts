@@ -78,6 +78,11 @@ export class RouteRefImpl<Params extends AnyParams>
     }
   }
 
+  //  /** @deprecated use `useRouteRef` instead */
+  //   get path() {
+  //     return thuis
+  //   }
+
   get icon() {
     return this.config.icon;
   }

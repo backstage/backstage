@@ -20,6 +20,7 @@ import {
   createPlugin,
   createRoutableExtension,
   createRouteRef,
+  createSubRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -29,9 +30,10 @@ export const rootRouteRef = createRouteRef({
   id: 'jenkins',
 });
 
-export const buildRouteRef = createRouteRef({
+export const buildRouteRef = createSubRouteRef({
   id: 'jenkins/build',
-  params: ['jobFullName', 'buildNumber'],
+  path: '/builds/:jobFullName/:buildNumber',
+  parent: rootRouteRef,
 });
 
 export const jenkinsPlugin = createPlugin({
