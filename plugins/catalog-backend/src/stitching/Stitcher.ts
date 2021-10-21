@@ -20,7 +20,7 @@ import {
   parseEntityRef,
   UNSTABLE_EntityStatusItem,
 } from '@backstage/catalog-model';
-import { SerializedError } from '@backstage/errors';
+import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { uniqBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -49,7 +49,9 @@ export class Stitcher {
       try {
         await this.stitchOne(entityRef);
       } catch (error) {
-        this.logger.error(`Failed to stitch ${entityRef}, ${error}`);
+        this.logger.error(
+          `Failed to stitch ${entityRef}, ${stringifyError(error)}`,
+        );
       }
     }
   }
