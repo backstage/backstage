@@ -16,6 +16,8 @@
 
 /**
  * Observer interface for consuming an Observer, see TC39.
+ *
+ * @public
  */
 export type Observer<T> = {
   next?(value: T): void;
@@ -25,6 +27,8 @@ export type Observer<T> = {
 
 /**
  * Subscription returned when subscribing to an Observable, see TC39.
+ *
+ * @public
  */
 export type Subscription = {
   /**
@@ -53,6 +57,8 @@ declare global {
  *
  * This is used as a common return type for observable values and can be created
  * using many different observable implementations, such as zen-observable or RxJS 5.
+ *
+ * @public
  */
 export type Observable<T> = {
   [Symbol.observable](): Observable<T>;

@@ -17,8 +17,6 @@ export type JsonPrimitive = number | string | boolean | null;
 // @public
 export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 
-// Warning: (ae-missing-release-tag) "Observable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Observable<T> = {
   [Symbol.observable](): Observable<T>;
@@ -30,8 +28,6 @@ export type Observable<T> = {
   ): Subscription;
 };
 
-// Warning: (ae-missing-release-tag) "Observer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Observer<T> = {
   next?(value: T): void;
@@ -39,8 +35,6 @@ export type Observer<T> = {
   complete?(): void;
 };
 
-// Warning: (ae-missing-release-tag) "Subscription" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Subscription = {
   unsubscribe(): void;
