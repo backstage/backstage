@@ -24,9 +24,7 @@ export const msw = {
     close: () => void;
     resetHandlers: () => void;
   }) => {
-    beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-    afterAll(() => worker.close());
-    afterEach(() => worker.resetHandlers());
+    setupRequestMockHandlers(worker);
   },
 };
 
