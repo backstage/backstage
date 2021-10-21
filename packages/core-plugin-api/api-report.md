@@ -683,13 +683,9 @@ export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
 // @public
 export type OAuthScope = string | string[];
 
-// Warning: (ae-missing-release-tag) "Observable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export type Observable<T> = Observable_2<T>;
 
-// Warning: (ae-missing-release-tag) "Observer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export type Observer<T> = Observer_2<T>;
 
@@ -897,8 +893,6 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   params: ParamKeys<Params>;
 };
 
-// Warning: (ae-missing-release-tag) "Subscription" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export type Subscription = Subscription_2;
 
