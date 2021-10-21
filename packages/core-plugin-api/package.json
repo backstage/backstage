@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.9",
-    "@backstage/core-types": "^0.1.0",
     "@backstage/theme": "^0.2.9",
+    "@backstage/types": "^0.1.0",
     "@backstage/version-bridge": "^0.1.0",
     "@material-ui/core": "^4.12.2",
     "@types/react": "*",

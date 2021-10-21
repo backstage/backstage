@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-// Temporarily re-export the JSON types from @backstage/core-types
+// Temporarily re-export the JSON types from @backstage/types
 import type {
   JsonArray as CoreJsonArray,
   JsonObject as CoreJsonObject,
   JsonPrimitive as CoreJsonPrimitive,
   JsonValue as CoreJsonValue,
-} from '@backstage/core-types';
+} from '@backstage/types';
 
 /**
  * A type representing all allowed JSON primitive values.
  *
  * @public
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type JsonPrimitive = CoreJsonPrimitive;
 
@@ -34,7 +34,7 @@ export type JsonPrimitive = CoreJsonPrimitive;
  * A type representing all allowed JSON object values.
  *
  * @public
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type JsonObject = CoreJsonObject;
 
@@ -42,7 +42,7 @@ export type JsonObject = CoreJsonObject;
  * A type representing all allowed JSON array values.
  *
  * @public
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type JsonArray = CoreJsonArray;
 
@@ -50,6 +50,6 @@ export type JsonArray = CoreJsonArray;
  * A type representing all allowed JSON values.
  *
  * @public
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type JsonValue = CoreJsonValue;

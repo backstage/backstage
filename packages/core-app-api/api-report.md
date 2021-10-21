@@ -40,7 +40,7 @@ import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/core-plugin-api';
-import { Observable as Observable_2 } from '@backstage/core-types';
+import { Observable as Observable_2 } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';

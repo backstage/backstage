@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/core-types';
+import { JsonObject, JsonValue } from '@backstage/types';
 
 /**
  * A serialized form of configuration data that carries additional context.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject } from '@backstage/core-types';
+import { JsonValue, JsonObject } from '@backstage/types';
 import { AppConfig, Config } from './types';
 import cloneDeep from 'lodash/cloneDeep';
 import mergeWith from 'lodash/mergeWith';

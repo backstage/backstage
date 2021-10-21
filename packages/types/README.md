@@ -1,4 +1,4 @@
-# Common core types used within Backstage
+# Common TypeScript types used within Backstage
 
 Contains some common types that are used widely within the rest of the Backstage project and in plugins.
 

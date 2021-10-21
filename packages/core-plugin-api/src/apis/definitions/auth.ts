@@ -15,7 +15,7 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '@backstage/core-types';
+import { Observable } from '@backstage/types';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.

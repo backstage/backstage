@@ -15,7 +15,7 @@
  */
 
 import { createApiRef, ApiRef } from '../system';
-import { Observable } from '@backstage/core-types';
+import { Observable } from '@backstage/types';
 
 export type AlertMessage = {
   message: string;

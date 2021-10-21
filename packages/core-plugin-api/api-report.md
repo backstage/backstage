@@ -8,12 +8,12 @@
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
-import { Observable as Observable_2 } from '@backstage/core-types';
-import { Observer as Observer_2 } from '@backstage/core-types';
+import { Observable as Observable_2 } from '@backstage/types';
+import { Observer as Observer_2 } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { Subscription as Subscription_2 } from '@backstage/core-types';
+import { Subscription as Subscription_2 } from '@backstage/types';
 import { SvgIconProps } from '@material-ui/core';
 
 // Warning: (ae-missing-release-tag) "AlertApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

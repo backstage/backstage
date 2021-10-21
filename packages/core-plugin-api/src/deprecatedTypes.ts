@@ -18,19 +18,19 @@ import {
   Observer as CoreObserver,
   Subscription as CoreSubscription,
   Observable as CoreObservable,
-} from '@backstage/core-types';
+} from '@backstage/types';
 
 /**
  * Observer interface for consuming an Observer, see TC39.
  *
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type Observer<T> = CoreObserver<T>;
 
 /**
  * Subscription returned when subscribing to an Observable, see TC39.
  *
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type Subscription = CoreSubscription;
 
@@ -42,6 +42,6 @@ export type Subscription = CoreSubscription;
  * This is used as a common return type for observable values and can be created
  * using many different observable implementations, such as zen-observable or RxJS 5.
  *
- * @deprecated Please use the same type from `@backstage/core-types` instead
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
 export type Observable<T> = CoreObservable<T>;

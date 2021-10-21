@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/core-types",
-  "description": "Common core types used within Backstage",
+  "name": "@backstage/types",
+  "description": "Common TypeScript types used within Backstage",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/core-types"
+    "directory": "packages/types"
   },
   "keywords": [
     "backstage"
