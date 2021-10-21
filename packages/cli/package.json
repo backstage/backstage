@@ -34,7 +34,6 @@
     "@backstage/integration": "^0.6.5",
     "@backstage/config": "^0.1.10",
     "@backstage/config-loader": "^0.6.8",
-    "@backstage/backend-common": "^0.9.4",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
@@ -119,6 +118,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-common": "^0.9.4",
     "@backstage/config": "^0.1.10",
     "@backstage/core-components": "^0.5.0",
     "@backstage/core-plugin-api": "^0.1.8",

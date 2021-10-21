@@ -41,7 +41,6 @@
     "json-schema": "^0.3.0",
     "json-schema-merge-allof": "^0.8.1",
     "typescript-json-schema": "^0.50.1",
-    "uuid": "^8.3.2",
     "yaml": "^1.9.2",
     "yup": "^0.29.3",
     "node-fetch": "2.6.5"
@@ -53,8 +52,7 @@
     "@types/node": "^14.14.32",
     "@types/yup": "^0.29.8",
     "mock-fs": "^5.1.0",
-    "fetch-mock-jest": "1.5.1",
-    "fetch-mock": "^9.11.0"
+    "msw": "^0.29.0"
   },
   "files": [
     "dist"
