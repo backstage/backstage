@@ -35,6 +35,7 @@
     "@backstage/catalog-model": "^0.9.4",
     "@backstage/core-components": "^0.7.0",
     "@backstage/core-plugin-api": "^0.1.10",
+    "@backstage/errors": "^0.1.2",
     "@backstage/integration": "^0.6.8",
     "@backstage/integration-react": "^0.1.12",
     "@backstage/plugin-catalog-react": "^0.6.0",

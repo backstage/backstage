@@ -87,6 +87,12 @@ export function readMicrosoftGraphConfig(
     );
     const groupFilter = providerConfig.getOptionalString('groupFilter');
 
+    if (userFilter && userGroupMemberFilter) {
+      throw new Error(
+        `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
+      );
+    }
+
     providers.push({
       target,
       authority,

@@ -25,7 +25,11 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 
-/** @public */
+/**
+ * Options that control the loading of configuration schema files in the backend.
+ *
+ * @public
+ */
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];

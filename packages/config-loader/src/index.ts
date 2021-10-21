@@ -25,7 +25,6 @@ export type {
   ConfigSchema,
   ConfigSchemaProcessingOptions,
   ConfigVisibility,
-  EnvFunc,
   LoadConfigSchemaOptions,
   TransformFunc,
 } from './lib';

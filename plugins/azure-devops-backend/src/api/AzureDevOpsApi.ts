@@ -14,42 +14,47 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { WebApi } from 'azure-devops-node-api';
 import {
   Build,
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {
   GitPullRequest,
   GitPullRequestSearchCriteria,
-} from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { PullRequest, PullRequestOptions, RepoBuild } from './types';
+  GitRepository,
+  PullRequest,
+  PullRequestOptions,
+  RepoBuild,
+} from './types';
+
+import { Logger } from 'winston';
+import { WebApi } from 'azure-devops-node-api';
 
 export class AzureDevOpsApi {
-  constructor(
+  public constructor(
     private readonly logger: Logger,
     private readonly webApi: WebApi,
   ) {}
 
-  async getGitRepository(projectName: string, repoName: string) {
-    if (this.logger) {
-      this.logger.debug(
-        `Calling Azure DevOps REST API, getting Repository ${repoName} for Project ${projectName}`,
-      );
-    }
+  public async getGitRepository(
+    projectName: string,
+    repoName: string,
+  ): Promise<GitRepository> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting Repository ${repoName} for Project ${projectName}`,
+    );
 
     const client = await this.webApi.getGitApi();
     return client.getRepository(repoName, projectName);
   }
 
-  async getBuildList(projectName: string, repoId: string, top: number) {
-    if (this.logger) {
-      this.logger.debug(
-        `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
-      );
-    }
+  public async getBuildList(
+    projectName: string,
+    repoId: string,
+    top: number,
+  ): Promise<Build[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
+    );
 
     const client = await this.webApi.getBuildApi();
     return client.getBuilds(
@@ -77,12 +82,14 @@ export class AzureDevOpsApi {
     );
   }
 
-  async getRepoBuilds(projectName: string, repoName: string, top: number) {
-    if (this.logger) {
-      this.logger.debug(
-        `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository ${repoName} for Project ${projectName}`,
-      );
-    }
+  public async getRepoBuilds(
+    projectName: string,
+    repoName: string,
+    top: number,
+  ) {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository ${repoName} for Project ${projectName}`,
+    );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const buildList = await this.getBuildList(
@@ -98,16 +105,14 @@ export class AzureDevOpsApi {
     return repoBuilds;
   }
 
-  async getPullRequests(
+  public async getPullRequests(
     projectName: string,
     repoName: string,
     options: PullRequestOptions,
-  ) {
-    if (this.logger) {
-      this.logger.debug(
-        `Calling Azure DevOps REST API, getting up to ${top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
-      );
-    }
+  ): Promise<PullRequest[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
+    );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const client = await this.webApi.getGitApi();
@@ -133,7 +138,7 @@ export class AzureDevOpsApi {
   }
 }
 
-export function mappedRepoBuild(build: Build) {
+export function mappedRepoBuild(build: Build): RepoBuild {
   return {
     id: build.id,
     title: [build.definition?.name, build.buildNumber]
@@ -150,7 +155,7 @@ export function mappedRepoBuild(build: Build) {
 export function mappedPullRequest(
   pullRequest: GitPullRequest,
   linkBaseUrl: string,
-) {
+): PullRequest {
   return {
     pullRequestId: pullRequest.pullRequestId,
     repoName: pullRequest.repository?.name,

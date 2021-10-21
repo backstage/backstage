@@ -32,6 +32,7 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.4",
     "@backstage/config": "^0.1.9",
+    "@backstage/errors": "^0.1.2",
     "@types/json-schema": "^7.0.6",
     "ajv": "^7.0.3",
     "chokidar": "^3.5.2",

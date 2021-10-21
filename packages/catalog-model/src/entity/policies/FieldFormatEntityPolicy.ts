@@ -27,6 +27,8 @@ import { Entity } from '../Entity';
  * Ensures that the format of individual fields of the entity envelope
  * is valid.
  *
+ * @remarks
+ *
  * This does not take into account machine generated fields such as uid, etag
  * and generation.
  *

@@ -14,17 +14,47 @@
  * limitations under the License.
  */
 
-/** @public */
+import { isError } from './assertion';
+
+/**
+ * A base class that custom Error classes can inherit from.
+ *
+ * @public
+ * @example
+ *```ts
+ * class MyCustomError extends CustomErrorBase {}
+ *
+ * const e = new MyCustomError('Some message', cause);
+ * // e.name === 'MyCustomError'
+ * // e.message === 'Some message'
+ * // e.cause === cause
+ * // e.stack is set if the runtime supports it
+ * ```
+ */
 export class CustomErrorBase extends Error {
   readonly cause?: Error;
 
-  constructor(message?: string, cause?: Error) {
+  constructor(message?: string, cause?: Error | unknown) {
+    let assignedCause: Error | undefined = undefined;
+
     let fullMessage = message;
-    if (cause) {
-      if (fullMessage) {
-        fullMessage += `; caused by ${cause}`;
+    if (cause !== undefined) {
+      let causeStr;
+      if (isError(cause)) {
+        assignedCause = cause;
+        causeStr = String(cause);
+
+        // Prefer the cause.toString, but if it's not implemented we use a nicer fallback
+        if (causeStr === '[object Object]') {
+          causeStr = `${cause.name}: ${cause.message}`;
+        }
       } else {
-        fullMessage = `caused by ${cause}`;
+        causeStr = `unknown error '${cause}'`;
+      }
+      if (fullMessage) {
+        fullMessage += `; caused by ${causeStr}`;
+      } else {
+        fullMessage = `caused by ${causeStr}`;
       }
     }
 
@@ -33,6 +63,6 @@ export class CustomErrorBase extends Error {
     Error.captureStackTrace?.(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.cause = cause;
+    this.cause = assignedCause;
   }
 }

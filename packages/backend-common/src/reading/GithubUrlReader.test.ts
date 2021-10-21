@@ -221,6 +221,32 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(NotModifiedError);
     });
 
+    it('should throw Error with ratelimit exceeded if GitHub responds with 403 and rate limit is exceeded', async () => {
+      expect.assertions(1);
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          (_req, res, ctx) => {
+            return res(
+              ctx.status(403),
+              ctx.set('X-RateLimit-Remaining', '0'),
+              ctx.body(
+                '{"message": "API rate limit exceeded for xxx.xxx.xxx.xxx..."}',
+              ),
+            );
+          },
+        ),
+      );
+
+      await expect(
+        gheProcessor.readUrl(
+          'https://github.com/backstage/mock/tree/blob/main',
+          { etag: 'foo' },
+        ),
+      ).rejects.toThrow(/rate limit exceeded/);
+    });
+
     it('should return etag from the response', async () => {
       (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
         headers: {

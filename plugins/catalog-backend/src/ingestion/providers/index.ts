@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-interface IStorageFilesMock {
-  emptyFiles(): void;
-  fileExists(targetPath: string): boolean;
-  readFile(targetPath: string): Buffer;
-  writeFile(targetPath: string, sourcePath: string): void;
-  writeFile(targetPath: string, sourceBuffer: Buffer): void;
-  writeFile(targetPath: string, source: string | Buffer): void;
-}
+export { GitHubOrgEntityProvider } from './GitHubOrgEntityProvider';

@@ -6,14 +6,17 @@
 import { JsonObject } from '@backstage/config';
 
 // @public
+export function assertError(value: unknown): asserts value is ErrorLike;
+
+// @public
 export class AuthenticationError extends CustomErrorBase {}
 
 // @public
 export class ConflictError extends CustomErrorBase {}
 
-// @public (undocumented)
+// @public
 export class CustomErrorBase extends Error {
-  constructor(message?: string, cause?: Error);
+  constructor(message?: string, cause?: Error | unknown);
   // (undocumented)
   readonly cause?: Error;
 }
@@ -22,6 +25,14 @@ export class CustomErrorBase extends Error {
 export function deserializeError<T extends Error = Error>(
   data: SerializedError,
 ): T;
+
+// @public
+export type ErrorLike = {
+  name: string;
+  message: string;
+  stack?: string;
+  [unknownKeys: string]: unknown;
+};
 
 // @public
 export type ErrorResponse = {
@@ -36,7 +47,15 @@ export type ErrorResponse = {
 };
 
 // @public
+export class ForwardedError extends CustomErrorBase {
+  constructor(message: string, cause: Error | unknown);
+}
+
+// @public
 export class InputError extends CustomErrorBase {}
+
+// @public
+export function isError(value: unknown): value is ErrorLike;
 
 // @public
 export class NotAllowedError extends CustomErrorBase {}

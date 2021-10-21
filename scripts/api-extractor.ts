@@ -134,6 +134,23 @@ async function findPackageDirs() {
   return packageDirs;
 }
 
+function logApiReportInstructions() {
+  console.log('');
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log(
+    '* You have uncommitted changes to the public API of a package.                      *',
+  );
+  console.log(
+    '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+  );
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log('');
+}
+
 interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
@@ -267,20 +284,7 @@ async function runApiExtraction({
 
     if (!extractorResult.succeeded) {
       if (shouldLogInstructions) {
-        console.log('');
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log(
-          '* You have uncommitted changes to the public API of a package.                      *',
-        );
-        console.log(
-          '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
-        );
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log('');
+        logApiReportInstructions();
 
         if (conflictingFile) {
           console.log('');
@@ -294,7 +298,8 @@ async function runApiExtraction({
 
           const content = await fs.readFile(conflictingFile, 'utf8');
           console.log(content);
-          console.log('');
+
+          logApiReportInstructions();
         }
       }
 

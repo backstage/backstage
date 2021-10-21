@@ -167,7 +167,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -216,7 +216,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });

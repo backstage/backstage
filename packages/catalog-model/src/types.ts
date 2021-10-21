@@ -17,7 +17,11 @@
 import { JsonValue } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 
-/** @public */
+/**
+ * JSONSchema extendable by arbitrary JSON attributes
+ *
+ * @public
+ */
 export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
 
 /**
@@ -35,7 +39,9 @@ export type EntityName = {
  * A reference by name to an entity, either as a compact string representation,
  * or as a compound reference structure.
  *
- * The string representation is on the form [<kind>:][<namespace>/]<name>.
+ * @remarks
+ *
+ * The string representation is on the form `[<kind>:][<namespace>/]<name>`.
  *
  * Left-out parts of the reference need to be handled by the application,
  * either by rejecting the reference or by falling back to default values.

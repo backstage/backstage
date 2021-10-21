@@ -16,7 +16,6 @@
 
 import { JsonValue } from '@backstage/config';
 
-/** @public */
 export type EnvFunc = (name: string) => Promise<string | undefined>;
 
 export type ReadFileFunc = (path: string) => Promise<string>;

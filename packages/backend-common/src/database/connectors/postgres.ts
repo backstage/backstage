@@ -17,6 +17,7 @@
 import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
@@ -94,8 +95,7 @@ function requirePgConnectionString() {
   try {
     return require('pg-connection-string').parse;
   } catch (e) {
-    const message = `Postgres: Install 'pg-connection-string'`;
-    throw new Error(`${message}\n${e.message}`);
+    throw new ForwardedError("Postgres: Install 'pg-connection-string'", e);
   }
 }
 

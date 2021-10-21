@@ -31,6 +31,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.4",
     "@backstage/config": "^0.1.10",
+    "@backstage/errors": "^0.1.2",
     "@backstage/plugin-catalog-backend": "^0.17.0",
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",

@@ -31,6 +31,7 @@
     "@backstage/cli-common": "^0.1.4",
     "@backstage/config": "^0.1.10",
     "@backstage/config-loader": "^0.6.10",
+    "@backstage/errors": "^0.1.2",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
