@@ -36,7 +36,11 @@ export class MockSentryApi implements SentryApi {
 export class ProductionSentryApi implements SentryApi {
   constructor(discoveryApi: DiscoveryApi, organization: string);
   // (undocumented)
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
+  fetchIssues(
+    project: string,
+    statsFor: string,
+    query: string,
+  ): Promise<SentryIssue[]>;
 }
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -49,7 +53,11 @@ export const Router: ({ entity }: { entity: Entity }) => JSX.Element;
 // @public (undocumented)
 export interface SentryApi {
   // (undocumented)
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
+  fetchIssues(
+    project: string,
+    statsFor: string,
+    query: string,
+  ): Promise<SentryIssue[]>;
 }
 
 // Warning: (ae-missing-release-tag) "sentryApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -100,10 +108,12 @@ export const SentryIssuesWidget: ({
   entity,
   statsFor,
   variant,
+  query,
 }: {
   entity: Entity;
   statsFor?: '12h' | '24h' | undefined;
   variant?: InfoCardVariants | undefined;
+  query?: string | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "sentryPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

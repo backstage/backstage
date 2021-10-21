@@ -38,10 +38,12 @@ export const SentryIssuesWidget = ({
   entity,
   statsFor = '24h',
   variant = 'gridItem',
+  query = '',
 }: {
   entity: Entity;
   statsFor?: '24h' | '12h';
   variant?: InfoCardVariants;
+  query?: string;
 }) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const sentryApi = useApi(sentryApiRef);
@@ -49,8 +51,8 @@ export const SentryIssuesWidget = ({
   const projectId = useProjectSlug(entity);
 
   const { loading, value, error } = useAsync(
-    () => sentryApi.fetchIssues(projectId, statsFor),
-    [sentryApi, statsFor, projectId],
+    () => sentryApi.fetchIssues(projectId, statsFor, query),
+    [sentryApi, statsFor, projectId, query],
   );
 
   useEffect(() => {

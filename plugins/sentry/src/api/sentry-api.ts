@@ -23,5 +23,9 @@ export const sentryApiRef = createApiRef<SentryApi>({
 });
 
 export interface SentryApi {
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
+  fetchIssues(
+    project: string,
+    statsFor: string,
+    query: string,
+  ): Promise<SentryIssue[]>;
 }
