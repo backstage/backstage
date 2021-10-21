@@ -38,7 +38,7 @@ type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 export interface RouterOptions {
   logger: Logger;
-  database?: PluginDatabaseManager;
+  database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
   providerFactories?: ProviderFactories;
