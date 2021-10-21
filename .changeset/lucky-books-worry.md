@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-Allow extra field in OAuth state parameter
+Allow OAuth state to be encoded by a stateEncoder.

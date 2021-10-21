@@ -21,6 +21,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity/types';
+import { OAuthState } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
 
 export type AuthProviderConfig = {
@@ -224,4 +225,6 @@ export type AuthHandler<AuthResult> = (
   input: AuthResult,
 ) => Promise<AuthHandlerResult>;
 
-export type StateHandler = (input: any) => Promise<string>;
+export type StateEncoder = (
+  input: OAuthState,
+) => Promise<{ encodedState: string }>;
