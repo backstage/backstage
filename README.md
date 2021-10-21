@@ -75,6 +75,8 @@ nav:
 plugins:
   - techdocs-core
 ```
+   Techdocs Todo
+  - Credentials are currently setup with a jenkins pipeline, the credentialing process is still in progress * 10/21
   
   - Once you have techdocs-cli installed
   run the techdocs:
@@ -82,7 +84,7 @@ plugins:
 ```sh
 yarn cli
 ```
-  - Then push your credentials to s3
+  - Then push your docs to s3
  
 ```sh
 techdocs-cli publish --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --entity <namespace/kind/name>
