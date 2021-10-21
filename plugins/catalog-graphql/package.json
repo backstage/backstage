@@ -31,7 +31,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.9.0",
+    "@backstage/catalog-model": "^0.9.5",
     "@backstage/config": "^0.1.8",
     "@graphql-modules/core": "^0.7.17",
     "apollo-server": "^2.16.1",
@@ -42,7 +42,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.0",
+    "@backstage/cli": "^0.8.0",
     "@backstage/test-utils": "^0.1.11",
     "@graphql-codegen/cli": "^1.21.3",
     "@graphql-codegen/typescript": "^1.17.7",

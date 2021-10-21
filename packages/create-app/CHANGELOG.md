@@ -1,5 +1,36 @@
 # @backstage/create-app
 
+## 0.4.0
+
+### Minor Changes
+
+- 5914668655: Removed `@backstage/plugin-welcome`, no new updates to the packages will be
+  published in the future.
+
+  The welcome plugin was used by early alpha versions of Backstage, but today only
+  contained a simple page with welcome instructions. It was superseded by
+  `@backstage/plugin-home` which can be used to build a homepage customized to the
+  needs of your organization.
+
+  If it's still used in your app, remove the dependency from your `package.json`
+  as well as left over code.
+
+### Patch Changes
+
+- b486adb8c6: Removed the included `jest` configuration from the root `package.json` as the `transformModules` option no longer exists.
+
+  To apply this change to an existing app, make the follow change to the root `package.json`:
+
+  ```diff
+  -  "jest": {
+  -    "transformModules": [
+  -      "@asyncapi/react-component"
+  -    ]
+  -  }
+  ```
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
 ## 0.3.45
 
 ### Patch Changes

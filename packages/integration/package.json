@@ -39,8 +39,8 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.16",
-    "@backstage/config-loader": "^0.6.10",
+    "@backstage/cli": "^0.8.0",
+    "@backstage/config-loader": "^0.7.0",
     "@backstage/test-utils": "^0.1.19",
     "@types/jest": "^26.0.7",
     "@types/luxon": "^2.0.4",

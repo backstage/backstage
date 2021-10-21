@@ -1,5 +1,17 @@
 # @backstage/core-plugin-api
 
+## 0.1.11
+
+### Patch Changes
+
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
 ## 0.1.10
 
 ### Patch Changes
