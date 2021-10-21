@@ -4,7 +4,6 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { CustomErrorBase } from '@backstage/errors';
 import { DateTime } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -32,16 +31,8 @@ export type CheckResult = {
 };
 
 // @public
-export class CheckValidationError extends CustomErrorBase {
-  constructor({
-    message,
-    cause,
-    errors,
-  }: {
-    message: string;
-    cause?: Error;
-    errors?: any;
-  });
+export class CheckValidationError extends Error {
+  constructor({ message, errors }: { message: string; errors?: any });
   // (undocumented)
   errors?: any;
 }

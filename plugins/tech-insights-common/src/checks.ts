@@ -15,7 +15,6 @@
  */
 import { TechInsightsStore } from './persistence';
 import { CheckResponse, FactResponse } from './responses';
-import { CustomErrorBase } from '@backstage/errors';
 
 /**
  * A factory wrapper to construct FactChecker implementations.
@@ -192,19 +191,11 @@ export type CheckValidationResponse = {
  *
  * @public
  */
-export class CheckValidationError extends CustomErrorBase {
+export class CheckValidationError extends Error {
   errors?: any;
 
-  constructor({
-    message,
-    cause,
-    errors,
-  }: {
-    message: string;
-    cause?: Error;
-    errors?: any;
-  }) {
-    super(message, cause);
+  constructor({ message, errors }: { message: string; errors?: any }) {
+    super(message);
     this.errors = errors;
   }
 }
