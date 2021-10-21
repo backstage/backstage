@@ -15,6 +15,7 @@
  */
 import { TechInsightsStore } from './persistence';
 import { CheckResponse, FactResponse } from './responses';
+import { CustomErrorBase } from '@backstage/errors';
 
 /**
  * A factory wrapper to construct FactChecker implementations.
@@ -82,7 +83,7 @@ export interface FactChecker<
    * @param check - The check to be validated
    * @returns - Validation result
    */
-  validate(check: CheckType): Promise<boolean>;
+  validate(check: CheckType): Promise<CheckValidationResponse>;
 }
 
 /**
@@ -170,4 +171,40 @@ export interface TechInsightCheck {
    * Can contain links, description texts or other actionable items
    */
   failureMetadata?: Record<string, any>;
+}
+
+/**
+ * Validation response from CheckValidator
+ *
+ * May contain additional data for display purposes
+ * @public
+ */
+export type CheckValidationResponse = {
+  valid: boolean;
+  message?: string;
+  errors?: any;
+};
+
+/**
+ * Error object for Validation Errors
+ *
+ * Can be used to short circuit larger execution paths instead of passing validation response around
+ *
+ * @public
+ */
+export class CheckValidationError extends CustomErrorBase {
+  errors?: any;
+
+  constructor({
+    message,
+    cause,
+    errors,
+  }: {
+    message: string;
+    cause?: Error;
+    errors?: any;
+  }) {
+    super(message, cause);
+    this.errors = errors;
+  }
 }

@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { CustomErrorBase } from '@backstage/errors';
 import { DateTime } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -31,6 +32,28 @@ export type CheckResult = {
 };
 
 // @public
+export class CheckValidationError extends CustomErrorBase {
+  constructor({
+    message,
+    cause,
+    errors,
+  }: {
+    message: string;
+    cause?: Error;
+    errors?: any;
+  });
+  // (undocumented)
+  errors?: any;
+}
+
+// @public
+export type CheckValidationResponse = {
+  valid: boolean;
+  message?: string;
+  errors?: any;
+};
+
+// @public
 export interface FactChecker<
   CheckType extends TechInsightCheck,
   CheckResultType extends CheckResult,
@@ -38,7 +61,7 @@ export interface FactChecker<
   addCheck(check: CheckType): Promise<CheckType>;
   getChecks(): Promise<CheckType[]>;
   runChecks(entity: string, checks: string[]): Promise<CheckResultType[]>;
-  validate(check: CheckType): Promise<boolean>;
+  validate(check: CheckType): Promise<CheckValidationResponse>;
 }
 
 // @public

@@ -22,6 +22,8 @@ import {
   TechInsightCheckRegistry,
   FlatTechInsightFact,
   TechInsightsStore,
+  CheckValidationResponse,
+  CheckValidationError,
 } from '@backstage/plugin-tech-insights-common';
 import { Engine, EngineResult, TopLevelCondition } from 'json-rules-engine';
 import { DefaultCheckRegistry } from './CheckRegistry';
@@ -110,22 +112,31 @@ export class JsonRulesEngineFactChecker
     }
   }
 
-  async validate(check: TechInsightJsonRuleCheck): Promise<boolean> {
+  async validate(
+    check: TechInsightJsonRuleCheck,
+  ): Promise<CheckValidationResponse> {
     const ajv = new Ajv({ verbose: true });
     const validator = ajv.compile(validationSchema);
     const isValidToSchema = validator(check.rule);
     if (check.type !== JSON_RULE_ENGINE_CHECK_TYPE) {
-      this.logger.warn(
-        'Only ${JSON_RULE_ENGINE_CHECK_TYPE} checks can be registered to this fact checker',
-      );
-      return false;
+      const msg = `Only ${JSON_RULE_ENGINE_CHECK_TYPE} checks can be registered to this fact checker`;
+      this.logger.warn(msg);
+      return {
+        valid: false,
+        message: msg,
+      };
     }
     if (!isValidToSchema) {
+      const msg = 'Failed to to validate conditions against JSON schema';
       this.logger.warn(
         'Failed to to validate conditions against JSON schema',
         validator.errors,
       );
-      return false;
+      return {
+        valid: false,
+        message: msg,
+        errors: validator.errors,
+      };
     }
 
     const existingSchemas = await this.repository.getLatestSchemas(
@@ -146,7 +157,17 @@ export class JsonRulesEngineFactChecker
         )}`,
       );
     });
-    return failedReferences.length === 0;
+    const valid = failedReferences.length === 0;
+    return {
+      valid,
+      ...(!valid
+        ? {
+            message: `Check is referencing missing values from fact schemas: ${failedReferences
+              .map(it => it.ref)
+              .join(',')}`,
+          }
+        : {}),
+    };
   }
 
   getChecks(): Promise<TechInsightJsonRuleCheck[]> {
@@ -156,13 +177,14 @@ export class JsonRulesEngineFactChecker
   async addCheck(
     check: TechInsightJsonRuleCheck,
   ): Promise<TechInsightJsonRuleCheck> {
-    if (!(await this.validate(check))) {
-      this.logger.warn(
-        `Check validation failed when adding check ${check.name} to check registry.`,
-      );
-      throw new Error(
-        'Failed to add check to rules engine. Validation failed.',
-      );
+    const checkValidationResponse = await this.validate(check);
+    if (!checkValidationResponse.valid) {
+      const msg = `Check validation failed when adding check ${check.name} to check registry.`;
+      this.logger.warn(msg);
+      throw new CheckValidationError({
+        message: checkValidationResponse.message || msg,
+        errors: checkValidationResponse.errors,
+      });
     }
     return await this.checkRegistry.register(check);
   }

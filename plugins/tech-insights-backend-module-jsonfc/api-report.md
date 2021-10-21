@@ -5,6 +5,7 @@
 ```ts
 import { BooleanCheckResult } from '@backstage/plugin-tech-insights-common';
 import { CheckResponse } from '@backstage/plugin-tech-insights-common';
+import { CheckValidationResponse } from '@backstage/plugin-tech-insights-common';
 import { DynamicFactCallback } from 'json-rules-engine';
 import { FactChecker } from '@backstage/plugin-tech-insights-common';
 import { FactOptions } from 'json-rules-engine';
@@ -72,7 +73,7 @@ export class JsonRulesEngineFactChecker
     checks: string[],
   ): Promise<JsonRuleBooleanCheckResult[]>;
   // (undocumented)
-  validate(check: TechInsightJsonRuleCheck): Promise<boolean>;
+  validate(check: TechInsightJsonRuleCheck): Promise<CheckValidationResponse>;
 }
 
 // @public

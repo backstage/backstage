@@ -289,12 +289,16 @@ describe('JsonRulesEngineFactChecker', () => {
 
   describe('when validating checks', () => {
     it('should succeed on valid rules', async () => {
-      const isValid = await factChecker.validate(testChecks.simple[0]);
-      expect(isValid).toBeTruthy();
+      const validationResponse = await factChecker.validate(
+        testChecks.simple[0],
+      );
+      expect(validationResponse.valid).toBeTruthy();
     });
     it('should fail on broken rules', async () => {
-      const isValid = await factChecker.validate(testChecks.broken[0]);
-      expect(isValid).toBeFalsy();
+      const validationResponse = await factChecker.validate(
+        testChecks.broken[0],
+      );
+      expect(validationResponse.valid).toBeFalsy();
     });
   });
 });
