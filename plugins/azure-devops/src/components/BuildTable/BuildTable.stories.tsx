@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-// import {
-//   BuildResult,
-//   BuildStatus,
-//   RepoBuild,
-// } from '@backstage/plugin-azure-devops-backend';
-
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+  RepoBuild,
+} from '@backstage/plugin-azure-devops-backend';
 
 import { BuildTable } from './BuildTable';
 import { MemoryRouter } from 'react-router';
 import React from 'react';
-
-type RepoBuild = any;
 
 export default {
   title: 'Plugins/Azure Devops/Build Table',
