@@ -292,6 +292,15 @@ scaffolder:
     visibility: public # or or 'private'
 
 auth:
+  ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
+  # the auth-backend.
+  #
+  # keyStore:
+  #  provider: firestore
+  #  firestore:
+  #    projectId: my-project
+  #    path: my-sessions
+
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
