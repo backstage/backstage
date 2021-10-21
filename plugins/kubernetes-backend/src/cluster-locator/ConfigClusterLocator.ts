@@ -35,6 +35,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
+          caData: c.getOptionalString('caData'),
           authProvider: authProvider,
         };
         const dashboardUrl = c.getOptionalString('dashboardUrl');
