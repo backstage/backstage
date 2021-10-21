@@ -56,6 +56,7 @@ export type Remote = {
   reloadIntervalSeconds: number;
 };
 
+/** @public */
 export type RemoteConfigProp = {
   /**
    * URL of the remote config
@@ -111,8 +112,6 @@ export type LoadConfigOptions = {
   watch?: Watch;
 };
 
-const HTTP_RESPONSE_HEADER_ETAG = 'ETag';
-
 /**
  * Load configuration data.
  *
@@ -128,18 +127,15 @@ export async function loadConfig(
     .filter((e): e is { path: string } => e.hasOwnProperty('path'))
     .map(configTarget => configTarget.path);
 
-  let configUrls: string[] = options.configTargets
+  const configUrls: string[] = options.configTargets
     .slice()
     .filter((e): e is { url: string } => e.hasOwnProperty('url'))
     .map(configTarget => configTarget.url);
 
-  const remoteConfigProps: RemoteConfigProp[] = [];
-
   if (remote === undefined && configUrls.length > 0) {
-    console.warn(
+    throw new Error(
       `Remote config detected, however, this feature is turned off. Remote config will be ignored.`,
     );
-    configUrls = [];
   }
 
   // If no paths are provided, we default to reading
@@ -183,47 +179,32 @@ export async function loadConfig(
   const loadRemoteConfigFiles = async () => {
     const configs: AppConfig[] = [];
 
-    const readConfigFromUrl = async (remoteConfigProp: RemoteConfigProp) => {
-      const response = await fetch(remoteConfigProp.url);
+    const readConfigFromUrl = async (url: string) => {
+      const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(
-          `Could not read config file at ${remoteConfigProp.url}`,
-        );
+        throw new Error(`Could not read config file at ${url}`);
       }
 
-      remoteConfigProp.oldETag = remoteConfigProp.newETag ?? undefined;
-      remoteConfigProp.newETag =
-        response.headers.get(HTTP_RESPONSE_HEADER_ETAG) ?? undefined;
-      remoteConfigProp.content = await response.text();
-
-      return remoteConfigProp;
+      return await response.text();
     };
 
     for (let i = 0; i < configUrls.length; i++) {
-      const remoteConfigProp = await readConfigFromUrl({
-        url: configUrls[i],
-        content: null,
-      });
-
-      if (!isValidUrl(remoteConfigProp.url)) {
-        throw new Error(
-          `Config load path is not valid: '${remoteConfigProp.url}'`,
-        );
+      const configUrl = configUrls[i];
+      if (!isValidUrl(configUrl)) {
+        throw new Error(`Config load path is not valid: '${configUrl}'`);
       }
 
-      const dir = configRoot;
-      if (!remoteConfigProp.content) {
+      const remoteConfigContent = await readConfigFromUrl(configUrl);
+      if (!remoteConfigContent) {
         throw new Error(`Config is not valid`);
       }
-      const input = yaml.parse(remoteConfigProp.content);
+      const configYaml = yaml.parse(remoteConfigContent);
       const substitutionTransform = createSubstitutionTransform(env);
-      const data = await applyConfigTransforms(dir, input, [
+      const data = await applyConfigTransforms(configRoot, configYaml, [
         substitutionTransform,
       ]);
 
-      configs.push({ data, context: remoteConfigProp.url });
-
-      remoteConfigProps.push(remoteConfigProp);
+      configs.push({ data, context: configUrl });
     }
 
     return configs;
@@ -277,17 +258,12 @@ export async function loadConfig(
   };
 
   const watchRemoteConfig = (watchProp: Watch, remoteProp: Remote) => {
-    const hasConfigChanged = async (remoteConfigProp: RemoteConfigProp) => {
-      const requestProps = { method: 'HEAD' };
-      const { headers } = await fetch(remoteConfigProp.url, requestProps);
-      remoteConfigProp.oldETag = remoteConfigProp.newETag ?? undefined;
-      remoteConfigProp.newETag =
-        headers.get(HTTP_RESPONSE_HEADER_ETAG) ?? undefined;
-
+    const hasConfigChanged = async (
+      oldRemoteConfigs: AppConfig[],
+      newRemoteConfigs: AppConfig[],
+    ) => {
       return (
-        remoteConfigProp.oldETag !== undefined &&
-        remoteConfigProp.newETag !== undefined &&
-        remoteConfigProp.oldETag !== remoteConfigProp.newETag
+        JSON.stringify(oldRemoteConfigs) !== JSON.stringify(newRemoteConfigs)
       );
     };
 
@@ -295,18 +271,12 @@ export async function loadConfig(
     try {
       handle = setInterval(async () => {
         console.info(`Checking for config update`);
-        for (const remoteConfigProp of remoteConfigProps) {
-          if (await hasConfigChanged(remoteConfigProp)) {
-            console.info(`Remote config change, reloading config ...`);
-            const newRemoteConfigs = await loadRemoteConfigFiles();
-            watchProp.onChange([
-              ...newRemoteConfigs,
-              ...fileConfigs,
-              ...envConfigs,
-            ]);
-            console.info(`Remote config reloaded`);
-            break;
-          }
+        const newRemoteConfigs = await loadRemoteConfigFiles();
+        if (await hasConfigChanged(remoteConfigs, newRemoteConfigs)) {
+          remoteConfigs = newRemoteConfigs;
+          console.info(`Remote config change, reloading config ...`);
+          watchProp.onChange([...remoteConfigs, ...fileConfigs, ...envConfigs]);
+          console.info(`Remote config reloaded`);
         }
       }, remoteProp.reloadIntervalSeconds * 1000);
     } catch (error) {

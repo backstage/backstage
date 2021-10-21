@@ -18,32 +18,46 @@ import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
 import mockFs from 'mock-fs';
 import fs from 'fs-extra';
-import { v4 as uuidv4 } from 'uuid';
-
-const fetchMock = require('fetch-mock').sandbox();
-const nodeFetch = require('node-fetch');
-
-nodeFetch.default = fetchMock;
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 describe('loadConfig', () => {
+  const server = setupServer();
+  const initialLoaderHandler = rest.get(
+    `https://some.domain.io/app-config.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(
+          `app:
+                    title: Remote Example App
+                    sessionKey: 'abc123'
+                    escaped: \$\${Escaped}
+                  `,
+        ),
+      );
+    },
+  );
+
+  const reloadHandler = rest.get(
+    `https://some.domain.io/app-config.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(
+          `app:
+                    title: NEW ReMOTe ExaMPLe App
+                    sessionKey: 'abc123'
+                    escaped: \$\${Escaped}
+                  `,
+        ),
+      );
+    },
+  );
+
+  beforeAll(() => server.listen());
+
   beforeEach(() => {
     process.env.MY_SECRET = 'is-secret';
     process.env.SUBSTITUTE_ME = 'substituted';
-
-    fetchMock.mock(
-      {
-        url: 'https://some.domain.io/app-config.yaml',
-        method: 'GET',
-      },
-      {
-        body: `app:
-          title: Remote Example App
-          sessionKey: 'abc123'
-          escaped: \$\${Escaped}
-        `,
-        headers: { ETag: uuidv4().toString() },
-      },
-    );
 
     mockFs({
       '/root/app-config.yaml': `
@@ -87,9 +101,11 @@ describe('loadConfig', () => {
   });
 
   afterEach(() => {
-    fetchMock.restore();
     mockFs.restore();
+    server.resetHandlers();
   });
+
+  afterAll(() => server.close());
 
   it('load config from default path', async () => {
     await expect(
@@ -113,6 +129,8 @@ describe('loadConfig', () => {
   });
 
   it('load config from remote path', async () => {
+    server.use(initialLoaderHandler);
+
     const configUrl = 'https://some.domain.io/app-config.yaml';
 
     await expect(
@@ -267,6 +285,8 @@ describe('loadConfig', () => {
   });
 
   it('watches remote config urls', async () => {
+    server.use(initialLoaderHandler);
+
     const onChange = defer<AppConfig[]>();
     const stopSignal = defer<void>();
 
@@ -296,20 +316,7 @@ describe('loadConfig', () => {
       },
     ]);
 
-    fetchMock.mock(
-      {
-        url: 'https://some.domain.io/app-config.yaml',
-      },
-      {
-        body: `app:
-          title: NEW ReMOTe ExaMPLe App
-          sessionKey: 'abc123'
-          escaped: \$\${Escaped}
-        `,
-        headers: { ETag: uuidv4().toString() },
-      },
-      { overwriteRoutes: true },
-    );
+    server.use(reloadHandler);
 
     await expect(onChange.promise).resolves.toEqual([
       {
