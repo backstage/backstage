@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Refresh Kubernetes plugin on interval
+The Kubernetes plugin will now re-fetch the kubernetes objects every ten seconds (not current configurable), this allows users to track the progress of deployments without refreshing the browser.
