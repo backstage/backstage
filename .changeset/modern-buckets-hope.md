@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-azure-devops': minor
+'@backstage/plugin-azure-devops': patch
 ---
 
-Created stories for `BuildTable` component to document different component states.
+Simplified queue time calculation in `BuildTable`.
