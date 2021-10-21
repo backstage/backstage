@@ -20351,7 +20351,6 @@ minipass-fetch@^1.3.0, minipass-fetch@^1.3.2:
   resolved "https://registry.npmjs.org/minipass-fetch/-/minipass-fetch-1.3.3.tgz#34c7cea038c817a8658461bf35174551dce17a0a"
   integrity sha512-akCrLDWfbdAWkMLBxJEeWTdNsjML+dt5YgOI4gJ53vuO0vrmYQkUPxa6j6V65s9CcePIr2SSWqjT2EcrNseryQ==
   dependencies:
-    encoding "^0.1.12"
     minipass "^3.1.0"
     minipass-sized "^1.0.3"
     minizlib "^2.0.0"
@@ -23808,7 +23807,7 @@ react-resize-detector@^2.3.0:
     prop-types "^15.6.0"
     resize-observer-polyfill "^1.5.0"
 
-react-router-dom@6.0.0-beta.0, react-router-dom@^6.0.0-beta.0:
+react-router-dom@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
   integrity sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==
@@ -23816,12 +23815,24 @@ react-router-dom@6.0.0-beta.0, react-router-dom@^6.0.0-beta.0:
     prop-types "^15.7.2"
     react-router "6.0.0-beta.0"
 
-react-router@6.0.0-beta.0, react-router@^6.0.0-beta.0:
+react-router-dom@6.0.0-beta.7, react-router-dom@^6.0.0-beta.0:
+  version "6.0.0-beta.7"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.7.tgz#896acf6002a57507cccf09ed5cc6cf9d5554e07d"
+  integrity sha512-XW50WW6YBYbRJwQPIt8SAcXf8Jo47sY5QuEI8Y/TkckekoMVOHcax4CAArrbONV8MTNyZ4jUfDU776G8ToNDgw==
+  dependencies:
+    react-router "6.0.0-beta.7"
+
+react-router@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
   dependencies:
     prop-types "^15.7.2"
+
+react-router@6.0.0-beta.7, react-router@^6.0.0-beta.0:
+  version "6.0.0-beta.7"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.7.tgz#8c22236c46977e53696ed779ebec31080ab2d3ee"
+  integrity sha512-n5eIqqY724yW6v2G2DXwcTNwz+NlowV1bOg/OKLz6EtJWD8/lez/5whyfyp9dPkA3ICqYuDZhZxnhk7A/u0aFQ==
 
 react-side-effect@^2.1.0:
   version "2.1.0"

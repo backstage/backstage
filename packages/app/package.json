@@ -58,7 +58,7 @@
     "react-dom": "^16.12.0",
     "react-hot-loader": "^4.12.21",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.0.0-beta.7",
     "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
   },

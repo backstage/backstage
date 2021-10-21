@@ -58,7 +58,7 @@
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.0.0-beta.7",
     "react-use": "^17.2.4",
     "use-immer": "^0.6.0",
     "zen-observable": "^0.8.15"

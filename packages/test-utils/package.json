@@ -42,7 +42,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.0.0-beta.7",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
