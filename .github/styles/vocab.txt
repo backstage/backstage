@@ -61,6 +61,7 @@ Debounce
 declaratively
 deduplicated
 deps
+dependabot
 destructured
 dev
 devops
