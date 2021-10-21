@@ -21,6 +21,7 @@ export interface CheckResponse {
   id: string;
   metadata?: Record<string, any>;
   name: string;
+  type: string;
 }
 
 // @public
@@ -34,7 +35,7 @@ export interface FactChecker<
   CheckType extends TechInsightCheck,
   CheckResultType extends CheckResult,
 > {
-  addCheck(check: CheckType): Promise<boolean>;
+  addCheck(check: CheckType): Promise<CheckType>;
   getChecks(): Promise<CheckType[]>;
   runChecks(entity: string, checks: string[]): Promise<CheckResultType[]>;
   validate(check: CheckType): Promise<boolean>;
@@ -108,14 +109,13 @@ export type FlatTechInsightFact = TechInsightFact & {
 
 // @public
 export interface TechInsightCheck {
-  // (undocumented)
   description: string;
   factRefs: string[];
   failureMetadata?: Record<string, any>;
   id: string;
-  // (undocumented)
   name: string;
   successMetadata?: Record<string, any>;
+  type: string;
 }
 
 // @public
@@ -127,7 +127,7 @@ export interface TechInsightCheckRegistry<CheckType extends TechInsightCheck> {
   // (undocumented)
   list(): Promise<CheckType[]>;
   // (undocumented)
-  register(check: CheckType): Promise<void>;
+  register(check: CheckType): Promise<CheckType>;
 }
 
 // @public

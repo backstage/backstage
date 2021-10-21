@@ -83,11 +83,16 @@ export async function createRouter<
       return res.send(await factChecker.getChecks());
     });
 
-    router.get('/checks/:namespace/:kind/:name', async (req, res) => {
+    router.post('/checks/run/:namespace/:kind/:name', async (req, res) => {
       const { namespace, kind, name } = req.params;
-      const checks = req.query.checks as string[];
-      const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
       try {
+        if (!('checks' in req.body)) {
+          return res.status(422).send({
+            message: 'Failed to get checks from request.',
+          });
+        }
+        const { checks }: { checks: string[] } = req.body;
+        const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
         const checkResult = await factChecker.runChecks(entityTriplet, checks);
         return res.send(checkResult);
       } catch (e) {
@@ -120,7 +125,11 @@ export async function createRouter<
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);
     const endDatetime = DateTime.fromISO(req.query.endDatetime as string);
     if (!startDatetime.isValid || !endDatetime.isValid) {
-      return res.status(422).send('Failed to parse datetime from request');
+      return res.status(422).send({
+        message: 'Failed to parse datetime from request',
+        field: !startDatetime.isValid ? 'startDateTime' : 'endDateTime',
+        value: !startDatetime.isValid ? startDatetime : endDatetime,
+      });
     }
     const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
     return res.send(

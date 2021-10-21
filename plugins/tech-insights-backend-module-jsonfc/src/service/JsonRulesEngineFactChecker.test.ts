@@ -18,7 +18,10 @@ import {
   TechInsightCheckRegistry,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-common';
-import { JsonRulesEngineFactCheckerFactory } from '../index';
+import {
+  JSON_RULE_ENGINE_CHECK_TYPE,
+  JsonRulesEngineFactCheckerFactory,
+} from '../index';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TechInsightJsonRuleCheck } from '../types';
 
@@ -27,6 +30,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
     {
       id: 'brokenTestCheck',
       name: 'brokenTestCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Broken Check For Testing',
       factRefs: ['test-factretriever'],
       rule: {
@@ -46,6 +50,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
     {
       id: 'brokenTestCheck2',
       name: 'brokenTestCheck2',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Second Broken Check For Testing',
       factRefs: ['non-existing-factretriever'],
       rule: {
@@ -65,6 +70,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
     {
       id: 'simpleTestCheck',
       name: 'simpleTestCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Simple Check For Testing',
       factRefs: ['test-factretriever'],
       rule: {
@@ -85,6 +91,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
     {
       id: 'simpleTestCheck2',
       name: 'simpleTestCheck2',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Second Simple Check For Testing',
       factRefs: ['test-factretriever'],
       rule: {

@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  JsonRulesEngineFactCheckerFactory,
-  JsonRulesEngineFactChecker,
-} from './service/JsonRulesEngineFactChecker';
-export { JSON_RULE_ENGINE_CHECK_TYPE } from './constants';
-export type {
-  JsonRulesEngineFactCheckerFactoryOptions,
-  JsonRulesEngineFactCheckerOptions,
-} from './service/JsonRulesEngineFactChecker';
-export type {
-  JsonRuleCheckResponse,
-  JsonRuleBooleanCheckResult,
-  TechInsightJsonRuleCheck,
-  ResponseTopLevelCondition,
-  Rule,
-  DynamicFact,
-  CheckCondition,
-} from './types';
+
+/**
+ * @public
+ */
+export const JSON_RULE_ENGINE_CHECK_TYPE = 'json-rules-engine';

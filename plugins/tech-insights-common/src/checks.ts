@@ -66,7 +66,7 @@ export interface FactChecker<
    * @param check - The actual check to be added.
    * @returns  - An indicator if fact was successfully added
    */
-  addCheck(check: CheckType): Promise<boolean>;
+  addCheck(check: CheckType): Promise<CheckType>;
 
   /**
    * Retrieves all available checks that can be used to run checks against.
@@ -93,7 +93,7 @@ export interface FactChecker<
  *
  */
 export interface TechInsightCheckRegistry<CheckType extends TechInsightCheck> {
-  register(check: CheckType): Promise<void>;
+  register(check: CheckType): Promise<CheckType>;
   get(checkId: string): Promise<CheckType>;
   getAll(checks: string[]): Promise<CheckType[]>;
   list(): Promise<CheckType[]>;
@@ -135,7 +135,21 @@ export interface TechInsightCheck {
    */
   id: string;
 
+  /**
+   * Type identifier for the check.
+   * Can be used to determine storage options, logical routing to correct FactChecker implementation
+   * or to help frontend render correct component types based on this
+   */
+  type: string;
+
+  /**
+   * Human readable name of the check, may be displayed in the UI
+   */
   name: string;
+
+  /**
+   * Human readable description of the check, may be displayed in the UI
+   */
   description: string;
 
   /**

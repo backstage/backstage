@@ -34,6 +34,9 @@ export interface DynamicFact<T = unknown> {
 }
 
 // @public (undocumented)
+export const JSON_RULE_ENGINE_CHECK_TYPE = 'json-rules-engine';
+
+// @public (undocumented)
 export interface JsonRuleBooleanCheckResult extends BooleanCheckResult {
   // (undocumented)
   check: JsonRuleCheckResponse;
@@ -60,7 +63,7 @@ export class JsonRulesEngineFactChecker
     checkRegistry,
   }: JsonRulesEngineFactCheckerOptions);
   // (undocumented)
-  addCheck(check: TechInsightJsonRuleCheck): Promise<boolean>;
+  addCheck(check: TechInsightJsonRuleCheck): Promise<TechInsightJsonRuleCheck>;
   // (undocumented)
   getChecks(): Promise<TechInsightJsonRuleCheck[]>;
   // (undocumented)

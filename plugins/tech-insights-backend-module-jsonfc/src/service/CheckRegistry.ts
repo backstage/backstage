@@ -31,13 +31,14 @@ export class DefaultCheckRegistry<CheckType extends TechInsightCheck>
     });
   }
 
-  async register(check: CheckType) {
+  async register(check: CheckType): Promise<CheckType> {
     if (this.checks.has(check.id)) {
       throw new ConflictError(
         `Tech insight check with id ${check.id} has already been registered`,
       );
     }
     this.checks.set(check.id, check);
+    return check;
   }
 
   async get(checkId: string): Promise<CheckType> {

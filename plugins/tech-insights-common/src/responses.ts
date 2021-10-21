@@ -27,6 +27,12 @@ export interface CheckResponse {
    */
   id: string;
   /**
+   * Type identifier for the check.
+   * Can be used to determine storage options, logical routing to correct FactChecker implementation
+   * or to help frontend render correct component types based on this
+   */
+  type: string;
+  /**
    * Human readable name of the Check
    */
   name: string;

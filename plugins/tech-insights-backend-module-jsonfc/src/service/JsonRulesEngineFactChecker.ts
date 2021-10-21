@@ -29,6 +29,7 @@ import { Logger } from 'winston';
 import { pick } from 'lodash';
 import Ajv from 'ajv';
 import * as validationSchema from './validation-schema.json';
+import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
 
 const noopEvent = {
   type: 'noop',
@@ -113,6 +114,12 @@ export class JsonRulesEngineFactChecker
     const ajv = new Ajv({ verbose: true });
     const validator = ajv.compile(validationSchema);
     const isValidToSchema = validator(check.rule);
+    if (check.type !== JSON_RULE_ENGINE_CHECK_TYPE) {
+      this.logger.warn(
+        'Only ${JSON_RULE_ENGINE_CHECK_TYPE} checks can be registered to this fact checker',
+      );
+      return false;
+    }
     if (!isValidToSchema) {
       this.logger.warn(
         'Failed to to validate conditions against JSON schema',
@@ -146,15 +153,18 @@ export class JsonRulesEngineFactChecker
     return this.checkRegistry.list();
   }
 
-  async addCheck(check: TechInsightJsonRuleCheck): Promise<boolean> {
+  async addCheck(
+    check: TechInsightJsonRuleCheck,
+  ): Promise<TechInsightJsonRuleCheck> {
     if (!(await this.validate(check))) {
       this.logger.warn(
         `Check validation failed when adding check ${check.name} to check registry.`,
       );
-      return false;
+      throw new Error(
+        'Failed to add check to rules engine. Validation failed.',
+      );
     }
-    this.checkRegistry.register(check);
-    return true;
+    return await this.checkRegistry.register(check);
   }
 
   private retrieveFactReferences(
@@ -216,6 +226,7 @@ export class JsonRulesEngineFactChecker
   ) {
     const returnable = {
       id: techInsightCheck.id,
+      type: techInsightCheck.type,
       name: techInsightCheck.name,
       description: techInsightCheck.description,
       factRefs: techInsightCheck.factRefs,
