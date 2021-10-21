@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { parseGitHubOrgUrl } from './util';
 
-export { readGithubConfig, readGithubMultiOrgConfig } from './config';
-export type { GithubMultiOrgConfig, ProviderConfig } from './config';
-export {
-  getOrganizationRepositories,
-  getOrganizationTeams,
-  getOrganizationUsers,
-} from './github';
-export { parseGitHubOrgUrl } from './util';
+describe('parseGitHubOrgUrl', () => {
+  it('only supports clean org urls, and decodes them', () => {
+    expect(() => parseGitHubOrgUrl('https://github.com')).toThrow();
+    expect(() => parseGitHubOrgUrl('https://github.com/org/foo')).toThrow();
+    expect(() =>
+      parseGitHubOrgUrl('https://github.com/org/foo/teams'),
+    ).toThrow();
+    expect(parseGitHubOrgUrl('https://github.com/foo%32')).toEqual({
+      org: 'foo2',
+    });
+  });
+});
