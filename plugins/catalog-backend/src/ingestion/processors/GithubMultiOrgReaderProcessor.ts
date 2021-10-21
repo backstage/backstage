@@ -128,21 +128,18 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
         let prefix: string = orgConfig.userNamespace ?? '';
         if (prefix.length > 0) prefix += '/';
 
-        users.forEach(u => {
-          if (!allUsersMap.has(prefix + u.metadata.name)) {
-            allUsersMap.set(prefix + u.metadata.name, u);
-          }
-        });
-
-        // add org group to member users
+        // Add org group to member users, accounts for org users not part of a team
         const orgUserNames: string[] = [];
         groupMemberUsers.set(
           orgConfig.groupNamespace || orgConfig.name,
           orgUserNames,
         );
 
-        users.forEach(user => {
-          orgUserNames.push(user.metadata.name);
+        users.forEach(u => {
+          if (!allUsersMap.has(prefix + u.metadata.name)) {
+            allUsersMap.set(prefix + u.metadata.name, u);
+          }
+          orgUserNames.push(u.metadata.name);
         });
 
         for (const [groupName, userNames] of groupMemberUsers.entries()) {

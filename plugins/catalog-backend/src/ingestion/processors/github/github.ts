@@ -119,7 +119,7 @@ export async function getOrganizationUsers(
       },
       spec: {
         profile: {},
-        memberOf: [],
+        memberOf: [orgNamespace || org],
       },
     };
 
@@ -128,9 +128,6 @@ export async function getOrganizationUsers(
     if (user.name) entity.spec.profile!.displayName = user.name;
     if (user.email) entity.spec.profile!.email = user.email;
     if (user.avatarUrl) entity.spec.profile!.picture = user.avatarUrl;
-
-    // Add user to org
-    entity.spec.memberOf.push(orgNamespace || org);
 
     return entity;
   };
@@ -190,12 +187,15 @@ export async function getOrganizationTeams(
   let orgName: string | undefined;
   let orgDescription: string | undefined;
 
+  const orgSlug = orgNamespace || org;
+
   const mapper = async (team: Team) => {
     const entity: GroupEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
       metadata: {
         name: team.slug,
+        namespace: orgSlug,
         annotations: {
           'github.com/team-slug': team.combinedSlug,
         },
@@ -207,10 +207,6 @@ export async function getOrganizationTeams(
       },
     };
 
-    if (orgNamespace) {
-      entity.metadata.namespace = orgNamespace;
-    }
-
     if (team.description) {
       entity.metadata.description = team.description;
     }
@@ -221,10 +217,10 @@ export async function getOrganizationTeams(
       entity.spec.profile!.picture = team.avatarUrl;
     }
     if (team.parentTeam) {
-      entity.spec.parent = `${orgNamespace}/${team.parentTeam.slug}`;
+      entity.spec.parent = `${orgSlug}/${team.parentTeam.slug}`;
     } else {
       // Add parent org if no parent
-      entity.spec.parent = `default/${orgNamespace || org}`;
+      entity.spec.parent = `default/${orgSlug}`;
     }
     if (team.organization) {
       // Set organization name and description if not already defined
@@ -233,7 +229,8 @@ export async function getOrganizationTeams(
     }
 
     const memberNames: string[] = [];
-    const groupKey = orgNamespace ? `${orgNamespace}/${team.slug}` : team.slug;
+    const groupKey = `${orgSlug}/${team.slug}`;
+    // Set members for each team
     groupMemberUsers.set(groupKey, memberNames);
 
     if (!team.members.pageInfo.hasNextPage) {
@@ -265,17 +262,17 @@ export async function getOrganizationTeams(
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
-      name: orgNamespace || org,
+      name: orgSlug,
       namespace: 'default',
       description: orgDescription,
       annotations: {
-        'github.com/organization-slug': org,
+        'github.com/user-login': org,
       },
     },
     spec: {
       type: 'organization',
       profile: {
-        displayName: orgName || orgNamespace || org,
+        displayName: orgName || orgSlug,
       },
       children: [],
     },
