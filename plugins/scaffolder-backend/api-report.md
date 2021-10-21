@@ -41,6 +41,7 @@ export type ActionContext<Input extends InputBase> = {
   input: Input;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
+  metadata?: TemplateMetadata;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogEntityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -432,6 +433,8 @@ export interface TaskSpecV1beta2 {
   // (undocumented)
   baseUrl?: string;
   // (undocumented)
+  metadata?: TemplateMetadata;
+  // (undocumented)
   output: {
     [name: string]: string;
   };
@@ -453,6 +456,8 @@ export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   // (undocumented)
   baseUrl?: string;
+  // (undocumented)
+  metadata?: TemplateMetadata;
   // (undocumented)
   output: {
     [name: string]: JsonValue;
@@ -558,4 +563,9 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
+
+// @public
+export type TemplateMetadata = {
+  name: string;
+};
 ```

@@ -91,6 +91,8 @@ argument. It looks like the following:
 - `createTemporaryDirectory` a function to call to give you a temporary
   directory somewhere on the runner so you can store some files there rather
   than polluting the `workspacePath`
+- `ctx.metadata` - an object containing a `name` field, indicating the template
+  name. More metadata fields may be added later.
 
 ### Registering Custom Actions
 

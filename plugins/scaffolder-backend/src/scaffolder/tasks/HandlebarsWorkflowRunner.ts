@@ -225,6 +225,12 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             input: JSON.stringify(input, null, 2),
           });
 
+          if (!task.spec.metadata) {
+            console.warn(
+              'DEPRECATION NOTICE: metadata is undefined. metadata will be required in the future.',
+            );
+          }
+
           await action.handler({
             baseUrl: task.spec.baseUrl,
             logger: taskLogger,
@@ -242,6 +248,7 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             output(name: string, value: JsonValue) {
               stepOutputs[name] = value;
             },
+            metadata: task.spec.metadata,
           });
 
           // Remove all temporary directories that were created when executing the action

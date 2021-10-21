@@ -18,6 +18,7 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
+import { TemplateMetadata } from '../tasks/types';
 
 type PartialJsonObject = Partial<JsonObject>;
 type PartialJsonValue = PartialJsonObject | JsonValue | undefined;
@@ -44,6 +45,8 @@ export type ActionContext<Input extends InputBase> = {
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
    */
   createTemporaryDirectory(): Promise<string>;
+
+  metadata?: TemplateMetadata;
 };
 
 export type TemplateAction<Input extends InputBase> = {
