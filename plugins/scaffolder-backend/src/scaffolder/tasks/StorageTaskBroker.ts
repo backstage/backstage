@@ -23,11 +23,13 @@ import {
   TaskStore,
   TaskBroker,
   DispatchResult,
-  DbTaskEventRow,
-  DbTaskRow,
+  SerializedTaskEvent,
+  SerializedTask,
 } from './types';
 
-/*
+/**
+ * TaskAgent
+ *
  * @public
  */
 export class TaskAgent implements Task {
@@ -106,7 +108,12 @@ export class TaskAgent implements Task {
   }
 }
 
-interface TaskState {
+/**
+ * TaskState
+ *
+ * @public
+ */
+export interface TaskState {
   spec: TaskSpec;
   taskId: string;
   secrets?: TaskSecrets;
@@ -120,14 +127,10 @@ function defer() {
   return { promise, resolve };
 }
 
-/**
- * StorageTaskBroker
- * @public
- */
 export class StorageTaskBroker implements TaskBroker {
   constructor(
-    protected readonly storage: TaskStore,
-    protected readonly logger: Logger,
+    private readonly storage: TaskStore,
+    private readonly logger: Logger,
   ) {}
   private deferredDispatch = defer();
 
@@ -161,7 +164,7 @@ export class StorageTaskBroker implements TaskBroker {
     };
   }
 
-  async get(taskId: string): Promise<DbTaskRow> {
+  async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
   }
 
@@ -172,7 +175,7 @@ export class StorageTaskBroker implements TaskBroker {
     },
     callback: (
       error: Error | undefined,
-      result: { events: DbTaskEventRow[] },
+      result: { events: SerializedTaskEvent[] },
     ) => void,
   ): () => void {
     const { taskId } = options;

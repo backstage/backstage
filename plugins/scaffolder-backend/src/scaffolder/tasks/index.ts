@@ -16,6 +16,6 @@
 
 export { DatabaseTaskStore } from './DatabaseTaskStore';
 export { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
+export type { TaskState } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
-export { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
-export { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
+export type { TaskWorkerOptions, CreateWorkerOptions } from './TaskWorker';

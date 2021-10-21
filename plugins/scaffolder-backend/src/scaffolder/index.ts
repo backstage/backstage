@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 export * from './actions';
-export {
-  TaskAgent,
-  DatabaseTaskStore,
-  StorageTaskBroker,
-  TaskWorker,
-  LegacyWorkflowRunner,
-  DefaultWorkflowRunner,
-} from './tasks';
+export { DatabaseTaskStore, TaskWorker } from './tasks';
+export type { TaskWorkerOptions, CreateWorkerOptions } from './tasks';
+export type { TaskState } from './tasks';
 export type {
-  Task,
-  TaskBroker,
-  TaskSpec,
   TaskSecrets,
-  DispatchResult,
-  TaskStore,
+  TaskSpec,
+  CompletedTaskState,
   TaskStoreEmitOptions,
-  DbTaskRow,
+  TaskStoreListEventsOptions,
+  SerializedTask,
+  SerializedTaskEvent,
   TaskSpecV1beta2,
   TaskSpecV1beta3,
   Status,
-  TaskEventType,
 } from './tasks/types';
-
-export type { RawDbTaskEventRow } from './tasks/DatabaseTaskStore';

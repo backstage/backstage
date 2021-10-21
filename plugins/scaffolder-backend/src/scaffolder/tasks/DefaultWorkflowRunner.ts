@@ -34,7 +34,7 @@ import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 
-type Options = {
+type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
@@ -77,10 +77,6 @@ const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
   return { taskLogger, streamLogger };
 };
 
-/*
- * DefaultWorkflowRunner
- * @public
- */
 export class DefaultWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 
@@ -92,7 +88,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     },
   };
 
-  constructor(private readonly options: Options) {
+  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.nunjucks = nunjucks.configure(this.nunjucksOptions);
 
     // TODO(blam): let's work out how we can deprecate these.

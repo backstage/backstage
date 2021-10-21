@@ -26,7 +26,6 @@ import {
   TaskWorker,
 } from '../scaffolder/tasks';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
-import { TaskBroker } from '../scaffolder';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
@@ -41,11 +40,15 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
-
 import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
 import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
-import { TaskSpec } from '../scaffolder/tasks/types';
+import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
 
+/**
+ * RouterOptions
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
