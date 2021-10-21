@@ -33,7 +33,7 @@ export interface Config {
 
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
-      provider?: 'postgres' | 'memory' | 'firestore';
+      provider?: 'database' | 'memory' | 'firestore';
       firestore?: {
         /** The host to connect to */
         host?: string;

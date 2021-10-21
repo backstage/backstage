@@ -32,7 +32,7 @@ type Options = {
 export class KeyStores {
   /**
    * Looks at the `auth.keyStore` section in the application configuration
-   * and returns a KeyStore store. Defaults to `postgres`
+   * and returns a KeyStore store. Defaults to `database`
    *
    * @returns a KeyStore store
    */
@@ -43,11 +43,11 @@ export class KeyStores {
     const { logger, database } = options ?? {};
 
     const ks = config.getOptionalConfig('auth.keyStore');
-    const provider = ks?.getOptionalString('provider') ?? 'postgres';
+    const provider = ks?.getOptionalString('provider') ?? 'database';
 
     logger?.info(`Configuring "${provider}" as KeyStore provider`);
 
-    if (provider === 'postgres') {
+    if (provider === 'database') {
       if (!database) {
         throw new Error('This KeyStore provider requires a database');
       }
