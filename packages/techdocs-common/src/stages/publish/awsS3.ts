@@ -114,9 +114,9 @@ export class AwsS3Publish implements PublisherBase {
     return new AwsS3Publish(
       storageClient,
       bucketName,
-      bucketRootPath,
       legacyPathCasing,
       logger,
+      bucketRootPath,
     );
   }
 
@@ -154,15 +154,15 @@ export class AwsS3Publish implements PublisherBase {
   constructor(
     private readonly storageClient: aws.S3,
     private readonly bucketName: string,
-    private readonly bucketRootPath: string,
     private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
+    private readonly bucketRootPath: string,
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
-    this.bucketRootPath = bucketRootPath;
     this.legacyPathCasing = legacyPathCasing;
     this.logger = logger;
+    this.bucketRootPath = bucketRootPath;
   }
 
   /**

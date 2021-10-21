@@ -86,24 +86,24 @@ export class GoogleGCSPublish implements PublisherBase {
     return new GoogleGCSPublish(
       storageClient,
       bucketName,
-      bucketRootPath,
       legacyPathCasing,
       logger,
+      bucketRootPath,
     );
   }
 
   constructor(
     private readonly storageClient: Storage,
     private readonly bucketName: string,
-    private readonly bucketRootPath: string,
     private readonly legacyPathCasing: boolean,
     private readonly logger: Logger,
+    private readonly bucketRootPath: string,
   ) {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
-    this.bucketRootPath = bucketRootPath;
     this.legacyPathCasing = legacyPathCasing;
     this.logger = logger;
+    this.bucketRootPath = bucketRootPath;
   }
 
   /**
