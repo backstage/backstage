@@ -53,12 +53,10 @@ type CoverageTableRow = {
 
 export const groupByPath = (files: CoverageTableRow[]) => {
   const acc: FileStructureObject = {};
-  files.forEach (file => {
+  files.forEach(file => {
     const filename = file.filename;
     if (!file.filename) return;
-    const pathArray = filename?.split('/').filter(
-      el => el !== ''
-    );
+    const pathArray = filename?.split('/').filter(el => el !== '');
     if (pathArray) {
       if (!acc.hasOwnProperty(pathArray[0])) {
         acc[pathArray[0]] = [];
@@ -69,11 +67,14 @@ export const groupByPath = (files: CoverageTableRow[]) => {
   return acc;
 };
 
-const removeVisitedPathGroup = (files: CoverageTableRow[], pathGroup: string) => {
+const removeVisitedPathGroup = (
+  files: CoverageTableRow[],
+  pathGroup: string,
+) => {
   return files.map(file => {
     return {
       ...file,
-      filename: file.filename 
+      filename: file.filename
         ? file.filename.substring(
             file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
           )
