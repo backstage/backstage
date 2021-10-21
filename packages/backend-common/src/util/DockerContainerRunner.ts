@@ -16,6 +16,7 @@
 
 import Docker from 'dockerode';
 import fs from 'fs-extra';
+import { ForwardedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { ContainerRunner, RunContainerOptions } from './ContainerRunner';
 
@@ -45,8 +46,9 @@ export class DockerContainerRunner implements ContainerRunner {
     try {
       await this.dockerClient.ping();
     } catch (e) {
-      throw new Error(
-        `This operation requires Docker. Docker does not appear to be available. Docker.ping() failed with: ${e.message}`,
+      throw new ForwardedError(
+        'This operation requires Docker. Docker does not appear to be available. Docker.ping() failed with',
+        e,
       );
     }
 

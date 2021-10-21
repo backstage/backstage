@@ -352,3 +352,15 @@ export const bitbucketAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.bitbucket',
 });
+
+/**
+ * Provides authentication towards Atlassian APIs.
+ *
+ * See https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/
+ * for a full list of supported scopes.
+ */
+export const atlassianAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.atlassian',
+});

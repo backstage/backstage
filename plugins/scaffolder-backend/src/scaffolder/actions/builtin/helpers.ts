@@ -19,6 +19,7 @@ import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
 import { Octokit } from '@octokit/rest';
+import { assertError } from '@backstage/errors';
 
 export type RunCommandOptions = {
   command: string;
@@ -152,6 +153,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         },
       });
     } catch (e) {
+      assertError(e);
       if (
         e.message.includes(
           'Upgrade to GitHub Pro or make this repository public to enable this feature',

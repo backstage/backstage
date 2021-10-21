@@ -15,10 +15,24 @@
  */
 
 import {
+  Build,
   BuildResult,
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import {
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+  PullRequestStatus,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
+
+export { BuildResult, BuildStatus, PullRequestStatus };
+export type {
+  Build,
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+};
 
 export type RepoBuild = {
   id?: number;

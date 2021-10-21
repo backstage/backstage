@@ -155,13 +155,13 @@ const columns: TableColumn[] = [
   },
 ];
 
-type Props = {
+type BuildTableProps = {
   items?: RepoBuild[];
   loading: boolean;
-  error?: any;
+  error?: Error;
 };
 
-export const BuildTable = ({ items, loading, error }: Props) => {
+export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
   if (error) {
     return (
       <div>
@@ -181,7 +181,7 @@ export const BuildTable = ({ items, loading, error }: Props) => {
         showEmptyDataSourceMessage: !loading,
       }}
       title={`Builds (${items ? items.length : 0})`}
-      data={items || []}
+      data={items ?? []}
     />
   );
 };

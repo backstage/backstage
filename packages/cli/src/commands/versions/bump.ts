@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
+import { isError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -59,7 +60,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error.name === 'NotFoundError') {
+      if (isError(error) && error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }
@@ -97,7 +98,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error.name === 'NotFoundError') {
+      if (isError(error) && error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }

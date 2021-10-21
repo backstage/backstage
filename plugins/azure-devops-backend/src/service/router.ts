@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { PullRequestOptions, PullRequestStatus } from '../api/types';
+import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
+
+import { AzureDevOpsApi } from '../api';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import Router from 'express-promise-router';
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
-import { AzureDevOpsApi } from '../api';
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { PullRequestOptions } from '../api/types';
 
 const DEFAULT_TOP: number = 10;
 

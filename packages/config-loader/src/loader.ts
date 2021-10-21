@@ -19,15 +19,19 @@ import yaml from 'yaml';
 import chokidar from 'chokidar';
 import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
 import { AppConfig } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import {
   applyConfigTransforms,
   readEnvConfig,
   createIncludeTransform,
   createSubstitutionTransform,
 } from './lib';
-import { EnvFunc } from './lib/transform/types';
 
-/** @public */
+/**
+ * Options that control the loading of configuration files in the backend.
+ *
+ * @public
+ */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
   configRoot: string;
@@ -43,7 +47,7 @@ export type LoadConfigOptions = {
    *
    * @experimental This API is not stable and may change at any point
    */
-  experimentalEnvFunc?: EnvFunc;
+  experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
 
   /**
    * An optional configuration that enables watching of config files.
@@ -114,9 +118,7 @@ export async function loadConfig(
   try {
     fileConfigs = await loadConfigFiles();
   } catch (error) {
-    throw new Error(
-      `Failed to read static configuration file, ${error.message}`,
-    );
+    throw new ForwardedError('Failed to read static configuration file', error);
   }
 
   const envConfigs = await readEnvConfig(process.env);

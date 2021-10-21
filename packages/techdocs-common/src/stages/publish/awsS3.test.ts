@@ -26,7 +26,7 @@ import { AwsS3Publish } from './awsS3';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
 
-const rootDir = global.rootDir;
+const rootDir = (global as any).rootDir; // Set by setupTests.ts
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -286,7 +286,7 @@ describe('AwsS3Publish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed, The file ${techDocsMetadaFilePath} does not exist!`,
+        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadaFilePath} does not exist!`,
       });
     });
   });

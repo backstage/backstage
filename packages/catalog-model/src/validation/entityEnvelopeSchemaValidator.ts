@@ -25,6 +25,8 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * if it matches that schema, or throws a {@link globals#TypeError} describing the
  * errors.
  *
+ * @remarks
+ *
  * Note that this validator is only meant for applying the base schema checks;
  * it does not take custom policies or additional processor based validation
  * into account.
@@ -33,13 +35,15 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * own, it may contain `$ref` references to the following, which are resolved
  * automatically for you:
  *
- * - EntityEnvelope
- * - Entity
- * - EntityMeta
- * - common#<id>
+ * - {@link EntityEnvelope}
+ * - {@link Entity}
+ * - {@link EntityMeta}
+ * - `common#<id>`
+ *
+ * See also {@link https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema}
  *
  * @public
- * @see https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema
+ *
  */
 export function entityEnvelopeSchemaValidator<
   T extends EntityEnvelope = EntityEnvelope,

@@ -364,6 +364,11 @@ auth:
       development:
         clientId: ${AUTH_BITBUCKET_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+    atlassian:
+      development:
+        clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
+        clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
+        scopes: ${AUTH_ATLASSIAN_SCOPES}
 costInsights:
   engineerCost: 200000
   products:

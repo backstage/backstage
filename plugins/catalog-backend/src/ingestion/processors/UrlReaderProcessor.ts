@@ -16,6 +16,7 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
@@ -91,6 +92,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
         });
       }
     } catch (error) {
+      assertError(error);
       const message = `Unable to read ${location.type}, ${error}`;
       if (error.name === 'NotModifiedError' && cacheItem) {
         for (const parseResult of cacheItem.value) {
