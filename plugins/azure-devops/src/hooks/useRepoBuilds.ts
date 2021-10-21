@@ -27,9 +27,9 @@ export function useRepoBuilds(
   entity: Entity,
   defaultLimit?: number,
 ): {
-  items: RepoBuild[] | null;
+  items?: RepoBuild[];
   loading: boolean;
-  error: Error | null;
+  error?: Error;
 } {
   const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
   const options: RepoBuildOptions = {
@@ -44,8 +44,8 @@ export function useRepoBuilds(
   }, [api, project, repo, entity]);
 
   return {
-    items: value?.items ?? null,
+    items: value?.items,
     loading,
-    error: error ?? null,
+    error,
   };
 }

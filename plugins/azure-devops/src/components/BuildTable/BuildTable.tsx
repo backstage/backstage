@@ -156,9 +156,9 @@ const columns: TableColumn[] = [
 ];
 
 type BuildTableProps = {
-  items: RepoBuild[] | null;
+  items?: RepoBuild[];
   loading: boolean;
-  error: Error | null;
+  error?: Error;
 };
 
 export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
