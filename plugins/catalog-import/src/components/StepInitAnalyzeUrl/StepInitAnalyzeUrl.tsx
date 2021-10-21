@@ -113,8 +113,8 @@ export const StepInitAnalyzeUrl = ({
             break;
           }
         }
-      } catch (e) {
-        setError(e.data?.error?.message ?? e.message);
+      } catch (e: any) {
+        setError(e?.data?.error?.message ?? e.message);
         setSubmitted(false);
       }
     },

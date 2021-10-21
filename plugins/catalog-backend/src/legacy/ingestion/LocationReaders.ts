@@ -255,7 +255,7 @@ export class LocationReaders implements LocationReader {
       const message = `Policy check failed while analyzing entity ${kind}:${namespace}/${name} at ${stringifyLocationReference(
         item.location,
       )}, ${e}`;
-      emit(result.inputError(item.location, e.message));
+      emit(result.inputError(item.location, message));
       logger.warn(message);
       return undefined;
     }

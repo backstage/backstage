@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { Readable } from 'stream';
+import { IStorageFilesMock } from '../../src/testUtils/types';
 
-const storage = global.storageFilesMock;
+const storage = global.storageFilesMock as IStorageFilesMock;
 
 class GCSFile {
   private readonly path: string;

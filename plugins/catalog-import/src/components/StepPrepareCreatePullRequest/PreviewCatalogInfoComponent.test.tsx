@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
@@ -45,26 +45,28 @@ const entities: Entity[] = [
 ];
 
 describe('<PreviewCatalogInfoComponent />', () => {
-  it('renders without exploding', async () => {
-    const { getByText, findByText } = render(
+  it('renders without exploding', () => {
+    render(
       <PreviewCatalogInfoComponent
         repositoryUrl="http://my-repository/a/"
         entities={entities}
       />,
     );
 
-    const repositoryUrl = getByText('http://my-repository/a/catalog-info.yaml');
-    const kindText = await findByText('Kind_2');
+    const repositoryUrl = screen.getByText(
+      'http://my-repository/a/catalog-info.yaml',
+    );
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();
     expect(kindText).toBeVisible();
   });
 
-  it('renders card with custom styles', async () => {
+  it('renders card with custom styles', () => {
     const { result } = renderHook(() => useStyles());
 
-    const { getByText } = render(
+    render(
       <PreviewCatalogInfoComponent
         repositoryUrl="http://my-repository/a/"
         entities={entities}
@@ -72,18 +74,20 @@ describe('<PreviewCatalogInfoComponent />', () => {
       />,
     );
 
-    const repositoryUrl = getByText('http://my-repository/a/catalog-info.yaml');
-    const kindText = getByText('Kind_2');
+    const repositoryUrl = screen.getByText(
+      'http://my-repository/a/catalog-info.yaml',
+    );
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).not.toBeVisible();
     expect(kindText).toBeInTheDocument();
     expect(kindText).not.toBeVisible();
   });
 
-  it('renders with custom styles', async () => {
+  it('renders with custom styles', () => {
     const { result } = renderHook(() => useStyles());
 
-    const { getByText } = render(
+    render(
       <PreviewCatalogInfoComponent
         repositoryUrl="http://my-repository/a/"
         entities={entities}
@@ -91,8 +95,10 @@ describe('<PreviewCatalogInfoComponent />', () => {
       />,
     );
 
-    const repositoryUrl = getByText('http://my-repository/a/catalog-info.yaml');
-    const kindText = getByText('Kind_2');
+    const repositoryUrl = screen.getByText(
+      'http://my-repository/a/catalog-info.yaml',
+    );
+    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();

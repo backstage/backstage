@@ -23,29 +23,37 @@ import ObservableImpl from 'zen-observable';
 
 export type MockStorageBucket = { [key: string]: any };
 
-const bucketStorageApis = new Map<string, MockStorageApi>();
-
 export class MockStorageApi implements StorageApi {
   private readonly namespace: string;
   private readonly data: MockStorageBucket;
+  private readonly bucketStorageApis: Map<string, MockStorageApi>;
 
-  private constructor(namespace: string, data?: MockStorageBucket) {
+  private constructor(
+    namespace: string,
+    bucketStorageApis: Map<string, MockStorageApi>,
+    data?: MockStorageBucket,
+  ) {
     this.namespace = namespace;
+    this.bucketStorageApis = bucketStorageApis;
     this.data = { ...data };
   }
 
   static create(data?: MockStorageBucket) {
-    return new MockStorageApi('', data);
+    return new MockStorageApi('', new Map(), data);
   }
 
   forBucket(name: string): StorageApi {
-    if (!bucketStorageApis.has(name)) {
-      bucketStorageApis.set(
+    if (!this.bucketStorageApis.has(name)) {
+      this.bucketStorageApis.set(
         name,
-        new MockStorageApi(`${this.namespace}/${name}`, this.data),
+        new MockStorageApi(
+          `${this.namespace}/${name}`,
+          this.bucketStorageApis,
+          this.data,
+        ),
       );
     }
-    return bucketStorageApis.get(name)!;
+    return this.bucketStorageApis.get(name)!;
   }
 
   get<T>(key: string): T | undefined {

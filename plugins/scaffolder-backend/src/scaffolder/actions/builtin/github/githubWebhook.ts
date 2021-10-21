@@ -17,6 +17,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
 import { emitterEventNames } from '@octokit/webhooks';
+import { assertError } from '@backstage/errors';
 
 type ContentType = 'form' | 'json';
 
@@ -130,6 +131,7 @@ export function createGithubWebhookAction(options: {
         });
         ctx.logger.info(`Webhook '${webhookUrl}' created successfully`);
       } catch (e) {
+        assertError(e);
         ctx.logger.warn(
           `Failed: create webhook '${webhookUrl}' on repo: '${repo}', ${e.message}`,
         );

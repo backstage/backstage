@@ -15,8 +15,9 @@
  */
 import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { MockAnalyticsApi, renderInTestApp } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogEntityRouteRef } from '../../routes';
@@ -166,5 +167,54 @@ describe('<CatalogGraphPage/>', () => {
     userEvent.click(getByText('b:d/e'), { shiftKey: true });
 
     expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
+  });
+
+  test('should capture analytics event when selecting other entity', async () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const { getByText, findAllByTestId } = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+        {wrapper}
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        },
+      },
+    );
+
+    expect(await findAllByTestId('node')).toHaveLength(2);
+
+    userEvent.click(getByText('b:d/e'));
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'b:d/e',
+    });
+  });
+
+  test('should capture analytics event when navigating to entity', async () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const { getByText, findAllByTestId } = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+        {wrapper}
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        },
+      },
+    );
+
+    expect(await findAllByTestId('node')).toHaveLength(2);
+
+    userEvent.click(getByText('b:d/e'), { shiftKey: true });
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'b:d/e',
+      attributes: {
+        to: '/entity/{kind}/{namespace}/{name}',
+      },
+    });
   });
 });

@@ -21,6 +21,7 @@ import {
   SOURCE_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 import fs from 'fs-extra';
 import os from 'os';
 import { Logger } from 'winston';
@@ -39,6 +40,7 @@ export async function getWorkingDirectory(
     await fs.access(workingDirectory, fs.constants.F_OK | fs.constants.W_OK);
     logger.info(`using working directory: ${workingDirectory}`);
   } catch (err) {
+    assertError(err);
     logger.error(
       `working directory ${workingDirectory} ${
         err.code === 'ENOENT' ? 'does not exist' : 'is not writable'

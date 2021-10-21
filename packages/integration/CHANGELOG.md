@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.6.8
+
+### Patch Changes
+
+- eab072161e: By replacing `\n` with a newline for GitHub Apps private keys, this allows users to store the private key as an environment variable and reference it in the YAML.
+
 ## 0.6.7
 
 ### Patch Changes

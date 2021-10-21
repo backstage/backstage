@@ -27,6 +27,7 @@ import {
   getGeneratorKey,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
+  patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
   storeEtagMetadata,
   validateMkdocsYaml,
@@ -65,6 +66,8 @@ const mkdocsYmlWithComments = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_comments.yml'),
 );
 const mockLogger = getVoidLogger();
+const warn = jest.spyOn(mockLogger, 'warn');
+
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
@@ -286,6 +289,78 @@ describe('helpers', () => {
     });
   });
 
+  describe('patchIndexPreBuild', () => {
+    afterEach(() => {
+      warn.mockClear();
+    });
+    it('should have no effect if docs/index.md exists', async () => {
+      mockFs({
+        '/docs/index.md': 'index.md content',
+        '/docs/README.md': 'docs/README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'index.md content',
+      );
+      expect(warn).not.toHaveBeenCalledWith();
+      mockFs.restore();
+    });
+
+    it("should use docs/README.md if docs/index.md doesn't exists", async () => {
+      mockFs({
+        '/docs/README.md': 'docs/README.md content',
+        '/README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'docs/README.md content',
+      );
+      expect(warn.mock.calls).toEqual([['docs/index.md not found.']]);
+      mockFs.restore();
+    });
+
+    it('should use README.md if neither docs/index.md or docs/README.md exist', async () => {
+      mockFs({
+        '/README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+        'main README.md content',
+      );
+      expect(warn.mock.calls).toEqual([
+        ['docs/index.md not found.'],
+        ['docs/README.md not found.'],
+        ['docs/readme.md not found.'],
+      ]);
+      mockFs.restore();
+    });
+
+    it('should not use any file as index.md if no one matches the requirements', async () => {
+      mockFs({});
+
+      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+
+      expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
+      expect(warn.mock.calls).toEqual([
+        ['docs/index.md not found.'],
+        ['docs/README.md not found.'],
+        ['docs/readme.md not found.'],
+        ['README.md not found.'],
+        ['readme.md not found.'],
+        [
+          "Could not find any techdocs' index file. Please make sure at least one of /docs/index.md /docs/README.md /docs/readme.md /README.md /readme.md exists.",
+        ],
+      ]);
+      mockFs.restore();
+    });
+  });
+
   describe('addBuildTimestampMetadata', () => {
     beforeEach(() => {
       mockFs.restore();
@@ -406,7 +481,7 @@ describe('helpers', () => {
     it('should return true on when a valid docs_dir is present', async () => {
       await expect(
         validateMkdocsYaml(inputDir, mkdocsYmlWithValidDocDir.toString()),
-      ).resolves.toBeUndefined();
+      ).resolves.toBe('docs/');
     });
 
     it('should return false on absolute doc_dir path', async () => {

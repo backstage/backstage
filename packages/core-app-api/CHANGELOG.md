@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 0.1.17
+
+### Patch Changes
+
+- 75bc878221: Internal refactor to avoid importing all of `@material-ui/core`.
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
 ## 0.1.16
 
 ### Patch Changes

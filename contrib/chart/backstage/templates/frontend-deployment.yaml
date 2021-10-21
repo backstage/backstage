@@ -32,7 +32,7 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.containerPort }}
           resources:
-            {{- toYaml .Values.backend.resources | nindent 12 }}
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "backstage.fullname" . }}-app-env

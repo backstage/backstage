@@ -16,11 +16,13 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
+import { Observable } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { StorageApi } from '@backstage/core-plugin-api';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
@@ -130,6 +132,17 @@ export type DefaultEntityFilters = {
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
 };
+
+// @public
+export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
+  constructor(opts: { storageApi: StorageApi });
+  // (undocumented)
+  isStarred(entityRef: string): boolean;
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
+}
 
 // Warning: (ae-forgotten-export) The symbol "EntityLoadingStatus" needs to be exported by the entry point index.d.ts
 //
@@ -742,6 +755,15 @@ export function reduceEntityFilters(
 // @public (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
+// @public
+export interface StarredEntitiesApi {
+  starredEntitie$(): Observable<Set<string>>;
+  toggleStarred(entityRef: string): Promise<void>;
+}
+
+// @public
+export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi>;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "UnregisterEntityDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -866,10 +888,18 @@ export const UserListPicker: ({
 // Warning: (ae-missing-release-tag) "useStarredEntities" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const useStarredEntities: () => {
+export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entity: Entity) => void;
-  isStarredEntity: (entity: Entity) => boolean;
+  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
+  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+};
+
+// Warning: (ae-missing-release-tag) "useStarredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+  toggleStarredEntity: () => void;
+  isStarredEntity: boolean;
 };
 
 // Warnings were encountered during analysis:

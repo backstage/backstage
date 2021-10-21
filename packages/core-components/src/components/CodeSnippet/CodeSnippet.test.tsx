@@ -31,6 +31,12 @@ const minProps = {
 };
 
 describe('<CodeSnippet />', () => {
+  // react-syntax-highlighter is large and can cause significant slowdowns
+  // This test makes sure we're loading things in asynchronously and not too broadly.
+  it('renders quickly', async () => {
+    await renderInTestApp(<CodeSnippet text="" language="javascript" />);
+  }, 1000);
+
   it('renders text without exploding', async () => {
     const { getByText } = await renderInTestApp(<CodeSnippet {...minProps} />);
     expect(getByText(/"Hello"/)).toBeInTheDocument();

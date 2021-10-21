@@ -20,6 +20,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { getCodeownersFilePath } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
+import { assertError } from '@backstage/errors';
 
 const BACKSTAGE = '@backstage';
 
@@ -35,6 +36,7 @@ export const checkExists = async (rootDir: string, pluginName: string) => {
         );
       }
     } catch (e) {
+      assertError(e);
       throw new Error(
         chalk.red(
           `   There was an error removing plugin ${chalk.cyan(pluginName)}: ${
@@ -51,6 +53,7 @@ export const removePluginDirectory = async (destination: string) => {
     try {
       await fse.remove(destination);
     } catch (e) {
+      assertError(e);
       throw Error(
         chalk.red(
           `   There was a problem removing the plugin directory: ${e.message}`,
@@ -67,6 +70,7 @@ export const removeSymLink = async (destination: string) => {
       try {
         await fse.remove(destination);
       } catch (e) {
+        assertError(e);
         throw Error(
           chalk.red(
             `   Could not remove symbolic link\t${chalk.cyan(destination)}: ${
@@ -106,6 +110,7 @@ export const removeReferencesFromPluginsFile = async (
     try {
       await removeAllStatementsContainingID(pluginsFile, pluginNameCapitalized);
     } catch (e) {
+      assertError(e);
       throw new Error(
         chalk.red(
           `   There was an error removing export statement for plugin ${chalk.cyan(
@@ -125,6 +130,7 @@ export const removePluginFromCodeOwners = async (
     try {
       await removeAllStatementsContainingID(codeOwnersFile, pluginName);
     } catch (e) {
+      assertError(e);
       throw new Error(
         chalk.red(
           `   There was an error removing code owners statement for plugin ${chalk.cyan(
@@ -165,6 +171,7 @@ export const removeReferencesFromAppPackage = async (
         'utf-8',
       );
     } catch (e) {
+      assertError(e);
       throw new Error(
         chalk.red(
           `  Failed to remove plugin as dependency in app: ${chalk.cyan(
@@ -245,6 +252,7 @@ export default async () => {
     );
     Task.log();
   } catch (error) {
+    assertError(error);
     Task.error(error.message);
     Task.log('It seems that something went wrong when removing the plugin 🤔');
   }

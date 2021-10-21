@@ -74,7 +74,7 @@ class GithubAppManager {
     this.baseUrl = baseUrl;
     this.baseAuthConfig = {
       appId: config.appId,
-      privateKey: config.privateKey,
+      privateKey: config.privateKey.replace(/\\n/gm, '\n'),
     };
     this.appClient = new Octokit({
       baseUrl,

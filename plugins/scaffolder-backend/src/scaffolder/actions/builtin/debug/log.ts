@@ -39,10 +39,15 @@ export function createDebugLogAction() {
             title: 'List all files in the workspace, if true.',
             type: 'boolean',
           },
+          extra: {
+            title: 'Extra info',
+          },
         },
       },
     },
     async handler(ctx) {
+      ctx.logger.info(JSON.stringify(ctx.input, null, 2));
+
       if (ctx.input?.message) {
         ctx.logStream.write(ctx.input.message);
       }

@@ -21,8 +21,11 @@ import { UNSTABLE_EntityStatus } from './EntityStatus';
 /**
  * The parts of the format that's common to all versions/kinds of entity.
  *
+ * @remarks
+ *
+ * See also:
+ * {@link https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/}
  * @public
- * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
 export type Entity = {
   /**
@@ -63,9 +66,13 @@ export type Entity = {
 /**
  * Metadata fields common to all versions/kinds of entity.
  *
+ * @remarks
+ *
+ * See also:
+ * {@link https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta}
+ * {@link https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/}
+ *
  * @public
- * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
- * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
 export type EntityMeta = JsonObject & {
   /**

@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.7.16
+
+### Patch Changes
+
+- 53bdc66623: add a --from <location> option to the plugin install command
+- 84e24fcdaf: Bump sucrase to version 3.20.2
+- 6583c6ac40: Add semicolon in template to make prettier happy
+- c6f927d819: Bump mini-css-extract-plugin to v2
+- 16f044cb6b: Update default backend ESLint configuration to allow usage of `__dirname` in tests.
+- 1ef9e64901: Add an experimental `install <plugin>` command.
+
+  Given a `pluginId`, the command looks for NPM packages matching `@backstage/plugin-{pluginId}` or `backstage-plugin-{pluginId}` or `{pluginId}`. It looks for the `experimentalInstallationRecipe` in their `package.json` for the steps of installation. Detailed documentation and API Spec to follow (and to be decided as well).
+
 ## 0.7.15
 
 ### Patch Changes
