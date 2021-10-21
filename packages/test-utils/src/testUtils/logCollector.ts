@@ -17,40 +17,38 @@
 /* eslint-disable no-console */
 
 /**
- * @public
- * @deprecated import from test-utils instead */
+ * Severity levels of {@link CollectedLogs}
+ * @public */
 export type LogFuncs = 'log' | 'warn' | 'error';
 /**
- * @public
- * @deprecated import from test-utils instead */
+ * AsyncLogCollector type used in {@link (withLogCollector:1)} callback function.
+ * @public */
 export type AsyncLogCollector = () => Promise<void>;
 /**
- * @public
- * @deprecated import from test-utils instead */
+ * SyncLogCollector type used in {@link (withLogCollector:2)} callback function.
+ * @public */
 export type SyncLogCollector = () => void;
 /**
- * @public
- * @deprecated import from test-utils instead */
+ * Union type used in {@link (withLogCollector:3)} callback function.
+ * @public */
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 /**
- * @public
- * @deprecated import from test-utils instead */
+ * Map of severity level and corresponding log lines.
+ * @public */
 export type CollectedLogs<T extends LogFuncs> = { [key in T]: string[] };
 
 const allCategories = ['log', 'warn', 'error'];
 
 /**
  * Asynchronous log collector with that collects all categories
- * @public
- * @deprecated import from test-utils instead */
+ * @public */
 export function withLogCollector(
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<LogFuncs>>;
 
 /**
  * Synchronous log collector with that collects all categories
- * @public
- * @deprecated import from test-utils instead */
+ * @public */
 export function withLogCollector(
   callback: SyncLogCollector,
 ): CollectedLogs<LogFuncs>;
@@ -58,9 +56,7 @@ export function withLogCollector(
 /**
  * Asynchronous log collector with that only collects selected categories
  * @public
- * @deprecated import from test-utils instead
  */
-
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: AsyncLogCollector,
@@ -68,14 +64,14 @@ export function withLogCollector<T extends LogFuncs>(
 
 /**
  * Synchronous log collector with that only collects selected categories
- * @public
- * @deprecated import from test-utils instead */
+ * @public */
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: SyncLogCollector,
 ): CollectedLogs<T>;
 
 /**
+ * Log collector that collect logs either from a sync or async collector.
  * @public
  * @deprecated import from test-utils instead
  * */

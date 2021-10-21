@@ -25,7 +25,8 @@ const codes = {
 
 /**
  * @public
- * @deprecated because of no usages. */
+ * @deprecated because it has no usages. Perhaps resurfaced in the future when need be.
+ */
 export class Keyboard {
   static async type(target, input) {
     await new Keyboard(target).type(input);

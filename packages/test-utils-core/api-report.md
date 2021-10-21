@@ -6,21 +6,17 @@
 import { ReactElement } from 'react';
 import { RenderResult } from '@testing-library/react';
 
-// Warning: (ae-missing-release-tag) "AsyncLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AsyncLogCollector = () => Promise<void>;
 
-// Warning: (ae-missing-release-tag) "CollectedLogs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CollectedLogs<T extends LogFuncs> = {
   [key in T]: string[];
 };
 
-// Warning: (ae-missing-release-tag) "Keyboard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class Keyboard {
   constructor(
     target: any,
@@ -66,48 +62,35 @@ export class Keyboard {
   static typeDebug(target: any, input: any): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "LogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 
-// Warning: (ae-missing-release-tag) "LogFuncs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LogFuncs = 'log' | 'warn' | 'error';
 
-// Warning: (ae-missing-release-tag) "renderWithEffects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated
 export function renderWithEffects(nodes: ReactElement): Promise<RenderResult>;
 
-// Warning: (ae-missing-release-tag) "SyncLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SyncLogCollector = () => void;
 
-// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "withLogCollector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated
 export function withLogCollector(
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<LogFuncs>>;
 
-// @public (undocumented)
+// @public @deprecated
 export function withLogCollector(
   callback: SyncLogCollector,
 ): CollectedLogs<LogFuncs>;
 
-// @public (undocumented)
+// @public @deprecated
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<T>>;
 
-// @public (undocumented)
+// @public @deprecated
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: SyncLogCollector,
