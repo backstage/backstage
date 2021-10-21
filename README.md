@@ -58,6 +58,10 @@ Once you observe 'Listening on :7000' in the log you can see the app by navigati
 
 ## Adding Techdocs to your repository
 
+**DISCLAIMER**
+
+**Credentials are currently setup with a jenkins pipeline, the credentialing process is still in progress with the BIH team and adding techdocs independently is not available at this time 10/21.**
+
 Things you'll need:
   
   - [Techdocs-cli](https://github.com/backstage/techdocs-cli)
@@ -75,8 +79,6 @@ nav:
 plugins:
   - techdocs-core
 ```
-   Techdocs Todo
-  - Credentials are currently setup with a jenkins pipeline, the credentialing process is still in progress * 10/21
   
   - Once you have techdocs-cli installed
   run the techdocs:
