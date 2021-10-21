@@ -579,8 +579,8 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:38:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:43:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
+// src/providers/atlassian/provider.d.ts:37:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
+// src/providers/atlassian/provider.d.ts:42:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:99:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:121:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
