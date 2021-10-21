@@ -14,7 +14,7 @@ export class AuthenticationError extends CustomErrorBase {}
 // @public
 export class ConflictError extends CustomErrorBase {}
 
-// @public (undocumented)
+// @public
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
   // (undocumented)
