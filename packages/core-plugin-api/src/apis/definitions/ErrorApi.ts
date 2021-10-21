@@ -15,7 +15,7 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/core-types';
 
 /**
  * Mirrors the JavaScript Error class, for the purpose of

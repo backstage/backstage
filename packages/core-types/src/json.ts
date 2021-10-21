@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,29 @@
  */
 
 /**
- * Core API used by Backstage plugins
+ * A type representing all allowed JSON primitive values.
  *
- * @packageDocumentation
+ * @public
  */
+export type JsonPrimitive = number | string | boolean | null;
 
-export * from './analytics';
-export * from './apis';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './routing';
-export * from './deprecatedTypes';
+/**
+ * A type representing all allowed JSON object values.
+ *
+ * @public
+ */
+export type JsonObject = { [key in string]?: JsonValue };
+
+/**
+ * A type representing all allowed JSON array values.
+ *
+ * @public
+ */
+export interface JsonArray extends Array<JsonValue> {}
+
+/**
+ * A type representing all allowed JSON values.
+ *
+ * @public
+ */
+export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
