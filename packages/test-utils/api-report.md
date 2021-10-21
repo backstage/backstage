@@ -146,9 +146,7 @@ export type MockStorageBucket = {
   [key: string]: any;
 };
 
-// Warning: (ae-missing-release-tag) "msw" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const msw: {
   setupDefaultHandlers: (worker: {
     listen: (t: any) => void;
@@ -165,6 +163,13 @@ export function renderInTestApp(
 
 // @public
 export function renderWithEffects(nodes: ReactElement): Promise<RenderResult>;
+
+// @public
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
 
 // @public
 export type SyncLogCollector = () => void;

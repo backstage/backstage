@@ -14,8 +14,6 @@ export type CollectedLogs<T extends LogFuncs> = {
   [key in T]: string[];
 };
 
-// Warning: (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
-//
 // @public @deprecated (undocumented)
 export class Keyboard {
   constructor(
