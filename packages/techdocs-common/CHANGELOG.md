@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.10.4
+
+### Patch Changes
+
+- 87f5b9db13: Use docs/README.md or README.md as fallback if docs/index.md is missing
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.10.3
 
 ### Patch Changes

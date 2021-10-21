@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.9.7
+
+### Patch Changes
+
+- be59619212: Add "rate limit exceeded" to error from GithubUrlReader if that is the cause of a read failure
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/errors@0.1.3
+
 ## 0.9.6
 
 ### Patch Changes

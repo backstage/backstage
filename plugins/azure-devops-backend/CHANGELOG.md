@@ -1,5 +1,13 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.1.3
+
+### Patch Changes
+
+- f67dff0d20: Re-exported types from azure-devops-node-api in @backstage/plugin-azure-devops-backend.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+
 ## 0.1.2
 
 ### Patch Changes

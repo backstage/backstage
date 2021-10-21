@@ -1,5 +1,16 @@
 # @backstage/plugin-jenkins
 
+## 0.5.11
+
+### Patch Changes
+
+- 3c756657b8: Sort Jenkins build by timestamp in `CITable`
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
 ## 0.5.10
 
 ### Patch Changes
