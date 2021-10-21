@@ -23,7 +23,7 @@
   "scripts": {
     "build": "backstage-cli build --outputs types,esm",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "test": "backstage-cli test --passWithNoTests",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
