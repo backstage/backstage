@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AtlassianAuthProvider,
-  atlassianDefaultSignInResolver,
-} from './provider';
+import { AtlassianAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
@@ -55,7 +52,6 @@ describe('createAtlassianProvider', () => {
     clientSecret: 'mock',
     callbackUrl: 'mock',
     scopes: 'scope',
-    signInResolver: atlassianDefaultSignInResolver,
   });
 
   it('should auth', async () => {
@@ -84,9 +80,6 @@ describe('createAtlassianProvider', () => {
     });
     const { response } = await provider.handler({} as any);
     expect(response).toEqual({
-      backstageIdentity: {
-        id: 'conrad',
-      },
       providerInfo: {
         accessToken: 'accessToken',
         expiresInSeconds: 123,
@@ -137,9 +130,6 @@ describe('createAtlassianProvider', () => {
     const response = await provider.refresh({} as any);
 
     expect(response).toEqual({
-      backstageIdentity: {
-        id: 'mockuser',
-      },
       profile: {
         displayName: 'Mocked User',
         email: 'mockuser@gmail.com',

@@ -55,23 +55,6 @@ export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
   logger: Logger;
 };
 
-export const atlassianDefaultSignInResolver: SignInResolver<OAuthResult> =
-  async (info, ctx) => {
-    const { profile, result } = info;
-
-    let id = result.fullProfile.id;
-
-    if (profile.email) {
-      id = profile.email.split('@')[0];
-    }
-
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: id, ent: [`user:default/${id}`] },
-    });
-
-    return { id, token };
-  };
-
 export const atlassianDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   fullProfile,
   params,
