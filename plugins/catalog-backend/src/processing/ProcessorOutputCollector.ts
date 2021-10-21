@@ -21,6 +21,7 @@ import {
   ORIGIN_LOCATION_ANNOTATION,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
+import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { CatalogProcessorResult } from '../ingestion';
 import { locationSpecToLocationEntity } from '../util/conversion';
@@ -73,6 +74,7 @@ export class ProcessorOutputCollector {
       try {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
+        assertError(e);
         this.logger.debug(`Envelope validation failed at ${i.location}, ${e}`);
         this.errors.push(e);
         return;

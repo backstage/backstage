@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Task, TaskBroker, WorkflowRunner } from './types';
 import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
+import { assertError } from '@backstage/errors';
 
 type Options = {
   taskBroker: TaskBroker;
@@ -44,6 +46,7 @@ export class TaskWorker {
 
       await task.complete('completed', { output });
     } catch (error) {
+      assertError(error);
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });

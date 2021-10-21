@@ -14,30 +14,44 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import { getRepoSourceDirectory } from './util';
 
 describe('getRepoSourceDirectory', () => {
-  test('should return workspace root if no sub folder is given', () => {
-    expect(getRepoSourceDirectory('/var/workspace', undefined)).toEqual(
-      '/var/workspace',
-    );
+  it('should return workspace root if no sub folder is given', () => {
+    expect(
+      getRepoSourceDirectory(path.join('/', 'var', 'workspace'), undefined),
+    ).toEqual(path.join('/', 'var', 'workspace'));
   });
 
-  test('should return path in workspace if sub folder is given', () => {
+  it('should return path in workspace if sub folder is given', () => {
     expect(
-      getRepoSourceDirectory('/var/workspace', 'path/of/subfolder'),
-    ).toEqual('/var/workspace/path/of/subfolder');
+      getRepoSourceDirectory(
+        path.join('/', 'var', 'workspace'),
+        path.join('path', 'of', 'subfolder'),
+      ),
+    ).toEqual(path.join('/', 'var', 'workspace', 'path', 'of', 'subfolder'));
   });
 
-  test('should not allow traversal outside the workspace root', () => {
-    expect(getRepoSourceDirectory('/var/workspace', '../secret')).toEqual(
-      '/var/workspace/secret',
-    );
+  it('should not allow traversal outside the workspace root', () => {
+    // We have to construct the path manually here, as path.join would mitigate the path traversal
     expect(
-      getRepoSourceDirectory('/var/workspace', './path/../../secret'),
-    ).toEqual('/var/workspace/secret');
+      getRepoSourceDirectory(
+        path.join('/', 'var', 'workspace'),
+        `..${path.sep}secret`,
+      ),
+    ).toEqual(path.join('/', 'var', 'workspace', 'secret'));
     expect(
-      getRepoSourceDirectory('/var/workspace', '/absolute/secret'),
-    ).toEqual('/var/workspace/absolute/secret');
+      getRepoSourceDirectory(
+        path.join('/', 'var', 'workspace'),
+        `.${path.sep}path${path.sep}..${path.sep}..${path.sep}secret`,
+      ),
+    ).toEqual(path.join('/', 'var', 'workspace', 'secret'));
+    expect(
+      getRepoSourceDirectory(
+        path.join('/', 'var', 'workspace'),
+        path.join('/', 'absolute', 'secret'),
+      ),
+    ).toEqual(path.join('/', 'var', 'workspace', 'absolute', 'secret'));
   });
 });

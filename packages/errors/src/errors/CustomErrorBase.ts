@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
-/** @public */
-export class CustomErrorBase extends Error {
-  readonly cause?: Error;
+import { stringifyError } from '../serialization';
+import { isError } from './assertion';
 
-  constructor(message?: string, cause?: Error) {
+/**
+ * A base class that custom Error classes can inherit from.
+ *
+ * @public
+ * @example
+ *```ts
+ * class MyCustomError extends CustomErrorBase {}
+ *
+ * const e = new MyCustomError('Some message', cause);
+ * // e.name === 'MyCustomError'
+ * // e.message === 'Some message'
+ * // e.cause === cause
+ * // e.stack is set if the runtime supports it
+ * ```
+ */
+export class CustomErrorBase extends Error {
+  readonly cause?: Error | undefined;
+
+  constructor(message?: string, cause?: Error | unknown) {
     let fullMessage = message;
-    if (cause) {
+    if (cause !== undefined) {
+      const causeStr = stringifyError(cause);
       if (fullMessage) {
-        fullMessage += `; caused by ${cause}`;
+        fullMessage += `; caused by ${causeStr}`;
       } else {
-        fullMessage = `caused by ${cause}`;
+        fullMessage = `caused by ${causeStr}`;
       }
     }
 
@@ -33,6 +51,6 @@ export class CustomErrorBase extends Error {
     Error.captureStackTrace?.(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.cause = cause;
+    this.cause = isError(cause) ? cause : undefined;
   }
 }

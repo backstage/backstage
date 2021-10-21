@@ -32,7 +32,7 @@ export class ProductionSentryApi implements SentryApi {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
 
     const response = await fetch(
-      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
+      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}`,
     );
 
     if (response.status >= 400 && response.status < 600) {

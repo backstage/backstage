@@ -25,6 +25,7 @@ import {
 import {
   addBuildTimestampMetadata,
   getMkdocsYml,
+  patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -36,6 +37,7 @@ import {
   GeneratorRunInType,
   GeneratorRunOptions,
 } from './types';
+import { ForwardedError } from '@backstage/errors';
 
 export class TechdocsGenerator implements GeneratorBase {
   /**
@@ -93,7 +95,7 @@ export class TechdocsGenerator implements GeneratorBase {
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
 
     // validate the docs_dir first
-    await validateMkdocsYaml(inputDir, content);
+    const docsDir = await validateMkdocsYaml(inputDir, content);
 
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
@@ -102,6 +104,7 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
+      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
     // Directories to bind on container
@@ -151,8 +154,9 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      throw new Error(
-        `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
+      throw new ForwardedError(
+        'Failed to generate docs from ${inputDir} into ${outputDir}',
+        error,
       );
     }
 

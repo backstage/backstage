@@ -211,6 +211,13 @@ export type AppThemeApi = {
 // @public (undocumented)
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
+// Warning: (ae-missing-release-tag) "atlassianAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const atlassianAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
+
 // Warning: (ae-missing-release-tag) "attachComponentData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

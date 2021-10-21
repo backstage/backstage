@@ -15,6 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
@@ -112,6 +113,7 @@ export class GoogleGCSPublish implements PublisherBase {
         isAvailable: true,
       };
     } catch (err) {
+      assertError(err);
       this.logger.error(
         `Could not retrieve metadata about the GCS bucket ${this.bucketName}. ` +
           'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
@@ -142,6 +144,7 @@ export class GoogleGCSPublish implements PublisherBase {
       );
       existingFiles = await this.getFilesForFolder(remoteFolder);
     } catch (e) {
+      assertError(e);
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
       );

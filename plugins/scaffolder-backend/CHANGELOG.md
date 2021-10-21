@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.10
+
+### Patch Changes
+
+- b149e94290: Allow `catalog:register` action to register optional locations
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.15.9
 
 ### Patch Changes

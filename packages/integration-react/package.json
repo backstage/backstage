@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.10",
-    "@backstage/core-components": "^0.7.0",
-    "@backstage/core-plugin-api": "^0.1.9",
+    "@backstage/core-components": "^0.7.1",
+    "@backstage/core-plugin-api": "^0.1.11",
     "@backstage/integration": "^0.6.8",
     "@backstage/theme": "^0.2.11",
     "@material-ui/core": "^4.12.2",
@@ -34,7 +34,7 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.16",
+    "@backstage/cli": "^0.8.0",
     "@backstage/dev-utils": "^0.2.12",
     "@backstage/test-utils": "^0.1.19",
     "@testing-library/jest-dom": "^5.10.1",

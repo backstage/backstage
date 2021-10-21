@@ -8,6 +8,7 @@ apis
 args
 asciidoc
 async
+Atlassian
 automations
 autoscaling
 Autoscaling
@@ -310,3 +311,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Firestore

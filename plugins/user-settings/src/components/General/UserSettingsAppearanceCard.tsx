@@ -20,7 +20,7 @@ import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
 export const UserSettingsAppearanceCard = () => (
-  <InfoCard title="Appearance">
+  <InfoCard title="Appearance" variant="gridItem">
     <List dense>
       <UserSettingsThemeToggle />
       <UserSettingsPinToggle />
