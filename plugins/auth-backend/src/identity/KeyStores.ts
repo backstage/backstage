@@ -21,10 +21,7 @@ import { Config } from '@backstage/config';
 
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { MemoryKeyStore } from './MemoryKeyStore';
-import {
-  FirestoreKeyStore,
-  FirestoreKeyStoreSettings,
-} from './FirestoreKeyStore';
+import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStore } from './types';
 
 type Options = {
@@ -65,8 +62,18 @@ export class KeyStores {
     }
 
     if (provider === 'firestore') {
-      const settings = ks?.getOptional(provider) as FirestoreKeyStoreSettings;
-      const keyStore = await FirestoreKeyStore.create(settings);
+      const settings = ks?.getConfig(provider);
+
+      const keyStore = await FirestoreKeyStore.create({
+        projectId: settings?.getOptionalString('projectId'),
+        keyFilename: settings?.getOptionalString('keyFilename'),
+        host: settings?.getOptionalString('host'),
+        port: settings?.getOptionalNumber('port'),
+        ssl: settings?.getOptionalBoolean('ssl'),
+        path: settings?.getOptionalString('path'),
+        timeout: settings?.getOptionalNumber('timeout'),
+      });
+
       await FirestoreKeyStore.verifyConnection(keyStore, logger);
 
       return keyStore;

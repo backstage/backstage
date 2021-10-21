@@ -63,6 +63,7 @@ describe('KeyStores', () => {
 
   it('can handle additional provider config', async () => {
     jest.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
+    const createSpy = jest.spyOn(FirestoreKeyStore, 'create');
 
     const configOptions = {
       auth: {
@@ -70,6 +71,12 @@ describe('KeyStores', () => {
           provider: 'firestore',
           firestore: {
             projectId: 'my-project',
+            keyFilename: 'cred.json',
+            path: 'my-path',
+            timeout: 100,
+            host: 'localhost',
+            port: 8088,
+            ssl: false,
           },
         },
       },
@@ -78,6 +85,9 @@ describe('KeyStores', () => {
     const keyStore = await KeyStores.fromConfig(config);
 
     expect(keyStore).toBeInstanceOf(FirestoreKeyStore);
+    expect(createSpy).toHaveBeenCalledWith(
+      configOptions.auth.keyStore.firestore,
+    );
     expect(
       config
         .getOptionalConfig('auth.keyStore')
