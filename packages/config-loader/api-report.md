@@ -26,18 +26,15 @@ export type ConfigSchemaProcessingOptions = {
 // @public
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
-// @public (undocumented)
-export type EnvFunc = (name: string) => Promise<string | undefined>;
-
 // @public
 export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 
-// @public (undocumented)
+// @public
 export type LoadConfigOptions = {
   configRoot: string;
   configPaths: string[];
   env?: string;
-  experimentalEnvFunc?: EnvFunc;
+  experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
   watch?: {
     onChange: (configs: AppConfig[]) => void;
     stopSignal?: Promise<void>;
@@ -49,7 +46,7 @@ export function loadConfigSchema(
   options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema>;
 
-// @public (undocumented)
+// @public
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];

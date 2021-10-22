@@ -43,6 +43,8 @@ export function generateEntityEtag(): string {
  * Checks whether there are any significant changes going from the previous to
  * the next version of this entity.
  *
+ * @remarks
+ *
  * Significance, in this case, means that we do not compare generated fields
  * such as uid, etag and generation.
  *
@@ -97,6 +99,8 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
 /**
  * Takes an old revision of an entity and a new desired state, and merges
  * them into a complete new state.
+ *
+ * @remarks
  *
  * The previous revision is expected to be a complete model loaded from the
  * catalog, including the uid, etag and generation fields.

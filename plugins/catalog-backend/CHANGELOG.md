@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.1
+
+### Patch Changes
+
+- 3adaf88db2: Take CatalogParser in account when processing file locations.
+- 1f62d1cbe9: Minor rearrangement of `Stitcher` to clarify the scope of one stitch round
+- 3ba87f514e: Add a `GitHubOrgEntityProvider` that can be used instead of the `GithubOrgReaderProcessor`.
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- 177401b571: Use entity title (if defined) as title of documents indexed by `DefaultCatalogCollator`
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.17.0
+
+### Minor Changes
+
+- 9fb9256e50: This continues the deprecation of classes used by the legacy catalog engine. New deprecations can be viewed in this [PR](https://github.com/backstage/backstage/pull/7500) or in the API reference documentation.
+
+  The `batchAddOrUpdateEntities` method of the `EntitiesCatalog` interface has been marked as optional and is being deprecated. It is still implemented and required to be implemented by the legacy catalog classes, but was never implemented in the new catalog.
+
+  This change is only relevant if you are consuming the `EntitiesCatalog` interface directly, in which case you will get a type error that you need to resolve. It can otherwise be ignored.
+
+### Patch Changes
+
+- 3b59bb915e: Fixes a bug in the catalog where entities were not being marked as orphaned.
+- 55ff928d50: This change refactors the internal package structure to remove the `next` catalog folder that was used during the implementation and testing phase of the new catalog engine. The implementation is now the default and is therefore restructured to no longer be packaged under `next/`. This refactor does not change catalog imports from other parts of the project.
+- Updated dependencies
+  - @backstage/integration@0.6.8
+
 ## 0.16.0
 
 ### Minor Changes

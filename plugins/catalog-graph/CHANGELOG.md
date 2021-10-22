@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.1
+
+### Patch Changes
+
+- ce0aef1841: Capture analytics events for clicks in the graph.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.2.0
+
+### Minor Changes
+
+- 5c42360577: Add documentation and more type safety around DependencyGraph
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
 ## 0.1.3
 
 ### Patch Changes

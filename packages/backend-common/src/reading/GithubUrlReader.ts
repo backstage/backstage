@@ -126,10 +126,21 @@ export class GithubUrlReader implements UrlReader {
       };
     }
 
-    const message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
+    let message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
     if (response.status === 404) {
       throw new NotFoundError(message);
     }
+
+    // GitHub returns a 403 response with a couple of headers indicating rate
+    // limit status. See more in the GitHub docs:
+    // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+    if (
+      response.status === 403 &&
+      response.headers.get('X-RateLimit-Remaining') === '0'
+    ) {
+      message += ' (rate limit exceeded)';
+    }
+
     throw new Error(message);
   }
 

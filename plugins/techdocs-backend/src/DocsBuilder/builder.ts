@@ -19,7 +19,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotModifiedError } from '@backstage/errors';
+import { assertError, isError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
@@ -131,7 +131,7 @@ export class DocsBuilder {
       preparedDir = preparerResponse.preparedDir;
       newEtag = preparerResponse.etag;
     } catch (err) {
-      if (err instanceof NotModifiedError) {
+      if (isError(err) && err.name === 'NotModifiedError') {
         // No need to prepare anymore since cache is valid.
         // Set last check happened to now
         new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
@@ -142,7 +142,7 @@ export class DocsBuilder {
         );
         return false;
       }
-      throw new Error(err.message);
+      throw err;
     }
 
     this.logger.info(
@@ -195,6 +195,7 @@ export class DocsBuilder {
         // Not a blocker hence no need to await this.
         fs.remove(preparedDir);
       } catch (error) {
+        assertError(error);
         this.logger.debug(`Error removing prepared directory ${error.message}`);
       }
     }
@@ -221,6 +222,7 @@ export class DocsBuilder {
         `Removing generated directory ${outputDir} since the site has been published`,
       );
     } catch (error) {
+      assertError(error);
       this.logger.debug(`Error removing generated directory ${error.message}`);
     }
 

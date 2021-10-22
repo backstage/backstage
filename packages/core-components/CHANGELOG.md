@@ -1,5 +1,41 @@
 # @backstage/core-components
 
+## 0.7.1
+
+### Patch Changes
+
+- e535ea766a: Switched to relying on the built-in support for async loading in `react-syntax-highlighter`. This should provide further improvements to async rendering and lazy loading, and avoid test flakiness that was happening because of the significant number or resources being loaded in lazily all at once.
+- 2023a9683f: Fixed invalid wrap in DismissableBanner component
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.7.0
+
+### Minor Changes
+
+- 5c42360577: Add documentation and more type safety around DependencyGraph
+- a20cbf00d2: The syntax highlighting library used by the `CodeSnippet` component is now lazy loaded. This most likely has no effect on existing code, but may break tests as the content of the `CodeSnippet` is now rendered asynchronously.
+
+### Patch Changes
+
+- 75bc878221: Internal refactor to avoid importing all of `@material-ui/core`.
+- 6ec56d5a57: update the null check to use the optional chaining operator in case of non-null assertion operator is not working in function extractInitials(values: string)
+- 81c2a1af86: Resolve a warning in `<Button>` related to not using `React.forwardRef`.
+- 53470ada54: Fix search in Firefox. When the search was performed by pressing enter, the query parameter was first set but then reverted back.
+- b488d8b69f: Change the Table search field placeholder to "Filter" and change icon accordingly
+
+  We had feedback that users expected the catalog table search field to have more sophisticated behaviour
+  than simple filtering. This change sets the search field placeholder to read "Filter"
+  to avoid confusion with the search feature. The icon is updated to match. This change is applied
+  generally in core-components so this change is made consistently across the app given the search
+  field is present on all pages via the sidebar.
+
+- 2435d7a49b: Deprecated HomepageTimer in favor of HeaderWorldClock which is found in the [home plugin](https://github.com/backstage/backstage/tree/master/plugins/home)
+- Updated dependencies
+  - @backstage/theme@0.2.11
+
 ## 0.6.1
 
 ### Patch Changes

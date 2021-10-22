@@ -21,6 +21,7 @@ import {
 } from '@azure/storage-blob';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
@@ -132,6 +133,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         );
       }
     } catch (e) {
+      assertError(e);
       this.logger.error(`from Azure Blob Storage client library: ${e.message}`);
     }
 
@@ -165,6 +167,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         maxPageSize: BATCH_CONCURRENCY,
       });
     } catch (e) {
+      assertError(e);
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
       );
@@ -307,7 +310,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
       return techdocsMetadata;
     } catch (e) {
-      throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
+      throw new ForwardedError('TechDocs metadata fetch failed', e);
     }
   }
 
@@ -386,6 +389,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     try {
       newPath = lowerCaseEntityTripletInStoragePath(originalPath);
     } catch (e) {
+      assertError(e);
       this.logger.warn(e.message);
       return;
     }
@@ -395,6 +399,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
       this.logger.verbose(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
+      assertError(e);
       this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
     }
   }

@@ -20,6 +20,7 @@ import { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
+import { assertError } from '@backstage/errors';
 
 /**
  * TaskWorkerOptions
@@ -102,6 +103,7 @@ export class TaskWorker {
 
       await task.complete('completed', { output });
     } catch (error) {
+      assertError(error);
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });

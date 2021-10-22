@@ -1,5 +1,19 @@
 # example-backend
 
+## 0.2.50
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.4.4
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-scaffolder-backend@0.15.8
+  - @backstage/plugin-catalog-backend@0.17.0
+  - @backstage/plugin-azure-devops-backend@0.1.2
+  - @backstage/plugin-code-coverage-backend@0.1.13
+  - @backstage/plugin-kubernetes-backend@0.3.17
+  - example-app@0.2.50
+
 ## 0.2.49
 
 ### Patch Changes

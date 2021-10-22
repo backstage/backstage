@@ -33,6 +33,7 @@ import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState
 
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { assertError } from '@backstage/errors';
 
 const useStyles = makeStyles({
   advancedButton: {
@@ -70,6 +71,7 @@ const Contents = ({
           await state.unregisterLocation();
           onConfirm();
         } catch (err) {
+          assertError(err);
           alertApi.post({ message: err.message });
         } finally {
           setBusy(false);
@@ -87,6 +89,7 @@ const Contents = ({
           await state.deleteEntity();
           onConfirm();
         } catch (err) {
+          assertError(err);
           alertApi.post({ message: err.message });
         } finally {
           setBusy(false);

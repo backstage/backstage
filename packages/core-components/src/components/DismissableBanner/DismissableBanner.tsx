@@ -56,6 +56,7 @@ const useStyles = makeStyles(
     content: {
       width: '100%',
       maxWidth: 'inherit',
+      flexWrap: 'nowrap',
     },
     message: {
       display: 'flex',

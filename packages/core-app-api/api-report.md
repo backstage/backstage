@@ -15,6 +15,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
+import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { AuthProvider } from '@backstage/core-plugin-api';
 import { AuthRequester } from '@backstage/core-plugin-api';
@@ -40,6 +41,7 @@ import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/core-plugin-api';
+import { Observable as Observable_2 } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
@@ -236,12 +238,25 @@ export class AppThemeSelector implements AppThemeApi {
   setActiveThemeId(themeId?: string): void;
 }
 
+// Warning: (ae-missing-release-tag) "AtlassianAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AtlassianAuth {
+  // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
+}
+
 // Warning: (ae-missing-release-tag) "Auth0Auth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class Auth0Auth {
-  // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
@@ -326,7 +341,7 @@ export const defaultConfigLoader: AppConfigLoader;
 export class ErrorAlerter implements ErrorApi {
   constructor(alertApi: AlertApi, errorApi: ErrorApi);
   // (undocumented)
-  error$(): Observable<{
+  error$(): Observable_2<{
     error: {
       name: string;
       message: string;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
@@ -195,6 +196,7 @@ export class StorageTaskBroker implements TaskBroker {
           try {
             callback(undefined, result);
           } catch (error) {
+            assertError(error);
             callback(error, { events: [] });
           }
         }

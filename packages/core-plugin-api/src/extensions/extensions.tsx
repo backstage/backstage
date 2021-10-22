@@ -51,12 +51,18 @@ export function createRoutableExtension<
               try {
                 useRouteRef(mountPoint);
               } catch (error) {
-                if (error?.message.startsWith('No path for ')) {
-                  throw new Error(
-                    `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
-                      'Routable extension components may not be rendered by other components and must be ' +
-                      'directly available as an element within the App provider component.',
-                  );
+                if (typeof error === 'object' && error !== null) {
+                  const { message } = error as { message?: unknown };
+                  if (
+                    typeof message === 'string' &&
+                    message.startsWith('No path for ')
+                  ) {
+                    throw new Error(
+                      `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
+                        'Routable extension components may not be rendered by other components and must be ' +
+                        'directly available as an element within the App provider component.',
+                    );
+                  }
                 }
                 throw error;
               }

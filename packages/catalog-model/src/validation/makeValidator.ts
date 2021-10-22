@@ -30,7 +30,11 @@ const defaultValidators: Validators = {
   isValidTag: CommonValidatorFunctions.isValidTag,
 };
 
-/** @public */
+/**
+ * Creates a {@link Validators} object from `overrides`, with default values taken from {@link KubernetesValidatorFunctions}
+ *
+ * @public
+ */
 export function makeValidator(overrides: Partial<Validators> = {}): Validators {
   return {
     ...defaultValidators,

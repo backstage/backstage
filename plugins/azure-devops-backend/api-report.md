@@ -45,6 +45,10 @@ export class AzureDevOpsApi {
   ): Promise<RepoBuild[]>;
 }
 
+export { BuildResult };
+
+export { BuildStatus };
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

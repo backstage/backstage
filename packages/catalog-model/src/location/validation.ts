@@ -18,8 +18,10 @@ import * as yup from 'yup';
 import { LocationSpec, Location } from './types';
 
 /**
+ * Deprecated.
+ *
  * @public
- * @deprecated Use JSONSchema or validators instead.
+ * @deprecated Use {@link JSONSchema} or validators instead.
  */
 export const locationSpecSchema: yup.SchemaOf<LocationSpec> = yup
   .object({
@@ -31,8 +33,10 @@ export const locationSpecSchema: yup.SchemaOf<LocationSpec> = yup
   .required();
 
 /**
+ * Deprecated.
+ *
  * @public
- * @deprecated Use JSONSchema or validators instead.
+ * @deprecated Use {@link JSONSchema} or validators instead.
  */
 export const locationSchema: yup.SchemaOf<Location> = yup
   .object({
@@ -45,8 +49,10 @@ export const locationSchema: yup.SchemaOf<Location> = yup
   .required();
 
 /**
+ * Deprecated.
+ *
  * @public
- * @deprecated Use JSONSchema or validators instead.
+ * @deprecated Use {@link JSONSchema} or validators instead.
  */
 export const analyzeLocationSchema: yup.SchemaOf<{ location: LocationSpec }> =
   yup
