@@ -44,7 +44,7 @@ type Props = {
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
-  onFinish: () => void;
+  onFinish: () => Promise<boolean>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
 };
@@ -122,9 +122,12 @@ export const MultistepJsonForm = ({
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
-  const handleCreate = () => {
+  const handleCreate = async () => {
     setDisableButtons(true);
-    onFinish();
+    const success = await onFinish();
+    if (!success) {
+      setDisableButtons(false);
+    }
   };
 
   return (
