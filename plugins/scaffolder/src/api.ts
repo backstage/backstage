@@ -15,7 +15,7 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Field, FieldValidation } from '@rjsf/core';

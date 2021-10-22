@@ -31,7 +31,7 @@ import { Logger } from 'winston';
 import path from 'path';
 import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 
 type Options = {

@@ -23,7 +23,7 @@ import {
 } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
 import { getProgramFromFiles, generateSchema } from 'typescript-json-schema';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 
 type Item = {

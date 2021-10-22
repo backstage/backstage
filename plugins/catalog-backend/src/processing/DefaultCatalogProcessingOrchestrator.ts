@@ -29,7 +29,7 @@ import {
   InputError,
   NotAllowedError,
 } from '@backstage/errors';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';

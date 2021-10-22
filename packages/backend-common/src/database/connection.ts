@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Config, JsonObject } from '@backstage/config';
+import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';

@@ -33,6 +33,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.5",
     "@backstage/config": "^0.1.8",
+    "@backstage/types": "^0.1.1",
     "@graphql-modules/core": "^0.7.17",
     "apollo-server": "^2.16.1",
     "cross-fetch": "^3.0.6",
