@@ -114,7 +114,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
-      state: await (await this.stateEncoder(req.state)).encodedState,
+      state: (await this.stateEncoder(req.state)).encodedState,
     });
   }
 
