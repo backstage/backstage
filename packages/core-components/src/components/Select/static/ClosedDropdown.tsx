@@ -17,6 +17,7 @@ import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
+/** @public */
 export type ClosedDropdownClassKey = 'icon';
 
 const useStyles = makeStyles(

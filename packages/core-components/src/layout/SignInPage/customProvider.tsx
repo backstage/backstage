@@ -30,6 +30,7 @@ import { GridItem } from './styles';
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 
+/** @public */
 export type CustomProviderClassKey = 'form' | 'button';
 
 const useFormStyles = makeStyles(
@@ -58,6 +59,7 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
     ...rest,
   };
 };
+
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({

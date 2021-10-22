@@ -25,7 +25,8 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 
-export type DismissbleBannerClassKey =
+/** @public */
+export type DismissableBannerClassKey =
   | 'root'
   | 'topPosition'
   | 'icon'
@@ -83,6 +84,7 @@ type Props = {
   fixed?: boolean;
 };
 
+/** @public */
 export const DismissableBanner = (props: Props) => {
   const { variant, message, id, fixed = false } = props;
   const classes = useStyles();
