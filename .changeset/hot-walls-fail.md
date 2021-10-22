@@ -25,9 +25,9 @@ If you already supply custom app components, you can use the following:
 
  const app = createApp({
    apis,
-+  components: {
-     ...defaultAppComponents(),
-+    Progress: MyCustomProgressComponent,
+  components: {
++     ...defaultAppComponents(),
+    Progress: MyCustomProgressComponent,
    },
    bindRoutes({ bind }) {
 ```
