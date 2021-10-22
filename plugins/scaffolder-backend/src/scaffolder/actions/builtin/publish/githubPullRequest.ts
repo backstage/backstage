@@ -198,7 +198,7 @@ export const createPublishGithubPullRequestAction = ({
           const absPath = path.resolve(fileRoot, filePath);
           const content = fs.readFileSync(absPath).toString();
           const fileStat = fs.statSync(absPath);
-          const isExecutable = fileStat.mode === 33277 // aka. 100755;
+          const isExecutable = fileStat.mode === 33277; // aka. 100755
           // See the properties of tree items
           // in https://docs.github.com/en/rest/reference/git#trees
           const githubTreeItemMode = isExecutable ? '100755' : '100644';
@@ -216,10 +216,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const changes = [
         {
-          files: zipObject(
-            repoFilePaths,
-            fileContents,
-          ),
+          files: zipObject(repoFilePaths, fileContents),
           commit: title,
         },
       ];

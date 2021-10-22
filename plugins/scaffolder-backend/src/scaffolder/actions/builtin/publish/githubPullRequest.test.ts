@@ -172,9 +172,9 @@ describe('createPublishGithubPullRequestAction', () => {
             commit: 'Create my new app',
             files: {
               'foo.txt': {
-                  content: 'Hello there!',
-                  encoding: 'utf-8',
-                  mode: '100644',
+                content: 'Hello there!',
+                encoding: 'utf-8',
+                mode: '100644',
               },
             },
           },
