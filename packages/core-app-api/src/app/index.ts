@@ -15,4 +15,5 @@
  */
 
 export { createApp, defaultConfigLoader } from './createApp';
+export type { AppIcons } from './icons';
 export * from './types';

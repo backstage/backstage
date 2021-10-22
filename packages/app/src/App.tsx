@@ -31,6 +31,7 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
+  defaultAppIcons,
   defaultAppComponents,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
@@ -91,6 +92,7 @@ const app = createApp({
   apis,
   plugins: Object.values(plugins),
   icons: {
+    ...defaultAppIcons(),
     // Custom icon example
     alert: AlarmIcon,
   },
