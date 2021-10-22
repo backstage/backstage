@@ -14,41 +14,27 @@
  * limitations under the License.
  */
 
-/**
- * This file contains non-react related core types used throughout Backstage.
- */
+import {
+  Observer as CoreObserver,
+  Subscription as CoreSubscription,
+  Observable as CoreObservable,
+} from '@backstage/types';
 
 /**
  * Observer interface for consuming an Observer, see TC39.
+ *
+ * @public
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
-export type Observer<T> = {
-  next?(value: T): void;
-  error?(error: Error): void;
-  complete?(): void;
-};
+export type Observer<T> = CoreObserver<T>;
 
 /**
  * Subscription returned when subscribing to an Observable, see TC39.
+ *
+ * @public
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
-export type Subscription = {
-  /**
-   * Cancels the subscription
-   */
-  unsubscribe(): void;
-
-  /**
-   * Value indicating whether the subscription is closed.
-   */
-  readonly closed: boolean;
-};
-
-// Declares the global well-known Symbol.observable
-// We get the actual runtime polyfill from zen-observable
-declare global {
-  interface SymbolConstructor {
-    readonly observable: symbol;
-  }
-}
+export type Subscription = CoreSubscription;
 
 /**
  * Observable sequence of values and errors, see TC39.
@@ -57,17 +43,8 @@ declare global {
  *
  * This is used as a common return type for observable values and can be created
  * using many different observable implementations, such as zen-observable or RxJS 5.
+ *
+ * @public
+ * @deprecated Please use the same type from `@backstage/types` instead
  */
-export type Observable<T> = {
-  [Symbol.observable](): Observable<T>;
-
-  /**
-   * Subscribes to this observable to start receiving new values.
-   */
-  subscribe(observer: Observer<T>): Subscription;
-  subscribe(
-    onNext?: (value: T) => void,
-    onError?: (error: Error) => void,
-    onComplete?: () => void,
-  ): Subscription;
-};
+export type Observable<T> = CoreObservable<T>;

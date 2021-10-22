@@ -15,16 +15,10 @@
  */
 
 /**
- * Core API used by Backstage plugins
+ * Common TypeScript types used within Backstage
  *
  * @packageDocumentation
  */
 
-export * from './analytics';
-export * from './apis';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './routing';
-export * from './deprecatedTypes';
+export type { JsonArray, JsonObject, JsonPrimitive, JsonValue } from './json';
+export type { Observable, Observer, Subscription } from './observable';

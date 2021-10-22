@@ -8,9 +8,12 @@
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { Observable as Observable_2 } from '@backstage/types';
+import { Observer as Observer_2 } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { Subscription as Subscription_2 } from '@backstage/types';
 import { SvgIconProps } from '@material-ui/core';
 
 // Warning: (ae-missing-release-tag) "AlertApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -18,7 +21,7 @@ import { SvgIconProps } from '@material-ui/core';
 // @public
 export type AlertApi = {
   post(alert: AlertMessage): void;
-  alert$(): Observable<AlertMessage>;
+  alert$(): Observable_2<AlertMessage>;
 };
 
 // Warning: (ae-missing-release-tag) "alertApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -201,7 +204,7 @@ export type AppTheme = {
 // @public
 export type AppThemeApi = {
   getInstalledThemes(): AppTheme[];
-  activeThemeId$(): Observable<string | undefined>;
+  activeThemeId$(): Observable_2<string | undefined>;
   getActiveThemeId(): string | undefined;
   setActiveThemeId(themeId?: string): void;
 };
@@ -478,7 +481,7 @@ export interface ElementCollection {
 // @public
 export type ErrorApi = {
   post(error: Error_2, context?: ErrorContext): void;
-  error$(): Observable<{
+  error$(): Observable_2<{
     error: Error_2;
     context?: ErrorContext;
   }>;
@@ -674,7 +677,7 @@ export type OAuthRequestApi = {
   createAuthRequester<AuthResponse>(
     options: AuthRequesterOptions<AuthResponse>,
   ): AuthRequester<AuthResponse>;
-  authRequest$(): Observable<PendingAuthRequest[]>;
+  authRequest$(): Observable_2<PendingAuthRequest[]>;
 };
 
 // Warning: (ae-missing-release-tag) "oauthRequestApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -687,27 +690,11 @@ export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
 // @public
 export type OAuthScope = string | string[];
 
-// Warning: (ae-missing-release-tag) "Observable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type Observable<T> = {
-  [Symbol.observable](): Observable<T>;
-  subscribe(observer: Observer<T>): Subscription;
-  subscribe(
-    onNext?: (value: T) => void,
-    onError?: (error: Error) => void,
-    onComplete?: () => void,
-  ): Subscription;
-};
+// @public @deprecated
+export type Observable<T> = Observable_2<T>;
 
-// Warning: (ae-missing-release-tag) "Observer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type Observer<T> = {
-  next?(value: T): void;
-  error?(error: Error): void;
-  complete?(): void;
-};
+// @public @deprecated
+export type Observer<T> = Observer_2<T>;
 
 // Warning: (ae-missing-release-tag) "oidcAuthApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -836,7 +823,7 @@ export const samlAuthApiRef: ApiRef<
 export type SessionApi = {
   signIn(): Promise<void>;
   signOut(): Promise<void>;
-  sessionState$(): Observable<SessionState>;
+  sessionState$(): Observable_2<SessionState>;
 };
 
 // Warning: (ae-missing-release-tag) "SessionState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -881,7 +868,7 @@ export interface StorageApi {
   get<T>(key: string): T | undefined;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  observe$<T>(key: string): Observable_2<StorageValueChange<T>>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   remove(key: string): Promise<void>;
@@ -913,13 +900,8 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   params: ParamKeys<Params>;
 };
 
-// Warning: (ae-missing-release-tag) "Subscription" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type Subscription = {
-  unsubscribe(): void;
-  readonly closed: boolean;
-};
+// @public @deprecated
+export type Subscription = Subscription_2;
 
 // Warning: (ae-missing-release-tag) "TypesToApiRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
