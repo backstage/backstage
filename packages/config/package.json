@@ -30,7 +30,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/types": "^0.1.0",
+    "@backstage/types": "^0.1.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
