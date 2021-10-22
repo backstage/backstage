@@ -59,15 +59,30 @@ export type RawDbTaskEventRow = {
  *
  * @public
  */
+export type DatabaseTaskStoreOptions = {
+  database: Knex;
+};
+
+/**
+ * DatabaseTaskStore
+ *
+ * @public
+ */
 export class DatabaseTaskStore implements TaskStore {
-  static async create(knex: Knex): Promise<DatabaseTaskStore> {
-    await knex.migrate.latest({
+  private readonly db: Knex;
+
+  static async create(
+    options: DatabaseTaskStoreOptions,
+  ): Promise<DatabaseTaskStore> {
+    await options.database.migrate.latest({
       directory: migrationsDir,
     });
-    return new DatabaseTaskStore(knex);
+    return new DatabaseTaskStore(options);
   }
 
-  constructor(private readonly db: Knex) {}
+  constructor(options: DatabaseTaskStoreOptions) {
+    this.db = options.database;
+  }
 
   async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')

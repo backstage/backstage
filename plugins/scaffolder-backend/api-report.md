@@ -193,9 +193,7 @@ export const createTemplateAction: <
   templateAction: TemplateAction<Input>,
 ) => TemplateAction<any>;
 
-// Warning: (ae-missing-release-tag) "CreateWorkerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
@@ -206,7 +204,7 @@ export type CreateWorkerOptions = {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
-  constructor(db: Knex);
+  constructor(options: DatabaseTaskStoreOptions);
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -219,8 +217,10 @@ export class DatabaseTaskStore implements TaskStore {
     status: Status;
     eventBody: JsonObject;
   }): Promise<void>;
+  // Warning: (ae-forgotten-export) The symbol "DatabaseTaskStoreOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  static create(knex: Knex): Promise<DatabaseTaskStore>;
+  static create(options: DatabaseTaskStoreOptions): Promise<DatabaseTaskStore>;
   // (undocumented)
   createTask(
     spec: TaskSpec,

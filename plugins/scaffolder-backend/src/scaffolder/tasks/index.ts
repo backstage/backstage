@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export { DatabaseTaskStore } from './DatabaseTaskStore';
+export type { DatabaseTaskStoreOptions } from './DatabaseTaskStore';
 export { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
 export type { TaskState } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';

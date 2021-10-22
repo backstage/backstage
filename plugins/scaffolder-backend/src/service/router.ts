@@ -92,9 +92,9 @@ export async function createRouter(
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
 
-  const databaseTaskStore = await DatabaseTaskStore.create(
-    await database.getClient(),
-  );
+  const databaseTaskStore = await DatabaseTaskStore.create({
+    database: await database.getClient(),
+  });
   const taskBroker =
     options.taskBroker || new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();

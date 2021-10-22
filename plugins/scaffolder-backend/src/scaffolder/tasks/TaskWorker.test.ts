@@ -33,7 +33,9 @@ async function createStore(): Promise<DatabaseTaskStore> {
       },
     }),
   ).forPlugin('scaffolder');
-  return await DatabaseTaskStore.create(await manager.getClient());
+  return await DatabaseTaskStore.create({
+    database: await manager.getClient(),
+  });
 }
 
 describe('TaskWorker', () => {
