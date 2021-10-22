@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/jscodeshift": "^0.11.0",
     "@types/node": "^14.14.32",
-    "commander": "^6.1.0",
+    "commander": "^8.2.0",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {

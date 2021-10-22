@@ -29,7 +29,7 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.4",
     "chalk": "^4.0.0",
-    "commander": "^6.1.0",
+    "commander": "^8.2.0",
     "fs-extra": "9.1.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
