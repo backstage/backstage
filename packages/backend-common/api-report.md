@@ -18,7 +18,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
 import { MergeResult } from 'isomorphic-git';

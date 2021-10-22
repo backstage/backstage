@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.9.5",
-    "@backstage/config": "^0.1.10"
+    "@backstage/types": "^0.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.0"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Template.v1beta2.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';

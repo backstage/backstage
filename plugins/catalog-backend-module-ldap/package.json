@@ -33,6 +33,7 @@
     "@backstage/config": "^0.1.10",
     "@backstage/errors": "^0.1.3",
     "@backstage/plugin-catalog-backend": "^0.17.1",
+    "@backstage/types": "^0.1.1",
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.21",

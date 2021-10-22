@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { Button } from '@material-ui/core';
 import { ErrorPage, ErrorPanel, Progress } from '@backstage/core-components';
 import { darkTheme, lightTheme } from '@backstage/theme';

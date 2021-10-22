@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   ConfigVisibility,
   DEFAULT_CONFIG_VISIBILITY,

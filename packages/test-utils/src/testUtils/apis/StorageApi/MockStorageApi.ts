@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Observable,
-  StorageApi,
-  StorageValueChange,
-} from '@backstage/core-plugin-api';
+import { StorageApi, StorageValueChange } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 export type MockStorageBucket = { [key: string]: any };

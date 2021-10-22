@@ -14,10 +14,8 @@ import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-back
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { JsonObject } from '@backstage/config';
-import { JsonObject as JsonObject_2 } from '@backstage/types';
-import { JsonValue } from '@backstage/config';
-import { JsonValue as JsonValue_2 } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Octokit } from '@octokit/rest';
@@ -185,7 +183,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public (undocumented)
 export const createTemplateAction: <
   Input extends Partial<{
-    [name: string]: JsonValue_2 | Partial<JsonObject_2> | undefined;
+    [name: string]: JsonValue | Partial<JsonObject> | undefined;
   }>,
 >(
   templateAction: TemplateAction<Input>,

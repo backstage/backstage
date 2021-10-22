@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ErrorApi, ErrorContext, Observable } from '@backstage/core-plugin-api';
+import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 type Options = {
   collect?: boolean;

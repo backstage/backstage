@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { resolvePackagePath } from '@backstage/backend-common';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';

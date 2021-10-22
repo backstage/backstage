@@ -15,7 +15,8 @@
  */
 
 import { Shortcut } from '../types';
-import { createApiRef, Observable } from '@backstage/core-plugin-api';
+import { createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 export const shortcutsApiRef = createApiRef<ShortcutApi>({
   id: 'plugin.shortcuts.api',
