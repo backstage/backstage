@@ -226,18 +226,26 @@ export type AppOptions = {
    *   id: 'light',
    *   title: 'Light Theme',
    *   variant: 'light',
-   *   theme: lightTheme,
    *   icon: <LightIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={lightTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }, {
    *   id: 'dark',
    *   title: 'Dark Theme',
    *   variant: 'dark',
-   *   theme: darkTheme,
    *   icon: <DarkIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={darkTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }]
    * ```
    */
-  themes?: AppTheme[];
+  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
 
   /**
    * A function that loads in App configuration that will be accessible via

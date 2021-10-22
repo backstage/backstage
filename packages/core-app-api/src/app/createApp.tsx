@@ -19,11 +19,8 @@ import { JsonObject } from '@backstage/types';
 import {
   defaultAppComponents,
   defaultAppIcons,
+  defaultAppThemes,
 } from '@backstage/core-components';
-import { darkTheme, lightTheme } from '@backstage/theme';
-import DarkIcon from '@material-ui/icons/Brightness2';
-import LightIcon from '@material-ui/icons/WbSunny';
-import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { PrivateAppImpl } from './App';
 import { AppThemeProvider } from './AppThemeProvider';
@@ -129,6 +126,15 @@ export function createApp(options?: AppOptions) {
     );
   }
 
+  if (!options?.themes) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'DEPRECATION WARNING: The createApp options will soon require themes to be provided. ' +
+        'Themes can be created using defaultAppThemes from @backstage/core-components ' +
+        'and then passed along like this: createApp({ theme: defaultAppThemes() })',
+    );
+  }
+
   const apis = options?.apis ?? [];
   const plugins = options?.plugins ?? [];
   const components = {
@@ -137,22 +143,6 @@ export function createApp(options?: AppOptions) {
     ThemeProvider: AppThemeProvider,
     ...options?.components,
   };
-  const themes = options?.themes ?? [
-    {
-      id: 'light',
-      title: 'Light Theme',
-      variant: 'light',
-      theme: lightTheme,
-      icon: <LightIcon />,
-    },
-    {
-      id: 'dark',
-      title: 'Dark Theme',
-      variant: 'dark',
-      theme: darkTheme,
-      icon: <DarkIcon />,
-    },
-  ];
   const configLoader = options?.configLoader ?? defaultConfigLoader;
 
   return new PrivateAppImpl({
@@ -160,7 +150,7 @@ export function createApp(options?: AppOptions) {
     icons: { ...appIcons, ...options?.icons },
     plugins: plugins as BackstagePlugin<any, any>[],
     components,
-    themes,
+    themes: options?.themes ?? defaultAppThemes(),
     configLoader,
     defaultApis,
     bindRoutes: options?.bindRoutes,

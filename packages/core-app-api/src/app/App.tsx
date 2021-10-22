@@ -126,7 +126,7 @@ type FullAppOptions = {
   icons: NonNullable<AppOptions['icons']>;
   plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
-  themes: AppTheme[];
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   defaultApis: Iterable<AnyApiFactory>;
   bindRoutes?: AppOptions['bindRoutes'];
@@ -206,7 +206,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.icons = options.icons;
     this.plugins = new Set(options.plugins);
     this.components = options.components;
-    this.themes = options.themes;
+    this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader;
     this.defaultApis = options.defaultApis;
     this.bindRoutes = options.bindRoutes;

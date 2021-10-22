@@ -27,3 +27,4 @@ export * from './layout';
 export * from './overridableComponents';
 export { defaultAppComponents } from './defaultAppComponents';
 export { defaultAppIcons } from './defaultAppIcons';
+export { defaultAppThemes } from './defaultAppThemes';

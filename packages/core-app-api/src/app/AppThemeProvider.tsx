@@ -90,6 +90,17 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
     throw new Error('App has no themes');
   }
 
+  if (appTheme.Provider) {
+    return <appTheme.Provider children={children} />;
+  }
+
+  // eslint-disable-next-line no-console
+  console.warn(
+    "DEPRECATION WARNING: A provided app theme is using the deprecated 'theme' property " +
+      'and should be migrated to use a Provider instead. ' +
+      'See https://backstage.io/docs/deprecations/TODO for more info.',
+  );
+
   return (
     <ThemeProvider theme={appTheme.theme}>
       <CssBaseline>{children}</CssBaseline>
