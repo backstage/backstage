@@ -9,7 +9,7 @@ import { ComponentType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';

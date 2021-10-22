@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 // TODO(Rugvip): These are stopgap and probably incomplete implementations of subjects.

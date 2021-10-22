@@ -15,7 +15,7 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Field, FieldValidation } from '@rjsf/core';
@@ -25,7 +25,6 @@ import {
   createApiRef,
   DiscoveryApi,
   IdentityApi,
-  Observable,
 } from '@backstage/core-plugin-api';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
