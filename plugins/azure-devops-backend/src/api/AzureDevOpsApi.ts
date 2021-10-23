@@ -111,7 +111,7 @@ export class AzureDevOpsApi {
     options: PullRequestOptions,
   ): Promise<PullRequest[]> {
     this.logger?.debug(
-      `Calling Azure DevOps REST API, getting up to ${top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
+      `Calling Azure DevOps REST API, getting up to ${options.top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
     );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
@@ -144,11 +144,14 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     title: [build.definition?.name, build.buildNumber]
       .filter(Boolean)
       .join(' - '),
-    link: build._links?.web.href ? build._links?.web.href : '',
-    status: build.status ? build.status : BuildStatus.None,
-    result: build.result ? build.result : BuildResult.None,
+    link: build._links?.web.href ?? '',
+    status: build.status ?? BuildStatus.None,
+    result: build.result ?? BuildResult.None,
     queueTime: build.queueTime,
+    startTime: build.startTime,
+    finishTime: build.finishTime,
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }
 
@@ -160,8 +163,8 @@ export function mappedPullRequest(
     pullRequestId: pullRequest.pullRequestId,
     repoName: pullRequest.repository?.name,
     title: pullRequest.title,
-    uniqueName: pullRequest.createdBy?.uniqueName,
-    createdBy: pullRequest.createdBy?.displayName,
+    uniqueName: pullRequest.createdBy?.uniqueName ?? 'N/A',
+    createdBy: pullRequest.createdBy?.displayName ?? 'N/A',
     creationDate: pullRequest.creationDate,
     sourceRefName: pullRequest.sourceRefName,
     targetRefName: pullRequest.targetRefName,

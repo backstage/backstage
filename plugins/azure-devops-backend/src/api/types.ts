@@ -41,7 +41,10 @@ export type RepoBuild = {
   status?: BuildStatus;
   result?: BuildResult;
   queueTime?: Date;
+  startTime?: Date;
+  finishTime?: Date;
   source: string;
+  uniqueName?: string;
 };
 
 export type PullRequest = {
