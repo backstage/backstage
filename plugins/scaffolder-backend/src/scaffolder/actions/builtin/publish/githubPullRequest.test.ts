@@ -99,8 +99,8 @@ describe('createPublishGithubPullRequestAction', () => {
             commit: 'Create my new app',
             files: {
               'file.txt': {
-                encoding: 'utf-8',
-                content: 'Hello there!',
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
                 mode: '100644',
               },
             },
@@ -172,8 +172,8 @@ describe('createPublishGithubPullRequestAction', () => {
             commit: 'Create my new app',
             files: {
               'foo.txt': {
-                content: 'Hello there!',
-                encoding: 'utf-8',
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
                 mode: '100644',
               },
             },
@@ -230,8 +230,8 @@ describe('createPublishGithubPullRequestAction', () => {
             commit: 'Create my new app',
             files: {
               'file.txt': {
-                content: 'Hello there!',
-                encoding: 'utf-8',
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
                 mode: '100644',
               },
             },
@@ -298,8 +298,8 @@ describe('createPublishGithubPullRequestAction', () => {
             commit: 'Create my new app',
             files: {
               'file.txt': {
-                content: 'Hello there!',
-                encoding: 'utf-8',
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
                 mode: '100755',
               },
             },
