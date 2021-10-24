@@ -43,16 +43,16 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
     const knex = await this.databaseFactory();
     const ticket = uuid();
 
-    async function release() {
+    const release = async () => {
       try {
         await knex<DbMutexesRow>(DB_MUTEXES_TABLE)
           .where('id', '=', id)
           .where('current_lock_ticket', '=', ticket)
           .delete();
-      } catch {
-        // fail silently
+      } catch (e) {
+        this.logger.warn(`Failed to release lock, ${e}`);
       }
-    }
+    };
 
     const record: Knex.DbRecord<DbMutexesRow> = {
       current_lock_ticket: ticket,
