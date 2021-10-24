@@ -19,30 +19,40 @@ import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
+import {
+  UserSettingsContext,
+  UserSettings,
+  DEFAULT_USER_SETTINGS,
+} from '../components/UserSettingsContext';
 
 type Props = {
+  userSettings?: Partial<UserSettings>;
   providerSettings?: JSX.Element;
 };
 
-export const SettingsPage = ({ providerSettings }: Props) => {
+export const SettingsPage = ({ providerSettings, userSettings }: Props) => {
   return (
-    <Page themeId="home">
-      <Header title="Settings" />
+    <UserSettingsContext.Provider
+      value={{ ...DEFAULT_USER_SETTINGS, ...userSettings }}
+    >
+      <Page themeId="home">
+        <Header title="Settings" />
 
-      <TabbedLayout>
-        <TabbedLayout.Route path="general" title="General">
-          <UserSettingsGeneral />
-        </TabbedLayout.Route>
-        <TabbedLayout.Route
-          path="auth-providers"
-          title="Authentication Providers"
-        >
-          <UserSettingsAuthProviders providerSettings={providerSettings} />
-        </TabbedLayout.Route>
-        <TabbedLayout.Route path="feature-flags" title="Feature Flags">
-          <UserSettingsFeatureFlags />
-        </TabbedLayout.Route>
-      </TabbedLayout>
-    </Page>
+        <TabbedLayout>
+          <TabbedLayout.Route path="general" title="General">
+            <UserSettingsGeneral />
+          </TabbedLayout.Route>
+          <TabbedLayout.Route
+            path="auth-providers"
+            title="Authentication Providers"
+          >
+            <UserSettingsAuthProviders providerSettings={providerSettings} />
+          </TabbedLayout.Route>
+          <TabbedLayout.Route path="feature-flags" title="Feature Flags">
+            <UserSettingsFeatureFlags />
+          </TabbedLayout.Route>
+        </TabbedLayout>
+      </Page>
+    </UserSettingsContext.Provider>
   );
 };
