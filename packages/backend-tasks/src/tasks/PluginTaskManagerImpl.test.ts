@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
-import { migrateBackendCommon } from '../database/migrateBackendCommon';
-import { getVoidLogger } from '../logging';
+import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskManagerImpl } from './PluginTaskManagerImpl';
 
 describe('PluginTaskManagerImpl', () => {
@@ -28,7 +28,7 @@ describe('PluginTaskManagerImpl', () => {
 
   async function init(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    await migrateBackendCommon(knex);
+    await migrateBackendTasks(knex);
     const manager = new PluginTaskManagerImpl(
       async () => knex,
       getVoidLogger(),

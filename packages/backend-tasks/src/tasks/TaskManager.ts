@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+import { DatabaseManager, getRootLogger } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { memoize } from 'lodash';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
-import { DatabaseManager } from '../database';
-import { migrateBackendCommon } from '../database/migrateBackendCommon';
-import { getRootLogger } from '../logging';
+import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskManagerImpl } from './PluginTaskManagerImpl';
 import { PluginTaskManagerJanitor } from './PluginTaskManagerJanitor';
 import { PluginTaskManager } from './types';
@@ -61,7 +60,7 @@ export class TaskManager {
     const databaseFactory = memoize(async () => {
       const knex = await this.databaseManager.forPlugin(pluginId).getClient();
 
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const janitor = new PluginTaskManagerJanitor({
         knex,

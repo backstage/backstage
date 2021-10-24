@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-export const DB_MIGRATIONS_TABLE = 'backstage_backend_common__knex_migrations';
-export const DB_MUTEXES_TABLE = 'backstage_backend_common__mutexes';
-export const DB_TASKS_TABLE = 'backstage_backend_common__tasks';
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_tasks__knex_migrations';
+export const DB_MUTEXES_TABLE = 'backstage_backend_tasks__mutexes';
+export const DB_TASKS_TABLE = 'backstage_backend_tasks__tasks';
 
 export type DbMutexesRow = {
   id: string;
-  current_lock_ticket?: string;
+  current_lock_ticket: string;
   current_lock_acquired_at?: Date | string;
   current_lock_expires_at?: Date | string;
 };

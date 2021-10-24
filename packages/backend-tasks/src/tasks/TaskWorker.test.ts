@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
-import { migrateBackendCommon } from '../database/migrateBackendCommon';
+import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { getVoidLogger } from '../logging';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV1 } from './types';
 
@@ -37,7 +37,7 @@ describe('TaskWorker', () => {
     'can run a single task to completion, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
@@ -60,7 +60,7 @@ describe('TaskWorker', () => {
     'goes through the expected states for a single run, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
@@ -135,7 +135,7 @@ describe('TaskWorker', () => {
     'runs tasks more than once even when the task throws, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const fn = jest.fn().mockRejectedValue(new Error('failed'));
       const settings: TaskSettingsV1 = {
@@ -159,7 +159,7 @@ describe('TaskWorker', () => {
     'does not clobber ticket lock when stolen, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
@@ -212,7 +212,7 @@ describe('TaskWorker', () => {
     'gracefully handles a disappeared task row, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      await migrateBackendCommon(knex);
+      await migrateBackendTasks(knex);
 
       const fn = jest.fn(async () => {});
       const settings: TaskSettingsV1 = {

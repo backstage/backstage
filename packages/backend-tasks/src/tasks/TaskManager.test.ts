@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
-import { DatabaseManager } from '../database';
-import { getVoidLogger } from '../logging';
 import { TaskManager } from './TaskManager';
 
 describe('TaskManager', () => {

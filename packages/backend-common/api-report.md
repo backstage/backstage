@@ -12,7 +12,6 @@ import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
-import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -385,11 +384,6 @@ export function loadBackendConfig(options: {
 }): Promise<Config>;
 
 // @public
-export interface LockOptions {
-  timeout: Duration;
-}
-
-// @public
 export function notFoundHandler(): RequestHandler;
 
 // @public
@@ -407,29 +401,6 @@ export type PluginEndpointDiscovery = {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
 };
-
-// @public
-export interface PluginTaskManager {
-  acquireLock(
-    id: string,
-    options: LockOptions,
-  ): Promise<
-    | {
-        acquired: false;
-      }
-    | {
-        acquired: true;
-        release(): Promise<void>;
-      }
-  >;
-  scheduleTask(
-    id: string,
-    options: TaskOptions,
-    fn: () => void | Promise<void>,
-  ): Promise<{
-    unschedule: () => Promise<void>;
-  }>;
-}
 
 // @public
 export type ReaderFactory = (options: {
@@ -606,27 +577,6 @@ export function statusCheckHandler(
 // @public (undocumented)
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
-}
-
-// @public
-export class TaskManager {
-  constructor(databaseManager: DatabaseManager, logger: Logger_2);
-  forPlugin(pluginId: string): PluginTaskManager;
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options?: {
-      databaseManager?: DatabaseManager;
-      logger?: Logger_2;
-    },
-  ): TaskManager;
-}
-
-// @public
-export interface TaskOptions {
-  frequency?: Duration;
-  initialDelay?: Duration;
-  timeout?: Duration;
 }
 
 // @public

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { isDatabaseConflictError } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-import { isDatabaseConflictError } from '../database';
 import { DbMutexesRow, DB_MUTEXES_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { LockOptions, PluginTaskManager, TaskOptions } from './types';
@@ -65,7 +65,6 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
     // First try to overwrite an existing lock, that has timed out
     const stolen = await knex<DbMutexesRow>(DB_MUTEXES_TABLE)
       .where('id', '=', id)
-      .whereNotNull('current_lock_ticket')
       .where('current_lock_expires_at', '<', knex.fn.now())
       .update(record);
 

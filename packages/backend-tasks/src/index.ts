@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
-import { resolvePackagePath } from '../paths';
-import { DB_MIGRATIONS_TABLE } from './tables';
+/**
+ * Common distributed task management / locking library for Backstage backends
+ *
+ * @packageDocumentation
+ */
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/backend-common',
-  'migrations',
-);
-
-export async function migrateBackendCommon(knex: Knex): Promise<void> {
-  await knex.migrate.latest({
-    directory: migrationsDir,
-    tableName: DB_MIGRATIONS_TABLE,
-  });
-}
+export * from './tasks';
