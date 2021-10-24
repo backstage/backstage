@@ -16,14 +16,22 @@
 import React from 'react';
 import { List } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
+import { UserSettingsContext } from '../../components/UserSettingsContext';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
-export const UserSettingsAppearanceCard = () => (
-  <InfoCard title="Appearance" variant="gridItem">
-    <List dense>
-      <UserSettingsThemeToggle />
-      <UserSettingsPinToggle />
-    </List>
-  </InfoCard>
-);
+export const UserSettingsAppearanceCard = () => {
+  const { themeToggle, sidebarPinToggle } =
+    React.useContext(UserSettingsContext);
+
+  if (!themeToggle && !sidebarPinToggle) return null;
+
+  return (
+    <InfoCard title="Appearance" variant="gridItem">
+      <List dense>
+        {themeToggle && <UserSettingsThemeToggle />}
+        {sidebarPinToggle && <UserSettingsPinToggle />}
+      </List>
+    </InfoCard>
+  );
+};
