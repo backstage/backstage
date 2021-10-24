@@ -35,7 +35,7 @@ export const ProviderSettingsItem: ({
 // Warning: (ae-missing-release-tag) "SettingsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: ({ providerSettings }: Props) => JSX.Element;
+export const Router: ({ providerSettings, userSettings }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Settings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -45,7 +45,7 @@ export const Settings: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const UserSettingsAppearanceCard: () => JSX.Element;
+export const UserSettingsAppearanceCard: () => JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "UserSettingsAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -63,7 +63,7 @@ export const UserSettingsFeatureFlags: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "UserSettingsGeneral" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const UserSettingsGeneral: () => JSX.Element;
+export const UserSettingsGeneral: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "UserSettingsMenu" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -75,7 +75,16 @@ export const UserSettingsMenu: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsPage: ({
   providerSettings,
+  userSettings,
 }: {
+  userSettings?:
+    | Partial<{
+        profileCard: boolean;
+        appearanceCard: boolean;
+        themeToggle: boolean;
+        sidebarPinToggle: boolean;
+      }>
+    | undefined;
   providerSettings?: JSX.Element | undefined;
 }) => JSX.Element;
 
