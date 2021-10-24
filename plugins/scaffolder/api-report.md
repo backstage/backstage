@@ -240,6 +240,29 @@ const scaffolderPlugin: BackstagePlugin<
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
 
+// Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateList: ({
+  TemplateCardComponent,
+}: TemplateListProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TemplateListProps = {
+  TemplateCardComponent?:
+    | ComponentType<{
+        template: TemplateEntityV1beta2;
+      }>
+    | undefined;
+};
+
+// Warning: (ae-missing-release-tag) "TemplateTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateTypePicker: () => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "TextValuePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
