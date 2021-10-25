@@ -1,5 +1,5 @@
 ---
-'@backstage/techdocs-common': minor
+'@backstage/techdocs-common': patch
 ---
 
-Support optional bucketRootPath in S3 and GCS publishers
+Support optional bucketRootPath configuration parameter in S3 and GCS publishers
