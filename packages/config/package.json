@@ -34,7 +34,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage/test-utils-core": "^0.1.2",
+    "@backstage/test-utils": "^0.1.19",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32"
   },

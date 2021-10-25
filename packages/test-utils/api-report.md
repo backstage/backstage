@@ -17,9 +17,73 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueChange } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "MockAnalyticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type AsyncLogCollector = () => Promise<void>;
+
+// @public
+export type CollectedLogs<T extends LogFuncs> = {
+  [key in T]: string[];
+};
+
+// @public
+export type ErrorWithContext = {
+  error: Error;
+  context?: ErrorContext;
+};
+
+// @public @deprecated (undocumented)
+export class Keyboard {
+  constructor(
+    target: any,
+    {
+      debug,
+    }?: {
+      debug?: boolean | undefined;
+    },
+  );
+  // (undocumented)
+  click(): Promise<void>;
+  // (undocumented)
+  debug: boolean;
+  // (undocumented)
+  document: any;
+  // (undocumented)
+  enter(value: any): Promise<void>;
+  // (undocumented)
+  escape(): Promise<void>;
+  // (undocumented)
+  get focused(): any;
+  // (undocumented)
+  static fromReadableInput(input: any): any;
+  // (undocumented)
+  _log(message: any, ...args: any[]): void;
+  // (undocumented)
+  _pretty(element: any): string;
+  // (undocumented)
+  send(chars: any): Promise<void>;
+  // (undocumented)
+  _sendKey(key: any, charCode: any, action: any): Promise<void>;
+  // (undocumented)
+  tab(): Promise<void>;
+  // (undocumented)
+  static toReadableInput(chars: any): any;
+  // (undocumented)
+  toString(): string;
+  // (undocumented)
+  static type(target: any, input: any): Promise<void>;
+  // (undocumented)
+  type(input: any): Promise<void>;
+  // (undocumented)
+  static typeDebug(target: any, input: any): Promise<void>;
+}
+
+// @public
+export type LogCollector = AsyncLogCollector | SyncLogCollector;
+
+// @public
+export type LogFuncs = 'log' | 'warn' | 'error';
+
+// @public
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent({
@@ -33,9 +97,6 @@ export class MockAnalyticsApi implements AnalyticsApi {
   getEvents(): AnalyticsEvent[];
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "mockBreakpoint" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function mockBreakpoint({
   matches,
@@ -43,19 +104,14 @@ export function mockBreakpoint({
   matches?: boolean | undefined;
 }): void;
 
-// Warning: (ae-missing-release-tag) "MockErrorApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class MockErrorApi implements ErrorApi {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options?: Options);
+  constructor(options?: MockErrorApiOptions);
   // (undocumented)
   error$(): Observable<{
     error: Error;
     context?: ErrorContext;
   }>;
-  // Warning: (ae-forgotten-export) The symbol "ErrorWithContext" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getErrors(): ErrorWithContext[];
   // (undocumented)
@@ -64,9 +120,12 @@ export class MockErrorApi implements ErrorApi {
   waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
 }
 
-// Warning: (ae-missing-release-tag) "MockStorageApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type MockErrorApiOptions = {
+  collect?: boolean;
+};
+
+// @public
 export class MockStorageApi implements StorageApi {
   // (undocumented)
   static create(data?: MockStorageBucket): MockStorageApi;
@@ -82,16 +141,12 @@ export class MockStorageApi implements StorageApi {
   set<T>(key: string, data: T): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "MockStorageBucket" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type MockStorageBucket = {
   [key: string]: any;
 };
 
-// Warning: (ae-missing-release-tag) "msw" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const msw: {
   setupDefaultHandlers: (worker: {
     listen: (t: any) => void;
@@ -100,22 +155,58 @@ export const msw: {
   }) => void;
 };
 
-// Warning: (ae-forgotten-export) The symbol "TestAppOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "renderInTestApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function renderInTestApp(
   Component: ComponentType | ReactNode,
   options?: TestAppOptions,
 ): Promise<RenderResult>;
 
-// Warning: (ae-missing-release-tag) "wrapInTestApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export function renderWithEffects(nodes: ReactElement): Promise<RenderResult>;
+
+// @public
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
+export type SyncLogCollector = () => void;
+
+// @public
+export type TestAppOptions = {
+  routeEntries?: string[];
+  mountedRoutes?: {
+    [path: string]: RouteRef | ExternalRouteRef;
+  };
+};
+
+// @public
+export function withLogCollector(
+  callback: AsyncLogCollector,
+): Promise<CollectedLogs<LogFuncs>>;
+
+// @public
+export function withLogCollector(
+  callback: SyncLogCollector,
+): CollectedLogs<LogFuncs>;
+
+// @public
+export function withLogCollector<T extends LogFuncs>(
+  logsToCollect: T[],
+  callback: AsyncLogCollector,
+): Promise<CollectedLogs<T>>;
+
+// @public
+export function withLogCollector<T extends LogFuncs>(
+  logsToCollect: T[],
+  callback: SyncLogCollector,
+): CollectedLogs<T>;
+
 // @public
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
   options?: TestAppOptions,
 ): ReactElement;
-
-export * from '@backstage/test-utils-core';
 ```

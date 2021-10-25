@@ -17,11 +17,20 @@
 import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 
-type Options = {
+/**
+ * Constructor arguments for {@link MockErrorApi}
+ * @public
+ */
+export type MockErrorApiOptions = {
+  // Need to be true if getErrors is used in testing.
   collect?: boolean;
 };
 
-type ErrorWithContext = {
+/**
+ * ErrorWithContext contains error and ErrorContext
+ * @public
+ */
+export type ErrorWithContext = {
   error: Error;
   context?: ErrorContext;
 };
@@ -39,11 +48,16 @@ const nullObservable = {
   },
 };
 
+/**
+ * Mock implementation of the {@link core-plugin-api#ErrorApi} to be used in tests.
+ * Incudes withForError and getErrors methods for error testing.
+ * @public
+ */
 export class MockErrorApi implements ErrorApi {
   private readonly errors = new Array<ErrorWithContext>();
   private readonly waiters = new Set<Waiter>();
 
-  constructor(private readonly options: Options = {}) {}
+  constructor(private readonly options: MockErrorApiOptions = {}) {}
 
   post(error: Error, context?: ErrorContext) {
     if (this.options.collect) {

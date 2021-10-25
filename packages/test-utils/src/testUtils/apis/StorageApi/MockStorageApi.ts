@@ -18,8 +18,16 @@ import { StorageApi, StorageValueChange } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
+/**
+ * Type for map holding data in {@link MockStorageApi}
+ * @public
+ */
 export type MockStorageBucket = { [key: string]: any };
 
+/**
+ * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests
+ * @public
+ */
 export class MockStorageApi implements StorageApi {
   private readonly namespace: string;
   private readonly data: MockStorageBucket;

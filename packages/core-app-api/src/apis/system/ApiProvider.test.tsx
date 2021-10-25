@@ -25,7 +25,7 @@ import {
 import { ApiProvider } from './ApiProvider';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
-import { withLogCollector } from '@backstage/test-utils-core';
+import { withLogCollector } from '@backstage/test-utils';
 import { useVersionedContext } from '@backstage/version-bridge';
 
 describe('ApiProvider', () => {
