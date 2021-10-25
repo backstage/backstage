@@ -24,6 +24,7 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
@@ -44,7 +45,7 @@ type Props = {
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
-  onFinish: () => Promise<boolean>;
+  onFinish: () => Promise<void>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
 };
@@ -113,6 +114,7 @@ export const MultistepJsonForm = ({
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
+  const errorApi = useApi(errorApiRef);
 
   const handleReset = () => {
     setActiveStep(0);
@@ -124,9 +126,11 @@ export const MultistepJsonForm = ({
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
     setDisableButtons(true);
-    const success = await onFinish();
-    if (!success) {
+    try {
+      await onFinish();
+    } catch (err) {
       setDisableButtons(false);
+      errorApi.post(err);
     }
   };
 

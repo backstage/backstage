@@ -128,15 +128,8 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    try {
-      const id = await scaffolderApi.scaffold(templateName, formState);
-
-      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
-      return true;
-    } catch (e) {
-      errorApi.post(e);
-      return false;
-    }
+    const id = await scaffolderApi.scaffold(templateName, formState);
+    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
   };
 
   if (error) {
