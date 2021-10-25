@@ -29,6 +29,8 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   static create(knex: Knex): Promise<DatabaseDocumentStore>;
   // (undocumented)
+  getTransaction(): Promise<Knex.Transaction>;
+  // (undocumented)
   insertDocuments(
     tx: Knex.Transaction,
     type: string,
@@ -55,6 +57,8 @@ export class DatabaseDocumentStore implements DatabaseStore {
 export interface DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
+  // (undocumented)
+  getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)
   insertDocuments(
     tx: Knex.Transaction,

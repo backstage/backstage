@@ -36,6 +36,7 @@ describe('PgSearchEngine', () => {
   beforeEach(() => {
     database = {
       transaction: jest.fn(),
+      getTransaction: jest.fn(),
       insertDocuments: jest.fn(),
       query: jest.fn(),
       completeInsert: jest.fn(),

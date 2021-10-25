@@ -226,7 +226,7 @@ describe('LunrSearchEngine', () => {
     });
 
     it('should handle single-item array filter as scalar value', async () => {
-      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
         logger: getVoidLogger(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();

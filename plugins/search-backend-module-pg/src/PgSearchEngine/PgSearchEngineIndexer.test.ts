@@ -19,13 +19,18 @@ import { DatabaseStore } from '../database';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 
 describe('PgSearchEngineIndexer', () => {
-  const tx: any = {} as any;
+  const tx = {
+    rollback: jest.fn(),
+    commit: jest.fn(),
+  } as any;
   let database: jest.Mocked<DatabaseStore>;
   let indexer: PgSearchEngineIndexer;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     database = {
       transaction: jest.fn().mockImplementation(fn => fn(tx)),
+      getTransaction: jest.fn().mockReturnValue(tx),
       insertDocuments: jest.fn(),
       query: jest.fn(),
       completeInsert: jest.fn(),
@@ -50,7 +55,7 @@ describe('PgSearchEngineIndexer', () => {
 
     await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
 
-    expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toHaveBeenCalledWith(
       tx,
@@ -58,6 +63,7 @@ describe('PgSearchEngineIndexer', () => {
       documents,
     );
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+    expect(tx.commit).toHaveBeenCalled();
   });
 
   it('should batch insert documents', async () => {
@@ -69,7 +75,7 @@ describe('PgSearchEngineIndexer', () => {
 
     await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
 
-    expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toBeCalledTimes(4);
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
@@ -89,13 +95,12 @@ describe('PgSearchEngineIndexer', () => {
     const result = await TestPipeline.withSubject(indexer)
       .withDocuments(documents)
       .execute();
-    const txCompletion = database.transaction.mock.results[0].value;
 
-    expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).not.toHaveBeenCalled();
     expect(database.completeInsert).not.toHaveBeenCalled();
     expect(result.error).toBe(expectedError);
-    expect(await txCompletion).toBeUndefined();
+    expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 
   it('should close tx and bubble up error on insert', async () => {
@@ -112,13 +117,12 @@ describe('PgSearchEngineIndexer', () => {
     const result = await TestPipeline.withSubject(indexer)
       .withDocuments(documents)
       .execute();
-    const txCompletion = database.transaction.mock.results[0].value;
 
-    expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.completeInsert).not.toHaveBeenCalled();
     expect(result.error).toBe(expectedError);
-    expect(await txCompletion).toBeUndefined();
+    expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 
   it('should close tx and bubble up error on completion', async () => {
@@ -135,13 +139,12 @@ describe('PgSearchEngineIndexer', () => {
     const result = await TestPipeline.withSubject(indexer)
       .withDocuments(documents)
       .execute();
-    const txCompletion = database.transaction.mock.results[0].value;
 
-    expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toHaveBeenCalledTimes(1);
     expect(database.completeInsert).toHaveBeenCalledTimes(1);
     expect(result.error).toBe(expectedError);
-    expect(await txCompletion).toBeUndefined();
+    expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 });

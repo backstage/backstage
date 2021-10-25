@@ -26,6 +26,7 @@ export interface PgSearchQuery {
 
 export interface DatabaseStore {
   transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T>;
+  getTransaction(): Promise<Knex.Transaction>;
   prepareInsert(tx: Knex.Transaction): Promise<void>;
   insertDocuments(
     tx: Knex.Transaction,
