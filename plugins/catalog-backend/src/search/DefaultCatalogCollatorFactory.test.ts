@@ -16,7 +16,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
-import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
 import { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 
 describe('DefaultCatalogCollatorFactory', () => {
@@ -36,13 +36,16 @@ describe('DefaultCatalogCollatorFactory', () => {
     const factory = DefaultCatalogCollatorFactory.fromConfig(config, options);
 
     it('instantiates collator with expected arguments', async () => {
-      DefaultCatalogCollator.fromConfig = jest.fn().mockReturnValue({
+      DefaultCatalogDocumentGenerator.fromConfig = jest.fn().mockReturnValue({
         execute: () => 'iterable',
       });
 
       const collator = await factory.getCollator();
 
-      expect(DefaultCatalogCollator.fromConfig).toBeCalledWith(config, options);
+      expect(DefaultCatalogDocumentGenerator.fromConfig).toBeCalledWith(
+        config,
+        options,
+      );
       expect(collator).toBeInstanceOf(Readable);
     });
   });

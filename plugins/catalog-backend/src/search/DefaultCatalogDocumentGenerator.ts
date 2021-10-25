@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery, TokenManager } from '@backstage/backend-common';
-import { Entity, UserEntity } from '@backstage/catalog-model';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
@@ -24,7 +23,7 @@ import {
   CatalogEntitiesRequest,
 } from '@backstage/catalog-client';
 
-interface CatalogEntityDocument extends IndexableDocument {
+export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
   namespace: string;
   kind: string;
@@ -32,48 +31,42 @@ interface CatalogEntityDocument extends IndexableDocument {
   owner: string;
 }
 
-/**
- * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
- * use DefaultCatalogCollator instead.
- */
-export class DefaultCatalogCollator {
+export class DefaultCatalogDocumentGenerator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
   protected filter?: CatalogEntitiesRequest['filter'];
   protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
-  protected tokenManager: TokenManager;
 
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
-      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ) {
-    return new DefaultCatalogCollator({
+    return new DefaultCatalogDocumentGenerator({
       ...options,
     });
   }
 
-  constructor(options: {
+  constructor({
+    discovery,
+    locationTemplate,
+    filter,
+    catalogClient,
+  }: {
     discovery: PluginEndpointDiscovery;
-    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   }) {
-    const { discovery, locationTemplate, filter, catalogClient, tokenManager } =
-      options;
-
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
     this.filter = filter;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
-    this.tokenManager = tokenManager;
   }
 
   protected applyArgsToFormat(
@@ -87,33 +80,11 @@ export class DefaultCatalogCollator {
     return formatted.toLowerCase();
   }
 
-  private isUserEntity(entity: Entity): entity is UserEntity {
-    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
-  }
-
-  private getDocumentText(entity: Entity): string {
-    let documentText = entity.metadata.description || '';
-    if (this.isUserEntity(entity)) {
-      if (entity.spec?.profile?.displayName && documentText) {
-        // combine displayName and description
-        const displayName = entity.spec?.profile?.displayName;
-        documentText = displayName.concat(' : ', documentText);
-      } else {
-        documentText = entity.spec?.profile?.displayName || documentText;
-      }
-    }
-    return documentText;
-  }
-
-  async *execute(): AsyncGenerator<CatalogEntityDocument> {
-    const { token } = await this.tokenManager.getToken();
+  async *execute() {
     const entities = (
-      await this.catalogClient.getEntities(
-        {
-          filter: this.filter,
-        },
-        { token },
-      )
+      await this.catalogClient.getEntities({
+        filter: this.filter,
+      })
     ).items;
     for (const entity of entities) {
       yield {
@@ -123,13 +94,13 @@ export class DefaultCatalogCollator {
           kind: entity.kind,
           name: entity.metadata.name,
         }),
-        text: this.getDocumentText(entity),
+        text: entity.metadata.description || '',
         componentType: entity.spec?.type?.toString() || 'other',
         namespace: entity.metadata.namespace || 'default',
         kind: entity.kind,
         lifecycle: (entity.spec?.lifecycle as string) || '',
         owner: (entity.spec?.owner as string) || '',
       };
-    };
+    }
   }
 }

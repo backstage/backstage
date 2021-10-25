@@ -7,6 +7,7 @@
 
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
@@ -747,6 +748,50 @@ export type DbPageInfo =
       hasNextPage: true;
       endCursor: string;
     };
+
+// Warning: (ae-missing-release-tag) "DefaultCatalogCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
+export class DefaultCatalogCollator {
+  constructor({
+    discovery,
+    locationTemplate,
+    filter,
+    catalogClient,
+  }: {
+    discovery: PluginEndpointDiscovery;
+    locationTemplate?: string;
+    filter?: CatalogEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
+  });
+  // (undocumented)
+  protected applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string;
+  // (undocumented)
+  protected readonly catalogClient: CatalogApi;
+  // (undocumented)
+  protected discovery: PluginEndpointDiscovery;
+  // Warning: (ae-forgotten-export) The symbol "CatalogEntityDocument" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  execute(): Promise<CatalogEntityDocument_2[]>;
+  // (undocumented)
+  protected filter?: CatalogEntitiesRequest['filter'];
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      filter?: CatalogEntitiesRequest['filter'];
+    },
+  ): DefaultCatalogCollator;
+  // (undocumented)
+  protected locationTemplate: string;
+  // (undocumented)
+  readonly type: string;
+}
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogCollatorFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

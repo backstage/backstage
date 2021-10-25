@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { Readable } from 'stream';
+import { TestPipeline } from '@backstage/plugin-search-backend-node';
 
 const server = setupServer();
 
@@ -58,27 +57,21 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultCatalogCollator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
-  let mockTokenManager: jest.Mocked<TokenManager>;
-  let collator: DefaultCatalogCollator;
+  let collator: DefaultCatalogDocumentGenerator;
 
   beforeAll(() => {
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
       getExternalBaseUrl: jest.fn(),
     };
-    mockTokenManager = {
-      getToken: jest.fn().mockResolvedValue({ token: '' }),
-      authenticate: jest.fn(),
-    };
-    collator = new DefaultCatalogCollator({
+    collator = new DefaultCatalogDocumentGenerator({
       discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
     });
     server.listen();
   });
   beforeEach(() => {
     server.use(
-      rest.get('http://localhost:7007/entities', (req, res, ctx) => {
+      rest.get('http://localhost:7000/entities', (req, res, ctx) => {
         if (req.url.searchParams.has('filter')) {
           const filter = req.url.searchParams.get('filter');
           if (filter === 'kind=Foo,kind=Bar') {
@@ -98,13 +91,21 @@ describe('DefaultCatalogCollator', () => {
   });
 
   it('fetches from the configured catalog service', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
     expect(documents).toHaveLength(expectedEntities.length);
   });
 
   it('maps a returned entity to an expected CatalogEntityDocument', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     expect(documents[0]).toMatchObject({
       title: expectedEntities[0].metadata.name,
       location: '/catalog/default/component/test-entity',
@@ -127,13 +128,15 @@ describe('DefaultCatalogCollator', () => {
 
   it('maps a returned entity with a custom locationTemplate', async () => {
     // Provide an alternate location template.
-    collator = new DefaultCatalogCollator({
+    collator = new DefaultCatalogDocumentGenerator({
       discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',
     });
 
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     expect(documents[0]).toMatchObject({
       location: '/software/test-entity',
     });
@@ -141,15 +144,21 @@ describe('DefaultCatalogCollator', () => {
 
   it('allows filtering of the retrieved catalog entities', async () => {
     // Provide an alternate location template.
-    collator = DefaultCatalogCollator.fromConfig(new ConfigReader({}), {
-      discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
-      filter: {
-        kind: ['Foo', 'Bar'],
+    collator = DefaultCatalogDocumentGenerator.fromConfig(
+      new ConfigReader({}),
+      {
+        discovery: mockDiscoveryApi,
+        filter: {
+          kind: ['Foo', 'Bar'],
+        },
       },
-    });
+    );
 
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     // The simulated 'Foo,Bar' filter should return in an empty list
     expect(documents).toHaveLength(0);
   });

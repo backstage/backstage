@@ -19,7 +19,7 @@ import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
 import { Readable } from 'stream';
-import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
 
 type FactoryOptions = {
   discovery: PluginEndpointDiscovery;
@@ -43,7 +43,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   }
 
   async getCollator() {
-    const collator = DefaultCatalogCollator.fromConfig(
+    const collator = DefaultCatalogDocumentGenerator.fromConfig(
       this.config,
       this.options,
     );
