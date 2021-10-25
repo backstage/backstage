@@ -54,13 +54,14 @@ An index is a collection of such documents of a given type.
 ### Collators
 
 You need to be able to search something! Collators are the way to define what
-can be searched. Specifically, they're classes which return documents conforming
-to a minimum set of fields (including a document title, location, and text), but
-which can contain any other fields as defined by the collator itself. One
-collator is responsible for defining and collecting documents of a type.
+can be searched. Specifically, they're readable object streams of documents that
+conform to a minimum set of fields (including a document title, location, and
+text), but which can contain any other fields as defined by the collator itself.
+One collator is responsible for defining and collecting documents of a type.
 
-Some plugins, like the Catalog Backend, provide so-called "default" collators
-which you can use out-of-the-box to start searching across Backstage quickly.
+Some plugins, like the Catalog Backend, provide so-called "default" collator
+factories which you can use out-of-the-box to start searching across Backstage
+quickly.
 
 ### Decorators
 
@@ -68,9 +69,15 @@ Sometimes you want to add extra information to a set of documents in your search
 index that the collator may not be aware of. For example, the Software Catalog
 knows about software entities, but it may not know about their usage or quality.
 
-Decorators are classes which can add extra fields to pre-collated documents.
-This extra metadata could then be used to bias search results or otherwise
-improve the search experience in your Backstage instance.
+Decorators are transform streams which sit between a collator (read stream) and
+an indexer (write stream) during the indexing process. It can be used to add
+extra fields to documents as they are being collated and indexed. This extra
+metadata could then be used to bias search results or otherwise improve the
+search experience in your Backstage instance.
+
+In addition to adding extra metadata, decorators (like any transform stream) can
+also be used to remove metadata, filter out, or even add extra documents at
+index-time.
 
 ### The Scheduler
 

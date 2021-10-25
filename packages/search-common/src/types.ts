@@ -107,7 +107,13 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 
   /**
-   * Factory method for getting a search engine indexer.
+   * Factory method for getting a search engine indexer for a given document
+   * type.
+   *
+   * @param type - The type or name of the document set for which an indexer
+   *   should be retrieved. This corresponds to the `type` property on the
+   *   document collator/decorator factories and will most often be used to
+   *   identify an index or group to which documents should be written.
    */
   getIndexer(type: string): Promise<Writable>;
 
