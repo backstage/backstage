@@ -247,7 +247,9 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
+      const after =
+        req.query.after !== undefined ? Number(req.query.after) : undefined;
+
       logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
       // Mandatory headers and http status to keep connection open
@@ -288,6 +290,43 @@ export async function createRouter(
       req.on('close', () => {
         unsubscribe();
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
+      });
+    })
+    .get('/v2/tasks/:taskId/logs', async (req, res) => {
+      const { taskId } = req.params;
+      const after = Number(req.query.after) || undefined;
+
+      let unsubscribe = () => {};
+
+      // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        res.json([]);
+      }, 30_000);
+
+      // Get all known events after an id (always includes the completion event) and return the first callback
+      unsubscribe = taskBroker.observe(
+        { taskId, after },
+        (error, { events }) => {
+          // stop the timeout
+          clearTimeout(timeout);
+          unsubscribe();
+
+          if (error) {
+            logger.error(
+              `Received error from log when observing taskId '${taskId}', ${error}`,
+            );
+          }
+
+          res.json(events);
+        },
+      );
+
+      // When client closes connection we update the clients list
+      // avoiding the disconnected one
+      req.on('close', () => {
+        unsubscribe();
+        clearTimeout(timeout);
       });
     });
 

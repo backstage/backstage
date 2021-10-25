@@ -318,4 +318,84 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(unsubscribe).toBeCalledTimes(1);
     });
   });
+
+  describe('GET /v2/tasks/:taskId/logs', () => {
+    it('should return log messages', async () => {
+      const unsubscribe = jest.fn();
+      MockStorageTaskBroker.prototype.observe.mockImplementation(
+        ({ taskId }, callback) => {
+          callback(undefined, {
+            events: [
+              {
+                id: 0,
+                taskId,
+                type: 'log',
+                createdAt: '',
+                body: { message: 'My log message' },
+              },
+              {
+                id: 1,
+                taskId,
+                type: 'completion',
+                createdAt: '',
+                body: { message: 'Finished!' },
+              },
+            ],
+          });
+          return unsubscribe;
+        },
+      );
+
+      const response = await request(app).get('/v2/tasks/a-random-id/logs');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          id: 0,
+          taskId: 'a-random-id',
+          type: 'log',
+          createdAt: '',
+          body: { message: 'My log message' },
+        },
+        {
+          id: 1,
+          taskId: 'a-random-id',
+          type: 'completion',
+          createdAt: '',
+          body: { message: 'Finished!' },
+        },
+      ]);
+
+      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
+      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+        { taskId: 'a-random-id' },
+        expect.any(Function),
+      );
+      expect(unsubscribe).toBeCalledTimes(1);
+    });
+
+    it('should return log messages with after query', async () => {
+      const unsubscribe = jest.fn();
+      MockStorageTaskBroker.prototype.observe.mockImplementation(
+        (_, callback) => {
+          callback(undefined, { events: [] });
+          return unsubscribe;
+        },
+      );
+
+      const response = await request(app)
+        .get('/v2/tasks/a-random-id/logs')
+        .query({ after: 10 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
+      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+        { taskId: 'a-random-id', after: 10 },
+        expect.any(Function),
+      );
+      expect(unsubscribe).toBeCalledTimes(1);
+    });
+  });
 });

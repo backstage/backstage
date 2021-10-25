@@ -55,6 +55,7 @@
     "json-schema": "^0.3.0",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
+    "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
