@@ -18,7 +18,6 @@ import { JsonRuleBooleanCheckResult, TechInsightJsonRuleCheck } from '../types';
 import {
   FactChecker,
   FactResponse,
-  FactValueDefinitions,
   TechInsightCheckRegistry,
   FlatTechInsightFact,
   TechInsightsStore,
@@ -81,20 +80,13 @@ export class JsonRulesEngineFactChecker
   ): Promise<JsonRuleBooleanCheckResult[]> {
     const engine = new Engine();
     const techInsightChecks = await this.checkRegistry.getAll(checks);
-    const factRefs = techInsightChecks.flatMap(it => it.factRefs);
-    const facts = await this.repository.getLatestFactsForRefs(factRefs, entity);
+    const factIds = techInsightChecks.flatMap(it => it.factIds);
+    const facts = await this.repository.getLatestFactsByIds(factIds, entity);
     techInsightChecks.forEach(techInsightCheck => {
       const rule = techInsightCheck.rule;
       rule.name = techInsightCheck.id;
       engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
-
-      if (techInsightCheck.dynamicFacts) {
-        techInsightCheck.dynamicFacts.forEach(it =>
-          engine.addFact(it.id, it.calculationMethod, it.options),
-        );
-      }
     });
-
     const factValues = Object.values(facts).reduce(
       (acc, it) => ({ ...acc, ...it.facts }),
       {},
@@ -140,21 +132,21 @@ export class JsonRulesEngineFactChecker
     }
 
     const existingSchemas = await this.repository.getLatestSchemas(
-      check.factRefs,
+      check.factIds,
     );
-    const references = this.retrieveFactReferences(check.rule.conditions);
+    const references = this.retrieveIndividualFactReferences(
+      check.rule.conditions,
+    );
     const results = references.map(ref => ({
       ref,
-      result: existingSchemas.some(schema => schema.schema.hasOwnProperty(ref)),
+      result: existingSchemas.some(schema => schema.hasOwnProperty(ref)),
     }));
     const failedReferences = results.filter(it => !it.result);
     failedReferences.forEach(it => {
       this.logger.warn(
         `Validation failed for check ${check.name}. Reference to value ${
           it.ref
-        } does not exists in referred fact schemas: ${check.factRefs.join(
-          ',',
-        )}`,
+        } does not exists in referred fact schemas: ${check.factIds.join(',')}`,
       );
     });
     const valid = failedReferences.length === 0;
@@ -189,17 +181,21 @@ export class JsonRulesEngineFactChecker
     return await this.checkRegistry.register(check);
   }
 
-  private retrieveFactReferences(
+  private retrieveIndividualFactReferences(
     condition: TopLevelCondition | { fact: string },
   ): string[] {
     let results: string[] = [];
     if ('all' in condition) {
       results = results.concat(
-        condition.all.flatMap(con => this.retrieveFactReferences(con)),
+        condition.all.flatMap(con =>
+          this.retrieveIndividualFactReferences(con),
+        ),
       );
     } else if ('any' in condition) {
       results = results.concat(
-        condition.any.flatMap(con => this.retrieveFactReferences(con)),
+        condition.any.flatMap(con =>
+          this.retrieveIndividualFactReferences(con),
+        ),
       );
     } else {
       results.push(condition.fact);
@@ -251,7 +247,7 @@ export class JsonRulesEngineFactChecker
       type: techInsightCheck.type,
       name: techInsightCheck.name,
       description: techInsightCheck.description,
-      factRefs: techInsightCheck.factRefs,
+      factIds: techInsightCheck.factIds,
       metadata: result.result
         ? techInsightCheck.successMetadata
         : techInsightCheck.failureMetadata,
@@ -272,18 +268,18 @@ export class JsonRulesEngineFactChecker
     techInsightCheck: TechInsightJsonRuleCheck,
   ): Promise<FactResponse> {
     const factSchemas = await this.repository.getLatestSchemas(
-      techInsightCheck.factRefs,
+      techInsightCheck.factIds,
     );
-    const schemas: FactValueDefinitions = factSchemas.reduce(
-      (acc, schema) => ({ ...acc, ...schema.schema }),
+    const schemas = factSchemas.reduce(
+      (acc, schema) => ({ ...acc, ...schema }),
       {},
     );
-    const individualFacts = this.retrieveFactReferences(
+    const individualFacts = this.retrieveIndividualFactReferences(
       techInsightCheck.rule.conditions,
     );
     const factValues = facts
       .filter(factContainer =>
-        techInsightCheck.factRefs.includes(factContainer.ref),
+        techInsightCheck.factIds.includes(factContainer.id),
       )
       .reduce(
         (acc, factContainer) => ({

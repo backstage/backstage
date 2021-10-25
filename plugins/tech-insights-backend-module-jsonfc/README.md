@@ -2,7 +2,7 @@
 
 This is an extension to module to tech-insights-backend plugin, which provides basic framework and functionality to implement tech insights within Backstage.
 
-This module provides functionality to run checks against a `json-rules-engine` and provide boolean logic by simply building checks using JSON conditions.
+This module provides functionality to run checks against a [json-rules-engine](https://github.com/CacheControl/json-rules-engine) and provide boolean logic by simply building checks using JSON conditions.
 
 ## Getting started
 

@@ -157,7 +157,7 @@ export interface TechInsightCheck {
    *
    * References the fact container, aka fact retriever itself which may or may not contain multiple individual facts and values
    */
-  factRefs: string[];
+  factIds: string[];
 
   /**
    * Metadata to be returned in case a check has been successfully evaluated

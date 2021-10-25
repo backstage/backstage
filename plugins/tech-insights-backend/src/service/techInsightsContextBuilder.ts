@@ -80,70 +80,57 @@ export type TechInsightsContext<
 };
 
 /**
- * @public
- * @typeParam CheckType - Type of the check for the fact checker this builder returns
- * @typeParam CheckResultType - Type of the check result for the fact checker this builder returns
+ * Constructs needed persistence context, fact retriever engine
+ * and optionally fact checker implementations to be used in the tech insights module.
  *
- * Default implementation of TechInsightsBuilder.
+ * @param options - Needed options to construct TechInsightsContext
+ * @returns TechInsightsContext with persistence implementations and optionally an implementation of a FactChecker
  */
-export class DefaultTechInsightsBuilder<
+export const buildTechInsightsContext = async <
   CheckType extends TechInsightCheck,
   CheckResultType extends CheckResult,
-> {
-  private readonly options: TechInsightsOptions<CheckType, CheckResultType>;
+>(
+  options: TechInsightsOptions<CheckType, CheckResultType>,
+): Promise<TechInsightsContext<CheckType, CheckResultType>> => {
+  const {
+    factRetrievers,
+    factCheckerFactory,
+    config,
+    discovery,
+    database,
+    logger,
+  } = options;
 
-  constructor(options: TechInsightsOptions<CheckType, CheckResultType>) {
-    this.options = options;
-  }
+  const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
 
-  /**
-   * Constructs needed persistence context, fact retriever engine
-   * and optionally fact checker implementations to be used in the tech insights module.
-   *
-   * @returns TechInsightsContext with persistence implementations and optionally an implementation of a FactChecker
-   */
-  async build(): Promise<TechInsightsContext<CheckType, CheckResultType>> {
-    const {
-      factRetrievers,
-      factCheckerFactory,
+  const persistenceContext = await DatabaseManager.initializePersistenceContext(
+    await database.getClient(),
+    { logger },
+  );
+
+  const factRetrieverEngine = await FactRetrieverEngine.create({
+    repository: persistenceContext.techInsightsStore,
+    factRetrieverRegistry,
+    factRetrieverContext: {
       config,
       discovery,
-      database,
       logger,
-    } = this.options;
+    },
+  });
 
-    const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
+  factRetrieverEngine.schedule();
 
-    const persistenceContext =
-      await DatabaseManager.initializePersistenceContext(
-        await database.getClient(),
-        { logger },
-      );
-
-    const factRetrieverEngine = await FactRetrieverEngine.fromConfig({
-      repository: persistenceContext.techInsightsStore,
-      factRetrieverRegistry,
-      factRetrieverContext: {
-        config,
-        discovery,
-        logger,
-      },
-    });
-
-    factRetrieverEngine.schedule();
-
-    if (factCheckerFactory) {
-      const factChecker = factCheckerFactory.construct(
-        persistenceContext.techInsightsStore,
-      );
-      return {
-        persistenceContext,
-        factChecker,
-      };
-    }
-
+  if (factCheckerFactory) {
+    const factChecker = factCheckerFactory.construct(
+      persistenceContext.techInsightsStore,
+    );
     return {
       persistenceContext,
+      factChecker,
     };
   }
-}
+
+  return {
+    persistenceContext,
+  };
+};

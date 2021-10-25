@@ -17,7 +17,7 @@ export interface BooleanCheckResult extends CheckResult {
 // @public
 export interface CheckResponse {
   description: string;
-  factRefs: string[];
+  factIds: string[];
   id: string;
   metadata?: Record<string, any>;
   name: string;
@@ -68,22 +68,23 @@ export interface FactCheckerFactory<
 
 // @public
 export type FactResponse = {
-  [key: string]: {
-    ref: string;
+  [id: string]: {
+    id: string;
     type: 'integer' | 'float' | 'string' | 'boolean' | 'datetime' | 'set';
     description: string;
     value: number | string | boolean | DateTime | [];
     since?: string;
     metadata?: Record<string, any>;
-    entityKinds: string[];
   };
 };
 
 // @public
 export interface FactRetriever {
+  entityTypes?: string[];
   handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
-  ref: string;
+  id: string;
   schema: FactSchema;
+  version: string;
 }
 
 // @public
@@ -101,30 +102,28 @@ export type FactRetrieverRegistration = {
 
 // @public
 export type FactSchema = {
-  version: string;
-  schema: FactValueDefinitions;
-};
-
-// @public
-export type FactValueDefinitions = {
-  [key: string]: {
+  [name: string]: {
     type: 'integer' | 'float' | 'string' | 'boolean' | 'datetime' | 'set';
     description: string;
     since?: string;
     metadata?: Record<string, any>;
-    entityKinds: string[];
   };
 };
 
+// Warning: (ae-missing-release-tag) "FactSchemaDefinition" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;
+
 // @public
 export type FlatTechInsightFact = TechInsightFact & {
-  ref: string;
+  id: string;
 };
 
 // @public
 export interface TechInsightCheck {
   description: string;
-  factRefs: string[];
+  factIds: string[];
   failureMetadata?: Record<string, any>;
   id: string;
   name: string;
@@ -151,14 +150,24 @@ export type TechInsightFact = {
     kind: string;
     name: string;
   };
-  facts: Record<string, number | string | boolean | DateTime | []>;
+  facts: Record<
+    string,
+    | number
+    | string
+    | boolean
+    | DateTime
+    | number[]
+    | string[]
+    | boolean[]
+    | DateTime[]
+  >;
   timestamp?: DateTime;
 };
 
 // @public
 export interface TechInsightsStore {
-  getFactsBetweenTimestampsForRefs(
-    refs: string[],
+  getFactsBetweenTimestampsByIds(
+    ids: string[],
     entity: string,
     startDateTime: DateTime,
     endDateTime: DateTime,
@@ -166,15 +175,15 @@ export interface TechInsightsStore {
     [factRef: string]: FlatTechInsightFact[];
   }>;
   // (undocumented)
-  getLatestFactsForRefs(
-    refs: string[],
+  getLatestFactsByIds(
+    ids: string[],
     entity: string,
   ): Promise<{
     [factRef: string]: FlatTechInsightFact;
   }>;
-  getLatestSchemas(refs?: string[]): Promise<FactSchema[]>;
-  insertFacts(ref: string, facts: TechInsightFact[]): Promise<void>;
-  insertFactSchema(ref: string, schema: FactSchema): Promise<void>;
+  getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
+  insertFacts(id: string, facts: TechInsightFact[]): Promise<void>;
+  insertFactSchema(schemaDefinition: FactSchemaDefinition): Promise<void>;
 }
 
 // (No @packageDocumentation comment for this package)

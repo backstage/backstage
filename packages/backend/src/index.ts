@@ -109,7 +109,7 @@ async function main() {
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
   const techInsightsEnv = useHotMemoize(module, () =>
-    createEnv('tech_insights'),
+    createEnv('tech-insights'),
   );
 
   const apiRouter = Router();

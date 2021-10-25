@@ -42,7 +42,17 @@ export type TechInsightFact = {
    *
    * Key indicates fact name as it is defined in FactSchema
    */
-  facts: Record<string, number | string | boolean | DateTime | []>;
+  facts: Record<
+    string,
+    | number
+    | string
+    | boolean
+    | DateTime
+    | number[]
+    | string[]
+    | boolean[]
+    | DateTime[]
+  >;
 
   /**
    * Optional timestamp value which can be used to override retrieval time of the fact row.
@@ -62,7 +72,7 @@ export type FlatTechInsightFact = TechInsightFact & {
   /**
    * Reference and unique identifier of the fact row
    */
-  ref: string;
+  id: string;
 };
 
 /**
@@ -73,8 +83,11 @@ export type FlatTechInsightFact = TechInsightFact & {
  * Used as part of a schema to validate, identify and generically construct usage implementations
  * of individual fact values in the system.
  */
-export type FactValueDefinitions = {
-  [key: string]: {
+export type FactSchema = {
+  /**
+   * Name of the fact
+   */
+  [name: string]: {
     /**
      * Type of the individual fact value
      *
@@ -109,28 +122,7 @@ export type FactValueDefinitions = {
      * ```
      */
     metadata?: Record<string, any>;
-
-    /**
-     * A list of entity kind descriptors to indicate if this fact is valid for an entity kind
-     */
-    entityKinds: string[];
   };
-};
-
-/**
- * @public
- *
- * Container for FactSchema
- */
-export type FactSchema = {
-  /**
-   * Semver string indicating the version of this schema
-   */
-  version: string;
-  /**
-   * Actual schema definitions for this schema
-   */
-  schema: FactValueDefinitions;
 };
 
 /**
@@ -159,7 +151,15 @@ export interface FactRetriever {
    * Used to identify and store individual facts returned from this retriever
    * and schemas defined by this retriever.
    */
-  ref: string;
+  id: string;
+
+  /**
+   * Semver string indicating the version of this fact retriever
+   * This version is used to determine if the schema this fact retriever matches the data this fact retriever provides.
+   *
+   * Should be incremented on changes to returned data from the handler or if the schema changes.
+   */
+  version: string;
 
   /**
    * Handler function that needs to be implemented to retrieve fact values for entities.
@@ -173,7 +173,19 @@ export interface FactRetriever {
    * A fact schema defining the shape of data returned from the handler method for each entity
    */
   schema: FactSchema;
+
+  /**
+   * An optional list of entity type descriptors to indicate if this fact retriever is valid for an entity type.
+   * If omitted, the retriever should apply to all entities.
+   *
+   * Should be defined as:
+   * ['component', 'group', 'user'] for top level items
+   * ['component:service', 'component:website'] for component types.
+   */
+  entityTypes?: string[];
 }
+
+export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;
 
 /**
  * @public

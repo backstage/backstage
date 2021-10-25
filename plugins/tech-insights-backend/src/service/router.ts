@@ -25,6 +25,11 @@ import {
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/DatabaseManager';
+import {
+  EntityRef,
+  parseEntityName,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 
 /**
  * @public
@@ -92,7 +97,7 @@ export async function createRouter<
           });
         }
         const { checks }: { checks: string[] } = req.body;
-        const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
+        const entityTriplet = stringifyEntityRef({ namespace, kind, name });
         const checkResult = await factChecker.runChecks(entityTriplet, checks);
         return res.send(checkResult);
       } catch (e) {
@@ -106,22 +111,33 @@ export async function createRouter<
   }
 
   router.get('/fact-schemas', async (req, res) => {
-    const refs = req.query.refs as string[];
-    return res.send(await techInsightsStore.getLatestSchemas(refs));
+    const ids = req.query.ids as string[];
+    return res.send(await techInsightsStore.getLatestSchemas(ids));
   });
 
-  router.get('/facts/latest/:namespace/:kind/:name', async (req, res) => {
-    const { namespace, kind, name } = req.params;
-    const refs = req.query.refs as string[];
-    const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
+  /**
+   * /facts/latest?entity=component:default/mycomponent&ids[]=factRetrieverId1&ids[]=factRetrieverId2
+   */
+  router.get('/facts/latest', async (req, res) => {
+    const { entity } = req.query;
+    const { namespace, kind, name } = parseEntityName(entity as EntityRef);
+    const ids = req.query.ids as string[];
     return res.send(
-      await techInsightsStore.getLatestFactsForRefs(refs, entityTriplet),
+      await techInsightsStore.getLatestFactsByIds(
+        ids,
+        stringifyEntityRef({ namespace, kind, name }),
+      ),
     );
   });
 
-  router.get('/facts/range/:namespace/:kind/:name', async (req, res) => {
-    const { namespace, kind, name } = req.params;
-    const refs = req.query.refs as string[];
+  /**
+   * /facts/latest?entity=component:default/mycomponent&startDateTime=2021-12-24T01:23:45&endDateTime=2021-12-31T23:59:59&ids[]=factRetrieverId1&ids[]=factRetrieverId2
+   */
+  router.get('/facts/range', async (req, res) => {
+    const { entity } = req.query;
+    const { namespace, kind, name } = parseEntityName(entity as EntityRef);
+
+    const ids = req.query.ids as string[];
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);
     const endDatetime = DateTime.fromISO(req.query.endDatetime as string);
     if (!startDatetime.isValid || !endDatetime.isValid) {
@@ -131,10 +147,10 @@ export async function createRouter<
         value: !startDatetime.isValid ? startDatetime : endDatetime,
       });
     }
-    const entityTriplet = `${namespace.toLowerCase()}/${kind.toLowerCase()}/${name.toLowerCase()}`;
+    const entityTriplet = stringifyEntityRef({ namespace, kind, name });
     return res.send(
-      await techInsightsStore.getFactsBetweenTimestampsForRefs(
-        refs,
+      await techInsightsStore.getFactsBetweenTimestampsByIds(
+        ids,
         entityTriplet,
         startDatetime,
         endDatetime,

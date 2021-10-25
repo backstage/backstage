@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DynamicFactCallback,
-  FactOptions,
-  TopLevelCondition,
-} from 'json-rules-engine';
+import { TopLevelCondition } from 'json-rules-engine';
 import {
   BooleanCheckResult,
   CheckResponse,
   TechInsightCheck,
 } from '@backstage/plugin-tech-insights-common';
-
-/**
- * @public
- */
-export interface DynamicFact<T = unknown> {
-  id: string;
-  calculationMethod: DynamicFactCallback<T> | T;
-  options?: FactOptions;
-}
 
 /**
  * @public
@@ -47,7 +34,6 @@ export type Rule = {
  */
 export interface TechInsightJsonRuleCheck extends TechInsightCheck {
   rule: Rule;
-  dynamicFacts?: DynamicFact[];
 }
 
 /**

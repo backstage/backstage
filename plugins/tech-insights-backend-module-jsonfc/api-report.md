@@ -6,9 +6,7 @@
 import { BooleanCheckResult } from '@backstage/plugin-tech-insights-common';
 import { CheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckValidationResponse } from '@backstage/plugin-tech-insights-common';
-import { DynamicFactCallback } from 'json-rules-engine';
 import { FactChecker } from '@backstage/plugin-tech-insights-common';
-import { FactOptions } from 'json-rules-engine';
 import { Logger as Logger_2 } from 'winston';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-common';
 import { TechInsightCheckRegistry } from '@backstage/plugin-tech-insights-common';
@@ -23,16 +21,6 @@ export type CheckCondition = {
   factResult: any;
   result: boolean;
 };
-
-// @public (undocumented)
-export interface DynamicFact<T = unknown> {
-  // (undocumented)
-  calculationMethod: DynamicFactCallback<T> | T;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  options?: FactOptions;
-}
 
 // @public (undocumented)
 export const JSON_RULE_ENGINE_CHECK_TYPE = 'json-rules-engine';
@@ -120,8 +108,6 @@ export type Rule = {
 
 // @public (undocumented)
 export interface TechInsightJsonRuleCheck extends TechInsightCheck {
-  // (undocumented)
-  dynamicFacts?: DynamicFact[];
   // (undocumented)
   rule: Rule;
 }

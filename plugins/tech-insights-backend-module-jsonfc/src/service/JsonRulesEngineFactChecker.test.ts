@@ -32,7 +32,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       name: 'brokenTestCheck',
       type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Broken Check For Testing',
-      factRefs: ['test-factretriever'],
+      factIds: ['test-factretriever'],
       rule: {
         conditions: {
           all: [
@@ -52,7 +52,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       name: 'brokenTestCheck2',
       type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Second Broken Check For Testing',
-      factRefs: ['non-existing-factretriever'],
+      factIds: ['non-existing-factretriever'],
       rule: {
         conditions: {
           any: [
@@ -72,7 +72,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       name: 'simpleTestCheck',
       type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Simple Check For Testing',
-      factRefs: ['test-factretriever'],
+      factIds: ['test-factretriever'],
       rule: {
         conditions: {
           all: [
@@ -93,7 +93,7 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       name: 'simpleTestCheck2',
       type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Second Simple Check For Testing',
-      factRefs: ['test-factretriever'],
+      factIds: ['test-factretriever'],
       rule: {
         conditions: {
           all: [
@@ -114,17 +114,15 @@ const latestSchemasMock = jest.fn().mockImplementation(() => [
     version: '0.0.1',
     id: 2,
     ref: 'test-factretriever',
-    schema: {
-      testnumberfact: {
-        type: 'integer',
-        description: '',
-        entityKinds: ['component'],
-      },
+    entityTypes: ['component'],
+    testnumberfact: {
+      type: 'integer',
+      description: '',
     },
   },
 ]);
-const factsBetweenTimestampsForRefsMock = jest.fn();
-const latestFactsForRefsMock = jest.fn().mockImplementation(() => ({}));
+const factsBetweenTimestampsByIdsMock = jest.fn();
+const latestFactsByIdsMock = jest.fn().mockImplementation(() => ({}));
 const mockCheckRegistry = {
   getAll(checks: string[]) {
     return checks.flatMap(check => testChecks[check]);
@@ -132,8 +130,8 @@ const mockCheckRegistry = {
 } as unknown as TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
 
 const mockRepository: TechInsightsStore = {
-  getLatestFactsForRefs: latestFactsForRefsMock,
-  getFactsBetweenTimestampsForRefs: factsBetweenTimestampsForRefsMock,
+  getLatestFactsByIds: latestFactsByIdsMock,
+  getFactsBetweenTimestampsByIds: factsBetweenTimestampsByIdsMock,
   getLatestSchemas: latestSchemasMock,
 } as unknown as TechInsightsStore;
 
@@ -159,10 +157,10 @@ describe('JsonRulesEngineFactChecker', () => {
       );
     });
     it('should respond with result, facts, fact schemas and checks', async () => {
-      latestFactsForRefsMock.mockImplementation(() =>
+      latestFactsByIdsMock.mockImplementation(() =>
         Promise.resolve({
           ['test-factretriever']: {
-            ref: 'test-factretriever',
+            id: 'test-factretriever',
             facts: {
               testnumberfact: 3,
             },
@@ -170,46 +168,45 @@ describe('JsonRulesEngineFactChecker', () => {
         }),
       );
       const results = await factChecker.runChecks('a/a/a', ['simple']);
-      expect(results).toMatchObject([
-        {
-          facts: {
-            testnumberfact: {
-              value: 3,
-              type: 'integer',
-              description: '',
-              entityKinds: ['component'],
-            },
+      expect(results).toHaveLength(1);
+      expect(results[0]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
           },
-          result: true,
-          check: {
-            id: 'simpleTestCheck',
-            name: 'simpleTestCheck',
-            description: 'Simple Check For Testing',
-            factRefs: ['test-factretriever'],
-            rule: {
-              conditions: {
-                all: [
-                  {
-                    fact: 'testnumberfact',
-                    factResult: 3,
-                    operator: 'lessThan',
-                    result: true,
-                    value: 5,
-                  },
-                ],
-                priority: 1,
-              },
+        },
+        result: true,
+        check: {
+          id: 'simpleTestCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'simpleTestCheck',
+          description: 'Simple Check For Testing',
+          factIds: ['test-factretriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'lessThan',
+                  result: true,
+                  value: 5,
+                },
+              ],
+              priority: 1,
             },
           },
         },
-      ]);
+      });
     });
 
     it('should gracefully handle multiple check at once', async () => {
-      latestFactsForRefsMock.mockImplementation(() =>
+      latestFactsByIdsMock.mockImplementation(() =>
         Promise.resolve({
           ['test-factretriever']: {
-            ref: 'test-factretriever',
+            id: 'test-factretriever',
             facts: {
               testnumberfact: 3,
             },
@@ -227,15 +224,15 @@ describe('JsonRulesEngineFactChecker', () => {
               value: 3,
               type: 'integer',
               description: '',
-              entityKinds: ['component'],
             },
           },
           result: true,
           check: {
             id: 'simpleTestCheck',
+            type: JSON_RULE_ENGINE_CHECK_TYPE,
             name: 'simpleTestCheck',
             description: 'Simple Check For Testing',
-            factRefs: ['test-factretriever'],
+            factIds: ['test-factretriever'],
             rule: {
               conditions: {
                 priority: 1,
@@ -258,15 +255,15 @@ describe('JsonRulesEngineFactChecker', () => {
               value: 3,
               type: 'integer',
               description: '',
-              entityKinds: ['component'],
             },
           },
           result: true,
           check: {
             id: 'simpleTestCheck2',
+            type: JSON_RULE_ENGINE_CHECK_TYPE,
             name: 'simpleTestCheck2',
             description: 'Second Simple Check For Testing',
-            factRefs: ['test-factretriever'],
+            factIds: ['test-factretriever'],
             rule: {
               conditions: {
                 priority: 1,

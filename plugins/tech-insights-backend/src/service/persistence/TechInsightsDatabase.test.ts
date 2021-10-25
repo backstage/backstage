@@ -20,46 +20,57 @@ import { Knex } from 'knex';
 
 const factSchemas = [
   {
-    ref: 'test-schema',
+    id: 'test-fact',
     version: '0.0.1-test',
+    entityTypes: ['component'],
     schema: JSON.stringify({
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
-        entityKinds: ['component'],
       },
     }),
   },
 ];
 const additionalFactSchemas = [
   {
-    ref: 'test-schema',
+    id: 'test-fact',
     version: '1.2.1-test',
+    entityTypes: ['component'],
     schema: JSON.stringify({
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
-        entityKinds: ['component'],
       },
       testStringFact: {
         type: 'string',
         description: 'Test fact with a string type',
-        entityKinds: ['service'],
       },
     }),
   },
   {
-    ref: 'test-schema',
+    id: 'test-fact',
     version: '1.1.1-test',
+    entityTypes: ['component'],
     schema: JSON.stringify({
       testStringFact: {
         type: 'string',
         description: 'Test fact with a string type',
-        entityKinds: ['service'],
       },
     }),
   },
 ];
+
+const secondSchema = {
+  id: 'second-test-fact',
+  version: '0.0.1-test',
+  entityTypes: ['service'],
+  schema: JSON.stringify({
+    testStringFact: {
+      type: 'string',
+      description: 'Test fact with a string type',
+    },
+  }),
+};
 
 const now = DateTime.now().toISO();
 const shortlyInTheFuture = DateTime.now()
@@ -72,18 +83,18 @@ const farInTheFuture = DateTime.now()
 const facts = [
   {
     timestamp: now,
-    ref: 'test-fact',
+    id: 'test-fact',
     version: '0.0.1-test',
-    entity: 'a/a/a',
+    entity: 'a:a/a',
     facts: JSON.stringify({
       testNumberFact: 1,
     }),
   },
   {
     timestamp: shortlyInTheFuture,
-    ref: 'test-fact',
+    id: 'test-fact',
     version: '0.0.1-test',
-    entity: 'a/a/a',
+    entity: 'a:a/a',
     facts: JSON.stringify({
       testNumberFact: 2,
     }),
@@ -93,9 +104,9 @@ const facts = [
 const additionalFacts = [
   {
     timestamp: farInTheFuture,
-    ref: 'test-fact',
+    id: 'test-fact',
     version: '0.0.1-test',
-    entity: 'a/a/a',
+    entity: 'a:a/a',
     facts: JSON.stringify({
       testNumberFact: 3,
     }),
@@ -114,7 +125,7 @@ describe('Tech Insights database', () => {
   });
 
   const baseAssertionFact = {
-    ref: 'test-fact',
+    id: 'test-fact',
     entity: { namespace: 'a', kind: 'a', name: 'a' },
     timestamp: DateTime.fromISO(shortlyInTheFuture),
     version: '0.0.1-test',
@@ -124,14 +135,12 @@ describe('Tech Insights database', () => {
   it('should be able to return latest schema', async () => {
     const schemas = await store.getLatestSchemas();
     expect(schemas[0]).toMatchObject({
-      ref: 'test-schema',
+      id: 'test-fact',
       version: '0.0.1-test',
-      schema: {
-        testNumberFact: {
-          type: 'integer',
-          description: 'Test fact with a number type',
-          entityKinds: ['component'],
-        },
+      entityTypes: ['component'],
+      testNumberFact: {
+        type: 'integer',
+        description: 'Test fact with a number type',
       },
     });
   });
@@ -141,43 +150,75 @@ describe('Tech Insights database', () => {
 
     const schemas = await store.getLatestSchemas();
     expect(schemas[0]).toMatchObject({
-      ref: 'test-schema',
+      id: 'test-fact',
       version: '1.2.1-test',
-      schema: {
-        testNumberFact: {
-          type: 'integer',
-          description: 'Test fact with a number type',
-          entityKinds: ['component'],
-        },
-        testStringFact: {
-          type: 'string',
-          description: 'Test fact with a string type',
-          entityKinds: ['service'],
-        },
+      entityTypes: ['component'],
+      testNumberFact: {
+        type: 'integer',
+        description: 'Test fact with a number type',
+      },
+      testStringFact: {
+        type: 'string',
+        description: 'Test fact with a string type',
       },
     });
   });
 
-  it('should return latest facts only for the correct ref', async () => {
-    const returnedFact = await store.getLatestFactsForRefs(
+  it('should return multiple schemas if those exists', async () => {
+    await testDbClient.batchInsert('fact_schemas', [
+      {
+        ...secondSchema,
+        id: 'second',
+      },
+    ]);
+
+    const schemas = await store.getLatestSchemas();
+    expect(schemas).toHaveLength(2);
+    expect(schemas[0]).toMatchObject({
+      id: 'test-fact',
+      version: '1.2.1-test',
+      entityTypes: ['component'],
+      testNumberFact: {
+        type: 'integer',
+        description: 'Test fact with a number type',
+      },
+      testStringFact: {
+        type: 'string',
+        description: 'Test fact with a string type',
+      },
+    });
+    expect(schemas[1]).toMatchObject({
+      id: 'second',
+      version: '0.0.1-test',
+      entityTypes: ['service'],
+      testStringFact: {
+        type: 'string',
+        description: 'Test fact with a string type',
+      },
+    });
+  });
+
+  it('should return latest facts only for the correct id', async () => {
+    const returnedFact = await store.getLatestFactsByIds(
       ['test-fact'],
-      'a/a/a',
+      'a:a/a',
     );
     expect(returnedFact['test-fact']).toMatchObject(baseAssertionFact);
   });
 
-  it('should return latest facts for multiple refs', async () => {
+  it('should return latest facts for multiple ids', async () => {
+    await testDbClient.batchInsert('fact_schemas', [secondSchema]);
     await testDbClient.batchInsert(
       'facts',
       additionalFacts.map(fact => ({
         ...fact,
-        ref: 'second-test-fact',
+        id: 'second-test-fact',
         timestamp: farInTheFuture,
       })),
     );
-    const returnedFacts = await store.getLatestFactsForRefs(
+    const returnedFacts = await store.getLatestFactsByIds(
       ['test-fact', 'second-test-fact'],
-      'a/a/a',
+      'a:a/a',
     );
 
     expect(returnedFacts['test-fact']).toMatchObject({
@@ -185,7 +226,7 @@ describe('Tech Insights database', () => {
     });
     expect(returnedFacts['second-test-fact']).toMatchObject({
       ...baseAssertionFact,
-      ref: 'second-test-fact',
+      id: 'second-test-fact',
       timestamp: DateTime.fromISO(farInTheFuture),
       facts: { testNumberFact: 3 },
     });
@@ -193,9 +234,9 @@ describe('Tech Insights database', () => {
 
   it('should return facts correctly between time range', async () => {
     await testDbClient.batchInsert('facts', additionalFacts);
-    const returnedFacts = await store.getFactsBetweenTimestampsForRefs(
+    const returnedFacts = await store.getFactsBetweenTimestampsByIds(
       ['test-fact'],
-      'a/a/a',
+      'a:a/a',
       DateTime.fromISO(now),
       DateTime.fromISO(shortlyInTheFuture).plus(Duration.fromMillis(10)),
     );

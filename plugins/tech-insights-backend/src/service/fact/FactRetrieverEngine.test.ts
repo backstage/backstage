@@ -16,7 +16,7 @@
 import {
   FactRetriever,
   FactRetrieverRegistration,
-  FactSchema,
+  FactSchemaDefinition,
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-common';
@@ -35,21 +35,18 @@ jest.mock('node-cron', () => {
 });
 
 const testFactRetriever: FactRetriever = {
-  ref: 'test-factretriever',
+  id: 'test-factretriever',
+  version: '0.0.1',
+  entityTypes: ['component'],
   schema: {
-    version: '0.0.1',
-    schema: {
-      testnumberfact: {
-        type: 'integer',
-        description: '',
-        entityKinds: ['component'],
-      },
+    testnumberfact: {
+      type: 'integer',
+      description: '',
     },
   },
   handler: async () => {
     return [
       {
-        ref: 'test-factretriever',
         entity: {
           namespace: 'a',
           kind: 'a',
@@ -65,7 +62,9 @@ const testFactRetriever: FactRetriever = {
 const cadence = '1 * * * *';
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
-  let factSchemaAssertionCallback: (ref: string, schema: FactSchema) => void;
+  let factSchemaAssertionCallback: (
+    factSchemaDefinition: FactSchemaDefinition,
+  ) => void;
   let factInsertionAssertionCallback: (facts: TechInsightFact[]) => void;
 
   const mockRepository: TechInsightsStore = {
@@ -73,8 +72,8 @@ describe('FactRetrieverEngine', () => {
       factInsertionAssertionCallback(facts);
       return Promise.resolve();
     },
-    insertFactSchema: (ref: string, schema: FactSchema) => {
-      factSchemaAssertionCallback(ref, schema);
+    insertFactSchema: (def: FactSchemaDefinition) => {
+      factSchemaAssertionCallback(def);
       return Promise.resolve();
     },
   } as unknown as TechInsightsStore;
@@ -102,21 +101,19 @@ describe('FactRetrieverEngine', () => {
   };
 
   it('Should update fact retriever schemas on initialization', async () => {
-    factSchemaAssertionCallback = (ref, schema) => {
-      expect(ref).toEqual('test-factretriever');
+    factSchemaAssertionCallback = ({ id, schema, version, entityTypes }) => {
+      expect(id).toEqual('test-factretriever');
+      expect(version).toEqual('0.0.1');
+      expect(entityTypes).toEqual(['component']);
       expect(schema).toEqual({
-        version: '0.0.1',
-        schema: {
-          testnumberfact: {
-            type: 'integer',
-            description: '',
-            entityKinds: ['component'],
-          },
+        testnumberfact: {
+          type: 'integer',
+          description: '',
         },
       });
     };
 
-    engine = await FactRetrieverEngine.fromConfig(defaultEngineConfig);
+    engine = await FactRetrieverEngine.create(defaultEngineConfig);
   });
   it('Should insert facts when scheduled step is run', async () => {
     (schedule as jest.Mock).mockImplementation(
@@ -143,7 +140,7 @@ describe('FactRetrieverEngine', () => {
         },
       });
     };
-    engine = await FactRetrieverEngine.fromConfig(defaultEngineConfig);
+    engine = await FactRetrieverEngine.create(defaultEngineConfig);
     engine.schedule();
     const job: any = engine.getJob('test-factretriever');
     job.triggerScheduledJobNow();

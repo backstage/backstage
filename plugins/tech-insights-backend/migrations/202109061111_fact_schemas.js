@@ -24,9 +24,8 @@ exports.up = async function up(knex) {
     table.comment(
       'The table for tech insight fact schemas. Containing a versioned data model definition for a collection of facts.',
     );
-    table.increments('id').primary();
     table
-      .text('ref')
+      .text('id')
       .notNullable()
       .comment('Identifier of the fact retriever plugin/package');
     table
@@ -34,14 +33,19 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('SemVer string defining the version of schema.');
     table
+      .string('entityTypes')
+      .nullable()
+      .comment(
+        'A comma separated collection of entity kinds the fact retriever providing this schema affects. Defaults to null, which means all entity kinds.',
+      );
+    table
       .text('schema')
       .notNullable()
       .comment(
         'Fact schema defining the values/types what this version of the fact would contain.',
       );
-
-    table.index('ref', 'fact_schema_ref_idx');
-    table.index(['ref', 'version'], 'fact_schema_ref_version_idx');
+    table.primary(['id', 'version']);
+    table.index('id', 'fact_schema_id_idx');
   });
 };
 
@@ -50,8 +54,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('fact_schemas', table => {
-    table.dropIndex([], 'fact_schema_ref_idx');
-    table.dropIndex([], 'fact_schema_ref_version_idx');
+    table.dropIndex([], 'fact_schema_id_idx');
   });
   await knex.schema.dropTable('fact_schemas');
 };

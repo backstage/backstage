@@ -124,7 +124,7 @@ const myFactRetriever: FactRetriever = {
       examplenumberfact: {
         type: 'integer', // Type of the fact
         description: 'A fact of a number', // Description of the fact
-        entityKinds: ['component'], // An array of entity kinds that this fact is applicable to
+        entityTypes: ['component'], // An array of entity kinds that this fact is applicable to
       },
     },
   },

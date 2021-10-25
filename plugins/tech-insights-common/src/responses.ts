@@ -44,7 +44,7 @@ export interface CheckResponse {
   /**
    * A collection of references to fact rows used to run this checks against
    */
-  factRefs: string[];
+  factIds: string[];
 
   /**
    * Metadata related to a check.
@@ -62,11 +62,11 @@ export interface CheckResponse {
  * Keyed by the name of the fact
  */
 export type FactResponse = {
-  [key: string]: {
+  [id: string]: {
     /**
      * Reference and unique identifier of the fact row
      */
-    ref: string;
+    id: string;
     /**
      * Type of the individual fact value
      *
@@ -97,10 +97,5 @@ export type FactResponse = {
      * Currently loosely typed, but in the future when patterns emerge, key shapes can be defined
      */
     metadata?: Record<string, any>;
-
-    /**
-     * A list of entity kind descriptors to indicate if this fact is valid for an entity kind
-     */
-    entityKinds: string[];
   };
 };

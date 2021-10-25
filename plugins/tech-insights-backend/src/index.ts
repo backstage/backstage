@@ -17,10 +17,10 @@
 export * from './service/router';
 export type { RouterOptions } from './service/router';
 
-export { DefaultTechInsightsBuilder } from './service/DefaultTechInsightsBuilder';
+export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
 export type {
   TechInsightsOptions,
   TechInsightsContext,
-} from './service/DefaultTechInsightsBuilder';
+} from './service/techInsightsContextBuilder';
 
 export type { PersistenceContext } from './service/persistence/DatabaseManager';

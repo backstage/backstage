@@ -15,11 +15,15 @@
  */
 import {
   createRouter,
-  DefaultTechInsightsBuilder,
+  buildTechInsightsContext,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
+import {
+  JSON_RULE_ENGINE_CHECK_TYPE,
+  JsonRulesEngineFactCheckerFactory,
+} from '@backstage/plugin-tech-insights-backend-module-jsonfc';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export default async function createPlugin({
   logger,
@@ -27,20 +31,75 @@ export default async function createPlugin({
   discovery,
   database,
 }: PluginEnvironment): Promise<Router> {
-  const builder = new DefaultTechInsightsBuilder({
+  const techInsightsContext = await buildTechInsightsContext({
     logger,
     config,
     database,
     discovery,
-    factRetrievers: [],
+    factRetrievers: [
+      {
+        cadence: '1 1 1 * *', // At 01:01 on day-of-month 1.
+        factRetriever: {
+          id: 'testRetriever',
+          version: '1.1.1',
+          entityTypes: ['component'],
+          schema: {
+            examplenumberfact: {
+              type: 'integer',
+              description: '',
+            },
+          },
+          handler: async _ctx => {
+            const catalogClient = new CatalogClient({
+              discoveryApi: discovery,
+            });
+            const entities = await catalogClient.getEntities();
+
+            return Promise.resolve(
+              entities.items.map(it => {
+                return {
+                  entity: {
+                    namespace: it.metadata.namespace!!,
+                    kind: it.kind,
+                    name: it.metadata.name,
+                  },
+                  facts: {
+                    examplenumberfact: 2,
+                  },
+                };
+              }),
+            );
+          },
+        },
+      },
+    ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
-      checks: [],
+      checks: [
+        {
+          id: 'simpleTestCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'simpleTestCheck',
+          description: 'Simple Check For Testing',
+          factIds: ['testRetriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'examplenumberfact',
+                  operator: 'lessThan',
+                  value: 5,
+                },
+              ],
+            },
+          },
+        },
+      ],
       logger,
     }),
   });
 
   return await createRouter({
-    ...(await builder.build()),
+    ...techInsightsContext,
     logger,
     config,
   });

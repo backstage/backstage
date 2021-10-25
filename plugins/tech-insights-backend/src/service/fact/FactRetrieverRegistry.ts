@@ -31,19 +31,19 @@ export class FactRetrieverRegistry {
   }
 
   register(registration: FactRetrieverRegistration) {
-    if (this.retrievers.has(registration.factRetriever.ref)) {
+    if (this.retrievers.has(registration.factRetriever.id)) {
       throw new ConflictError(
-        `Tech insight fact retriever with reference '${registration.factRetriever.ref}' has already been registered`,
+        `Tech insight fact retriever with identifier '${registration.factRetriever.id}' has already been registered`,
       );
     }
-    this.retrievers.set(registration.factRetriever.ref, registration);
+    this.retrievers.set(registration.factRetriever.id, registration);
   }
 
   get(retrieverReference: string): FactRetriever {
     const registration = this.retrievers.get(retrieverReference);
     if (!registration) {
       throw new NotFoundError(
-        `Tech insight fact retriever with reference '${retrieverReference}' is not registered.`,
+        `Tech insight fact retriever with identifier '${retrieverReference}' is not registered.`,
       );
     }
     return registration.factRetriever;

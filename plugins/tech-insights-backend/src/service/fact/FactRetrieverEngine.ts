@@ -45,7 +45,7 @@ export class FactRetrieverEngine {
     private readonly defaultCadence?: string,
   ) {}
 
-  static async fromConfig({
+  static async create({
     repository,
     factRetrieverRegistry,
     factRetrieverContext,
@@ -59,7 +59,7 @@ export class FactRetrieverEngine {
     await Promise.all(
       factRetrieverRegistry
         .listRetrievers()
-        .map(it => repository.insertFactSchema(it.ref, it.schema)),
+        .map(it => repository.insertFactSchema(it)),
     );
 
     return new FactRetrieverEngine(
@@ -76,12 +76,12 @@ export class FactRetrieverEngine {
     const newRegs: string[] = [];
     registrations.forEach(registration => {
       const { factRetriever, cadence } = registration;
-      if (!this.scheduledJobs.has(factRetriever.ref)) {
+      if (!this.scheduledJobs.has(factRetriever.id)) {
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
         if (!validate(cronExpression)) {
           this.logger.warn(
-            `Validation failed for cron expression ${cronExpression} when trying to schedule fact retriever ${factRetriever.ref}`,
+            `Validation failed for cron expression ${cronExpression} when trying to schedule fact retriever ${factRetriever.id}`,
           );
           return;
         }
@@ -89,8 +89,8 @@ export class FactRetrieverEngine {
           cronExpression,
           this.createFactRetrieverHandler(factRetriever),
         );
-        this.scheduledJobs.set(factRetriever.ref, job);
-        newRegs.push(factRetriever.ref);
+        this.scheduledJobs.set(factRetriever.id, job);
+        newRegs.push(factRetriever.id);
       }
     });
     this.logger.info(
@@ -106,27 +106,27 @@ export class FactRetrieverEngine {
     return async () => {
       const startTimestamp = process.hrtime();
       this.logger.info(
-        `Retrieving facts for fact retriever ${factRetriever.ref}`,
+        `Retrieving facts for fact retriever ${factRetriever.id}`,
       );
       const facts = await factRetriever.handler(this.factRetrieverContext);
       if (this.logger.isDebugEnabled()) {
         this.logger.debug(
           `Retrieved ${facts.length} facts for fact retriever ${
-            factRetriever.ref
+            factRetriever.id
           } in ${duration(startTimestamp)}`,
         );
       }
 
       try {
-        await this.repository.insertFacts(factRetriever.ref, facts);
+        await this.repository.insertFacts(factRetriever.id, facts);
         this.logger.info(
           `Stored ${facts.length} facts for fact retriever ${
-            factRetriever.ref
+            factRetriever.id
           } in ${duration(startTimestamp)}`,
         );
       } catch (e) {
         this.logger.warn(
-          `Failed to insert facts for fact retriever ${factRetriever.ref}`,
+          `Failed to insert facts for fact retriever ${factRetriever.id}`,
           e,
         );
       }

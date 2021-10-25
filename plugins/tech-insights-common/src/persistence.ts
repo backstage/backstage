@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FactSchema, TechInsightFact, FlatTechInsightFact } from './facts';
+import {
+  FactSchema,
+  TechInsightFact,
+  FlatTechInsightFact,
+  FactSchemaDefinition,
+} from './facts';
 import { DateTime } from 'luxon';
 
 /**
@@ -28,34 +33,34 @@ export interface TechInsightsStore {
    *
    * Each row may contain multiple individual facts and values
    *
-   * @param ref - Unique identifier of the fact retriever these facts relate to
+   * @param id - Unique identifier of the fact retriever these facts relate to
    * @param facts - A collection of TechInsightFacts
    */
-  insertFacts(ref: string, facts: TechInsightFact[]): Promise<void>;
+  insertFacts(id: string, facts: TechInsightFact[]): Promise<void>;
 
   /**
-   * @param refs - A collection of reference string to a fact row
+   * @param ids - A collection of fact row identifiers
    * @param entity - A string identifying an entity. In a format namespace/kind/name
    *
    * @returns - An object keyed by a fact reference and containing an individual TechInsightFact
    */
-  getLatestFactsForRefs(
-    refs: string[],
+  getLatestFactsByIds(
+    ids: string[],
     entity: string,
   ): Promise<{ [factRef: string]: FlatTechInsightFact }>;
 
   /**
    * Retrieves fact values identified by fact row references for an individual entity.
    *
-   * @param refs - A collection of reference string to a fact row
+   * @param ids - A collection of fact row identifiers
    * @param entity - A string identifying an entity. In a format namespace/kind/name
    * @param startDateTime - DateTime object indicating start of the time frame
    * @param endDateTime - DateTime object indicating start of the time frame
    *
    * @returns - An object keyed by a fact reference and containing a collection of TechInsightFacts matching the time frame
    */
-  getFactsBetweenTimestampsForRefs(
-    refs: string[],
+  getFactsBetweenTimestampsByIds(
+    ids: string[],
     entity: string,
     startDateTime: DateTime,
     endDateTime: DateTime,
@@ -64,16 +69,15 @@ export interface TechInsightsStore {
   /**
    * Stores versioned fact schemas into data store
    *
-   * @param ref - Identifier of the fact schema. Reference to a fact retriever.
-   * @param schema - The actual schema to store
+   * @param schemaDefinition - FactSchemaDefinition containing id, version, schema and entityTypes.
    */
-  insertFactSchema(ref: string, schema: FactSchema): Promise<void>;
+  insertFactSchema(schemaDefinition: FactSchemaDefinition): Promise<void>;
 
   /**
    * Retrieves latest versions (as defined by semver) of fact schemas from the data store.
    *
-   * @param refs - Collection of refs to return. If omitted, all Schemas should be returned.
+   * @param ids - Collection of ids to return. If omitted, all Schemas should be returned.
    * @returns - A collection of schemas
    */
-  getLatestSchemas(refs?: string[]): Promise<FactSchema[]>;
+  getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
 }

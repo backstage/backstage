@@ -25,11 +25,7 @@ exports.up = async function up(knex) {
       'The table for tech insight fact collections. Contains facts for individual fact retriever namespace/ref.',
     );
     table
-      .bigIncrements('index')
-      .notNullable()
-      .comment('An insert counter to ensure ordering');
-    table
-      .text('ref')
+      .text('id')
       .notNullable()
       .comment('Unique identifier of the fact retriever plugin/package');
     table
@@ -54,9 +50,13 @@ exports.up = async function up(knex) {
         'Values of the fact collection stored as key-value pairs in JSON format.',
       );
 
-    table.index('index', 'fact_index_idx');
-    table.index('ref', 'fact_ref_idx');
-    table.index(['ref', 'entity'], 'fact_ref_entity_idx');
+    table
+      .foreign(['id', 'version'])
+      .references(['id', 'version'])
+      .inTable('fact_schemas');
+
+    table.index(['id', 'entity'], 'fact_id_entity_idx');
+    table.index('id', 'fact_id_idx');
   });
 };
 
@@ -65,9 +65,8 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('facts', table => {
-    table.dropIndex([], 'facts_index_idx');
-    table.dropIndex([], 'fact_ref_idx');
-    table.dropIndex([], 'fact_ref_entity_idx');
+    table.dropIndex([], 'fact_id_idx');
+    table.dropIndex([], 'fact_id_entity_idx');
   });
   await knex.schema.dropTable('facts');
 };

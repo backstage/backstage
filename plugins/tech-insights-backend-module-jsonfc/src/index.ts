@@ -28,6 +28,5 @@ export type {
   TechInsightJsonRuleCheck,
   ResponseTopLevelCondition,
   Rule,
-  DynamicFact,
   CheckCondition,
 } from './types';

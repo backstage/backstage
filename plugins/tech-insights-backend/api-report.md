@@ -15,20 +15,21 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-common';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
 
+// Warning: (ae-missing-release-tag) "buildTechInsightsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const buildTechInsightsContext: <
+  CheckType extends TechInsightCheck,
+  CheckResultType extends CheckResult,
+>(
+  options: TechInsightsOptions<CheckType, CheckResultType>,
+) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
+
 // @public
 export function createRouter<
   CheckType extends TechInsightCheck,
   CheckResultType extends CheckResult,
 >(options: RouterOptions<CheckType, CheckResultType>): Promise<express.Router>;
-
-// @public (undocumented)
-export class DefaultTechInsightsBuilder<
-  CheckType extends TechInsightCheck,
-  CheckResultType extends CheckResult,
-> {
-  constructor(options: TechInsightsOptions<CheckType, CheckResultType>);
-  build(): Promise<TechInsightsContext<CheckType, CheckResultType>>;
-}
 
 // @public
 export type PersistenceContext = {
