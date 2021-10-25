@@ -15,3 +15,6 @@
  */
 
 import '@testing-library/jest-dom';
+
+const { EventSourcePolyfill } = jest.requireMock('event-source-polyfill');
+global.EventSource = EventSourcePolyfill;
