@@ -13,25 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
-
-import { rootRouteRef } from './routes';
-
-export const flytePlugin = createPlugin({
-  id: 'flyte',
-  routes: {
-    root: rootRouteRef,
-  },
-});
-
-export const FlytePage = flytePlugin.provide(
-  createRoutableExtension({
-    name: 'FlytePage',
-    component: () =>
-      import('./components/FlyteComponent').then(m => m.FlyteComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
+export { FlyteComponent } from './FlyteComponent';

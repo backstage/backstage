@@ -28,7 +28,10 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "@flyteorg/flyteidl": "^0.19.14",
+    "protobufjs": "~6.8.0",
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.0",
