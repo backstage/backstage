@@ -22,6 +22,7 @@
     "@backstage/plugin-code-coverage": "^0.1.15",
     "@backstage/plugin-cost-insights": "^0.11.10",
     "@backstage/plugin-explore": "^0.3.20",
+    "@backstage/plugin-flyte": "^0.1.0",
     "@backstage/plugin-gcp-projects": "^0.3.8",
     "@backstage/plugin-github-actions": "^0.4.22",
     "@backstage/plugin-graphiql": "^0.2.20",

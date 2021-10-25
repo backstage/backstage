@@ -85,6 +85,7 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { FlytePage } from '@backstage/plugin-flyte';
 
 const app = createApp({
   apis,
@@ -203,6 +204,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/flyte" element={<FlytePage />} />
   </FlatRoutes>
 );
 
