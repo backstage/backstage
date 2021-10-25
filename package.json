@@ -53,15 +53,16 @@
   },
   "version": "1.0.0",
   "dependencies": {
+    "@octokit/rest": "^18.12.0",
     "@microsoft/api-documenter": "^7.13.47",
     "@microsoft/api-extractor": "^7.18.7",
     "@microsoft/api-extractor-model": "^7.13.5",
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
-    "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
     "@spotify/prettier-config": "^11.0.0",
+    "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
     "eslint-plugin-notice": "^0.9.10",
