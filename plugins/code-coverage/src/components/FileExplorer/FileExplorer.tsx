@@ -30,7 +30,6 @@ import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
-
 import {
   Progress,
   ResponseErrorPanel,
