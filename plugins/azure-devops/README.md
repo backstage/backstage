@@ -2,74 +2,50 @@
 
 Website: [https://dev.azure.com/](https://dev.azure.com/)
 
-![Azure DevOps Builds Example](./docs/azure-devops-builds.png)
+## Features
+
+### Azure Pipelines
+
+Lists the top _n_ builds for a given repository where _n_ is a configurable value
+
+![Azure Pipelines Builds Example](./docs/azure-devops-builds.png)
 
 ## Setup
 
 The following sections will help you get the Azure DevOps plugin setup and running
 
-### Configuration
+### Azure DevOps Backend
 
-The Azure DevOps plugin requires the following YAML to be added to your app-config.yaml:
+You need to setup the [Azure DevOps backend plugin](https://github.com/backstage/backstage/tree/master/plugins/azure-devops-backend) before you move forward with any of these steps if you haven't already
+
+### Entity Annotation
+
+To be able to use the Azure DevOps plugin you need to add the following annotation to any entities you want to use it with:
 
 ```yaml
-azureDevOps:
-  host: dev.azure.com
-  token: ${AZURE_TOKEN}
-  organization: my-company
+dev.azure.com/project-repo: <project-name>/<repo-name>
 ```
 
-Configuration Details:
+Let's break this down a little: `<project-name>` will be the name of your Team Project and `<repo-name>` will be the name of your repository which needs to be part of the Team Project you entered for `<project-name>`.
 
-- `host` and `token` can be the same as the ones used for the `integration` section
-- `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
-- `organization` is your Azure DevOps Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
+Here's what that will look like in action:
 
-### Backend
+```yaml
+# Example catalog-info.yaml entity definition file
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    dev.azure.com/project-repo: my-project/my-repo
+spec:
+  type: service
+  # ...
+```
 
-Here's how to get the backend up and running:
+### Azure Pipelines Component
 
-1. First we need to add the `@backstage/plugin-azure-devops-backend` package to your backend:
-
-   ```sh
-   # From the Backstage root directory
-   cd packages/backend
-   yarn add @backstage/plugin-azure-devops-backend
-   ```
-
-2. Then we will create a new file named `packages/backend/src/plugins/azure-devops.ts`, and add the
-   following to it:
-
-   ```ts
-   import { createRouter } from '@backstage/plugin-azure-devops-backend';
-   import { Router } from 'express';
-   import type { PluginEnvironment } from '../types';
-
-   export default function createPlugin({
-     logger,
-     config,
-   }: PluginEnvironment): Promise<Router> {
-     return createRouter({ logger, config });
-   }
-   ```
-
-3. Next we wire this into the overall backend router, edit `packages/backend/src/index.ts`:
-
-   ```ts
-   import azureDevOps from './plugins/azuredevops';
-   // ...
-   async function main() {
-     // ...
-     const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
-     apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
-   ```
-
-4. Now run `yarn start-backend` from the repo root
-5. Finally open `http://localhost:7000/api/azure-devops/health` in a browser and it should return `{"status":"ok"}`
-
-### Frontend
-
-To get the frontend working you'll need to do the following two steps:
+To get the Azure Pipelines component working you'll need to do the following two steps:
 
 1. First we need to add the @backstage/plugin-azure-devops package to your frontend app:
 
@@ -101,35 +77,7 @@ To get the frontend working you'll need to do the following two steps:
      </EntitySwitch>
    ```
 
-### Entity Annotation
-
-You need to add the following annotation to any entities you want to be able to use the Azure Devops plugin with:
-
-```yaml
-dev.azure.com/project-repo: <project-name>/<repo-name>
-```
-
-Let's break this down a little: `<project-name>` will be the name of your Team Project and `<repo-name>` will be the name of your repository which needs to be part of the Team Project you entered for `<project-name>`.
-
-Here's what that will look like in action:
-
-```yaml
-# Example catalog-info.yaml entity definition file
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  # ...
-  annotations:
-    dev.azure.com/project-repo: my-project/my-repo
-spec:
-  type: service
-  # ...
-```
-
-## Features
-
-- Lists the top _n_ builds for a given repository where _n_ is the value configured for `top`
-
 ## Limitations
 
-- Currently multiple organizations is not supported
+- Currently multiple organizations are not supported
+- Mixing Azure DevOps Services (cloud) and Azure DevOps Server (on-premise) is not supported
