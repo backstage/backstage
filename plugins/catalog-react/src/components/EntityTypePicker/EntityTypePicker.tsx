@@ -22,7 +22,7 @@ import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 
-type EntityTypeFilterProps = {
+export type EntityTypeFilterProps = {
   initialFilter?: string;
   hidden?: boolean;
 };

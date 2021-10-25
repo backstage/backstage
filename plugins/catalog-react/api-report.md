@@ -645,7 +645,14 @@ export class EntityTypeFilter implements EntityFilter {
   readonly value: string | string[];
 }
 
-// Warning: (ae-forgotten-export) The symbol "EntityTypeFilterProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "EntityTypeFilterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
 // Warning: (ae-missing-release-tag) "EntityTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
