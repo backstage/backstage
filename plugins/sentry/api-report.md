@@ -75,7 +75,7 @@ export type SentryIssue = {
   userCount: number;
   stats: {
     '24h'?: EventPoint[];
-    '12h'?: EventPoint[];
+    '14d'?: EventPoint[];
   };
   culprit: string;
   title: string;
@@ -111,7 +111,7 @@ export const SentryIssuesWidget: ({
   query,
 }: {
   entity: Entity;
-  statsFor?: '12h' | '24h' | undefined;
+  statsFor?: '' | '14d' | '24h' | undefined;
   variant?: InfoCardVariants | undefined;
   query?: string | undefined;
 }) => JSX.Element;

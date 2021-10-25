@@ -41,7 +41,7 @@ export const SentryIssuesWidget = ({
   query = '',
 }: {
   entity: Entity;
-  statsFor?: '24h' | '12h';
+  statsFor?: '24h' | '14d' | '';
   variant?: InfoCardVariants;
   query?: string;
 }) => {
