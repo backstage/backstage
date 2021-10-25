@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { DefaultCatalogCollator } from './DefaultCatalogCollator';
+export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 export type { CatalogEntityDocument } from './DefaultCatalogCollator';

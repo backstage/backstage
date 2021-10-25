@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { Entity, UserEntity } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
+import { PluginEndpointDiscovery, TokenManager } from '@backstage/backend-common';
+import { IndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
   CatalogApi,
@@ -35,7 +32,7 @@ export interface CatalogEntityDocument extends IndexableDocument {
   owner: string;
 }
 
-export class DefaultCatalogCollator implements DocumentCollator {
+export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
   protected filter?: CatalogEntitiesRequest['filter'];
@@ -104,16 +101,18 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return documentText;
   }
 
-  async execute() {
+  async *execute() {
     const { token } = await this.tokenManager.getToken();
-    const response = await this.catalogClient.getEntities(
-      {
-        filter: this.filter,
-      },
-      { token },
-    );
-    return response.items.map((entity: Entity): CatalogEntityDocument => {
-      return {
+    const entities = (
+      await this.catalogClient.getEntities(
+        {
+          filter: this.filter,
+        },
+        { token },
+      )
+    ).items;
+    for (const entity of entities) {
+      yield {
         title: entity.metadata.title ?? entity.metadata.name,
         location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
@@ -127,6 +126,6 @@ export class DefaultCatalogCollator implements DocumentCollator {
         lifecycle: (entity.spec?.lifecycle as string) || '',
         owner: (entity.spec?.owner as string) || '',
       };
-    });
+    }
   }
 }
