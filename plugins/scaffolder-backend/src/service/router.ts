@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { CatalogEntityClient } from '../lib/catalog';
-import { validate } from 'jsonschema';
-import {
-  DatabaseTaskStore,
-  TemplateActionRegistry,
-  TaskWorker,
-  TemplateAction,
-  createBuiltinActions,
-} from '../scaffolder';
-import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-
+import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import express from 'express';
+import Router from 'express-promise-router';
+import { validate } from 'jsonschema';
+import { Logger } from 'winston';
+import { CatalogEntityClient } from '../lib/catalog';
+import {
+  createBuiltinActions,
+  DatabaseTaskStore,
+  TaskBroker,
+  TaskSpec,
+  TaskWorker,
+  TemplateAction,
+  TemplateActionRegistry,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 
 /**
  * RouterOptions
@@ -278,7 +278,8 @@ export async function createRouter(
               // to automatically reconnect because it lost connection.
             }
           }
-          res.flush();
+          // res.flush() is only available with the compression middleware
+          res.flush?.();
           if (shouldUnsubscribe) unsubscribe();
         },
       );
