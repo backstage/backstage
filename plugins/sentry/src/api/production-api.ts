@@ -27,7 +27,7 @@ export class ProductionSentryApi implements SentryApi {
   async fetchIssues(
     project: string,
     statsFor: string,
-    query: string,
+    query?: string,
   ): Promise<SentryIssue[]> {
     if (!project) {
       return [];

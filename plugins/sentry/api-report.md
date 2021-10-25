@@ -39,7 +39,7 @@ export class ProductionSentryApi implements SentryApi {
   fetchIssues(
     project: string,
     statsFor: string,
-    query: string,
+    query?: string,
   ): Promise<SentryIssue[]>;
 }
 
@@ -56,7 +56,7 @@ export interface SentryApi {
   fetchIssues(
     project: string,
     statsFor: string,
-    query: string,
+    query?: string,
   ): Promise<SentryIssue[]>;
 }
 

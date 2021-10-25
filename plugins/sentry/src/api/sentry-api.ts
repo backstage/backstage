@@ -26,6 +26,6 @@ export interface SentryApi {
   fetchIssues(
     project: string,
     statsFor: string,
-    query: string,
+    query?: string,
   ): Promise<SentryIssue[]>;
 }
