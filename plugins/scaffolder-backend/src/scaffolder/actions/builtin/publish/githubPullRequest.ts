@@ -30,6 +30,8 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
+export type Encoding = 'utf-8' | 'base64';
+
 class GithubResponseError extends CustomErrorBase {}
 
 type CreatePullRequestResponse = {
@@ -210,8 +212,9 @@ export const createPublishGithubPullRequestAction = ({
           //
           // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
           // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+          const encoding: Encoding = 'base64';
           return {
-            encoding: 'base64',
+            encoding: encoding,
             content: base64EncodedContent,
             mode: githubTreeItemMode,
           };
