@@ -56,6 +56,9 @@ export interface IndexableDocument {
   location: string;
 }
 
+/**
+ * Factory class for instantiating collators.
+ */
 export interface DocumentCollatorFactory {
   /**
    * The type or name of the document set returned by this collator. Used as an
@@ -69,6 +72,9 @@ export interface DocumentCollatorFactory {
   getCollator(): Promise<Readable>;
 }
 
+/**
+ * Factory class for instantiating decorators.
+ */
 export interface DocumentDecoratorFactory {
   /**
    * An optional array of document/index types on which this decorator should
@@ -101,7 +107,7 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 
   /**
-   * Factory method for a search engine indexer.
+   * Factory method for getting a search engine indexer.
    */
   getIndexer(type: string): Promise<Writable>;
 

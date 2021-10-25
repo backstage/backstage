@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="node" />
 
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { Client } from '@elastic/elasticsearch';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/search-common';
@@ -114,8 +116,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix,
   }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
+<<<<<<< HEAD
   index(type: string, documents: IndexableDocument[]): Promise<void>;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
+=======
+  getIndexer(type: string): Promise<ElasticSearchEngineIndexer>;
+>>>>>>> Updated API reports.
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchQueryTranslator" needs to be exported by the entry point index.d.ts

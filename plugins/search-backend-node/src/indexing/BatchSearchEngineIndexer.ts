@@ -17,12 +17,14 @@
 import { IndexableDocument } from '@backstage/search-common';
 import { Writable } from 'stream';
 
-type ErrorCallback = (error?: Error | null) => void;
-
-type BatchSearchEngineOptions = {
+export type BatchSearchEngineOptions = {
   batchSize: number;
 };
 
+/**
+ * Base class encapsulating batch-based stream processing. Useful as a base
+ * class for search engine indexers.
+ */
 export abstract class BatchSearchEngineIndexer extends Writable {
   private batchSize: number;
   private currentBatch: IndexableDocument[] = [];
@@ -64,7 +66,14 @@ export abstract class BatchSearchEngineIndexer extends Writable {
    */
   public abstract finalize(): Promise<void>;
 
-  async _write(doc: IndexableDocument, _e: any, done: ErrorCallback) {
+  /**
+   * Encapsulates batch stream write logic.
+   */
+  async _write(
+    doc: IndexableDocument,
+    _e: any,
+    done: (error?: Error | null) => void,
+  ) {
     // Wait for init before proceeding. Throw error if initialization failed.
     const maybeError = await this.initialized;
     if (maybeError) {
@@ -87,7 +96,10 @@ export abstract class BatchSearchEngineIndexer extends Writable {
     }
   }
 
-  async _final(done: ErrorCallback) {
+  /**
+   * Encapsulates finalization and final error handling logic.
+   */
+  async _final(done: (error?: Error | null) => void) {
     try {
       // Index any remaining documents.
       if (this.currentBatch.length) {

@@ -15,3 +15,4 @@
  */
 
 export { BatchSearchEngineIndexer } from './BatchSearchEngineIndexer';
+export type { BatchSearchEngineOptions } from './BatchSearchEngineIndexer';
