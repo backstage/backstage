@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { TemplateList } from './TemplateList';
+export type { TemplateListProps } from './TemplateList';
