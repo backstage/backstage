@@ -20,7 +20,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { GitLabClient, GitLabProject, paginated } from './gitlab';
+import { GitLabClient, BlobsSearchResult } from './gitlab';
 import {
   CacheClient,
   CacheManager,
@@ -30,17 +30,22 @@ import {
 /**
  * Extracts repositories out of an GitLab instance.
  */
-export class GitLabDiscoveryProcessor implements CatalogProcessor {
+export class GitLabESDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
 
+  getProcessorName() {
+    return 'gitlab-es-discovery';
+  }
+
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
-    const pluginCache =
-      CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
+    const pluginCache = CacheManager.fromConfig(config).forPlugin(
+      'gitlab-es-discovery',
+    );
 
-    return new GitLabDiscoveryProcessor({
+    return new GitLabESDiscoveryProcessor({
       ...options,
       integrations,
       pluginCache,
@@ -62,11 +67,11 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean> {
-    if (location.type !== 'gitlab-discovery') {
+    if (location.type !== 'gitlab-es-discovery') {
       return false;
     }
 
-    const { group, host, branch, catalogPath } = parseUrl(location.target);
+    const { group, host, searchStatement } = parseUrl(location.target);
 
     const integration = this.integrations.gitlab.byUrl(`https://${host}`);
     if (!integration) {
@@ -81,39 +86,40 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       cache: this.cache,
     });
     const startTimestamp = Date.now();
-    this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
-    const projects = paginated(options => client.listProjects(options), {
-      group,
-      last_activity_after: await this.updateLastActivity(),
-      page: 1,
+    const searchResults = await client.performSearch({
+      id: group,
+      scope: 'blobs',
+      search: `path:${searchStatement}`,
     });
 
-    const result: Result = {
+    const result: SearchResult = {
       scanned: 0,
       matches: [],
     };
-    for await (const project of projects) {
+
+    for (const searchResult of searchResults) {
       result.scanned++;
-      if (!project.archived) {
-        result.matches.push(project);
-      }
+      result.matches.push(searchResult);
     }
 
-    for (const project of result.matches) {
-      const project_branch = branch === '*' ? project.default_branch : branch;
-
+    for (const res of result.matches) {
+      // try to fetch the desired object before emitting a result
+      let url: string;
+      if (res.project) {
+        url = `${res.project.web_url}/-/blob/${res.project.default_branch}/${res.path}`;
+      } else {
+        throw new Error(
+          `cannot build URL with no project for search result ${JSON.stringify(
+            res,
+          )}`,
+        );
+      }
       emit(
         results.location(
           {
             type: 'url',
-            // The format expected by the GitLabUrlReader:
-            // https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-            //
-            // This unfortunately will trigger another API call in `getGitLabFileFetchUrl` to get the project ID.
-            // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
-            // URL here won't work either.
-            target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+            target: url,
           },
           true,
         ),
@@ -127,19 +133,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
     return true;
   }
-
-  async updateLastActivity(): Promise<string | undefined> {
-    const lastActivity = await this.cache.get('last-activity');
-    await this.cache.set('last-activity', new Date().toISOString());
-    return lastActivity as string | undefined;
-  }
 }
 
-type Result = {
+type SearchResult = {
   scanned: number;
-  matches: GitLabProject[];
+  matches: BlobsSearchResult[];
 };
-
 /*
  * Helpers
  */
@@ -147,8 +146,7 @@ type Result = {
 export function parseUrl(urlString: string): {
   group?: string;
   host: string;
-  branch: string;
-  catalogPath: string;
+  searchStatement: string;
 } {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
@@ -162,8 +160,7 @@ export function parseUrl(urlString: string): {
     return {
       group,
       host: url.host,
-      branch: decodeURIComponent(path[blobIndex + 1]),
-      catalogPath: decodeURIComponent(path.slice(blobIndex + 2).join('/')),
+      searchStatement: decodeURIComponent(path.slice(blobIndex + 2).join('/')),
     };
   }
 

@@ -21,3 +21,15 @@ export type GitLabProject = {
   last_activity_at: string;
   web_url: string;
 };
+
+export type BlobsSearchResult = {
+  basename: string;
+  data: string;
+  path: string;
+  filename: string;
+  id?: string | number;
+  ref: string;
+  startline?: number;
+  project_id: number;
+  project?: GitLabProject;
+};

@@ -20,14 +20,22 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
+import { BlobsSearchResult, GitLabProject } from './types';
+import { CacheClient } from '@backstage/backend-common';
 
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
   private readonly logger: Logger;
+  private readonly cache: CacheClient | undefined;
 
-  constructor(options: { config: GitLabIntegrationConfig; logger: Logger }) {
+  constructor(options: {
+    config: GitLabIntegrationConfig;
+    logger: Logger;
+    cache?: CacheClient;
+  }) {
     this.config = options.config;
     this.logger = options.logger;
+    this.cache = options.cache;
   }
 
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
@@ -44,6 +52,70 @@ export class GitLabClient {
     }
 
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
+  }
+
+  async getProject(project_id: string | number): Promise<GitLabProject> {
+    if (!this.cache) {
+      return await this._getProject(project_id);
+    }
+    const cacheKey = `gitlabproject--${project_id}`;
+    const res = this.cache.get(cacheKey) as unknown as GitLabProject;
+    if (Object.keys(res).length > 0) {
+      return res;
+    }
+    const output = await this._getProject(project_id);
+    await this.cache.set(cacheKey, output);
+    return output;
+  }
+
+  private async _getProject(
+    project_id: string | number,
+  ): Promise<GitLabProject> {
+    const request = new URL(
+      `${this.config.apiBaseUrl}/projects/${encodeURIComponent(project_id)}`,
+    );
+    const response = await fetch(
+      request.toString(),
+      getGitLabRequestOptions(this.config),
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Could not get project ${project_id}: ${response.status} ${response.statusText} - ${response.text}`,
+      );
+    }
+    return response.json() as unknown as GitLabProject;
+  }
+
+  async performSearch(
+    options: AdvancedSearchOptions,
+  ): Promise<BlobsSearchResult[]> {
+    let request: URL;
+    if (options?.id) {
+      request = new URL(
+        `${this.config.apiBaseUrl}/groups/${encodeURIComponent(
+          options?.id,
+        )}/search`,
+      );
+    } else {
+      request = new URL(`${this.config.apiBaseUrl}/search`);
+    }
+    request.searchParams.append('scope', 'blobs');
+    request.searchParams.append('search', options.search);
+    const response = await fetch(
+      request.toString(),
+      getGitLabRequestOptions(this.config),
+    );
+    return response.json().then(async value => {
+      if (value.message?.error !== undefined) {
+        // handle case when ES is not available
+        this.logger.error(`gitlab:performSearch error: ${value.message.error}`);
+        throw new Error(value.message.error);
+      }
+      for (const result of value) {
+        result.project = await this.getProject(result.project_id);
+      }
+      return value;
+    }) as unknown as BlobsSearchResult[];
   }
 
   private async pagedRequest(
@@ -87,6 +159,17 @@ export type ListOptions = {
   page?: number | undefined;
 };
 
+export type AdvancedSearchOptions = {
+  id?: string | number;
+  scope: string;
+  search: string;
+};
+
+export type RawFileOptions = {
+  project_id: string | number;
+  file_path: string;
+  file_ref?: string;
+};
 export type PagedResponse<T> = {
   items: T[];
   nextPage?: number;
