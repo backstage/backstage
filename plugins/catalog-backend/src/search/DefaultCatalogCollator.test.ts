@@ -23,6 +23,8 @@ import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { Readable } from 'stream';
+import { TestPipeline } from '@backstage/plugin-search-backend-node';
 
 const server = setupServer();
 
@@ -98,13 +100,21 @@ describe('DefaultCatalogCollator', () => {
   });
 
   it('fetches from the configured catalog service', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
     expect(documents).toHaveLength(expectedEntities.length);
   });
 
   it('maps a returned entity to an expected CatalogEntityDocument', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     expect(documents[0]).toMatchObject({
       title: expectedEntities[0].metadata.name,
       location: '/catalog/default/component/test-entity',
@@ -133,7 +143,10 @@ describe('DefaultCatalogCollator', () => {
       locationTemplate: '/software/:name',
     });
 
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     expect(documents[0]).toMatchObject({
       location: '/software/test-entity',
     });
@@ -149,7 +162,11 @@ describe('DefaultCatalogCollator', () => {
       },
     });
 
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
+
     // The simulated 'Foo,Bar' filter should return in an empty list
     expect(documents).toHaveLength(0);
   });

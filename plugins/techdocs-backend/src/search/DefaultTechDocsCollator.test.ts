@@ -24,7 +24,9 @@ import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { Readable } from 'stream';
 import { ConfigReader } from '@backstage/config';
+import { TestPipeline } from '@backstage/plugin-search-backend-node';
 
 const logger = getVoidLogger();
 
@@ -126,14 +128,20 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
   });
 
   it('fetches from the configured catalog and tech docs services', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
     expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('techdocs');
     expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
   });
 
   it('should create documents for each tech docs search index', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     const entity = expectedEntities[0];
     documents.forEach((document, idx) => {
       expect(document).toMatchObject({
@@ -186,7 +194,10 @@ describe('DefaultTechDocsCollator', () => {
   });
 
   it('should create documents for each tech docs search index', async () => {
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     const entity = expectedEntities[0];
     documents.forEach((document, idx) => {
       expect(document).toMatchObject({
@@ -213,7 +224,10 @@ describe('DefaultTechDocsCollator', () => {
       logger,
     });
 
-    const documents = await collator.execute();
+    const collatorStream = Readable.from(collator.execute());
+    const { documents } = await TestPipeline.withSubject(
+      collatorStream,
+    ).execute();
     expect(documents[0]).toMatchObject({
       location: '/software/test-entity-with-docs',
     });

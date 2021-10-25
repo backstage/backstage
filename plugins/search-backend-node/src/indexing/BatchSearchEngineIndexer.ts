@@ -72,8 +72,8 @@ export abstract class BatchSearchEngineIndexer extends Writable {
       return;
     }
 
+    this.currentBatch.push(doc);
     if (this.currentBatch.length < this.batchSize) {
-      this.currentBatch.push(doc);
       done();
       return;
     }
@@ -89,8 +89,11 @@ export abstract class BatchSearchEngineIndexer extends Writable {
 
   async _final(done: ErrorCallback) {
     try {
-      await this.index(this.currentBatch);
-      this.currentBatch = [];
+      // Index any remaining documents.
+      if (this.currentBatch.length) {
+        await this.index(this.currentBatch);
+        this.currentBatch = [];
+      }
       await this.finalize();
       done();
     } catch (e) {

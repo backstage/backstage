@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { range } from 'lodash';
 import { DatabaseStore } from '../database';
 import {
   ConcretePgSearchQuery,
@@ -21,6 +20,13 @@ import {
   encodePageCursor,
   PgSearchEngine,
 } from './PgSearchEngine';
+import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
+
+jest.mock('./PgSearchEngineIndexer', () => ({
+  PgSearchEngineIndexer: jest
+    .fn()
+    .mockImplementation(async () => 'the-expected-indexer'),
+}));
 
 describe('PgSearchEngine', () => {
   const tx: any = {} as any;
@@ -122,46 +128,21 @@ describe('PgSearchEngine', () => {
     });
   });
 
-  describe('insert', () => {
-    it('should insert documents', async () => {
-      database.transaction.mockImplementation(fn => fn(tx));
+  describe('index', () => {
+    it('should instantiate indexer', async () => {
+      const indexer = await searchEngine.getIndexer('my-type');
 
-      const documents = [
-        { title: 'Hello World', text: 'Lorem Ipsum', location: 'location-1' },
-        {
-          location: 'location-2',
-          text: 'Hello World',
-          title: 'Dolor sit amet',
-        },
-      ];
-
-      await searchEngine.index('my-type', documents);
-
-      expect(database.transaction).toHaveBeenCalledTimes(1);
-      expect(database.prepareInsert).toHaveBeenCalledTimes(1);
-      expect(database.insertDocuments).toHaveBeenCalledWith(
-        tx,
-        'my-type',
-        documents,
+      // Indexer instantiated with expected args.
+      expect(PgSearchEngineIndexer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          batchSize: 100,
+          type: 'my-type',
+          databaseStore: database,
+        }),
       );
-      expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
-    });
 
-    it('should batch insert documents', async () => {
-      database.transaction.mockImplementation(fn => fn(tx));
-
-      const documents = range(350).map(i => ({
-        title: `Hello World ${i}`,
-        text: 'Lorem Ipsum',
-        location: `location-${i}`,
-      }));
-
-      await searchEngine.index('my-type', documents);
-
-      expect(database.transaction).toHaveBeenCalledTimes(1);
-      expect(database.prepareInsert).toHaveBeenCalledTimes(1);
-      expect(database.insertDocuments).toBeCalledTimes(4);
-      expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+      // Indexer is as expected.
+      expect(indexer).toBe('the-expected-indexer');
     });
   });
 

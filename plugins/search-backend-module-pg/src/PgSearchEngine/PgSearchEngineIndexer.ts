@@ -38,11 +38,16 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   initialize(): Promise<void> {
-    return new Promise(initDone => {
+    return new Promise((initDone, initAbort) => {
       // Begin a transaction.
       this.store.transaction(async tx => {
         // Prepare the transaction.
-        await this.store.prepareInsert(tx);
+        try {
+          await this.store.prepareInsert(tx);
+        } catch (e) {
+          initAbort(e);
+          return;
+        }
 
         // Allow the transaction to be completed in finalize() by awaiting an
         // open-ended promise here, but storing a reference to its resolver on
