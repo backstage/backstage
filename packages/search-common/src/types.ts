@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
+import { Readable, Transform, Writable } from 'stream';
 
 export interface SearchQuery {
   term: string;
@@ -55,31 +56,31 @@ export interface IndexableDocument {
   location: string;
 }
 
-/**
- * Interface that must be implemented in order to expose new documents to
- * search.
- */
-export interface DocumentCollator {
+export interface DocumentCollatorFactory {
   /**
    * The type or name of the document set returned by this collator. Used as an
    * index name by Search Engines.
    */
   readonly type: string;
-  execute(): Promise<IndexableDocument[]>;
+
+  /**
+   * Instantiates and resolves a document collator.
+   */
+  getCollator(): Promise<Readable>;
 }
 
-/**
- * Interface that must be implemented in order to decorate existing documents with
- * additional metadata.
- */
-export interface DocumentDecorator {
+export interface DocumentDecoratorFactory {
   /**
    * An optional array of document/index types on which this decorator should
    * be applied. If no types are provided, this decorator will be applied to
    * all document/index types.
    */
   readonly types?: string[];
-  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+
+  /**
+   * Instantiates and resolves a document decorator.
+   */
+  getDecorator(): Promise<Transform>;
 }
 
 /**
@@ -100,9 +101,9 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 
   /**
-   * Add the given documents to the SearchEngine index of the given type.
+   * Factory method for a search engine indexer.
    */
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  getIndexer(type: string): Promise<Writable>;
 
   /**
    * Perform a search query against the SearchEngine.
