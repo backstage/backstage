@@ -37,11 +37,14 @@ export type TechDocsPageRenderFunction = ({
   onReady: () => void;
 }) => JSX.Element;
 
-export type TechDocsPageProps = {
+export type TechDocsPageProps = Omit<
+  JSX.IntrinsicElements['div'],
+  'children'
+> & {
   children?: TechDocsPageRenderFunction | React.ReactNode;
 };
 
-export const TechDocsPage = ({ children }: TechDocsPageProps) => {
+export const TechDocsPage = ({ children, ...props }: TechDocsPageProps) => {
   const outlet = useOutlet();
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);
@@ -73,7 +76,7 @@ export const TechDocsPage = ({ children }: TechDocsPageProps) => {
   if (!children) return outlet || <LegacyTechDocsPage />;
 
   return (
-    <Page themeId="documentation">
+    <Page {...props} themeId="documentation">
       {children instanceof Function
         ? children({
             techdocsMetadataValue,

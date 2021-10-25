@@ -117,16 +117,16 @@ type contextMenuOptions = {
   disableUnregister: boolean;
 };
 
-type EntityPageLayoutProps = {
+type EntityPageLayoutProps = JSX.IntrinsicElements['div'] & {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: contextMenuOptions;
-  children?: React.ReactNode;
 };
 
 export const EntityPageLayout = ({
   children,
   UNSTABLE_extraContextMenuItems,
   UNSTABLE_contextMenuOptions,
+  ...props
 }: EntityPageLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
@@ -147,7 +147,7 @@ export const EntityPageLayout = ({
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
   return (
-    <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
+    <Page {...props} themeId={entity?.spec?.type?.toString() ?? 'home'}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}

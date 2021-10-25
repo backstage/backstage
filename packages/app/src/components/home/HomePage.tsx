@@ -47,8 +47,8 @@ const clockConfigs: ClockConfig[] = [
   },
 ];
 
-export const HomePage = () => (
-  <Page themeId="home">
+export const HomePage = (props: JSX.IntrinsicElements['div']) => (
+  <Page {...props} themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
       <HeaderWorldClock clockConfigs={clockConfigs} />
     </Header>

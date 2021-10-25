@@ -20,13 +20,13 @@ import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
-type Props = {
+type Props = JSX.IntrinsicElements['div'] & {
   providerSettings?: JSX.Element;
 };
 
-export const SettingsPage = ({ providerSettings }: Props) => {
+export const SettingsPage = ({ providerSettings, ...props }: Props) => {
   return (
-    <Page themeId="home">
+    <Page {...props} themeId="home">
       <Header title="Settings" />
 
       <TabbedLayout>

@@ -42,10 +42,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const SearchPage = () => {
+const SearchPage = (props: JSX.IntrinsicElements['div']) => {
   const classes = useStyles();
   return (
-    <Page themeId="home">
+    <Page {...props} themeId="home">
       <Header title="Search" subtitle={<Lifecycle alpha />} />
       <Content>
         <Grid container direction="row">

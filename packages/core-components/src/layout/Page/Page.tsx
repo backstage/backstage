@@ -17,6 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import cn from 'classnames';
 
 export type PageClassKey = 'root';
 
@@ -35,12 +36,11 @@ const useStyles = makeStyles(
   { name: 'BackstagePage' },
 );
 
-type Props = {
+type Props = JSX.IntrinsicElements['div'] & {
   themeId: string;
 };
 
-export function Page(props: PropsWithChildren<Props>) {
-  const { themeId, children } = props;
+export function Page({ themeId, ...props }: PropsWithChildren<Props>) {
   const classes = useStyles();
   return (
     <ThemeProvider
@@ -49,7 +49,7 @@ export function Page(props: PropsWithChildren<Props>) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <div className={classes.root}>{children}</div>
+      <div {...props} className={cn(classes.root, props.className)} />
     </ThemeProvider>
   );
 }
