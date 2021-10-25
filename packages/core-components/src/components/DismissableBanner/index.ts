@@ -15,4 +15,7 @@
  */
 
 export { DismissableBanner } from './DismissableBanner';
-export type { DismissableBannerClassKey } from './DismissableBanner';
+export type {
+  DismissableBannerClassKey,
+  DismissbleBannerClassKey,
+} from './DismissableBanner';

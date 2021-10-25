@@ -35,6 +35,12 @@ export type DismissableBannerClassKey =
   | 'info'
   | 'error';
 
+/**
+ * @public
+ * @deprecated This type contained a typo, please use DismissableBannerClassKey instead
+ */
+export type DismissbleBannerClassKey = DismissableBannerClassKey;
+
 const useStyles = makeStyles(
   (theme: BackstageTheme) => ({
     root: {

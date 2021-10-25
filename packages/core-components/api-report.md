@@ -294,6 +294,9 @@ export type DismissableBannerClassKey =
   | 'info'
   | 'error';
 
+// @public @deprecated (undocumented)
+export type DismissbleBannerClassKey = DismissableBannerClassKey;
+
 // @public (undocumented)
 export function DocsIcon(props: IconComponentProps): JSX.Element;
 
