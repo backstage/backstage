@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
-import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
+import { DefaultTechDocsDocumentGenerator } from './DefaultTechDocsDocumentGenerator';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
 
 describe('DefaultTechDocsCollatorFactory', () => {
@@ -39,13 +39,13 @@ describe('DefaultTechDocsCollatorFactory', () => {
     const factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);
 
     it('instantiates collator with expected arguments', async () => {
-      DefaultTechDocsCollator.fromConfig = jest.fn().mockReturnValue({
+      DefaultTechDocsDocumentGenerator.fromConfig = jest.fn().mockReturnValue({
         execute: () => 'iterable',
       });
 
       const collator = await factory.getCollator();
 
-      expect(DefaultTechDocsCollator.fromConfig).toBeCalledWith(
+      expect(DefaultTechDocsDocumentGenerator.fromConfig).toBeCalledWith(
         config,
         options,
       );

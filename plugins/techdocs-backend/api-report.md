@@ -26,6 +26,41 @@ import { TokenManager } from '@backstage/backend-common';
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// Warning: (ae-missing-release-tag) "DefaultTechDocsCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
+export class DefaultTechDocsCollator {
+  // Warning: (ae-forgotten-export) The symbol "TechDocsCollatorOptions" needs to be exported by the entry point index.d.ts
+  //
+  // @deprecated
+  constructor({
+    discovery,
+    locationTemplate,
+    logger,
+    catalogClient,
+    parallelismLimit,
+    legacyPathCasing,
+  }: TechDocsCollatorOptions_2);
+  // (undocumented)
+  protected applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string;
+  // (undocumented)
+  protected discovery: PluginEndpointDiscovery;
+  // (undocumented)
+  execute(): Promise<TechDocsDocument[]>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: TechDocsCollatorOptions_2,
+  ): DefaultTechDocsCollator;
+  // (undocumented)
+  protected locationTemplate: string;
+  // (undocumented)
+  readonly type: string;
+}
+
 // Warning: (ae-missing-release-tag) "DefaultTechDocsCollatorFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

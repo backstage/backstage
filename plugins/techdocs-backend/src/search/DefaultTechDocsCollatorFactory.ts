@@ -18,9 +18,9 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
 import { Readable } from 'stream';
 import {
-  DefaultTechDocsCollator,
+  DefaultTechDocsDocumentGenerator,
   TechDocsCollatorOptions,
-} from './DefaultTechDocsCollator';
+} from './DefaultTechDocsDocumentGenerator';
 
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
@@ -38,7 +38,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   }
 
   async getCollator(): Promise<Readable> {
-    const collator = DefaultTechDocsCollator.fromConfig(
+    const collator = DefaultTechDocsDocumentGenerator.fromConfig(
       this.config,
       this.options,
     );
