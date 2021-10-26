@@ -61,15 +61,15 @@ export class PagerDutyClient implements PagerDutyApi {
   // Warning: (ae-forgotten-export) The symbol "Service" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
+  getServiceByServiceId(serviceId: string): Promise<Service>;
   // Warning: (ae-forgotten-export) The symbol "TriggerAlarmRequest" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   triggerAlarm({
-    integrationKey,
-    source,
+    serviceId,
+    title,
+    from,
     description,
-    userName,
   }: TriggerAlarmRequest): Promise<Response>;
 }
 

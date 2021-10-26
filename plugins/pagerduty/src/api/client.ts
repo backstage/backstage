@@ -18,7 +18,7 @@ import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
   TriggerAlarmRequest,
-  ServicesResponse,
+  ServiceResponse,
   IncidentsResponse,
   OnCallsResponse,
   ClientApiConfig,
@@ -40,24 +40,24 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
 
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
-    const eventsBaseUrl: string =
-      configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
-      'https://events.pagerduty.com/v2';
+    const apiBaseUrl: string =
+      configApi.getOptionalString('pagerDuty.apiBaseUrl') ??
+      'https://api.pagerduty.com';
     return new PagerDutyClient({
-      eventsBaseUrl,
+      apiBaseUrl,
       discoveryApi,
     });
   }
   constructor(private readonly config: ClientApiConfig) {}
 
-  async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    const params = `time_zone=UTC&include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
+  async getServiceByServiceId(serviceId: string): Promise<Service> {
+    const params = `time_zone=UTC&include[]=integrations&include[]=escalation_policies`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
-    )}/pagerduty/services?${params}`;
-    const { services } = await this.getByUrl<ServicesResponse>(url);
+    )}/pagerduty/services/${serviceId}?${params}`;
+    const { service } = await this.getByUrl<ServiceResponse>(url);
 
-    return services;
+    return service;
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
@@ -92,24 +92,24 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   triggerAlarm({
-    integrationKey,
-    source,
+    serviceId,
+    title,
+    from,
     description,
-    userName,
   }: TriggerAlarmRequest): Promise<Response> {
     const body = JSON.stringify({
-      event_action: 'trigger',
-      routing_key: integrationKey,
-      client: 'Backstage',
-      client_url: source,
-      payload: {
-        summary: description,
-        source: source,
-        severity: 'error',
-        class: 'manual trigger',
-        custom_details: {
-          user: userName,
+      incident: {
+        incident: 'incident',
+        title: title,
+        service: {
+          id: serviceId,
+          type: 'service_reference',
         },
+      },
+      urgency: 'high',
+      body: {
+        type: 'incident_body',
+        details: description,
       },
     });
 
@@ -117,14 +117,15 @@ export class PagerDutyClient implements PagerDutyApi {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        From: from,
         Accept: 'application/json, text/plain, */*',
       },
       body,
     };
 
-    const url = this.config.eventsBaseUrl ?? 'https://events.pagerduty.com/v2';
+    const url = this.config.apiBaseUrl ?? 'https://api.pagerduty.com';
 
-    return this.request(`${url}/enqueue`, options);
+    return this.request(`${url}/incidents`, options);
   }
 
   private async getByUrl<T>(url: string): Promise<T> {

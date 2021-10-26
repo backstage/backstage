@@ -58,7 +58,7 @@ describe('TriggerDialog', () => {
       metadata: {
         name: 'pagerduty-test',
         annotations: {
-          'pagerduty.com/integration-key': 'abc123',
+          'pagerduty.com/service-id': 'abc123',
         },
       },
     };
@@ -81,10 +81,20 @@ describe('TriggerDialog', () => {
         exact: false,
       }),
     ).toBeInTheDocument();
-    const input = getByTestId('trigger-input');
+    const descriptionInput = getByTestId('trigger-description-input');
+    const fromInput = getByTestId('trigger-from-input');
+    const titleInput = getByTestId('trigger-title-input');
     const description = 'Test Trigger Alarm';
+    const title = 'Test Trigger Alarm';
+    const from = 'guest@example.com';
     await act(async () => {
-      fireEvent.change(input, { target: { value: description } });
+      fireEvent.change(descriptionInput, { target: { value: description } });
+    });
+    await act(async () => {
+      fireEvent.change(titleInput, { target: { value: title } });
+    });
+    await act(async () => {
+      fireEvent.change(fromInput, { target: { value: from } });
     });
     const triggerButton = getByTestId('trigger-button');
     await act(async () => {
@@ -92,11 +102,10 @@ describe('TriggerDialog', () => {
     });
     expect(mockTriggerAlarmFn).toHaveBeenCalled();
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      integrationKey:
-        entity!.metadata!.annotations!['pagerduty.com/integration-key'],
-      source: window.location.toString(),
+      serviceId: entity!.metadata!.annotations!['pagerduty.com/service-id'],
+      title,
       description,
-      userName: 'guest@example.com',
+      from,
     });
   });
 });

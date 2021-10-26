@@ -36,7 +36,7 @@ export function TriggerButton({
   children,
 }: PropsWithChildren<TriggerButtonProps>) {
   const { buttonStyle } = useStyles();
-  const { integrationKey } = usePagerdutyEntity();
+  const { serviceId } = usePagerdutyEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
@@ -46,7 +46,7 @@ export function TriggerButton({
     setDialogShown(false);
   }, [setDialogShown]);
 
-  const disabled = !integrationKey;
+  const disabled = !serviceId;
   return (
     <>
       <Button
@@ -55,11 +55,9 @@ export function TriggerButton({
         className={disabled ? '' : buttonStyle}
         disabled={disabled}
       >
-        {integrationKey
-          ? children ?? 'Create Incident'
-          : 'Missing integration key'}
+        {serviceId ? children ?? 'Create Incident' : 'Missing Service Id'}
       </Button>
-      {integrationKey && (
+      {serviceId && (
         <TriggerDialog showDialog={dialogShown} handleDialog={hideDialog} />
       )}
     </>

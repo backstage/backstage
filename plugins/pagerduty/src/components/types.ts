@@ -51,7 +51,6 @@ export type Service = {
   id: string;
   name: string;
   html_url: string;
-  integrationKey: string;
   escalation_policy: {
     id: string;
     user: User;

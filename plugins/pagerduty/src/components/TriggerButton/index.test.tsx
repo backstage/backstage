@@ -58,7 +58,7 @@ describe('TriggerButton', () => {
       metadata: {
         name: 'pagerduty-test',
         annotations: {
-          'pagerduty.com/integration-key': 'abc123',
+          'pagerduty.com/service-id': 'abc123',
         },
       },
     };
@@ -97,7 +97,7 @@ describe('TriggerButton', () => {
       metadata: {
         name: 'pagerduty-test',
         annotations: {
-          'pagerduty.com/integration-key': 'abc123',
+          'pagerduty.com/service-id': 'abc123',
         },
       },
     };
@@ -113,7 +113,7 @@ describe('TriggerButton', () => {
     expect(screen.getByText('Send an alert')).toBeInTheDocument();
   });
 
-  it('renders a disabled trigger button if entity does not include key', async () => {
+  it('renders a disabled trigger button if entity does not include serviceId', async () => {
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -130,7 +130,7 @@ describe('TriggerButton', () => {
       </ApiProvider>,
     );
 
-    const triggerButton = screen.getByText('Missing integration key');
+    const triggerButton = screen.getByText('Missing Service Id');
 
     await act(async () => {
       fireEvent.click(triggerButton);

@@ -25,8 +25,38 @@ import { Service, User } from '../types';
 import { alertApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
+const entity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/service-id': 'abc123',
+    },
+  },
+};
+
+const user: User = {
+  name: 'person1',
+  id: 'p1',
+  summary: 'person1',
+  email: 'person1@example.com',
+  html_url: 'http://a.com/id1',
+};
+
+const service: Service = {
+  id: 'abcd',
+  name: 'pagerduty-name',
+  html_url: 'www.example.com',
+  escalation_policy: {
+    id: 'def',
+    user: user,
+    html_url: 'http://a.com/id1',
+  },
+};
+
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
-  getServiceByIntegrationKey: async () => [],
+  getServiceByServiceId: async () => service,
   getOnCallByPolicyId: async () => [],
   getIncidentsByServiceId: async () => [],
 };
@@ -41,42 +71,12 @@ const apis = ApiRegistry.from([
     }),
   ],
 ]);
-const entity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'pagerduty-test',
-    annotations: {
-      'pagerduty.com/integration-key': 'abc123',
-    },
-  },
-};
-
-const user: User = {
-  name: 'person1',
-  id: 'p1',
-  summary: 'person1',
-  email: 'person1@example.com',
-  html_url: 'http://a.com/id1',
-};
-
-const service: Service = {
-  id: 'abc',
-  name: 'pagerduty-name',
-  html_url: 'www.example.com',
-  escalation_policy: {
-    id: 'def',
-    user: user,
-    html_url: 'http://a.com/id1',
-  },
-  integrationKey: 'abcd',
-};
 
 describe('PageDutyCard', () => {
   it('Render pagerduty', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByServiceId = jest
       .fn()
-      .mockImplementationOnce(async () => [service]);
+      .mockImplementationOnce(async () => service);
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -95,7 +95,7 @@ describe('PageDutyCard', () => {
   });
 
   it('Handles custom error for missing token', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByServiceId = jest
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
@@ -113,7 +113,7 @@ describe('PageDutyCard', () => {
   });
 
   it('handles general error', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByServiceId = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
     const { getByText, queryByTestId } = render(
@@ -134,9 +134,9 @@ describe('PageDutyCard', () => {
     ).toBeInTheDocument();
   });
   it('opens the dialog when trigger button is clicked', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByServiceId = jest
       .fn()
-      .mockImplementationOnce(async () => [service]);
+      .mockImplementationOnce(async () => service);
 
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(

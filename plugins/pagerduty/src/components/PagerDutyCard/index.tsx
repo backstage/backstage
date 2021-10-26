@@ -26,7 +26,7 @@ import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import { usePagerdutyEntity } from '../../hooks';
-import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
+import { PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
 
@@ -40,10 +40,10 @@ import {
 } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
+  Boolean(entity.metadata.annotations?.[PAGERDUTY_SERVICE_ID]);
 
 export const PagerDutyCard = () => {
-  const { integrationKey } = usePagerdutyEntity();
+  const { serviceId } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -67,16 +67,16 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
-    const services = await api.getServiceByIntegrationKey(
-      integrationKey as string,
+    const returnedService = await api.getServiceByServiceId(
+      serviceId as string,
     );
 
     return {
-      id: services[0].id,
-      name: services[0].name,
-      url: services[0].html_url,
-      policyId: services[0].escalation_policy.id,
-      policyLink: services[0].escalation_policy.html_url,
+      id: returnedService.id,
+      name: returnedService.name,
+      url: returnedService.html_url,
+      policyId: returnedService.escalation_policy.id,
+      policyLink: returnedService.escalation_policy.html_url,
     };
   });
 

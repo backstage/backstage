@@ -18,18 +18,18 @@ import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type TriggerAlarmRequest = {
-  integrationKey: string;
-  source: string;
+  serviceId: string;
+  from: string;
+  title: string;
   description: string;
-  userName: string;
 };
 
 export interface PagerDutyApi {
   /**
-   * Fetches a list of services, filtered by the provided integration key.
+   * Fetches a service via serviceId.
    *
    */
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
+  getServiceByServiceId(serviceId: string): Promise<Service>;
 
   /**
    * Fetches a list of incidents a provided service has.
@@ -55,8 +55,8 @@ export interface PagerDutyApi {
   triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 }
 
-export type ServicesResponse = {
-  services: Service[];
+export type ServiceResponse = {
+  service: Service;
 };
 
 export type IncidentsResponse = {
@@ -72,7 +72,7 @@ export type OnCallsResponse = {
 };
 
 export type ClientApiConfig = {
-  eventsBaseUrl?: string;
+  apiBaseUrl?: string;
   discoveryApi: DiscoveryApi;
 };
 

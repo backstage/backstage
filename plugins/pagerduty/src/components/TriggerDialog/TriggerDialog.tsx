@@ -46,20 +46,22 @@ export const TriggerDialog = ({
   handleDialog,
   onIncidentCreated: onIncidentCreated,
 }: Props) => {
-  const { name, integrationKey } = usePagerdutyEntity();
+  const { name, serviceId } = usePagerdutyEntity();
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const userName = identityApi.getUserId();
   const api = useApi(pagerDutyApiRef);
+  const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [from, setFrom] = useState<string>('');
 
   const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
-    async (descriptions: string) =>
+    async (descriptions: string, froms: string, titles: string) =>
       await api.triggerAlarm({
-        integrationKey: integrationKey as string,
-        source: window.location.toString(),
+        serviceId: serviceId as string,
+        from: froms,
+        title: titles,
         description: descriptions,
-        userName,
       }),
   );
 
@@ -67,6 +69,14 @@ export const TriggerDialog = ({
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setDescription(event.target.value);
+  };
+
+  const fromChanged = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFrom(event.target.value);
+  };
+
+  const titleChanged = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTitle(event.target.value);
   };
 
   useEffect(() => {
@@ -119,7 +129,7 @@ export const TriggerDialog = ({
           out to you if necessary.
         </Typography>
         <TextField
-          inputProps={{ 'data-testid': 'trigger-input' }}
+          inputProps={{ 'data-testid': 'trigger-description-input' }}
           id="description"
           multiline
           fullWidth
@@ -129,6 +139,22 @@ export const TriggerDialog = ({
           variant="outlined"
           onChange={descriptionChanged}
         />
+        <TextField
+          inputProps={{ 'data-testid': 'trigger-title-input' }}
+          id="title"
+          margin="normal"
+          label="Incident Title"
+          variant="outlined"
+          onChange={titleChanged}
+        />
+        <TextField
+          inputProps={{ 'data-testid': 'trigger-from-input' }}
+          id="from"
+          margin="normal"
+          label="Email of user creating incident. Must be a valid pager duty user"
+          variant="outlined"
+          onChange={fromChanged}
+        />
       </DialogContent>
       <DialogActions>
         <Button
@@ -137,7 +163,7 @@ export const TriggerDialog = ({
           color="secondary"
           disabled={!description || loading}
           variant="contained"
-          onClick={() => handleTriggerAlarm(description)}
+          onClick={() => handleTriggerAlarm(description, from, title)}
           endIcon={loading && <CircularProgress size={16} />}
         >
           Trigger Incident
