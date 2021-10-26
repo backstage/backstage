@@ -21,6 +21,6 @@ export type Paths = {
   resolveTargetRoot: ResolveFunc;
 };
 
-// @public (undocumented)
+// @public
 export type ResolveFunc = (...paths: string[]) => string;
 ```
