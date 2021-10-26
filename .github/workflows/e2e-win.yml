@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/e2e-win.yml'
       - 'packages/cli/**'
-      - 'packages/e2e/**'
+      - 'packages/e2e-test/**'
       - 'packages/create-app/**'
 
 jobs:
