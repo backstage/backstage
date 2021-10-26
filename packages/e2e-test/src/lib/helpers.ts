@@ -133,7 +133,7 @@ export async function waitForPageWithText(
   let findAttempts = 0;
   for (;;) {
     try {
-      const waitTimeMs = intervalMs * (Math.log10(findAttempts + 1) + 1);
+      const waitTimeMs = intervalMs * (findAttempts + 1);
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
 
