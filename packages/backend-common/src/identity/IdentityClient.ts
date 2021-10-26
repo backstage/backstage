@@ -16,8 +16,8 @@
 
 import fetch from 'cross-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
-import { BackstageIdentity } from '../providers';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { PluginEndpointDiscovery } from '../discovery';
 
 const CLOCK_MARGIN_S = 10;
 

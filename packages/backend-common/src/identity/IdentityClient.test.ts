@@ -17,14 +17,14 @@
 import { JWT, JSONWebKey } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '../logging';
+import { PluginEndpointDiscovery } from '../discovery';
 import { IdentityClient } from './IdentityClient';
-import { MemoryKeyStore } from './MemoryKeyStore';
-import { TokenFactory } from './TokenFactory';
-import { KeyStore } from './types';
+import {
+  KeyStore,
+  MemoryKeyStore,
+  TokenFactory,
+} from '@backstage/plugin-auth-backend';
 
 const logger = getVoidLogger();
 
