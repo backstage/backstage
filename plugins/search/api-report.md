@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';

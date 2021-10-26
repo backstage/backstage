@@ -4,7 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
 
 // @public (undocumented)

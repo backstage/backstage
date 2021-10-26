@@ -24,6 +24,8 @@ import React from 'react';
 
 /**
  * Edge of {@link DependencyGraph}
+ *
+ * @public
  */
 export type DependencyEdge<T = {}> = T & {
   /**
@@ -54,6 +56,8 @@ export type RenderLabelFunction<T = {}> = (
 
 /**
  * Node of {@link DependencyGraph}
+ *
+ * @public
  */
 export type DependencyNode<T = {}> = T & {
   id: string;
@@ -73,6 +77,8 @@ export type RenderNodeFunction<T = {}> = (
 
 /**
  * Graph direction
+ *
+ * @public
  */
 export enum Direction {
   /**
@@ -95,6 +101,8 @@ export enum Direction {
 
 /**
  * Node alignment
+ *
+ * @public
  */
 export enum Alignment {
   /**
@@ -139,6 +147,8 @@ export enum Ranker {
 
 /**
  * Position of label in relation to the edge
+ *
+ * @public
  */
 export enum LabelPosition {
   LEFT = 'l',

@@ -10,7 +10,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { SearchEntry } from 'ldapjs';

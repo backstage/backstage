@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /*
  * This module should use '@types/yeoman-environment' eventually as soon as '@types/yeoman-environment' supports

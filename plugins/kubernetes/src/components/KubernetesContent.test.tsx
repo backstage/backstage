@@ -18,11 +18,11 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
-import { useKubernetesObjects } from '../../hooks';
+import { useKubernetesObjects } from '../hooks';
 
-jest.mock('../../hooks');
-import * as oneDeployment from '../../__fixtures__/1-deployments.json';
-import * as twoDeployments from '../../__fixtures__/2-deployments.json';
+jest.mock('../hooks');
+import * as oneDeployment from '../__fixtures__/1-deployments.json';
+import * as twoDeployments from '../__fixtures__/2-deployments.json';
 
 describe('KubernetesContent', () => {
   it('render empty response', async () => {

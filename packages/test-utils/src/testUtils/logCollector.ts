@@ -16,36 +16,65 @@
 
 /* eslint-disable no-console */
 
+/**
+ * Severity levels of {@link CollectedLogs}
+ * @public */
 export type LogFuncs = 'log' | 'warn' | 'error';
+/**
+ * AsyncLogCollector type used in {@link (withLogCollector:1)} callback function.
+ * @public */
 export type AsyncLogCollector = () => Promise<void>;
+/**
+ * SyncLogCollector type used in {@link (withLogCollector:2)} callback function.
+ * @public */
 export type SyncLogCollector = () => void;
+/**
+ * Union type used in {@link (withLogCollector:3)} callback function.
+ * @public */
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
+/**
+ * Map of severity level and corresponding log lines.
+ * @public */
 export type CollectedLogs<T extends LogFuncs> = { [key in T]: string[] };
 
 const allCategories = ['log', 'warn', 'error'];
 
-// Asynchronous log collector with that collects all categories
+/**
+ * Asynchronous log collector with that collects all categories
+ * @public */
 export function withLogCollector(
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<LogFuncs>>;
 
-// Synchronous log collector with that collects all categories
+/**
+ * Synchronous log collector with that collects all categories
+ * @public */
 export function withLogCollector(
   callback: SyncLogCollector,
 ): CollectedLogs<LogFuncs>;
 
-// Asynchronous log collector with that only collects selected categories
+/**
+ * Asynchronous log collector with that only collects selected categories
+ * @public
+ */
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<T>>;
 
-// Synchronous log collector with that only collects selected categories
+/**
+ * Synchronous log collector with that only collects selected categories
+ * @public */
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: SyncLogCollector,
 ): CollectedLogs<T>;
 
+/**
+ * Log collector that collect logs either from a sync or async collector.
+ * @public
+ * @deprecated import from test-utils instead
+ * */
 export function withLogCollector(
   logsToCollect: LogFuncs[] | LogCollector,
   callback?: LogCollector,

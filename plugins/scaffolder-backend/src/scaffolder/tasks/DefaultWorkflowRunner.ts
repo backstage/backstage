@@ -26,7 +26,7 @@ import * as winston from 'winston';
 import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 import path from 'path';
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { isTruthy } from './helper';

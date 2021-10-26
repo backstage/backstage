@@ -25,6 +25,7 @@
     "@backstage/integration": "^0.6.2",
     "@backstage/plugin-scaffolder-backend": "^0.15.10",
     "@backstage/config": "^0.1.8",
+    "@backstage/types": "^0.1.1",
     "command-exists": "^1.2.9",
     "fs-extra": "10.0.0",
     "winston": "^3.2.1",

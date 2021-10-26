@@ -132,6 +132,7 @@ const StyledMTableToolbar = withStyles(
   { name: 'BackstageTableToolbar' },
 )(MTableToolbar);
 
+/** @public */
 export type FiltersContainerClassKey = 'root' | 'title';
 
 const useFilterStyles = makeStyles<BackstageTheme>(
