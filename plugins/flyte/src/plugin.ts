@@ -18,12 +18,13 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
+import { rootRouteRef, flyteDomainRouteRef } from './routes';
 
 export const flytePlugin = createPlugin({
   id: 'flyte',
   routes: {
     root: rootRouteRef,
+    flyteDomainPage: flyteDomainRouteRef,
   },
 });
 
@@ -33,5 +34,16 @@ export const FlytePage = flytePlugin.provide(
     component: () =>
       import('./components/FlyteComponent').then(m => m.FlyteComponent),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const FlyteDomainPage = flytePlugin.provide(
+  createRoutableExtension({
+    name: 'FlyteDomainPage',
+    component: () =>
+      import('./components/FlyteDomainComponent').then(
+        m => m.FlyteDomainComponent,
+      ),
+    mountPoint: flyteDomainRouteRef,
   }),
 );

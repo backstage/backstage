@@ -59,7 +59,7 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
 
 export const FlyteProjectFetchComponent = () => {
   const { value, loading, error } =
-    useAsync(async (): Promise<flyteidl.admin.Projects | null> => {
+    useAsync(async (): Promise<flyteidl.admin.Projects> => {
       const options: AxiosRequestConfig = {
         method: 'get',
         responseType: 'arraybuffer',

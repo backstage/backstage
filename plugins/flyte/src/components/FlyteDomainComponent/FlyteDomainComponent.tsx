@@ -13,17 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
+import React from 'react';
+import { Page } from '@backstage/core-components';
 
-const NoIcon = () => null;
-
-export const rootRouteRef = createRouteRef({
-  title: 'flyte',
-});
-
-export const flyteDomainRouteRef = createRouteRef({
-  icon: NoIcon,
-  path: '/flyte/:project/:domain',
-  title: 'Flyte Domain details',
-  params: ['project', 'domain'],
-});
+export const FlyteDomainComponent = () => <Page themeId="tool" />;
