@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 export * from './actions';
-export { DatabaseTaskStore, TaskWorker } from './tasks';
-export type { CreateWorkerOptions } from './tasks';
-export type { TaskState } from './tasks';
-export type {
-  TaskSecrets,
-  TaskSpec,
-  CompletedTaskState,
-  TaskStoreEmitOptions,
-  TaskStoreListEventsOptions,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-  Status,
-  TaskEventType,
-} from './tasks/types';
+export * from './tasks';

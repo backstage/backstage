@@ -22,10 +22,12 @@ import { CatalogEntityClient } from '../lib/catalog';
 import { validate } from 'jsonschema';
 import {
   DatabaseTaskStore,
-  StorageTaskBroker,
+  TemplateActionRegistry,
   TaskWorker,
-} from '../scaffolder/tasks';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
+  TemplateAction,
+  createBuiltinActions,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
@@ -38,8 +40,6 @@ import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../scaffolder/actions';
-import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
 
 /**
