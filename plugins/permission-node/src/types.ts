@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export * from './handler';
-export * from './integration';
-export * from './types';
+import type { PermissionCriteria } from '@backstage/permission-common';
+
+export type PermissionRule<TResource, TQuery, TParams extends any[] = any> = {
+  name: string;
+  description: string;
+  apply(resource: TResource, ...params: TParams): boolean;
+  toQuery(...params: TParams): TQuery | PermissionCriteria<TQuery>;
+};

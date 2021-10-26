@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  AuthorizeResult,
+  OpaqueAuthorizeRequest,
+} from '@backstage/permission-common';
+import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { HandlerResult, PermissionHandler } from './types';
 
-export * from './handler';
-export * from './integration';
-export * from './types';
+export class AllowAllPermissionHandler implements PermissionHandler {
+  async handle(
+    _request: OpaqueAuthorizeRequest,
+    _user?: BackstageIdentity,
+  ): Promise<HandlerResult> {
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}

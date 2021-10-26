@@ -18,7 +18,12 @@
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@backstage/permission-common": "^0.1.0",
+    "@backstage/plugin-auth-backend": "^0.4.5",
+    "@types/express": "*",
+    "express": "^4.17.1"
+  },
   "devDependencies": {
     "@backstage/cli": "^0.8.0"
   },
