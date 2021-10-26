@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/e2e-win.yml'
       - 'packages/cli/**'
-      - 'packages/e2e/**'
+      - 'packages/e2e-test/**'
       - 'packages/create-app/**'
 
 jobs:
@@ -48,3 +48,5 @@ jobs:
         run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
         run: yarn e2e-test run
+        env:
+          DEBUG: zombie
