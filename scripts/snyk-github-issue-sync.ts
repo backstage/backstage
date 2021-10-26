@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Octokit } from '@octokit/rest';
+// The GitHub workflow .github/workflows/
 import syncJsonOutput from '../snyk.json';
 
 type Vulnerability = {
