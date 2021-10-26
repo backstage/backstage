@@ -24,9 +24,9 @@ import {
   TechDocsPermission,
 } from '@backstage/permission-common';
 import {
+  PermissionPolicy,
   conditionFor,
-  HandlerResult,
-  PermissionHandler,
+  PolicyResult,
 } from '@backstage/plugin-permission-node';
 import {
   conditions as catalogConditions,
@@ -38,11 +38,11 @@ import { isComponentType as isComponentTypeRule } from './rules';
 const { isEntityOwner, isEntityKind } = catalogConditions;
 const isComponentType = conditionFor(isComponentTypeRule);
 
-export class SimplePermissionHandler implements PermissionHandler {
+export class SimplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: OpaqueAuthorizeRequest,
     identity?: BackstageIdentity,
-  ): Promise<HandlerResult> {
+  ): Promise<PolicyResult> {
     if (TechDocsPermission.includes(request.permission)) {
       return {
         result: AuthorizeResult.DENY,
