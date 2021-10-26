@@ -25,7 +25,7 @@ import {
 } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
-import { OAuthState, encodeState } from '../../lib/oauth';
+import { OAuthStartRequest, encodeState } from '../../lib/oauth';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -57,8 +57,8 @@ describe('GithubAuthProvider', () => {
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),
-    stateEncoder: async (state: OAuthState) => ({
-      encodedState: encodeState(state),
+    stateEncoder: async (req: OAuthStartRequest) => ({
+      encodedState: encodeState(req.state),
     }),
     callbackUrl: 'mock',
     clientId: 'mock',

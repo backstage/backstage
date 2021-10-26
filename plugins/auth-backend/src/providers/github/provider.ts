@@ -42,7 +42,6 @@ import {
   encodeState,
   OAuthRefreshRequest,
   OAuthResponse,
-  OAuthState,
 } from '../../lib/oauth';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity';
@@ -114,7 +113,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
-      state: (await this.stateEncoder(req.state)).encodedState,
+      state: (await this.stateEncoder(req)).encodedState,
     });
   }
 
@@ -286,11 +285,11 @@ export const createGithubProvider = (
           logger,
         });
 
-      const stateEncoder: StateEncoder = options?.stateEncoder
-        ? options.stateEncoder
-        : async (state: OAuthState): Promise<{ encodedState: string }> => {
-            return { encodedState: encodeState(state) };
-          };
+      const stateEncoder: StateEncoder =
+        options?.stateEncoder ??
+        (async (req: OAuthStartRequest): Promise<{ encodedState: string }> => {
+          return { encodedState: encodeState(req.state) };
+        });
 
       const provider = new GithubAuthProvider({
         clientId,
