@@ -1,4 +1,5 @@
 ---
+'@backstage/errors': patch
 '@backstage/integration': patch
 '@backstage/theme': patch
 ---

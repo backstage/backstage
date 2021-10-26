@@ -45,14 +45,19 @@ export interface ScmIntegrationRegistry
    * within the file tree of a certain repo, an absolute path of `/b.yaml` does
    * not resolve to `https://hostname/b.yaml` but rather to
    * `<repo root url>/b.yaml` inside the file tree of that same repo.
-   *
-   * @param options.url - The (absolute or relative) URL or path to resolve
-   * @param options.base - The base URL onto which this resolution happens
-   * @param options.lineNumber - The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
   resolveUrl(options: {
+    /**
+     * The (absolute or relative) URL or path to resolve.
+     */
     url: string;
+    /**
+     * The base URL onto which this resolution happens
+     */
     base: string;
+    /**
+     * The line number in the target file to link to, starting with 1. Only applicable when linking to files.
+     */
     lineNumber?: number;
   }): string;
 

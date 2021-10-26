@@ -344,9 +344,6 @@ export function replaceGitHubUrlType(
 // @public
 export interface ScmIntegration {
   resolveEditUrl(url: string): string;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   resolveUrl(options: {
     url: string;
     base: string;
@@ -370,9 +367,6 @@ export interface ScmIntegrationRegistry
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
   resolveEditUrl(url: string): string;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   resolveUrl(options: {
     url: string;
     base: string;
