@@ -75,6 +75,6 @@ const dummyDataGroupedByPath = {
 
 describe('groupByPath function', () => {
   it('should group files by their root directory,as per their filename', () => {
-    expect(groupByPath(dummyFiles)).toBe(dummyDataGroupedByPath);
+    expect(groupByPath(dummyFiles)).toStrictEqual(dummyDataGroupedByPath);
   });
 });
