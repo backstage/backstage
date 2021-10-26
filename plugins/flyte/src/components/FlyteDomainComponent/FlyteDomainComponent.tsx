@@ -25,6 +25,7 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
+import { useParams } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
@@ -61,12 +62,8 @@ export const DenseTable = ({ workflowList }: DenseTableProps) => {
   );
 };
 
-type FlyteDomainProps = {
-  project: string;
-  domain: string;
-};
-
-export const FlyteDomainComponent = ({ project, domain }: FlyteDomainProps) => {
+export const FlyteDomainComponent = () => {
+  const { project, domain } = useParams();
   const api = useApi(flyteApiRef);
   const { value, loading, error } = useAsync(async () =>
     api.listWorkflows(project, domain),
