@@ -25,7 +25,12 @@ const DEFAULT_PROVIDER = {
   icon: MicrosoftIcon,
 };
 
-class MicrosoftAuth {
+/**
+ * Implements the OAuth flow to Microsoft products.
+ *
+ * @public
+ */
+export default class MicrosoftAuth {
   static create({
     environment = 'development',
     provider = DEFAULT_PROVIDER,
@@ -48,5 +53,3 @@ class MicrosoftAuth {
     });
   }
 }
-
-export default MicrosoftAuth;

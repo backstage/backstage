@@ -45,7 +45,14 @@ const DEFAULT_PROVIDER = {
   icon: SamlIcon,
 };
 
-class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
+/**
+ * Implements a general SAML based auth flow.
+ *
+ * @public
+ */
+export default class SamlAuth
+  implements ProfileInfoApi, BackstageIdentityApi, SessionApi
+{
   static create({
     discoveryApi,
     environment = 'development',
@@ -94,5 +101,3 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
     return session?.profile;
   }
 }
-
-export default SamlAuth;

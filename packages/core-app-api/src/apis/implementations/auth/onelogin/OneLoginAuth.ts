@@ -26,7 +26,6 @@ import { OAuth2 } from '../oauth2';
 type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
-
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -49,7 +48,12 @@ const OIDC_SCOPES: Set<String> = new Set([
 
 const SCOPE_PREFIX: string = 'onelogin.';
 
-class OneLoginAuth {
+/**
+ * Implements a OneLogin OAuth flow.
+ *
+ * @public
+ */
+export default class OneLoginAuth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -78,5 +82,3 @@ class OneLoginAuth {
     });
   }
 }
-
-export default OneLoginAuth;
