@@ -15,9 +15,19 @@
  */
 
 import { TokenManager } from './types';
+import { IdentityClient } from '../identity';
+import { PluginEndpointDiscovery } from '../discovery';
 
 export class AuthIdentityTokenManager implements TokenManager {
   private readonly SERVER_TOKEN = 'server-token';
+  private identityClient: IdentityClient;
+
+  constructor(discovery: PluginEndpointDiscovery) {
+    this.identityClient = new IdentityClient({
+      discovery,
+      issuer: 'auth-identity-token-manager',
+    });
+  }
 
   async getServerToken(): Promise<{ token: string }> {
     return { token: this.SERVER_TOKEN };
@@ -25,7 +35,12 @@ export class AuthIdentityTokenManager implements TokenManager {
 
   async validateToken(token: string): Promise<void> {
     if (token !== this.SERVER_TOKEN) {
-      throw new Error('Invalid server token');
+      try {
+        await this.identityClient.authenticate(token);
+        return;
+      } catch (e) {
+        throw new Error('Invalid token');
+      }
     }
   }
 }
