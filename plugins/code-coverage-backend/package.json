@@ -40,7 +40,7 @@
     "@backstage/cli": "^0.8.0",
     "@types/express-xml-bodyparser": "^0.3.2",
     "@types/supertest": "^2.0.8",
-    "msw": "^0.29.0",
+    "msw": "^0.35.0",
     "supertest": "^4.0.2",
     "xml2js": "^0.4.23"
   },

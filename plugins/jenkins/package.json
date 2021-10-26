@@ -59,7 +59,7 @@
     "@types/node": "^14.14.32",
     "@types/testing-library__jest-dom": "^5.9.1",
     "cross-fetch": "^3.0.6",
-    "msw": "^0.29.0"
+    "msw": "^0.35.0"
   },
   "files": [
     "dist"
