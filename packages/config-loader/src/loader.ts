@@ -32,7 +32,7 @@ import { isValidUrl } from '@backstage/integration';
 
 export type ConfigTarget = { path: string } | { url: string };
 
-export type Watch = {
+export type LoadConfigOptionsWatch = {
   /**
    * A listener that is called when a config file is changed.
    */
@@ -44,12 +44,7 @@ export type Watch = {
   stopSignal?: Promise<void>;
 };
 
-/**
- * Options that control the loading of configuration files in the backend.
- *
- * @public
- */
-export type Remote = {
+export type LoadConfigOptionsRemote = {
   /**
    * An optional remote config reloading period, in seconds
    */
@@ -104,12 +99,12 @@ export type LoadConfigOptions = {
   /**
    * An optional remote config
    */
-  remote?: Remote;
+  remote?: LoadConfigOptionsRemote;
 
   /**
    * An optional configuration that enables watching of config files.
    */
-  watch?: Watch;
+  watch?: LoadConfigOptionsWatch;
 };
 
 /**
@@ -222,13 +217,13 @@ export async function loadConfig(
     try {
       remoteConfigs = await loadRemoteConfigFiles();
     } catch (error) {
-      throw new Error(`Failed to read remote configuration file, ${error}`);
+      throw new ForwardedError(`Failed to read remote configuration file, ${error}`);
     }
   }
 
   const envConfigs = await readEnvConfig(process.env);
 
-  const watchConfigFile = (watchProp: Watch) => {
+  const watchConfigFile = (watchProp: LoadConfigOptionsWatch) => {
     const watcher = chokidar.watch(configPaths, {
       usePolling: process.env.NODE_ENV === 'test',
     });
@@ -257,7 +252,10 @@ export async function loadConfig(
     }
   };
 
-  const watchRemoteConfig = (watchProp: Watch, remoteProp: Remote) => {
+  const watchRemoteConfig = (
+    watchProp: LoadConfigOptionsWatch,
+    remoteProp: LoadConfigOptionsRemote,
+  ) => {
     const hasConfigChanged = async (
       oldRemoteConfigs: AppConfig[],
       newRemoteConfigs: AppConfig[],
