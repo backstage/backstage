@@ -129,7 +129,6 @@ describe('<EntityTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('component') },
             updateFilters,
             queryParameters,
           }}
