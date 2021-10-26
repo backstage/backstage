@@ -370,7 +370,7 @@ async function testAppServe(pluginName: string, appDir: string) {
         successful = true;
         break;
       } catch (error) {
-        if (attempts >= 5) {
+        if (attempts >= 20) {
           throw new Error(`App serve test failed, ${error}`);
         }
         console.log(`App serve failed, trying again, ${error}`);
