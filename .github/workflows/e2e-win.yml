@@ -47,4 +47,6 @@ jobs:
       - name: yarn build
         run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
-        run: DEBUG=zombie yarn e2e-test run
+        run: yarn e2e-test run
+        env:
+          DEBUG: zombie
