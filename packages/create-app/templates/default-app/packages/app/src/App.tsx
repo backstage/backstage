@@ -25,25 +25,30 @@ import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { Root } from './components/Root';
 
-import { AlertDisplay, defaultAppComponents, OAuthRequestDialog } from '@backstage/core-components';
+import {
+  AlertDisplay,
+  withDefaults,
+  OAuthRequestDialog,
+} from '@backstage/core-components';
 import { createApp, FlatRoutes } from '@backstage/core-app-api';
 
-const app = createApp({
-  apis,
-  components: defaultAppComponents(),
-  bindRoutes({ bind }) {
-    bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-      viewTechDoc: techdocsPlugin.routes.docRoot,
-    });
-    bind(apiDocsPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-    });
-    bind(scaffolderPlugin.externalRoutes, {
-      registerComponent: catalogImportPlugin.routes.importPage,
-    });
-  },
-});
+const app = createApp(
+  withDefaults({
+    apis,
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+        viewTechDoc: techdocsPlugin.routes.docRoot,
+      });
+      bind(apiDocsPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+      bind(scaffolderPlugin.externalRoutes, {
+        registerComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  }),
+);
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();

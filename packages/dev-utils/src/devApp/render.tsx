@@ -27,12 +27,12 @@ import { Route } from 'react-router';
 
 import {
   AlertDisplay,
-  defaultAppComponents,
   OAuthRequestDialog,
   Sidebar,
   SidebarItem,
   SidebarPage,
   SidebarSpacer,
+  withDefaults,
 } from '@backstage/core-components';
 
 import {
@@ -174,21 +174,22 @@ export class DevAppBuilder {
       );
     }
 
-    const app = createApp({
-      apis,
-      plugins: this.plugins,
-      themes: this.themes,
-      components: defaultAppComponents(),
-      bindRoutes: ({ bind }) => {
-        for (const plugin of this.plugins ?? []) {
-          const targets: Record<string, RouteRef<any>> = {};
-          for (const routeKey of Object.keys(plugin.externalRoutes)) {
-            targets[routeKey] = dummyRouteRef;
+    const app = createApp(
+      withDefaults({
+        apis,
+        plugins: this.plugins,
+        themes: this.themes,
+        bindRoutes: ({ bind }) => {
+          for (const plugin of this.plugins ?? []) {
+            const targets: Record<string, RouteRef<any>> = {};
+            for (const routeKey of Object.keys(plugin.externalRoutes)) {
+              targets[routeKey] = dummyRouteRef;
+            }
+            bind(plugin.externalRoutes, targets);
           }
-          bind(plugin.externalRoutes, targets);
-        }
-      },
-    });
+        },
+      }),
+    );
 
     const AppProvider = app.getProvider();
     const AppRouter = app.getRouter();

@@ -98,10 +98,9 @@ export function createApp(options?: AppOptions) {
   if (missingRequiredComponents.length > 0) {
     // eslint-disable-next-line no-console
     console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require a minimal set of ' +
-        'components to be provided in the components option. These components can be ' +
-        'created using defaultAppComponents from @backstage/core-components and ' +
-        'passed along like this: createApp({ components: defaultAppComponents() }). ' +
+      'DEPRECATION WARNING: The createApp options will soon require a minimal set of components to ' +
+        'be provided. You can use the default components by using withDefaults from @backstage/core-components ' +
+        'like this: createApp(withDefaults({ ... })), or you can provide the components yourself. ' +
         `The following components are missing: ${missingRequiredComponents.join(
           ', ',
         )}`,
@@ -115,9 +114,9 @@ export function createApp(options?: AppOptions) {
   if (missingIconKeys.length > 0) {
     // eslint-disable-next-line no-console
     console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require all app icons to be provided.' +
-        'These icons can be created using defaultAppIcons from @backstage/core-components ' +
-        'and then passed along like this: createApp({ icons: ...defaultAppIcons() })' +
+      'DEPRECATION WARNING: The createApp options will soon require a minimal set of icons to ' +
+        'be provided. You can use the default icons by using withDefaults from @backstage/core-components ' +
+        'like this: createApp(withDefaults({ ... })), or you can provide the icons yourself. ' +
         `The following icons are missing: ${missingIconKeys.join(', ')}`,
     );
   }
@@ -125,9 +124,9 @@ export function createApp(options?: AppOptions) {
   if (!options?.themes) {
     // eslint-disable-next-line no-console
     console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require themes to be provided. ' +
-        'Themes can be created using defaultAppThemes from @backstage/core-components ' +
-        'and then passed along like this: createApp({ theme: defaultAppThemes() })',
+      'DEPRECATION WARNING: The createApp options will soon require the themes to be provided. ' +
+        'You can use the default themes by using withDefaults from @backstage/core-components ' +
+        'like this: createApp(withDefaults({ ... })), or you can provide the themes yourself. ',
     );
   }
 
