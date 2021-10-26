@@ -6,15 +6,11 @@
 import { Config } from '@backstage/config';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
-// Warning: (ae-missing-release-tag) "AwsS3Integration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class AwsS3Integration implements ScmIntegration {
   constructor(integrationConfig: AwsS3IntegrationConfig);
   // (undocumented)
   get config(): AwsS3IntegrationConfig;
-  // Warning: (ae-forgotten-export) The symbol "ScmIntegrationsFactory" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static factory: ScmIntegrationsFactory<AwsS3Integration>;
   // (undocumented)
@@ -31,8 +27,6 @@ export class AwsS3Integration implements ScmIntegration {
   get type(): string;
 }
 
-// Warning: (ae-missing-release-tag) "AwsS3IntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type AwsS3IntegrationConfig = {
   host: string;
@@ -41,9 +35,7 @@ export type AwsS3IntegrationConfig = {
   roleArn?: string;
 };
 
-// Warning: (ae-missing-release-tag) "AzureIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class AzureIntegration implements ScmIntegration {
   constructor(integrationConfig: AzureIntegrationConfig);
   // (undocumented)
@@ -64,17 +56,13 @@ export class AzureIntegration implements ScmIntegration {
   get type(): string;
 }
 
-// Warning: (ae-missing-release-tag) "AzureIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type AzureIntegrationConfig = {
   host: string;
   token?: string;
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class BitbucketIntegration implements ScmIntegration {
   constructor(integrationConfig: BitbucketIntegrationConfig);
   // (undocumented)
@@ -95,8 +83,6 @@ export class BitbucketIntegration implements ScmIntegration {
   get type(): string;
 }
 
-// Warning: (ae-missing-release-tag) "BitbucketIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type BitbucketIntegrationConfig = {
   host: string;
@@ -106,8 +92,6 @@ export type BitbucketIntegrationConfig = {
   appPassword?: string;
 };
 
-// Warning: (ae-missing-release-tag) "defaultScmResolveUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function defaultScmResolveUrl(options: {
   url: string;
@@ -115,92 +99,44 @@ export function defaultScmResolveUrl(options: {
   lineNumber?: number;
 }): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getAzureCommitsUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getAzureCommitsUrl(url: string): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getAzureDownloadUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getAzureDownloadUrl(url: string): string;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getAzureFileFetchUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getAzureFileFetchUrl(url: string): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getAzureRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
 ): RequestInit;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getBitbucketDefaultBranch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getBitbucketDefaultBranch(
   url: string,
   config: BitbucketIntegrationConfig,
 ): Promise<string>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getBitbucketDownloadUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getBitbucketDownloadUrl(
   url: string,
   config: BitbucketIntegrationConfig,
 ): Promise<string>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getBitbucketFileFetchUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getBitbucketFileFetchUrl(
   url: string,
   config: BitbucketIntegrationConfig,
 ): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getBitbucketRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,
 ): RequestInit;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-forgotten-export) The symbol "GithubCredentials" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "getGitHubFileFetchUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getGitHubFileFetchUrl(
   url: string,
@@ -208,36 +144,34 @@ export function getGitHubFileFetchUrl(
   credentials: GithubCredentials,
 ): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getGitHubRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export function getGitHubRequestOptions(
   config: GitHubIntegrationConfig,
   credentials: GithubCredentials,
 ): RequestInit;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getGitLabFileFetchUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
 ): Promise<string>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getGitLabRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getGitLabRequestOptions(
   config: GitLabIntegrationConfig,
 ): RequestInit;
 
-// Warning: (ae-missing-release-tag) "GithubAppCredentialsMux" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type GithubAppConfig = {
+  appId: number;
+  privateKey: string;
+  webhookSecret: string;
+  clientId: string;
+  clientSecret: string;
+  allowedInstallationOwners?: string[];
+};
+
+// @public
 export class GithubAppCredentialsMux {
   constructor(config: GitHubIntegrationConfig);
   // (undocumented)
@@ -248,33 +182,26 @@ export class GithubAppCredentialsMux {
   getAppToken(owner: string, repo?: string): Promise<string | undefined>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubCredentialsProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type GithubCredentials = {
+  headers?: {
+    [name: string]: string;
+  };
+  token?: string;
+  type: GithubCredentialType;
+};
+
+// @public
 export class GithubCredentialsProvider {
   // (undocumented)
   static create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-undefined-tag) The TSDoc tag "@type" is not defined in this configuration
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubCredentialType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type GithubCredentialType = 'app' | 'token';
 
-// Warning: (ae-missing-release-tag) "GitHubIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GitHubIntegration implements ScmIntegration {
   constructor(integrationConfig: GitHubIntegrationConfig);
   // (undocumented)
@@ -295,8 +222,6 @@ export class GitHubIntegration implements ScmIntegration {
   get type(): string;
 }
 
-// Warning: (ae-missing-release-tag) "GitHubIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GitHubIntegrationConfig = {
   host: string;
@@ -306,9 +231,7 @@ export type GitHubIntegrationConfig = {
   apps?: GithubAppConfig[];
 };
 
-// Warning: (ae-missing-release-tag) "GitLabIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GitLabIntegration implements ScmIntegration {
   constructor(integrationConfig: GitLabIntegrationConfig);
   // (undocumented)
@@ -329,8 +252,6 @@ export class GitLabIntegration implements ScmIntegration {
   get type(): string;
 }
 
-// Warning: (ae-missing-release-tag) "GitLabIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GitLabIntegrationConfig = {
   host: string;
@@ -339,114 +260,89 @@ export type GitLabIntegrationConfig = {
   baseUrl: string;
 };
 
-// Warning: (ae-missing-release-tag) "GoogleGcsIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GoogleGcsIntegrationConfig = {
   clientEmail?: string;
   privateKey?: string;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readAwsS3IntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export interface IntegrationsByType {
+  // (undocumented)
+  awsS3: ScmIntegrationsGroup<AwsS3Integration>;
+  // (undocumented)
+  azure: ScmIntegrationsGroup<AzureIntegration>;
+  // (undocumented)
+  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  // (undocumented)
+  github: ScmIntegrationsGroup<GitHubIntegration>;
+  // (undocumented)
+  gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+}
+
 // @public
 export function readAwsS3IntegrationConfig(
   config: Config,
 ): AwsS3IntegrationConfig;
 
-// Warning: (ae-missing-release-tag) "readAwsS3IntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function readAwsS3IntegrationConfigs(
   configs: Config[],
 ): AwsS3IntegrationConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readAzureIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readAzureIntegrationConfig(
   config: Config,
 ): AzureIntegrationConfig;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readAzureIntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readAzureIntegrationConfigs(
   configs: Config[],
 ): AzureIntegrationConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readBitbucketIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readBitbucketIntegrationConfig(
   config: Config,
 ): BitbucketIntegrationConfig;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readBitbucketIntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readBitbucketIntegrationConfigs(
   configs: Config[],
 ): BitbucketIntegrationConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readGitHubIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readGitHubIntegrationConfig(
   config: Config,
 ): GitHubIntegrationConfig;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readGitHubIntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readGitHubIntegrationConfigs(
   configs: Config[],
 ): GitHubIntegrationConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readGitLabIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readGitLabIntegrationConfig(
   config: Config,
 ): GitLabIntegrationConfig;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readGitLabIntegrationConfigs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readGitLabIntegrationConfigs(
   configs: Config[],
 ): GitLabIntegrationConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readGoogleGcsIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readGoogleGcsIntegrationConfig(
   config: Config,
 ): GoogleGcsIntegrationConfig;
 
-// Warning: (ae-missing-release-tag) "replaceUrlType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function replaceGitHubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
 ): string;
 
-// Warning: (ae-missing-release-tag) "ScmIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface ScmIntegration {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   resolveEditUrl(url: string): string;
   // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
@@ -460,8 +356,6 @@ export interface ScmIntegration {
   type: string;
 }
 
-// Warning: (ae-missing-release-tag) "ScmIntegrationRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
@@ -475,7 +369,6 @@ export interface ScmIntegrationRegistry
   github: ScmIntegrationsGroup<GitHubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   resolveEditUrl(url: string): string;
   // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
@@ -487,11 +380,8 @@ export interface ScmIntegrationRegistry
   }): string;
 }
 
-// Warning: (ae-missing-release-tag) "ScmIntegrations" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ScmIntegrations implements ScmIntegrationRegistry {
-  // Warning: (ae-forgotten-export) The symbol "IntegrationsByType" needs to be exported by the entry point index.d.ts
   constructor(integrationsByType: IntegrationsByType);
   // (undocumented)
   get awsS3(): ScmIntegrationsGroup<AwsS3Integration>;
@@ -521,20 +411,20 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   }): string;
 }
 
-// Warning: (ae-missing-release-tag) "ScmIntegrationsGroup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {
+  config: Config;
+}) => ScmIntegrationsGroup<T>;
+
 // @public
 export interface ScmIntegrationsGroup<T extends ScmIntegration> {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   byHost(host: string): T | undefined;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   byUrl(url: string | URL): T | undefined;
   list(): T[];
 }
 
 // Warnings were encountered during analysis:
 //
-// src/github/config.d.ts:41:5 - (ae-forgotten-export) The symbol "GithubAppConfig" needs to be exported by the entry point index.d.ts
-// src/gitlab/config.d.ts:27:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/gitlab/config.d.ts:27:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/gitlab/config.d.ts:29:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/gitlab/config.d.ts:29:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 ```

@@ -23,6 +23,8 @@ import { GitLabIntegration } from './gitlab/GitLabIntegration';
 
 /**
  * Holds all registered SCM integrations, of all types.
+ *
+ * @public
  */
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
@@ -44,9 +46,9 @@ export interface ScmIntegrationRegistry
    * not resolve to `https://hostname/b.yaml` but rather to
    * `<repo root url>/b.yaml` inside the file tree of that same repo.
    *
-   * @param options.url The (absolute or relative) URL or path to resolve
-   * @param options.base The base URL onto which this resolution happens
-   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
+   * @param options.url - The (absolute or relative) URL or path to resolve
+   * @param options.base - The base URL onto which this resolution happens
+   * @param options.lineNumber - The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
   resolveUrl(options: {
     url: string;
@@ -63,7 +65,7 @@ export interface ScmIntegrationRegistry
    * If this is not possible, the integration can fall back to a URL to view
    * the file in the web interface.
    *
-   * @param url The absolute URL to the file that should be edited.
+   * @param url - The absolute URL to the file that should be edited.
    */
   resolveEditUrl(url: string): string;
 }

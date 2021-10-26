@@ -20,7 +20,12 @@ import {
   Palette,
 } from '@material-ui/core/styles/createPalette';
 
-type PaletteAdditions = {
+/**
+ * Backstage specific additions to the material-ui palette.
+ *
+ * @public
+ */
+export type BackstagePaletteAdditions = {
   status: {
     ok: string;
     warning: string;
@@ -74,8 +79,9 @@ type PaletteAdditions = {
   };
 };
 
-export type BackstagePalette = Palette & PaletteAdditions;
-export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
+export type BackstagePalette = Palette & BackstagePaletteAdditions;
+export type BackstagePaletteOptions = PaletteOptions &
+  BackstagePaletteAdditions;
 
 export type PageThemeSelector = {
   themeId: string;
