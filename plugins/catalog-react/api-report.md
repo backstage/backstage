@@ -15,6 +15,7 @@ import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
@@ -725,6 +726,21 @@ export function getEntitySourceLocation(
 //
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
+
+// Warning: (ae-missing-release-tag) "loadCatalogOwnerRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function loadCatalogOwnerRefs(
+  catalogApi: CatalogApi,
+  identityOwnerRefs: string[],
+): Promise<string[]>;
+
+// Warning: (ae-missing-release-tag) "loadIdentityOwnerRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function loadIdentityOwnerRefs(
+  identityApi: IdentityApi,
+): Promise<string[]>;
 
 // Warning: (ae-missing-release-tag) "MockEntityListContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
