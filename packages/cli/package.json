@@ -110,7 +110,7 @@
     "typescript": "^4.0.3",
     "util": "^0.12.3",
     "webpack": "^5.48.0",
-    "webpack-dev-server": "4.0.0-rc.0",
+    "webpack-dev-server": "4.3.1",
     "webpack-node-externals": "^3.0.0",
     "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
