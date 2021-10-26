@@ -18,7 +18,8 @@ import { Table, TableColumn, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
-import axios, { AxiosRequestConfig } from 'axios';
+import { flyteApiRef } from './../../api';
+import { useApi } from '@backstage/core-plugin-api';
 
 type DenseTableProps = {
   projects: flyteidl.admin.Projects | null;
@@ -58,19 +59,8 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
 };
 
 export const FlyteProjectFetchComponent = () => {
-  const { value, loading, error } =
-    useAsync(async (): Promise<flyteidl.admin.Projects> => {
-      const options: AxiosRequestConfig = {
-        method: 'get',
-        responseType: 'arraybuffer',
-        headers: { Accept: 'application/octet-stream' },
-        url: 'http://localhost:8088/api/v1/projects',
-      };
-
-      const response = await axios.request(options);
-      const uint8 = new Uint8Array(response.data);
-      return flyteidl.admin.Projects.decode(uint8);
-    }, []);
+  const api = useApi(flyteApiRef);
+  const { value, loading, error } = useAsync(async () => api.listProjects());
 
   if (loading) {
     return <Progress />;

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { flyteApiRef, FlyteClient } from './api';
 
 import { rootRouteRef, flyteDomainRouteRef } from './routes';
 
@@ -26,6 +28,15 @@ export const flytePlugin = createPlugin({
     root: rootRouteRef,
     flyteDomainPage: flyteDomainRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: flyteApiRef,
+      deps: {},
+      factory() {
+        return new FlyteClient();
+      },
+    }),
+  ],
 });
 
 export const FlytePage = flytePlugin.provide(
