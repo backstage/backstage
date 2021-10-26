@@ -139,7 +139,10 @@ export async function waitForPageWithText(
       const waitTimeMs = intervalMs * (Math.log10(findAttempts + 1) + 1);
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+
       await browser.visit(path);
+
+      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
 
       const escapedText = text.replace(/"|\\/g, '\\$&');
       browser.assert.evaluate(
