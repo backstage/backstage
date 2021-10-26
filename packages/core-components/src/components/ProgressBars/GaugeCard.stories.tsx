@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { MemoryRouter } from 'react-router';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };

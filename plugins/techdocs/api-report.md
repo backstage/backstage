@@ -145,6 +145,11 @@ export type DocsTableRow = {
 // @public (undocumented)
 export const EmbeddedDocsRouter: (_props: Props_2) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityListDocsGrid" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityListDocsGrid: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntityListDocsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

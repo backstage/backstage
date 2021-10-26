@@ -37,13 +37,8 @@ AWSMock.mock(
   Buffer.from(
     require('fs').readFileSync(
       path.resolve(
-        'src',
-        'ingestion',
-        'processors',
-        '__fixtures__',
-        'fileReaderProcessor',
-        'awsS3',
-        'awsS3-mock-object.txt',
+        __dirname,
+        '__fixtures__/fileReaderProcessor/awsS3/awsS3-mock-object.txt',
       ),
     ),
   ),

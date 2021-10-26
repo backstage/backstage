@@ -23,7 +23,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { RoutedTabs } from './RoutedTabs';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 
 type SubRoute = {
   path: string;

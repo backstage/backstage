@@ -16,14 +16,12 @@
 
 import React from 'react';
 import { useForm, UseFormRegisterReturn } from 'react-hook-form';
-import {
-  Typography,
-  Button,
-  FormControl,
-  TextField,
-  FormHelperText,
-  makeStyles,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
@@ -32,6 +30,7 @@ import { GridItem } from './styles';
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 
+/** @public */
 export type CustomProviderClassKey = 'form' | 'button';
 
 const useFormStyles = makeStyles(
@@ -60,6 +59,7 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
     ...rest,
   };
 };
+
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({

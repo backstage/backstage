@@ -15,14 +15,17 @@
  */
 
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
+import { LightAsync } from 'react-syntax-highlighter';
+import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
+import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
 /**
  * Properties for {@link CodeSnippet}
+ *
+ * @public
  */
 export interface CodeSnippetProps {
   /**
@@ -66,22 +69,25 @@ export interface CodeSnippetProps {
 /**
  * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
  * providing consistent theming and copy code button
+ *
+ * @public
  */
 export function CodeSnippet(props: CodeSnippetProps) {
   const {
     text,
     language,
     showLineNumbers = false,
-    showCopyCodeButton = false,
     highlightedNumbers,
     customStyle,
+    showCopyCodeButton = false,
   } = props;
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
+
   return (
     <div style={{ position: 'relative' }}>
-      <SyntaxHighlighter
+      <LightAsync
         customStyle={customStyle}
         language={language}
         style={mode}
@@ -99,7 +105,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
         }
       >
         {text}
-      </SyntaxHighlighter>
+      </LightAsync>
       {showCopyCodeButton && (
         <div style={{ position: 'absolute', top: 0, right: 0 }}>
           <CopyTextButton text={text} />

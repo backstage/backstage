@@ -58,6 +58,7 @@ const expectedEntities: Entity[] = [
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: {
+      title: 'Test Entity with Docs!',
       name: 'test-entity-with-docs',
       description: 'Documented description',
       annotations: {
@@ -133,6 +134,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
         location: `/docs/default/Component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
         text: mockSearchDocIndex.docs[idx].text,
         namespace: 'default',
+        entityTitle: entity!.metadata.title,
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
@@ -177,6 +179,7 @@ describe('DefaultTechDocsCollator', () => {
         location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
         text: mockSearchDocIndex.docs[idx].text,
         namespace: 'default',
+        entityTitle: entity!.metadata.title,
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',

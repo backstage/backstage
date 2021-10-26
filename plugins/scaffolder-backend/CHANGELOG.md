@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.10
+
+### Patch Changes
+
+- b149e94290: Allow `catalog:register` action to register optional locations
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.15.9
+
+### Patch Changes
+
+- 0f99f1170e: Make sure `sourcePath` of `publish:github:pull-request` can only be used to
+  retrieve files from the workspace.
+
+## 0.15.8
+
+### Patch Changes
+
+- 42c618abf6: Use `resolveSafeChildPath` in the `fetchContents` function to forbid reading files outside the base directory when a template is registered from a `file:` location.
+- 18083d1821: Introduce the new `scaffolder.backstage.io/v1beta3` template kind with nunjucks support 🥋
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-catalog-backend@0.17.0
+
 ## 0.15.7
 
 ### Patch Changes

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { PullRequestOptions, PullRequestStatus } from '../api/types';
+import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
+
+import { AzureDevOpsApi } from '../api';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import Router from 'express-promise-router';
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
-import { AzureDevOpsApi } from '../api';
 
 const DEFAULT_TOP: number = 10;
 
@@ -82,6 +84,24 @@ export async function createRouter(
       top,
     );
     res.status(200).json(gitRepository);
+  });
+
+  router.get('/pull-requests/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const status = req.query.status
+      ? Number(req.query.status)
+      : PullRequestStatus.Active;
+    const pullRequestOptions: PullRequestOptions = {
+      top: top,
+      status: status,
+    };
+    const gitPullRequest = await azureDevOpsApi.getPullRequests(
+      projectName,
+      repoName,
+      pullRequestOptions,
+    );
+    res.status(200).json(gitPullRequest);
   });
 
   router.use(errorHandler());

@@ -1,5 +1,44 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.18
+
+### Patch Changes
+
+- b61c50a12f: Fix Kubernetes plugin custom objects lookup regression
+- c57b075d18: add caData support for kubernetes client config
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.3.17
+
+### Patch Changes
+
+- 89bcf90b66: Refactor kubernetes fetcher to reduce boilerplate code
+- a982e166c5: Enable customization of services used by the kubernetes backend plugin
+
+  The createRouter function has been deprecated in favor of a KubernetesBuilder object.
+  Here's how you should upgrade your projects when configuring the Kubernetes backend plugin.
+  in your `packages/backend/src/plugins/kubernetes.ts` file for instance:
+
+  ```typescript
+  import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    config,
+  }: PluginEnvironment) {
+    const { router } = await KubernetesBuilder.createBuilder({
+      logger,
+      config,
+    }).build();
+    return router;
+  }
+  ```
+
 ## 0.3.16
 
 ### Patch Changes

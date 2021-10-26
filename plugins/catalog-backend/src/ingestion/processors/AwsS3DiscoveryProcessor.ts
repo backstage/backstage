@@ -16,6 +16,7 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
+import { isError } from '@backstage/errors';
 import limiterFactory from 'p-limit';
 import * as result from './results';
 import {
@@ -50,7 +51,7 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
 
-      if (error.name === 'NotFoundError') {
+      if (isError(error) && error.name === 'NotFoundError') {
         if (!optional) {
           emit(result.notFoundError(location, message));
         }

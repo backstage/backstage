@@ -22,7 +22,7 @@ import {
   DependencyGraphDefaultNodeClassKey,
   DependencyGraphEdgeClassKey,
   DependencyGraphNodeClassKey,
-  DismissbleBannerClassKey,
+  DismissableBannerClassKey,
   EmptyStateClassKey,
   EmptyStateImageClassKey,
   MissingAnnotationEmptyStateClassKey,
@@ -98,7 +98,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageDependencyGraphDefaultNode: DependencyGraphDefaultNodeClassKey;
   BackstageDependencyGraphEdge: DependencyGraphEdgeClassKey;
   BackstageDependencyGraphNode: DependencyGraphNodeClassKey;
-  BackstageDismissableBanner: DismissbleBannerClassKey;
+  BackstageDismissableBanner: DismissableBannerClassKey;
   BackstageEmptyState: EmptyStateClassKey;
   BackstageEmptyStateImage: EmptyStateImageClassKey;
   BackstageMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
@@ -165,6 +165,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageCardTab: CardTabClassKey;
 };
 
+/** @public */
 export type BackstageOverrides = Overrides & {
   [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
     StyleRules<BackstageComponentsNameToClassKey[Name]>

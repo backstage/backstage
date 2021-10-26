@@ -16,14 +16,10 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import {
-  Badge,
-  makeStyles,
-  styled,
-  TextField,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { makeStyles, styled, Theme } from '@material-ui/core/styles';
+import Badge from '@material-ui/core/Badge';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
@@ -464,6 +460,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
 
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
+      ev.preventDefault();
       search();
     }
   };

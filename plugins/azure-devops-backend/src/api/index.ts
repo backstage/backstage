@@ -15,4 +15,5 @@
  */
 
 export { AzureDevOpsApi } from './AzureDevOpsApi';
-export type { RepoBuild } from './types';
+export { BuildResult, BuildStatus } from './types';
+export type { RepoBuild, PullRequest } from './types';

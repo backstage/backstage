@@ -391,6 +391,6 @@ export function usePatchDryRun({
     asyncCatcher,
     abortIfError,
     selectedPatchCommit: latestCommitOnReleaseBranchRes.value
-      ?.selectedPatchCommit as any,
+      ?.selectedPatchCommit as GetRecentCommitsResultSingle,
   };
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { ConfigVisibility } from './types';
-import { filterByVisibility } from './filtering';
+import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 
 const data = {
   arr: ['f', 'b', 's'],
@@ -173,5 +173,197 @@ describe('filterByVisibility', () => {
     expect(
       filterByVisibility(data, filter, visibility, undefined, true),
     ).toEqual(expected);
+  });
+});
+
+describe('filterErrorsByVisibility', () => {
+  it('should allow empty input', () => {
+    expect(
+      filterErrorsByVisibility(undefined, ['frontend'], new Map(), new Map()),
+    ).toEqual([]);
+    expect(
+      filterErrorsByVisibility(
+        ['my-error' as any],
+        undefined,
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual(['my-error']);
+    expect(
+      filterErrorsByVisibility([], ['frontend'], new Map(), new Map()),
+    ).toEqual([]);
+  });
+
+  it('should filter generic errors', () => {
+    const errors = [
+      {
+        keyword: 'something',
+        dataPath: '/a',
+        schemaPath: '#/properties/a/something',
+        params: {},
+        message: 'a',
+      },
+      {
+        keyword: 'something',
+        dataPath: '/b',
+        schemaPath: '#/properties/b/something',
+        params: {},
+        message: 'b',
+      },
+      {
+        keyword: 'something',
+        dataPath: '/c',
+        schemaPath: '#/properties/c/something',
+        params: {},
+        message: 'c',
+      },
+    ];
+    const visibilityByDataPath = new Map<string, ConfigVisibility>([
+      ['/a', 'frontend'],
+      ['/c', 'secret'],
+    ]);
+
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        undefined,
+        visibilityByDataPath,
+        new Map(),
+      ),
+    ).toEqual([
+      expect.objectContaining({ message: 'a' }),
+      expect.objectContaining({ message: 'b' }),
+      expect.objectContaining({ message: 'c' }),
+    ]);
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        ['frontend'],
+        visibilityByDataPath,
+        new Map(),
+      ),
+    ).toEqual([expect.objectContaining({ message: 'a' })]);
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        ['backend'],
+        visibilityByDataPath,
+        new Map(),
+      ),
+    ).toEqual([expect.objectContaining({ message: 'b' })]);
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        ['secret'],
+        visibilityByDataPath,
+        new Map(),
+      ),
+    ).toEqual([expect.objectContaining({ message: 'c' })]);
+    expect(
+      filterErrorsByVisibility(errors, [], visibilityByDataPath, new Map()),
+    ).toEqual([]);
+  });
+
+  it('should always forward structural type errors', () => {
+    const errors = [
+      {
+        keyword: 'type',
+        dataPath: '/a',
+        schemaPath: '#/properties/a/type',
+        params: { type: 'number' },
+        message: 'a',
+      },
+      {
+        keyword: 'type',
+        dataPath: '/b',
+        schemaPath: '#/properties/b/type',
+        params: { type: 'string' },
+        message: 'b',
+      },
+      {
+        keyword: 'type',
+        dataPath: '/c',
+        schemaPath: '#/properties/c/type',
+        params: { type: 'array' },
+        message: 'c',
+      },
+      {
+        keyword: 'type',
+        dataPath: '/c',
+        schemaPath: '#/properties/c/type',
+        params: { type: 'object' },
+        message: 'd',
+      },
+      {
+        keyword: 'type',
+        dataPath: '/c',
+        schemaPath: '#/properties/c/type',
+        params: { type: 'null' },
+        message: 'e',
+      },
+    ];
+    const visibilityByDataPath = new Map<string, ConfigVisibility>([
+      ['/a', 'secret'],
+      ['/b', 'secret'],
+      ['/c', 'secret'],
+      ['/d', 'secret'],
+      ['/e', 'secret'],
+    ]);
+
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        ['frontend'],
+        visibilityByDataPath,
+        new Map(),
+      ),
+    ).toEqual([
+      expect.objectContaining({ message: 'c' }),
+      expect.objectContaining({ message: 'd' }),
+    ]);
+  });
+
+  it('should filter requirement errors based on schema path', () => {
+    const errors = [
+      {
+        keyword: 'required',
+        dataPath: '/a',
+        schemaPath: '#/properties/o/required',
+        params: { missingProperty: 'a' },
+        message: 'a',
+      },
+      {
+        keyword: 'required',
+        dataPath: '/b',
+        schemaPath: '#/properties/o/required',
+        params: { missingProperty: 'b' },
+        message: 'b',
+      },
+      {
+        keyword: 'required',
+        dataPath: '/c',
+        schemaPath: '#/properties/o/required',
+        params: { missingProperty: 'c' },
+        message: 'c',
+      },
+    ];
+    const visibilityBySchemaPath = new Map<string, ConfigVisibility>([
+      ['/properties/o', 'secret'],
+      ['/properties/o/properties/a', 'frontend'],
+      ['/properties/o/properties/b', 'secret'],
+      ['/properties/o/properties/c/properties/x', 'frontend'],
+    ]);
+
+    expect(
+      filterErrorsByVisibility(
+        errors,
+        ['frontend'],
+        new Map(),
+        visibilityBySchemaPath,
+      ),
+    ).toEqual([
+      expect.objectContaining({ message: 'a' }),
+      expect.objectContaining({ message: 'c' }),
+    ]);
   });
 });

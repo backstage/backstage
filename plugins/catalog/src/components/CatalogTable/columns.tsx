@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
+import {
+  formatEntityRefTitle,
+  EntityRefLink,
+  EntityRefLinks,
+} from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import { EntityRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import { Entity } from '@backstage/catalog-model';
 
 type NameColumnProps = {
   defaultKind?: string;
@@ -26,10 +31,24 @@ type NameColumnProps = {
 export function createNameColumn(
   props?: NameColumnProps,
 ): TableColumn<EntityRow> {
+  function formatContent(entity: Entity): string {
+    return (
+      entity.metadata?.title ||
+      formatEntityRefTitle(entity, {
+        defaultKind: props?.defaultKind,
+      })
+    );
+  }
+
   return {
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
+    customSort({ entity: entity1 }, { entity: entity2 }) {
+      // TODO: We could implement this more efficiently by comparing field by field.
+      // This has similar issues as above.
+      return formatContent(entity1).localeCompare(formatContent(entity2));
+    },
     render: ({ entity }) => (
       <EntityRefLink
         entityRef={entity}

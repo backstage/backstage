@@ -19,9 +19,11 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { Helmet } from 'react-helmet';
 
+/** @public */
 export type ContentHeaderClassKey =
   | 'container'
   | 'leftItemsBox'
@@ -92,6 +94,7 @@ type ContentHeaderProps = {
   textAlign?: 'left' | 'right' | 'center';
 };
 
+/** @public */
 export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   const {
     description,
@@ -107,6 +110,7 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   ) : (
     <ContentHeaderTitle title={title} className={classes.title} />
   );
+
   return (
     <>
       <Helmet title={title} />

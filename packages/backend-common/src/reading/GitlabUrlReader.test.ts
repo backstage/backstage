@@ -223,7 +223,7 @@ describe('GitlabUrlReader', () => {
 
   describe('readTree', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {
@@ -495,7 +495,7 @@ describe('GitlabUrlReader', () => {
 
   describe('search', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {

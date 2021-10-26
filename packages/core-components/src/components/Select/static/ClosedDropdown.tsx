@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { SvgIcon, makeStyles, createStyles } from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
+/** @public */
 export type ClosedDropdownClassKey = 'icon';
 
 const useStyles = makeStyles(

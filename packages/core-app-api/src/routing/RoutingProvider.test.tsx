@@ -83,7 +83,7 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
   } catch (ex) {
     return (
       <div>
-        Error at {props.name}: {ex.message}
+        Error at {props.name}, {String(ex)}
       </div>
     );
   }
@@ -293,12 +293,12 @@ describe('discovery', () => {
 
     expect(
       rendered.getByText(
-        `Error at outsideWithParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideWithParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
     expect(
       rendered.getByText(
-        `Error at outsideNoParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideNoParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
   });

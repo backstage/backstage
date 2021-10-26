@@ -15,13 +15,17 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import { Button, IconButton, useMediaQuery } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
 /**
  * Properties for {@link CreateButton}
+ *
+ * @public
  */
 export type CreateButtonProps = {
   title: string;
@@ -29,6 +33,8 @@ export type CreateButtonProps = {
 
 /**
  * Responsive Button giving consistent UX for creation of different things
+ *
+ * @public
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;

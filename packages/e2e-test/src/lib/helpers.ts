@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import {
   spawn,
   execFile as execFileCb,
@@ -66,11 +67,12 @@ export async function runPlain(cmd: string[], options?: SpawnOptions) {
     });
     return stdout.trim();
   } catch (error) {
+    assertError(error);
     if (error.stdout) {
-      process.stdout.write(error.stdout);
+      process.stdout.write(error.stdout as Buffer);
     }
     if (error.stderr) {
-      process.stderr.write(error.stderr);
+      process.stderr.write(error.stderr as Buffer);
     }
     throw error;
   }
@@ -129,33 +131,17 @@ export async function waitForPageWithText(
   browser: any,
   path: string,
   text: string,
-  { intervalMs = 1000, maxLoadAttempts = 240, maxFindTextAttempts = 3 } = {},
+  { intervalMs = 1000, maxLoadAttempts = 50 } = {},
 ) {
   let loadAttempts = 0;
   for (;;) {
     try {
-      await new Promise(resolve => setTimeout(resolve, intervalMs));
+      const waitTimeMs = intervalMs * (Math.log10(loadAttempts + 1) + 1);
+      console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
+      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
       await browser.visit(path);
-      break;
-    } catch (error) {
-      if (error.message.match(EXPECTED_LOAD_ERRORS)) {
-        loadAttempts++;
-        if (loadAttempts >= maxLoadAttempts) {
-          throw new Error(
-            `Failed to load page '${path}', max number of attempts reached`,
-          );
-        }
-      } else {
-        throw error;
-      }
-    }
-  }
 
-  // The page may not be fully loaded and hence we need to retry.
-  let findTextAttempts = 0;
-  const escapedText = text.replace(/"|\\/g, '\\$&');
-  for (;;) {
-    try {
+      const escapedText = text.replace(/"|\\/g, '\\$&');
       browser.assert.evaluate(
         `Array.from(document.querySelectorAll("*")).some(el => el.textContent === "${escapedText}")`,
         true,
@@ -163,10 +149,14 @@ export async function waitForPageWithText(
       );
       break;
     } catch (error) {
-      findTextAttempts++;
-      if (findTextAttempts <= maxFindTextAttempts) {
-        await new Promise(resolve => setTimeout(resolve, intervalMs));
-        continue;
+      assertError(error);
+      if (error.message.match(EXPECTED_LOAD_ERRORS)) {
+        loadAttempts++;
+        if (loadAttempts >= maxLoadAttempts) {
+          throw new Error(
+            `Failed to load page '${path}', max number of attempts reached`,
+          );
+        }
       } else {
         throw error;
       }

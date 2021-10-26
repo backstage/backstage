@@ -16,7 +16,10 @@
 
 import React, { useContext, useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import { Link, Typography, makeStyles, Collapse } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -26,6 +29,7 @@ import {
 } from './config';
 import { SidebarDivider } from './Items';
 
+/** @public */
 export type SidebarIntroClassKey =
   | 'introCard'
   | 'introDismiss'
@@ -84,6 +88,7 @@ type IntroCardProps = {
   onClose: () => void;
 };
 
+/** @public */
 export function IntroCard(props: IntroCardProps) {
   const classes = useStyles();
   const { text, onClose } = props;

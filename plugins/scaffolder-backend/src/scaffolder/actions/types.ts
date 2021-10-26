@@ -16,7 +16,7 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue, JsonObject } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
 
 type PartialJsonObject = Partial<JsonObject>;

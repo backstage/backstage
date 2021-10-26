@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import type {
   FetchResponse,
   KubernetesFetchError,
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
-
-export interface CustomResource {
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
 
 export interface ObjectFetchParams {
   serviceId: string;
@@ -32,7 +29,7 @@ export interface ObjectFetchParams {
     | GKEClusterDetails
     | ServiceAccountClusterDetails
     | ClusterDetails;
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
 }
@@ -51,6 +48,17 @@ export interface FetchResponseWrapper {
 }
 
 // TODO fairly sure there's a easier way to do this
+
+export interface ObjectToFetch {
+  objectType: KubernetesObjectTypes;
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+export interface CustomResource extends ObjectToFetch {
+  objectType: 'customresources';
+}
 
 export type KubernetesObjectTypes =
   | 'pods'
@@ -83,6 +91,7 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  caData?: string | undefined;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks
@@ -115,4 +124,20 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
   externalId?: string;
+}
+
+export interface KubernetesObjectsProviderOptions {
+  logger: Logger;
+  fetcher: KubernetesFetcher;
+  serviceLocator: KubernetesServiceLocator;
+  customResources: CustomResource[];
+  objectTypesToFetch?: ObjectToFetch[];
+}
+
+export type ObjectsByEntityRequest = KubernetesRequestBody;
+
+export interface KubernetesObjectsProvider {
+  getKubernetesObjectsByEntity(
+    request: ObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
 }

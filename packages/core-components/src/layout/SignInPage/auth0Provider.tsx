@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import {
@@ -23,6 +25,7 @@ import {
   auth0AuthApiRef,
   errorApiRef,
 } from '@backstage/core-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 
 const Component: ProviderComponent = ({ onResult }) => {
   const auth0AuthApi = useApi(auth0AuthApiRef);
@@ -51,7 +54,7 @@ const Component: ProviderComponent = ({ onResult }) => {
         },
       });
     } catch (error) {
-      errorApi.post(error);
+      errorApi.post(new ForwardedError('Auth0 login failed', error));
     }
   };
 

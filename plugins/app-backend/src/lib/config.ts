@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
-import { AppConfig, Config, JsonObject } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { loadConfigSchema, readEnvConfig } from '@backstage/config-loader';
 
 type InjectOptions = {

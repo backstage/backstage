@@ -21,7 +21,7 @@ import {
   SparklinesLineProps,
   SparklinesProps,
 } from 'react-sparklines';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 
 function color(data: number[], theme: BackstageTheme): string | undefined {

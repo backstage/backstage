@@ -15,8 +15,9 @@
  */
 import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
+/** @public */
 export type HeaderIconLinkRowClassKey = 'links';
 
 const useStyles = makeStyles(
@@ -36,6 +37,7 @@ type Props = {
   links: IconLinkVerticalProps[];
 };
 
+/** @public */
 export function HeaderIconLinkRow(props: Props) {
   const { links } = props;
   const classes = useStyles();

@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { AzureDevOpsApi } from './api';
-export type { RepoBuild } from './api';
+export { AzureDevOpsApi, BuildResult, BuildStatus } from './api';
+export type { RepoBuild, PullRequest } from './api';
 export * from './service/router';

@@ -15,16 +15,53 @@
  */
 
 import {
+  Build,
   BuildResult,
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+  PullRequestStatus,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
+
+export { BuildResult, BuildStatus, PullRequestStatus };
+export type {
+  Build,
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+};
 
 export type RepoBuild = {
   id?: number;
   title: string;
-  link: string;
+  link?: string;
   status?: BuildStatus;
   result?: BuildResult;
   queueTime?: Date;
+  startTime?: Date;
+  finishTime?: Date;
   source: string;
+  uniqueName?: string;
+};
+
+export type PullRequest = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  uniqueName?: string;
+  createdBy?: string;
+  creationDate?: Date;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
+};
+
+export type PullRequestOptions = {
+  top: number;
+  status: PullRequestStatus;
 };

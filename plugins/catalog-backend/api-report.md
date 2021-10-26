@@ -16,9 +16,10 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
-import { JsonObject } from '@backstage/config';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
@@ -966,6 +967,7 @@ export class FileReaderProcessor implements CatalogProcessor {
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean>;
 }
 
@@ -1017,6 +1019,33 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
+}
+
+// Warning: (ae-missing-release-tag) "GitHubOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GitHubOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    orgUrl: string;
+    gitHubConfig: GitHubIntegrationConfig;
+    logger: Logger_2;
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      id: string;
+      orgUrl: string;
+      logger: Logger_2;
+    },
+  ): GitHubOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  read(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "GithubOrgReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

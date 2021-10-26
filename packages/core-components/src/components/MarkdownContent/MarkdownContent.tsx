@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
-import ReactMarkdown from 'react-markdown';
+import { makeStyles } from '@material-ui/core/styles';
+import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
@@ -69,9 +69,17 @@ type Props = {
   dialect?: 'gfm' | 'common-mark';
 };
 
-const renderers = {
-  code: ({ language, value }: { language: string; value?: string }) => {
-    return <CodeSnippet language={language} text={value ?? ''} />;
+const components: Options['components'] = {
+  code: ({ inline, className, children, ...props }) => {
+    const text = String(children).replace(/\n+$/, '');
+    const match = /language-(\w+)/.exec(className || '');
+    return !inline && match ? (
+      <CodeSnippet language={match[1]} text={text} />
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
   },
 };
 
@@ -86,10 +94,10 @@ export function MarkdownContent(props: Props) {
   const classes = useStyles();
   return (
     <ReactMarkdown
-      plugins={dialect === 'gfm' ? [gfm] : []}
+      remarkPlugins={dialect === 'gfm' ? [gfm] : []}
       className={classes.markdown}
       children={content}
-      renderers={renderers}
+      components={components}
     />
   );
 }

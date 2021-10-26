@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
@@ -185,6 +186,7 @@ export class StorageTaskBroker implements TaskBroker {
           try {
             callback(undefined, result);
           } catch (error) {
+            assertError(error);
             callback(error, { events: [] });
           }
         }

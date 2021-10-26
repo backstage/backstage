@@ -16,12 +16,17 @@
 
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { Box, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
+/** @public */
 export type HeaderClassKey =
   | 'header'
   | 'leftItemsBox'
@@ -186,6 +191,7 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   );
 };
 
+/** @public */
 export function Header(props: PropsWithChildren<Props>) {
   const {
     children,

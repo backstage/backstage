@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.1.3
+
+### Patch Changes
+
+- f67dff0d20: Re-exported types from azure-devops-node-api in @backstage/plugin-azure-devops-backend.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+
+## 0.1.2
+
+### Patch Changes
+
+- a23206049f: Updates function for mapping RepoBuilds to handle undefined properties
+- b7c0585471: Expands the Azure DevOps backend plugin to provide pull request data to be used by the front end plugin
+
 ## 0.1.1
 
 ### Patch Changes

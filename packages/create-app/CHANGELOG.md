@@ -1,5 +1,56 @@
 # @backstage/create-app
 
+## 0.4.0
+
+### Minor Changes
+
+- 5914668655: Removed `@backstage/plugin-welcome`, no new updates to the packages will be
+  published in the future.
+
+  The welcome plugin was used by early alpha versions of Backstage, but today only
+  contained a simple page with welcome instructions. It was superseded by
+  `@backstage/plugin-home` which can be used to build a homepage customized to the
+  needs of your organization.
+
+  If it's still used in your app, remove the dependency from your `package.json`
+  as well as left over code.
+
+### Patch Changes
+
+- b486adb8c6: Removed the included `jest` configuration from the root `package.json` as the `transformModules` option no longer exists.
+
+  To apply this change to an existing app, make the follow change to the root `package.json`:
+
+  ```diff
+  -  "jest": {
+  -    "transformModules": [
+  -      "@asyncapi/react-component"
+  -    ]
+  -  }
+  ```
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
+## 0.3.45
+
+### Patch Changes
+
+- eaca0f53fb: The scaffolder plugin has just released the beta 3 version of software templates, which replaces the handlebars templating syntax. As part of this change, the template entity schema is no longer included in the core catalog-model as with previous versions. The decoupling of the template entities version will allow us to more easily make updates in the future.
+
+  In order to use the new beta 3 templates, the following changes are **required** for any existing installation, inside `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+  ...
+
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(new ScaffolderEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+  ```
+
+  If you're interested in learning more about creating custom kinds, please check out the [extending the model](https://backstage.io/docs/features/software-catalog/extending-the-model) documentation.
+
 ## 0.3.44
 
 ### Patch Changes

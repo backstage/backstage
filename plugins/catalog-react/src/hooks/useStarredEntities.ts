@@ -14,57 +14,44 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { storageApiRef, useApi } from '@backstage/core-plugin-api';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  Entity,
+  EntityName,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import { useCallback } from 'react';
 import { useObservable } from 'react-use';
+import { starredEntitiesApiRef } from '../apis';
 
-const buildEntityKey = (component: Entity) =>
-  `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
-    component.metadata.name
-  }`;
+function getEntityRef(entityOrRef: Entity | EntityName | string): string {
+  return typeof entityOrRef === 'string'
+    ? entityOrRef
+    : stringifyEntityRef(entityOrRef);
+}
 
-export const useStarredEntities = () => {
-  const storageApi = useApi(storageApiRef);
-  const settingsStore = storageApi.forBucket('settings');
-  const rawStarredEntityKeys =
-    settingsStore.get<string[]>('starredEntities') ?? [];
+export function useStarredEntities(): {
+  starredEntities: Set<string>;
+  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
+  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+} {
+  const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
-  const [starredEntities, setStarredEntities] = useState(
-    new Set(rawStarredEntityKeys),
-  );
-
-  const observedItems = useObservable(
-    settingsStore.observe$<string[]>('starredEntities'),
-  );
-
-  useEffect(() => {
-    if (observedItems?.newValue) {
-      const currentValue = observedItems?.newValue ?? [];
-      setStarredEntities(new Set(currentValue));
-    }
-  }, [observedItems?.newValue]);
-
-  const toggleStarredEntity = useCallback(
-    (entity: Entity) => {
-      const entityKey = buildEntityKey(entity);
-      if (starredEntities.has(entityKey)) {
-        starredEntities.delete(entityKey);
-      } else {
-        starredEntities.add(entityKey);
-      }
-
-      settingsStore.set('starredEntities', Array.from(starredEntities));
-    },
-    [starredEntities, settingsStore],
+  const starredEntities = useObservable(
+    starredEntitiesApi.starredEntitie$(),
+    new Set<string>(),
   );
 
   const isStarredEntity = useCallback(
-    (entity: Entity) => {
-      const entityKey = buildEntityKey(entity);
-      return starredEntities.has(entityKey);
-    },
+    (entityOrRef: Entity | EntityName | string) =>
+      starredEntities.has(getEntityRef(entityOrRef)),
     [starredEntities],
+  );
+
+  const toggleStarredEntity = useCallback(
+    (entityOrRef: Entity | EntityName | string) =>
+      starredEntitiesApi.toggleStarred(getEntityRef(entityOrRef)).then(),
+    [starredEntitiesApi],
   );
 
   return {
@@ -72,4 +59,4 @@ export const useStarredEntities = () => {
     toggleStarredEntity,
     isStarredEntity,
   };
-};
+}

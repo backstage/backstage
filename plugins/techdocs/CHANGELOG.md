@@ -1,5 +1,39 @@
 # @backstage/plugin-techdocs
 
+## 0.12.3
+
+### Patch Changes
+
+- ba5b75ed2f: Add `<EntityListDocsGrid>` as an alternative to `<EntityListDocsTable>` that
+  shows a grid of card instead of table.
+
+  Extend `<DocsCardGrid>` to display the entity title of the entity instead of the
+  name if available.
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- cdf8ca6111: Only replace the shadow dom if the content is changed to avoid a flickering UI.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog@0.7.2
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.12.2
+
+### Patch Changes
+
+- 76fef740fe: Refactored `<Reader />` component internals to support future extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/plugin-search@0.4.15
+  - @backstage/integration-react@0.1.12
+
 ## 0.12.1
 
 ### Patch Changes

@@ -14,38 +14,51 @@
  * limitations under the License.
  */
 
-import {
-  Observable,
-  StorageApi,
-  StorageValueChange,
-} from '@backstage/core-plugin-api';
+import { StorageApi, StorageValueChange } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
+/**
+ * Type for map holding data in {@link MockStorageApi}
+ * @public
+ */
 export type MockStorageBucket = { [key: string]: any };
 
-const bucketStorageApis = new Map<string, MockStorageApi>();
-
+/**
+ * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests
+ * @public
+ */
 export class MockStorageApi implements StorageApi {
   private readonly namespace: string;
   private readonly data: MockStorageBucket;
+  private readonly bucketStorageApis: Map<string, MockStorageApi>;
 
-  private constructor(namespace: string, data?: MockStorageBucket) {
+  private constructor(
+    namespace: string,
+    bucketStorageApis: Map<string, MockStorageApi>,
+    data?: MockStorageBucket,
+  ) {
     this.namespace = namespace;
+    this.bucketStorageApis = bucketStorageApis;
     this.data = { ...data };
   }
 
   static create(data?: MockStorageBucket) {
-    return new MockStorageApi('', data);
+    return new MockStorageApi('', new Map(), data);
   }
 
   forBucket(name: string): StorageApi {
-    if (!bucketStorageApis.has(name)) {
-      bucketStorageApis.set(
+    if (!this.bucketStorageApis.has(name)) {
+      this.bucketStorageApis.set(
         name,
-        new MockStorageApi(`${this.namespace}/${name}`, this.data),
+        new MockStorageApi(
+          `${this.namespace}/${name}`,
+          this.bucketStorageApis,
+          this.data,
+        ),
       );
     }
-    return bucketStorageApis.get(name)!;
+    return this.bucketStorageApis.get(name)!;
   }
 
   get<T>(key: string): T | undefined {

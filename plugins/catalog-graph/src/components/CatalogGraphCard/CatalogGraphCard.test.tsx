@@ -15,12 +15,14 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { MockAnalyticsApi, renderInTestApp } from '@backstage/test-utils';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from '../../routes';
 import { CatalogGraphCard } from './CatalogGraphCard';
@@ -116,5 +118,31 @@ describe('<CatalogGraphCard/>', () => {
       'href',
       '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc',
     );
+  });
+
+  test('captures analytics event on click', async () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const { findByText } = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+        {wrapper}
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/catalog-graph': catalogGraphRouteRef,
+        },
+      },
+    );
+
+    expect(await findByText('b:d/c')).toBeInTheDocument();
+    userEvent.click(await findByText('b:d/c'));
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'b:d/c',
+      attributes: {
+        to: '/entity/{kind}/{namespace}/{name}',
+      },
+    });
   });
 });

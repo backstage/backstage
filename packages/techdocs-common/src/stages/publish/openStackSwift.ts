@@ -31,6 +31,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { assertError, ForwardedError } from '@backstage/errors';
 
 const streamToBuffer = (stream: Stream | Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -40,7 +41,7 @@ const streamToBuffer = (stream: Stream | Readable): Promise<Buffer> => {
       stream.on('error', reject);
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
-      throw new Error(`Unable to parse the response data ${e.message}`);
+      throw new ForwardedError('Unable to parse the response data', e);
     }
   });
 };
@@ -118,6 +119,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
         isAvailable: false,
       };
     } catch (err) {
+      assertError(err);
       this.logger.error(`from OpenStack client library: ${err.message}`);
       return {
         isAvailable: false,
@@ -203,6 +205,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
 
           resolve(techdocsMetadata);
         } catch (err) {
+          assertError(err);
           this.logger.error(err.message);
           reject(new Error(err.message));
         }
@@ -245,6 +248,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
 
           res.send(await streamToBuffer(stream));
         } catch (err) {
+          assertError(err);
           this.logger.warn(
             `TechDocs OpenStack swift router failed to serve content from container ${this.containerName} at path ${filePath}: ${err.message}`,
           );
@@ -276,6 +280,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       }
       return false;
     } catch (err) {
+      assertError(err);
       this.logger.warn(err.message);
       return false;
     }

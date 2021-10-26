@@ -174,4 +174,42 @@ describe('catalog:register', () => {
       'http://foo/var',
     );
   });
+
+  it('should ignore failures when dry running the location in the catalog if `optional` is set', async () => {
+    addLocation
+      .mockResolvedValueOnce({
+        entities: [],
+      })
+      .mockRejectedValueOnce(new Error('Not found'));
+    await action.handler({
+      ...mockContext,
+      input: {
+        catalogInfoUrl: 'http://foo/var',
+        optional: true,
+      },
+    });
+
+    expect(addLocation).toHaveBeenNthCalledWith(
+      1,
+      {
+        type: 'url',
+        target: 'http://foo/var',
+      },
+      {},
+    );
+    expect(addLocation).toHaveBeenNthCalledWith(
+      2,
+      {
+        dryRun: true,
+        type: 'url',
+        target: 'http://foo/var',
+      },
+      {},
+    );
+
+    expect(mockContext.output).toBeCalledWith(
+      'catalogInfoUrl',
+      'http://foo/var',
+    );
+  });
 });

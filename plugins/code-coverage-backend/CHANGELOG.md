@@ -1,5 +1,23 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.14
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.1.13
+
+### Patch Changes
+
+- da9241530a: check for existence of lines property in files
+- Updated dependencies
+  - @backstage/integration@0.6.8
+
 ## 0.1.12
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.5
+
+### Patch Changes
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.4
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.10.4
 
 ### Patch Changes

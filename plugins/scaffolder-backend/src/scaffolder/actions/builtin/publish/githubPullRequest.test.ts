@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
+import { getRootLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import mockFs from 'mock-fs';
-import { Writable } from 'stream';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
-import {
-  PullRequestCreator,
-  GithubPullRequestActionInput,
-  createPublishGithubPullRequestAction,
-  ClientFactoryInput,
-} from './githubPullRequest';
+import { Writable } from 'stream';
 import { ActionContext, TemplateAction } from '../../types';
-import { getRootLogger } from '@backstage/backend-common';
-
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
+import {
+  ClientFactoryInput,
+  createPublishGithubPullRequestAction,
+  GithubPullRequestActionInput,
+  PullRequestCreator,
+} from './githubPullRequest';
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
 const workspacePath = resolvePath(root, 'my-workspace');
@@ -173,6 +172,14 @@ describe('createPublishGithubPullRequestAction', () => {
           },
         ],
       });
+    });
+
+    it('should not allow to use files outside of the workspace', async () => {
+      input.sourcePath = '../../test';
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
     });
   });
 

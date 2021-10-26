@@ -15,7 +15,16 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { buildMemberOf, buildOrgHierarchy } from './org';
+import { assignGroupsToUsers, buildMemberOf, buildOrgHierarchy } from './org';
+
+function u(name: string, memberOf: string[] = []): UserEntity {
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: { name },
+    spec: { memberOf },
+  };
+}
 
 function g(
   name: string,
@@ -56,22 +65,33 @@ describe('buildOrgHierarchy', () => {
   });
 });
 
+describe('assignGroupsToUsers', () => {
+  it('should assign groups to users', () => {
+    const users: UserEntity[] = [u('u1'), u('u2')];
+    const groupMemberUsers = new Map<string, string[]>([
+      ['g1', ['u1', 'u2']],
+      ['g2', ['u2']],
+      ['g3', ['u3']],
+    ]);
+
+    assignGroupsToUsers(users, groupMemberUsers);
+
+    expect(users[0].spec.memberOf).toEqual(['g1']);
+    expect(users[1].spec.memberOf).toEqual(['g1', 'g2']);
+  });
+});
+
 describe('buildMemberOf', () => {
   it('fills indirect member of groups', () => {
     const a = g('a', undefined, []);
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
-    const u: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: { name: 'n' },
-      spec: { profile: {}, memberOf: ['c'] },
-    };
+    const user = u('n', ['c']);
 
     const groups = [a, b, c];
     buildOrgHierarchy(groups);
-    buildMemberOf(groups, [u]);
-    expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
+    buildMemberOf(groups, [user]);
+    expect(user.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
   });
 
   it('takes group spec.members into account', () => {
@@ -79,16 +99,11 @@ describe('buildMemberOf', () => {
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
     c.spec.members = ['n'];
-    const u: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: { name: 'n' },
-      spec: { profile: {}, memberOf: [] },
-    };
+    const user = u('n');
 
     const groups = [a, b, c];
     buildOrgHierarchy(groups);
-    buildMemberOf(groups, [u]);
-    expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
+    buildMemberOf(groups, [user]);
+    expect(user.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
   });
 });

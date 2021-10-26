@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.8
+
+### Patch Changes
+
+- 406dcf06e5: Add `MicrosoftGraphOrgEntityProvider` as an alternative to `MicrosoftGraphOrgReaderProcessor` that automatically handles user and group deletions.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.0
+
 ## 0.2.6
 
 ### Patch Changes
