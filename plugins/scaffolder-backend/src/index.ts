@@ -24,10 +24,3 @@ export * from './scaffolder';
 export * from './service/router';
 export * from './lib/catalog';
 export * from './processor';
-export { TaskAgent } from './scaffolder/tasks';
-export type {
-  TaskBroker,
-  DispatchResult,
-  TaskStore,
-  Task,
-} from './scaffolder/tasks/types';

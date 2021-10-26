@@ -40,7 +40,7 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
-import { createRouter } from './router';
+import { createRouter } from '../index';
 
 const createCatalogClient = (templates: any[] = []) =>
   ({

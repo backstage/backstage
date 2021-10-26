@@ -30,4 +30,8 @@ export type {
   TaskSpecV1beta3,
   Status,
   TaskEventType,
+  TaskBroker,
+  Task,
+  TaskStore,
+  DispatchResult,
 } from './types';
