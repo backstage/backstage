@@ -332,15 +332,10 @@ describe('GoogleGCSPublish', () => {
         name: 'path',
       };
 
-      const techDocsMetadaFilePath = path.posix.join(
-        ...Object.values(invalidEntityName),
-        'techdocs_metadata.json',
-      );
-
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `The file ${techDocsMetadaFilePath} does not exist!`,
+        message: expect.stringMatching(/The file .* does not exist/i),
       });
     });
   });

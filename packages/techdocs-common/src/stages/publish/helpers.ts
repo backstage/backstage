@@ -198,10 +198,12 @@ export const getCloudPathForLocalPath = (
     ? relativeFilePathTriplet
     : lowerCaseEntityTriplet(relativeFilePathTriplet);
 
-  const destinationWithRoot = path.join(
-    ...externalStorageRootPath.split(path.posix.sep),
+  // Again, the / delimiter is intentional, as it represents remote storage.
+  const destinationWithRoot = [
+    // The extra filter prevents unintended double slashes and prefixes.
+    ...externalStorageRootPath.split(path.posix.sep).filter(s => s !== ''),
     destination,
-  );
+  ].join('/');
 
   return destinationWithRoot; // Remote storage file relative path
 };
