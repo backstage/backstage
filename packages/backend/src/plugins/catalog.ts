@@ -18,7 +18,7 @@ import {
   CatalogBuilder,
   registerPermissionRule,
 } from '@backstage/plugin-catalog-backend';
-import { isComponentType } from '@backstage/plugin-permission-handler-simple';
+import { isComponentType } from '@backstage/plugin-permission-policy-simple';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
