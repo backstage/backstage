@@ -25,12 +25,13 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
-import { useParams } from 'react-router-dom';
+import { useRouteRefParams, useApi } from '@backstage/core-plugin-api';
+import { flyteDomainRouteRef } from '../../routes';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { flyteApiRef } from './../../api';
-import { useApi } from '@backstage/core-plugin-api';
+
 import { Grid } from '@material-ui/core';
 
 type DenseTableProps = {
@@ -63,7 +64,7 @@ export const DenseTable = ({ workflowList }: DenseTableProps) => {
 };
 
 export const FlyteDomainComponent = () => {
-  const { project, domain } = useParams();
+  const { project, domain } = useRouteRefParams(flyteDomainRouteRef);
   const api = useApi(flyteApiRef);
   const { value, loading, error } = useAsync(async () =>
     api.listWorkflows(project, domain),

@@ -28,9 +28,4 @@ export type FlyteApi = {
     project: string,
     domain: string,
   ): Promise<flyteidl.admin.NamedEntityIdentifierList>;
-  //   getProject(projectId: string): Promise<Project>;
-  //   createProject(options: {
-  //     projectId: string;
-  //     projectName: string;
-  //   }): Promise<Operation>;
 };
