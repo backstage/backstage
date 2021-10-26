@@ -164,6 +164,30 @@ export type AppContext = {
   getComponents(): AppComponents;
 };
 
+// Warning: (ae-missing-release-tag) "AppIcons" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AppIcons = {
+  'kind:api': IconComponent;
+  'kind:component': IconComponent;
+  'kind:domain': IconComponent;
+  'kind:group': IconComponent;
+  'kind:location': IconComponent;
+  'kind:system': IconComponent;
+  'kind:user': IconComponent;
+  brokenImage: IconComponent;
+  catalog: IconComponent;
+  chat: IconComponent;
+  dashboard: IconComponent;
+  docs: IconComponent;
+  email: IconComponent;
+  github: IconComponent;
+  group: IconComponent;
+  help: IconComponent;
+  user: IconComponent;
+  warning: IconComponent;
+};
+
 // @public
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
@@ -172,7 +196,7 @@ export type AppOptions = {
   };
   plugins?: BackstagePluginWithAnyOutput[];
   components?: Partial<AppComponents>;
-  themes?: AppTheme[];
+  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
@@ -608,5 +632,4 @@ export class WebStorage implements StorageApi {
 // Warnings were encountered during analysis:
 //
 // src/apis/system/ApiProvider.d.ts:15:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:152:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```
