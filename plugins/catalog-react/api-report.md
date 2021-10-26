@@ -16,7 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';

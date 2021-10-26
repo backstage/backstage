@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mappedPullRequest, mappedRepoBuild } from './AzureDevOpsApi';
-import { PullRequest, RepoBuild } from './types';
+
 import {
   Build,
   BuildResult,
   BuildStatus,
-  DefinitionReference,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {
   GitPullRequest,
+  GitRepository,
+  PullRequest,
   PullRequestStatus,
-} from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { GitRepository } from 'azure-devops-node-api/interfaces/TfvcInterfaces';
+  RepoBuild,
+} from './types';
+import { mappedPullRequest, mappedRepoBuild } from './AzureDevOpsApi';
+
+import { DefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
 describe('AzureDevOpsApi', () => {
@@ -41,16 +42,24 @@ describe('AzureDevOpsApi', () => {
         },
       };
 
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
+      };
+
       const inputBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: inputBuildDefinition,
         _links: inputLinks,
+        requestedFor: inputIdentityRef,
       };
 
       const outputRepoBuild: RepoBuild = {
@@ -60,7 +69,10 @@ describe('AzureDevOpsApi', () => {
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         source: 'refs/heads/develop (f4f78b31)',
+        uniqueName: 'DOMAINjdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -75,16 +87,24 @@ describe('AzureDevOpsApi', () => {
         },
       };
 
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
+      };
+
       const inputBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
         _links: inputLinks,
+        requestedFor: inputIdentityRef,
       };
 
       const outputRepoBuild: RepoBuild = {
@@ -94,7 +114,10 @@ describe('AzureDevOpsApi', () => {
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         source: 'refs/heads/develop (f4f78b31)',
+        uniqueName: 'DOMAINjdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -109,16 +132,24 @@ describe('AzureDevOpsApi', () => {
         },
       };
 
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
+      };
+
       const inputBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: undefined,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
         _links: inputLinks,
+        requestedFor: inputIdentityRef,
       };
 
       const outputRepoBuild: RepoBuild = {
@@ -128,7 +159,10 @@ describe('AzureDevOpsApi', () => {
         status: BuildStatus.None,
         result: BuildResult.Succeeded,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         source: 'refs/heads/develop (f4f78b31)',
+        uniqueName: 'DOMAINjdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -143,16 +177,24 @@ describe('AzureDevOpsApi', () => {
         },
       };
 
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
+      };
+
       const inputBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: BuildStatus.InProgress,
         result: undefined,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
         _links: inputLinks,
+        requestedFor: inputIdentityRef,
       };
 
       const outputRepoBuild: RepoBuild = {
@@ -162,7 +204,10 @@ describe('AzureDevOpsApi', () => {
         status: BuildStatus.InProgress,
         result: BuildResult.None,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         source: 'refs/heads/develop (f4f78b31)',
+        uniqueName: 'DOMAINjdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -171,16 +216,24 @@ describe('AzureDevOpsApi', () => {
 
   describe('mappedRepoBuild with undefined link', () => {
     it('should return empty string for link', () => {
+      const inputIdentityRef: IdentityRef = {
+        displayName: 'Jane Doe',
+        uniqueName: 'DOMAINjdoe',
+      };
+
       const inputBuild: Build = {
         id: 1,
         buildNumber: 'Build-1',
         status: BuildStatus.InProgress,
         result: undefined,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
         _links: undefined,
+        requestedFor: inputIdentityRef,
       };
 
       const outputRepoBuild: RepoBuild = {
@@ -190,7 +243,10 @@ describe('AzureDevOpsApi', () => {
         status: BuildStatus.InProgress,
         result: BuildResult.None,
         queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
+        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
+        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
         source: 'refs/heads/develop (f4f78b31)',
+        uniqueName: 'DOMAINjdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);

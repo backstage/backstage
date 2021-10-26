@@ -30,7 +30,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.9",
+    "@backstage/types": "^0.1.1",
     "cross-fetch": "^3.0.6",
     "serialize-error": "^8.0.1"
   },

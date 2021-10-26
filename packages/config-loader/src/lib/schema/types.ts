@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /**
  * An sub-set of configuration schema.

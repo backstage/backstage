@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */

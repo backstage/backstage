@@ -24,7 +24,7 @@ import {
   ORIGIN_LOCATION_ANNOTATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';

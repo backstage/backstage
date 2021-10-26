@@ -25,8 +25,8 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionApi,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { SamlSession } from './types';
 import {
   AuthSessionStore,

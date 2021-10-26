@@ -18,7 +18,8 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader, JsonValue } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { loadConfig } from '@backstage/config-loader';
 
 export class ObservableConfigProxy implements Config {

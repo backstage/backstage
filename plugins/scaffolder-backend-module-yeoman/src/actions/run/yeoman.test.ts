@@ -23,7 +23,7 @@ import os from 'os';
 import { PassThrough } from 'stream';
 import { createRunYeomanAction } from './yeoman';
 import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 describe('run:yeoman', () => {
   const mockTmpDir = os.tmpdir();
