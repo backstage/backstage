@@ -25,7 +25,12 @@ const DEFAULT_PROVIDER = {
   icon: Auth0Icon,
 };
 
-class Auth0Auth {
+/**
+ * Implements the OAuth flow to Auth0 products.
+ *
+ * @public
+ */
+export default class Auth0Auth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -42,5 +47,3 @@ class Auth0Auth {
     });
   }
 }
-
-export default Auth0Auth;

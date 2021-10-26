@@ -30,6 +30,8 @@ import { BehaviorSubject } from '../../../lib/subjects';
  * The purpose of this class and the API is to read a stream of incoming requests
  * of OAuth access tokens from different providers with varying scope, and funnel
  * them all together into a single request for each OAuth provider.
+ *
+ * @public
  */
 export class OAuthRequestManager implements OAuthRequestApi {
   private readonly subject = new BehaviorSubject<PendingAuthRequest[]>([]);

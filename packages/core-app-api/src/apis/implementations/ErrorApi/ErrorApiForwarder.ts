@@ -20,6 +20,8 @@ import { PublishSubject } from '../../../lib/subjects';
 
 /**
  * Base implementation for the ErrorApi that simply forwards errors to consumers.
+ *
+ * @public
  */
 export class ErrorApiForwarder implements ErrorApi {
   private readonly subject = new PublishSubject<{
