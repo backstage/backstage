@@ -16,20 +16,15 @@
 
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import {
-  defaultAppComponents,
-  defaultAppIcons,
-  defaultAppThemes,
-} from '@backstage/core-components';
-import { BrowserRouter } from 'react-router-dom';
+import { withDefaults } from '@backstage/core-components';
 import { PrivateAppImpl } from './App';
-import { AppThemeProvider } from './AppThemeProvider';
+import { AppComponents, AppConfigLoader, AppOptions } from './types';
 import { defaultApis } from './defaultApis';
-import { AppConfigLoader, AppOptions } from './types';
-import { AppComponents, BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 const REQUIRED_APP_COMPONENTS: Array<keyof AppComponents> = [
   'Progress',
+  'Router',
   'NotFoundErrorPage',
   'BootErrorPage',
   'ErrorBoundaryFallback',
@@ -95,6 +90,8 @@ export const defaultConfigLoader: AppConfigLoader = async (
  * @public
  */
 export function createApp(options?: AppOptions) {
+  const optionsWithDefaults = withDefaults(options);
+
   const missingRequiredComponents = REQUIRED_APP_COMPONENTS.filter(
     name => !options?.components?.[name],
   );
@@ -111,9 +108,8 @@ export function createApp(options?: AppOptions) {
     );
   }
 
-  const appIcons = defaultAppIcons();
   const providedIconKeys = Object.keys(options?.icons ?? {});
-  const missingIconKeys = Object.keys(appIcons).filter(
+  const missingIconKeys = Object.keys(optionsWithDefaults.icons!).filter(
     key => !providedIconKeys.includes(key),
   );
   if (missingIconKeys.length > 0) {
@@ -135,24 +131,16 @@ export function createApp(options?: AppOptions) {
     );
   }
 
-  const apis = options?.apis ?? [];
-  const plugins = options?.plugins ?? [];
-  const components = {
-    ...defaultAppComponents(),
-    Router: BrowserRouter,
-    ThemeProvider: AppThemeProvider,
-    ...options?.components,
-  };
-  const configLoader = options?.configLoader ?? defaultConfigLoader;
+  const { icons, themes, components } = optionsWithDefaults;
 
   return new PrivateAppImpl({
-    apis,
-    icons: { ...appIcons, ...options?.icons },
-    plugins: plugins as BackstagePlugin<any, any>[],
-    components,
-    themes: options?.themes ?? defaultAppThemes(),
-    configLoader,
+    icons: icons!,
+    themes: themes!,
+    components: components! as AppComponents,
     defaultApis,
+    apis: options?.apis ?? [],
     bindRoutes: options?.bindRoutes,
+    plugins: (options?.plugins as BackstagePlugin<any, any>[]) ?? [],
+    configLoader: options?.configLoader ?? defaultConfigLoader,
   });
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-// This is a bit of a hack that we use to avoid having to redeclare these types
-// within this package or have an explicit dependency on core-app-api.
-// These types end up being inlined and duplicated into this package at build time.
-// eslint-disable-next-line no-restricted-imports
-export type {
-  BootErrorPageProps,
-  SignInResult,
-  SignInPageProps,
-  ErrorBoundaryFallbackProps,
-  AppComponents,
-  AppContext,
-} from '../../../core-app-api/src/app/types';
+export { withDefaults } from './withDefaults';

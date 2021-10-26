@@ -31,8 +31,7 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
-  defaultAppIcons,
-  defaultAppComponents,
+  withDefaults,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -88,47 +87,46 @@ import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 
-const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
-  icons: {
-    ...defaultAppIcons(),
-    // Custom icon example
-    alert: AlarmIcon,
-  },
-
-  components: {
-    ...defaultAppComponents(),
-    SignInPage: props => {
-      return (
-        <SignInPage
-          {...props}
-          providers={['guest', 'custom', ...providers]}
-          title="Select a sign-in method"
-          align="center"
-        />
-      );
+const app = createApp(
+  withDefaults({
+    apis,
+    plugins: Object.values(plugins),
+    icons: {
+      // Custom icon example
+      alert: AlarmIcon,
     },
-  },
-  bindRoutes({ bind }) {
-    bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-      viewTechDoc: techdocsPlugin.routes.docRoot,
-    });
-    bind(catalogGraphPlugin.externalRoutes, {
-      catalogEntity: catalogPlugin.routes.catalogEntity,
-    });
-    bind(apiDocsPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-    });
-    bind(explorePlugin.externalRoutes, {
-      catalogEntity: catalogPlugin.routes.catalogEntity,
-    });
-    bind(scaffolderPlugin.externalRoutes, {
-      registerComponent: catalogImportPlugin.routes.importPage,
-    });
-  },
-});
+    components: {
+      SignInPage: props => {
+        return (
+          <SignInPage
+            {...props}
+            providers={['guest', 'custom', ...providers]}
+            title="Select a sign-in method"
+            align="center"
+          />
+        );
+      },
+    },
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+        viewTechDoc: techdocsPlugin.routes.docRoot,
+      });
+      bind(catalogGraphPlugin.externalRoutes, {
+        catalogEntity: catalogPlugin.routes.catalogEntity,
+      });
+      bind(apiDocsPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+      bind(explorePlugin.externalRoutes, {
+        catalogEntity: catalogPlugin.routes.catalogEntity,
+      });
+      bind(scaffolderPlugin.externalRoutes, {
+        registerComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  }),
+);
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
