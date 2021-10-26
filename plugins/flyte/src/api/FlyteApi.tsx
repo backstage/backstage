@@ -24,6 +24,10 @@ export const flyteApiRef = createApiRef<FlyteApi>({
 
 export type FlyteApi = {
   listProjects(): Promise<flyteidl.admin.Projects>;
+  listWorkflows(
+    project: string,
+    domain: string,
+  ): Promise<flyteidl.admin.NamedEntityIdentifierList>;
   //   getProject(projectId: string): Promise<Project>;
   //   createProject(options: {
   //     projectId: string;

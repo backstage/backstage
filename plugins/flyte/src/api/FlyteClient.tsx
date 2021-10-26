@@ -32,4 +32,20 @@ export class FlyteClient implements FlyteApi {
       .then(response => new Uint8Array(response.data))
       .then(data => flyteidl.admin.Projects.decode(data));
   }
+
+  listWorkflows(
+    project: string,
+    domain: string,
+  ): Promise<flyteidl.admin.NamedEntityIdentifierList> {
+    const options: AxiosRequestConfig = {
+      method: 'get',
+      responseType: 'arraybuffer',
+      headers: { Accept: 'application/octet-stream' },
+      url: `http://localhost:8088/api/v1/workflow_ids/${project}/${domain}?limit=5`,
+    };
+    return axios
+      .request(options)
+      .then(response => new Uint8Array(response.data))
+      .then(data => flyteidl.admin.NamedEntityIdentifierList.decode(data));
+  }
 }
