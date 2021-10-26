@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { SimplePermissionHandler } from './SimplePermissionHandler';
+export { SimplePermissionPolicy } from './SimplePermissionPolicy';
 export { isComponentType } from './rules';
