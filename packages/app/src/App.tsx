@@ -20,6 +20,7 @@ import {
   techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
+import { DashboardTable } from './components/custom';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
@@ -86,6 +87,7 @@ const routes = (
     <Route path="/search" element={<SearchPage />} />
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/explore" element={<ExplorePage />} />
+    <Route path="/dashboard" element={<DashboardTable />} />
   </FlatRoutes>
 );
 

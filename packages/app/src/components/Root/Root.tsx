@@ -92,7 +92,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />*/}
       <SidebarSpace />
       <SidebarDivider />
-      <SidebarItem icon={DashboardRounded} to="docs" text="Dashboard" />
+      <SidebarItem icon={DashboardRounded} to="dashboard" text="Dashboard" />
       <SidebarSettings />
     </Sidebar>
     {children}

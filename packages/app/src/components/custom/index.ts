@@ -1,0 +1,2 @@
+
+export { DashboardTable } from './DashboardTable';

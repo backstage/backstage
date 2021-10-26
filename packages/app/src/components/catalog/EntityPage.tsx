@@ -54,6 +54,7 @@ import {
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EmptyState } from '@backstage/core-components';
+import { DashboardTable } from '../custom';
 
 const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.
@@ -80,6 +81,17 @@ const cicdContent = (
       />
     </EntitySwitch.Case>
   </EntitySwitch>
+);
+const dashboardPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/Dashboard" title="Dashboard">
+     
+        <Grid container>
+          <DashboardTable />
+        </Grid>
+
+    </EntityLayout.Route>
+  </EntityLayout>
 );
 
 const entityWarningContent = (
@@ -329,6 +341,7 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('api')} children={apiPage} />
     <EntitySwitch.Case if={isKind('group')} children={groupPage} />
     <EntitySwitch.Case if={isKind('user')} children={userPage} />
+    <EntitySwitch.Case if={isKind('dashboard')} children={dashboardPage} />
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
 
