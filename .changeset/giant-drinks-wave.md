@@ -2,4 +2,4 @@
 '@backstage/dev-utils': patch
 ---
 
-Migrated to explicit passing of components to `createApp`.
+Migrated to using `withDefaults` to pass defaults to `createApp`.
