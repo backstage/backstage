@@ -49,8 +49,8 @@ export type LoadConfigOptions = {
   configTargets: ConfigTarget[];
   env?: string;
   experimentalEnvFunc?: EnvFunc;
-  remote?: Remote;
-  watch?: Watch;
+  remote?: LoadConfigOptionsRemote;
+  watch?: LoadConfigOptionsWatch;
 };
 
 // @public
@@ -75,10 +75,10 @@ export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
 
-// Warning: (ae-missing-release-tag) "Remote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsRemote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type Remote = {
+export type LoadConfigOptionsRemote = {
   reloadIntervalSeconds: number;
 };
 
@@ -90,10 +90,10 @@ export type TransformFunc<T extends number | string | boolean> = (
   },
 ) => T | undefined;
 
-// Warning: (ae-missing-release-tag) "Watch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsWatch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type Watch = {
+export type LoadConfigOptionsWatch = {
   onChange: (configs: AppConfig[]) => void;
   stopSignal?: Promise<void>;
 };
