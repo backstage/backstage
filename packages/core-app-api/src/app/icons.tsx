@@ -35,6 +35,7 @@ import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
 
+/** @public */
 export type AppIcons = {
   'kind:api': IconComponent;
   'kind:component': IconComponent;

@@ -15,3 +15,4 @@
  */
 
 export { withDefaults } from './withDefaults';
+export type { OptionalAppOptions } from './withDefaults';

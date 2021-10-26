@@ -164,8 +164,6 @@ export type AppContext = {
   getComponents(): AppComponents;
 };
 
-// Warning: (ae-missing-release-tag) "AppIcons" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AppIcons = {
   'kind:api': IconComponent;

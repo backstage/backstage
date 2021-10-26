@@ -28,22 +28,22 @@ import { defaultAppComponents } from './defaultAppComponents';
 import { defaultAppIcons } from './defaultAppIcons';
 import { defaultAppThemes } from './defaultAppThemes';
 
-interface OptionalAppOptions {
-  icons?: Partial<AppIcons> & {
-    [key in string]: IconComponent;
-  };
-  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
-  components?: Partial<AppComponents>;
-}
+// NOTE: we don't re-export any of the types imported from core-app-api, as we
+//       want them to be imported from there rather than core-components.
 
 /**
- * The options required by {@link @backstage/core-app-api#createApp}, but with
- * many of the fields being optional
+ * The set of app options that will be populated by {@link withDefaults} if they
+ * are not passed in explicitly.
  *
  * @public
  */
-type DefaultAppOptions = Omit<AppOptions, keyof OptionalAppOptions> &
-  OptionalAppOptions;
+export interface OptionalAppOptions {
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
+  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[]; // TODO: simplify once AppTheme is updated
+  components?: Partial<AppComponents>;
+}
 
 /**
  * Provides a set of default App options with the ability to override specific options.
@@ -52,7 +52,9 @@ type DefaultAppOptions = Omit<AppOptions, keyof OptionalAppOptions> &
  *
  * @public
  */
-export function withDefaults(options?: DefaultAppOptions): AppOptions {
+export function withDefaults(
+  options?: Omit<AppOptions, keyof OptionalAppOptions> & OptionalAppOptions,
+): AppOptions {
   const { themes, icons, components } = options ?? {};
 
   return {

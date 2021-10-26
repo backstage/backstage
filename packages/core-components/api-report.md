@@ -681,6 +681,22 @@ export type OAuthRequestDialogClassKey =
 // @public (undocumented)
 export type OpenedDropdownClassKey = 'icon';
 
+// @public
+export interface OptionalAppOptions {
+  // Warning: (ae-forgotten-export) The symbol "AppComponents" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  components?: Partial<AppComponents>;
+  // Warning: (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
+  // (undocumented)
+  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
+}
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "OverflowTooltip" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2328,11 +2344,12 @@ export type WarningPanelClassKey =
   | 'message'
   | 'details';
 
-// Warning: (ae-forgotten-export) The symbol "DefaultAppOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AppOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function withDefaults(options?: DefaultAppOptions): AppOptions;
+export function withDefaults(
+  options?: Omit<AppOptions, keyof OptionalAppOptions> & OptionalAppOptions,
+): AppOptions;
 
 // Warnings were encountered during analysis:
 //
