@@ -413,6 +413,9 @@ export interface TaskBroker {
 }
 
 // @public
+export type TaskEventType = 'completion' | 'log';
+
+// @public
 export type TaskSecrets = {
   token: string | undefined;
 };
@@ -519,7 +522,6 @@ export type TaskStoreListEventsOptions = {
 
 // @public
 export class TaskWorker {
-  constructor(options: TaskWorkerOptions);
   // (undocumented)
   static createWorker(options: CreateWorkerOptions): TaskWorker;
   // (undocumented)
@@ -527,15 +529,6 @@ export class TaskWorker {
   // (undocumented)
   start(): void;
 }
-
-// @public
-export type TaskWorkerOptions = {
-  taskBroker: TaskBroker;
-  runners: {
-    legacyWorkflowRunner: LegacyWorkflowRunner;
-    workflowRunner: WorkflowRunner;
-  };
-};
 
 // Warning: (ae-missing-release-tag) "TemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -563,10 +556,4 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/scaffolder/tasks/TaskWorker.d.ts:14:9 - (ae-forgotten-export) The symbol "LegacyWorkflowRunner" needs to be exported by the entry point index.d.ts
-// src/scaffolder/tasks/TaskWorker.d.ts:15:9 - (ae-forgotten-export) The symbol "WorkflowRunner" needs to be exported by the entry point index.d.ts
-// src/scaffolder/tasks/types.d.ts:37:5 - (ae-forgotten-export) The symbol "TaskEventType" needs to be exported by the entry point index.d.ts
 ```

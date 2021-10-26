@@ -15,7 +15,7 @@
  */
 export * from './actions';
 export { DatabaseTaskStore, TaskWorker } from './tasks';
-export type { TaskWorkerOptions, CreateWorkerOptions } from './tasks';
+export type { CreateWorkerOptions } from './tasks';
 export type { TaskState } from './tasks';
 export type {
   TaskSecrets,
@@ -28,4 +28,5 @@ export type {
   TaskSpecV1beta2,
   TaskSpecV1beta3,
   Status,
+  TaskEventType,
 } from './tasks/types';

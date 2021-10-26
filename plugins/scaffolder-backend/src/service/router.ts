@@ -40,8 +40,6 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '../scaffolder/actions';
 import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
-import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
-import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
 import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
 
 /**
@@ -98,28 +96,15 @@ export async function createRouter(
   const taskBroker =
     options.taskBroker || new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
-  const legacyWorkflowRunner = new LegacyWorkflowRunner({
-    logger,
-    actionRegistry,
-    integrations,
-    workingDirectory,
-  });
-
-  const workflowRunner = new DefaultWorkflowRunner({
-    actionRegistry,
-    integrations,
-    logger,
-    workingDirectory,
-  });
 
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = new TaskWorker({
+    const worker = TaskWorker.createWorker({
       taskBroker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
     });
     workers.push(worker);
   }

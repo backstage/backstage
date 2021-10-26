@@ -49,6 +49,11 @@ export type SerializedTask = {
   secrets?: TaskSecrets;
 };
 
+/**
+ * TaskEventType
+ *
+ * @public
+ */
 export type TaskEventType = 'completion' | 'log';
 
 /**

@@ -15,8 +15,8 @@
  */
 
 import { Task, TaskBroker, WorkflowRunner } from './types';
-import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
-import { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
+import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
+import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
@@ -30,7 +30,7 @@ import { assertError } from '@backstage/errors';
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
   runners: {
-    legacyWorkflowRunner: LegacyWorkflowRunner;
+    legacyWorkflowRunner: HandlebarsWorkflowRunner;
     workflowRunner: WorkflowRunner;
   };
 };
@@ -54,7 +54,7 @@ export type CreateWorkerOptions = {
  * @public
  */
 export class TaskWorker {
-  constructor(private readonly options: TaskWorkerOptions) {}
+  private constructor(private readonly options: TaskWorkerOptions) {}
 
   static createWorker(options: CreateWorkerOptions) {
     const {
@@ -65,14 +65,14 @@ export class TaskWorker {
       workingDirectory,
     } = options;
 
-    const legacyWorkflowRunner = new LegacyWorkflowRunner({
+    const legacyWorkflowRunner = new HandlebarsWorkflowRunner({
       logger,
       actionRegistry,
       integrations,
       workingDirectory,
     });
 
-    const workflowRunner = new DefaultWorkflowRunner({
+    const workflowRunner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
       logger,

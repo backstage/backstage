@@ -18,7 +18,7 @@ import mockFs from 'mock-fs';
 import * as winston from 'winston';
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { DefaultWorkflowRunner } from './DefaultWorkflowRunner';
+import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
@@ -27,7 +27,7 @@ import { Task, TaskSpec } from './types';
 describe('DefaultWorkflowRunner', () => {
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
-  let runner: DefaultWorkflowRunner;
+  let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
 
   const integrations = ScmIntegrations.fromConfig(
@@ -88,7 +88,7 @@ describe('DefaultWorkflowRunner', () => {
       },
     });
 
-    runner = new DefaultWorkflowRunner({
+    runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
       workingDirectory: '/tmp',
