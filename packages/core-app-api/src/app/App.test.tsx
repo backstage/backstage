@@ -38,7 +38,7 @@ import {
   analyticsApiRef,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
-import { AppThemeProvider } from './AppThemeProvider';
+import { AppComponents } from './types';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
@@ -178,13 +178,13 @@ describe('Integration Test', () => {
     }),
   );
 
-  const components = {
+  const components: AppComponents = {
     NotFoundErrorPage: () => null,
     BootErrorPage: () => null,
     Progress: () => null,
     Router: BrowserRouter,
     ErrorBoundaryFallback: () => null,
-    ThemeProvider: AppThemeProvider,
+    ThemeProvider: ({ children }) => <>{children}</>,
   };
 
   it('runs happy paths', async () => {
