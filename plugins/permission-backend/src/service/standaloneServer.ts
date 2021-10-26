@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { AllowAllPermissionHandler } from '@backstage/plugin-permission-node';
+import { AllowAllPermissionPolicy } from '@backstage/plugin-permission-node';
 import { createRouter } from './router';
 
 export interface ServerOptions {
@@ -38,7 +38,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
-    permissionHandler: new AllowAllPermissionHandler(),
+    policy: new AllowAllPermissionPolicy(),
   });
 
   let service = createServiceBuilder(module)

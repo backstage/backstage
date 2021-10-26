@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-permission-handler-simple",
+  "name": "@backstage/plugin-permission-policy-simple",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

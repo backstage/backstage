@@ -42,13 +42,13 @@ import {
 } from '@backstage/permission-common';
 import {
   ApplyConditionsRequest,
-  PermissionHandler,
+  PermissionPolicy,
 } from '@backstage/plugin-permission-node';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  permissionHandler: PermissionHandler;
+  policy: PermissionPolicy;
 }
 
 // TODO(authorization-framework) probably move this to a separate client
@@ -92,11 +92,11 @@ const applyConditions = async (
 const handleRequest = async (
   { id, resourceRef, ...request }: Identified<AuthorizeRequest>,
   user: BackstageIdentity | undefined,
-  permissionHandler: PermissionHandler,
+  policy: PermissionPolicy,
   discoveryApi: PluginEndpointDiscovery,
   authHeader?: string,
 ): Promise<Identified<AuthorizeResponse>> => {
-  const response = await permissionHandler.handle(request, user);
+  const response = await policy.handle(request, user);
 
   if (response.result === AuthorizeResult.MAYBE) {
     // Sanity check that any resource provided matches the one expected by the permission
@@ -136,7 +136,7 @@ const handleRequest = async (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, permissionHandler } = options;
+  const { config, policy } = options;
   const discovery = SingleHostDiscovery.fromConfig(config);
   const identity = new IdentityClient({
     discovery,
@@ -173,7 +173,7 @@ export async function createRouter(
             handleRequest(
               request,
               user,
-              permissionHandler,
+              policy,
               discovery,
               req.header('authorization'),
             ),

@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export type {
-  ConditionalHandlerResult,
-  HandlerResult,
-  PermissionHandler,
-} from './types';
-export { AllowAllPermissionHandler } from './AllowAllPermissionHandler';
+export { SimplePermissionPolicy } from './SimplePermissionPolicy';
+export { isComponentType } from './rules';

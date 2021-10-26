@@ -13,32 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   AuthorizeResult,
-  DefinitiveAuthorizeResult,
   OpaqueAuthorizeRequest,
-  PermissionCondition,
-  PermissionCriteria,
 } from '@backstage/permission-common';
 import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { PermissionPolicy, PolicyResult } from './types';
 
-export type ConditionalHandlerResult = {
-  result: AuthorizeResult.MAYBE;
-  conditions: {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
-};
-
-export type HandlerResult =
-  | DefinitiveAuthorizeResult
-  | ConditionalHandlerResult;
-
-export interface PermissionHandler {
-  handle(
-    request: OpaqueAuthorizeRequest,
-    user?: BackstageIdentity,
-  ): Promise<HandlerResult>;
+export class AllowAllPermissionPolicy implements PermissionPolicy {
+  async handle(
+    _request: OpaqueAuthorizeRequest,
+    _user?: BackstageIdentity,
+  ): Promise<PolicyResult> {
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
 }

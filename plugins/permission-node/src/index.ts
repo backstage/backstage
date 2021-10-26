@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './handler';
 export * from './integration';
+export * from './policy';
 export * from './types';

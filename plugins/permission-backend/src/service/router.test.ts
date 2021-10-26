@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { AllowAllPermissionHandler } from '@backstage/plugin-permission-node';
+import { AllowAllPermissionPolicy } from '@backstage/plugin-permission-node';
 import express from 'express';
 import request from 'supertest';
 
@@ -29,7 +29,7 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({}),
-      permissionHandler: new AllowAllPermissionHandler(),
+      policy: new AllowAllPermissionPolicy(),
     });
     app = express().use(router);
   });

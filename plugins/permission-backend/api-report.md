@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
-import { PermissionHandler } from '@backstage/plugin-permission-node';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -22,7 +22,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
-  permissionHandler: PermissionHandler;
+  policy: PermissionPolicy;
 }
 
 // (No @packageDocumentation comment for this package)
