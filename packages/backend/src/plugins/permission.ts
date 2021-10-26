@@ -15,7 +15,7 @@
  */
 
 import { createRouter } from '@backstage/plugin-permission-backend';
-import { SimplePermissionHandler } from '@backstage/plugin-permission-handler-simple';
+import { SimplePermissionPolicy } from '@backstage/plugin-permission-policy-simple';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -26,6 +26,6 @@ export default async function createPlugin(
   return await createRouter({
     logger,
     config,
-    permissionHandler: new SimplePermissionHandler(),
+    policy: new SimplePermissionPolicy(),
   });
 }
