@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { AuthIdentityTokenManager } from './AuthIdentityTokenManager';
 export type { TokenManager } from './types';

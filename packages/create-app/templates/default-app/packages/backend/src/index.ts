@@ -17,6 +17,7 @@ import {
   DatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
+  AuthIdentityTokenManager,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import app from './plugins/app';
@@ -37,12 +38,13 @@ function makeCreateEnv(config: Config) {
 
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config);
+  const tokenManager = new AuthIdentityTokenManager(discovery);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, database, cache, config, reader, discovery };
+    return { logger, database, cache, config, reader, discovery, tokenManager };
   };
 }
 
