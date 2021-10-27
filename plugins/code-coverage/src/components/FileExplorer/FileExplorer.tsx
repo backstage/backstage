@@ -82,7 +82,7 @@ const removeVisitedPathGroup = (
   });
 };
 
-const buildFileStructure = (row: CoverageTableRow) => {
+export const buildFileStructure = (row: CoverageTableRow) => {
   const dataGroupedByPath: FileStructureObject = groupByPath(row.files);
   row.files = Object.keys(dataGroupedByPath).map(pathGroup => {
     return buildFileStructure({
