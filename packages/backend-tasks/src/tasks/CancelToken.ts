@@ -15,7 +15,6 @@
  */
 
 export class CancelToken {
-  // @ts-ignore: is actually assigned by the Promise constructor
   #cancel: () => void;
   #isCancelled: boolean;
   #cancelPromise: Promise<void>;
@@ -26,6 +25,8 @@ export class CancelToken {
 
   private constructor() {
     this.#isCancelled = false;
+
+    this.#cancel = () => {}; // Avoids a TS warning
     this.#cancelPromise = new Promise(resolve => {
       this.#cancel = () => {
         this.#isCancelled = true;
