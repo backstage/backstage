@@ -15,7 +15,12 @@
  */
 
 import { Duration } from 'luxon';
+import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
+
+export type TaskFunction =
+  | ((abortSignal: AbortSignal) => void | Promise<void>)
+  | (() => void | Promise<void>);
 
 /**
  * Options that apply to the invocation of a given task.
@@ -31,7 +36,7 @@ export interface TaskDefinition {
   /**
    * The actual task function to be invoked regularly.
    */
-  fn: () => void | Promise<void>;
+  fn: TaskFunction;
 
   /**
    * The maximum amount of time that a single task invocation can take, before

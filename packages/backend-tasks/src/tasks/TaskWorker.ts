@@ -16,12 +16,12 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
+import { AbortController } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { TaskSettingsV1, taskSettingsV1Schema } from './types';
-import { nowPlus, sleep } from './util';
+import { TaskFunction, TaskSettingsV1, taskSettingsV1Schema } from './types';
+import { delegateAbortController, nowPlus, sleep } from './util';
 
 const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -32,24 +32,17 @@ const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
  */
 export class TaskWorker {
   private readonly taskId: string;
-  private readonly fn: () => void | Promise<void>;
+  private readonly fn: TaskFunction;
   private readonly knex: Knex;
   private readonly logger: Logger;
   private readonly abortController: AbortController;
-  private readonly abortSignal: AbortSignal;
 
-  constructor(
-    taskId: string,
-    fn: () => void | Promise<void>,
-    knex: Knex,
-    logger: Logger,
-  ) {
+  constructor(taskId: string, fn: TaskFunction, knex: Knex, logger: Logger) {
     this.taskId = taskId;
     this.fn = fn;
     this.knex = knex;
     this.logger = logger;
     this.abortController = new AbortController();
-    this.abortSignal = this.abortController.signal;
   }
 
   async start(settings: TaskSettingsV1) {
@@ -65,13 +58,13 @@ export class TaskWorker {
 
     (async () => {
       try {
-        while (!this.abortSignal.aborted) {
+        while (!this.abortController.signal.aborted) {
           const runResult = await this.runOnce();
           if (runResult.result === 'abort') {
             break;
           }
 
-          await sleep(WORK_CHECK_FREQUENCY, this.abortSignal);
+          await sleep(WORK_CHECK_FREQUENCY, this.abortController.signal);
         }
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {
@@ -111,11 +104,22 @@ export class TaskWorker {
       return { result: 'not-ready-yet' };
     }
 
+    // Abort the task execution either if the worker is stopped, or if the
+    // task timeout is hit
+    const taskAbortController = delegateAbortController(
+      this.abortController.signal,
+    );
+    const timeoutHandle = setTimeout(() => {
+      taskAbortController.abort();
+    }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
+
     try {
-      await this.fn();
+      await this.fn(taskAbortController.signal);
     } catch (e) {
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
+    } finally {
+      clearTimeout(timeoutHandle);
     }
 
     await this.tryReleaseTask(ticket, taskSettings);

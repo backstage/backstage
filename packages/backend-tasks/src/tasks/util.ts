@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
+import { AbortController, AbortSignal } from 'node-abort-controller';
 
 // Keep the IDs compatible with e.g. Prometheus
 export function validateId(id: string) {
@@ -74,4 +74,32 @@ export async function sleep(
     timeoutHandle = setTimeout(done, duration.as('milliseconds'));
     abortSignal?.addEventListener('abort', done);
   });
+}
+
+/**
+ * Creates a new AbortController that, in addition to working as a regular
+ * standalone controller, also gets aborted if the given parent signal
+ * reaches aborted state.
+ *
+ * @param parent - The "parent" signal that can trigger the delegate
+ */
+export function delegateAbortController(parent: AbortSignal): AbortController {
+  const delegate = new AbortController();
+
+  if (parent.aborted) {
+    delegate.abort();
+  } else {
+    const onParentAborted = () => {
+      delegate.abort();
+    };
+
+    const onChildAborted = () => {
+      parent.removeEventListener('abort', onParentAborted);
+    };
+
+    parent.addEventListener('abort', onParentAborted, { once: true });
+    delegate.signal.addEventListener('abort', onChildAborted, { once: true });
+  }
+
+  return delegate;
 }
