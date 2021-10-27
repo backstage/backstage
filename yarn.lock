@@ -18244,9 +18244,9 @@ keytar@^7.3.0:
     prebuild-install "^6.0.0"
 
 keyv-memcache@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.npmjs.org/keyv-memcache/-/keyv-memcache-1.2.5.tgz#9097af5c617dc740e7300ebfd4a2efb8917429e3"
-  integrity sha512-iG+GHlhXyV83gmlCtMFIqNYVvv0i0towAy42NvziUR7D+k9jp81fAq0lu66H4gooOnW+ojkdigRvRpL40j1f7w==
+  version "1.2.7"
+  resolved "https://registry.npmjs.org/keyv-memcache/-/keyv-memcache-1.2.7.tgz#b8a43eeecdb11ad8f4d6d64abd4298d014c74955"
+  integrity sha512-lD7QaHf9M+bq9XLFZVEXJ2HNqEvO5CmtjiJjB2FHifbEQ18+YRDTfJCjo88Roc0hXtIqz/QZjYXpIYL8EWpL1g==
   dependencies:
     json-buffer "^3.0.1"
     memjs "^1.3.0"
