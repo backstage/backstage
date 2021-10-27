@@ -77,6 +77,7 @@ import {
   SignInPageProps,
   SignInResult,
 } from './types';
+import { AppThemeProvider } from './AppThemeProvider';
 
 export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
@@ -151,7 +152,7 @@ function useConfigLoader(
     noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
   }
 
-  const { ThemeProvider } = components;
+  const { ThemeProvider = AppThemeProvider } = components;
 
   // Before the config is loaded we can't use a router, so exit early
   if (noConfigNode) {
@@ -307,7 +308,7 @@ export class PrivateAppImpl implements BackstageApp {
         return loadedConfig.node;
       }
 
-      const { ThemeProvider } = this.components;
+      const { ThemeProvider = AppThemeProvider } = this.components;
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
