@@ -350,7 +350,6 @@ async function testAppServe(pluginName: string, appDir: string) {
       GITHUB_TOKEN: 'abc',
     },
   });
-
   Browser.localhost('localhost', 3000);
 
   let successful = false;
@@ -379,9 +378,7 @@ async function testAppServe(pluginName: string, appDir: string) {
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    if (startApp.pid) {
-      killTree(startApp.pid);
-    }
+    killTree(startApp.pid);
   }
 
   try {
@@ -460,9 +457,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   } finally {
     print('Stopping the child process');
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    if (child.pid) {
-      killTree(child.pid);
-    }
+    killTree(child.pid);
   }
 
   try {
