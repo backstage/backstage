@@ -27,7 +27,7 @@ import { Task, templatingTask } from './lib/tasks';
 
 const exec = promisify(execCb);
 
-async function checkAppPathDoesntExist(rootDir: string, name: string) {
+async function checkAppExists(rootDir: string, name: string) {
   await Task.forItem('checking', name, async () => {
     const destination = resolvePath(rootDir, name);
 
@@ -40,18 +40,13 @@ async function checkAppPathDoesntExist(rootDir: string, name: string) {
   });
 }
 
-async function checkPathExistsAndIsDirectory(path: string) {
+async function checkPathExists(path: string) {
   await Task.forItem('checking', path, async () => {
-    if (await fs.pathExists(path)) {
-      if (!fs.lstatSync(path).isDirectory()) {
-        throw new Error(
-          'Directory specified with --path argument is a file\nPlease ensure target path is a directory',
-        );
-      }
-    } else {
-      throw new Error(
-        'Directory specified with --path argument does not exist\nPlease try again with a different path',
-      );
+    try {
+      await fs.mkdirs(path);
+    } catch (error) {
+      // will fail if a file already exists at given `path`
+      throw new Error(`Failed to create app directory: ${error.message}`);
     }
   });
 }
@@ -150,7 +145,7 @@ export default async (cmd: Command): Promise<void> => {
       // Template directly to specified path
 
       Task.section('Checking that supplied path exists');
-      await checkPathExistsAndIsDirectory(appDir);
+      await checkPathExists(appDir);
 
       Task.section('Preparing files');
       await templatingTask(templateDir, cmd.path, answers);
@@ -158,7 +153,7 @@ export default async (cmd: Command): Promise<void> => {
       // Template to temporary location, and then move files
 
       Task.section('Checking if the directory is available');
-      await checkAppPathDoesntExist(paths.targetDir, answers.name);
+      await checkAppExists(paths.targetDir, answers.name);
 
       Task.section('Creating a temporary app directory');
       await createTemporaryAppFolder(tempDir);
