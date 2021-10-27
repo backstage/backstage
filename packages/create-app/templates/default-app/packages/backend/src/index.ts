@@ -42,7 +42,17 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, database, cache, config, reader, discovery };
+    return {
+      logger,
+      cache,
+      database,
+      config,
+      reader,
+      discovery,
+      // TODO(authorization-framework): use PermissionClient once
+      // @backstage/permission-common is published.
+      permissions: {},
+    };
   };
 }
 
