@@ -5,12 +5,16 @@
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
+import { AuthorizeRequest } from '@backstage/permission-common';
+import { AuthorizeResponse } from '@backstage/permission-common';
+import { AuthorizeResult } from '@backstage/permission-common';
 import { ComponentType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
+import { PermissionApi } from '@backstage/core-plugin-api';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';
@@ -125,6 +129,17 @@ export class MockErrorApi implements ErrorApi {
 export type MockErrorApiOptions = {
   collect?: boolean;
 };
+
+// @public
+export class MockPermissionApi implements PermissionApi {
+  constructor(
+    requestHandler?: (
+      request: AuthorizeRequest,
+    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
+  );
+  // (undocumented)
+  authorize(requests: AuthorizeRequest[]): Promise<AuthorizeResponse[]>;
+}
 
 // @public
 export class MockStorageApi implements StorageApi {
