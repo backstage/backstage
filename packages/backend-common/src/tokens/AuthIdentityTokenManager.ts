@@ -19,6 +19,7 @@ import { IdentityClient } from '../identity';
 import { PluginEndpointDiscovery } from '../discovery';
 
 export class AuthIdentityTokenManager implements TokenManager {
+  // TODO: (b2b-auth) replace this in favor of actual server token in config likely
   private readonly SERVER_TOKEN = 'server-token';
   private identityClient: IdentityClient;
 
@@ -33,13 +34,15 @@ export class AuthIdentityTokenManager implements TokenManager {
     return { token: this.SERVER_TOKEN };
   }
 
+  // TODO: (b2b-auth) authenticate returns a Backstage Identity
+  // need to figure out what to return after validating a server token
   async validateToken(token: string): Promise<void> {
     if (token !== this.SERVER_TOKEN) {
       try {
         await this.identityClient.authenticate(token);
         return;
-      } catch (e) {
-        throw new Error('Invalid token');
+      } catch (error) {
+        throw new Error(`Invalid token, ${error}`);
       }
     }
   }

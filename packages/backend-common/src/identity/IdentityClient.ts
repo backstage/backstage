@@ -27,6 +27,8 @@ const CLOCK_MARGIN_S = 10;
  *
  * @experimental This is not a stable API yet
  */
+
+// TODO: (b2b-auth) integrate IdentityClient into the TokenManager instead
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
@@ -90,6 +92,7 @@ export class IdentityClient {
    * Returns the public signing key matching the given jwt token,
    * or null if no matching key was found
    */
+  // TODO (b2b-auth): switch on type to identify server tokens?
   private async getKey(rawJwtToken: string): Promise<JWK.Key | null> {
     const { header, payload } = JWT.decode(rawJwtToken, {
       complete: true,
