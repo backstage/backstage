@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
-import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
+export type FlyteProject = {
+  id: string;
+  name: string;
+  description: string;
+  domains: FlyteDomain[];
+};
 
-export const flyteApiRef = createApiRef<FlyteApi>({
-  id: 'plugin.flyte',
-  description: 'Used by the Flyte plugin to make requests',
-});
-
-export type FlyteApi = {
-  listProjects(): Promise<flyteidl.admin.Projects>;
-  listWorkflows(
-    project: string,
-    domain: string,
-  ): Promise<flyteidl.admin.NamedEntityIdentifierList>;
+export type FlyteDomain = {
+  id: string;
+  name: string;
 };

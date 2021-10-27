@@ -17,12 +17,12 @@ import React from 'react';
 import { Table, TableColumn, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
-import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { flyteApiRef } from './../../api';
+import { FlyteProject, FlyteDomain } from './../../api/types';
 import { useApi } from '@backstage/core-plugin-api';
 
 type DenseTableProps = {
-  projects: flyteidl.admin.Projects | null;
+  projects: FlyteProject[];
 };
 
 export const DenseTable = ({ projects }: DenseTableProps) => {
@@ -33,13 +33,8 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
     { title: 'Description', field: 'description' },
   ];
 
-  const data = projects!.projects.map(project => {
-    const domains = project
-      .domains!.map(domain => {
-        return domain.id;
-      })
-      .join();
-
+  const data = projects.map(project => {
+    const domains = project.domains.map(d => d.id).join();
     return {
       id: project.id,
       name: project.name,
@@ -51,7 +46,7 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
   return (
     <Table
       title="Flyte Projects List"
-      options={{ search: false, paging: false }}
+      options={{ search: true, paging: false }}
       columns={columns}
       data={data}
     />
@@ -68,5 +63,5 @@ export const FlyteProjectFetchComponent = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <DenseTable projects={value || null} />;
+  return <DenseTable projects={value!} />;
 };

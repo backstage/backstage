@@ -16,10 +16,11 @@
 
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { FlyteApi } from './FlyteApi';
+import { FlyteProject, FlyteDomain } from './types';
 import axios, { AxiosRequestConfig } from 'axios';
 
 export class FlyteClient implements FlyteApi {
-  listProjects(): Promise<flyteidl.admin.Projects> {
+  listProjects(): Promise<FlyteProject[]> {
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
@@ -30,7 +31,27 @@ export class FlyteClient implements FlyteApi {
     return axios
       .request(options)
       .then(response => new Uint8Array(response.data))
-      .then(data => flyteidl.admin.Projects.decode(data));
+      .then(data => flyteidl.admin.Projects.decode(data))
+      .then(proto =>
+        proto.projects.map(project => {
+          const domains: FlyteDomain[] = [];
+          domains.push.apply(
+            domains,
+            project.domains!.map(domain => {
+              return {
+                id: domain!.id!,
+                name: domain!.name!,
+              };
+            }),
+          );
+          return {
+            id: project.id!,
+            name: project.name!,
+            description: project.description!,
+            domains: domains!,
+          };
+        }),
+      );
   }
 
   listWorkflows(
