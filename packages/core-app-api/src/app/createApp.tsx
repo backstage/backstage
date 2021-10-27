@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { withDefaults } from '@backstage/core-components';
-import { PrivateAppImpl } from './App';
+import { AppManager } from './AppManager';
 import { AppComponents, AppConfigLoader, AppOptions } from './types';
 import { defaultApis } from './defaultApis';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -132,7 +132,7 @@ export function createApp(options?: AppOptions) {
 
   const { icons, themes, components } = optionsWithDefaults;
 
-  return new PrivateAppImpl({
+  return new AppManager({
     icons: icons!,
     themes: themes!,
     components: components! as AppComponents,

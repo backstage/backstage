@@ -171,7 +171,7 @@ function useConfigLoader(
 }
 
 class AppContextImpl implements AppContext {
-  constructor(private readonly app: PrivateAppImpl) {}
+  constructor(private readonly app: AppManager) {}
 
   getPlugins(): BackstagePlugin<any, any>[] {
     return this.app.getPlugins();
@@ -186,7 +186,7 @@ class AppContextImpl implements AppContext {
   }
 }
 
-export class PrivateAppImpl implements BackstageApp {
+export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
 
