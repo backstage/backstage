@@ -25,3 +25,9 @@ export type FlyteDomain = {
   id: string;
   name: string;
 };
+
+export type PartialIdentifier = {
+  project: string;
+  domain: string;
+  name: string;
+};

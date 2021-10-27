@@ -16,7 +16,7 @@
 
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { FlyteApi } from './FlyteApi';
-import { FlyteProject, FlyteDomain } from './types';
+import { FlyteProject, FlyteDomain, PartialIdentifier } from './types';
 import axios, { AxiosRequestConfig } from 'axios';
 
 export class FlyteClient implements FlyteApi {
@@ -54,10 +54,7 @@ export class FlyteClient implements FlyteApi {
       );
   }
 
-  listWorkflows(
-    project: string,
-    domain: string,
-  ): Promise<flyteidl.admin.NamedEntityIdentifierList> {
+  listWorkflows(project: string, domain: string): Promise<PartialIdentifier[]> {
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
@@ -67,6 +64,15 @@ export class FlyteClient implements FlyteApi {
     return axios
       .request(options)
       .then(response => new Uint8Array(response.data))
-      .then(data => flyteidl.admin.NamedEntityIdentifierList.decode(data));
+      .then(data => flyteidl.admin.NamedEntityIdentifierList.decode(data))
+      .then(proto =>
+        proto.entities.map(entity => {
+          return {
+            project: entity.project!,
+            domain: entity.domain!,
+            name: entity.name!,
+          };
+        }),
+      );
   }
 }

@@ -16,7 +16,7 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
-import { FlyteProject } from './types';
+import { FlyteProject, PartialIdentifier } from './types';
 
 export const flyteApiRef = createApiRef<FlyteApi>({
   id: 'plugin.flyte',
@@ -25,8 +25,5 @@ export const flyteApiRef = createApiRef<FlyteApi>({
 
 export type FlyteApi = {
   listProjects(): Promise<FlyteProject[]>;
-  listWorkflows(
-    project: string,
-    domain: string,
-  ): Promise<flyteidl.admin.NamedEntityIdentifierList>;
+  listWorkflows(project: string, domain: string): Promise<PartialIdentifier[]>;
 };
