@@ -197,9 +197,8 @@ export class TaskWorker {
       return { result: 'ready', settings };
     } catch (e) {
       this.logger.info(
-        'No longer able to parse task settings; aborting and assuming that a ' +
-          'newer version of the task has been issued and being handled by ' +
-          `other workers, ${e}`,
+        `Task "${this.taskId}" is no longer able to parse task settings; aborting and assuming that a ` +
+          `newer version of the task has been issued and being handled by other workers, ${e}`,
       );
       return { result: 'abort' };
     }
