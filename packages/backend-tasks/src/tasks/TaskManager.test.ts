@@ -47,6 +47,7 @@ describe('TaskManager', () => {
         'task1',
         {
           timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromMillis(5000),
         },
         () => {},
       );

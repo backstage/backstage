@@ -68,9 +68,6 @@ export class TaskWorker {
           if (runResult.result === 'abort') {
             break;
           }
-          if (!settings.recurringAtMostEveryDuration) {
-            break;
-          }
 
           await this.sleep(WORK_CHECK_FREQUENCY);
         }
@@ -239,17 +236,6 @@ export class TaskWorker {
     settings: TaskSettingsV1,
   ): Promise<boolean> {
     const { recurringAtMostEveryDuration } = settings;
-
-    // If this is not a recurring task, and we still have the current run
-    // ticket, delete it from the table
-    if (recurringAtMostEveryDuration === undefined) {
-      const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
-        .where('id', '=', this.taskId)
-        .where('current_run_ticket', '=', ticket)
-        .delete();
-
-      return rows === 1;
-    }
 
     // We make an effort to keep the datetime calculations in the database
     // layer, making sure to not have to perform conversions back and forth and

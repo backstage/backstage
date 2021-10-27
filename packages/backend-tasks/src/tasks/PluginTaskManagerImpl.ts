@@ -42,8 +42,8 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
     await task.start({
       version: 1,
       initialDelayDuration: options.initialDelay?.toISO(),
-      recurringAtMostEveryDuration: options.frequency?.toISO(),
-      timeoutAfterDuration: options.timeout?.toISO(),
+      recurringAtMostEveryDuration: options.frequency.toISO(),
+      timeoutAfterDuration: options.timeout.toISO(),
     });
 
     return {

@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskManagerImpl } from './PluginTaskManagerImpl';
@@ -44,7 +45,14 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
-        const { unschedule } = await manager.scheduleTask('task1', {}, fn);
+        const { unschedule } = await manager.scheduleTask(
+          'task1',
+          {
+            timeout: Duration.fromMillis(5000),
+            frequency: Duration.fromMillis(5000),
+          },
+          fn,
+        );
 
         await waitForExpect(() => {
           expect(fn).toBeCalled();

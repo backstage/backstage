@@ -34,7 +34,7 @@ describe('TaskWorker', () => {
   });
 
   it.each(databases.eachSupportedId())(
-    'can run a single task to completion, %p',
+    'goes through the expected states, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
       await migrateBackendTasks(knex);
@@ -44,32 +44,9 @@ describe('TaskWorker', () => {
       );
       const settings: TaskSettingsV1 = {
         version: 1,
-      };
-
-      const worker = new TaskWorker('task1', fn, knex, logger);
-      await worker.start(settings);
-
-      waitForExpect(() => {
-        expect(fn).toBeCalledTimes(1);
-      });
-    },
-    60_000,
-  );
-
-  it.each(databases.eachSupportedId())(
-    'goes through the expected states for a single run, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
-
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO(),
-        recurringAtMostEveryDuration: undefined,
-        timeoutAfterDuration: undefined,
+        initialDelayDuration: Duration.fromMillis(1000).toISO(),
+        recurringAtMostEveryDuration: Duration.fromMillis(2000).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -87,6 +64,8 @@ describe('TaskWorker', () => {
       expect(JSON.parse(row.settings_json)).toEqual({
         version: 1,
         initialDelayDuration: 'PT1S',
+        recurringAtMostEveryDuration: 'PT2S',
+        timeoutAfterDuration: 'PT60S',
       });
 
       await expect(worker.findReadyTask()).resolves.toEqual({
@@ -117,7 +96,7 @@ describe('TaskWorker', () => {
           id: 'task1',
           current_run_ticket: 'ticket',
           current_run_started_at: expect.anything(),
-          current_run_expires_at: null,
+          current_run_expires_at: expect.anything(),
         }),
       );
 
@@ -126,7 +105,14 @@ describe('TaskWorker', () => {
       );
 
       row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toBeUndefined();
+      expect(row).toEqual(
+        expect.objectContaining({
+          id: 'task1',
+          current_run_ticket: null,
+          current_run_started_at: null,
+          current_run_expires_at: null,
+        }),
+      );
     },
     60_000,
   );
@@ -142,7 +128,7 @@ describe('TaskWorker', () => {
         version: 1,
         initialDelayDuration: undefined,
         recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
-        timeoutAfterDuration: undefined,
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -167,6 +153,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV1 = {
         version: 1,
         recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -183,7 +170,7 @@ describe('TaskWorker', () => {
           id: 'task1',
           current_run_ticket: 'ticket',
           current_run_started_at: expect.anything(),
-          current_run_expires_at: null,
+          current_run_expires_at: expect.anything(),
         }),
       );
 
@@ -201,7 +188,7 @@ describe('TaskWorker', () => {
           id: 'task1',
           current_run_ticket: 'stolen',
           current_run_started_at: expect.anything(),
-          current_run_expires_at: null,
+          current_run_expires_at: expect.anything(),
         }),
       );
     },
@@ -218,6 +205,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV1 = {
         version: 1,
         recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker1 = new TaskWorker('task1', fn, knex, logger);

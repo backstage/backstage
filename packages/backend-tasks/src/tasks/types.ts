@@ -31,7 +31,7 @@ export interface TaskOptions {
    * If no value is given for this field then there is no timeout. This is
    * potentially dangerous.
    */
-  timeout?: Duration;
+  timeout: Duration;
 
   /**
    * The amount of time that should pass between task invocation starts.
@@ -48,7 +48,7 @@ export interface TaskOptions {
    * If no value is given for this field then the task will only be invoked
    * once (on any worker) and then unscheduled automatically.
    */
-  frequency?: Duration;
+  frequency: Duration;
 
   /**
    * The amount of time that should pass before the first invocation happens.
@@ -107,11 +107,9 @@ export const taskSettingsV1Schema = z.object({
     .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
   recurringAtMostEveryDuration: z
     .string()
-    .optional()
     .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
   timeoutAfterDuration: z
     .string()
-    .optional()
     .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
 });
 
