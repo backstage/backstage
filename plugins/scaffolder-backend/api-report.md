@@ -523,7 +523,7 @@ export type TaskStoreListEventsOptions = {
 // @public
 export class TaskWorker {
   // (undocumented)
-  static createWorker(options: CreateWorkerOptions): TaskWorker;
+  static create(options: CreateWorkerOptions): Promise<TaskWorker>;
   // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
