@@ -91,14 +91,14 @@ export class TaskWorker {
    * @returns The outcome of the attempt
    */
   async runOnce(): Promise<
-    | { result: 'not ready yet' }
+    | { result: 'not-ready-yet' }
     | { result: 'abort' }
     | { result: 'failed' }
     | { result: 'completed' }
   > {
     const findResult = await this.findReadyTask();
     if (
-      findResult.result === 'not ready yet' ||
+      findResult.result === 'not-ready-yet' ||
       findResult.result === 'abort'
     ) {
       return findResult;
@@ -109,7 +109,7 @@ export class TaskWorker {
 
     const claimed = await this.tryClaimTask(ticket, taskSettings);
     if (!claimed) {
-      return { result: 'not ready yet' };
+      return { result: 'not-ready-yet' };
     }
 
     try {
@@ -165,7 +165,7 @@ export class TaskWorker {
    * Check if the task is ready to run
    */
   async findReadyTask(): Promise<
-    | { result: 'not ready yet' }
+    | { result: 'not-ready-yet' }
     | { result: 'abort' }
     | { result: 'ready'; settings: TaskSettingsV1 }
   > {
@@ -189,7 +189,7 @@ export class TaskWorker {
       );
       return { result: 'abort' };
     } else if (!row.ready) {
-      return { result: 'not ready yet' };
+      return { result: 'not-ready-yet' };
     }
 
     try {

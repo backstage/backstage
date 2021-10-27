@@ -90,7 +90,7 @@ describe('TaskWorker', () => {
       });
 
       await expect(worker.findReadyTask()).resolves.toEqual({
-        result: 'not ready yet',
+        result: 'not-ready-yet',
       });
 
       waitForExpect(async () => {
