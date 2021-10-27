@@ -17,7 +17,11 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import {
+  AlertApi,
+  alertApiRef,
+  permissionApiRef,
+} from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
   catalogApiRef,
@@ -27,6 +31,7 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  MockPermissionApi,
   MockStorageApi,
   renderInTestApp,
   TestApiRegistry,
@@ -58,6 +63,7 @@ const mockApis = TestApiRegistry.from(
     starredEntitiesApiRef,
     new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
   ],
+  [permissionApiRef, new MockPermissionApi()]
 );
 
 describe('EntityLayout', () => {
