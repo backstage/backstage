@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ExampleFetchComponent } from './ExampleFetchComponent';
+import { LeftNavComponent } from './LeftNavComponent';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
 
-describe('ExampleFetchComponent', () => {
+describe('LeftNavComponent', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   msw.setupDefaultHandlers(server);
@@ -19,7 +19,7 @@ describe('ExampleFetchComponent', () => {
     );
   });
   it('should render', async () => {
-    const rendered = render(<ExampleFetchComponent />);
+    const rendered = render(<LeftNavComponent />);
     expect(await rendered.findByTestId('progress')).toBeInTheDocument();
   });
 });

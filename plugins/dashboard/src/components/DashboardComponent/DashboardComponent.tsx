@@ -1,11 +1,12 @@
 import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
   Content,
 } from '@backstage/core-components';
 import { DashboardTable } from '../../../../../packages/app/src/components/custom';
+import { LeftNavComponent } from '../LeftNavComponent';
 
 export const DashboardComponent = () => (
   <Page themeId="tool">
@@ -14,7 +15,7 @@ export const DashboardComponent = () => (
     <Content>
       <Grid container > 
     <Grid lg={2} direction="column">
-      <Typography>This is where Left nav goes</Typography>
+      <LeftNavComponent />
     </Grid>
       <Grid lg={10} direction="column">
         <Grid item>
