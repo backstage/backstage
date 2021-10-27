@@ -15,6 +15,7 @@
  */
 
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { permissionApiRef } from '@backstage/core-plugin-api';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import {
   DefaultStarredEntitiesApi,
@@ -22,7 +23,11 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockPermissionApi,
+  MockStorageApi,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import React from 'react';
 import { cicdContent } from './EntityPage';
 
@@ -52,10 +57,12 @@ describe('EntityPage Test', () => {
     downloadJobLogsForWorkflowRun: jest.fn(),
   } as jest.Mocked<typeof githubActionsApiRef.T>;
 
-  const apis = ApiRegistry.with(githubActionsApiRef, mockedApi).with(
-    starredEntitiesApiRef,
-    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
-  );
+  const apis = ApiRegistry.with(githubActionsApiRef, mockedApi)
+    .with(
+      starredEntitiesApiRef,
+      new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
+    )
+    .with(permissionApiRef, new MockPermissionApi());
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
