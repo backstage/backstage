@@ -99,7 +99,7 @@ export async function createRouter(
 
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = TaskWorker.createWorker({
+    const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
       integrations,

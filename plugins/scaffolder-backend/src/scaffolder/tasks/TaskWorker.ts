@@ -56,7 +56,7 @@ export type CreateWorkerOptions = {
 export class TaskWorker {
   private constructor(private readonly options: TaskWorkerOptions) {}
 
-  static createWorker(options: CreateWorkerOptions) {
+  static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
       taskBroker,
       logger,
