@@ -82,7 +82,7 @@ describe('TaskWorker', () => {
 
   it('should call the legacy workflow runner when the apiVersion is not beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = TaskWorker.create({
+    const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -113,7 +113,7 @@ describe('TaskWorker', () => {
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = TaskWorker.create({
+    const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -142,7 +142,7 @@ describe('TaskWorker', () => {
     });
 
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = TaskWorker.create({
+    const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
