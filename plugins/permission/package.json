@@ -24,7 +24,6 @@
     "start": "backstage-cli plugin:serve",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "diff": "backstage-cli plugin:diff",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
