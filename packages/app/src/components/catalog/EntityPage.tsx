@@ -85,11 +85,7 @@ const cicdContent = (
 const dashboardPage = (
   <EntityLayout>
     <EntityLayout.Route path="/Dashboard" title="Dashboard">
-     
-        <Grid container>
-          <DashboardTable />
-        </Grid>
-
+      <DashboardTable />
     </EntityLayout.Route>
   </EntityLayout>
 );

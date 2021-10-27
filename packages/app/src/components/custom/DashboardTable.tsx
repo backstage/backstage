@@ -28,9 +28,13 @@ export const DashboardTable = () => {
     ];
     const testData = [
         {
-            prodInfo: "ProdInfoTEST"
+            prodInfo: "ProdInfoTEST",
+            cicd: null,
+            security: null,
+            other: null,
         },
         {
+            prodInfo: 'test again',
             cicd:"cicdTest"
         },
         {
