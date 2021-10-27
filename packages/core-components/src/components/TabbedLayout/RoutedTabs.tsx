@@ -33,9 +33,14 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     element: children,
   }));
 
-  const element = useRoutes(routes) ?? subRoutes[0].children;
+  // TODO: remove once react-router updated
+  const sortedRoutes = routes.sort((a, b) =>
+    b.path.slice(0, -2).localeCompare(a.path.slice(0, -2)),
+  );
 
-  const [matchedRoute] = matchRoutes(routes, `/${params['*']}`) ?? [];
+  const element = useRoutes(sortedRoutes) ?? subRoutes[0].children;
+
+  const [matchedRoute] = matchRoutes(sortedRoutes, `/${params['*']}`) ?? [];
   const foundIndex = matchedRoute
     ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;
