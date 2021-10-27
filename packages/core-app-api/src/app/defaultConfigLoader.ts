@@ -16,7 +16,7 @@
 
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { AppConfigLoader } from '@backstage/core-app-api';
+import { AppConfigLoader } from './types';
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -30,7 +30,7 @@ import { AppConfigLoader } from '@backstage/core-app-api';
  *
  * @public
  */
-export const configLoader: AppConfigLoader = async (
+export const defaultConfigLoader: AppConfigLoader = async (
   // This string may be replaced at runtime to provide additional config.
   // It should be replaced by a JSON-serialized config object.
   // It's a param so we can test it, but at runtime this will always fall back to default.

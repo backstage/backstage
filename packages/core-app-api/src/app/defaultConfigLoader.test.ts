@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { configLoader } from './configLoader';
+import { defaultConfigLoader } from './defaultConfigLoader';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
 const anyWindow = window as any;
 
-describe('configLoader', () => {
+describe('defaultConfigLoader', () => {
   afterEach(() => {
     delete anyEnv.APP_CONFIG;
     delete anyWindow.__APP_CONFIG__;
@@ -32,7 +32,7 @@ describe('configLoader', () => {
       { data: { my: 'override-config' }, context: 'b' },
     ];
 
-    const configs = await configLoader();
+    const configs = await defaultConfigLoader();
     expect(configs).toEqual([
       { data: { my: 'config' }, context: 'a' },
       { data: { my: 'override-config' }, context: 'b' },
@@ -45,7 +45,9 @@ describe('configLoader', () => {
       { data: { my: 'config' }, context: 'b' },
     ];
 
-    const configs = await (configLoader as any)('{"my":"runtime-config"}');
+    const configs = await (defaultConfigLoader as any)(
+      '{"my":"runtime-config"}',
+    );
     expect(configs).toEqual([
       { data: { my: 'override-config' }, context: 'a' },
       { data: { my: 'config' }, context: 'b' },
@@ -54,14 +56,14 @@ describe('configLoader', () => {
   });
 
   it('fails to load invalid missing config', async () => {
-    await expect(configLoader()).rejects.toThrow(
+    await expect(defaultConfigLoader()).rejects.toThrow(
       'No static configuration provided',
     );
   });
 
   it('fails to load invalid static config', async () => {
     anyEnv.APP_CONFIG = { my: 'invalid-config' };
-    await expect(configLoader()).rejects.toThrow(
+    await expect(defaultConfigLoader()).rejects.toThrow(
       'Static configuration has invalid format',
     );
   });
@@ -69,7 +71,7 @@ describe('configLoader', () => {
   it('fails to load bad runtime config', async () => {
     anyEnv.APP_CONFIG = [{ data: { my: 'config' }, context: 'a' }];
 
-    await expect((configLoader as any)('}')).rejects.toThrow(
+    await expect((defaultConfigLoader as any)('}')).rejects.toThrow(
       'Failed to load runtime configuration, SyntaxError: Unexpected token } in JSON at position 0',
     );
   });
@@ -82,7 +84,7 @@ describe('configLoader', () => {
     const windowConfig = { app: { configKey: 'config-value' } };
     anyWindow.__APP_CONFIG__ = windowConfig;
 
-    const configs = await configLoader();
+    const configs = await defaultConfigLoader();
 
     expect(configs).toEqual([
       ...anyEnv.APP_CONFIG,

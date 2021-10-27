@@ -16,6 +16,5 @@
 
 export { apis } from './apis';
 export { components } from './components';
-export { configLoader } from './configLoader';
 export { icons } from './icons';
 export { themes } from './themes';
