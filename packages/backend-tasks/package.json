@@ -37,6 +37,7 @@
     "knex": "^0.95.1",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
+    "node-abort-controller": "^3.0.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "zod": "^3.9.5"

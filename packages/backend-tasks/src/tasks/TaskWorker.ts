@@ -16,12 +16,12 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
+import { AbortController, AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { CancelToken } from './CancelToken';
 import { TaskSettingsV1, taskSettingsV1Schema } from './types';
-import { nowPlus } from './util';
+import { nowPlus, sleep } from './util';
 
 const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -35,7 +35,8 @@ export class TaskWorker {
   private readonly fn: () => void | Promise<void>;
   private readonly knex: Knex;
   private readonly logger: Logger;
-  private readonly cancelToken: CancelToken;
+  private readonly abortController: AbortController;
+  private readonly abortSignal: AbortSignal;
 
   constructor(
     taskId: string,
@@ -47,7 +48,8 @@ export class TaskWorker {
     this.fn = fn;
     this.knex = knex;
     this.logger = logger;
-    this.cancelToken = CancelToken.create();
+    this.abortController = new AbortController();
+    this.abortSignal = this.abortController.signal;
   }
 
   async start(settings: TaskSettingsV1) {
@@ -63,13 +65,13 @@ export class TaskWorker {
 
     (async () => {
       try {
-        while (!this.cancelToken.isCancelled) {
+        while (!this.abortSignal.aborted) {
           const runResult = await this.runOnce();
           if (runResult.result === 'abort') {
             break;
           }
 
-          await this.sleep(WORK_CHECK_FREQUENCY);
+          await sleep(WORK_CHECK_FREQUENCY, this.abortSignal);
         }
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {
@@ -79,7 +81,7 @@ export class TaskWorker {
   }
 
   stop() {
-    this.cancelToken.cancel();
+    this.abortController.abort();
   }
 
   /**
@@ -118,19 +120,6 @@ export class TaskWorker {
 
     await this.tryReleaseTask(ticket, taskSettings);
     return { result: 'completed' };
-  }
-
-  /**
-   * Sleep for the given duration, but abort sooner if the cancel token
-   * triggers.
-   *
-   * @param duration - The amount of time to sleep, at most
-   */
-  private async sleep(duration: Duration): Promise<void> {
-    await Promise.race([
-      new Promise(resolve => setTimeout(resolve, duration.as('milliseconds'))),
-      this.cancelToken.promise,
-    ]);
   }
 
   /**

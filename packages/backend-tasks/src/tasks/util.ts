@@ -17,6 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
+import { AbortSignal } from 'node-abort-controller';
 
 // Keep the IDs compatible with e.g. Prometheus
 export function validateId(id: string) {
@@ -42,4 +43,35 @@ export function nowPlus(duration: Duration | undefined, knex: Knex) {
   return knex.client.config.client === 'sqlite3'
     ? knex.raw(`datetime('now', ?)`, [`${seconds} seconds`])
     : knex.raw(`now() + interval '${seconds} seconds'`);
+}
+
+/**
+ * Sleep for the given duration, but return sooner if the abort signal
+ * triggers.
+ *
+ * @param duration - The amount of time to sleep, at most
+ * @param abortSignal - An optional abort signal that short circuits the wait
+ */
+export async function sleep(
+  duration: Duration,
+  abortSignal?: AbortSignal,
+): Promise<void> {
+  if (abortSignal?.aborted) {
+    return;
+  }
+
+  await new Promise<void>(resolve => {
+    let timeoutHandle: NodeJS.Timeout | undefined = undefined;
+
+    const done = () => {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+      abortSignal?.removeEventListener('abort', done);
+      resolve();
+    };
+
+    timeoutHandle = setTimeout(done, duration.as('milliseconds'));
+    abortSignal?.addEventListener('abort', done);
+  });
 }

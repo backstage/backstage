@@ -16,9 +16,10 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
+import { AbortController, AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { CancelToken } from './CancelToken';
+import { sleep } from './util';
 
 /**
  * Makes sure to auto-expire and clean up things that time out or for other
@@ -28,7 +29,8 @@ export class PluginTaskManagerJanitor {
   private readonly knex: Knex;
   private readonly waitBetweenRuns: Duration;
   private readonly logger: Logger;
-  private readonly cancelToken: CancelToken;
+  private readonly abortController: AbortController;
+  private readonly abortSignal: AbortSignal;
 
   constructor(options: {
     knex: Knex;
@@ -38,23 +40,24 @@ export class PluginTaskManagerJanitor {
     this.knex = options.knex;
     this.waitBetweenRuns = options.waitBetweenRuns;
     this.logger = options.logger;
-    this.cancelToken = CancelToken.create();
+    this.abortController = new AbortController();
+    this.abortSignal = this.abortController.signal;
   }
 
   async start() {
-    while (!this.cancelToken.isCancelled) {
+    while (!this.abortSignal.aborted) {
       try {
         await this.runOnce();
       } catch (e) {
         this.logger.warn(`Error while performing janitorial tasks, ${e}`);
       }
 
-      await this.sleep(this.waitBetweenRuns);
+      await sleep(this.waitBetweenRuns, this.abortSignal);
     }
   }
 
   async stop() {
-    this.cancelToken.cancel();
+    this.abortController.abort();
   }
 
   private async runOnce() {
@@ -78,16 +81,5 @@ export class PluginTaskManagerJanitor {
         this.logger.warn(`Task timed out and was lost: ${id}`);
       }
     }
-  }
-
-  /**
-   * Sleeps for the given duration, but aborts sooner if the cancel token
-   * triggers.
-   */
-  private async sleep(duration: Duration) {
-    await Promise.race([
-      new Promise(resolve => setTimeout(resolve, duration.as('milliseconds'))),
-      this.cancelToken.promise,
-    ]);
   }
 }
