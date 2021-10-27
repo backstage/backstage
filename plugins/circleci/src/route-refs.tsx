@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
 export const circleCIRouteRef = createRouteRef({
   id: 'circle-ci',
 });
 
-export const circleCIBuildRouteRef = createRouteRef({
+export const circleCIBuildRouteRef = createSubRouteRef({
   id: 'circle-ci/build',
+  parent: circleCIRouteRef,
+  path: '/:buildId',
 });

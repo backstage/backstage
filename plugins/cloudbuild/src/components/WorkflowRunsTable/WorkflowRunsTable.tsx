@@ -17,7 +17,7 @@ import React from 'react';
 import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GoogleIcon from '@material-ui/icons/CloudCircle';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
@@ -26,6 +26,7 @@ import { Entity } from '@backstage/catalog-model';
 import { buildRouteRef } from '../../routes';
 import { DateTime } from 'luxon';
 import { Table, TableColumn } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -54,15 +55,19 @@ const generatedColumns: TableColumn[] = [
     field: 'source',
     highlight: true,
     width: '200px',
-    render: (row: Partial<WorkflowRun>) => (
-      <Link
-        component={RouterLink}
-        data-testid="cell-source"
-        to={generatePath(buildRouteRef.path, { id: row.id! })}
-      >
-        {row.message}
-      </Link>
-    ),
+    render: (row: Partial<WorkflowRun>) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const routeLink = useRouteRef(buildRouteRef);
+      return (
+        <Link
+          component={RouterLink}
+          data-testid="cell-source"
+          to={routeLink({ id: row.id! })}
+        >
+          {row.message}
+        </Link>
+      );
+    },
   },
   {
     title: 'Ref',

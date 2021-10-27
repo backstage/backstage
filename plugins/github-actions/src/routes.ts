@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   id: 'github-actions',
 });
 
-export const buildRouteRef = createRouteRef({
+export const buildRouteRef = createSubRouteRef({
   id: 'github-actions/build',
-  params: ['id'],
+  path: '/:id',
+  parent: rootRouteRef,
 });
