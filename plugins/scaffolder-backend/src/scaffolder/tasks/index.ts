@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export { DatabaseTaskStore } from './DatabaseTaskStore';
-export { TaskAgent } from './StorageTaskBroker';
+export { TaskManager } from './StorageTaskBroker';
 export type { TaskState } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
 export type { CreateWorkerOptions } from './TaskWorker';
@@ -31,7 +31,7 @@ export type {
   Status,
   TaskEventType,
   TaskBroker,
-  Task,
+  TaskContext,
   TaskStore,
   DispatchResult,
 } from './types';

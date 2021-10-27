@@ -22,7 +22,7 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { Task, TaskSpec } from './types';
+import { TaskContext, TaskSpec } from './types';
 
 describe('DefaultWorkflowRunner', () => {
   const logger = getVoidLogger();
@@ -38,7 +38,7 @@ describe('DefaultWorkflowRunner', () => {
     }),
   );
 
-  const createMockTaskWithSpec = (spec: TaskSpec): Task => ({
+  const createMockTaskWithSpec = (spec: TaskSpec): TaskContext => ({
     spec,
     complete: async () => {},
     done: false,

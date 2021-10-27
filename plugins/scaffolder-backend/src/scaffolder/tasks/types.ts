@@ -139,7 +139,7 @@ export type DispatchResult = {
  *
  * @public
  */
-export interface Task {
+export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   done: boolean;
@@ -154,7 +154,7 @@ export interface Task {
  * @public
  */
 export interface TaskBroker {
-  claim(): Promise<Task>;
+  claim(): Promise<TaskContext>;
   dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
   vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
   observe(
@@ -221,5 +221,5 @@ export interface TaskStore {
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 export interface WorkflowRunner {
-  execute(task: Task): Promise<WorkflowResponse>;
+  execute(task: TaskContext): Promise<WorkflowResponse>;
 }

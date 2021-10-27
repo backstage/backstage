@@ -21,7 +21,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
-import { Task, TaskSpec } from './types';
+import { TaskContext, TaskSpec } from './types';
 import { RepoSpec } from '../actions/builtin/publish/util';
 
 describe('LegacyWorkflowRunner', () => {
@@ -37,7 +37,7 @@ describe('LegacyWorkflowRunner', () => {
     }),
   );
 
-  const createMockTaskWithSpec = (spec: TaskSpec): Task => ({
+  const createMockTaskWithSpec = (spec: TaskSpec): TaskContext => ({
     spec,
     complete: async () => {},
     done: false,

@@ -350,47 +350,9 @@ export type Status =
   | 'completed';
 
 // @public
-export interface Task {
-  // (undocumented)
-  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
-  // (undocumented)
-  done: boolean;
-  // (undocumented)
-  emitLog(message: string, metadata?: JsonValue): Promise<void>;
-  // (undocumented)
-  getWorkspaceName(): Promise<string>;
-  // (undocumented)
-  secrets?: TaskSecrets;
-  // (undocumented)
-  spec: TaskSpec;
-}
-
-// @public
-export class TaskAgent implements Task {
-  // (undocumented)
-  complete(result: CompletedTaskState, metadata?: JsonObject): Promise<void>;
-  // (undocumented)
-  static create(
-    state: TaskState,
-    storage: TaskStore,
-    logger: Logger_2,
-  ): TaskAgent;
-  // (undocumented)
-  get done(): boolean;
-  // (undocumented)
-  emitLog(message: string, metadata?: JsonObject): Promise<void>;
-  // (undocumented)
-  getWorkspaceName(): Promise<string>;
-  // (undocumented)
-  get secrets(): TaskSecrets | undefined;
-  // (undocumented)
-  get spec(): TaskSpec;
-}
-
-// @public
 export interface TaskBroker {
   // (undocumented)
-  claim(): Promise<Task>;
+  claim(): Promise<TaskContext>;
   // (undocumented)
   dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
   // (undocumented)
@@ -413,7 +375,45 @@ export interface TaskBroker {
 }
 
 // @public
+export interface TaskContext {
+  // (undocumented)
+  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
+  // (undocumented)
+  done: boolean;
+  // (undocumented)
+  emitLog(message: string, metadata?: JsonValue): Promise<void>;
+  // (undocumented)
+  getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  secrets?: TaskSecrets;
+  // (undocumented)
+  spec: TaskSpec;
+}
+
+// @public
 export type TaskEventType = 'completion' | 'log';
+
+// @public
+export class TaskManager implements TaskContext {
+  // (undocumented)
+  complete(result: CompletedTaskState, metadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  static create(
+    state: TaskState,
+    storage: TaskStore,
+    logger: Logger_2,
+  ): TaskManager;
+  // (undocumented)
+  get done(): boolean;
+  // (undocumented)
+  emitLog(message: string, metadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  get secrets(): TaskSecrets | undefined;
+  // (undocumented)
+  get spec(): TaskSpec;
+}
 
 // @public
 export type TaskSecrets = {
@@ -525,7 +525,7 @@ export class TaskWorker {
   // (undocumented)
   static createWorker(options: CreateWorkerOptions): TaskWorker;
   // (undocumented)
-  runOneTask(task: Task): Promise<void>;
+  runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;
 }

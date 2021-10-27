@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Task, TaskBroker, WorkflowRunner } from './types';
+import { TaskContext, TaskBroker, WorkflowRunner } from './types';
 import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
@@ -94,7 +94,7 @@ export class TaskWorker {
     })();
   }
 
-  async runOneTask(task: Task) {
+  async runOneTask(task: TaskContext) {
     try {
       const { output } =
         task.spec.apiVersion === 'scaffolder.backstage.io/v1beta3'

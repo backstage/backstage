@@ -15,7 +15,7 @@
  */
 import { ScmIntegrations } from '@backstage/integration';
 import {
-  Task,
+  TaskContext,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -52,7 +52,13 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
 
-const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
+const createStepLogger = ({
+  task,
+  step,
+}: {
+  task: TaskContext;
+  step: TaskStep;
+}) => {
   const metadata = { stepId: step.id };
   const taskLogger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -162,7 +168,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
   }
 
-  async execute(task: Task): Promise<WorkflowResponse> {
+  async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
         'Wrong template version executed with the workflow engine',

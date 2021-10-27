@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  Task,
+  TaskContext,
   WorkflowRunner,
   WorkflowResponse,
   TaskSpecV1beta2,
@@ -72,7 +72,7 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
     this.handlebars.registerHelper('eq', (a, b) => a === b);
   }
 
-  async execute(task: Task): Promise<WorkflowResponse> {
+  async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(`Task spec is not a valid v1beta2 task spec`);
     }

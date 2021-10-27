@@ -18,7 +18,7 @@ import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
-  Task,
+  TaskContext,
   TaskSecrets,
   TaskSpec,
   TaskStore,
@@ -29,17 +29,17 @@ import {
 } from './types';
 
 /**
- * TaskAgent
+ * TaskManager
  *
  * @public
  */
-export class TaskAgent implements Task {
+export class TaskManager implements TaskContext {
   private isDone = false;
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(state: TaskState, storage: TaskStore, logger: Logger) {
-    const agent = new TaskAgent(state, storage, logger);
+    const agent = new TaskManager(state, storage, logger);
     agent.startTimeout();
     return agent;
   }
@@ -135,11 +135,11 @@ export class StorageTaskBroker implements TaskBroker {
   ) {}
   private deferredDispatch = defer();
 
-  async claim(): Promise<Task> {
+  async claim(): Promise<TaskContext> {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        return TaskAgent.create(
+        return TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,

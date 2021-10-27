@@ -17,7 +17,7 @@
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
-import { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
+import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { TaskSecrets, TaskSpec, SerializedTaskEvent } from './types';
 
 async function createStore(): Promise<DatabaseTaskStore> {
@@ -48,7 +48,7 @@ describe('StorageTaskBroker', () => {
   it('should claim a dispatched work item', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch({} as TaskSpec);
-    await expect(broker.claim()).resolves.toEqual(expect.any(TaskAgent));
+    await expect(broker.claim()).resolves.toEqual(expect.any(TaskManager));
   });
 
   it('should wait for a dispatched work item', async () => {
@@ -58,7 +58,7 @@ describe('StorageTaskBroker', () => {
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
 
     await broker.dispatch({} as TaskSpec);
-    await expect(promise).resolves.toEqual(expect.any(TaskAgent));
+    await expect(promise).resolves.toEqual(expect.any(TaskManager));
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
@@ -70,9 +70,9 @@ describe('StorageTaskBroker', () => {
     const taskA = await broker.claim();
     const taskB = await broker.claim();
     const taskC = await broker.claim();
-    await expect(taskA).toEqual(expect.any(TaskAgent));
-    await expect(taskB).toEqual(expect.any(TaskAgent));
-    await expect(taskC).toEqual(expect.any(TaskAgent));
+    await expect(taskA).toEqual(expect.any(TaskManager));
+    await expect(taskB).toEqual(expect.any(TaskManager));
+    await expect(taskC).toEqual(expect.any(TaskManager));
     await expect(taskA.spec.steps[0].id).toBe('a');
     await expect(taskB.spec.steps[0].id).toBe('b');
     await expect(taskC.spec.steps[0].id).toBe('c');
