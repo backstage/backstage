@@ -122,6 +122,7 @@ export class NextCatalogBuilder {
       minSeconds: 100,
       maxSeconds: 150,
     });
+  private locationAnalyzer: LocationAnalyzer | undefined = undefined;
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -173,6 +174,14 @@ export class NextCatalogBuilder {
     refreshInterval: RefreshIntervalFunction,
   ): NextCatalogBuilder {
     this.refreshInterval = refreshInterval;
+    return this;
+  }
+
+  /**
+   * Overwrites the default location analyzer.
+   */
+  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder {
+    this.locationAnalyzer = locationAnalyzer;
     return this;
   }
 
@@ -338,7 +347,8 @@ export class NextCatalogBuilder {
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
-    const locationAnalyzer = new RepoLocationAnalyzer(logger, integrations);
+    const locationAnalyzer =
+      this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new DefaultLocationService(
       locationStore,
       orchestrator,
