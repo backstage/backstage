@@ -15,4 +15,4 @@
  */
 
 export { TaskManager } from './TaskManager';
-export type { PluginTaskManager, TaskOptions } from './types';
+export type { PluginTaskManager, TaskDefinition } from './types';

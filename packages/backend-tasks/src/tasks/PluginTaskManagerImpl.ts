@@ -17,7 +17,7 @@
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskManager, TaskOptions } from './types';
+import { PluginTaskManager, TaskDefinition } from './types';
 import { validateId } from './util';
 
 /**
@@ -30,25 +30,23 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
   ) {}
 
   async scheduleTask(
-    id: string,
-    options: TaskOptions,
-    fn: () => void | Promise<void>,
+    task: TaskDefinition,
   ): Promise<{ unschedule: () => Promise<void> }> {
-    validateId(id);
+    validateId(task.id);
 
     const knex = await this.databaseFactory();
 
-    const task = new TaskWorker(id, fn, knex, this.logger);
-    await task.start({
+    const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+    await worker.start({
       version: 1,
-      initialDelayDuration: options.initialDelay?.toISO(),
-      recurringAtMostEveryDuration: options.frequency.toISO(),
-      timeoutAfterDuration: options.timeout.toISO(),
+      initialDelayDuration: task.initialDelay?.toISO(),
+      recurringAtMostEveryDuration: task.frequency.toISO(),
+      timeoutAfterDuration: task.timeout.toISO(),
     });
 
     return {
       async unschedule() {
-        await task.stop();
+        await worker.stop();
       },
     };
   }

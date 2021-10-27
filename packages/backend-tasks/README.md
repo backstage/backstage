@@ -19,15 +19,13 @@ import { TaskManager } from '@backstage/backend-tasks';
 
 const manager = TaskManager.fromConfig(rootConfig).forPlugin('my-plugin');
 
-const { unschedule } = await manager.scheduleTask(
-  'refresh-things',
-  {
-    frequency: Duration.fromObject({ minutes: 10 }),
-  },
-  async () => {
+const { unschedule } = await manager.scheduleTask({
+  id: 'refresh-things',
+  frequency: Duration.fromObject({ minutes: 10 }),
+  fn: async () => {
     await entityProvider.run();
   },
-);
+});
 ```
 
 ## Documentation

@@ -10,13 +10,18 @@ import { Logger as Logger_2 } from 'winston';
 
 // @public
 export interface PluginTaskManager {
-  scheduleTask(
-    id: string,
-    options: TaskOptions,
-    fn: () => void | Promise<void>,
-  ): Promise<{
+  scheduleTask(task: TaskDefinition): Promise<{
     unschedule: () => Promise<void>;
   }>;
+}
+
+// @public
+export interface TaskDefinition {
+  fn: () => void | Promise<void>;
+  frequency: Duration;
+  id: string;
+  initialDelay?: Duration;
+  timeout: Duration;
 }
 
 // @public
@@ -31,12 +36,5 @@ export class TaskManager {
       logger?: Logger_2;
     },
   ): TaskManager;
-}
-
-// @public
-export interface TaskOptions {
-  frequency?: Duration;
-  initialDelay?: Duration;
-  timeout?: Duration;
 }
 ```

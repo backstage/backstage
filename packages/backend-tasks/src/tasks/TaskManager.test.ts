@@ -43,14 +43,12 @@ describe('TaskManager', () => {
       const database = await createDatabase(databaseId);
       const manager = new TaskManager(database, logger).forPlugin('test');
 
-      const task = await manager.scheduleTask(
-        'task1',
-        {
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromMillis(5000),
-        },
-        () => {},
-      );
+      const task = await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromMillis(5000),
+        fn: () => {},
+      });
       expect(task.unschedule).toBeDefined();
     },
   );

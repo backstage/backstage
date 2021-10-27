@@ -22,7 +22,17 @@ import { z } from 'zod';
  *
  * @public
  */
-export interface TaskOptions {
+export interface TaskDefinition {
+  /**
+   * A unique ID (within the scope of the plugin) for the task.
+   */
+  id: string;
+
+  /**
+   * The actual task function to be invoked regularly.
+   */
+  fn: () => void | Promise<void>;
+
   /**
    * The maximum amount of time that a single task invocation can take, before
    * it's considered timed out and gets "released" such that a new invocation
@@ -77,17 +87,13 @@ export interface PluginTaskManager {
    * its options are just overwritten with the given options, and things
    * continue from there.
    *
-   * @param id - A unique ID (within the scope of the plugin) for the task
-   * @param options - Options for the task
-   * @param fn - The actual task function to be invoked
+   * @param definition - The task definition
    * @returns An `unschedule` function that can be used to stop the task
    *          invocations later on. This removes the task entirely from storage
    *          and stops its invocations across all workers.
    */
   scheduleTask(
-    id: string,
-    options: TaskOptions,
-    fn: () => void | Promise<void>,
+    task: TaskDefinition,
   ): Promise<{ unschedule: () => Promise<void> }>;
 }
 
