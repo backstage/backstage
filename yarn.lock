@@ -21141,10 +21141,10 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.npmjs.org/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-octokit-plugin-create-pull-request@^3.9.3:
-  version "3.9.3"
-  resolved "https://registry.npmjs.org/octokit-plugin-create-pull-request/-/octokit-plugin-create-pull-request-3.9.3.tgz#f99f53907ac322a3494cc970514a023d7b659e2b"
-  integrity sha512-lTyNnCRoT4IvCQx2Cb4eFMqg8aIpsaDd59MNwf4OPnWAJM7hT6g7RW/icImvAzZLR4t5ENSLNzWarv2XqLL+Lg==
+octokit-plugin-create-pull-request@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.npmjs.org/octokit-plugin-create-pull-request/-/octokit-plugin-create-pull-request-3.10.0.tgz#c9a589e0014e949eadd24a03ace10565007784d5"
+  integrity sha512-QU3nk62+OimV7ki+pV90cXoqqbUAQLdbqccS7/cNajdjQ2KYmaakz21FL1y78a5N0mA2P4WOs0o2+aunvbWI0w==
   dependencies:
     "@octokit/types" "^6.8.2"
 
