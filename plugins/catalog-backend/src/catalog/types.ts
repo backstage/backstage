@@ -39,7 +39,7 @@ export type EntityPagination = {
 /**
  * Matches rows in the entities_search table.
  */
-export type EntitiesSearchFilter = {
+export type EntitiesValuesFilter = {
   /**
    * The key to match on.
    *
@@ -50,17 +50,27 @@ export type EntitiesSearchFilter = {
   /**
    * Match on plain equality of values.
    *
-   * If undefined, this factor is not taken into account. Otherwise, match on
+   * Match on
    * values that are equal to any of the given array items. Matches are always
    * case insensitive.
    */
-  matchValueIn?: string[];
+  values: string[];
 
-  /**
-   * Match on existence of key.
-   */
-  matchValueExists?: boolean;
+  negate?: boolean;
 };
+
+export type EntitiesKeyFilter = {
+  /**
+   * The key to match on.
+   *
+   * Matches are always case insensitive.
+   */
+  key: string;
+
+  negate?: boolean;
+};
+
+export type EntitiesSearchFilter = EntitiesValuesFilter | EntitiesKeyFilter;
 
 export type PageInfo =
   | {
