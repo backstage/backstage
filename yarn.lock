@@ -5408,10 +5408,10 @@
   resolved "https://registry.npmjs.org/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@spotify/eslint-config-base@^9.0.0":
-  version "9.0.2"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-9.0.2.tgz#a4830f610f40de935de795d3def486c3e5064ee4"
-  integrity sha512-HS+eLpVMbUUBXZ9ZlPcd6yCje/OVNhdcGDeU+DoK+C9AFfzbRtuZ1EJ8ewzj58ENrhlfJPuxCS68bypA/esyjw==
+"@spotify/eslint-config-base@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-12.0.0.tgz#0b1e41bb436d5c1c20714703629514d64c3c0f06"
+  integrity sha512-5Uud/TmzakqmdUNCZpD8JFQRa2VG3dVd3DanSMpU/nVdu6K5LyX8EMU3Tz1vGP18Wih8iAu/sBSJhntNzw7e6w==
 
 "@spotify/eslint-config-react@^10.0.0":
   version "10.0.0"
