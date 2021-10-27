@@ -79,28 +79,63 @@ export type BackstagePaletteAdditions = {
   };
 };
 
+/**
+ * The full Backstage palette.
+ *
+ * @public
+ */
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
+
+/**
+ * The full Backstage palette options.
+ *
+ * @public
+ */
 export type BackstagePaletteOptions = PaletteOptions &
   BackstagePaletteAdditions;
 
+/**
+ * Selector for what page theme to use.
+ *
+ * @public
+ */
 export type PageThemeSelector = {
   themeId: string;
 };
 
+/**
+ * A Backstage theme.
+ *
+ * @public
+ */
 export interface BackstageTheme extends Theme {
   palette: BackstagePalette;
   page: PageTheme;
-  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
-}
-
-export interface BackstageThemeOptions extends ThemeOptions {
-  palette: BackstagePaletteOptions;
-  page: PageTheme;
-  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
 }
 
 /**
- * A simpler configuration for creating a new theme that just tweaks some parts of the backstage one.
+ * Backstage theme options.
+ *
+ * @public
+ * @remarks
+ *
+ * This is essentially a partial theme definition made by the user, that then
+ * gets merged together with defaults and other values to form the final
+ * {@link BackstageTheme}.
+ *
+ */
+export interface BackstageThemeOptions extends ThemeOptions {
+  palette: BackstagePaletteOptions;
+  page: PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
+}
+
+/**
+ * A simpler configuration for creating a new theme that just tweaks some parts
+ * of the backstage one.
+ *
+ * @public
  */
 export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
@@ -109,6 +144,11 @@ export type SimpleThemeOptions = {
   fontFamily?: string;
 };
 
+/**
+ * The theme definitions for a given layout page.
+ *
+ * @public
+ */
 export type PageTheme = {
   colors: string[];
   shape: string;
