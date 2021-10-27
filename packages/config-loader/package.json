@@ -30,7 +30,6 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/integration": "^0.6.5",
     "@backstage/cli-common": "^0.1.4",
     "@backstage/config": "^0.1.9",
     "@backstage/errors": "^0.1.3",

@@ -21,7 +21,7 @@ import { findPaths } from '@backstage/cli-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { ConfigTarget, loadConfig } from '@backstage/config-loader';
-import { isValidUrl } from '@backstage/integration';
+import { isValidUrl } from './urls';
 
 export class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -162,6 +162,7 @@ export async function loadBackendConfig(options: {
 
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
+    configPaths: [],
     configTargets: configTargets,
     watch: {
       onChange(newConfigs) {

@@ -11555,11 +11555,6 @@ core-js@^2.4.0, core-js@^2.5.0, core-js@^2.6.10:
   resolved "https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
-core-js@^3.0.0:
-  version "3.18.3"
-  resolved "https://registry.npmjs.org/core-js/-/core-js-3.18.3.tgz#86a0bba2d8ec3df860fefcc07a8d119779f01509"
-  integrity sha512-tReEhtMReZaPFVw7dajMx0vlsz3oOb8ajgPoHVYGxr8ErnZ6PcYEvvmjGmXlfpnxpkYSdOQttjB+MvVbCGfvLw==
-
 core-js@^3.0.4, core-js@^3.6.5, core-js@^3.8.2:
   version "3.15.0"
   resolved "https://registry.npmjs.org/core-js/-/core-js-3.15.0.tgz#db9554ebce0b6fd90dc9b1f2465c841d2d055044"
@@ -14248,22 +14243,6 @@ fetch-blob@2.1.2:
   resolved "https://registry.npmjs.org/fetch-blob/-/fetch-blob-2.1.2.tgz#a7805db1361bd44c1ef62bb57fb5fe8ea173ef3c"
   integrity sha512-YKqtUDwqLyfyMnmbw8XD6Q8j9i/HggKtPEI+pZ1+8bvheBu78biSmNaXWusx1TauGqtUUGx/cBb1mKdq2rLYow==
 
-fetch-mock@^9.11.0:
-  version "9.11.0"
-  resolved "https://registry.npmjs.org/fetch-mock/-/fetch-mock-9.11.0.tgz#371c6fb7d45584d2ae4a18ee6824e7ad4b637a3f"
-  integrity sha512-PG1XUv+x7iag5p/iNHD4/jdpxL9FtVSqRMUQhPab4hVDt80T1MH5ehzVrL2IdXO9Q2iBggArFvPqjUbHFuI58Q==
-  dependencies:
-    "@babel/core" "^7.0.0"
-    "@babel/runtime" "^7.0.0"
-    core-js "^3.0.0"
-    debug "^4.1.1"
-    glob-to-regexp "^0.4.0"
-    is-subset "^0.1.1"
-    lodash.isequal "^4.5.0"
-    path-to-regexp "^2.2.1"
-    querystring "^0.2.0"
-    whatwg-url "^6.5.0"
-
 fetch-readablestream@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/fetch-readablestream/-/fetch-readablestream-0.2.0.tgz#eaa6d1a76b12de2d4731a343393c6ccdcfe2c795"
@@ -15088,7 +15067,7 @@ glob-to-regexp@^0.3.0:
   resolved "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.3.0.tgz#8c5a1494d2066c570cc3bfe4496175acc4d502ab"
   integrity sha1-jFoUlNIGbFcMw7/kSWF1rMTVAqs=
 
-glob-to-regexp@^0.4.0, glob-to-regexp@^0.4.1:
+glob-to-regexp@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.4.1.tgz#c75297087c851b9a578bd217dd59a92f59fe546e"
   integrity sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==
@@ -17129,11 +17108,6 @@ is-subdir@^1.1.1:
   dependencies:
     better-path-resolve "1.0.0"
 
-is-subset@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/is-subset/-/is-subset-0.1.1.tgz#8a59117d932de1de00f245fcdd39ce43f1e939a6"
-  integrity sha1-ilkRfZMt4d4A8kX83TnOQ/HpOaY=
-
 is-svg@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/is-svg/-/is-svg-3.0.0.tgz#9321dbd29c212e5ca99c4fa9794c714bcafa2f75"
@@ -19002,7 +18976,7 @@ lodash.isempty@^4.4.0:
   resolved "https://registry.npmjs.org/lodash.isempty/-/lodash.isempty-4.4.0.tgz#6f86cbedd8be4ec987be9aaf33c9684db1b31e7e"
   integrity sha1-b4bL7di+TsmHvpqvM8loTbGzHn4=
 
-lodash.isequal@^4.0.0, lodash.isequal@^4.5.0:
+lodash.isequal@^4.0.0:
   version "4.5.0"
   resolved "https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
@@ -22190,11 +22164,6 @@ path-to-regexp@^1.7.0:
   integrity sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==
   dependencies:
     isarray "0.0.1"
-
-path-to-regexp@^2.2.1:
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-2.4.0.tgz#35ce7f333d5616f1c1e1bfe266c3aba2e5b2e704"
-  integrity sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==
 
 path-type@^1.0.0:
   version "1.1.0"
@@ -28732,7 +28701,7 @@ whatwg-url@^5.0.0:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
 
-whatwg-url@^6.4.1, whatwg-url@^6.5.0:
+whatwg-url@^6.4.1:
   version "6.5.0"
   resolved "https://registry.npmjs.org/whatwg-url/-/whatwg-url-6.5.0.tgz#f2df02bff176fd65070df74ad5ccbb5a199965a8"
   integrity sha512-rhRZRqx/TLJQWUpQ6bmrt2UV4f0HCQ463yQuONJqC6fO2VoEb1pTYddbe59SkYq87aoM5A3bdhMZiUiVws+fzQ==
