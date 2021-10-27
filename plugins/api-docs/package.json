@@ -64,7 +64,7 @@
     "@types/node": "^14.14.32",
     "@types/swagger-ui-react": "^3.23.3",
     "cross-fetch": "^3.0.6",
-    "msw": "^0.29.0"
+    "msw": "^0.35.0"
   },
   "files": [
     "dist"
