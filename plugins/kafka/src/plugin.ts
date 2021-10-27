@@ -21,6 +21,7 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootCatalogKafkaRouteRef = createRouteRef({
@@ -33,8 +34,9 @@ export const kafkaPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: kafkaApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new KafkaBackendClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new KafkaBackendClient({ discoveryApi, identityApi }),
     }),
   ],
   routes: {
