@@ -9,9 +9,7 @@ import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Theme } from '@material-ui/core';
 import { ThemeOptions } from '@material-ui/core';
 
-// Warning: (ae-missing-release-tag) "BackstagePalette" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
 
 // @public
@@ -69,101 +67,71 @@ export type BackstagePaletteAdditions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "BackstagePaletteOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BackstagePaletteOptions = PaletteOptions &
   BackstagePaletteAdditions;
 
-// Warning: (ae-missing-release-tag) "BackstageTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface BackstageTheme extends Theme {
   // (undocumented)
-  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
   // (undocumented)
   page: PageTheme;
   // (undocumented)
   palette: BackstagePalette;
 }
 
-// Warning: (ae-missing-release-tag) "BackstageThemeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface BackstageThemeOptions extends ThemeOptions {
   // (undocumented)
-  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
   // (undocumented)
   page: PageTheme;
   // (undocumented)
   palette: BackstagePaletteOptions;
 }
 
-// Warning: (ae-missing-release-tag) "colorVariants" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const colorVariants: Record<string, string[]>;
 
-// Warning: (ae-missing-release-tag) "createTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createTheme(options: SimpleThemeOptions): BackstageTheme;
 
-// Warning: (ae-missing-release-tag) "createThemeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createThemeOptions(
   options: SimpleThemeOptions,
 ): BackstageThemeOptions;
 
-// Warning: (ae-missing-release-tag) "createThemeOverrides" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createThemeOverrides(theme: BackstageTheme): Overrides;
 
-// Warning: (ae-missing-release-tag) "darkTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const darkTheme: BackstageTheme;
 
-// Warning: (ae-missing-release-tag) "genPageTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function genPageTheme(colors: string[], shape: string): PageTheme;
 
-// Warning: (ae-missing-release-tag) "lightTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const lightTheme: BackstageTheme;
 
-// Warning: (ae-missing-release-tag) "PageTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type PageTheme = {
   colors: string[];
   shape: string;
   backgroundImage: string;
 };
 
-// Warning: (ae-missing-release-tag) "pageTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const pageTheme: Record<string, PageTheme>;
 
-// Warning: (ae-missing-release-tag) "PageThemeSelector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type PageThemeSelector = {
   themeId: string;
 };
 
-// Warning: (ae-missing-release-tag) "shapes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const shapes: Record<string, string>;
 
-// Warning: (ae-missing-release-tag) "SimpleThemeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
