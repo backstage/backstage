@@ -21,30 +21,6 @@
  */
 exports.up = async function up(knex) {
   //
-  // mutexes
-  //
-  await knex.schema.createTable('backstage_backend_tasks__mutexes', table => {
-    table.comment('Locks used for mutual exclusion among multiple workers');
-    table
-      .text('id')
-      .primary()
-      .notNullable()
-      .comment('The unique ID of this particular mutex');
-    table
-      .text('current_lock_ticket')
-      .notNullable()
-      .comment('A unique ticket for the current mutex lock');
-    table
-      .dateTime('current_lock_acquired_at')
-      .nullable()
-      .comment('The time when the mutex was locked');
-    table
-      .dateTime('current_lock_expires_at')
-      .nullable()
-      .comment('The time when a locked mutex will time out and auto-release');
-    table.index(['id'], 'backstage_backend_tasks__mutexes__id_idx');
-  });
-  //
   // tasks
   //
   await knex.schema.createTable('backstage_backend_tasks__tasks', table => {
@@ -89,11 +65,4 @@ exports.down = async function down(knex) {
     table.dropIndex([], 'backstage_backend_tasks__tasks__id_idx');
   });
   await knex.schema.dropTable('backstage_backend_tasks__tasks');
-  //
-  // locks
-  //
-  await knex.schema.alterTable('backstage_backend_tasks__task_locks', table => {
-    table.dropIndex([], 'backstage_backend_tasks__task_locks__id_idx');
-  });
-  await knex.schema.dropTable('backstage_backend_tasks__task_locks');
 };

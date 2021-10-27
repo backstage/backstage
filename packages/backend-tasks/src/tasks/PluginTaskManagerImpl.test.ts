@@ -16,7 +16,6 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskManagerImpl } from './PluginTaskManagerImpl';
@@ -35,86 +34,6 @@ describe('PluginTaskManagerImpl', () => {
     );
     return { knex, manager };
   }
-
-  describe('acquireLock', () => {
-    it.each(databases.eachSupportedId())(
-      'can run the happy path, %p',
-      async databaseId => {
-        const { manager } = await init(databaseId);
-
-        const lock1 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        const lock2 = await manager.acquireLock('lock2', {
-          timeout: Duration.fromMillis(5000),
-        });
-
-        expect(lock1.acquired).toBe(true);
-        expect(lock2.acquired).toBe(true);
-
-        await expect(
-          manager.acquireLock('lock1', {
-            timeout: Duration.fromMillis(5000),
-          }),
-        ).resolves.toEqual({ acquired: false });
-
-        await (lock1 as any).release();
-        await (lock2 as any).release();
-
-        const lock1Again = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        expect(lock1Again.acquired).toBe(true);
-        await (lock1Again as any).release();
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
-      'rejects double lock attempts, %p',
-      async databaseId => {
-        const { manager } = await init(databaseId);
-
-        const lock1 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        const lock2 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-
-        expect(lock1.acquired).toBe(true);
-        expect(lock2.acquired).toBe(false);
-
-        await (lock1 as any).release();
-
-        const lock1Again = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        expect(lock1Again.acquired).toBe(true);
-        await (lock1Again as any).release();
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
-      'times out locks, %p',
-      async databaseId => {
-        const { manager } = await init(databaseId);
-
-        const lock1 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(200),
-        });
-
-        expect(lock1.acquired).toBe(true);
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const lock2 = await manager.acquireLock('lock1', {
-          timeout: Duration.fromMillis(5000),
-        });
-        expect(lock2.acquired).toBe(true);
-        await (lock2 as any).release();
-      },
-    );
-  });
 
   // This is just to test the wrapper code; most of the actual tests are in
   // TaskWorker.test.ts

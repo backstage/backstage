@@ -43,10 +43,14 @@ describe('TaskManager', () => {
       const database = await createDatabase(databaseId);
       const manager = new TaskManager(database, logger).forPlugin('test');
 
-      const lock = await manager.acquireLock('lock1', {
-        timeout: Duration.fromMillis(5000),
-      });
-      expect(lock.acquired).toBe(true);
+      const task = await manager.scheduleTask(
+        'task1',
+        {
+          timeout: Duration.fromMillis(5000),
+        },
+        () => {},
+      );
+      expect(task.unschedule).toBeDefined();
     },
   );
 });

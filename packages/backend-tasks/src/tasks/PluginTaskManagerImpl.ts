@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { isDatabaseConflictError } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-import { DbMutexesRow, DB_MUTEXES_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
-import { LockOptions, PluginTaskManager, TaskOptions } from './types';
-import { nowPlus, validateId } from './util';
+import { PluginTaskManager, TaskOptions } from './types';
+import { validateId } from './util';
 
 /**
  * Implements the actual task management.
@@ -31,57 +28,6 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,
   ) {}
-
-  async acquireLock(
-    id: string,
-    options: LockOptions,
-  ): Promise<
-    { acquired: false } | { acquired: true; release(): Promise<void> }
-  > {
-    validateId(id);
-
-    const knex = await this.databaseFactory();
-    const ticket = uuid();
-
-    const release = async () => {
-      try {
-        await knex<DbMutexesRow>(DB_MUTEXES_TABLE)
-          .where('id', '=', id)
-          .where('current_lock_ticket', '=', ticket)
-          .delete();
-      } catch (e) {
-        this.logger.warn(`Failed to release lock, ${e}`);
-      }
-    };
-
-    const record: Knex.DbRecord<DbMutexesRow> = {
-      current_lock_ticket: ticket,
-      current_lock_acquired_at: knex.fn.now(),
-      current_lock_expires_at: options.timeout
-        ? nowPlus(options.timeout, knex)
-        : knex.raw('null'),
-    };
-
-    // First try to overwrite an existing lock, that has timed out
-    const stolen = await knex<DbMutexesRow>(DB_MUTEXES_TABLE)
-      .where('id', '=', id)
-      .where('current_lock_expires_at', '<', knex.fn.now())
-      .update(record);
-
-    if (stolen) {
-      return { acquired: true, release };
-    }
-
-    try {
-      await knex<DbMutexesRow>(DB_MUTEXES_TABLE).insert({ id, ...record });
-      return { acquired: true, release };
-    } catch (e) {
-      if (!isDatabaseConflictError(e)) {
-        this.logger.warn(`Failed to acquire lock, ${e}`);
-      }
-      return { acquired: false };
-    }
-  }
 
   async scheduleTask(
     id: string,

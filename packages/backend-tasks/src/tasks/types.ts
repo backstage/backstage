@@ -18,19 +18,6 @@ import { Duration } from 'luxon';
 import { z } from 'zod';
 
 /**
- * Options that apply to the acquiral of a given lock.
- *
- * @public
- */
-export interface LockOptions {
-  /**
-   * The maximum amount of time that the lock can be held, before it's
-   * considered timed out and gets auto-released by the framework.
-   */
-  timeout: Duration;
-}
-
-/**
  * Options that apply to the invocation of a given task.
  *
  * @public
@@ -82,26 +69,6 @@ export interface TaskOptions {
  * @public
  */
 export interface PluginTaskManager {
-  /**
-   * Attempts to acquire an exclusive lock.
-   *
-   * A lock can only be held by one party at a time. Any subsequent attempts to
-   * acquire the lock will fail, unless the timeout period has been exceeded or
-   * the lock was released by the previous holder.
-   *
-   * @param id - A unique ID (within the scope of the plugin) for a lock
-   * @param options - Options for the lock
-   * @returns The result of the lock attempt. If it was successfully acquired,
-   *          you should remember to call its `release` method as soon as you
-   *          are done with the lock.
-   */
-  acquireLock(
-    id: string,
-    options: LockOptions,
-  ): Promise<
-    { acquired: false } | { acquired: true; release(): Promise<void> }
-  >;
-
   /**
    * Schedules a task function for coordinated exclusive invocation across
    * workers.

@@ -17,12 +17,7 @@
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
-import {
-  DbMutexesRow,
-  DbTasksRow,
-  DB_MUTEXES_TABLE,
-  DB_TASKS_TABLE,
-} from '../database/tables';
+import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { CancelToken } from './CancelToken';
 
 /**
@@ -69,22 +64,6 @@ export class PluginTaskManagerJanitor {
     // is why we avoid that entirely for the sqlite3 driver.
     // https://github.com/knex/knex/issues/4370
     // https://github.com/mapbox/node-sqlite3/issues/1453
-
-    const mutexesQuery = this.knex<DbMutexesRow>(DB_MUTEXES_TABLE)
-      .where('current_lock_expires_at', '<', this.knex.fn.now())
-      .delete();
-
-    if (this.knex.client.config.client === 'sqlite3') {
-      const mutexes = await mutexesQuery;
-      if (mutexes > 0) {
-        this.logger.warn(`${mutexes} mutex locks timed out and were lost`);
-      }
-    } else {
-      const mutexes = await mutexesQuery.returning(['id']);
-      for (const { id } of mutexes) {
-        this.logger.warn(`Mutex lock timed out and was lost: ${id}`);
-      }
-    }
 
     const tasksQuery = this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('current_run_expires_at', '<', this.knex.fn.now())

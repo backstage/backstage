@@ -9,24 +9,7 @@ import { Duration } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 
 // @public
-export interface LockOptions {
-  timeout: Duration;
-}
-
-// @public
 export interface PluginTaskManager {
-  acquireLock(
-    id: string,
-    options: LockOptions,
-  ): Promise<
-    | {
-        acquired: false;
-      }
-    | {
-        acquired: true;
-        release(): Promise<void>;
-      }
-  >;
   scheduleTask(
     id: string,
     options: TaskOptions,
