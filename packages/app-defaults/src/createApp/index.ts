@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { withDefaults } from './withDefaults';
-export type { OptionalAppOptions } from './withDefaults';
+export { createApp, defaultConfigLoader } from './createApp';
+export type { AppIcons } from './icons';
+export * from './types';

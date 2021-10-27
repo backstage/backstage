@@ -15,13 +15,9 @@
  */
 
 /**
- * Core components used by Backstage plugins and apps
+ * Provides the default wiring of a Backstage App
  *
  * @packageDocumentation
  */
 
-export * from './components';
-export * from './hooks';
-export * from './icons';
-export * from './layout';
-export * from './overridableComponents';
+export * from './createApp';
