@@ -83,22 +83,24 @@ export async function sleep(
  *
  * @param parent - The "parent" signal that can trigger the delegate
  */
-export function delegateAbortController(parent: AbortSignal): AbortController {
+export function delegateAbortController(parent?: AbortSignal): AbortController {
   const delegate = new AbortController();
 
-  if (parent.aborted) {
-    delegate.abort();
-  } else {
-    const onParentAborted = () => {
+  if (parent) {
+    if (parent.aborted) {
       delegate.abort();
-    };
+    } else {
+      const onParentAborted = () => {
+        delegate.abort();
+      };
 
-    const onChildAborted = () => {
-      parent.removeEventListener('abort', onParentAborted);
-    };
+      const onChildAborted = () => {
+        parent.removeEventListener('abort', onParentAborted);
+      };
 
-    parent.addEventListener('abort', onParentAborted, { once: true });
-    delegate.signal.addEventListener('abort', onChildAborted, { once: true });
+      parent.addEventListener('abort', onParentAborted, { once: true });
+      delegate.signal.addEventListener('abort', onChildAborted, { once: true });
+    }
   }
 
   return delegate;

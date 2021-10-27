@@ -18,6 +18,7 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import { TaskManager } from './TaskManager';
+import waitForExpect from 'wait-for-expect';
 
 describe('TaskManager', () => {
   const logger = getVoidLogger();
@@ -42,14 +43,18 @@ describe('TaskManager', () => {
     async databaseId => {
       const database = await createDatabase(databaseId);
       const manager = new TaskManager(database, logger).forPlugin('test');
+      const fn = jest.fn();
 
-      const task = await manager.scheduleTask({
+      await manager.scheduleTask({
         id: 'task1',
         timeout: Duration.fromMillis(5000),
         frequency: Duration.fromMillis(5000),
-        fn: () => {},
+        fn,
       });
-      expect(task.unschedule).toBeDefined();
+
+      await waitForExpect(() => {
+        expect(fn).toBeCalled();
+      });
     },
   );
 });

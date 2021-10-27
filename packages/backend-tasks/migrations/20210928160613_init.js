@@ -36,7 +36,7 @@ exports.up = async function up(knex) {
       .comment('JSON serialized object with properties for this task');
     table
       .dateTime('next_run_start_at')
-      .nullable()
+      .notNullable()
       .comment('The next time that the task should be started');
     table
       .text('current_run_ticket')

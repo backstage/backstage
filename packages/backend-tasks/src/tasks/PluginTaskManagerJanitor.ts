@@ -16,7 +16,7 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
+import { AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { sleep } from './util';
@@ -29,8 +29,6 @@ export class PluginTaskManagerJanitor {
   private readonly knex: Knex;
   private readonly waitBetweenRuns: Duration;
   private readonly logger: Logger;
-  private readonly abortController: AbortController;
-  private readonly abortSignal: AbortSignal;
 
   constructor(options: {
     knex: Knex;
@@ -40,24 +38,18 @@ export class PluginTaskManagerJanitor {
     this.knex = options.knex;
     this.waitBetweenRuns = options.waitBetweenRuns;
     this.logger = options.logger;
-    this.abortController = new AbortController();
-    this.abortSignal = this.abortController.signal;
   }
 
-  async start() {
-    while (!this.abortSignal.aborted) {
+  async start(abortSignal?: AbortSignal) {
+    while (!abortSignal?.aborted) {
       try {
         await this.runOnce();
       } catch (e) {
         this.logger.warn(`Error while performing janitorial tasks, ${e}`);
       }
 
-      await sleep(this.waitBetweenRuns, this.abortSignal);
+      await sleep(this.waitBetweenRuns, abortSignal);
     }
-  }
-
-  async stop() {
-    this.abortController.abort();
   }
 
   private async runOnce() {
@@ -68,9 +60,15 @@ export class PluginTaskManagerJanitor {
     // https://github.com/knex/knex/issues/4370
     // https://github.com/mapbox/node-sqlite3/issues/1453
 
+    const dbNull = this.knex.raw('null');
+
     const tasksQuery = this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('current_run_expires_at', '<', this.knex.fn.now())
-      .delete();
+      .update({
+        current_run_ticket: dbNull,
+        current_run_started_at: dbNull,
+        current_run_expires_at: dbNull,
+      });
 
     if (this.knex.client.config.client === 'sqlite3') {
       const tasks = await tasksQuery;

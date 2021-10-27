@@ -29,25 +29,22 @@ export class PluginTaskManagerImpl implements PluginTaskManager {
     private readonly logger: Logger,
   ) {}
 
-  async scheduleTask(
-    task: TaskDefinition,
-  ): Promise<{ unschedule: () => Promise<void> }> {
+  async scheduleTask(task: TaskDefinition): Promise<void> {
     validateId(task.id);
 
     const knex = await this.databaseFactory();
 
     const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
-    await worker.start({
-      version: 1,
-      initialDelayDuration: task.initialDelay?.toISO(),
-      recurringAtMostEveryDuration: task.frequency.toISO(),
-      timeoutAfterDuration: task.timeout.toISO(),
-    });
-
-    return {
-      async unschedule() {
-        await worker.stop();
+    await worker.start(
+      {
+        version: 1,
+        initialDelayDuration: task.initialDelay?.toISO(),
+        recurringAtMostEveryDuration: task.frequency.toISO(),
+        timeoutAfterDuration: task.timeout.toISO(),
       },
-    };
+      {
+        signal: task.signal,
+      },
+    );
   }
 }

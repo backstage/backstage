@@ -45,7 +45,7 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
-        const { unschedule } = await manager.scheduleTask({
+        await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromMillis(5000),
@@ -55,8 +55,6 @@ describe('PluginTaskManagerImpl', () => {
         await waitForExpect(() => {
           expect(fn).toBeCalled();
         });
-
-        await unschedule();
       },
     );
   });

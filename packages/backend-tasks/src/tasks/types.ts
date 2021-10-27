@@ -39,6 +39,12 @@ export interface TaskDefinition {
   fn: TaskFunction;
 
   /**
+   * An abort signal that, when triggered, will stop the recurring execution of
+   * the task.
+   */
+  signal?: AbortSignal;
+
+  /**
    * The maximum amount of time that a single task invocation can take, before
    * it's considered timed out and gets "released" such that a new invocation
    * is permitted to take place (possibly, then, on a different worker).
@@ -93,13 +99,8 @@ export interface PluginTaskManager {
    * continue from there.
    *
    * @param definition - The task definition
-   * @returns An `unschedule` function that can be used to stop the task
-   *          invocations later on. This removes the task entirely from storage
-   *          and stops its invocations across all workers.
    */
-  scheduleTask(
-    task: TaskDefinition,
-  ): Promise<{ unschedule: () => Promise<void> }>;
+  scheduleTask(task: TaskDefinition): Promise<void>;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {

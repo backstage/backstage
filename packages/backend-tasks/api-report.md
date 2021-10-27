@@ -11,9 +11,7 @@ import { Logger as Logger_2 } from 'winston';
 
 // @public
 export interface PluginTaskManager {
-  scheduleTask(task: TaskDefinition): Promise<{
-    unschedule: () => Promise<void>;
-  }>;
+  scheduleTask(task: TaskDefinition): Promise<void>;
 }
 
 // @public
@@ -22,6 +20,7 @@ export interface TaskDefinition {
   frequency: Duration;
   id: string;
   initialDelay?: Duration;
+  signal?: AbortSignal_2;
   timeout: Duration;
 }
 
