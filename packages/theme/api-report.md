@@ -9,16 +9,71 @@ import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Theme } from '@material-ui/core';
 import { ThemeOptions } from '@material-ui/core';
 
-// Warning: (ae-forgotten-export) The symbol "PaletteAdditions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "BackstagePalette" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type BackstagePalette = Palette & PaletteAdditions;
+export type BackstagePalette = Palette & BackstagePaletteAdditions;
+
+// @public
+export type BackstagePaletteAdditions = {
+  status: {
+    ok: string;
+    warning: string;
+    error: string;
+    pending: string;
+    running: string;
+    aborted: string;
+  };
+  border: string;
+  textContrast: string;
+  textVerySubtle: string;
+  textSubtle: string;
+  highlight: string;
+  errorBackground: string;
+  warningBackground: string;
+  infoBackground: string;
+  errorText: string;
+  infoText: string;
+  warningText: string;
+  linkHover: string;
+  link: string;
+  gold: string;
+  navigation: {
+    background: string;
+    indicator: string;
+    color: string;
+    selectedColor: string;
+  };
+  tabbar: {
+    indicator: string;
+  };
+  bursts: {
+    fontColor: string;
+    slackChannelText: string;
+    backgroundColor: {
+      default: string;
+    };
+    gradient: {
+      linear: string;
+    };
+  };
+  pinSidebarButton: {
+    icon: string;
+    background: string;
+  };
+  banner: {
+    info: string;
+    error: string;
+    text: string;
+    link: string;
+  };
+};
 
 // Warning: (ae-missing-release-tag) "BackstagePaletteOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
+export type BackstagePaletteOptions = PaletteOptions &
+  BackstagePaletteAdditions;
 
 // Warning: (ae-missing-release-tag) "BackstageTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
