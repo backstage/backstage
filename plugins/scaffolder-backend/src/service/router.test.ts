@@ -40,6 +40,12 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+/**
+ * TODO: The following should import directly from the router file.
+ * Due to a circular dependency between this plugin and the
+ * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
+ * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
+ */
 import { createRouter } from '../index';
 
 const createCatalogClient = (templates: any[] = []) =>
