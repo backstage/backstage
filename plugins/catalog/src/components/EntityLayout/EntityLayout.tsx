@@ -200,9 +200,7 @@ export const EntityLayout = ({
               tabProps: props.tabProps,
             },
           ];
-        })
-        // TODO: remove once react-router updated
-        .sort((a, b) => b.path.localeCompare(a.path)),
+        }),
     [entity],
   );
 
