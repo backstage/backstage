@@ -450,3 +450,22 @@ azureDevOps:
   host: dev.azure.com
   token: my-token
   organization: my-company
+
+apiDocs:
+  asyncApi:
+    parserConfig:
+      expand:
+        channels:
+          root: true
+        servers:
+          root: true
+        messages:
+          root: true
+          elements: true
+    fetcherConfig:
+      order: 199
+      canReadValue: "^https?:\/\/[^\\s$.?#].[^\\s]*$"
+      fetchOptions:
+        headers:
+          EXAMPLE: my-value
+

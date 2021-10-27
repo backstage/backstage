@@ -1,0 +1,218 @@
+{
+  "$schema": "https://backstage.io/schema/config-v1",
+  "type": "object",
+  "properties": {
+    "apiDocs": {
+      "type": "object",
+      "properties": {
+        "asyncApi": {
+          "type": "object",
+          "properties": {
+            "parserConfig": {
+              "type": "object",
+              "properties": {
+                "schemaID": {
+                  "type": "string",
+                  "visibility": "frontend"
+                },
+                "show": {
+                  "type": "object",
+                  "properties": {
+                    "info": {
+                      "type": "boolean",
+                      "visibility": "frontend"
+                    },
+                    "channels": {
+                      "type": "boolean",
+                      "visibility": "frontend"
+                    },
+                    "servers": {
+                      "type": "boolean",
+                      "visibility": "frontend"
+                    },
+                    "messages": {
+                      "type": "boolean",
+                      "visibility": "frontend"
+                    },
+                    "schemas": {
+                      "type": "boolean",
+                      "visibility": "frontend"
+                    }
+                  }
+                },
+                "expand": {
+                  "type": "object",
+                  "properties": {
+                    "channels": {
+                      "type": "object",
+                      "properties": {
+                        "root": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        },
+                        "elements": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        }
+                      }
+                    },
+                    "servers": {
+                      "type": "object",
+                      "properties": {
+                        "root": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        },
+                        "elements": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        }
+                      }
+                    },
+                    "messages": {
+                      "type": "object",
+                      "properties": {
+                        "root": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        },
+                        "elements": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        }
+                      }
+                    },
+                    "schemas": {
+                      "type": "object",
+                      "properties": {
+                        "root": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        },
+                        "elements": {
+                          "type": "boolean",
+                          "visibility": "frontend"
+                        }
+                      }
+                    }
+                  }
+                },
+                "showErrors": {
+                  "type": "boolean"
+                },
+                "parserOptions": {
+                  "type": "object",
+                  "properties": {
+                    "resolve": {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "object",
+                          "properties": {
+                            "order": {
+                              "type": "integer",
+                              "visibility": "frontend"
+                            },
+                            "canRead": {
+                              "type": "boolean",
+                              "visibility": "frontend"
+                            }
+                          }
+                        },
+                        "http": {
+                          "type": "object",
+                          "properties": {
+                            "order": {
+                              "type": "integer",
+                              "visibility": "frontend"
+                            },
+                            "canRead": {
+                              "type": "boolean",
+                              "visibility": "frontend"
+                            },
+                            "timeout": {
+                              "type": "integer",
+                              "visibility": "frontend"
+                            },
+                            "redirect": {
+                              "type": "integer",
+                              "visibility": "frontend"
+                            },
+                            "withCredentials": {
+                              "type": "boolean",
+                              "visibility": "frontend"
+                            },
+                            "headers": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string",
+                                "visibility": "frontend"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "fetcherConfig": {
+              "type": "object",
+              "properties": {
+                "order": {
+                  "type": "integer",
+                  "visibility": "frontend"
+                },
+                "canReadValue": {
+                  "type": ["boolean", "string"],
+                  "visibility": "frontend"
+                },
+                "fetchOptions": {
+                  "type": "object",
+                  "properties": {
+                    "cache": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "credentials": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "headers": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string",
+                        "visibility": "frontend"
+                      }
+                    },
+                    "integrity": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "mode": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "redirect": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "referrer": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    },
+                    "referrerPolicy": {
+                      "type": "string",
+                      "visibility": "frontend"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

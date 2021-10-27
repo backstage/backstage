@@ -18,6 +18,8 @@ import AsyncApi from '@asyncapi/react-component';
 import '@asyncapi/react-component/lib/styles/fiori.css';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -88,15 +90,13 @@ const useStyles = makeStyles(theme => ({
     '& .asyncapi__enum': {
       color: theme.palette.secondary.main,
     },
-    '& .asyncapi__info, .asyncapi__channel, .asyncapi__channels > div, .asyncapi__schema, .asyncapi__channel-operations-list .asyncapi__messages-list-item .asyncapi__message, .asyncapi__message, .asyncapi__server, .asyncapi__servers > div, .asyncapi__messages > div, .asyncapi__schemas > div':
-      {
-        'background-color': 'inherit',
-      },
-    '& .asyncapi__channel-parameters-header, .asyncapi__channel-operations-header, .asyncapi__channel-operation-oneOf-subscribe-header, .asyncapi__channel-operation-oneOf-publish-header, .asyncapi__channel-operation-message-header,  .asyncapi__message-header, .asyncapi__message-header-title, .asyncapi__message-header-title > h3, .asyncapi__bindings, .asyncapi__bindings-header, .asyncapi__bindings-header > h4':
-      {
-        'background-color': 'inherit',
-        color: theme.palette.text.primary,
-      },
+    '& .asyncapi__info, .asyncapi__channel, .asyncapi__channels > div, .asyncapi__schema, .asyncapi__channel-operations-list .asyncapi__messages-list-item .asyncapi__message, .asyncapi__message, .asyncapi__server, .asyncapi__servers > div, .asyncapi__messages > div, .asyncapi__schemas > div': {
+      'background-color': 'inherit',
+    },
+    '& .asyncapi__channel-parameters-header, .asyncapi__channel-operations-header, .asyncapi__channel-operation-oneOf-subscribe-header, .asyncapi__channel-operation-oneOf-publish-header, .asyncapi__channel-operation-message-header,  .asyncapi__message-header, .asyncapi__message-header-title, .asyncapi__message-header-title > h3, .asyncapi__bindings, .asyncapi__bindings-header, .asyncapi__bindings-header > h4': {
+      'background-color': 'inherit',
+      color: theme.palette.text.primary,
+    },
     '& .asyncapi__additional-properties-notice': {
       color: theme.palette.text.hint,
     },
@@ -106,11 +106,10 @@ const useStyles = makeStyles(theme => ({
     '& .asyncapi__schema-example-header-title': {
       color: theme.palette.text.secondary,
     },
-    '& .asyncapi__message-headers-header, .asyncapi__message-payload-header, .asyncapi__server-variables-header, .asyncapi__server-security-header':
-      {
-        'background-color': 'inherit',
-        color: theme.palette.text.secondary,
-      },
+    '& .asyncapi__message-headers-header, .asyncapi__message-payload-header, .asyncapi__server-variables-header, .asyncapi__server-security-header': {
+      'background-color': 'inherit',
+      color: theme.palette.text.secondary,
+    },
     '& .asyncapi__table-header': {
       background: theme.palette.background.default,
     },
@@ -134,12 +133,46 @@ type Props = {
   definition: string;
 };
 
+const fetchResolver = {
+  order: 199,
+  canReadValue: false,
+  canRead(file: any) {
+    if ((this.canReadValue as any) instanceof Boolean) {
+      return this.canReadValue;
+    }
+    return file.url.match(new RegExp((this.canReadValue as unknown) as string));
+  },
+  fetchOptions: {},
+
+  async read(file: any) {
+    // @ts-ignore
+    const response = await fetch(file.url, {
+      ...this.fetchOptions,
+    });
+    return response.text();
+  },
+};
+
 export const AsyncApiDefinitionWidget = ({ definition }: Props) => {
   const classes = useStyles();
+  const configApi = useApi(configApiRef);
+
+  const globalConfig =
+    configApi.getOptional<JsonObject>('apiDocs.asyncApi.parserConfig') || {};
+  const fetchResolverConfig =
+    configApi.getOptional<JsonObject>('apiDocs.asyncApi.fetcherConfig') || {};
+  const config = {
+    ...globalConfig,
+    ...{
+      parserOptions: {
+        resolve: { fetch: { ...fetchResolver, ...fetchResolverConfig } },
+      },
+    },
+  };
 
   return (
     <div className={classes.root}>
-      <AsyncApi schema={definition} />
+      <AsyncApi schema={definition} config={config} />
     </div>
   );
 };
