@@ -56,5 +56,6 @@ describe('TaskManager', () => {
         expect(fn).toBeCalled();
       });
     },
+    60_000,
   );
 });

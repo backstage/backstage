@@ -56,6 +56,7 @@ describe('PluginTaskManagerImpl', () => {
           expect(fn).toBeCalled();
         });
       },
+      60_000,
     );
   });
 });

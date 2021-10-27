@@ -18,6 +18,14 @@ import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
 
+/**
+ * A function that can be called as a scheduled task.
+ *
+ * It may optionally accept an abort signal argument. When the signal triggers,
+ * processing should abort and return as quickly as possible.
+ *
+ * @public
+ */
 export type TaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
   | (() => void | Promise<void>);

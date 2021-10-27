@@ -24,9 +24,7 @@ export interface TaskDefinition {
   timeout: Duration;
 }
 
-// Warning: (ae-missing-release-tag) "TaskFunction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type TaskFunction =
   | ((abortSignal: AbortSignal_2) => void | Promise<void>)
   | (() => void | Promise<void>);
