@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { permissionApiRef } from '@backstage/core-plugin-api';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import {
   DefaultStarredEntitiesApi,
@@ -22,6 +23,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 import {
+  MockPermissionApi,
   MockStorageApi,
   renderInTestApp,
   TestApiProvider,
@@ -62,6 +64,7 @@ describe('EntityPage Test', () => {
                 storageApi: MockStorageApi.create(),
               }),
             ],
+            [permissionApiRef, new MockPermissionApi()],
           ]}
         >
           <EntityProvider entity={entity}>
