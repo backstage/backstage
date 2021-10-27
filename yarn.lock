@@ -6715,22 +6715,10 @@
   dependencies:
     postcss "5 - 7"
 
-"@types/d3-color@*":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/d3-color/-/d3-color-2.0.0.tgz#febdfadade56e215a4c3f612fe3000d92999f5d5"
-  integrity sha512-Bs0maTeU47rdZT+n42iQ0C4gnbnJlIDJkqHFtIsDx2tPPITDeoSdIrm+00UYXzegzArYC2GsG80eHNMwz08IAw==
-
 "@types/d3-force@^2.1.1":
   version "2.1.1"
   resolved "https://registry.npmjs.org/@types/d3-force/-/d3-force-2.1.1.tgz#a18b6f029d056eb0f8f84a09471e6228e4469b14"
   integrity sha512-3r+CQv2K/uDTAVg0DGxsbBjV02vgOxb8RhPIv3gd6cp3pdPAZ7wEXpDjUZSoqycAQLSDOxG/AZ54Vx6YXZSbmQ==
-
-"@types/d3-interpolate@*":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/d3-interpolate/-/d3-interpolate-2.0.0.tgz#325029216dc722c1c68c33ccda759f1209d35823"
-  integrity sha512-Wt1v2zTlEN8dSx8hhx6MoOhWQgTkz0Ukj7owAEIOF2QtI0e219paFX9rf/SLOr/UExWb1TcUzatU8zWwFby6gg==
-  dependencies:
-    "@types/d3-color" "*"
 
 "@types/d3-path@*":
   version "3.0.0"
@@ -6742,7 +6730,7 @@
   resolved "https://registry.npmjs.org/@types/d3-path/-/d3-path-1.0.9.tgz#73526b150d14cd96e701597cbf346cfd1fd4a58c"
   integrity sha512-NaIeSIBiFgSC6IGUBjZWcscUJEq7vpVu7KthHN8eieTV9d9MqkSOZLH4chq1PmcKy06PNe3axLeKmRIyxJ+PZQ==
 
-"@types/d3-selection@*", "@types/d3-selection@^2.0.0":
+"@types/d3-selection@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@types/d3-selection/-/d3-selection-2.0.0.tgz#59df94a8e47ed1050a337d4ffb4d4d213aa590a8"
   integrity sha512-EF0lWZ4tg7oDFg4YQFlbOU3936e3a9UmoQ2IXlBy1+cv2c2Pv7knhKUzGlH5Hq2sF/KeDTH1amiRPey2rrLMQA==
@@ -6760,14 +6748,6 @@
   integrity sha512-5+ButCmIfNX8id5seZ7jKj3igdcxx+S9IDBiT35fQGTLZUfkFgTv+oBH34xgeoWDKpWcMITSzBILWQtBoN5Piw==
   dependencies:
     "@types/d3-path" "*"
-
-"@types/d3-zoom@^2.0.0":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@types/d3-zoom/-/d3-zoom-2.0.1.tgz#6f0d993042124947314053c937784e24d8b003cf"
-  integrity sha512-FuiGLfaHmp84b9wsj0dG03E/aJl5k98OLnJ2/5p7bQOHEpWqR+z5WCoWYMAbdGxaca7VNd9tCT5i6AJnpauNTQ==
-  dependencies:
-    "@types/d3-interpolate" "*"
-    "@types/d3-selection" "*"
 
 "@types/dagre@^0.7.44":
   version "0.7.44"
