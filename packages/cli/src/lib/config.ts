@@ -21,7 +21,7 @@ import {
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
-import { isValidUrl } from '@backstage/integration';
+import { isValidUrl } from './urls';
 
 type Options = {
   args: string[];
@@ -56,6 +56,7 @@ export async function loadCliConfig(options: Options) {
       ? async name => process.env[name] || 'x'
       : undefined,
     configRoot: paths.targetRoot,
+    configPaths: [],
     configTargets: configTargets,
   });
 

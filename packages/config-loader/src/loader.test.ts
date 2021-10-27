@@ -67,6 +67,13 @@ describe('loadConfig', () => {
             $file: secrets/session-key.txt
           escaped: \$\${Escaped}
       `,
+      '/root/app-config2.yaml': `
+        app:
+          title: Example App 2
+          sessionKey:
+            $file: secrets/session-key.txt
+          escaped: \$\${Escaped}
+      `,
       '/root/app-config.development.yaml': `
         app:
           sessionKey: development-key
@@ -111,6 +118,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [],
         env: 'production',
       }),
@@ -136,6 +144,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [{ url: configUrl }],
         env: 'production',
         remote: {
@@ -156,10 +165,43 @@ describe('loadConfig', () => {
     ]);
   });
 
-  it('loads config with secrets', async () => {
+  it('loads config with secrets from two different files', async () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: ['/root/app-config2.yaml'],
+        configTargets: [{ path: '/root/app-config.yaml' }],
+        env: 'production',
+      }),
+    ).resolves.toEqual([
+      {
+        context: 'app-config.yaml',
+        data: {
+          app: {
+            title: 'Example App',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+      {
+        context: 'app-config2.yaml',
+        data: {
+          app: {
+            title: 'Example App 2',
+            sessionKey: 'abc123',
+            escaped: '${Escaped}',
+          },
+        },
+      },
+    ]);
+  });
+
+  it('loads config with secrets from single file', async () => {
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: ['/root/app-config.yaml'],
         configTargets: [{ path: '/root/app-config.yaml' }],
         env: 'production',
       }),
@@ -181,6 +223,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [
           { path: '/root/app-config.yaml' },
           { path: '/root/app-config.development.yaml' },
@@ -221,6 +264,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [{ path: '/root/app-config.substitute.yaml' }],
         env: 'development',
       }),
@@ -246,6 +290,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [],
         watch: {
           onChange: onChange.resolve,
@@ -294,6 +339,7 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({
         configRoot: '/root',
+        configPaths: [],
         configTargets: [{ url: configUrl }],
         watch: {
           onChange: onChange.resolve,
@@ -339,6 +385,7 @@ describe('loadConfig', () => {
 
     await loadConfig({
       configRoot: '/root',
+      configPaths: [],
       configTargets: [],
       watch: {
         onChange: () => {

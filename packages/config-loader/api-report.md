@@ -46,6 +46,7 @@ export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 // @public (undocumented)
 export type LoadConfigOptions = {
   configRoot: string;
+  configPaths: string[];
   configTargets: ConfigTarget[];
   env?: string;
   experimentalEnvFunc?: EnvFunc;

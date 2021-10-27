@@ -33,7 +33,6 @@
     "@backstage/config": "^0.1.10",
     "@backstage/config-loader": "^0.6.8",
     "@backstage/errors": "^0.1.2",
-    "@backstage/integration": "^0.6.5",
     "@google-cloud/storage": "^5.8.0",
     "@octokit/rest": "^18.5.3",
     "@types/cors": "^2.8.6",
