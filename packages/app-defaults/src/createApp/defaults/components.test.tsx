@@ -17,7 +17,7 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { OptionallyWrapInRouter } from './defaultAppComponents';
+import { OptionallyWrapInRouter } from './components';
 
 describe('OptionallyWrapInRouter', () => {
   it('should wrap with router if not yet inside a router', async () => {

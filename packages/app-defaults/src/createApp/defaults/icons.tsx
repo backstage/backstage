@@ -32,7 +32,7 @@ import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
 
-export const defaultAppIcons = () => ({
+export const icons = () => ({
   brokenImage: MuiBrokenImageIcon as IconComponent,
   // To be confirmed: see https://github.com/backstage/backstage/issues/4970
   catalog: MuiMenuBookIcon as IconComponent,

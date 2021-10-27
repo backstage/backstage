@@ -16,16 +16,18 @@
 
 import React, { ReactNode } from 'react';
 import Button from '@material-ui/core/Button';
-import { ErrorPanel, Progress } from '../components';
-import { ErrorPage } from '../layout';
-import { MemoryRouter, useInRouterContext } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
+import { ErrorPanel, Progress, ErrorPage } from '@backstage/core-components';
+import {
+  MemoryRouter,
+  useInRouterContext,
+  BrowserRouter,
+} from 'react-router-dom';
 import {
   AppComponents,
   BootErrorPageProps,
   ErrorBoundaryFallbackProps,
 } from '@backstage/core-plugin-api';
-import { AppThemeProvider } from './AppThemeProvider';
+import { AppThemeProvider } from '../components/AppThemeProvider';
 
 export function OptionallyWrapInRouter({ children }: { children: ReactNode }) {
   if (useInRouterContext()) {
@@ -52,6 +54,7 @@ const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {
     </OptionallyWrapInRouter>
   );
 };
+
 const DefaultErrorBoundaryFallback = ({
   error,
   resetError,
@@ -75,13 +78,11 @@ const DefaultErrorBoundaryFallback = ({
  *
  * @public
  */
-export function defaultAppComponents(): AppComponents {
-  return {
-    Progress,
-    Router: BrowserRouter,
-    ThemeProvider: AppThemeProvider,
-    NotFoundErrorPage: DefaultNotFoundPage,
-    BootErrorPage: DefaultBootErrorPage,
-    ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
-  };
-}
+export const components: AppComponents = {
+  Progress,
+  Router: BrowserRouter,
+  ThemeProvider: AppThemeProvider,
+  NotFoundErrorPage: DefaultNotFoundPage,
+  BootErrorPage: DefaultBootErrorPage,
+  ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
+};

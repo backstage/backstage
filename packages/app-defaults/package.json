@@ -31,6 +31,7 @@
   "dependencies": {
     "@backstage/core-components": "^0.7.1",
     "@backstage/config": "^0.1.10",
+    "@backstage/core-app-api": "^0.1.11",
     "@backstage/core-plugin-api": "^0.1.11",
     "@backstage/theme": "^0.2.11",
     "@backstage/types": "^0.1.1",

@@ -22,31 +22,29 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { AppTheme } from '@backstage/core-plugin-api';
 
-export function defaultAppThemes(): AppTheme[] {
-  return [
-    {
-      id: 'light',
-      title: 'Light Theme',
-      variant: 'light',
-      icon: <LightIcon />,
-      theme: lightTheme,
-      Provider: ({ children }) => (
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline>{children}</CssBaseline>
-        </ThemeProvider>
-      ),
-    },
-    {
-      id: 'dark',
-      title: 'Dark Theme',
-      variant: 'dark',
-      icon: <DarkIcon />,
-      theme: darkTheme,
-      Provider: ({ children }) => (
-        <ThemeProvider theme={darkTheme}>
-          <CssBaseline>{children}</CssBaseline>
-        </ThemeProvider>
-      ),
-    },
-  ];
-}
+export const themes: AppTheme[] = [
+  {
+    id: 'light',
+    title: 'Light Theme',
+    variant: 'light',
+    icon: <LightIcon />,
+    theme: lightTheme,
+    Provider: ({ children }) => (
+      <ThemeProvider theme={lightTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
+  },
+  {
+    id: 'dark',
+    title: 'Dark Theme',
+    variant: 'dark',
+    icon: <DarkIcon />,
+    theme: darkTheme,
+    Provider: ({ children }) => (
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
+  },
+];

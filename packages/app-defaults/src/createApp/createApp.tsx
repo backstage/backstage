@@ -14,132 +14,81 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { withDefaults } from '@backstage/core-components';
-import { PrivateAppImpl } from './App';
-import { AppComponents, AppConfigLoader, AppOptions } from './types';
-import { defaultApis } from './defaultApis';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
-
-const REQUIRED_APP_COMPONENTS: Array<keyof AppComponents> = [
-  'Progress',
-  'Router',
-  'NotFoundErrorPage',
-  'BootErrorPage',
-  'ErrorBoundaryFallback',
-];
+import { apis, components, configLoader, icons, themes } from './defaults';
+import {
+  AppTheme,
+  BackstagePlugin,
+  IconComponent,
+} from '@backstage/core-plugin-api';
+import {
+  AppComponents,
+  AppOptions,
+  AppIcons,
+  PrivateAppImpl,
+} from '@backstage/core-app-api';
 
 /**
- * The default config loader, which expects that config is available at compile-time
- * in `process.env.APP_CONFIG`. APP_CONFIG should be an array of config objects as
- * returned by the config loader.
- *
- * It will also load runtime config from the __APP_INJECTED_RUNTIME_CONFIG__ string,
- * which can be rewritten at runtime to contain an additional JSON config object.
- * If runtime config is present, it will be placed first in the config array, overriding
- * other config values.
- *
- * @public
- */
-export const defaultConfigLoader: AppConfigLoader = async (
-  // This string may be replaced at runtime to provide additional config.
-  // It should be replaced by a JSON-serialized config object.
-  // It's a param so we can test it, but at runtime this will always fall back to default.
-  runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
-) => {
-  const appConfig = process.env.APP_CONFIG;
-  if (!appConfig) {
-    throw new Error('No static configuration provided');
-  }
-  if (!Array.isArray(appConfig)) {
-    throw new Error('Static configuration has invalid format');
-  }
-  const configs = appConfig.slice() as unknown as AppConfig[];
-
-  // Avoiding this string also being replaced at runtime
-  if (
-    runtimeConfigJson !==
-    '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
-  ) {
-    try {
-      const data = JSON.parse(runtimeConfigJson) as JsonObject;
-      if (Array.isArray(data)) {
-        configs.push(...data);
-      } else {
-        configs.push({ data, context: 'env' });
-      }
-    } catch (error) {
-      throw new Error(`Failed to load runtime configuration, ${error}`);
-    }
-  }
-
-  const windowAppConfig = (window as any).__APP_CONFIG__;
-  if (windowAppConfig) {
-    configs.push({
-      context: 'window',
-      data: windowAppConfig,
-    });
-  }
-  return configs;
-};
-
-/**
- * Creates a new Backstage App.
+ * Creates a new Backstage App using a default set of components, icons and themes unless
+ * they are explicitly provided.
  *
  * @public
  */
 export function createApp(options?: AppOptions) {
-  const optionsWithDefaults = withDefaults(options);
-
-  const missingRequiredComponents = REQUIRED_APP_COMPONENTS.filter(
-    name => !options?.components?.[name],
-  );
-  if (missingRequiredComponents.length > 0) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require a minimal set of components to ' +
-        'be provided. You can use the default components by using withDefaults from @backstage/core-components ' +
-        'like this: createApp(withDefaults({ ... })), or you can provide the components yourself. ' +
-        `The following components are missing: ${missingRequiredComponents.join(
-          ', ',
-        )}`,
-    );
-  }
-
-  const providedIconKeys = Object.keys(options?.icons ?? {});
-  const missingIconKeys = Object.keys(optionsWithDefaults.icons!).filter(
-    key => !providedIconKeys.includes(key),
-  );
-  if (missingIconKeys.length > 0) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require a minimal set of icons to ' +
-        'be provided. You can use the default icons by using withDefaults from @backstage/core-components ' +
-        'like this: createApp(withDefaults({ ... })), or you can provide the icons yourself. ' +
-        `The following icons are missing: ${missingIconKeys.join(', ')}`,
-    );
-  }
-
-  if (!options?.themes) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'DEPRECATION WARNING: The createApp options will soon require the themes to be provided. ' +
-        'You can use the default themes by using withDefaults from @backstage/core-components ' +
-        'like this: createApp(withDefaults({ ... })), or you can provide the themes yourself. ',
-    );
-  }
-
-  const { icons, themes, components } = optionsWithDefaults;
-
   return new PrivateAppImpl({
-    icons: icons!,
-    themes: themes!,
-    components: components! as AppComponents,
-    defaultApis,
+    ...options,
     apis: options?.apis ?? [],
     bindRoutes: options?.bindRoutes,
+    components: {
+      ...components,
+      ...options?.components,
+    },
+    configLoader: options?.configLoader ?? configLoader,
+    defaultApis: apis,
+    icons: {
+      ...icons,
+      ...options?.icons,
+    },
     plugins: (options?.plugins as BackstagePlugin<any, any>[]) ?? [],
-    configLoader: options?.configLoader ?? defaultConfigLoader,
+    themes: options?.themes ?? themes,
   });
+}
+
+// NOTE: we don't re-export any of the types imported from core-app-api, as we
+//       want them to be imported from there rather than core-components.
+
+/**
+ * The set of app options that will be populated by {@link withDefaults} if they
+ * are not passed in explicitly.
+ *
+ * @public
+ */
+export interface OptionalAppOptions {
+  /**
+   * A set of icons to override the default icons with.
+   *
+   * The override is applied for each icon individually.
+   *
+   * @public
+   */
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
+
+  /**
+   * A set of themes that override all of the default app themes.
+   *
+   * If this option is provided none of the default themes will be used.
+   *
+   * @public
+   */
+  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[]; // TODO: simplify once AppTheme is updated
+
+  /**
+   * A set of components to override the default components with.
+   *
+   * The override is applied for each icon individually.
+   *
+   * @public
+   */
+  components?: Partial<AppComponents>;
 }

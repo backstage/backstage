@@ -34,7 +34,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-} from '../apis';
+} from '@backstage/core-app-api';
 
 import {
   createApiFactory,
@@ -61,7 +61,7 @@ import {
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
 
-export const defaultApis = [
+export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
