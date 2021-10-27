@@ -65,7 +65,6 @@ export class ScmAuth implements ScmAuthApi {
       host?: string;
     },
   ): ScmAuth;
-  // (undocumented)
   getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
   isUrlSupported(url: URL): boolean;
   static merge(...providers: ScmAuth[]): ScmAuthApi;
@@ -79,7 +78,7 @@ export interface ScmAuthApi {
 // @public
 export const scmAuthApiRef: ApiRef<ScmAuthApi>;
 
-// @public (undocumented)
+// @public
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   additionalScope?: {
     repoWrite?: boolean;
@@ -87,7 +86,7 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
   url: string;
 }
 
-// @public (undocumented)
+// @public
 export interface ScmAuthTokenResponse {
   headers: {
     [name: string]: string;
@@ -95,25 +94,21 @@ export interface ScmAuthTokenResponse {
   token: string;
 }
 
-// Warning: (ae-missing-release-tag) "ScmIntegrationIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const ScmIntegrationIcon: ({
-  type,
-}: {
-  type?: string | undefined;
-}) => JSX.Element;
+// @public
+export const ScmIntegrationIcon: (
+  props: ScmIntegrationIconProps,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ScmIntegrationsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type ScmIntegrationIconProps = {
+  type?: string;
+};
+
+// @public
 export class ScmIntegrationsApi {
-  // (undocumented)
   static fromConfig(config: Config): ScmIntegrationRegistry;
 }
 
-// Warning: (ae-missing-release-tag) "scmIntegrationsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry>;
 ```
