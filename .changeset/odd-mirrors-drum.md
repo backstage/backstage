@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Removes the unused d3-zoom dependency
+Updates the d3 dependencies
