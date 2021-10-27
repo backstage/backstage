@@ -48,7 +48,7 @@ export const DashboardTable = () => {
     
     return(
         <Table
-        title="Dev Ops Dashboard"
+        title="Current Status"
         columns={columns}
         data={testData}
        />
