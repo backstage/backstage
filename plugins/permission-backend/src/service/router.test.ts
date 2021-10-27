@@ -28,7 +28,12 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      config: new ConfigReader({}),
+      config: new ConfigReader({
+        backend: {
+          baseUrl: 'http://127.0.0.1',
+          listen: { port: 12345 },
+        },
+      }),
       policy: new AllowAllPermissionPolicy(),
     });
     app = express().use(router);
