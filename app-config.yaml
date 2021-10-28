@@ -450,3 +450,6 @@ azureDevOps:
   host: dev.azure.com
   token: my-token
   organization: my-company
+
+flyte:
+  httpUrl: http://localhost:8088

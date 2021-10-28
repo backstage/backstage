@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { flyteidl, google } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { FlyteApi } from './FlyteApi';
 import {
@@ -25,12 +26,23 @@ import {
 import axios, { AxiosRequestConfig } from 'axios';
 
 export class FlyteClient implements FlyteApi {
+  public configApi: Config;
+
+  constructor({ configApi }: { configApi: Config }) {
+    this.configApi = configApi;
+  }
+
+  getFlyteHttpBaseUrl(): String {
+    return this.configApi.getString('flyte.httpUrl');
+  }
+
   listProjects(): Promise<FlyteProject[]> {
+    const flyteBaseUrl = this.getFlyteHttpBaseUrl();
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
       headers: { Accept: 'application/octet-stream' },
-      url: 'http://localhost:8088/api/v1/projects',
+      url: `${flyteBaseUrl}/api/v1/projects`,
     };
 
     return axios
@@ -63,11 +75,12 @@ export class FlyteClient implements FlyteApi {
     project: string,
     domain: string,
   ): Promise<PartialIdentifier[]> {
+    const flyteBaseUrl = this.getFlyteHttpBaseUrl();
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
       headers: { Accept: 'application/octet-stream' },
-      url: `http://localhost:8088/api/v1/workflow_ids/${project}/${domain}?limit=5`,
+      url: `${flyteBaseUrl}/api/v1/workflow_ids/${project}/${domain}?limit=5`,
     };
     return axios
       .request(options)
@@ -90,11 +103,12 @@ export class FlyteClient implements FlyteApi {
     name: string,
     limit: number,
   ): Promise<FlyteExecution[]> {
+    const flyteBaseUrl = this.getFlyteHttpBaseUrl();
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
       headers: { Accept: 'application/octet-stream' },
-      url: `http://localhost:8088/api/v1/executions/${project}/${domain}?filters=eq(workflow.name,${name})&limit=${limit}&sort_by.direction=DESCENDING&sort_by.key=created_at`,
+      url: `${flyteBaseUrl}/api/v1/executions/${project}/${domain}?filters=eq(workflow.name,${name})&limit=${limit}&sort_by.direction=DESCENDING&sort_by.key=created_at`,
     };
 
     return axios

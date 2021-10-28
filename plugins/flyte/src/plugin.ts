@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -35,9 +36,11 @@ export const flytePlugin = createPlugin({
   apis: [
     createApiFactory({
       api: flyteApiRef,
-      deps: {},
-      factory() {
-        return new FlyteClient();
+      deps: {
+        configApi: configApiRef,
+      },
+      factory({ configApi }) {
+        return new FlyteClient({ configApi });
       },
     }),
   ],
