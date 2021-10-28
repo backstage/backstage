@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.7.2",
+  "version": "0.7.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -18,8 +18,8 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "backstage-cli build --outputs types,esm",
     "lint": "backstage-cli lint",
@@ -29,10 +29,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.11",
-    "@backstage/core-plugin-api": "^0.1.12",
-    "@backstage/errors": "^0.1.4",
-    "@backstage/theme": "^0.2.12",
+    "@backstage/config": "^0.1.10",
+    "@backstage/core-plugin-api": "^0.1.11",
+    "@backstage/errors": "^0.1.3",
+    "@backstage/theme": "^0.2.11",
     "@material-table/core": "^3.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -67,9 +67,9 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/core-app-api": "^0.1.19",
-    "@backstage/cli": "^0.8.1",
-    "@backstage/test-utils": "^0.1.20",
+    "@backstage/core-app-api": "^0.1.18",
+    "@backstage/cli": "^0.8.0",
+    "@backstage/test-utils": "^0.1.19",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
