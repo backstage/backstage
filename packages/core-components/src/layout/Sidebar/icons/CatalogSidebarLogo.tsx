@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SvgIcon } from '@material-ui/core';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import React from 'react';
 
 export const CatalogSidebarLogo = () => {
