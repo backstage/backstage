@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import { Config } from '@backstage/config';
@@ -38,11 +41,13 @@ export class DefaultCatalogCollator implements DocumentCollator {
   protected filter?: CatalogEntitiesRequest['filter'];
   protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
+  protected tokenManager: TokenManager;
 
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ) {
@@ -56,8 +61,10 @@ export class DefaultCatalogCollator implements DocumentCollator {
     locationTemplate,
     filter,
     catalogClient,
+    tokenManager,
   }: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
@@ -68,6 +75,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     this.filter = filter;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.tokenManager = tokenManager;
   }
 
   protected applyArgsToFormat(
@@ -82,9 +90,13 @@ export class DefaultCatalogCollator implements DocumentCollator {
   }
 
   async execute() {
-    const response = await this.catalogClient.getEntities({
-      filter: this.filter,
-    });
+    const { token } = await this.tokenManager.getServerToken();
+    const response = await this.catalogClient.getEntities(
+      {
+        filter: this.filter,
+      },
+      { token },
+    );
     return response.items.map((entity: Entity): CatalogEntityDocument => {
       return {
         title: entity.metadata.title ?? entity.metadata.name,

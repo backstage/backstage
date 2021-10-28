@@ -157,7 +157,9 @@ async function main() {
       const token =
         IdentityClient.getBearerToken(req.headers.authorization) ||
         req.cookies.token;
-      req.user = await identity.authenticate(token);
+
+      await authEnv.tokenManager.validateToken(token);
+
       if (!req.headers.authorization) {
         // Authorization header may be forwarded by plugin requests
         req.headers.authorization = `Bearer ${token}`;
