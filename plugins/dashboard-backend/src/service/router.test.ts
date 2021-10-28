@@ -42,4 +42,12 @@ describe('createRouter', () => {
       expect(response.body).toEqual({ status: 'ok' });
     });
   });
+
+  describe('GET /data', () => {
+    it('returns the mock data', async () => {
+      const response = await request(app).get('/data');
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+    });
+  });
 });
