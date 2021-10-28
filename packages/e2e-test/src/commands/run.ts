@@ -383,7 +383,6 @@ async function testAppServe(pluginName: string, appDir: string) {
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    if (browser) await browser.close();
     await new Promise<void>((res, rej) =>
       killTree(startApp.pid, err => (err ? rej(err) : res())),
     );
