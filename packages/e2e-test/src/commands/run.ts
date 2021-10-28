@@ -360,7 +360,8 @@ async function testAppServe(pluginName: string, appDir: string) {
       try {
         browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto('http://localhost:3000');
+
+        await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
 
         await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(

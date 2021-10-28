@@ -138,7 +138,9 @@ export async function waitForPageWithText(
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
 
-      await page.goto(`http://localhost:3000${path}`);
+      await page.goto(`http://localhost:3000${path}`, {
+        waitUntil: 'networkidle0',
+      });
 
       const escapedText = text.replace(/"|\\/g, '\\$&');
       const match = await page.evaluate(() =>
