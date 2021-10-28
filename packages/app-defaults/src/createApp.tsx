@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { apis, components, configLoader, icons, themes } from './defaults';
+import { apis, components, icons, themes } from './defaults';
 import {
   AppTheme,
   BackstagePlugin,
@@ -24,7 +24,7 @@ import {
   AppComponents,
   AppOptions,
   AppIcons,
-  PrivateAppImpl,
+  createSpecializedApp,
 } from '@backstage/core-app-api';
 
 /**
@@ -33,8 +33,10 @@ import {
  *
  * @public
  */
-export function createApp(options?: AppOptions) {
-  return new PrivateAppImpl({
+export function createApp(
+  options?: Omit<AppOptions, keyof OptionalAppOptions> & OptionalAppOptions,
+) {
+  return createSpecializedApp({
     ...options,
     apis: options?.apis ?? [],
     bindRoutes: options?.bindRoutes,
@@ -42,7 +44,7 @@ export function createApp(options?: AppOptions) {
       ...components,
       ...options?.components,
     },
-    configLoader: options?.configLoader ?? configLoader,
+    configLoader: options?.configLoader,
     defaultApis: apis,
     icons: {
       ...icons,
@@ -53,16 +55,13 @@ export function createApp(options?: AppOptions) {
   });
 }
 
-// NOTE: we don't re-export any of the types imported from core-app-api, as we
-//       want them to be imported from there rather than core-components.
-
 /**
- * The set of app options that will be populated by {@link withDefaults} if they
- * are not passed in explicitly.
+ * The set of app options that {@link createApp} will provide defaults for
+ * if they are not passed in explicitly.
  *
  * @public
  */
-export interface OptionalAppOptions {
+export type OptionalAppOptions = {
   /**
    * A set of icons to override the default icons with.
    *
@@ -91,4 +90,4 @@ export interface OptionalAppOptions {
    * @public
    */
   components?: Partial<AppComponents>;
-}
+};

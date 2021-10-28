@@ -201,9 +201,18 @@ export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
 
   /**
+   * A collection of ApiFactories to register in the application as default APIs.
+   * Theses APIs can not be overridden by plugin factories, but can be overridden
+   * by plugin APIs provided through the
+   * A collection of ApiFactories to register in the application to either
+   * add add new ones, or override factories provided by default or by plugins.
+   */
+  defaultApis?: Iterable<AnyApiFactory>;
+
+  /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<AppIcons> & { [key in string]: IconComponent };
+  icons: AppIcons & { [key in string]: IconComponent };
 
   /**
    * A list of all plugins to include in the app.
@@ -213,7 +222,7 @@ export type AppOptions = {
   /**
    * Supply components to the app to override the default ones.
    */
-  components?: Partial<AppComponents>;
+  components: AppComponents;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one
@@ -245,7 +254,7 @@ export type AppOptions = {
    * }]
    * ```
    */
-  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
 
   /**
    * A function that loads in App configuration that will be accessible via

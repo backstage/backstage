@@ -78,6 +78,7 @@ import {
   SignInResult,
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
+import { defaultConfigLoader } from './defaultConfigLoader';
 
 export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
@@ -121,17 +122,6 @@ function getBasePath(configApi: Config) {
   pathname = pathname.replace(/\/*$/, '');
   return pathname;
 }
-
-type FullAppOptions = {
-  apis: Iterable<AnyApiFactory>;
-  icons: NonNullable<AppOptions['icons']>;
-  plugins: BackstagePlugin<any, any>[];
-  components: AppComponents;
-  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
-  configLoader?: AppConfigLoader;
-  defaultApis: Iterable<AnyApiFactory>;
-  bindRoutes?: AppOptions['bindRoutes'];
-};
 
 function useConfigLoader(
   configLoader: AppConfigLoader | undefined,
@@ -202,14 +192,16 @@ export class AppManager implements BackstageApp {
   private readonly identityApi = new AppIdentity();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
-  constructor(options: FullAppOptions) {
-    this.apis = options.apis;
+  constructor(options: AppOptions) {
+    this.apis = options.apis ?? [];
     this.icons = options.icons;
-    this.plugins = new Set(options.plugins);
+    this.plugins = new Set(
+      (options.plugins as BackstagePlugin<any, any>[]) ?? [],
+    );
     this.components = options.components;
     this.themes = options.themes as AppTheme[];
-    this.configLoader = options.configLoader;
-    this.defaultApis = options.defaultApis;
+    this.configLoader = options.configLoader ?? defaultConfigLoader;
+    this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
   }

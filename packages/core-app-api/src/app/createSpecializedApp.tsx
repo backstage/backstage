@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export { createApp } from './createApp';
+import { AppManager } from './AppManager';
+import { AppOptions } from './types';
+
+/**
+ * Creates a new Backstage App where the full set of options are required.
+ *
+ * @param options - A set of options for creating the app
+ * @returns
+ */
+export function createSpecializedApp(options: AppOptions) {
+  return new AppManager(options);
+}

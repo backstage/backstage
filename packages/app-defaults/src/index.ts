@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './createApp';
+export { createApp } from './createApp';
+export type { OptionalAppOptions } from './createApp';

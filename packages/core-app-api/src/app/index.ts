@@ -15,6 +15,7 @@
  */
 
 export { createApp } from './createApp';
+export { createSpecializedApp } from './createSpecializedApp';
 export { defaultConfigLoader } from './defaultConfigLoader';
 export type { AppIcons } from './icons';
 export * from './types';

@@ -29,6 +29,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/app-defaults": "^0.1.0",
     "@backstage/core-components": "^0.7.3",
     "@backstage/config": "^0.1.11",
     "@backstage/core-plugin-api": "^0.1.13",
