@@ -122,5 +122,10 @@ export default async function serve(cmd: Command) {
       );
     });
 
-  await waitForSignal([mkdocsChildProcess]);
+  try {
+    await waitForSignal([mkdocsChildProcess]);
+    process.exit(0);
+  } catch {
+    process.exit(1);
+  }
 }
