@@ -142,15 +142,14 @@ export async function waitForPageWithText(
         waitUntil: 'networkidle0',
       });
 
-      const escapedText = text.replace(/"|\\/g, '\\$&');
       const match = await page.evaluate(() =>
         Array.from(document.querySelectorAll('*')).some(
-          el => el.textContent === escapedText,
+          el => el.textContent === text,
         ),
       );
 
       if (!match) {
-        throw new Error(`Expected to find text ${escapedText}`);
+        throw new Error(`Expected to find text ${text}`);
       }
 
       break;
