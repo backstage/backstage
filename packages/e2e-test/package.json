@@ -35,6 +35,7 @@
     "fs-extra": "9.1.0",
     "handlebars": "^4.7.3",
     "pgtools": "^0.3.0",
+    "puppeteer": "^10.4.0",
     "tree-kill": "^1.2.2",
     "ts-node": "^10.0.0"
   },
@@ -42,8 +43,5 @@
     "watch": "./src",
     "exec": "bin/e2e-test",
     "ext": "ts"
-  },
-  "dependencies": {
-    "puppeteer": "^10.4.0"
   }
 }

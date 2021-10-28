@@ -352,14 +352,16 @@ async function testAppServe(pluginName: string, appDir: string) {
     },
   });
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('http://localhost:3000');
-
   let successful = false;
+
+  let browser;
   try {
     for (let attempts = 1; ; attempts++) {
       try {
+        browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto('http://localhost:3000');
+
         await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(
           page,
@@ -380,6 +382,7 @@ async function testAppServe(pluginName: string, appDir: string) {
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
+    if (browser) await browser.close();
     killTree(startApp.pid);
   }
 

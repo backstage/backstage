@@ -141,13 +141,15 @@ export async function waitForPageWithText(
       await page.goto(`http://localhost:3000${path}`);
 
       const escapedText = text.replace(/"|\\/g, '\\$&');
-      await expect(() =>
-        page.evaluate(() =>
-          Array.from(document.querySelectorAll('*')).some(
-            el => el.textContent === escapedText,
-          ),
+      const match = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('*')).some(
+          el => el.textContent === escapedText,
         ),
-      ).resolves.toBeTruthy();
+      );
+
+      if (!match) {
+        throw new Error(`Expected to find text ${escapedText}`);
+      }
 
       break;
     } catch (error) {
