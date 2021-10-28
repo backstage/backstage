@@ -25,7 +25,7 @@ const codes = {
 
 /**
  * @public
- * @deprecated because it has no usages. Perhaps resurfaced in the future when need be.
+ * @deprecated superseded by @testing-library/user-event
  */
 export class Keyboard {
   static async type(target, input) {
