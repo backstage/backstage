@@ -54,7 +54,7 @@ export class TaskScheduler {
    * Instantiates a task manager instance for the given plugin.
    *
    * @param pluginId - The unique ID of the plugin, for example "catalog"
-   * @returns A {@link PluginTaskManager} instance
+   * @returns A {@link PluginTaskScheduler} instance
    */
   forPlugin(pluginId: string): PluginTaskScheduler {
     const databaseFactory = memoize(async () => {

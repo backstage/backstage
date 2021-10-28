@@ -32,7 +32,6 @@ export type TaskFunction =
 // @public
 export class TaskScheduler {
   constructor(databaseManager: DatabaseManager, logger: Logger_2);
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/backend-tasks" does not have an export "PluginTaskManager"
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
