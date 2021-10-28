@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import {
+  Link,
   Page,
   Table,
   TableColumn,
@@ -25,8 +26,15 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
-import { useRouteRefParams, useApi } from '@backstage/core-plugin-api';
-import { flyteDomainRouteRef } from '../../routes';
+import {
+  useRouteRefParams,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import {
+  flyteDomainRouteRef,
+  flyteWorkflowExecutionsRouteRef,
+} from '../../routes';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
@@ -44,12 +52,25 @@ export const DenseTable = ({ workflowList }: DenseTableProps) => {
     { title: 'project', field: 'project' },
     { title: 'domain', field: 'domain' },
   ];
+  const getFlyteWorkflowExecutionsRouteRef = useRouteRef(
+    flyteWorkflowExecutionsRouteRef,
+  );
 
   const data = workflowList.map(workflow => {
     return {
       project: workflow.project,
       domain: workflow.domain,
-      name: workflow.name,
+      name: (
+        <Link
+          to={getFlyteWorkflowExecutionsRouteRef({
+            project: workflow.project,
+            domain: workflow.domain,
+            name: workflow.name,
+          })}
+        >
+          {workflow.name}
+        </Link>
+      ),
     };
   });
 

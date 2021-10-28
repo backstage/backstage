@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn, Progress } from '@backstage/core-components';
+import { Link, Table, TableColumn, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
 import { FlyteProject } from './../../api/types';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { flyteDomainRouteRef } from './../../routes';
 
 type DenseTableProps = {
   projects: FlyteProject[];
@@ -32,9 +33,23 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
     { title: 'NAME', field: 'name' },
     { title: 'Description', field: 'description' },
   ];
+  const getFlyteDomainRouteRef = useRouteRef(flyteDomainRouteRef);
 
   const data = projects.map(project => {
-    const domains = project.domains.map(d => d.id).join();
+    const domains = project.domains
+      .map(d => (
+        <Link
+          to={getFlyteDomainRouteRef({ project: project.id, domain: d.id })}
+        >
+          {d.id}
+        </Link>
+      ))
+      .map((link, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && ', '}
+          <span> {link}</span>
+        </React.Fragment>
+      ));
     return {
       id: project.id,
       name: project.name,
