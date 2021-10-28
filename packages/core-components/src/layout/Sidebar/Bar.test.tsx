@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { createEvent, fireEvent, screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
@@ -24,7 +24,6 @@ import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { MiscIcon } from './icons/MiscIcon';
 import { Sidebar, SidebarExpandButton } from './Bar';
 import { SidebarItem, SidebarSearchField } from './Items';
-import { hexToRgb } from '@material-ui/core/styles';
 import { SubmenuItem } from './SubmenuItem';
 
 async function renderScalableSidebar() {

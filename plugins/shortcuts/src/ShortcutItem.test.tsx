@@ -37,7 +37,7 @@ describe('ShortcutItem', () => {
 
   it('displays the shortcut', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider value={{ isOpen: true }}>
+      <SidebarContext.Provider value={{ isOpen: true, setIsOpen: () => {} }}>
         <ShortcutItem api={api} shortcut={shortcut} />
       </SidebarContext.Provider>,
     );
