@@ -160,6 +160,18 @@ by this plugin.
 Grab a copy of [oauth2-redirect.html](https://github.com/swagger-api/swagger-ui/blob/master/dist/oauth2-redirect.html)
 and put it in the `app/public/` directory in order to enable Swagger UI to complete this redirection.
 
+This also may require you to adjust `Content Security Policy` header settings of your backstage application. So javascript on `oauth2-redirect.html` can be executed.
+
+There are two steps:
+1. Open `oauth2-redirect.html` for editing and add `nonce` to the `script` tag. Like this
+  ```
+  <script nonce="oauth2-redirect">
+  ```
+2. Now adjust backstage configuration, `backend.csp` section and add there new property:
+  ```
+  script-src: ["'self'", "'nonce-oauth2-redirect'", "'unsafe-eval'"]
+  ```
+
 #### Configuring your OAuth2 Client
 
 You'll need to make sure your OAuth2 client has been registered in your OAuth2 Authentication Server (AS)
