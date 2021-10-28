@@ -43,9 +43,14 @@ jobs:
             --org=backstage-dgh
             --strict-out-of-sync=false
             --sarif-file-output=snyk.sarif
+            --json-file-output=snyk.json
+          json: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Upload Snyk report
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: snyk.sarif
+
+      - name: Update Github issues
+        run: yarn ts-node scripts/snyk-github-issue-sync.ts

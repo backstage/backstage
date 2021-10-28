@@ -59,8 +59,8 @@
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
-    "@octokit/rest": "^18.12.0",
     "@changesets/cli": "^2.14.0",
+    "@octokit/rest": "^18.12.0",
     "@spotify/prettier-config": "^11.0.0",
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
@@ -70,6 +70,7 @@
     "husky": "^6.0.0",
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
+    "minimist": "^1.2.5",
     "prettier": "^2.2.1",
     "shx": "^0.3.2",
     "yarn-lock-check": "^1.0.5"
