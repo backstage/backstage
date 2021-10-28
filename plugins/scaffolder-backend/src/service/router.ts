@@ -89,12 +89,17 @@ export async function createRouter(
   const workingDirectory = await getWorkingDirectory(config, logger);
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
+  let taskBroker: TaskBroker;
 
-  const databaseTaskStore = await DatabaseTaskStore.create({
-    database: await database.getClient(),
-  });
-  const taskBroker =
-    options.taskBroker || new StorageTaskBroker(databaseTaskStore, logger);
+  if (!options.taskBroker) {
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await database.getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  } else {
+    taskBroker = options.taskBroker;
+  }
+
   const actionRegistry = new TemplateActionRegistry();
 
   const workers = [];
