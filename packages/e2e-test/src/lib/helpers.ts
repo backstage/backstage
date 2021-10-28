@@ -142,10 +142,12 @@ export async function waitForPageWithText(
         waitUntil: 'networkidle0',
       });
 
-      const match = await page.evaluate(() =>
-        Array.from(document.querySelectorAll('*')).some(
-          el => el.textContent === text,
-        ),
+      const match = await page.evaluate(
+        textContent =>
+          Array.from(document.querySelectorAll('*')).some(
+            el => el.textContent === textContent,
+          ),
+        text,
       );
 
       if (!match) {
@@ -154,6 +156,7 @@ export async function waitForPageWithText(
 
       break;
     } catch (error) {
+      console.log(error);
       assertError(error);
 
       findAttempts++;
