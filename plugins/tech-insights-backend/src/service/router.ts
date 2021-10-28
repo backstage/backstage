@@ -20,8 +20,9 @@ import { Config } from '@backstage/config';
 import {
   FactChecker,
   TechInsightCheck,
-  CheckResult,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
+
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/DatabaseManager';

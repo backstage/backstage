@@ -18,7 +18,7 @@ import {
   FactRetriever,
   FactRetrieverRegistration,
   FactSchema,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
 export class FactRetrieverRegistry {

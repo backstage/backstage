@@ -175,14 +175,16 @@ export interface FactRetriever {
   schema: FactSchema;
 
   /**
-   * An optional list of entity type descriptors to indicate if this fact retriever is valid for an entity type.
+   * An optional object/array of objects of entity filters to indicate if this fact retriever is valid for an entity type.
    * If omitted, the retriever should apply to all entities.
    *
-   * Should be defined as:
-   * ['component', 'group', 'user'] for top level items
-   * ['component:service', 'component:website'] for component types.
+   * Should be defined for example:
+   *   { field: 'kind', values: ['component'] }
+   *   { field: 'metadata.name', values: ['component-1', 'component-2'] }
    */
-  entityTypes?: string[];
+  entityFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>;
 }
 
 export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;

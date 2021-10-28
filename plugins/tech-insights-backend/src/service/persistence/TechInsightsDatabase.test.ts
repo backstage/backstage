@@ -15,14 +15,14 @@
  */
 import { DatabaseManager } from './DatabaseManager';
 import { DateTime, Duration } from 'luxon';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
+import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { Knex } from 'knex';
 
 const factSchemas = [
   {
     id: 'test-fact',
     version: '0.0.1-test',
-    entityTypes: ['component'],
+    entityFilter: JSON.stringify([{ kind: 'component' }]),
     schema: JSON.stringify({
       testNumberFact: {
         type: 'integer',
@@ -35,7 +35,7 @@ const additionalFactSchemas = [
   {
     id: 'test-fact',
     version: '1.2.1-test',
-    entityTypes: ['component'],
+    entityFilter: JSON.stringify([{ kind: 'component' }]),
     schema: JSON.stringify({
       testNumberFact: {
         type: 'integer',
@@ -50,7 +50,7 @@ const additionalFactSchemas = [
   {
     id: 'test-fact',
     version: '1.1.1-test',
-    entityTypes: ['component'],
+    entityFilter: JSON.stringify([{ kind: 'component' }]),
     schema: JSON.stringify({
       testStringFact: {
         type: 'string',
@@ -63,7 +63,7 @@ const additionalFactSchemas = [
 const secondSchema = {
   id: 'second-test-fact',
   version: '0.0.1-test',
-  entityTypes: ['service'],
+  entityFilter: JSON.stringify([{ kind: 'service' }]),
   schema: JSON.stringify({
     testStringFact: {
       type: 'string',
@@ -137,7 +137,7 @@ describe('Tech Insights database', () => {
     expect(schemas[0]).toMatchObject({
       id: 'test-fact',
       version: '0.0.1-test',
-      entityTypes: ['component'],
+      entityFilter: [{ kind: 'component' }],
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
@@ -152,7 +152,7 @@ describe('Tech Insights database', () => {
     expect(schemas[0]).toMatchObject({
       id: 'test-fact',
       version: '1.2.1-test',
-      entityTypes: ['component'],
+      entityFilter: [{ kind: 'component' }],
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
@@ -177,7 +177,7 @@ describe('Tech Insights database', () => {
     expect(schemas[0]).toMatchObject({
       id: 'test-fact',
       version: '1.2.1-test',
-      entityTypes: ['component'],
+      entityFilter: [{ kind: 'component' }],
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
@@ -190,7 +190,7 @@ describe('Tech Insights database', () => {
     expect(schemas[1]).toMatchObject({
       id: 'second',
       version: '0.0.1-test',
-      entityTypes: ['service'],
+      entityFilter: [{ kind: 'service' }],
       testStringFact: {
         type: 'string',
         description: 'Test fact with a string type',

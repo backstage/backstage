@@ -77,16 +77,18 @@ you will not have any fact retrievers present in your application. To have the i
 To create factRetrieverRegistration you need to implement `FactRetriever` interface defined in `@backstage/plugin-tech-insights-common` package. After you have implemented this interface you can wrap that into a registration object like follows:
 
 ```ts
-const myFactRetriever: FactRetriever = {
+import { createFactRetrieverRegistration } from './createFactRetriever';
+
+const myFactRetriever = {
   /**
    * snip
    */
 };
 
-const myFactRetrieverRegistration = {
-  cadence: '1 * 3 * * ', // On the first minute of the third day of the month
-  factRetriever: myFactRetriever,
-};
+const myFactRetrieverRegistration = createFactRetrieverRegistration(
+  '1 * 3 * * ', // On the first minute of the third day of the month
+  myFactRetriever,
+);
 ```
 
 Then you can modify the example `techInsights.ts` file shown above like this:
@@ -104,28 +106,25 @@ discovery,
 
 ### Creating Fact Retrievers
 
-A Fact Retriever consist of three parts:
+A Fact Retriever consist of four parts:
 
-1. `ref` - unique identifier of a fact retriever
-2. `schema` - A versioned schema defining the shape of data a fact retriever returns
-3. `handler` - An asynchronous function handling the logic of retrieving and returning facts for an entity
+1. `id` - unique identifier of a fact retriever
+2. `version`: A semver string indicating the current version of the schema and the handler
+3. `schema` - A versioned schema defining the shape of data a fact retriever returns
+4. `handler` - An asynchronous function handling the logic of retrieving and returning facts for an entity
 
 An example implementation of a FactRetriever could for example be as follows:
 
 ```ts
 const myFactRetriever: FactRetriever = {
-  ref: 'documentation-number-factretriever', // unique ref, identifier of the fact retriever
+  id: 'documentation-number-factretriever', // unique identifier of the fact retriever
+  version: '0.1.1', // SemVer version number of this fact retriever schema. This should be incremented if the implementation changes
   schema: {
-    version: '0.1.1', // SemVer version number of this fact retriever schema. This should be incremented if the implementation changes
-
-    // the actual schema
-    schema: {
-      // Name/identifier of an individual fact that this retriever returns
-      examplenumberfact: {
-        type: 'integer', // Type of the fact
-        description: 'A fact of a number', // Description of the fact
-        entityTypes: ['component'], // An array of entity kinds that this fact is applicable to
-      },
+    // Name/identifier of an individual fact that this retriever returns
+    examplenumberfact: {
+      type: 'integer', // Type of the fact
+      description: 'A fact of a number', // Description of the fact
+      entityTypes: ['component'], // An array of entity kinds that this fact is applicable to
     },
   },
   handler: async ctx => {

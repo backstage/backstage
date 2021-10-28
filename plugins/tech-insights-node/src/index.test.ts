@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export type { RouterOptions } from './service/router';
+import * as anything from './';
 
-export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
-export type {
-  TechInsightsOptions,
-  TechInsightsContext,
-} from './service/techInsightsContextBuilder';
-
-export type { PersistenceContext } from './service/persistence/DatabaseManager';
-export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
+describe('tech-insights-node', () => {
+  // Types only
+  it('should exist', () => {
+    expect(anything).toBeTruthy();
+  });
+});

@@ -17,7 +17,7 @@ import {
   FactRetriever,
   FactRetrieverContext,
   TechInsightsStore,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { schedule, validate, ScheduledTask } from 'node-cron';
 import { Logger } from 'winston';

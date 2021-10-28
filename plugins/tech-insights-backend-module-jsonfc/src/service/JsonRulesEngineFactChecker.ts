@@ -17,13 +17,12 @@
 import { JsonRuleBooleanCheckResult, TechInsightJsonRuleCheck } from '../types';
 import {
   FactChecker,
-  FactResponse,
   TechInsightCheckRegistry,
   FlatTechInsightFact,
   TechInsightsStore,
   CheckValidationResponse,
-  CheckValidationError,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
+import { FactResponse } from '@backstage/plugin-tech-insights-common';
 import { Engine, EngineResult, TopLevelCondition } from 'json-rules-engine';
 import { DefaultCheckRegistry } from './CheckRegistry';
 import { Logger } from 'winston';
@@ -71,15 +70,19 @@ export class JsonRulesEngineFactChecker
     this.repository = repository;
     this.logger = logger;
     checks.forEach(check => this.validate(check));
-    this.checkRegistry = checkRegistry ?? new DefaultCheckRegistry(checks);
+    this.checkRegistry =
+      checkRegistry ??
+      new DefaultCheckRegistry<TechInsightJsonRuleCheck>(checks);
   }
 
   async runChecks(
     entity: string,
-    checks: string[],
+    checks?: string[],
   ): Promise<JsonRuleBooleanCheckResult[]> {
     const engine = new Engine();
-    const techInsightChecks = await this.checkRegistry.getAll(checks);
+    const techInsightChecks = checks
+      ? await this.checkRegistry.getAll(checks)
+      : await this.checkRegistry.list();
     const factIds = techInsightChecks.flatMap(it => it.factIds);
     const facts = await this.repository.getLatestFactsByIds(factIds, entity);
     techInsightChecks.forEach(techInsightCheck => {
@@ -127,7 +130,7 @@ export class JsonRulesEngineFactChecker
       return {
         valid: false,
         message: msg,
-        errors: validator.errors,
+        errors: validator.errors ? validator.errors : undefined,
       };
     }
 
@@ -164,21 +167,6 @@ export class JsonRulesEngineFactChecker
 
   getChecks(): Promise<TechInsightJsonRuleCheck[]> {
     return this.checkRegistry.list();
-  }
-
-  async addCheck(
-    check: TechInsightJsonRuleCheck,
-  ): Promise<TechInsightJsonRuleCheck> {
-    const checkValidationResponse = await this.validate(check);
-    if (!checkValidationResponse.valid) {
-      const msg = `Check validation failed when adding check ${check.name} to check registry.`;
-      this.logger.warn(msg);
-      throw new CheckValidationError({
-        message: checkValidationResponse.message || msg,
-        errors: checkValidationResponse.errors,
-      });
-    }
-    return await this.checkRegistry.register(check);
   }
 
   private retrieveIndividualFactReferences(
@@ -255,8 +243,10 @@ export class JsonRulesEngineFactChecker
     };
 
     if ('toJSON' in result) {
-      // Results serialize "wrong" since the objects are creating their own serialization implementations
-      // 'toJSON' should always be present in the result object but it is missing from the types
+      // Results from json-rules-engine serialize "wrong" since the objects are creating their own serialization implementations.
+      // 'toJSON' should always be present in the result object but it is missing from the types.
+      // Parsing the stringified representation into a plain object here to be able to serialize it later
+      // along with other items present in the returned response.
       const rule = JSON.parse(result.toJSON());
       return { ...returnable, rule: pick(rule, ['conditions']) };
     }
@@ -312,7 +302,7 @@ export class JsonRulesEngineFactChecker
 export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
   logger: Logger;
-  checkRegistry?: TechInsightCheckRegistry<any>;
+  checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
 };
 
 /**
@@ -325,7 +315,7 @@ export type JsonRulesEngineFactCheckerFactoryOptions = {
 export class JsonRulesEngineFactCheckerFactory {
   private readonly checks: TechInsightJsonRuleCheck[];
   private readonly logger: Logger;
-  private readonly checkRegistry?: TechInsightCheckRegistry<any>;
+  private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
 
   constructor({
     checks,

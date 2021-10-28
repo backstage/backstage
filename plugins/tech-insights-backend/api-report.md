@@ -6,17 +6,16 @@
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { FactChecker } from '@backstage/plugin-tech-insights-common';
-import { FactCheckerFactory } from '@backstage/plugin-tech-insights-common';
-import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-common';
+import { FactChecker } from '@backstage/plugin-tech-insights-node';
+import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
+import { FactRetriever } from '@backstage/plugin-tech-insights-node';
+import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { TechInsightCheck } from '@backstage/plugin-tech-insights-common';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
+import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
+import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 
-// Warning: (ae-missing-release-tag) "buildTechInsightsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const buildTechInsightsContext: <
   CheckType extends TechInsightCheck,
@@ -24,6 +23,12 @@ export const buildTechInsightsContext: <
 >(
   options: TechInsightsOptions<CheckType, CheckResultType>,
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
+
+// @public
+export function createFactRetrieverRegistration(
+  cadence: string,
+  factRetriever: FactRetriever,
+): FactRetrieverRegistration;
 
 // @public
 export function createRouter<

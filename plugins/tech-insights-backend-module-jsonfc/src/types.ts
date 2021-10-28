@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { TopLevelCondition } from 'json-rules-engine';
+import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import {
   BooleanCheckResult,
   CheckResponse,
-  TechInsightCheck,
 } from '@backstage/plugin-tech-insights-common';
 
 /**

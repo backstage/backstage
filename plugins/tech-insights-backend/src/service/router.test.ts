@@ -20,7 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
 import express from 'express';
 import { PersistenceContext } from './persistence/DatabaseManager';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
+import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 

@@ -16,14 +16,15 @@
 import {
   createRouter,
   buildTechInsightsContext,
+  createFactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import {
-  JSON_RULE_ENGINE_CHECK_TYPE,
-  JsonRulesEngineFactCheckerFactory,
-} from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 import { CatalogClient } from '@backstage/catalog-client';
+import {
+  JsonRulesEngineFactCheckerFactory,
+  JSON_RULE_ENGINE_CHECK_TYPE,
+} from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 
 export default async function createPlugin({
   logger,
@@ -37,41 +38,38 @@ export default async function createPlugin({
     database,
     discovery,
     factRetrievers: [
-      {
-        cadence: '1 1 1 * *', // At 01:01 on day-of-month 1.
-        factRetriever: {
-          id: 'testRetriever',
-          version: '1.1.1',
-          entityTypes: ['component'],
-          schema: {
-            examplenumberfact: {
-              type: 'integer',
-              description: '',
-            },
-          },
-          handler: async _ctx => {
-            const catalogClient = new CatalogClient({
-              discoveryApi: discovery,
-            });
-            const entities = await catalogClient.getEntities();
-
-            return Promise.resolve(
-              entities.items.map(it => {
-                return {
-                  entity: {
-                    namespace: it.metadata.namespace!!,
-                    kind: it.kind,
-                    name: it.metadata.name,
-                  },
-                  facts: {
-                    examplenumberfact: 2,
-                  },
-                };
-              }),
-            );
+      createFactRetrieverRegistration('* * * * *', {
+        id: 'testRetriever',
+        version: '1.1.2',
+        entityFilter: [{ kind: 'component' }], // EntityFilter to be used in the future (creating checks, graphs etc.) to figure out which entities this fact retrieves data for.
+        schema: {
+          examplenumberfact: {
+            type: 'integer',
+            description: 'Example fact returning a number',
           },
         },
-      },
+        handler: async _ctx => {
+          const catalogClient = new CatalogClient({
+            discoveryApi: discovery,
+          });
+          const entities = await catalogClient.getEntities();
+
+          return Promise.resolve(
+            entities.items.map(it => {
+              return {
+                entity: {
+                  namespace: it.metadata.namespace!!,
+                  kind: it.kind,
+                  name: it.metadata.name,
+                },
+                facts: {
+                  examplenumberfact: 2,
+                },
+              };
+            }),
+          );
+        },
+      }),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
       checks: [

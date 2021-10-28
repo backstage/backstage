@@ -33,10 +33,10 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('SemVer string defining the version of schema.');
     table
-      .string('entityTypes')
+      .string('entityFilter')
       .nullable()
       .comment(
-        'A comma separated collection of entity kinds the fact retriever providing this schema affects. Defaults to null, which means all entity kinds.',
+        'A serialized entity filter object used to determine which entities this schema is applicable to.',
       );
     table
       .text('schema')

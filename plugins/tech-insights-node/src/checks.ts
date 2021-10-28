@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TechInsightsStore } from './persistence';
-import { CheckResponse, FactResponse } from './responses';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
 
 /**
  * A factory wrapper to construct FactChecker implementations.
@@ -57,16 +57,7 @@ export interface FactChecker<
    * @param checks - A collection of checks to run against provided entity
    * @returns - A collection containing check/fact information and the actual results of the check
    */
-  runChecks(entity: string, checks: string[]): Promise<CheckResultType[]>;
-
-  /**
-   * Adds and stores new checks so they can be run checks against.
-   * Implementation should ideally run validation against the check.
-   *
-   * @param check - The actual check to be added.
-   * @returns  - An indicator if fact was successfully added
-   */
-  addCheck(check: CheckType): Promise<CheckType>;
+  runChecks(entity: string, checks?: string[]): Promise<CheckResultType[]>;
 
   /**
    * Retrieves all available checks that can be used to run checks against.
@@ -97,29 +88,6 @@ export interface TechInsightCheckRegistry<CheckType extends TechInsightCheck> {
   get(checkId: string): Promise<CheckType>;
   getAll(checks: string[]): Promise<CheckType[]>;
   list(): Promise<CheckType[]>;
-}
-
-/**
- * Generic CheckResult
- *
- * Contains information about the facts used to calculate the check result
- * and information about the check itself. Both may include metadata to be able to display additional information.
- * A collection of these should be parseable by the frontend to display scorecards
- *
- * @public
- */
-export type CheckResult = {
-  facts: FactResponse;
-  check: CheckResponse;
-};
-
-/**
- * CheckResult of type Boolean.
- *
- * @public
- */
-export interface BooleanCheckResult extends CheckResult {
-  result: boolean;
 }
 
 /**
@@ -181,21 +149,5 @@ export interface TechInsightCheck {
 export type CheckValidationResponse = {
   valid: boolean;
   message?: string;
-  errors?: any;
+  errors?: unknown[];
 };
-
-/**
- * Error object for Validation Errors
- *
- * Can be used to short circuit larger execution paths instead of passing validation response around
- *
- * @public
- */
-export class CheckValidationError extends Error {
-  errors?: any;
-
-  constructor({ message, errors }: { message: string; errors?: any }) {
-    super(message);
-    this.errors = errors;
-  }
-}

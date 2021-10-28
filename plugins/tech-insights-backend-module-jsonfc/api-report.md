@@ -5,12 +5,12 @@
 ```ts
 import { BooleanCheckResult } from '@backstage/plugin-tech-insights-common';
 import { CheckResponse } from '@backstage/plugin-tech-insights-common';
-import { CheckValidationResponse } from '@backstage/plugin-tech-insights-common';
-import { FactChecker } from '@backstage/plugin-tech-insights-common';
+import { CheckValidationResponse } from '@backstage/plugin-tech-insights-node';
+import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { Logger as Logger_2 } from 'winston';
-import { TechInsightCheck } from '@backstage/plugin-tech-insights-common';
-import { TechInsightCheckRegistry } from '@backstage/plugin-tech-insights-common';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
+import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
+import { TechInsightCheckRegistry } from '@backstage/plugin-tech-insights-node';
+import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { TopLevelCondition } from 'json-rules-engine';
 
 // @public (undocumented)
@@ -52,13 +52,11 @@ export class JsonRulesEngineFactChecker
     checkRegistry,
   }: JsonRulesEngineFactCheckerOptions);
   // (undocumented)
-  addCheck(check: TechInsightJsonRuleCheck): Promise<TechInsightJsonRuleCheck>;
-  // (undocumented)
   getChecks(): Promise<TechInsightJsonRuleCheck[]>;
   // (undocumented)
   runChecks(
     entity: string,
-    checks: string[],
+    checks?: string[],
   ): Promise<JsonRuleBooleanCheckResult[]>;
   // (undocumented)
   validate(check: TechInsightJsonRuleCheck): Promise<CheckValidationResponse>;
@@ -79,7 +77,7 @@ export class JsonRulesEngineFactCheckerFactory {
 export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
   logger: Logger_2;
-  checkRegistry?: TechInsightCheckRegistry<any>;
+  checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
 };
 
 // @public

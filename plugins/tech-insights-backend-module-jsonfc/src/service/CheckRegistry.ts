@@ -18,7 +18,7 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import {
   TechInsightCheck,
   TechInsightCheckRegistry,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 
 export class DefaultCheckRegistry<CheckType extends TechInsightCheck>
   implements TechInsightCheckRegistry<CheckType>

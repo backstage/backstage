@@ -18,7 +18,7 @@ import knexFactory, { Knex } from 'knex';
 import { Logger } from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { TechInsightsDatabase } from './TechInsightsDatabase';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-common';
+import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-tech-insights-backend',

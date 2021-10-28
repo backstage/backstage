@@ -19,7 +19,7 @@ import {
   FactSchemaDefinition,
   TechInsightFact,
   TechInsightsStore,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { FactRetrieverEngine } from './FactRetrieverEngine';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -37,7 +37,7 @@ jest.mock('node-cron', () => {
 const testFactRetriever: FactRetriever = {
   id: 'test-factretriever',
   version: '0.0.1',
-  entityTypes: ['component'],
+  entityFilter: [{ kind: 'component' }],
   schema: {
     testnumberfact: {
       type: 'integer',
@@ -101,10 +101,10 @@ describe('FactRetrieverEngine', () => {
   };
 
   it('Should update fact retriever schemas on initialization', async () => {
-    factSchemaAssertionCallback = ({ id, schema, version, entityTypes }) => {
+    factSchemaAssertionCallback = ({ id, schema, version, entityFilter }) => {
       expect(id).toEqual('test-factretriever');
       expect(version).toEqual('0.0.1');
-      expect(entityTypes).toEqual(['component']);
+      expect(entityFilter).toEqual([{ kind: 'component' }]);
       expect(schema).toEqual({
         testnumberfact: {
           type: 'integer',

@@ -17,7 +17,7 @@
 import {
   TechInsightCheckRegistry,
   TechInsightsStore,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import {
   JSON_RULE_ENGINE_CHECK_TYPE,
   JsonRulesEngineFactCheckerFactory,

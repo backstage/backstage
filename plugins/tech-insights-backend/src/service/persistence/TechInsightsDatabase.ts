@@ -20,7 +20,7 @@ import {
   FlatTechInsightFact,
   TechInsightsStore,
   FactSchemaDefinition,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
@@ -39,7 +39,7 @@ type RawDbFactSchemaRow = {
   id: string;
   version: string;
   schema: string;
-  entityTypes?: string;
+  entityFilter?: string;
 };
 
 export class TechInsightsDatabase implements TechInsightsStore {
@@ -63,12 +63,12 @@ export class TechInsightsDatabase implements TechInsightsStore {
       .map((it: RawDbFactSchemaRow) => ({
         ...omit(it, 'schema'),
         ...JSON.parse(it.schema),
-        entityTypes: it.entityTypes ? it.entityTypes.split(',') : [],
+        entityFilter: it.entityFilter ? JSON.parse(it.entityFilter) : null,
       }));
   }
 
   async insertFactSchema(schemaDefinition: FactSchemaDefinition) {
-    const { id, version, schema, entityTypes } = schemaDefinition;
+    const { id, version, schema, entityFilter } = schemaDefinition;
     const existingSchemas = await this.db<RawDbFactSchemaRow>('fact_schemas')
       .where({ id })
       .and.where({ version })
@@ -78,7 +78,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
       await this.db<RawDbFactSchemaRow>('fact_schemas').insert({
         id,
         version,
-        entityTypes: entityTypes && entityTypes.join(','),
+        entityFilter: entityFilter ? JSON.stringify(entityFilter) : undefined,
         schema: JSON.stringify(schema),
       });
     }

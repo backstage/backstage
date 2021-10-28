@@ -23,16 +23,16 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import {
-  CheckResult,
   FactChecker,
   FactCheckerFactory,
   FactRetrieverRegistration,
   TechInsightCheck,
-} from '@backstage/plugin-tech-insights-common';
+} from '@backstage/plugin-tech-insights-node';
 import {
   DatabaseManager,
   PersistenceContext,
 } from './persistence/DatabaseManager';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
 
 /**
  * @public
@@ -80,6 +80,8 @@ export type TechInsightsContext<
 };
 
 /**
+ * @public
+ *
  * Constructs needed persistence context, fact retriever engine
  * and optionally fact checker implementations to be used in the tech insights module.
  *
