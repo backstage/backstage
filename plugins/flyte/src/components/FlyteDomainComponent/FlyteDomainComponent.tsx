@@ -67,7 +67,7 @@ export const FlyteDomainComponent = () => {
   const { project, domain } = useRouteRefParams(flyteDomainRouteRef);
   const api = useApi(flyteApiRef);
   const { value, loading, error } = useAsync(async () =>
-    api.listWorkflows(project, domain),
+    api.listWorkflowIds(project, domain),
   );
   if (loading) {
     return <Progress />;

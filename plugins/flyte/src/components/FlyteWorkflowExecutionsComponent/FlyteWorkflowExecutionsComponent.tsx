@@ -18,34 +18,37 @@ import { Table, TableColumn, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
-import { FlyteProject } from './../../api/types';
-import { useApi } from '@backstage/core-plugin-api';
+import { FlyteExecution } from './../../api/types';
+import { useRouteRefParams, useApi } from '@backstage/core-plugin-api';
+import { flyteWorkflowExecutionsRouteRef } from '../../routes';
 
 type DenseTableProps = {
-  projects: FlyteProject[];
+  executions: FlyteExecution[];
 };
 
-export const DenseTable = ({ projects }: DenseTableProps) => {
+export const DenseTable = ({ executions }: DenseTableProps) => {
   const columns: TableColumn[] = [
-    { title: 'ID', field: 'id' },
-    { title: 'Domains', field: 'domains' },
-    { title: 'NAME', field: 'name' },
-    { title: 'Description', field: 'description' },
+    { title: 'project', field: 'project' },
+    { title: 'domain', field: 'domain' },
+    { title: 'name', field: 'name' },
+    { title: 'phase', field: 'phase' },
+    { title: 'startedAt', field: 'startedAt' },
+    { title: 'updatedAt', field: 'updatedAt' },
   ];
-
-  const data = projects.map(project => {
-    const domains = project.domains.map(d => d.id).join();
+  const data = executions.map(execution => {
     return {
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      domains: domains,
+      project: execution.workflowExecutionId.project,
+      domain: execution.workflowExecutionId.domain,
+      name: execution.workflowExecutionId.name,
+      phase: execution.phase,
+      startedAt: execution.startedAt,
+      updatedAt: execution.updatedAt,
     };
   });
 
   return (
     <Table
-      title="Flyte Projects List"
+      title="Flyte Executions List"
       options={{ search: true, paging: false }}
       columns={columns}
       data={data}
@@ -53,9 +56,14 @@ export const DenseTable = ({ projects }: DenseTableProps) => {
   );
 };
 
-export const FlyteProjectFetchComponent = () => {
+export const FlyteWorkflowExecutionsComponent = () => {
   const api = useApi(flyteApiRef);
-  const { value, loading, error } = useAsync(async () => api.listProjects());
+  const { project, domain, name } = useRouteRefParams(
+    flyteWorkflowExecutionsRouteRef,
+  );
+  const { value, loading, error } = useAsync(async () =>
+    api.listExecutions(project, domain, name, 100),
+  );
 
   if (loading) {
     return <Progress />;
@@ -63,5 +71,5 @@ export const FlyteProjectFetchComponent = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <DenseTable projects={value!} />;
+  return <DenseTable executions={value!} />;
 };

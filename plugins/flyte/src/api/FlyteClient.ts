@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { flyteidl } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
+import { flyteidl, google } from '@flyteorg/flyteidl/gen/pb-js/flyteidl';
 import { FlyteApi } from './FlyteApi';
-import { FlyteProject, FlyteDomain, PartialIdentifier } from './types';
+import {
+  FlyteProject,
+  FlyteDomain,
+  PartialIdentifier,
+  FlyteExecution,
+} from './types';
 import axios, { AxiosRequestConfig } from 'axios';
 
 export class FlyteClient implements FlyteApi {
@@ -54,7 +59,10 @@ export class FlyteClient implements FlyteApi {
       );
   }
 
-  listWorkflows(project: string, domain: string): Promise<PartialIdentifier[]> {
+  listWorkflowIds(
+    project: string,
+    domain: string,
+  ): Promise<PartialIdentifier[]> {
     const options: AxiosRequestConfig = {
       method: 'get',
       responseType: 'arraybuffer',
@@ -75,4 +83,80 @@ export class FlyteClient implements FlyteApi {
         }),
       );
   }
+
+  listExecutions(
+    project: string,
+    domain: string,
+    name: string,
+    limit: number,
+  ): Promise<FlyteExecution[]> {
+    const options: AxiosRequestConfig = {
+      method: 'get',
+      responseType: 'arraybuffer',
+      headers: { Accept: 'application/octet-stream' },
+      url: `http://localhost:8088/api/v1/executions/${project}/${domain}?filters=eq(workflow.name,${name})&limit=${limit}&sort_by.direction=DESCENDING&sort_by.key=created_at`,
+    };
+
+    return axios
+      .request(options)
+      .then(response => new Uint8Array(response.data))
+      .then(data => flyteidl.admin.ExecutionList.decode(data))
+      .then(proto =>
+        proto.executions.map(execution => {
+          const phase: string = getEnumString(execution.closure?.phase || 0);
+          const startedAt = timestampToString(
+            execution.closure?.startedAt || null,
+          );
+          const updatedAt = timestampToString(
+            execution.closure?.updatedAt || null,
+          );
+          return {
+            workflowExecutionId: {
+              project: execution.id!.project!,
+              domain: execution.id!.domain!,
+              name: execution.id!.name!,
+            },
+            phase: phase,
+            startedAt: startedAt,
+            updatedAt: updatedAt,
+          };
+        }),
+      );
+  }
+}
+
+function getEnumString(value: Number): string {
+  switch (value) {
+    case 0:
+      return 'UNDEFINED';
+    case 1:
+      return 'QUEUED';
+    case 2:
+      return 'RUNNING';
+    case 3:
+      return 'SUCCEEDING';
+    case 4:
+      return 'SUCCEEDED';
+    case 5:
+      return 'FAILING';
+    case 6:
+      return 'FAILED';
+    case 7:
+      return 'ABORTED';
+    case 8:
+      return 'TIMED_OUT';
+    default:
+      return 'UNKNOWN';
+  }
+}
+function timestampToString(
+  timestamp: google.protobuf.ITimestamp | null,
+): string {
+  if (timestamp === null) {
+    return '';
+  }
+  const nanos = timestamp.nanos || 0;
+  const seconds = Number(timestamp.seconds) || 0;
+  const milliseconds = seconds * 1000 + nanos / 1e6;
+  return new Date(milliseconds).toISOString();
 }

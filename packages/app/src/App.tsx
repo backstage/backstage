@@ -85,7 +85,11 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
-import { FlytePage, FlyteDomainPage } from '@backstage/plugin-flyte';
+import {
+  FlytePage,
+  FlyteDomainPage,
+  FlyteWorkflowExecutionsPage,
+} from '@backstage/plugin-flyte';
 
 const app = createApp({
   apis,
@@ -206,6 +210,10 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/flyte" element={<FlytePage />} />
     <Route path="/flyte/:project/:domain" element={<FlyteDomainPage />} />
+    <Route
+      path="/flyte/:project/:domain/:name"
+      element={<FlyteWorkflowExecutionsPage />}
+    />
   </FlatRoutes>
 );
 

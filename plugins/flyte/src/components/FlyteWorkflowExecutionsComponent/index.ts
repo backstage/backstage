@@ -13,25 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createApiRef } from '@backstage/core-plugin-api';
-import { FlyteProject, PartialIdentifier, FlyteExecution } from './types';
-
-export const flyteApiRef = createApiRef<FlyteApi>({
-  id: 'plugin.flyte',
-  description: 'Used by the Flyte plugin to make requests',
-});
-
-export type FlyteApi = {
-  listProjects(): Promise<FlyteProject[]>;
-  listWorkflowIds(
-    project: string,
-    domain: string,
-  ): Promise<PartialIdentifier[]>;
-  listExecutions(
-    project: string,
-    domain: string,
-    name: string,
-    limit: number,
-  ): Promise<FlyteExecution[]>;
-};
+export { FlyteWorkflowExecutionsComponent } from './FlyteWorkflowExecutionsComponent';

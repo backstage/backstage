@@ -20,7 +20,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { flyteApiRef, FlyteClient } from './api';
 
-import { rootRouteRef, flyteDomainRouteRef } from './routes';
+import {
+  rootRouteRef,
+  flyteDomainRouteRef,
+  flyteWorkflowExecutionsRouteRef,
+} from './routes';
 
 export const flytePlugin = createPlugin({
   id: 'flyte',
@@ -56,5 +60,16 @@ export const FlyteDomainPage = flytePlugin.provide(
         m => m.FlyteDomainComponent,
       ),
     mountPoint: flyteDomainRouteRef,
+  }),
+);
+
+export const FlyteWorkflowExecutionsPage = flytePlugin.provide(
+  createRoutableExtension({
+    name: 'FlyteWorkflowExecutionsPage',
+    component: () =>
+      import('./components/FlyteWorkflowExecutionsComponent').then(
+        m => m.FlyteWorkflowExecutionsComponent,
+      ),
+    mountPoint: flyteWorkflowExecutionsRouteRef,
   }),
 );

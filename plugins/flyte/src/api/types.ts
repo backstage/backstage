@@ -31,3 +31,10 @@ export type PartialIdentifier = {
   domain: string;
   name: string;
 };
+
+export type FlyteExecution = {
+  workflowExecutionId: PartialIdentifier;
+  phase: string;
+  startedAt: string;
+  updatedAt: string;
+};

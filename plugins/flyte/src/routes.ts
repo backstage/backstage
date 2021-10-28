@@ -27,3 +27,10 @@ export const flyteDomainRouteRef = createRouteRef({
   title: 'Flyte Domain details',
   params: ['project', 'domain'],
 });
+
+export const flyteWorkflowExecutionsRouteRef = createRouteRef({
+  icon: NoIcon,
+  path: '/flyte/:project/:domain/:name',
+  title: 'Flyte Domain details',
+  params: ['project', 'domain', 'name'],
+});
