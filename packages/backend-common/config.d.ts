@@ -69,6 +69,16 @@ export interface Config {
        * Defaults to true if unspecified.
        */
       ensureExists?: boolean;
+      /**
+       * Whether plugins should use their own schemas instead of databases. If enabled,
+       * each plugin will create a schema in the configured database instance
+       * using the `pluginId` as its schema name.
+       *
+       * NOTE: Currently only supported by the `pg` client.
+       *
+       * @default false
+       */
+      usePluginSchemas?: boolean;
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {

@@ -18,12 +18,15 @@ import { omit } from 'lodash';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
-  createDatabaseClient,
   ensureDatabaseExists,
   createNameOverride,
   normalizeConnection,
+  createSchemaOverride,
+  ensureSchemaExists,
+  createDatabaseClient,
 } from './connection';
 import { PluginDatabaseManager } from './types';
+import { mergeDatabaseConfig } from './config';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -79,14 +82,15 @@ export class DatabaseManager {
    * Provides the canonical database name for a given plugin.
    *
    * This method provides the effective database name which is determined using global
-   * and plugin specific database config. If no explicit database name is configured,
-   * this method will provide a generated name which is the pluginId prefixed with
-   * 'backstage_plugin_'.
+   * and plugin specific database config. If no explicit database name is configured
+   * and usePluginSchemas is not enabled, this method will provide a generated name
+   * which is the pluginId prefixed with 'backstage_plugin_'. If `usePluginSchemas` is
+   * enabled, it will fallback to using the default database for the knex instance.
    *
    * @param pluginId Lookup the database name for given plugin
    * @returns String representing the plugin's database name
    */
-  private getDatabaseName(pluginId: string): string {
+  private getDatabaseName(pluginId: string): string | undefined {
     const connection = this.getConnectionConfig(pluginId);
 
     if (this.getClientType(pluginId).client === 'sqlite3') {
@@ -95,11 +99,16 @@ export class DatabaseManager {
         (connection as Knex.Sqlite3ConnectionConfig)?.filename ?? ':memory:'
       );
     }
+
+    const databaseName = (connection as Knex.ConnectionConfig)?.database;
+
+    // usePluginSchemas enabled should use overridden databaseName if supplied or fallback to default knex database
+    if (this.getUsePluginSchemasConfig()) {
+      return databaseName;
+    }
+
     // all other supported databases should fallback to an auto-prefixed name
-    return (
-      (connection as Knex.ConnectionConfig)?.database ??
-      `${this.prefix}${pluginId}`
-    );
+    return databaseName ?? `${this.prefix}${pluginId}`;
   }
 
   /**
@@ -136,13 +145,18 @@ export class DatabaseManager {
     );
   }
 
+  private getUsePluginSchemasConfig(): boolean {
+    return this.config.getOptionalBoolean('usePluginSchemas') ?? false;
+  }
+
   /**
    * Provides a Knex connection plugin config by combining base and plugin config.
    *
    * This method provides a baseConfig for a plugin database connector. If the client type
    * has not been overridden, the global connection config will be included with plugin
    * specific config as the base. Values from the plugin connection take precedence over the
-   * base. Base database name is omitted for all supported databases excluding SQLite.
+   * base. Base database name is omitted for all supported databases excluding SQLite unless
+   * `usePluginSchemas` is enabled.
    */
   private getConnectionConfig(
     pluginId: string,
@@ -153,10 +167,13 @@ export class DatabaseManager {
       this.config.get('connection'),
       this.config.getString('client'),
     );
-    // As databases cannot be shared, the `database` property from the base connection
-    // is omitted. SQLite3's `filename` property is an exception as this is used as a
+    // Databases cannot be shared unless the usePluginSchemas is enabled. The
+    // `database` property from the base connection is omitted unless usePluginSchemas
+    // is enabled. SQLite3's `filename` property is an exception as this is used as a
     // directory elsewhere so we preserve `filename`.
-    baseConnection = omit(baseConnection, 'database');
+    if (!this.getUsePluginSchemasConfig()) {
+      baseConnection = omit(baseConnection, 'database');
+    }
 
     // get and normalize optional plugin specific database connection
     const connection = normalizeConnection(
@@ -188,16 +205,29 @@ export class DatabaseManager {
   }
 
   /**
+   * Provides a partial Knex.Config database schema override for a given plugin.
+   *
+   * @param pluginId Target plugin to get database schema override
+   * @returns Partial Knex.Config with database schema override
+   */
+  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
+    return createSchemaOverride(this.getClientType(pluginId).client, pluginId);
+  }
+
+  /**
    * Provides a partial Knex.Config database name override for a given plugin.
    *
    * @param pluginId Target plugin to get database name override
    * @returns Partial Knex.Config with database name override
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
-    return createNameOverride(
-      this.getClientType(pluginId).client,
-      this.getDatabaseName(pluginId),
-    );
+    const databaseNameOverride = this.getDatabaseName(pluginId);
+    return databaseNameOverride
+      ? createNameOverride(
+          this.getClientType(pluginId).client,
+          databaseNameOverride,
+        )
+      : {};
   }
 
   /**
@@ -211,8 +241,8 @@ export class DatabaseManager {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    if (this.getEnsureExistsConfig(pluginId)) {
-      const databaseName = this.getDatabaseName(pluginId);
+    const databaseName = this.getDatabaseName(pluginId);
+    if (databaseName && this.getEnsureExistsConfig(pluginId)) {
       try {
         await ensureDatabaseExists(pluginConfig, databaseName);
       } catch (error) {
@@ -222,9 +252,24 @@ export class DatabaseManager {
       }
     }
 
-    return createDatabaseClient(
-      pluginConfig,
+    let schemaOverrides;
+    if (this.getUsePluginSchemasConfig()) {
+      try {
+        schemaOverrides = this.getSchemaOverrides(pluginId);
+        await ensureSchemaExists(pluginConfig, pluginId);
+      } catch (error) {
+        throw new Error(
+          `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
+        );
+      }
+    }
+
+    const databaseClientOverrides = mergeDatabaseConfig(
+      {},
       this.getDatabaseOverrides(pluginId),
+      schemaOverrides,
     );
+
+    return createDatabaseClient(pluginConfig, databaseClientOverrides);
   }
 }

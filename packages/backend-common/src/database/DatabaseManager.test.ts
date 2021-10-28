@@ -15,13 +15,18 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
-import { createDatabaseClient, ensureDatabaseExists } from './connection';
+import {
+  createDatabaseClient,
+  ensureDatabaseExists,
+  ensureSchemaExists,
+} from './connection';
 import { DatabaseManager } from './DatabaseManager';
 
 jest.mock('./connection', () => ({
   ...jest.requireActual('./connection'),
   createDatabaseClient: jest.fn(),
   ensureDatabaseExists: jest.fn(),
+  ensureSchemaExists: jest.fn(),
 }));
 
 describe('DatabaseManager', () => {
@@ -312,6 +317,192 @@ describe('DatabaseManager', () => {
       expect(overrides).toHaveProperty(
         'connection.database',
         expect.stringContaining('userdbname'),
+      );
+    });
+
+    it('plugin sets schema override for pg client', async () => {
+      const overrideConfig = {
+        backend: {
+          database: {
+            client: 'pg',
+            usePluginSchemas: true,
+            connection: {
+              host: 'localhost',
+              user: 'foo',
+              password: 'bar',
+              database: 'foodb',
+            },
+          },
+        },
+      };
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader(overrideConfig),
+      );
+      const pluginId = 'schemaoverride';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, overrides] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: config.backend.database.connection,
+      });
+
+      expect(overrides).toMatchObject({
+        searchPath: [pluginId],
+      });
+    });
+
+    it('plugin does not provide schema override for non pg client', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'sqlite3',
+              usePluginSchemas: true,
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+          },
+        }),
+      );
+      const pluginId = 'any-plugin';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, overrides] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'sqlite3',
+        connection: config.backend.database.connection,
+      });
+
+      expect(overrides).not.toHaveProperty('searchPath');
+    });
+
+    it('plugin does not provide schema override if usePluginSchemas is not provided', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              usePluginSchemas: false,
+              connection: 'some-file-path',
+            },
+          },
+        }),
+      );
+
+      const pluginId = 'any-plugin';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_baseConfig, overrides] = mockCalls[0];
+
+      expect(overrides).not.toHaveProperty('searchPath');
+    });
+
+    it('plugin does not provide schema override if usePluginSchemas is false', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+          },
+        }),
+      );
+
+      const pluginId = 'schemaoverride';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_baseConfig, overrides] = mockCalls[0];
+
+      expect(overrides).not.toHaveProperty('searchPath');
+    });
+
+    it('usePluginSchemas ensures that each plugin schema exists', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              usePluginSchemas: true,
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+          },
+        }),
+      );
+      const pluginId = 'testdbname';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(ensureSchemaExists).mock.calls;
+      const [_, schemaName] = mockCalls[0];
+
+      expect(schemaName).toEqual('testdbname');
+    });
+
+    it('usePluginSchemas allows connection overrides for plugins', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              usePluginSchemas: true,
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+              plugin: {
+                testdbname: {
+                  connection: {
+                    database: 'database_name_overriden',
+                    host: 'newhost',
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+      const pluginId = 'testdbname';
+      await testManager.forPlugin(pluginId).getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, overrides] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: {
+          database: 'database_name_overriden',
+          host: 'newhost',
+          user: 'foo',
+          password: 'bar',
+        },
+      });
+      expect(overrides).toHaveProperty('searchPath', ['testdbname']);
+      expect(overrides).toHaveProperty(
+        'connection.database',
+        'database_name_overriden',
       );
     });
   });

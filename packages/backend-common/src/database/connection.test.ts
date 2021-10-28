@@ -18,8 +18,24 @@ import { ConfigReader } from '@backstage/config';
 import {
   createDatabaseClient,
   createNameOverride,
+  createSchemaOverride,
+  ensureSchemaExists,
   parseConnectionString,
 } from './connection';
+import { pgConnector } from './connectors';
+
+const mocked = (f: Function) => f as jest.Mock;
+
+jest.mock('./connectors', () => {
+  const connectors = jest.requireActual('./connectors');
+  return {
+    ...connectors,
+    pgConnector: {
+      ...connectors.pgConnector,
+      ensureSchemaExists: jest.fn(),
+    },
+  };
+});
 
 describe('database connection', () => {
   describe('createDatabaseClient', () => {
@@ -150,6 +166,65 @@ describe('database connection', () => {
 
     it('throws an error if client hint is not provided', () => {
       expect(() => parseConnectionString('sqlite://')).toThrow();
+    });
+  });
+
+  describe('createSchemaOverride', () => {
+    it('returns Knex config for postgres', () => {
+      expect(createSchemaOverride('pg', 'testpg')).toHaveProperty(
+        'searchPath',
+        ['testpg'],
+      );
+    });
+
+    it('throws error for sqlite', () => {
+      expect(createSchemaOverride('sqlite3', 'testsqlite')).toBeUndefined();
+    });
+
+    it('returns Knex config for mysql', () => {
+      expect(createSchemaOverride('mysql', 'testmysql')).toBeUndefined();
+    });
+
+    it('throws an error for unknown connection', () => {
+      expect(createSchemaOverride('unknown', 'testname')).toBeUndefined();
+    });
+  });
+
+  describe('ensureSchemaExists', () => {
+    it('returns sucessfully with pg client', async () => {
+      await ensureSchemaExists(
+        new ConfigReader({
+          client: 'pg',
+          schema: 'catalog',
+          connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
+        }),
+        'catalog',
+      );
+
+      const mockCalls = mocked(
+        pgConnector.ensureSchemaExists as Function,
+      ).mock.calls.splice(-1);
+      const [baseConfig, schemaName] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
+      });
+
+      expect(schemaName).toEqual('catalog');
+    });
+
+    it('throws error for non pg client', () => {
+      return expect(
+        ensureSchemaExists(
+          new ConfigReader({
+            client: 'sqlite3',
+            schema: 'catalog',
+            connection: ':memory:',
+          }),
+          'catalog',
+        ),
+      ).resolves.toBeUndefined();
     });
   });
 });

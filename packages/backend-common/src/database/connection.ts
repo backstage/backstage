@@ -83,6 +83,23 @@ export async function ensureDatabaseExists(
 }
 
 /**
+ * Ensures that the given schemas all exist, creating them if they do not.
+ *
+ * @public
+ */
+export async function ensureSchemaExists(
+  dbConfig: Config,
+  ...schemas: Array<string>
+): Promise<void> {
+  const client: DatabaseClient = dbConfig.getString('client');
+
+  return await ConnectorMapping[client]?.ensureSchemaExists?.(
+    dbConfig,
+    ...schemas,
+  );
+}
+
+/**
  * Provides a Knex.Config object with the provided database name for a given client.
  */
 export function createNameOverride(
@@ -94,6 +111,23 @@ export function createNameOverride(
   } catch (e) {
     throw new InputError(
       `Unable to create database name override for '${client}' connector`,
+      e,
+    );
+  }
+}
+
+/**
+ * Provides a Knex.Config object with the provided database schema for a given client. Currently only supported by `pg`.
+ */
+export function createSchemaOverride(
+  client: string,
+  name: string,
+): Partial<Knex.Config | undefined> {
+  try {
+    return ConnectorMapping[client]?.createSchemaOverride?.(name);
+  } catch (e) {
+    throw new InputError(
+      `Unable to create database schema override for '${client}' connector`,
       e,
     );
   }
