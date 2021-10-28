@@ -292,7 +292,7 @@ export async function createRouter(
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
       });
     })
-    .get('/v2/tasks/:taskId/logs', async (req, res) => {
+    .get('/v2/tasks/:taskId/events', async (req, res) => {
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
 

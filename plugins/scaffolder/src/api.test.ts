@@ -133,40 +133,43 @@ describe('api', () => {
 
       it('should work', async () => {
         server.use(
-          rest.get(`${mockBaseUrl}/v2/tasks/:taskId/logs`, (req, res, ctx) => {
-            const { taskId } = req.params;
-            const after = req.url.searchParams.get('after');
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (req, res, ctx) => {
+              const { taskId } = req.params;
+              const after = req.url.searchParams.get('after');
 
-            if (taskId === 'a-random-task-id') {
-              if (!after) {
-                return res(
-                  ctx.json([
-                    {
-                      id: 1,
-                      taskId: 'a-random-id',
-                      type: 'log',
-                      createdAt: '',
-                      body: { message: 'My log message' },
-                    },
-                  ]),
-                );
-              } else if (after === '1') {
-                return res(
-                  ctx.json([
-                    {
-                      id: 2,
-                      taskId: 'a-random-id',
-                      type: 'completion',
-                      createdAt: '',
-                      body: { message: 'Finished!' },
-                    },
-                  ]),
-                );
+              if (taskId === 'a-random-task-id') {
+                if (!after) {
+                  return res(
+                    ctx.json([
+                      {
+                        id: 1,
+                        taskId: 'a-random-id',
+                        type: 'log',
+                        createdAt: '',
+                        body: { message: 'My log message' },
+                      },
+                    ]),
+                  );
+                } else if (after === '1') {
+                  return res(
+                    ctx.json([
+                      {
+                        id: 2,
+                        taskId: 'a-random-id',
+                        type: 'completion',
+                        createdAt: '',
+                        body: { message: 'Finished!' },
+                      },
+                    ]),
+                  );
+                }
               }
-            }
 
-            return res(ctx.status(500));
-          }),
+              return res(ctx.status(500));
+            },
+          ),
         );
 
         const next = jest.fn();
@@ -198,30 +201,33 @@ describe('api', () => {
         expect.assertions(3);
 
         server.use(
-          rest.get(`${mockBaseUrl}/v2/tasks/:taskId/logs`, (req, res, ctx) => {
-            const { taskId } = req.params;
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (req, res, ctx) => {
+              const { taskId } = req.params;
 
-            const after = req.url.searchParams.get('after');
+              const after = req.url.searchParams.get('after');
 
-            // use assertion to make sure it is not called after unsubscribing
-            expect(after).toBe(null);
+              // use assertion to make sure it is not called after unsubscribing
+              expect(after).toBe(null);
 
-            if (taskId === 'a-random-task-id') {
-              return res(
-                ctx.json([
-                  {
-                    id: 1,
-                    taskId: 'a-random-id',
-                    type: 'log',
-                    createdAt: '',
-                    body: { message: 'My log message' },
-                  },
-                ]),
-              );
-            }
+              if (taskId === 'a-random-task-id') {
+                return res(
+                  ctx.json([
+                    {
+                      id: 1,
+                      taskId: 'a-random-id',
+                      type: 'log',
+                      createdAt: '',
+                      body: { message: 'My log message' },
+                    },
+                  ]),
+                );
+              }
 
-            return res(ctx.status(500));
-          }),
+              return res(ctx.status(500));
+            },
+          ),
         );
 
         const next = jest.fn();
@@ -252,25 +258,28 @@ describe('api', () => {
         const called = jest.fn();
 
         server.use(
-          rest.get(`${mockBaseUrl}/v2/tasks/:taskId/logs`, (_req, res, ctx) => {
-            called();
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (_req, res, ctx) => {
+              called();
 
-            if (called.mock.calls.length > 1) {
-              return res(
-                ctx.json([
-                  {
-                    id: 2,
-                    taskId: 'a-random-id',
-                    type: 'completion',
-                    createdAt: '',
-                    body: { message: 'Finished!' },
-                  },
-                ]),
-              );
-            }
+              if (called.mock.calls.length > 1) {
+                return res(
+                  ctx.json([
+                    {
+                      id: 2,
+                      taskId: 'a-random-id',
+                      type: 'completion',
+                      createdAt: '',
+                      body: { message: 'Finished!' },
+                    },
+                  ]),
+                );
+              }
 
-            return res(ctx.status(500));
-          }),
+              return res(ctx.status(500));
+            },
+          ),
         );
 
         const next = jest.fn();

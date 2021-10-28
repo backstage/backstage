@@ -319,7 +319,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     });
   });
 
-  describe('GET /v2/tasks/:taskId/logs', () => {
+  describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
       const unsubscribe = jest.fn();
       MockStorageTaskBroker.prototype.observe.mockImplementation(
@@ -346,7 +346,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         },
       );
 
-      const response = await request(app).get('/v2/tasks/a-random-id/logs');
+      const response = await request(app).get('/v2/tasks/a-random-id/events');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
@@ -384,7 +384,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       );
 
       const response = await request(app)
-        .get('/v2/tasks/a-random-id/logs')
+        .get('/v2/tasks/a-random-id/events')
         .query({ after: 10 });
 
       expect(response.status).toEqual(200);

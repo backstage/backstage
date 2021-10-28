@@ -265,7 +265,7 @@ export class ScaffolderClient implements ScaffolderApi {
         while (!subscriber.closed) {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
-          )}/logs?${qs.stringify({ after })}`;
+          )}/events?${qs.stringify({ after })}`;
           const response = await fetch(url);
 
           if (!response.ok) {
