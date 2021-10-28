@@ -166,7 +166,7 @@ export interface TaskBroker {
       error: Error | undefined,
       result: { events: SerializedTaskEvent[] },
     ) => void,
-  ): () => void;
+  ): { unsubscribe: () => void };
   get(taskId: string): Promise<SerializedTask>;
 }
 

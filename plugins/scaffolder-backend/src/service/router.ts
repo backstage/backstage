@@ -258,7 +258,7 @@ export async function createRouter(
       });
 
       // After client opens connection send all events as string
-      const unsubscribe = taskBroker.observe(
+      const { unsubscribe } = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
           if (error) {

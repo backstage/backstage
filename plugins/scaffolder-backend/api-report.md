@@ -369,7 +369,9 @@ export interface TaskBroker {
         events: SerializedTaskEvent[];
       },
     ) => void,
-  ): () => void;
+  ): {
+    unsubscribe: () => void;
+  };
   // (undocumented)
   vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
 }

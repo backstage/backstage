@@ -178,7 +178,7 @@ export class StorageTaskBroker implements TaskBroker {
       error: Error | undefined,
       result: { events: SerializedTaskEvent[] },
     ) => void,
-  ): () => void {
+  ): { unsubscribe: () => void } {
     const { taskId } = options;
 
     let cancelled = false;
@@ -205,7 +205,7 @@ export class StorageTaskBroker implements TaskBroker {
       }
     })();
 
-    return unsubscribe;
+    return { unsubscribe };
   }
 
   async vacuumTasks(timeoutS: { timeoutS: number }): Promise<void> {
