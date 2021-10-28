@@ -1,0 +1,7 @@
+# NOTE: This file is used for testing techdocs-cli locally
+
+backend:
+  baseUrl: http://localhost:7000
+
+techdocs:
+  requestUrl: http://localhost:7000/api

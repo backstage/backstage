@@ -61,7 +61,6 @@ nav:
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
           - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
-
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
@@ -78,6 +77,7 @@ nav:
           - TechDocs Configuration Options: 'features/techdocs/configuration.md'
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
+          - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
