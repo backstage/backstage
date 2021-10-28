@@ -14,10 +14,44 @@
  * limitations under the License.
  */
 
+import { Duration } from 'luxon';
 import { AbortController } from 'node-abort-controller';
-import { delegateAbortController } from './util';
+import { delegateAbortController, sleep, validateId } from './util';
 
 describe('util', () => {
+  describe('validateId', () => {
+    it.each(['a', 'a_b', 'ab123c_2'])(
+      'accepts valid inputs, %p',
+      async input => {
+        expect(validateId(input)).toBeUndefined();
+      },
+    );
+
+    it.each(['', 'a!', 'A', 'a-b', 'a.b', '_a', 'a_', null, Symbol('a')])(
+      'rejects invalid inputs, %p',
+      async input => {
+        expect(() => validateId(input as any)).toThrow();
+      },
+    );
+  });
+
+  describe('sleep', () => {
+    it('finishes the wait as expected with no signal', async () => {
+      const ac = new AbortController();
+      const start = Date.now();
+      await sleep(Duration.fromObject({ seconds: 1 }), ac.signal);
+      expect(Date.now() - start).toBeGreaterThan(800);
+    }, 5_000);
+
+    it('aborts properly on the signal', async () => {
+      const ac = new AbortController();
+      const promise = sleep(Duration.fromObject({ seconds: 10 }), ac.signal);
+      ac.abort();
+      await promise;
+      expect(true).toBe(true);
+    }, 1_000);
+  });
+
   describe('delegateAbortController', () => {
     it('inherits parent abort state', () => {
       const parent = new AbortController();

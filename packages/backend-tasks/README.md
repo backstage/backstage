@@ -16,6 +16,7 @@ then make use of its facilities as necessary:
 
 ```typescript
 import { TaskManager } from '@backstage/backend-tasks';
+import { Duration } from 'luxon';
 
 const manager = TaskManager.fromConfig(rootConfig).forPlugin('my-plugin');
 
