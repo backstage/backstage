@@ -1,0 +1,10 @@
+app:
+  title: Techdocs Preview App
+  baseUrl: http://localhost:3000
+
+backend:
+  baseUrl: http://localhost:3000
+
+techdocs:
+  builder: 'external'
+  requestUrl: http://localhost:3000/api
