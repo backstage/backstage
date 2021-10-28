@@ -453,3 +453,4 @@ azureDevOps:
 
 flyte:
   httpUrl: http://localhost:8088
+  consoleUrl: http://localhost:8080

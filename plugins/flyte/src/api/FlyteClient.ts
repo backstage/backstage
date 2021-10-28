@@ -32,8 +32,12 @@ export class FlyteClient implements FlyteApi {
     this.configApi = configApi;
   }
 
-  getFlyteHttpBaseUrl(): String {
+  getFlyteHttpBaseUrl(): string {
     return this.configApi.getString('flyte.httpUrl');
+  }
+
+  getFlyteConsoleUrl(): string {
+    return this.configApi.getString('flyte.consoleUrl');
   }
 
   listProjects(): Promise<FlyteProject[]> {
@@ -133,6 +137,9 @@ export class FlyteClient implements FlyteApi {
             phase: phase,
             startedAt: startedAt,
             updatedAt: updatedAt,
+            executionConsoleUrl: `${this.getFlyteConsoleUrl()}/console/projects/${execution.id!
+              .project!}/domains/${execution.id!
+              .domain!}/executions/${execution.id!.name!}`,
           };
         }),
       );

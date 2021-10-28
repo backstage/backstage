@@ -20,10 +20,17 @@ export interface Config {
    */
   flyte: {
     /**
-     * @example http://localhost:8080
+     * @example http://localhost:8088
      * @example https://internally-hosted-flyte.net
      * @visibility frontend
      */
     httpUrl: string;
+
+    /**
+     * @example http://localhost:8080
+     * @example https://flyteconsole.internally-hosted-flyte.net
+     * @visibility frontend
+     */
+    consoleUrl: string;
   };
 }

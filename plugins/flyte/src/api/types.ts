@@ -37,4 +37,5 @@ export type FlyteExecution = {
   phase: string;
   startedAt: string;
   updatedAt: string;
+  executionConsoleUrl: string;
 };

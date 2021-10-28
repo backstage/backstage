@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn, Progress } from '@backstage/core-components';
+import { Link, Table, TableColumn, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
@@ -39,13 +39,16 @@ export const DenseTable = ({ executions }: DenseTableProps) => {
     return {
       project: execution.workflowExecutionId.project,
       domain: execution.workflowExecutionId.domain,
-      name: execution.workflowExecutionId.name,
+      name: (
+        <Link to={execution.executionConsoleUrl}>
+          {execution.workflowExecutionId.name}
+        </Link>
+      ),
       phase: execution.phase,
       startedAt: execution.startedAt,
       updatedAt: execution.updatedAt,
     };
   });
-
   return (
     <Table
       title="Flyte Executions List"
