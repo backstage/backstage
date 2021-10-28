@@ -1,5 +1,18 @@
 # @backstage/techdocs-common
 
+## 0.10.5
+
+### Patch Changes
+
+- d207f6ee9e: Support optional bucketRootPath configuration parameter in S3 and GCS publishers
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+
 ## 0.10.4
 
 ### Patch Changes
