@@ -18,7 +18,7 @@ import React, { ComponentType, ReactNode, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
-import { createApp } from '@backstage/core-app-api';
+import { createSpecializedApp } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
   RouteRef,
@@ -29,6 +29,28 @@ import {
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from './testingLibrary';
 import { mockApis } from './mockApis';
+
+const mockIcons = {
+  'kind:api': () => <span />,
+  'kind:component': () => <span />,
+  'kind:domain': () => <span />,
+  'kind:group': () => <span />,
+  'kind:location': () => <span />,
+  'kind:system': () => <span />,
+  'kind:user': () => <span />,
+
+  brokenImage: () => <span />,
+  catalog: () => <span />,
+  chat: () => <span />,
+  dashboard: () => <span />,
+  docs: () => <span />,
+  email: () => <span />,
+  github: () => <span />,
+  group: () => <span />,
+  help: () => <span />,
+  user: () => <span />,
+  warning: () => <span />,
+};
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {
   throw new Error(`Reached ErrorBoundaryFallback Page with error, ${error}`);
@@ -90,7 +112,7 @@ export function wrapInTestApp(
   const { routeEntries = ['/'] } = options;
   const boundRoutes = new Map<ExternalRouteRef, RouteRef>();
 
-  const app = createApp({
+  const app = createSpecializedApp({
     apis: mockApis,
     // Bit of a hack to make sure that the default config loader isn't used
     // as that would force every single test to wait for config loading.
@@ -104,6 +126,7 @@ export function wrapInTestApp(
         <MemoryRouter initialEntries={routeEntries} children={children} />
       ),
     },
+    icons: mockIcons,
     plugins: [],
     themes: [
       {

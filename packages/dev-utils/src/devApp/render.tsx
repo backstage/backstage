@@ -32,7 +32,6 @@ import {
   SidebarItem,
   SidebarPage,
   SidebarSpacer,
-  withDefaults,
 } from '@backstage/core-components';
 
 import {
@@ -48,7 +47,8 @@ import {
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
 
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 
 const GatheringRoute: (props: {
   path: string;
@@ -174,22 +174,20 @@ export class DevAppBuilder {
       );
     }
 
-    const app = createApp(
-      withDefaults({
-        apis,
-        plugins: this.plugins,
-        themes: this.themes,
-        bindRoutes: ({ bind }) => {
-          for (const plugin of this.plugins ?? []) {
-            const targets: Record<string, RouteRef<any>> = {};
-            for (const routeKey of Object.keys(plugin.externalRoutes)) {
-              targets[routeKey] = dummyRouteRef;
-            }
-            bind(plugin.externalRoutes, targets);
+    const app = createApp({
+      apis,
+      plugins: this.plugins,
+      themes: this.themes,
+      bindRoutes: ({ bind }) => {
+        for (const plugin of this.plugins ?? []) {
+          const targets: Record<string, RouteRef<any>> = {};
+          for (const routeKey of Object.keys(plugin.externalRoutes)) {
+            targets[routeKey] = dummyRouteRef;
           }
-        },
-      }),
-    );
+          bind(plugin.externalRoutes, targets);
+        }
+      },
+    });
 
     const AppProvider = app.getProvider();
     const AppRouter = app.getRouter();
