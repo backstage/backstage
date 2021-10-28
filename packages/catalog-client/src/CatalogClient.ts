@@ -53,12 +53,13 @@ export class CatalogClient implements CatalogApi {
 
   /**
    * Gets the Ancestors of an Entity.
-   * @public
    *
    * @param request - A request type for retrieving Entity ancestors.
    * @param options - An object with your preferred options.
    *
    * @returns A CatalogEntityAncestorsResponse.
+   *
+   * @public
    */
   async getEntityAncestors(
     request: CatalogEntityAncestorsRequest,
@@ -76,12 +77,13 @@ export class CatalogClient implements CatalogApi {
 
   /**
    * Gets a Location by Id.
-   * @public
    *
    * @param id - A string containing the Id.
    * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
+   *
+   * @public
    */
   async getLocationById(
     id: string,
@@ -96,12 +98,13 @@ export class CatalogClient implements CatalogApi {
 
   /**
    * Gets a set of Entities.
-   * @public
    *
    * @param request - A request type for retrieving an Entity.
    * @param options - An object with your preferred options.
    *
    * @returns A CatalogListResponse.
+   *
+   * @public
    */
   async getEntities(
     request?: CatalogEntitiesRequest,
@@ -177,6 +180,8 @@ export class CatalogClient implements CatalogApi {
    * @param options - An object with your preferred options.
    *
    * @returns An {@link catalog-model#Entity}.
+   *
+   * @public
    */
   async getEntityByName(
     compoundName: EntityName,
@@ -198,6 +203,7 @@ export class CatalogClient implements CatalogApi {
    * @param entityRef - A string containing the entityREf
    * @param options - An object with your preferred options.
    *
+   * @public
    */
   async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
     const response = await fetch(
@@ -224,6 +230,8 @@ export class CatalogClient implements CatalogApi {
    * @param AddLocationRequest - A request object for adding locations.
    *
    * @returns An AddLocationResponse
+   *
+   * @public
    */
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
@@ -267,6 +275,8 @@ export class CatalogClient implements CatalogApi {
    * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
+   *
+   * @public
    */
   async getOriginLocationByEntity(
     entity: Entity,
@@ -294,6 +304,8 @@ export class CatalogClient implements CatalogApi {
    * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Location_2}.
+   *
+   * @public
    */
   async getLocationByEntity(
     entity: Entity,
@@ -319,6 +331,7 @@ export class CatalogClient implements CatalogApi {
    * @param id - A string containing the Id
    * @param options - An object with your preferred options.
    *
+   * @public
    */
   async removeLocationById(
     id: string,
@@ -337,6 +350,7 @@ export class CatalogClient implements CatalogApi {
    * @param uid - A string containing the Uid
    * @param options - An object with your preferred options.
    *
+   * @public
    */
   async removeEntityByUid(
     uid: string,

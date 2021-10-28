@@ -86,6 +86,7 @@ export interface CatalogApi {
    * @param options - An object with your preferred options.
    *
    * @returns A CatalogListResponse with items typed Catalog Model Entity.
+   *
    */
   getEntities(
     request?: CatalogEntitiesRequest,
@@ -95,7 +96,7 @@ export interface CatalogApi {
    * Gets the Entity ancestor information from the catalog based on your request and options.
    *
    * @param request - An object with your filters and fields.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    * @returns A CatalogEntityAncestorsResponse.
    */
@@ -107,7 +108,7 @@ export interface CatalogApi {
    * Gets a single Entity from the catalog by Entity name.
    *
    * @param name - A complete Entity name, with the full kind-namespace-name triplet.
-   * @param options - An object with your perferred options.
+   * @param options - An object with your preferred options.
    *
    * @returns A {@link catalog-model#Entity}.
    */
