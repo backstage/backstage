@@ -6,6 +6,7 @@
  * Happy hacking!
  */
 
+import express from 'express';
 import Router from 'express-promise-router';
 import {
   createServiceBuilder,
@@ -49,9 +50,6 @@ function makeCreateEnv(config: Config) {
       config,
       reader,
       discovery,
-      // TODO(authorization-framework): use PermissionClient once
-      // @backstage/permission-common is published.
-      permissions: {},
     };
   };
 }
@@ -74,6 +72,15 @@ async function main() {
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  // TODO(authorization-framework): backends like the catalog currently
+  // assume that there is a permission backend set up. Before shipping
+  // this integration we'll need support for environments without
+  // a permission backend set up - likely with a stub permission api that
+  // just returns ALLOW. For now, the inclusion of this stub api route
+  // ensures that the e2e tests pass in our proof-of-concept branch.
+  apiRouter.use('/permission/authorize', express.json(), (req, res) => {
+    res.json((req.body as any[]).map(() => ({ result: 'ALLOW' })));
+  });
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));

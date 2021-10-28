@@ -14,7 +14,4 @@ export type PluginEnvironment = {
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
-  // TODO(authorization-framework): use correct PermissionClient type once
-  // @backstage/permission-common is published.
-  permissions: any;
 };
