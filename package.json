@@ -58,9 +58,9 @@
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
-    "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
     "@spotify/prettier-config": "^11.0.0",
+    "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
     "eslint-plugin-notice": "^0.9.10",
@@ -69,6 +69,7 @@
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.2.1",
+    "prettier-plugin-organize-imports": "^2.3.4",
     "shx": "^0.3.2",
     "yarn-lock-check": "^1.0.5"
   },

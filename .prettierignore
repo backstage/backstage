@@ -1,10 +1,10 @@
-.yarn
-dist
-microsite
-coverage
 *.hbs
-templates
-api-report.md
-plugins/scaffolder-backend/sample-templates
 .vscode
+.yarn
+api-report.md
+contrib
+coverage
+dist
 dist-types
+microsite
+plugins/scaffolder-backend/sample-templates
