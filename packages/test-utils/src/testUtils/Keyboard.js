@@ -25,7 +25,7 @@ const codes = {
 
 /**
  * @public
- * @deprecated superseded by @testing-library/user-event
+ * @deprecated superseded by {@link @testing-library/user-event#userEvent}
  */
 export class Keyboard {
   static async type(target, input) {
