@@ -38,7 +38,7 @@ export default async function createPlugin({
     database,
     discovery,
     factRetrievers: [
-      createFactRetrieverRegistration('* * * * *', {
+      createFactRetrieverRegistration('5 4 * * 6', {
         id: 'testRetriever',
         version: '1.1.2',
         entityFilter: [{ kind: 'component' }], // EntityFilter to be used in the future (creating checks, graphs etc.) to figure out which entities this fact retrieves data for.
