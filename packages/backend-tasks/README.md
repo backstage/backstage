@@ -1,6 +1,6 @@
 # @backstage/backend-tasks
 
-Common distributed task management / locking library for Backstage backends.
+Common distributed task management for Backstage backends.
 
 ## Usage
 
@@ -15,12 +15,12 @@ yarn add @backstage/backend-tasks
 then make use of its facilities as necessary:
 
 ```typescript
-import { TaskManager } from '@backstage/backend-tasks';
+import { TaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';
 
-const manager = TaskManager.fromConfig(rootConfig).forPlugin('my-plugin');
+const scheduler = TaskScheduler.fromConfig(rootConfig).forPlugin('my-plugin');
 
-await manager.scheduleTask({
+await scheduler.scheduleTask({
   id: 'refresh-things',
   frequency: Duration.fromObject({ minutes: 10 }),
   fn: async () => {

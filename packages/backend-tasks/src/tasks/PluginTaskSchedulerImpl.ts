@@ -17,13 +17,13 @@
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskManager, TaskDefinition } from './types';
+import { PluginTaskScheduler, TaskDefinition } from './types';
 import { validateId } from './util';
 
 /**
  * Implements the actual task management.
  */
-export class PluginTaskManagerImpl implements PluginTaskManager {
+export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,

@@ -15,7 +15,7 @@
  */
 
 /**
- * Common distributed task management / locking library for Backstage backends
+ * Common distributed task management library for Backstage backends
  *
  * @packageDocumentation
  */

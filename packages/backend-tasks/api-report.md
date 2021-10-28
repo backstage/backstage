@@ -10,7 +10,7 @@ import { Duration } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 
 // @public
-export interface PluginTaskManager {
+export interface PluginTaskScheduler {
   scheduleTask(task: TaskDefinition): Promise<void>;
 }
 
@@ -30,9 +30,10 @@ export type TaskFunction =
   | (() => void | Promise<void>);
 
 // @public
-export class TaskManager {
+export class TaskScheduler {
   constructor(databaseManager: DatabaseManager, logger: Logger_2);
-  forPlugin(pluginId: string): PluginTaskManager;
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/backend-tasks" does not have an export "PluginTaskManager"
+  forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -40,6 +41,6 @@ export class TaskManager {
       databaseManager?: DatabaseManager;
       logger?: Logger_2;
     },
-  ): TaskManager;
+  ): TaskScheduler;
 }
 ```

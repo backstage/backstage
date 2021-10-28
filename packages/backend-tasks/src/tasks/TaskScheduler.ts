@@ -20,29 +20,29 @@ import { memoize } from 'lodash';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
-import { PluginTaskManagerImpl } from './PluginTaskManagerImpl';
-import { PluginTaskManagerJanitor } from './PluginTaskManagerJanitor';
-import { PluginTaskManager } from './types';
+import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
+import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
+import { PluginTaskScheduler } from './types';
 
 /**
- * Deals with management and locking related to distributed tasks.
+ * Deals with the scheduling of distributed tasks.
  *
  * @public
  */
-export class TaskManager {
+export class TaskScheduler {
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: DatabaseManager;
       logger?: Logger;
     },
-  ): TaskManager {
+  ): TaskScheduler {
     const databaseManager =
       options?.databaseManager ?? DatabaseManager.fromConfig(config);
     const logger = (options?.logger || getRootLogger()).child({
       type: 'taskManager',
     });
-    return new TaskManager(databaseManager, logger);
+    return new TaskScheduler(databaseManager, logger);
   }
 
   constructor(
@@ -56,13 +56,13 @@ export class TaskManager {
    * @param pluginId - The unique ID of the plugin, for example "catalog"
    * @returns A {@link PluginTaskManager} instance
    */
-  forPlugin(pluginId: string): PluginTaskManager {
+  forPlugin(pluginId: string): PluginTaskScheduler {
     const databaseFactory = memoize(async () => {
       const knex = await this.databaseManager.forPlugin(pluginId).getClient();
 
       await migrateBackendTasks(knex);
 
-      const janitor = new PluginTaskManagerJanitor({
+      const janitor = new PluginTaskSchedulerJanitor({
         knex,
         waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
         logger: this.logger,
@@ -72,7 +72,7 @@ export class TaskManager {
       return knex;
     });
 
-    return new PluginTaskManagerImpl(
+    return new PluginTaskSchedulerImpl(
       databaseFactory,
       this.logger.child({ plugin: pluginId }),
     );

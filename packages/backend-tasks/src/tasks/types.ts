@@ -92,12 +92,11 @@ export interface TaskDefinition {
 }
 
 /**
- * Deals with management and locking related to distributed tasks, for a given
- * plugin.
+ * Deals with the scheduling of distributed tasks, for a given plugin.
  *
  * @public
  */
-export interface PluginTaskManager {
+export interface PluginTaskScheduler {
   /**
    * Schedules a task function for coordinated exclusive invocation across
    * workers.
