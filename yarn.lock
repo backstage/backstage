@@ -5141,9 +5141,9 @@
     react-lifecycles-compat "^3.0.4"
 
 "@rjsf/core@^3.0.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.1.0.tgz#7667364a4532e25c164abbc2adabe39157ffec4c"
-  integrity sha512-EwM2juiQxEdXzFy9rIIsDr6/e+FYeR1cKx0/no8ASEuXZ1p+/nf/CxKGobzD6UhpRip7JK9PhhuHFEFBIjHFJA==
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.2.0.tgz#189ff7fb132cb223463792d75fb1e04e9dd5d9f9"
+  integrity sha512-Cgonq9bBWlpE0yeeIv7rAIDuJvO1wAvp9G7tT/UvhODAyb4tDb1q8J/8ubWuRRiEyzYUkuxN0W8uPIzQsJgtTQ==
   dependencies:
     "@types/json-schema" "^7.0.7"
     ajv "^6.7.0"
@@ -11459,20 +11459,10 @@ core-js-compat@^3.9.0, core-js-compat@^3.9.1:
     browserslist "^4.16.6"
     semver "7.0.0"
 
-core-js-pure@^3.10.2, core-js-pure@^3.6.5:
-  version "3.15.1"
-  resolved "https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.15.1.tgz#8356f6576fa2aa8e54ca6fe02620968ff010eed7"
-  integrity sha512-OZuWHDlYcIda8sJLY4Ec6nWq2hRjlyCqCZ+jCflyleMkVt3tPedDVErvHslyS2nbO+SlBFMSBJYvtLMwxnrzjA==
-
-core-js-pure@^3.16.0:
+core-js-pure@^3.10.2, core-js-pure@^3.16.0, core-js-pure@^3.6.5, core-js-pure@^3.8.2:
   version "3.16.2"
   resolved "https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.16.2.tgz#0ef4b79cabafb251ea86eb7d139b42bd98c533e8"
   integrity sha512-oxKe64UH049mJqrKkynWp6Vu0Rlm/BTXO/bJZuN2mmR3RtOFNepLlSWDd1eo16PzHpQAoNG97rLU1V/YxesJjw==
-
-core-js-pure@^3.8.2:
-  version "3.16.0"
-  resolved "https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.16.0.tgz#218e07add3f1844e53fab195c47871fc5ba18de8"
-  integrity sha512-wzlhZNepF/QA9yvx3ePDgNGudU5KDB8lu/TRPKelYA/QtSnkS/cLl2W+TIdEX1FAFcBr0YpY7tPDlcmXJ7AyiQ==
 
 core-js@^2.4.0, core-js@^2.5.0, core-js@^2.6.10:
   version "2.6.12"
