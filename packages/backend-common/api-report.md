@@ -18,7 +18,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
 import { MergeResult } from 'isomorphic-git';
@@ -210,6 +210,12 @@ export type ErrorHandlerOptions = {
   logger?: Logger_2;
   logClientErrors?: boolean;
 };
+
+// @public
+export type FromReadableArrayOptions = Array<{
+  data: Readable;
+  path: string;
+}>;
 
 // @public (undocumented)
 export function getRootLogger(): winston.Logger;
@@ -419,15 +425,13 @@ export type ReadTreeResponse = {
   etag: string;
 };
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponseDirOptions = {
   targetDir?: string;
 };
 
 // @public (undocumented)
 export interface ReadTreeResponseFactory {
-  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   fromReadableArray(
     options: FromReadableArrayOptions,
@@ -442,7 +446,7 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
 }
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponseFactoryOptions = {
   stream: Readable;
   subpath?: string;
@@ -580,7 +584,7 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
-// @public (undocumented)
+// @public
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
   reader: UrlReader;

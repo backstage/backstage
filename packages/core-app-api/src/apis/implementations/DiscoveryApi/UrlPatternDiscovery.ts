@@ -16,9 +16,13 @@
 
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+const ERROR_PREFIX = 'Invalid discovery URL pattern,';
+
 /**
  * UrlPatternDiscovery is a lightweight DiscoveryApi implementation.
  * It uses a single template string to construct URLs for each plugin.
+ *
+ * @public
  */
 export class UrlPatternDiscovery implements DiscoveryApi {
   /**
@@ -30,21 +34,22 @@ export class UrlPatternDiscovery implements DiscoveryApi {
    */
   static compile(pattern: string): UrlPatternDiscovery {
     const parts = pattern.split(/\{\{\s*pluginId\s*\}\}/);
+    const urlStr = parts.join('pluginId');
 
+    let url;
     try {
-      const urlStr = parts.join('pluginId');
-      const url = new URL(urlStr);
-      if (url.hash) {
-        throw new Error('URL must not have a hash');
-      }
-      if (url.search) {
-        throw new Error('URL must not have a query');
-      }
-      if (urlStr.endsWith('/')) {
-        throw new Error('URL must not end with a slash');
-      }
-    } catch (error) {
-      throw new Error(`Invalid discovery URL pattern, ${error.message}`);
+      url = new URL(urlStr);
+    } catch {
+      throw new Error(`${ERROR_PREFIX} URL '${urlStr}' is invalid`);
+    }
+    if (url.hash) {
+      throw new Error(`${ERROR_PREFIX} URL must not have a hash`);
+    }
+    if (url.search) {
+      throw new Error(`${ERROR_PREFIX} URL must not have a query`);
+    }
+    if (urlStr.endsWith('/')) {
+      throw new Error(`${ERROR_PREFIX} URL must not end with a slash`);
     }
 
     return new UrlPatternDiscovery(parts);

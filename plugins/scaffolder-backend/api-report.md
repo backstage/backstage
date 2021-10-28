@@ -14,8 +14,8 @@ import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-back
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { JsonObject } from '@backstage/config';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Octokit } from '@octokit/rest';

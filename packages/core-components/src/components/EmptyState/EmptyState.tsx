@@ -20,6 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { EmptyStateImage } from './EmptyStateImage';
 
+/** @public */
 export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
 
 const useStyles = makeStyles(
@@ -45,6 +46,7 @@ type Props = {
   action?: JSX.Element;
 };
 
+/** @public */
 export function EmptyState(props: Props) {
   const { title, description, missing, action } = props;
   const classes = useStyles();

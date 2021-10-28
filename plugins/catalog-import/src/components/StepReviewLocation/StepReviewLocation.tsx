@@ -25,6 +25,7 @@ import { PrepareResult, ReviewResult } from '../useImportState';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { assertError } from '@backstage/errors';
 
 type Props = {
   prepareResult: PrepareResult;
@@ -88,6 +89,7 @@ export const StepReviewLocation = ({
         locations,
       });
     } catch (e) {
+      assertError(e);
       // TODO: this error should be handled differently. We add it as 'optional' and
       //       it is not uncommon that a PR has not been merged yet.
       if (

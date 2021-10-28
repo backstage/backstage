@@ -22,7 +22,7 @@ import {
   BackstageIdentity,
   AuthProviderConfig,
 } from '../../providers/types';
-import { InputError, NotAllowedError } from '@backstage/errors';
+import { InputError, isError, NotAllowedError } from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
 import { readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
@@ -153,13 +153,13 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response,
       });
     } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       // post error message back to popup if failure
       return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
-        error: {
-          name: error.name,
-          message: error.message,
-        },
+        error: { name, message },
       });
     }
   }
@@ -220,7 +220,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       res.status(200).json(response);
     } catch (error) {
-      res.status(401).send(`${error.message}`);
+      res.status(401).send(String(error));
     }
   }
 

@@ -1,7 +1,7 @@
 ---
 title: Harbor
 author: BESTSELLER
-authorUrl: bestsellerit.com
+authorUrl: https://bestsellerit.com
 category: Discovery
 description: This plugin will show you information about Docker images within the Harbor cloud native registry.
 documentation: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master/README.md

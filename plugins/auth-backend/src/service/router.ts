@@ -26,10 +26,10 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { NotFoundError } from '@backstage/errors';
+import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
+import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';
@@ -56,11 +56,9 @@ export async function createRouter({
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
+  const keyStore = await KeyStores.fromConfig(config, { logger, database });
   const keyDurationSeconds = 3600;
 
-  const keyStore = await DatabaseKeyStore.create({
-    database: await database.getClient(),
-  });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
@@ -121,6 +119,7 @@ export async function createRouter({
 
         router.use(`/${providerId}`, r);
       } catch (e) {
+        assertError(e);
         if (process.env.NODE_ENV !== 'development') {
           throw new Error(
             `Failed to initialize ${providerId} auth provider, ${e.message}`,

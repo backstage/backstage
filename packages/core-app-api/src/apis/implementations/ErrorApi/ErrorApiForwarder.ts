@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext, Observable } from '@backstage/core-plugin-api';
+
+import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
 
 /**
  * Base implementation for the ErrorApi that simply forwards errors to consumers.
+ *
+ * @public
  */
 export class ErrorApiForwarder implements ErrorApi {
   private readonly subject = new PublishSubject<{

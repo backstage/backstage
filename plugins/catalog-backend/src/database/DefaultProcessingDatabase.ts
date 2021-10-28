@@ -15,7 +15,7 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError, isError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -550,7 +550,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       return result.rowCount === 1 || result.length === 1;
     } catch (error) {
       // SQLite reached this rather than the rowCount check above
-      if (error.message.includes('UNIQUE constraint failed')) {
+      if (
+        isError(error) &&
+        error.message.includes('UNIQUE constraint failed')
+      ) {
         return false;
       }
       throw error;

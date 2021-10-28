@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.6
+
+### Patch Changes
+
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+  - @backstage/techdocs-common@0.10.5
+
+## 0.10.5
+
+### Patch Changes
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.4
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.10.4
 
 ### Patch Changes

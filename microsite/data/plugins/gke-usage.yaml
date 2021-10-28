@@ -1,7 +1,7 @@
 ---
 title: GKE Usage
 author: BESTSELLER
-authorUrl: bestsellerit.com
+authorUrl: https://bestsellerit.com
 category: Discovery
 description: This plugin will show you the cost and resource usage of your application within Google Kubernetes Engine (GKE).
 documentation: https://github.com/BESTSELLER/backstage-plugin-gkeusage/blob/master/README.md

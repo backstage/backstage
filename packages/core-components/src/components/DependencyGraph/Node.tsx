@@ -21,6 +21,7 @@ import { RenderNodeFunction, RenderNodeProps, DependencyNode } from './types';
 import { NODE_TEST_ID } from './constants';
 import dagre from 'dagre';
 
+/** @public */
 export type DependencyGraphNodeClassKey = 'node';
 
 const useStyles = makeStyles(

@@ -20,6 +20,7 @@ export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';
 export type {
+  FromReadableArrayOptions,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,

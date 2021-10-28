@@ -287,7 +287,7 @@ describe('SomeComponent', () => {
     await waitFor(() => {
       expect(apiSpy.getEvents()[0]).toMatchObject({
         action: 'expected action',
-        subject: 'expected subject'',
+        subject: 'expected subject',
         attributes: {
           foo: 'bar',
         },

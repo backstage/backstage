@@ -13,5 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { azureDevOpsPlugin, EntityAzurePipelinesContent } from './plugin';
-export { isAzureDevOpsAvailable } from './components/Router';
+export {
+  azureDevOpsPlugin,
+  EntityAzurePipelinesContent,
+  isAzureDevOpsAvailable,
+} from './plugin';

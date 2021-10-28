@@ -23,8 +23,13 @@ import {
   stringifyEntityRef,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
-import { ConflictError, InputError, NotAllowedError } from '@backstage/errors';
-import { JsonValue } from '@backstage/config';
+import {
+  assertError,
+  ConflictError,
+  InputError,
+  NotAllowedError,
+} from '@backstage/errors';
+import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
@@ -160,6 +165,7 @@ export class DefaultCatalogProcessingOrchestrator
         ok: collectorResults.errors.length === 0,
       };
     } catch (error) {
+      assertError(error);
       return {
         ok: false,
         errors: collector.results().errors.concat(error),

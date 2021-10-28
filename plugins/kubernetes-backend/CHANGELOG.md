@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.18
+
+### Patch Changes
+
+- b61c50a12f: Fix Kubernetes plugin custom objects lookup regression
+- c57b075d18: add caData support for kubernetes client config
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.3.17
 
 ### Patch Changes

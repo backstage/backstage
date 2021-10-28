@@ -63,6 +63,10 @@ techdocs:
       # (Required) Cloud Storage Bucket Name
       bucketName: 'techdocs-storage'
 
+      # (Optional) Location in storage bucket to save files
+      # If not set, the default location will be the root of the storage bucket
+      bucketRootPath: '/'
+
       # (Optional) An API key is required to write to a storage bucket.
       # If missing, GOOGLE_APPLICATION_CREDENTIALS environment variable will be used.
       # https://cloud.google.com/docs/authentication/production
@@ -74,6 +78,10 @@ techdocs:
     awsS3:
       # (Required) AWS S3 Bucket Name
       bucketName: 'techdocs-storage'
+
+      # (Optional) Location in storage bucket to save files
+      # If not set, the default location will be the root of the storage bucket
+      bucketRootPath: '/'
 
       # (Optional) An API key is required to write to a storage bucket.
       # If not set, environment variables or aws config file will be used to authenticate.

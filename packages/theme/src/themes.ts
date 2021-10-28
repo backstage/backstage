@@ -18,6 +18,11 @@ import { createTheme } from './baseTheme';
 import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
+/**
+ * The default Backstage light theme.
+ *
+ * @public
+ */
 export const lightTheme = createTheme({
   palette: {
     type: 'light',
@@ -83,6 +88,11 @@ export const lightTheme = createTheme({
   pageTheme,
 });
 
+/**
+ * The default Backstage dark theme.
+ *
+ * @public
+ */
 export const darkTheme = createTheme({
   palette: {
     type: 'dark',

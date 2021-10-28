@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import mockFs from 'mock-fs';
+import * as winston from 'winston';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
-import os from 'os';
 import { Task, TaskSpec } from './types';
 import { RepoSpec } from '../actions/builtin/publish/util';
 
 describe('LegacyWorkflowRunner', () => {
   let runner: LegacyWorkflowRunner;
-  const workingDirectory = os.tmpdir();
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
 
@@ -45,6 +46,11 @@ describe('LegacyWorkflowRunner', () => {
   });
 
   beforeEach(() => {
+    winston.format.simple(); // put logform the require cache before mocking fs
+    mockFs({
+      '/tmp': mockFs.directory(),
+    });
+
     actionRegistry = new TemplateActionRegistry();
     actionRegistry.register({
       id: 'test-action',
@@ -57,9 +63,13 @@ describe('LegacyWorkflowRunner', () => {
     runner = new LegacyWorkflowRunner({
       actionRegistry,
       integrations,
-      workingDirectory,
+      workingDirectory: '/tmp',
       logger,
     });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
   });
 
   it('should fail when the action does not exist', async () => {

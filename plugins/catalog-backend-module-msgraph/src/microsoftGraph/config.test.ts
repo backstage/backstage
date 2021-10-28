@@ -72,4 +72,21 @@ describe('readMicrosoftGraphConfig', () => {
     ];
     expect(actual).toEqual(expected);
   });
+
+  it('should fail if both userFilter and userGroupMemberFilter are set', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          authority: 'https://login.example.com/',
+          userFilter: 'accountEnabled eq true',
+          userGroupMemberFilter: 'any',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
+  });
 });
