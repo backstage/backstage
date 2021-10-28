@@ -27,7 +27,12 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth {
+/**
+ * Implements the OAuth flow to Google products.
+ *
+ * @public
+ */
+export default class GoogleAuth {
   static create({
     discoveryApi,
     oauthRequestApi,
@@ -65,4 +70,3 @@ class GoogleAuth {
     });
   }
 }
-export default GoogleAuth;

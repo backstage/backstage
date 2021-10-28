@@ -20,6 +20,8 @@ import { PublishSubject } from '../../../lib/subjects';
 
 /**
  * Base implementation for the AlertApi that simply forwards alerts to consumers.
+ *
+ * @public
  */
 export class AlertApiForwarder implements AlertApi {
   private readonly subject = new PublishSubject<AlertMessage>();

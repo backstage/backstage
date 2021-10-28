@@ -33,11 +33,6 @@ import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 
-type Options = {
-  sessionManager: SessionManager<OAuth2Session>;
-  scopeTransform: (scopes: string[]) => string[];
-};
-
 type CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
 };
@@ -59,7 +54,12 @@ const DEFAULT_PROVIDER = {
   icon: OAuth2Icon,
 };
 
-class OAuth2
+/**
+ * Implements a generic OAuth2 flow for auth.
+ *
+ * @public
+ */
+export default class OAuth2
   implements
     OAuthApi,
     OpenIdConnectApi,
@@ -115,7 +115,10 @@ class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
-  constructor(options: Options) {
+  constructor(options: {
+    sessionManager: SessionManager<OAuth2Session>;
+    scopeTransform: (scopes: string[]) => string[];
+  }) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
   }
@@ -176,5 +179,3 @@ class OAuth2
     return new Set(scopeTransform(scopeList));
   }
 }
-
-export default OAuth2;

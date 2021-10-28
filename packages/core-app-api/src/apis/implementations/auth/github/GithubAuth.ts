@@ -51,7 +51,12 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi, SessionApi {
+/**
+ * Implements the OAuth flow to GitHub products.
+ *
+ * @public
+ */
+export default class GithubAuth implements OAuthApi, SessionApi {
   static create({
     discoveryApi,
     environment = 'development',
@@ -158,4 +163,3 @@ class GithubAuth implements OAuthApi, SessionApi {
     return new Set(scopeList);
   }
 }
-export default GithubAuth;

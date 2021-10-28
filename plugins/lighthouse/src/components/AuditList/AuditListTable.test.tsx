@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp, msw } from '@backstage/test-utils';
+import { wrapInTestApp, setupRequestMockHandlers } from '@backstage/test-utils';
 import AuditListTable from './AuditListTable';
 
 import {
@@ -36,7 +36,7 @@ describe('AuditListTable', () => {
   let apis: ApiRegistry;
 
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     apis = ApiRegistry.from([

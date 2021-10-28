@@ -22,6 +22,12 @@ import {
 } from '@backstage/core-plugin-api';
 import { ApiFactoryHolder } from './types';
 
+/**
+ * Handles the actual on-demand instantiation and memoization of APIs out of
+ * an {@link ApiFactoryHolder}.
+ *
+ * @public
+ */
 export class ApiResolver implements ApiHolder {
   /**
    * Validate factories by making sure that each of the apis can be created

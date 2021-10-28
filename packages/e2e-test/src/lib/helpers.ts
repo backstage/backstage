@@ -25,9 +25,6 @@ import { promisify } from 'util';
 
 const execFile = promisify(execFileCb);
 
-const EXPECTED_LOAD_ERRORS =
-  /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
-
 export function spawnPiped(cmd: string[], options?: SpawnOptions) {
   function pipeWithPrefix(stream: NodeJS.WriteStream, prefix = '') {
     return (data: Buffer) => {
@@ -131,15 +128,18 @@ export async function waitForPageWithText(
   browser: any,
   path: string,
   text: string,
-  { intervalMs = 1000, maxLoadAttempts = 50 } = {},
+  { intervalMs = 1000, maxFindAttempts = 50 } = {},
 ) {
-  let loadAttempts = 0;
+  let findAttempts = 0;
   for (;;) {
     try {
-      const waitTimeMs = intervalMs * (Math.log10(loadAttempts + 1) + 1);
+      const waitTimeMs = intervalMs * (findAttempts + 1);
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+
       await browser.visit(path);
+
+      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
 
       const escapedText = text.replace(/"|\\/g, '\\$&');
       browser.assert.evaluate(
@@ -150,15 +150,12 @@ export async function waitForPageWithText(
       break;
     } catch (error) {
       assertError(error);
-      if (error.message.match(EXPECTED_LOAD_ERRORS)) {
-        loadAttempts++;
-        if (loadAttempts >= maxLoadAttempts) {
-          throw new Error(
-            `Failed to load page '${path}', max number of attempts reached`,
-          );
-        }
-      } else {
-        throw error;
+
+      findAttempts++;
+      if (findAttempts >= maxFindAttempts) {
+        throw new Error(
+          `Failed to load page '${path}', max number of attempts reached`,
+        );
       }
     }
   }

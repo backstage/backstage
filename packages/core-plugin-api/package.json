@@ -55,7 +55,7 @@
     "@types/prop-types": "^15.7.3",
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^3.0.6",
-    "msw": "^0.29.0"
+    "msw": "^0.35.0"
   },
   "files": [
     "dist"

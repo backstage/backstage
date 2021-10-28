@@ -334,15 +334,12 @@ describe('AwsS3Publish', () => {
         name: 'path',
       };
 
-      const techDocsMetadaFilePath = path.posix.join(
-        ...Object.values(invalidEntityName),
-        'techdocs_metadata.json',
-      );
-
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadaFilePath} does not exist!`,
+        message: expect.stringMatching(
+          /TechDocs metadata fetch failed; caused by Error: The file .* does not exist/i,
+        ),
       });
     });
   });

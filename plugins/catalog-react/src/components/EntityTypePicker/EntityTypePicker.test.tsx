@@ -121,4 +121,26 @@ describe('<EntityTypePicker/>', () => {
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
   });
+
+  it('respects the query parameter filter value', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { type: 'tool' };
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityTypePicker initialFilter="tool" hidden />
+        </MockEntityListContextProvider>
+        ,
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      type: new EntityTypeFilter(['tool']),
+    });
+  });
 });

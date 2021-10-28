@@ -19,7 +19,7 @@ jest.mock('../helpers');
 import { createPublishBitbucketAction } from './bitbucket';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -60,7 +60,7 @@ describe('publish:bitbucket', () => {
     createTemporaryDirectory: jest.fn(),
   };
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

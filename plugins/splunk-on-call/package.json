@@ -58,7 +58,7 @@
     "@types/luxon": "^2.0.4",
     "@types/node": "^14.14.32",
     "cross-fetch": "^3.0.6",
-    "msw": "^0.29.0",
+    "msw": "^0.35.0",
     "node-fetch": "^2.6.1"
   },
   "configSchema": "config.d.ts",
