@@ -253,6 +253,7 @@ const ItemWithSubmenu = ({
       >
         <div
           onMouseEnter={handleMouseEnter}
+          data-testid="item-with-submenu"
           className={clsx(
             classes.root,
             isOpen ? classes.open : classes.closed,

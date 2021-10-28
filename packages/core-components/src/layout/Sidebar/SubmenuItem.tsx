@@ -20,7 +20,9 @@ import {
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
-import { Link, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
 import clsx from 'clsx';
 import { BackstageTheme } from '@backstage/theme';

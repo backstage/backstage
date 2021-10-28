@@ -146,7 +146,12 @@ export const SidebarExpandButton = () => {
   }
 
   return (
-    <button onClick={handleClick} className={classes.expandButton}>
+    <button
+      onClick={handleClick}
+      className={classes.expandButton}
+      aria-label="Expand Sidebar"
+      data-testid="sidebar-expand-button"
+    >
       <div className={classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
       </div>
