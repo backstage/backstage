@@ -28,6 +28,7 @@
     "@backstage/errors": "^0.1.2",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^14.14.32",
+    "@types/puppeteer": "^5.4.4",
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "cross-fetch": "^3.0.6",
@@ -35,12 +36,14 @@
     "handlebars": "^4.7.3",
     "pgtools": "^0.3.0",
     "tree-kill": "^1.2.2",
-    "ts-node": "^10.0.0",
-    "zombie": "^6.1.4"
+    "ts-node": "^10.0.0"
   },
   "nodemonConfig": {
     "watch": "./src",
     "exec": "bin/e2e-test",
     "ext": "ts"
+  },
+  "dependencies": {
+    "puppeteer": "^10.4.0"
   }
 }

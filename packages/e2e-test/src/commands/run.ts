@@ -20,7 +20,8 @@ import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
-import Browser from 'zombie';
+import puppeteer from 'puppeteer';
+
 import {
   spawnPiped,
   runPlain,
@@ -350,17 +351,18 @@ async function testAppServe(pluginName: string, appDir: string) {
       GITHUB_TOKEN: 'abc',
     },
   });
-  Browser.localhost('localhost', 3000);
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('http://localhost:3000');
 
   let successful = false;
   try {
     for (let attempts = 1; ; attempts++) {
       try {
-        const browser = new Browser();
-
-        await waitForPageWithText(browser, '/', 'My Company Catalog');
+        await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(
-          browser,
+          page,
           `/${pluginName}`,
           `Welcome to ${pluginName}!`,
         );
