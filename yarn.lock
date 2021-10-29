@@ -1491,6 +1491,14 @@
   dependencies:
     lodash "^4.17.15"
 
+"@backstage/config@^0.1.9":
+  version "0.1.11"
+  resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.11.tgz#efaace61f02f11e6d0342efc9ef6d72da818ba80"
+  integrity sha512-8Zle4YcIr+vwVTS5pk9+SKOre3OQKTWPufpO9OZ86riFVuB9mKN4lCX9zyarlt2FOd50R25Oc/M7fWcwOQzSPA==
+  dependencies:
+    "@backstage/types" "^0.1.1"
+    lodash "^4.17.21"
+
 "@backstage/core-app-api@^0.1.10", "@backstage/core-app-api@^0.1.11", "@backstage/core-app-api@^0.1.3", "@backstage/core-app-api@^0.1.4", "@backstage/core-app-api@^0.1.8":
   version "0.1.11"
   resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.1.11.tgz#1176aeda38dc69b564dc07bec3bfd12503c56bed"
@@ -1772,7 +1780,7 @@
     react-dom "^16.13.1"
     react-use "^17.2.4"
 
-"@backstage/integration@^0.6.1":
+"@backstage/integration@^0.6.1", "@backstage/integration@^0.6.8":
   version "0.6.8"
   resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.8.tgz#36e1c54fb73b9d6c36f2cbf71bad8dcaa2f5c65a"
   integrity sha512-Y2U0pantPSNmLbEye2LEhYMrHu6e/vCQ5SWTLljwjK/X9OIPM7w0kBysaoETmV2IArSMxnylrSChf5wLhJPC9g==
@@ -1795,19 +1803,6 @@
     "@octokit/rest" "^18.5.3"
     cross-fetch "^3.0.6"
     git-url-parse "~11.4.4"
-    luxon "^2.0.2"
-
-"@backstage/integration@^0.6.8":
-  version "0.6.8"
-  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.8.tgz#36e1c54fb73b9d6c36f2cbf71bad8dcaa2f5c65a"
-  integrity sha512-Y2U0pantPSNmLbEye2LEhYMrHu6e/vCQ5SWTLljwjK/X9OIPM7w0kBysaoETmV2IArSMxnylrSChf5wLhJPC9g==
-  dependencies:
-    "@backstage/config" "^0.1.10"
-    "@octokit/auth-app" "^3.4.0"
-    "@octokit/rest" "^18.5.3"
-    cross-fetch "^3.0.6"
-    git-url-parse "^11.6.0"
-    lodash "^4.17.21"
     luxon "^2.0.2"
 
 "@backstage/plugin-api-docs@^0.6.6":
@@ -2481,6 +2476,11 @@
   integrity sha512-+8Ad1ply4nD3LvG6bJj67/XBXoSMSYjqxEmCzM0vxBzNRPPYaey7TzFJRrAK8Zisz0WVvS9UqHcOHWbcuxxuUQ==
   dependencies:
     "@material-ui/core" "^4.12.2"
+
+"@backstage/types@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@backstage/types/-/types-0.1.1.tgz#9d3091daef5cba7329d7ee98b82ea27430234201"
+  integrity sha512-ju+T86ogNPnwjjXjSaa4FIb6H/+J0DLWvxfdmqYOrLuuuJvZ5v3wwg7c2SHWfQhokjj8fqA1oERliCIiqcNHIg==
 
 "@backstage/version-bridge@^0.1.0":
   version "0.1.0"
@@ -10467,7 +10467,7 @@ graphlib@^2.1.8:
   dependencies:
     lodash "^4.17.15"
 
-graphql-language-service-interface@^2.8.2:
+graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.8.2:
   version "2.8.2"
   resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
   integrity sha512-otbOQmhgkAJU1QJgQkMztNku6SbJLu/uodoFOYOOtJsizTjrMs93vkYaHCcYnLA3oi1Goj27XcHjMnRCYQOZXQ==
@@ -10477,7 +10477,7 @@ graphql-language-service-interface@^2.8.2:
     graphql-language-service-utils "^2.5.1"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.9.0:
+graphql-language-service-parser@1.9.0, graphql-language-service-parser@^1.9.0:
   version "1.9.0"
   resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
   integrity sha512-B5xPZLbBmIp0kHvpY1Z35I5DtPoDK9wGxQVRDIzcBaiIvAmlTrDvjo3bu7vKREdjFbYKvWNgrEWENuprMbF17Q==

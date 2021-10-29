@@ -4,6 +4,8 @@ import { Header, Page, Content } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
 import { DashboardTable } from '../../../../../packages/app/src/components/custom';
 import { LeftNavComponent } from '../LeftNavComponent';
+import { useDashboard } from '../../hooks/useDashboard';
+
 
 const useStyles = makeStyles({
   gridPadding: {
@@ -14,7 +16,8 @@ const useStyles = makeStyles({
 export const DashboardComponent = () => {
   const classes = useStyles();
   const [table, setTable] = useState('home');
-
+  const data = useDashboard();
+  console.log(data);
   return (
     <Page themeId="tool">
       <Header title="DevOps Dashboard"></Header>
