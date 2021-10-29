@@ -17,32 +17,32 @@ yarn add @backstage/plugin-tech-insights-backend-module-jsonfc
 and modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
 
 ```diff
-+ import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
++import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 
-+ const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
-+    checks: [],
-+    logger,
-+  }),
++const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
++   checks: [],
++   logger,
++}),
 
-  const builder = new DefaultTechInsightsBuilder({
-    logger,
-    config,
-    database,
-    discovery,
-    factRetrievers: [myFactRetrieverRegistration],
-+   factCheckerFactory: myFactCheckerFactory
-  });
+ const builder = new DefaultTechInsightsBuilder({
+   logger,
+   config,
+   database,
+   discovery,
+   factRetrievers: [myFactRetrieverRegistration],
++  factCheckerFactory: myFactCheckerFactory
+ });
 ```
 
 By default this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
 
 ```diff
-  const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
-  const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
-    checks: [],
-    logger,
-+   checkRegistry: myTechInsightCheckRegistry
-  }),
+ const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
+ const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
+   checks: [],
+   logger,
++  checkRegistry: myTechInsightCheckRegistry
+ }),
 
 ```
 

@@ -53,20 +53,20 @@ With the `techInsights.ts` router setup in place, add the router to
 `packages/backend/src/index.ts`:
 
 ```diff
-+ import techInsights from './plugins/techInsights';
++import techInsights from './plugins/techInsights';
 
-  async function main() {
-    ...
-    const createEnv = makeCreateEnv(config);
+ async function main() {
+   ...
+   const createEnv = makeCreateEnv(config);
 
-    const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-+   const techInsightsEnv = useHotMemoize(module, () => createEnv('tech_insights'));
+   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
++  const techInsightsEnv = useHotMemoize(module, () => createEnv('tech_insights'));
 
-    const apiRouter = Router();
-+   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
-    ...
-    apiRouter.use(notFoundHandler());
-  }
+   const apiRouter = Router();
++  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
+   ...
+   apiRouter.use(notFoundHandler());
+ }
 ```
 
 ### Adding fact retrievers
@@ -104,14 +104,32 @@ const builder = new DefaultTechInsightsBuilder({
 });
 ```
 
+#### Running fact retrievers in a multi-instance installation
+
+Current logic on running scheduled fact retrievers is intended to be executed in a single instance. Running on multi-instane environment there might be some additional data accumulation when multiple fact retrievers would retrieve and persist their facts. To mitigate this it is recommended to mark a single instance to be a specific fact retriever instance. One way to do this is by using environment variables to indicate if the retrievers should be registered. This can be done for example like the code snippet below
+
+```diff
+const builder = new DefaultTechInsightsBuilder({
+  logger,
+  config,
+  database,
+  discovery,
+- factRetrievers: [],
++ factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
+});
+```
+
+Where the instance dedicated to handling retrieval of facts would have environment variable `MAIN_FACT_RETRIEVER_INSTANCE` set to true.
+
 ### Creating Fact Retrievers
 
-A Fact Retriever consist of four parts:
+A Fact Retriever consist of four required and one optional parts:
 
 1. `id` - unique identifier of a fact retriever
 2. `version`: A semver string indicating the current version of the schema and the handler
 3. `schema` - A versioned schema defining the shape of data a fact retriever returns
 4. `handler` - An asynchronous function handling the logic of retrieving and returning facts for an entity
+5. `entityFilter` - (Optional) EntityFilter object defining the entity kinds, types and/or names this fact retriever handles
 
 An example implementation of a FactRetriever could for example be as follows:
 
@@ -178,21 +196,21 @@ yarn add @backstage/plugin-tech-insights-backend-module-jsonfc
 and modify the `techInsights.ts` file to contain a reference to the FactChecker implementation.
 
 ```diff
-+ import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
++import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 
-+ const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
-+    checks: [],
-+    logger,
-+  }),
++const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
++   checks: [],
++   logger,
++}),
 
-  const builder = new DefaultTechInsightsBuilder({
-    logger,
-    config,
-    database,
-    discovery,
-    factRetrievers: [myFactRetrieverRegistration],
-+   factCheckerFactory: myFactCheckerFactory
-  });
+ const builder = new DefaultTechInsightsBuilder({
+   logger,
+   config,
+   database,
+   discovery,
+   factRetrievers: [myFactRetrieverRegistration],
++  factCheckerFactory: myFactCheckerFactory
+ });
 ```
 
 To be able to run checks, you need to additionally add individual checks into your FactChecker implementation. For examples how to add these, you can check the documentation of the individual implementation of the FactChecker
