@@ -3,4 +3,4 @@
 '@backstage/theme': patch
 ---
 
-Will Add warning variant to Dismissable component.
+Will Add warning variant to DismissableBanner component.

@@ -130,6 +130,7 @@ export const darkTheme = createTheme({
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
+      warning: '#FF9800',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',
