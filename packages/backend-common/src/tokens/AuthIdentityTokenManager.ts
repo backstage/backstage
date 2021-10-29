@@ -14,36 +14,48 @@
  * limitations under the License.
  */
 
+import { JWK, JWT } from 'jose';
 import { TokenManager } from './types';
 import { IdentityClient } from '../identity';
 import { PluginEndpointDiscovery } from '../discovery';
 
 export class AuthIdentityTokenManager implements TokenManager {
-  // TODO: (b2b-auth) replace this in favor of actual server token in config likely
-  private readonly SERVER_TOKEN = 'server-token';
   private identityClient: IdentityClient;
+  private key: JWK.OctKey;
 
-  constructor(discovery: PluginEndpointDiscovery) {
+  constructor(discovery: PluginEndpointDiscovery, secret: string) {
     this.identityClient = new IdentityClient({
       discovery,
       issuer: 'auth-identity-token-manager',
     });
+    this.key = JWK.asKey(Buffer.from(secret)) as JWK.OctKey;
   }
 
   async getServerToken(): Promise<{ token: string }> {
-    return { token: this.SERVER_TOKEN };
+    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key);
+    return { token: jwt };
   }
 
   // TODO: (b2b-auth) authenticate returns a Backstage Identity
   // need to figure out what to return after validating a server token
   async validateToken(token: string): Promise<void> {
-    if (token !== this.SERVER_TOKEN) {
-      try {
-        await this.identityClient.authenticate(token);
-        return;
-      } catch (error) {
-        throw new Error(`Invalid token, ${error}`);
-      }
+    let maybeUser;
+    let maybeServer;
+    try {
+      maybeUser = await this.identityClient.authenticate(token);
+    } catch (error) {
+      // invalid token
     }
+
+    try {
+      maybeServer = JWT.verify(token, this.key);
+    } catch (error) {
+      // invalid token
+    }
+
+    if (!maybeUser && !maybeServer) {
+      throw new Error(`Invalid token`);
+    }
+    return;
   }
 }
