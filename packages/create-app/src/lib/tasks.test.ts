@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import child_process, { ChildProcess } from 'child_process';
+import child_process from 'child_process';
 import path from 'path';
 import {
   buildAppTask,
@@ -114,22 +114,24 @@ describe('createTemporaryAppFolderTask', () => {
 describe('buildAppTask', () => {
   it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
     const mockChdir = jest.spyOn(process, 'chdir');
-    const mockExec = jest.spyOn(child_process, 'exec');
+    const mockExec = child_process.exec as unknown as jest.MockedFunction<
+      (
+        command: string,
+        callback: (error: null, stdout: string, stderr: string) => void,
+      ) => void
+    >;
 
     // requires callback implementation to support `promisify` wrapper
     // https://stackoverflow.com/a/60579617/10044859
-    mockExec.mockImplementation((_: string, callback?: any): ChildProcess => {
-      callback(null, 'stdout', 'stderr');
-      return;
+    mockExec.mockImplementation((_command, callback) => {
+      callback(null, 'standard out', 'standard error');
     });
 
     const appDir = 'projects/dir';
     await expect(buildAppTask(appDir)).resolves.not.toThrow();
-
     expect(mockChdir).toBeCalledTimes(2);
     expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
     expect(mockChdir).toHaveBeenNthCalledWith(2, appDir);
-
     expect(mockExec).toBeCalledTimes(2);
     expect(mockExec).toHaveBeenNthCalledWith(
       1,
