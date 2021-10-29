@@ -35,6 +35,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   // TODO: remove once react-router updated
   const sortedRoutes = routes.sort((a, b) =>
+    // remove added "/*" symbols from path before comparing
     b.path.slice(0, -2).localeCompare(a.path.slice(0, -2)),
   );
 
