@@ -1089,6 +1089,27 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   updateLastActivity(): Promise<string | undefined>;
 }
 
+// Warning: (ae-missing-release-tag) "GitLabESDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class GitLabESDiscoveryProcessor implements CatalogProcessor {
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GitLabESDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+}
+
 // Warning: (ae-missing-release-tag) "HigherOrderOperation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
