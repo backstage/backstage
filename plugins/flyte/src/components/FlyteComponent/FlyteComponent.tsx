@@ -18,21 +18,17 @@ import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import {
   InfoCard,
-  Header,
   Page,
   Content,
   ContentHeader,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
 import { FlyteProjectFetchComponent } from '../FlyteProjectFetchComponent';
+import { FlyteHeaderComponent } from '../FlyteHeaderComponent';
 
 export const FlyteComponent = () => (
   <Page themeId="tool">
-    <Header title="Welcome to flyte!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
+    <FlyteHeaderComponent />
     <Content>
       <ContentHeader title="Plugin title">
         <SupportButton>A description of your plugin goes here.</SupportButton>

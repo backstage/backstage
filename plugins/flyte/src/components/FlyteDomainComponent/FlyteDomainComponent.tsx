@@ -22,8 +22,6 @@ import {
   Progress,
   Content,
   ContentHeader,
-  Header,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
 import {
@@ -40,6 +38,7 @@ import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
 import { PartialIdentifier } from './../../api/types';
 
+import { FlyteHeaderComponent } from '../FlyteHeaderComponent';
 import { Grid } from '@material-ui/core';
 
 type DenseTableProps = {
@@ -97,10 +96,7 @@ export const FlyteDomainComponent = () => {
   }
   return (
     <Page themeId="tool">
-      <Header title="Welcome to flyte!" subtitle="Optional subtitle">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+      <FlyteHeaderComponent />
       <Content>
         <ContentHeader title="Plugin title">
           <SupportButton>A description of your plugin goes here.</SupportButton>
