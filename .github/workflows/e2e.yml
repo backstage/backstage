@@ -74,4 +74,3 @@ jobs:
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           yarn e2e-test run
-       
