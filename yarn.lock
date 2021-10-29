@@ -266,10 +266,17 @@
   dependencies:
     tslib "^2.0.0"
 
-"@azure/msal-common@^4.0.0", "@azure/msal-common@^4.4.0":
+"@azure/msal-common@^4.0.0":
   version "4.4.0"
   resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-4.4.0.tgz#818526042f78838ebc332fb735e7de64d8bccb45"
   integrity sha512-Qrs33Ctt2KM7NxArFPIUKc8UbIcm7zYxJFdJeQ9k7HKBhVk3e88CUz1Mw33cS/Jr+YA1H02OAzHg++bJ+4SFyQ==
+  dependencies:
+    debug "^4.1.1"
+
+"@azure/msal-common@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-5.0.1.tgz#234030b340cc63575e84190b96a8a336b69c7698"
+  integrity sha512-CmPR3XM9+CGUu7V/+bAwDxyN6XqWJJhVLmv7utT3sbgay4l5roVXsD1t4wURTs8PwzxmmnJOrhvvGhoDxUW69g==
   dependencies:
     debug "^4.1.1"
 
@@ -284,12 +291,12 @@
     uuid "^8.3.0"
 
 "@azure/msal-node@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.2.0.tgz#d08a5fb3391436715cb37c6eb44816013bdfa11e"
-  integrity sha512-79o5n483vslc7Qegh9+0BsxODRmlk6YYjVdl9jvwmAuF+i+oylq57e7RVhTVocKCbLCIMOKARI14JyKdDbW0WA==
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.3.2.tgz#17665397c04b9cad57b42eb6e21d5d6f35d9b83a"
+  integrity sha512-aKU2lVRKhZa1IJ/Za/Ir6qlythQ3FHz0g0px3SbM4iC1otyr3ANS4mIn/6fmkpZDIHc8eAgJh2KMep1Yn2zpig==
   dependencies:
-    "@azure/msal-common" "^4.4.0"
-    axios "^0.21.1"
+    "@azure/msal-common" "^5.0.1"
+    axios "^0.21.4"
     jsonwebtoken "^8.5.1"
     uuid "^8.3.0"
 
@@ -9348,7 +9355,7 @@ axios-cached-dns-resolve@0.5.2:
     pino "^5.12.2"
     pino-pretty "^2.6.0"
 
-axios@^0.21.1:
+axios@^0.21.1, axios@^0.21.4:
   version "0.21.4"
   resolved "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
