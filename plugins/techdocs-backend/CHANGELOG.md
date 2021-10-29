@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.7
+
+### Patch Changes
+
+- b45607a2ec: Make techdocs s3 publisher credentials config schema optional.
+
 ## 0.10.6
 
 ### Patch Changes
