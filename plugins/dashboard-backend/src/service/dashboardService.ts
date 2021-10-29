@@ -79,7 +79,7 @@ export const getDashboardData = (): DashboardData => {
         releaseFailure: randomFloat(),
         mttr: randomInteger(30),
     },
-    health: randomFloat(),
+    health: Math.floor(Math.random() * 3) + 1,
     twistLock: {
         low: randomInteger(25),
         medium: randomInteger(30),
