@@ -39,6 +39,7 @@ import { flyteApiRef } from './../../api';
 import { PartialIdentifier } from './../../api/types';
 
 import { FlyteHeaderComponent } from '../FlyteHeaderComponent';
+import { FlyteIdComponent } from '../FlyteIdComponent';
 import { Grid } from '@material-ui/core';
 
 type DenseTableProps = {
@@ -102,6 +103,9 @@ export const FlyteDomainComponent = () => {
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
+          <Grid item>
+            <FlyteIdComponent project={project} domain={domain} />
+          </Grid>
           <Grid item>
             <DenseTable workflowList={value!} />
           </Grid>

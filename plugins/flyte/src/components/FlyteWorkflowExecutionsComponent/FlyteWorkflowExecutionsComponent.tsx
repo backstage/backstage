@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Link, Table, TableColumn, Progress } from '@backstage/core-components';
+import {
+  Link,
+  Page,
+  Table,
+  TableColumn,
+  Progress,
+  Content,
+  ContentHeader,
+  SupportButton,
+} from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { flyteApiRef } from './../../api';
 import { FlyteExecution } from './../../api/types';
 import { useRouteRefParams, useApi } from '@backstage/core-plugin-api';
 import { flyteWorkflowExecutionsRouteRef } from '../../routes';
+import { FlyteHeaderComponent } from '../FlyteHeaderComponent';
+import { FlyteIdComponent } from '../FlyteIdComponent';
+import { Grid } from '@material-ui/core';
 
 type DenseTableProps = {
   executions: FlyteExecution[];
@@ -74,5 +86,26 @@ export const FlyteWorkflowExecutionsComponent = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <DenseTable executions={value!} />;
+  return (
+    <Page themeId="tool">
+      <FlyteHeaderComponent />
+      <Content>
+        <ContentHeader title="Plugin title">
+          <SupportButton>A description of your plugin goes here.</SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <FlyteIdComponent
+              project={project}
+              domain={domain}
+              workflowName={name}
+            />
+          </Grid>
+          <Grid item>
+            <DenseTable executions={value!} />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  );
 };

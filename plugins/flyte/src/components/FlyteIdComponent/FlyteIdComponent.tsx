@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Header, HeaderLabel } from '@backstage/core-components';
+import { InfoCard } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
 
-export const FlyteHeaderComponent = () => {
-  return (
-    <Header title="Welcome to flyte!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
-  );
+export type FlyteIdComponentProps = {
+  project: string;
+  domain?: string;
+  workflowName?: string;
 };
+
+export const FlyteIdComponent = ({
+  project,
+  domain,
+  workflowName,
+}: FlyteIdComponentProps) => (
+  <InfoCard title="Information card">
+    <Typography variant="body1">{project}</Typography>
+    {domain && <Typography variant="body1">{domain}</Typography>}
+    {workflowName && <Typography variant="body1">{workflowName}</Typography>}
+  </InfoCard>
+);

@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
-  InfoCard,
   Page,
   Content,
   ContentHeader,
@@ -34,13 +33,6 @@ export const FlyteComponent = () => (
         <SupportButton>A description of your plugin goes here.</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
-        </Grid>
         <Grid item>
           <FlyteProjectFetchComponent />
         </Grid>

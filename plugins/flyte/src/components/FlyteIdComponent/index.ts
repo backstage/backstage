@@ -13,14 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Header, HeaderLabel } from '@backstage/core-components';
-
-export const FlyteHeaderComponent = () => {
-  return (
-    <Header title="Welcome to flyte!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
-  );
-};
+export { FlyteIdComponent } from './FlyteIdComponent';
