@@ -23,7 +23,7 @@ import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
  * individual filters must match.
  */
 export type EntityFilter = {
-  anyOf: { allOf: EntitiesSearchFilter[] }[];
+  anyOf: { allOf: (EntitiesSearchFilter | EntityFilter)[] }[];
 };
 
 /**

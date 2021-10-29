@@ -23,6 +23,7 @@ import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
+  DbSearchRow,
 } from '../database/tables';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 
@@ -71,6 +72,52 @@ describe('NextEntitiesCatalog', () => {
         target_entity_ref: stringifyEntityRef(entity),
       });
     }
+  }
+
+  async function addEntityToSearch(knex: Knex, entity: Entity) {
+    const id = uuid();
+    const entityRef = stringifyEntityRef(entity);
+    const entityJson = JSON.stringify(entity);
+
+    await knex<DbRefreshStateRow>('refresh_state').insert({
+      entity_id: id,
+      entity_ref: entityRef,
+      unprocessed_entity: entityJson,
+      errors: '[]',
+      next_update_at: '2031-01-01 23:00:00',
+      last_discovery_at: '2021-04-01 13:37:00',
+    });
+
+    await knex<DbFinalEntitiesRow>('final_entities').insert({
+      entity_id: id,
+      final_entity: entityJson,
+      hash: 'h',
+      stitch_ticket: '',
+    });
+
+    await insertSearchRow(knex, id, null, entity);
+  }
+
+  async function insertSearchRow(
+    knex: Knex,
+    id: string,
+    previousKey: string | null,
+    previousValue: Object,
+  ) {
+    return Promise.all(
+      Object.entries(previousValue).map(async ([key, value]) => {
+        const currentKey = `${previousKey ? `${previousKey}.` : ``}${key}`;
+        if (typeof value === 'object') {
+          await insertSearchRow(knex, id, currentKey, value);
+        } else {
+          await knex<DbSearchRow>('search').insert({
+            entity_id: id,
+            key: currentKey,
+            value: value,
+          });
+        }
+      }),
+    );
   }
 
   describe('entityAncestry', () => {
@@ -207,6 +254,114 @@ describe('NextEntitiesCatalog', () => {
         );
       },
       60_000,
+    );
+  });
+
+  describe('entities', () => {
+    it.each(databases.eachSupportedId())(
+      'should return correct entity for simple filter',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two' },
+          spec: {
+            test: 'test value',
+          },
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const testFilter = {
+          key: 'spec.test',
+          matchValueExists: true,
+        };
+        const request = {
+          filter: { anyOf: [{ allOf: [testFilter] }] },
+        };
+        const { entities } = await catalog.entities(request);
+
+        expect(entities.length).toBe(1);
+        expect(entities[0]).toEqual(entity2);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should return correct entity for nested filter',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one', org: 'a', desc: 'description' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two', org: 'b', desc: 'description' },
+          spec: {},
+        };
+        const entity3: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'three', org: 'b', color: 'red' },
+          spec: {},
+        };
+        const entity4: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'four', org: 'b', color: 'blue' },
+          spec: {},
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        await addEntityToSearch(knex, entity3);
+        await addEntityToSearch(knex, entity4);
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const testFilter1 = {
+          key: 'metadata.org',
+          matchValueExists: true,
+          matchValueIn: ['b'],
+        };
+        const testFilter2 = {
+          key: 'metadata.desc',
+          matchValueExists: true,
+        };
+        const testFilter3 = {
+          key: 'metadata.color',
+          matchValueExists: true,
+          matchValueIn: ['blue'],
+        };
+        const request = {
+          filter: {
+            anyOf: [
+              {
+                allOf: [
+                  testFilter1,
+                  {
+                    anyOf: [{ allOf: [testFilter2] }, { allOf: [testFilter3] }],
+                  },
+                ],
+              },
+            ],
+          },
+        };
+        const { entities } = await catalog.entities(request);
+
+        expect(entities.length).toBe(2);
+        expect(entities).toContainEqual(entity2);
+        expect(entities).toContainEqual(entity4);
+      },
     );
   });
 });

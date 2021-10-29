@@ -23,6 +23,8 @@ import {
   EntitiesResponse,
   EntityAncestryResponse,
   EntityPagination,
+  EntityFilter,
+  EntitiesSearchFilter,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -73,6 +75,64 @@ function stringifyPagination(input: { limit: number; offset: number }) {
   return base64;
 }
 
+function addCondition(
+  queryBuilder: Knex.QueryBuilder,
+  db: Knex,
+  { key, matchValueIn, matchValueExists }: EntitiesSearchFilter,
+) {
+  // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+  // make a lot of sense. However, it had abysmal performance on sqlite
+  // when datasets grew large, so we're using IN instead.
+  const matchQuery = db<DbSearchRow>('search')
+    .select('entity_id')
+    .where(function keyFilter() {
+      this.andWhere({ key: key.toLowerCase() });
+      if (matchValueExists !== false && matchValueIn) {
+        if (matchValueIn.length === 1) {
+          this.andWhere({ value: matchValueIn[0].toLowerCase() });
+        } else if (matchValueIn.length > 1) {
+          this.andWhere(
+            'value',
+            'in',
+            matchValueIn.map(v => v.toLowerCase()),
+          );
+        }
+      }
+    });
+  // Explicitly evaluate matchValueExists as a boolean since it may be undefined
+  queryBuilder.andWhere(
+    'entity_id',
+    matchValueExists === false ? 'not in' : 'in',
+    matchQuery,
+  );
+}
+
+function isEntityFilter(
+  filter: EntitiesSearchFilter | EntityFilter,
+): filter is EntityFilter {
+  return filter.hasOwnProperty('anyOf');
+}
+
+function parseFilter(
+  filters: EntityFilter,
+  query: Knex.QueryBuilder,
+  db: Knex,
+): Knex.QueryBuilder {
+  let cumulativeQuery = query;
+  for (const singleFilter of filters?.anyOf ?? []) {
+    cumulativeQuery = cumulativeQuery.orWhere(function singleFilterFn() {
+      for (const filter of singleFilter.allOf) {
+        if (isEntityFilter(filter)) {
+          this.andWhere(subQuery => parseFilter(filter, subQuery, db));
+        } else {
+          addCondition(this, db, filter);
+        }
+      }
+    });
+  }
+  return cumulativeQuery;
+}
+
 export class NextEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Knex) {}
 
@@ -80,41 +140,8 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
 
     let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
-
-    for (const singleFilter of request?.filter?.anyOf ?? []) {
-      entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const {
-          key,
-          matchValueIn,
-          matchValueExists,
-        } of singleFilter.allOf) {
-          // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-          // make a lot of sense. However, it had abysmal performance on sqlite
-          // when datasets grew large, so we're using IN instead.
-          const matchQuery = db<DbSearchRow>('search')
-            .select('entity_id')
-            .where(function keyFilter() {
-              this.andWhere({ key: key.toLowerCase() });
-              if (matchValueExists !== false && matchValueIn) {
-                if (matchValueIn.length === 1) {
-                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
-                } else if (matchValueIn.length > 1) {
-                  this.andWhere(
-                    'value',
-                    'in',
-                    matchValueIn.map(v => v.toLowerCase()),
-                  );
-                }
-              }
-            });
-          // Explicitly evaluate matchValueExists as a boolean since it may be undefined
-          this.andWhere(
-            'entity_id',
-            matchValueExists === false ? 'not in' : 'in',
-            matchQuery,
-          );
-        }
-      });
+    if (request?.filter) {
+      entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
     }
 
     // TODO: move final_entities to use entity_ref

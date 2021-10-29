@@ -872,7 +872,7 @@ export type EntityAncestryResponse = {
 // @public
 export type EntityFilter = {
   anyOf: {
-    allOf: EntitiesSearchFilter[];
+    allOf: (EntitiesSearchFilter | EntityFilter)[];
   }[];
 };
 

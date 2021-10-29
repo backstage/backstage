@@ -46,7 +46,11 @@ import {
   DbPageInfo,
   Transaction,
 } from './types';
-import { EntityPagination } from '../../catalog/types';
+import {
+  EntityPagination,
+  EntityFilter,
+  EntitiesSearchFilter,
+} from '../../catalog/types';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -219,11 +223,13 @@ export class CommonDatabase implements Database {
 
     for (const singleFilter of request?.filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const {
-          key,
-          matchValueIn,
-          matchValueExists,
-        } of singleFilter.allOf) {
+        for (const filter of singleFilter.allOf) {
+          if (isEntityFilter(filter)) {
+            throw new Error(
+              'Nested filters are not supported in the legacy CommonDatabase',
+            );
+          }
+          const { key, matchValueIn, matchValueExists } = filter;
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
@@ -605,4 +611,10 @@ function deduplicateRelations(
     rows,
     r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
   );
+}
+
+function isEntityFilter(
+  filter: EntitiesSearchFilter | EntityFilter,
+): filter is EntityFilter {
+  return filter.hasOwnProperty('anyOf');
 }
