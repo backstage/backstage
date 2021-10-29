@@ -40,8 +40,6 @@ type DenseTableProps = {
 
 export const DenseTable = ({ executions }: DenseTableProps) => {
   const columns: TableColumn[] = [
-    { title: 'project', field: 'project' },
-    { title: 'domain', field: 'domain' },
     { title: 'name', field: 'name' },
     { title: 'phase', field: 'phase' },
     { title: 'startedAt', field: 'startedAt' },
@@ -49,8 +47,6 @@ export const DenseTable = ({ executions }: DenseTableProps) => {
   ];
   const data = executions.map(execution => {
     return {
-      project: execution.workflowExecutionId.project,
-      domain: execution.workflowExecutionId.domain,
       name: (
         <Link to={execution.executionConsoleUrl}>
           {execution.workflowExecutionId.name}

@@ -47,19 +47,13 @@ type DenseTableProps = {
 };
 
 export const DenseTable = ({ workflowList }: DenseTableProps) => {
-  const columns: TableColumn[] = [
-    { title: 'name', field: 'name' },
-    { title: 'project', field: 'project' },
-    { title: 'domain', field: 'domain' },
-  ];
+  const columns: TableColumn[] = [{ title: 'name', field: 'name' }];
   const getFlyteWorkflowExecutionsRouteRef = useRouteRef(
     flyteWorkflowExecutionsRouteRef,
   );
 
   const data = workflowList.map(workflow => {
     return {
-      project: workflow.project,
-      domain: workflow.domain,
       name: (
         <Link
           to={getFlyteWorkflowExecutionsRouteRef({
