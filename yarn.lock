@@ -1222,6 +1222,50 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
+"@backstage/backend-common@^0.8.10":
+  version "0.8.10"
+  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.8.10.tgz#87668810845b75bb1169c8ac212eba35553a28f0"
+  integrity sha512-Pyi2JVRSljbwZ2WzfjbAF8IfLWtzNIyF7OZ5oL+Ew9GLS0fYTuRh2E3NPztBUfyJGZ5S2WhkDWfbK6pO9woymQ==
+  dependencies:
+    "@backstage/cli-common" "^0.1.2"
+    "@backstage/config" "^0.1.7"
+    "@backstage/config-loader" "^0.6.7"
+    "@backstage/errors" "^0.1.1"
+    "@backstage/integration" "^0.6.1"
+    "@google-cloud/storage" "^5.8.0"
+    "@octokit/rest" "^18.5.3"
+    "@types/cors" "^2.8.6"
+    "@types/dockerode" "^3.2.1"
+    "@types/express" "^4.17.6"
+    archiver "^5.0.2"
+    aws-sdk "^2.840.0"
+    compression "^1.7.4"
+    concat-stream "^2.0.0"
+    cors "^2.8.5"
+    cross-fetch "^3.0.6"
+    dockerode "^3.2.1"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    fs-extra "9.1.0"
+    git-url-parse "~11.4.4"
+    helmet "^4.0.0"
+    isomorphic-git "^1.8.0"
+    keyv "^4.0.3"
+    keyv-memcache "^1.2.5"
+    knex "^0.95.1"
+    lodash "^4.17.15"
+    logform "^2.1.1"
+    minimatch "^3.0.4"
+    minimist "^1.2.5"
+    morgan "^1.10.0"
+    raw-body "^2.4.1"
+    selfsigned "^1.10.7"
+    stoppable "^1.1.0"
+    tar "^6.1.2"
+    unzipper "^0.10.11"
+    winston "^3.2.1"
+    yn "^4.0.0"
+
 "@backstage/backend-common@^0.9.0", "@backstage/backend-common@^0.9.1":
   version "0.9.1"
   resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.9.1.tgz#f7753922b5264b6e0eb6286369fd9a211c3357f2"
@@ -1433,7 +1477,7 @@
     yaml "^1.9.2"
     yup "^0.29.3"
 
-"@backstage/config@^0.1.10", "@backstage/config@^0.1.9":
+"@backstage/config@^0.1.10":
   version "0.1.10"
   resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.10.tgz#09d1f0f61f87f8f3bb6f2035ef2a91bc676d0f57"
   integrity sha512-1kpfnnTJU5+2leoSBUQVvBKjwbHUVDIGsjkItElhUKGBNkguKwq6qcDZpZFvXM8/vcr1W2KhuZ/PF/L9mhGGow==
@@ -1727,6 +1771,19 @@
     react "^16.13.1"
     react-dom "^16.13.1"
     react-use "^17.2.4"
+
+"@backstage/integration@^0.6.1":
+  version "0.6.8"
+  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.8.tgz#36e1c54fb73b9d6c36f2cbf71bad8dcaa2f5c65a"
+  integrity sha512-Y2U0pantPSNmLbEye2LEhYMrHu6e/vCQ5SWTLljwjK/X9OIPM7w0kBysaoETmV2IArSMxnylrSChf5wLhJPC9g==
+  dependencies:
+    "@backstage/config" "^0.1.10"
+    "@octokit/auth-app" "^3.4.0"
+    "@octokit/rest" "^18.5.3"
+    cross-fetch "^3.0.6"
+    git-url-parse "^11.6.0"
+    lodash "^4.17.21"
+    luxon "^2.0.2"
 
 "@backstage/integration@^0.6.2", "@backstage/integration@^0.6.3":
   version "0.6.3"
@@ -4567,6 +4624,11 @@
   resolved "https://registry.npmjs.org/@types/cookie/-/cookie-0.4.0.tgz#14f854c0f93d326e39da6e3b6f34f7d37513d108"
   integrity sha512-y7mImlc/rNkvCRmg8gC3/lj87S7pTUIJ6QGjwHR9WQJcFs+ZMTOaoPrkdFA/YdbuqVEmEbb5RdhVxMkAcgOnpg==
 
+"@types/cookiejar@*":
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/@types/cookiejar/-/cookiejar-2.1.2.tgz#66ad9331f63fe8a3d3d9d8c6e3906dd10f6446e8"
+  integrity sha512-t73xJJrvdTjXrn4jLS9VSGRbz0nUY3cl2DMGDU48lKl+HR9dbbjW2A9r3g40VA++mQpy6uuHg33gy7du2BKpog==
+
 "@types/cors@^2.8.6":
   version "2.8.10"
   resolved "https://registry.npmjs.org/@types/cors/-/cors-2.8.10.tgz#61cc8469849e5bcdd0c7044122265c39cec10cf4"
@@ -5030,6 +5092,21 @@
   integrity sha512-Yjye9VwMdYeXfS71ihueWRSxrruuXTwKCbzue4+5b2rjnQ//AtyM7myZ1BEhNhBQ/nL/RE7bdToUoLln2miKvg==
   dependencies:
     "@types/react" "*"
+
+"@types/superagent@*":
+  version "4.1.13"
+  resolved "https://registry.npmjs.org/@types/superagent/-/superagent-4.1.13.tgz#0aaa3f4ff9404b94932d1dcdfb7f3d39d23997a0"
+  integrity sha512-YIGelp3ZyMiH0/A09PMAORO0EBGlF5xIKfDpK74wdYvWUs2o96b5CItJcWPdH409b7SAXIIG6p8NdU/4U2Maww==
+  dependencies:
+    "@types/cookiejar" "*"
+    "@types/node" "*"
+
+"@types/supertest@^2.0.8":
+  version "2.0.11"
+  resolved "https://registry.npmjs.org/@types/supertest/-/supertest-2.0.11.tgz#2e70f69f220bc77b4f660d72c2e1a4231f44a77d"
+  integrity sha512-uci4Esokrw9qGb9bvhhSVEjd6rkny/dk5PK/Qz4yxKiyppEI+dOPlNrZBahE3i+PoKFYyDxChVXZ/ysS/nrm1Q==
+  dependencies:
+    "@types/superagent" "*"
 
 "@types/testing-library__jest-dom@^5.9.1":
   version "5.9.5"
@@ -7127,7 +7204,7 @@ compare-func@^2.0.0:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
 
-component-emitter@^1.2.1:
+component-emitter@^1.2.1, component-emitter@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"
   integrity sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==
@@ -7404,6 +7481,11 @@ cookie@0.4.1, cookie@^0.4.1, cookie@~0.4.1:
   version "0.4.1"
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.4.1.tgz#afd713fe26ebd21ba95ceb61f9a8116e50a537d1"
   integrity sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
+
+cookiejar@^2.1.2:
+  version "2.1.3"
+  resolved "https://registry.npmjs.org/cookiejar/-/cookiejar-2.1.3.tgz#fc7a6216e408e74414b90230050842dacda75acc"
+  integrity sha512-JxbCBUdrfr6AQjOXrxoTvAMJO4HBTUIlBzslcJPAz+/KT8yk53fXun51u+RenNYvad/+Vc2DIz5o9UxlCDymFQ==
 
 copy-descriptor@^0.1.0:
   version "0.1.1"
@@ -9851,6 +9933,11 @@ formdata-node@^3.6.2:
     form-data-encoder "1.4.3"
     node-domexception "1.0.0"
 
+formidable@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/formidable/-/formidable-1.2.2.tgz#bf69aea2972982675f00865342b982986f6b8dd9"
+  integrity sha512-V8gLm+41I/8kguQ4/o1D3RIHRmhYFG4pnNyonvua+40rqcEmT4+V71yaZ3B457xbbgCsCfjSPi65u/W6vK1U5Q==
+
 forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
@@ -10380,7 +10467,7 @@ graphlib@^2.1.8:
   dependencies:
     lodash "^4.17.15"
 
-graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.8.2:
+graphql-language-service-interface@^2.8.2:
   version "2.8.2"
   resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
   integrity sha512-otbOQmhgkAJU1QJgQkMztNku6SbJLu/uodoFOYOOtJsizTjrMs93vkYaHCcYnLA3oi1Goj27XcHjMnRCYQOZXQ==
@@ -10390,7 +10477,7 @@ graphql-language-service-interface@2.8.2, graphql-language-service-interface@^2.
     graphql-language-service-utils "^2.5.1"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@1.9.0, graphql-language-service-parser@^1.9.0:
+graphql-language-service-parser@^1.9.0:
   version "1.9.0"
   resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
   integrity sha512-B5xPZLbBmIp0kHvpY1Z35I5DtPoDK9wGxQVRDIzcBaiIvAmlTrDvjo3bu7vKREdjFbYKvWNgrEWENuprMbF17Q==
@@ -13810,7 +13897,7 @@ meros@^1.1.4:
   resolved "https://registry.npmjs.org/meros/-/meros-1.1.4.tgz#c17994d3133db8b23807f62bec7f0cb276cfd948"
   integrity sha512-E9ZXfK9iQfG9s73ars9qvvvbSIkJZF5yOo9j4tcwM5tN8mUKfj/EKN5PzOr3ZH0y5wL7dLAHw3RVEfpQV9Q7VQ==
 
-methods@^1.0.0, methods@~1.1.2:
+methods@^1.0.0, methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
@@ -14195,7 +14282,7 @@ mime@1.6.0:
   resolved "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
-mime@^2.2.0:
+mime@^2.2.0, mime@^2.4.6:
   version "2.5.2"
   resolved "https://registry.npmjs.org/mime/-/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
   integrity sha512-tqkh47FzKeCPD2PUiPB6pkbMzsCasjxAfC62/Wap5qrUWcb+sFasXUC5I3gYM5iBM8v/Qpn4UK0x+j0iHyFPDg==
@@ -19042,6 +19129,31 @@ sucrase@^3.18.0, sucrase@^3.18.2:
     mz "^2.7.0"
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
+
+superagent@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.npmjs.org/superagent/-/superagent-6.1.0.tgz#09f08807bc41108ef164cfb4be293cebd480f4a6"
+  integrity sha512-OUDHEssirmplo3F+1HWKUrUjvnQuA+nZI6i/JJBdXb5eq9IyEQwPyPpqND+SSsxf6TygpBEkUjISVRN4/VOpeg==
+  dependencies:
+    component-emitter "^1.3.0"
+    cookiejar "^2.1.2"
+    debug "^4.1.1"
+    fast-safe-stringify "^2.0.7"
+    form-data "^3.0.0"
+    formidable "^1.2.2"
+    methods "^1.1.2"
+    mime "^2.4.6"
+    qs "^6.9.4"
+    readable-stream "^3.6.0"
+    semver "^7.3.2"
+
+supertest@^6.1.6:
+  version "6.1.6"
+  resolved "https://registry.npmjs.org/supertest/-/supertest-6.1.6.tgz#6151c518f4c5ced2ac2aadb9f96f1bf8198174c8"
+  integrity sha512-0hACYGNJ8OHRg8CRITeZOdbjur7NLuNs0mBjVhdpxi7hP6t3QIbOzLON5RTUmZcy2I9riuII3+Pr2C7yztrIIg==
+  dependencies:
+    methods "^1.1.2"
+    superagent "^6.1.0"
 
 supports-color@^2.0.0:
   version "2.0.0"

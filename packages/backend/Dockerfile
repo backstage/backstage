@@ -16,14 +16,11 @@ WORKDIR /app
 # Change to root user for copying app files and adjusting perms for the app user.
 USER root
 
-# These three lines are in place to install python3, pip3 and mkdocs so that we can generate
-# within the application.  When we get to a point where BIH is just reading, we
-# can start to remove this piece and lighten the load on the backend of the application.
-# This can be removed and in the case that we are utilizing AWS S3, but if locally you
-# are just wanting to use local docs, then this needs to be included.
-# RUN apt-get update && apt-get install -y python3
-# RUN apt-get update && apt-get install -y python3-pip
-# RUN pip3 install --upgrade pip && pip3 install mkdocs-techdocs-core==0.0.16
+# curl envconsul package from dev8 Nexus and place package in PATH
+RUN curl -k -X GET "https://nexus.dev8.bip.va.gov/repository/raw-dependencies/hashicorp/envconsul/envconsul_0.11.0_linux_amd64.tgz" -O
+RUN tar xzf envconsul_0.11.0_linux_amd64.tgz && rm envconsul_0.11.0_linux_amd64.tgz
+RUN mv envconsul /bin
+RUN chmod 777 /bin/envconsul
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -35,7 +32,7 @@ RUN yarn config set "strict-ssl" false -g
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # Then copy the rest of the backend bundle, along with other required files.
-COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml ./
+COPY packages/backend/dist/bundle.tar.gz app-config.yaml github-app-backstage-bih-1-credentials.yaml config.hcl ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 # Give the node app user read access to app files.
@@ -48,4 +45,4 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+CMD ["envconsul", "-config", "config.hcl", "node", "packages/backend", "--config", "app-config.yaml"]

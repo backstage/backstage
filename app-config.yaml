@@ -1,9 +1,9 @@
 app:
-  title: BIH Backstage App
+  title: "Benefits Innovation Hub"
   baseUrl: http://localhost:3000
 
 organization:
-  name: BIH
+  name: ${BIH_ORG}
 
 backend:
   baseUrl: http://localhost:7000
@@ -14,17 +14,17 @@ backend:
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
-    origin: http://localhost:3000
+    origin: ${BIH_APP_BASE_URL}:3000
     methods: [GET, POST, PUT, DELETE]
     credentials: true
   # config options: https://node-postgres.com/api/client
   database:
     client: pg
     connection:
-      host: ${POSTGRES_HOST}
-      port: ${POSTGRES_PORT}
-      user: ${POSTGRES_USER}
-      password: ${POSTGRES_PASSWORD}
+      host: ${BIH_POSTGRES_HOST}
+      port: ${BIH_POSTGRES_PORT}
+      user: ${BIH_POSTGRES_USER}
+      password: ${BIH_POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
       # ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
       #   ca: # if you have a CA file and want to verify it you can uncomment this section
@@ -52,23 +52,23 @@ proxy:
 # Note: After experimenting with basic setup, use CI/CD to generate docs
 # and an external cloud storage when deploying TechDocs for production use-case.
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
-techdocs:
-  builder: 'external'
-  publisher:
-    type: 'awsS3'
-    awsS3:
-      bucketName: ${AWS_BUCKET_NAME}
-      region: ${AWS_BUCKET_REGION}
-      credentials:
-        accessKeyId: ${AWS_ACCESS_KEY_ID}
-        secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
-
 # techdocs:
-#   builder: 'local'
+#   builder: 'external'
 #   publisher:
-#     type: 'local'
-#   generator:
-#     techdocs: local
+#     type: 'awsS3'
+#     awsS3:
+#       bucketName: ${BIH_AWS_BUCKET_NAME}
+#       region: ${BIH_AWS_BUCKET_REGION}
+#       credentials:
+#         accessKeyId: ${AWS_ACCESS_KEY_ID}
+#         secretAccessKey: ${AWS_ACCESS_KEY_SECRET}
+
+techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
+  generator:
+    techdocs: local
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
@@ -76,7 +76,7 @@ auth:
 
 scaffolder:
   github:
-    token: ${GITHUB_TOKEN}
+    token: ${BIH_GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
 
 catalog:
@@ -120,3 +120,9 @@ catalog:
       target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/docs-template/template.yaml
       rules:
         - allow: [Template]
+
+  processors:
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token: ${BIH_GITHUB_TOKEN}
