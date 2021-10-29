@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  Task,
+  TaskContext,
   WorkflowRunner,
   WorkflowResponse,
   TaskSpecV1beta2,
@@ -47,7 +47,7 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta2 =>
  * This is the legacy workflow runner, which supports handlebars. This entire implementation will be replaced
  * with the default workflow runner interface in the future so this entire thing can go bye bye.
  */
-export class LegacyWorkflowRunner implements WorkflowRunner {
+export class HandlebarsWorkflowRunner implements WorkflowRunner {
   private readonly handlebars: typeof Handlebars;
 
   constructor(private readonly options: Options) {
@@ -72,7 +72,7 @@ export class LegacyWorkflowRunner implements WorkflowRunner {
     this.handlebars.registerHelper('eq', (a, b) => a === b);
   }
 
-  async execute(task: Task): Promise<WorkflowResponse> {
+  async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(`Task spec is not a valid v1beta2 task spec`);
     }

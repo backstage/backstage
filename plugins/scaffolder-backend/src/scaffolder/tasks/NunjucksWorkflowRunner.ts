@@ -15,7 +15,7 @@
  */
 import { ScmIntegrations } from '@backstage/integration';
 import {
-  Task,
+  TaskContext,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -34,7 +34,7 @@ import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 
-type Options = {
+type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
@@ -52,7 +52,13 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
 
-const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
+const createStepLogger = ({
+  task,
+  step,
+}: {
+  task: TaskContext;
+  step: TaskStep;
+}) => {
   const metadata = { stepId: step.id };
   const taskLogger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -77,7 +83,7 @@ const createStepLogger = ({ task, step }: { task: Task; step: TaskStep }) => {
   return { taskLogger, streamLogger };
 };
 
-export class DefaultWorkflowRunner implements WorkflowRunner {
+export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly nunjucks: nunjucks.Environment;
 
   private readonly nunjucksOptions: nunjucks.ConfigureOptions = {
@@ -88,7 +94,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     },
   };
 
-  constructor(private readonly options: Options) {
+  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.nunjucks = nunjucks.configure(this.nunjucksOptions);
 
     // TODO(blam): let's work out how we can deprecate these.
@@ -162,7 +168,7 @@ export class DefaultWorkflowRunner implements WorkflowRunner {
     });
   }
 
-  async execute(task: Task): Promise<WorkflowResponse> {
+  async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
         'Wrong template version executed with the workflow engine',
