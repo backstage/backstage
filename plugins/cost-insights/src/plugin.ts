@@ -49,6 +49,7 @@ export const costInsightsPlugin = createPlugin({
 
 export const CostInsightsPage = costInsightsPlugin.provide(
   createRoutableExtension({
+    name: 'CostInsightsPage',
     component: () =>
       import('./components/CostInsightsPage').then(m => m.CostInsightsPage),
     mountPoint: rootRouteRef,
@@ -58,6 +59,7 @@ export const CostInsightsPage = costInsightsPlugin.provide(
 export const CostInsightsProjectGrowthInstructionsPage =
   costInsightsPlugin.provide(
     createRoutableExtension({
+      name: 'CostInsightsProjectGrowthInstructionsPage',
       component: () =>
         import('./components/ProjectGrowthInstructionsPage').then(
           m => m.ProjectGrowthInstructionsPage,
@@ -69,6 +71,7 @@ export const CostInsightsProjectGrowthInstructionsPage =
 export const CostInsightsLabelDataflowInstructionsPage =
   costInsightsPlugin.provide(
     createRoutableExtension({
+      name: 'CostInsightsLabelDataflowInstructionsPage',
       component: () =>
         import('./components/LabelDataflowInstructionsPage').then(
           m => m.LabelDataflowInstructionsPage,

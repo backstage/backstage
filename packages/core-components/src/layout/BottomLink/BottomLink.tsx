@@ -15,32 +15,42 @@
  */
 
 import React from 'react';
-import { Divider, Typography, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { Link } from '../../components/Link';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    maxWidth: 'fit-content',
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  boxTitle: {
-    margin: 0,
-    color: theme.palette.textSubtle,
-  },
-  arrow: {
-    color: theme.palette.textSubtle,
-  },
-}));
+/** @public */
+export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      maxWidth: 'fit-content',
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    boxTitle: {
+      margin: 0,
+      color: theme.palette.textSubtle,
+    },
+    arrow: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageBottomLink' },
+);
+
+/** @public */
 export type BottomLinkProps = {
   link: string;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
+/** @public */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;
   const classes = useStyles();

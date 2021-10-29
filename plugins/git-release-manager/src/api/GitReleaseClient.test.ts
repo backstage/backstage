@@ -37,6 +37,7 @@ describe('GitReleaseClient', () => {
         "createRef": [Function],
         "createRelease": [Function],
         "createTagObject": [Function],
+        "deleteRef": [Function],
         "getAllReleases": [Function],
         "getAllTags": [Function],
         "getBranch": [Function],

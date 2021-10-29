@@ -15,7 +15,7 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/types';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -339,4 +339,28 @@ export const oneloginAuthApiRef: ApiRef<
     SessionApi
 > = createApiRef({
   id: 'core.auth.onelogin',
+});
+
+/**
+ * Provides authentication towards Bitbucket APIs.
+ *
+ * See https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
+ * for a full list of supported scopes.
+ */
+export const bitbucketAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.bitbucket',
+});
+
+/**
+ * Provides authentication towards Atlassian APIs.
+ *
+ * See https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/
+ * for a full list of supported scopes.
+ */
+export const atlassianAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.atlassian',
 });

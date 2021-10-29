@@ -18,18 +18,31 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader, JsonValue } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { ConfigTarget, loadConfig } from '@backstage/config-loader';
+
 import { isValidUrl } from './urls';
 
-class ObservableConfigProxy implements Config {
+export class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
 
   private readonly subscribers: (() => void)[] = [];
 
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly parent?: ObservableConfigProxy,
+    private parentKey?: string,
+  ) {
+    if (parent && !parentKey) {
+      throw new Error('parentKey is required if parent is set');
+    }
+  }
 
   setConfig(config: Config) {
+    if (this.parent) {
+      throw new Error('immutable');
+    }
     this.config = config;
     for (const subscriber of this.subscribers) {
       try {
@@ -41,6 +54,10 @@ class ObservableConfigProxy implements Config {
   }
 
   subscribe(onChange: () => void): { unsubscribe: () => void } {
+    if (this.parent) {
+      return this.parent.subscribe(onChange);
+    }
+
     this.subscribers.push(onChange);
     return {
       unsubscribe: () => {
@@ -52,53 +69,84 @@ class ObservableConfigProxy implements Config {
     };
   }
 
+  private select(required: true): Config;
+  private select(required: false): Config | undefined;
+  private select(required: boolean): Config | undefined {
+    if (this.parent && this.parentKey) {
+      if (required) {
+        return this.parent.select(true).getConfig(this.parentKey);
+      }
+      return this.parent.select(false)?.getOptionalConfig(this.parentKey);
+    }
+
+    return this.config;
+  }
+
   has(key: string): boolean {
-    return this.config.has(key);
+    return this.select(false)?.has(key) ?? false;
   }
+
   keys(): string[] {
-    return this.config.keys();
+    return this.select(false)?.keys() ?? [];
   }
+
   get<T = JsonValue>(key?: string): T {
-    return this.config.get(key);
+    return this.select(true).get(key);
   }
+
   getOptional<T = JsonValue>(key?: string): T | undefined {
-    return this.config.getOptional(key);
+    return this.select(false)?.getOptional(key);
   }
+
   getConfig(key: string): Config {
-    return this.config.getConfig(key);
+    return new ObservableConfigProxy(this.logger, this, key);
   }
+
   getOptionalConfig(key: string): Config | undefined {
-    return this.config.getOptionalConfig(key);
+    if (this.select(false)?.has(key)) {
+      return new ObservableConfigProxy(this.logger, this, key);
+    }
+    return undefined;
   }
+
   getConfigArray(key: string): Config[] {
-    return this.config.getConfigArray(key);
+    return this.select(true).getConfigArray(key);
   }
+
   getOptionalConfigArray(key: string): Config[] | undefined {
-    return this.config.getOptionalConfigArray(key);
+    return this.select(false)?.getOptionalConfigArray(key);
   }
+
   getNumber(key: string): number {
-    return this.config.getNumber(key);
+    return this.select(true).getNumber(key);
   }
+
   getOptionalNumber(key: string): number | undefined {
-    return this.config.getOptionalNumber(key);
+    return this.select(false)?.getOptionalNumber(key);
   }
+
   getBoolean(key: string): boolean {
-    return this.config.getBoolean(key);
+    return this.select(true).getBoolean(key);
   }
+
   getOptionalBoolean(key: string): boolean | undefined {
-    return this.config.getOptionalBoolean(key);
+    return this.select(false)?.getOptionalBoolean(key);
   }
+
   getString(key: string): string {
-    return this.config.getString(key);
+    return this.select(true).getString(key);
   }
+
   getOptionalString(key: string): string | undefined {
-    return this.config.getOptionalString(key);
+    return this.select(false)?.getOptionalString(key);
   }
+
   getStringArray(key: string): string[] {
-    return this.config.getStringArray(key);
+    return this.select(true).getStringArray(key);
   }
+
   getOptionalStringArray(key: string): string[] | undefined {
-    return this.config.getOptionalStringArray(key);
+    return this.select(false)?.getOptionalStringArray(key);
   }
 }
 

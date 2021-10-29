@@ -1,5 +1,75 @@
 # @backstage/core-app-api
 
+## 0.1.18
+
+### Patch Changes
+
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.1.17
+
+### Patch Changes
+
+- 75bc878221: Internal refactor to avoid importing all of `@material-ui/core`.
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.1.16
+
+### Patch Changes
+
+- d9fd798cc8: The Core App API now automatically instruments all route location changes using
+  the new Analytics API. Each location change triggers a `navigate` event, which
+  is an analogue of a "pageview" event in traditional web analytics systems. In
+  addition to the path, these events provide plugin-level metadata via the
+  analytics context, which can be useful for analyzing plugin usage:
+
+  ```json
+  {
+    "action": "navigate",
+    "subject": "/the-path/navigated/to?with=params#and-hashes",
+    "context": {
+      "extension": "App",
+      "pluginId": "id-of-plugin-that-exported-the-route",
+      "routeRef": "associated-route-ref-id"
+    }
+  }
+  ```
+
+  These events can be identified and handled by checking for the action
+  `navigate` and the extension `App`.
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- d6ad46eb22: Stop calling connector.removeSession in StaticAuthSessionManager, instead just discarding the
+  session locally.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.1.15
+
+### Patch Changes
+
+- 0c4ee1876f: Enables late registration of plugins into the application by updating ApiHolder when additional plugins have been added in.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
 ## 0.1.14
 
 ### Patch Changes

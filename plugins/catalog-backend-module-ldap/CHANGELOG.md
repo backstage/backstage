@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.5
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.3.3
+
+### Patch Changes
+
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.16.0
+  - @backstage/catalog-model@0.9.4
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.15.0
+
 ## 0.3.1
 
 ### Patch Changes

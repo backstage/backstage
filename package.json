@@ -13,10 +13,10 @@
     "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
     "build:api-docs": "yarn build:api-reports --docs",
     "tsc": "tsc",
-    "tsc:full": "tsc --skipLibCheck false --incremental false",
+    "tsc:full": "backstage-cli clean && tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
-    "test": "lerna run test --since origin/master -- --coverage",
+    "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:docs": "node ./scripts/check-docs-quality",
@@ -61,7 +61,6 @@
   "devDependencies": {
     "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
-    "@octokit/openapi-types": "^2.2.0",
     "@spotify/prettier-config": "^11.0.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
@@ -71,7 +70,6 @@
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.2.1",
-    "recursive-readdir": "^2.2.2",
     "shx": "^0.3.2",
     "yarn-lock-check": "^1.0.5"
   },
@@ -86,11 +84,6 @@
     ],
     "*.md": [
       "node ./scripts/check-docs-quality"
-    ]
-  },
-  "jest": {
-    "transformModules": [
-      "@asyncapi/react-component"
     ]
   }
 }

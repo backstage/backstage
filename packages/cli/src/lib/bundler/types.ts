@@ -47,11 +47,13 @@ export type BackendBundlingOptions = {
   isDev: boolean;
   parallel?: ParallelOption;
   inspectEnabled: boolean;
+  inspectBrkEnabled: boolean;
 };
 
 export type BackendServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   inspectEnabled: boolean;
+  inspectBrkEnabled: boolean;
 };
 
 export type LernaPackage = {

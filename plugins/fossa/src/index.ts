@@ -20,5 +20,6 @@
  * @packageDocumentation
  */
 
-export { fossaPlugin } from './plugin';
+export * from './components';
 export { EntityFossaCard, FossaPage } from './extensions';
+export { fossaPlugin } from './plugin';

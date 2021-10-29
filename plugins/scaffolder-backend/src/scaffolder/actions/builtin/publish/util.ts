@@ -15,6 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { isChildPath } from '@backstage/backend-common';
 import { join as joinPath, normalize as normalizePath } from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
@@ -27,7 +28,11 @@ export const getRepoSourceDirectory = (
       /^(\.\.(\/|\\|$))+/,
       '',
     );
-    return joinPath(workspacePath, safeSuffix);
+    const path = joinPath(workspacePath, safeSuffix);
+    if (!isChildPath(workspacePath, path)) {
+      throw new Error('Invalid source path');
+    }
+    return path;
   }
   return workspacePath;
 };

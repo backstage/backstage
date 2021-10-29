@@ -36,6 +36,7 @@ export const badgesPlugin = createPlugin({
 
 export const EntityBadgesDialog = badgesPlugin.provide(
   createComponentExtension({
+    name: 'EntityBadgesDialog',
     component: {
       lazy: () =>
         import('./components/EntityBadgesDialog').then(

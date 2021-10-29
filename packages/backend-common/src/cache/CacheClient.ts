@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { createHash } from 'crypto';
 import Keyv from 'keyv';
 

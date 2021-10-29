@@ -26,7 +26,7 @@ import { GoogleGCSPublish } from './googleStorage';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Google Cloud Storage client library
 
-const rootDir = global.rootDir;
+const rootDir = (global as any).rootDir; // Set by setupTests.ts
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -43,9 +43,11 @@ jest.spyOn(logger, 'error').mockReturnValue(logger);
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
+  bucketRootPath = '/',
   legacyUseCaseSensitiveTripletPaths = false,
 }: {
   bucketName?: string;
+  bucketRootPath?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
 } = {}) => {
   const config = new ConfigReader({
@@ -56,6 +58,7 @@ const createPublisherFromConfig = ({
         googleGcs: {
           credentials: '{}',
           bucketName,
+          bucketRootPath,
         },
       },
       legacyUseCaseSensitiveTripletPaths,
@@ -149,6 +152,21 @@ describe('GoogleGCSPublish', () => {
       expect(await publisher.publish({ entity, directory })).toBeUndefined();
     });
 
+    it('should publish a directory when root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+    });
+
+    it('should publish a directory when root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+    });
+
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
@@ -212,6 +230,23 @@ describe('GoogleGCSPublish', () => {
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
     });
 
+    it('should return true if docs has been generated if root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+    });
+
+    it('should return true if docs has been generated if root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+    });
+
     it('should return false if docs has not been generated', async () => {
       const publisher = createPublisherFromConfig();
       expect(
@@ -237,6 +272,27 @@ describe('GoogleGCSPublish', () => {
 
     it('should return tech docs metadata even if the legacy case is enabled', async () => {
       const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+    });
+
+    it('should return tech docs metadata even if root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+    });
+
+    it('should return tech docs metadata if root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
@@ -291,6 +347,7 @@ describe('GoogleGCSPublish', () => {
 
   describe('docsRouter', () => {
     const entityTripletPath = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+    // const entityTripletPath =
 
     let app: Express.Application;
 
@@ -334,6 +391,47 @@ describe('GoogleGCSPublish', () => {
       expect(jsResponse.text).toEqual('found it too');
     });
 
+    it('should pass expected object path to bucket if root path is specified', async () => {
+      const rootPath = 'backstage-data/techdocs';
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: rootPath,
+      });
+      await publisher.publish({ entity, directory });
+      app = express().use(publisher.docsRouter());
+
+      const pngResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass expected object path to bucket if root path is specified and legacy case is enabled', async () => {
+      const rootPath = 'backstage-data/techdocs';
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: rootPath,
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      app = express().use(publisher.docsRouter());
+
+      const pngResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
     it('should pass text/plain content-type for html', async () => {
       const htmlResponse = await request(app).get(
         `/${entityTripletPath}/html/unsafe.html`,
@@ -350,6 +448,17 @@ describe('GoogleGCSPublish', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should return 404 if file is not found', async () => {
+      const response = await request(app).get(
+        `/${entityTripletPath}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
     });
   });
 });

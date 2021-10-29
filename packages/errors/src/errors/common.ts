@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isError } from './assertion';
 import { CustomErrorBase } from './CustomErrorBase';
 
 /*
@@ -72,3 +73,19 @@ export class ConflictError extends CustomErrorBase {}
  * @public
  */
 export class NotModifiedError extends CustomErrorBase {}
+
+/**
+ * An error that forwards an underlying cause with additional context in the message.
+ *
+ * The `name` property of the error will be inherited from the `cause` if
+ * possible, and will otherwise be set to `'Error'`.
+ *
+ * @public
+ */
+export class ForwardedError extends CustomErrorBase {
+  constructor(message: string, cause: Error | unknown) {
+    super(message, cause);
+
+    this.name = isError(cause) ? cause.name : 'Error';
+  }
+}

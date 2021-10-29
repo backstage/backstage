@@ -36,7 +36,7 @@ that we provide. This gives us a way to automate some of the work required to
 create a GitHub app.
 
 You can read more about the
-[`backstage-cli create-github-app` method](../cli/commands.md#create-github-app).
+[`backstage-cli create-github-app` method](../local-dev/cli-commands.md#create-github-app).
 
 Once you've gone through the CLI command, it should produce a YAML file in the
 root of the project which you can then use as an `include` in your
@@ -60,7 +60,7 @@ The YAML file must include the following information. Please note that the
 indentation for the `privateKey` is required.
 
 ```yaml
-appId: 1
+appId: app id
 clientId: client id
 clientSecret: client secret
 webhookSecret: webhook secret
@@ -95,7 +95,7 @@ If you want to limit the GitHub app installations visible to backstage you may
 optionally include the `allowedInstallationOwners` option.
 
 ```yaml
-appId: 1
+appId: app id
 allowedInstallationOwners: ['GlobexCorp']
 clientId: client id
 clientSecret: client secret

@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
 export { DefaultCatalogRulesEnforcer } from './CatalogRules';
-export { HigherOrderOperations } from './HigherOrderOperations';
-export { LocationReaders } from './LocationReaders';
+export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
+export * from './processors';
+export * from './providers';
 export type {
-  AddLocationResult,
-  AnalyzeLocationRequest,
-  AnalyzeLocationResponse,
-  HigherOrderOperation,
-  LocationAnalyzer,
-  LocationReader,
-  ReadLocationEntity,
-  ReadLocationError,
-  ReadLocationResult,
   AnalyzeLocationEntityField,
   AnalyzeLocationExistingEntity,
   AnalyzeLocationGenerateEntity,
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+  LocationAnalyzer,
 } from './types';
-export * from './processors';

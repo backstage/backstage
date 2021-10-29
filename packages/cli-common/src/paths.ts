@@ -115,7 +115,7 @@ export function findPaths(searchDir: string): Paths {
   // Drive letter can end up being lowercased here on Windows, bring back to uppercase for consistency
   const targetDir = fs
     .realpathSync(process.cwd())
-    .replace(/^[a-z]:/, str => str.toUpperCase());
+    .replace(/^[a-z]:/, str => str.toLocaleUpperCase('en-US'));
 
   // Lazy load this as it will throw an error if we're not inside the Backstage repo.
   let ownRoot = '';

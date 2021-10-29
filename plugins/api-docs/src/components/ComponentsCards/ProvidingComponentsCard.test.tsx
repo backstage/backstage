@@ -19,6 +19,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
@@ -70,6 +71,11 @@ describe('<ProvidingComponentsCard />', () => {
           <ProvidingComponentsCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('Providers')).toBeInTheDocument();
@@ -121,6 +127,11 @@ describe('<ProvidingComponentsCard />', () => {
           <ProvidingComponentsCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {

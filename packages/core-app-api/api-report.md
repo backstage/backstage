@@ -5,6 +5,8 @@
 ```ts
 import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
+import { AnalyticsApi } from '@backstage/core-plugin-api';
+import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
@@ -13,6 +15,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
+import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { AuthProvider } from '@backstage/core-plugin-api';
 import { AuthRequester } from '@backstage/core-plugin-api';
@@ -21,6 +24,7 @@ import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -36,7 +40,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
@@ -233,12 +237,25 @@ export class AppThemeSelector implements AppThemeApi {
   setActiveThemeId(themeId?: string): void;
 }
 
+// Warning: (ae-missing-release-tag) "AtlassianAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AtlassianAuth {
+  // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
+}
+
 // Warning: (ae-missing-release-tag) "Auth0Auth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class Auth0Auth {
-  // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
@@ -267,6 +284,33 @@ export type BackstagePluginWithAnyOutput = Omit<
   'output'
 > & {
   output(): (PluginOutput | UnknownPluginOutput)[];
+};
+
+// Warning: (ae-missing-release-tag) "BitbucketAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class BitbucketAuth {
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+    defaultScopes,
+  }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
+}
+
+// Warning: (ae-missing-release-tag) "BitbucketSession" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };
 
 // Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -454,6 +498,14 @@ export class MicrosoftAuth {
     discoveryApi,
     defaultScopes,
   }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+}
+
+// Warning: (ae-missing-release-tag) "NoOpAnalyticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class NoOpAnalyticsApi implements AnalyticsApi {
+  // (undocumented)
+  captureEvent(_event: AnalyticsEvent): void;
 }
 
 // Warning: (ae-missing-release-tag) "OAuth2" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

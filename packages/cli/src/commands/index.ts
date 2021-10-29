@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import { CommanderStatic } from 'commander';
 import { exitWithError } from '../lib/errors';
 
@@ -69,6 +70,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
     .option('--inspect', 'Enable debugger')
+    .option('--inspect-brk', 'Enable debugger with await to attach debugger')
     // We don't actually use the config in the CLI, just pass them on to the NodeJS process
     .option(...configOption)
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
@@ -224,6 +226,20 @@ export function registerCommands(program: CommanderStatic) {
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')
     .action(lazy(() => import('./create-github-app').then(m => m.default)));
+
+  program
+    .command('info')
+    .description('Show helpful information for debugging and reporting bugs')
+    .action(lazy(() => import('./info').then(m => m.default)));
+
+  program
+    .command('install [plugin-id]', { hidden: true })
+    .option(
+      '--from <packageJsonFilePath>',
+      'Install from a local package.json containing the installation recipe',
+    )
+    .description('Install a Backstage plugin [EXPERIMENTAL]')
+    .action(lazy(() => import('./install/install').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors
@@ -237,6 +253,7 @@ function lazy(
 
       process.exit(0);
     } catch (error) {
+      assertError(error);
       exitWithError(error);
     }
   };

@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import {
-  Step as MuiStep,
-  StepContent,
-  StepLabel,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import MuiStep from '@material-ui/core/Step';
+import StepContent from '@material-ui/core/StepContent';
+import StepLabel from '@material-ui/core/StepLabel';
+import Typography from '@material-ui/core/Typography';
 import { SimpleStepperFooter } from './SimpleStepperFooter';
 import { StepProps } from './types';
 
-const useStyles = makeStyles(theme => ({
-  end: {
-    padding: theme.spacing(3),
-  },
-}));
+export type SimpleStepperStepClassKey = 'end';
+
+const useStyles = makeStyles(
+  theme => ({
+    end: {
+      padding: theme.spacing(3),
+    },
+  }),
+  { name: 'SimpleStepperStep' },
+);
 
 export function SimpleStepperStep(props: PropsWithChildren<StepProps>) {
   const { title, children, end, actions, ...muiProps } = props;

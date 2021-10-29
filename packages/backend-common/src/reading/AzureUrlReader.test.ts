@@ -152,7 +152,7 @@ describe('AzureUrlReader', () => {
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
+      path.resolve(__dirname, '__fixtures__/mock-main.zip'),
     );
 
     const processor = new AzureUrlReader(
@@ -264,7 +264,7 @@ describe('AzureUrlReader', () => {
 
   describe('search', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
+      path.resolve(__dirname, '__fixtures__/mock-main.zip'),
     );
 
     const processor = new AzureUrlReader(

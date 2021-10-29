@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
 const BITBUCKET_HOST = 'bitbucket.org';
@@ -83,7 +84,7 @@ export function readBitbucketIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === BITBUCKET_HOST) {
     apiBaseUrl = BITBUCKET_API_BASE_URL;
   }

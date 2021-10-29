@@ -16,7 +16,7 @@
 
 import { Entity, EntityMeta } from '@backstage/catalog-model';
 import fetch from 'cross-fetch';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 export interface ReaderEntityMeta extends EntityMeta {
   uid: string;

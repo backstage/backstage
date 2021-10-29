@@ -15,7 +15,8 @@
  */
 import { Knex } from 'knex';
 import { omit } from 'lodash';
-import { Config, ConfigReader, JsonObject } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
   createDatabaseClient,
   ensureDatabaseExists,

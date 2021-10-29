@@ -1,5 +1,20 @@
 # @backstage/catalog-model
 
+## 0.9.5
+
+### Patch Changes
+
+- ab2df3be33: Improved documentation for exported symbols.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+
+## 0.9.4
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+
 ## 0.9.3
 
 ### Patch Changes

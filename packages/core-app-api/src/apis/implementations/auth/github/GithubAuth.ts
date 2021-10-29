@@ -24,8 +24,8 @@ import {
   ProfileInfo,
   BackstageIdentity,
   AuthRequestOptions,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,

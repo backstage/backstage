@@ -6,13 +6,17 @@
 /// <reference types="node" />
 
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { JsonObject } from '@backstage/config';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
+import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Octokit } from '@octokit/rest';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -243,6 +247,18 @@ export const runCommand: ({
   args,
   logStream,
 }: RunCommandOptions) => Promise<void>;
+
+// @public (undocumented)
+export class ScaffolderEntitiesProcessor implements CatalogProcessor {
+  // (undocumented)
+  postProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity>;
+  // (undocumented)
+  validateEntityKind(entity: Entity): Promise<boolean>;
+}
 
 // Warning: (ae-missing-release-tag) "TemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

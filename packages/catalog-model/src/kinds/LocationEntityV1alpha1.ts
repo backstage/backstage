@@ -18,7 +18,11 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Location.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
-/** @public */
+/**
+ * Backstage catalog Location kind Entity.
+ *
+ * @public
+ */
 export interface LocationEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Location';
@@ -29,6 +33,10 @@ export interface LocationEntityV1alpha1 extends Entity {
   };
 }
 
-/** @public */
+/**
+ * {@link KindValidator} for {@link LocationEntityV1alpha1}.
+ *
+ * @public
+ */
 export const locationEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);

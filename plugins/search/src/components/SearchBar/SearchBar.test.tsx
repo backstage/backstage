@@ -65,6 +65,26 @@ describe('SearchBar', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Search in Mock title'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('Renders with custom placeholder', async () => {
+    render(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={{ ...initialState }}>
+          <SearchBar placeholder="This is a custom placeholder" />
+        </SearchContextProvider>
+        ,
+      </ApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText('This is a custom placeholder'),
+      ).toBeInTheDocument();
     });
   });
 

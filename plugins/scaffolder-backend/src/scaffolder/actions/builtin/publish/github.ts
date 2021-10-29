@@ -22,6 +22,7 @@ import { getRepoSourceDirectory } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
 import { OctokitProvider } from '../github/OctokitProvider';
+import { assertError } from '@backstage/errors';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
@@ -198,6 +199,7 @@ export function createPublishGithubAction(options: {
               permission,
             });
           } catch (e) {
+            assertError(e);
             ctx.logger.warn(
               `Skipping ${permission} access for ${team_slug}, ${e.message}`,
             );
@@ -213,6 +215,7 @@ export function createPublishGithubAction(options: {
             names: topics.map(t => t.toLowerCase()),
           });
         } catch (e) {
+          assertError(e);
           ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
         }
       }
@@ -250,6 +253,7 @@ export function createPublishGithubAction(options: {
           requireCodeOwnerReviews,
         });
       } catch (e) {
+        assertError(e);
         ctx.logger.warn(
           `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );

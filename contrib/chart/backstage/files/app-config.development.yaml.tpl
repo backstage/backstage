@@ -47,5 +47,5 @@ sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}
 
 techdocs:
-  generators:
-    techdocs: 'local'
+  generator: 
+    runIn: 'local'

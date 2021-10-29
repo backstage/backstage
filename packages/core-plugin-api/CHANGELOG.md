@@ -1,5 +1,53 @@
 # @backstage/core-plugin-api
 
+## 0.1.11
+
+### Patch Changes
+
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
+## 0.1.10
+
+### Patch Changes
+
+- 829bc698f4: Introducing the Analytics API: a lightweight way for plugins to instrument key
+  events that could help inform a Backstage Integrator how their instance of
+  Backstage is being used. The API consists of the following:
+
+  - `useAnalytics()`, a hook to be used inside plugin components which retrieves
+    an Analytics Tracker.
+  - `tracker.captureEvent()`, a method on the tracker used to instrument key
+    events. The method expects an action (the event name) and a subject (a unique
+    identifier of the object the action is being taken on).
+  - `<AnalyticsContext />`, a way to declaratively attach additional information
+    to any/all events captured in the underlying React tree. There is also a
+    `withAnalyticsContext()` HOC utility.
+  - The `tracker.captureEvent()` method also accepts an `attributes` option for
+    providing additional run-time information about an event, as well as a
+    `value` option for capturing a numeric/metric value.
+
+  By default, captured events are not sent anywhere. In order to collect and
+  redirect events to an analytics system, the `analyticsApi` will need to be
+  implemented and instantiated by an App Integrator.
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+## 0.1.9
+
+### Patch Changes
+
+- 98bd661240: Improve compatibility between different versions by defining the route reference type using a string key rather than a unique symbol. This change only applies to type checking and has no effect on the runtime value, where we still use the symbol.
+
 ## 0.1.8
 
 ### Patch Changes

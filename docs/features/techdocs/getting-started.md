@@ -215,10 +215,10 @@ techdocs:
   publisher:
     type: 'local'
   generator:
-    techdocs: local
+    runIn: local
 ```
 
-Setting `generators.techdocs` to `local` means you will have to make sure your
+Setting `generator.runIn` to `local` means you will have to make sure your
 environment is compatible with techdocs.
 
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from

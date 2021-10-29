@@ -44,6 +44,7 @@ export const allurePlugin = createPlugin({
 
 export const EntityAllureReportContent = allurePlugin.provide(
   createRoutableExtension({
+    name: 'EntityAllureReportContent',
     component: () =>
       import('./components/AllureReportComponent').then(
         m => m.AllureReportComponent,

@@ -15,21 +15,103 @@
  */
 import { rancherFormatter } from './rancher';
 
-describe('clusterLinks - Rancher formatter', () => {
-  it('should return an url on the workloads when there is a namespace only', () => {
-    expect(() =>
-      rancherFormatter({
-        dashboardUrl: new URL('https://k8s.foo.com'),
-        object: {
-          metadata: {
-            name: 'foobar',
-            namespace: 'bar',
-          },
+describe('clusterLinks - rancher formatter', () => {
+  it('should return a url on the workloads when there is a namespace only', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          namespace: 'bar',
         },
-        kind: 'Deployment',
-      }),
-    ).toThrowError(
-      'Rancher formatter is not yet implemented. Please, contribute!',
+      },
+      kind: 'foo',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/explorer/workload');
+  });
+  it('should return a url on the workloads when the kind is not recognized', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'UnknownKind',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/explorer/workload');
+  });
+  it('should return a url on the deployment', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/explorer/apps.deployment/bar/foobar',
+    );
+  });
+  it('should return a url on the service', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Service',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/explorer/service/bar/foobar');
+  });
+  it('should return a url on the ingress', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Ingress',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/explorer/networking.k8s.io.ingress/bar/foobar',
+    );
+  });
+  it('should return a url on the deployment for a hpa', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'HorizontalPodAutoscaler',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/explorer/autoscaling.horizontalpodautoscaler/bar/foobar',
+    );
+  });
+  it('should support subpaths in dashboardUrl', () => {
+    const url = rancherFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/dashboard/c/c-28a4b/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/dashboard/c/c-28a4b/explorer/apps.deployment/bar/foobar',
     );
   });
 });

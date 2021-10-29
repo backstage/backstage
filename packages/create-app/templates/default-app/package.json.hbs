@@ -15,7 +15,7 @@
     "tsc:full": "tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
-    "test": "lerna run test --since origin/master -- --coverage",
+    "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:all": "lerna run lint --",
@@ -48,11 +48,6 @@
     ],
     "*.{json,md}": [
       "prettier --write"
-    ]
-  },
-  "jest": {
-    "transformModules": [
-      "@asyncapi/react-component"
     ]
   }
 }

@@ -18,8 +18,9 @@ import {
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
 import { EventEmitter } from 'events';
+import { IStorageFilesMock } from '../../src/testUtils/types';
 
-const storage = global.storageFilesMock;
+const storage = global.storageFilesMock as IStorageFilesMock;
 
 export class BlockBlobClient {
   private readonly blobName;

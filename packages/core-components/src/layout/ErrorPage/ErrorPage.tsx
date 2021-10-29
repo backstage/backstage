@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Typography, Link, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { MicDrop } from './MicDrop';
@@ -28,25 +30,32 @@ interface IErrorPageProps {
   additionalInfo?: string;
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  container: {
-    padding: theme.spacing(8),
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(2),
-    },
-  },
-  title: {
-    paddingBottom: theme.spacing(5),
-    [theme.breakpoints.down('xs')]: {
-      paddingBottom: theme.spacing(4),
-      fontSize: 32,
-    },
-  },
-  subtitle: {
-    color: theme.palette.textSubtle,
-  },
-}));
+/** @public */
+export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    container: {
+      padding: theme.spacing(8),
+      [theme.breakpoints.down('xs')]: {
+        padding: theme.spacing(2),
+      },
+    },
+    title: {
+      paddingBottom: theme.spacing(5),
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: theme.spacing(4),
+        fontSize: 32,
+      },
+    },
+    subtitle: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageErrorPage' },
+);
+
+/** @public */
 export function ErrorPage(props: IErrorPageProps) {
   const { status, statusMessage, additionalInfo } = props;
   const classes = useStyles();
@@ -57,7 +66,11 @@ export function ErrorPage(props: IErrorPageProps) {
     <Grid container spacing={0} className={classes.container}>
       <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
-        <Typography variant="body1" className={classes.subtitle}>
+        <Typography
+          data-testid="error"
+          variant="body1"
+          className={classes.subtitle}
+        >
           ERROR {status}: {statusMessage}
         </Typography>
         <Typography variant="body1" className={classes.subtitle}>

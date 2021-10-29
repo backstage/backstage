@@ -18,50 +18,70 @@ import React, { ReactNode, useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import { useObservable } from 'react-use';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  root: {
-    padding: theme.spacing(0),
-    marginBottom: theme.spacing(0),
-    marginTop: theme.spacing(0),
-    display: 'flex',
-    flexFlow: 'row nowrap',
-  },
-  // showing on top
-  topPosition: {
-    position: 'relative',
-    marginBottom: theme.spacing(6),
-    marginTop: -theme.spacing(3),
-    zIndex: 'unset',
-  },
-  icon: {
-    fontSize: 20,
-  },
-  content: {
-    width: '100%',
-    maxWidth: 'inherit',
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-    color: theme.palette.banner.text,
-    '& a': {
-      color: theme.palette.banner.link,
+/** @public */
+export type DismissableBannerClassKey =
+  | 'root'
+  | 'topPosition'
+  | 'icon'
+  | 'content'
+  | 'message'
+  | 'info'
+  | 'error';
+
+/**
+ * @public
+ * @deprecated This type contained a typo, please use DismissableBannerClassKey instead
+ */
+export type DismissbleBannerClassKey = DismissableBannerClassKey;
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    root: {
+      padding: theme.spacing(0),
+      marginBottom: theme.spacing(0),
+      marginTop: theme.spacing(0),
+      display: 'flex',
+      flexFlow: 'row nowrap',
     },
-  },
-  info: {
-    backgroundColor: theme.palette.banner.info,
-  },
-  error: {
-    backgroundColor: theme.palette.banner.error,
-  },
-}));
+    // showing on top
+    topPosition: {
+      position: 'relative',
+      marginBottom: theme.spacing(6),
+      marginTop: -theme.spacing(3),
+      zIndex: 'unset',
+    },
+    icon: {
+      fontSize: 20,
+    },
+    content: {
+      width: '100%',
+      maxWidth: 'inherit',
+      flexWrap: 'nowrap',
+    },
+    message: {
+      display: 'flex',
+      alignItems: 'center',
+      color: theme.palette.banner.text,
+      '& a': {
+        color: theme.palette.banner.link,
+      },
+    },
+    info: {
+      backgroundColor: theme.palette.banner.info,
+    },
+    error: {
+      backgroundColor: theme.palette.banner.error,
+    },
+  }),
+  { name: 'BackstageDismissableBanner' },
+);
 
 type Props = {
   variant: 'info' | 'error';
@@ -70,6 +90,7 @@ type Props = {
   fixed?: boolean;
 };
 
+/** @public */
 export const DismissableBanner = (props: Props) => {
   const { variant, message, id, fixed = false } = props;
   const classes = useStyles();

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+const globalRestrictedSyntax = [
+  {
+    message:
+      'Default import from winston is not allowed, import `* as winston` instead.',
+    selector:
+      'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
+  },
+];
+
 module.exports = {
   extends: [
     '@spotify/eslint-config-base',
@@ -71,15 +80,10 @@ module.exports = {
       'error',
       {
         message:
-          'Default import from winston is not allowed, import `* as winston` instead.',
-        selector:
-          'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
-      },
-      {
-        message:
           "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
         selector: 'Identifier[name="__dirname"]',
       },
+      ...globalRestrictedSyntax,
     ],
   },
   overrides: [
@@ -103,6 +107,7 @@ module.exports = {
             bundledDependencies: true,
           },
         ],
+        'no-restricted-syntax': ['error', ...globalRestrictedSyntax],
       },
     },
   ],

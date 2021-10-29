@@ -25,6 +25,7 @@ import {
 import {
   addBuildTimestampMetadata,
   getMkdocsYml,
+  patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -36,10 +37,14 @@ import {
   GeneratorRunInType,
   GeneratorRunOptions,
 } from './types';
-
-const defaultDockerImage = 'spotify/techdocs';
+import { ForwardedError } from '@backstage/errors';
 
 export class TechdocsGenerator implements GeneratorBase {
+  /**
+   * The default docker image (and version) used to generate content. Public
+   * and static so that techdocs-common consumers can use the same version.
+   */
+  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.4';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -90,7 +95,7 @@ export class TechdocsGenerator implements GeneratorBase {
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
 
     // validate the docs_dir first
-    await validateMkdocsYaml(inputDir, content);
+    const docsDir = await validateMkdocsYaml(inputDir, content);
 
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
@@ -99,6 +104,7 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
+      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
     // Directories to bind on container
@@ -124,7 +130,8 @@ export class TechdocsGenerator implements GeneratorBase {
           break;
         case 'docker':
           await this.containerRunner.runContainer({
-            imageName: this.options.dockerImage ?? defaultDockerImage,
+            imageName:
+              this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
             logStream,
             mountDirs,
@@ -147,8 +154,9 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      throw new Error(
-        `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
+      throw new ForwardedError(
+        'Failed to generate docs from ${inputDir} into ${outputDir}',
+        error,
       );
     }
 

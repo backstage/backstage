@@ -110,7 +110,7 @@ function createPage({
     render() {
       return (
         <Reader
-          entityId={{
+          entityRef={{
             kind: 'Component',
             namespace: 'default',
             name: 'my-docs',

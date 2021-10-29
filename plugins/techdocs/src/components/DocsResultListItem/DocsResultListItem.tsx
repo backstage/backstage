@@ -47,7 +47,11 @@ export const DocsResultListItem = ({
     <ListItemText
       className={classes.itemText}
       primaryTypographyProps={{ variant: 'h6' }}
-      primary={title ? title : `${result.title} | ${result.name} docs`}
+      primary={
+        title
+          ? title
+          : `${result.title} | ${result.entityTitle ?? result.name} docs`
+      }
       secondary={
         <TextTruncate
           line={lineClamp}

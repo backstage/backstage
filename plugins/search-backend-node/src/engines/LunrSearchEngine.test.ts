@@ -192,6 +192,37 @@ describe('LunrSearchEngine', () => {
       });
     });
 
+    it('should handle single-item array filter as scalar value', async () => {
+      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+        logger: getVoidLogger(),
+      });
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        term: 'testTerm',
+        filters: { kind: ['testKind'] },
+      }) as ConcreteLunrQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: undefined,
+        lunrQueryBuilder: expect.any(Function),
+      });
+
+      const query: jest.Mocked<lunr.Query> = {
+        allFields: ['kind'],
+        clauses: [],
+        term: jest.fn(),
+        clause: jest.fn(),
+      };
+
+      actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
+
+      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+        fields: ['kind'],
+        presence: lunr.Query.presence.REQUIRED,
+      });
+    });
+
     it('should return translated query with multiple filters', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
         logger: getVoidLogger(),

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { Gauge } from './Gauge';
@@ -30,13 +30,20 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
-const useStyles = makeStyles({
-  root: {
-    height: '100%',
-    width: 250,
-  },
-});
+/** @public */
+export type GaugeCardClassKey = 'root';
 
+const useStyles = makeStyles(
+  {
+    root: {
+      height: '100%',
+      width: 250,
+    },
+  },
+  { name: 'BackstageGaugeCard' },
+);
+
+/** @public */
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);
   const { title, subheader, progress, inverse, deepLink, variant } = props;

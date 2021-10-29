@@ -89,9 +89,14 @@ export const SearchBarBase = ({
 type Props = {
   className?: string;
   debounceTime?: number;
+  placeholder?: string;
 };
 
-export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
+export const SearchBar = ({
+  className,
+  debounceTime = 0,
+  placeholder,
+}: Props) => {
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
 
@@ -113,6 +118,7 @@ export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
       value={value}
       onChange={handleQuery}
       onClear={handleClear}
+      placeholder={placeholder}
     />
   );
 };

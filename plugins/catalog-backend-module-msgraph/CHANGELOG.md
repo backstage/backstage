@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.8
+
+### Patch Changes
+
+- 406dcf06e5: Add `MicrosoftGraphOrgEntityProvider` as an alternative to `MicrosoftGraphOrgReaderProcessor` that automatically handles user and group deletions.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.2.6
+
+### Patch Changes
+
+- ff7c6cec1a: Allow loading users using group membership
+- 95869261ed: Adding some documentation for the `msgraph` client
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.16.0
+  - @backstage/catalog-model@0.9.4
+
+## 0.2.5
+
+### Patch Changes
+
+- 664bba5c45: Bumped `@microsoft/microsoft-graph-types` to v2
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.15.0
+
 ## 0.2.4
 
 ### Patch Changes

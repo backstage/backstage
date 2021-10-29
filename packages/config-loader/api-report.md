@@ -4,7 +4,7 @@
 
 ```ts
 import { AppConfig } from '@backstage/config';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
 // @public
@@ -37,19 +37,16 @@ export type ConfigTarget =
 // @public
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
-// @public (undocumented)
-export type EnvFunc = (name: string) => Promise<string | undefined>;
-
 // @public
 export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 
-// @public (undocumented)
+// @public
 export type LoadConfigOptions = {
   configRoot: string;
   configPaths: string[];
   configTargets: ConfigTarget[];
   env?: string;
-  experimentalEnvFunc?: EnvFunc;
+  experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
   remote?: LoadConfigOptionsRemote;
   watch?: LoadConfigOptionsWatch;
 };
@@ -59,10 +56,11 @@ export function loadConfigSchema(
   options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema>;
 
-// @public (undocumented)
+// @public
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
+      packagePaths?: string[];
     }
   | {
       serialized: JsonObject;

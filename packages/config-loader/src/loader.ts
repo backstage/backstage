@@ -19,11 +19,12 @@ import yaml from 'yaml';
 import chokidar from 'chokidar';
 import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
 import { AppConfig } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import {
   applyConfigTransforms,
+  readEnvConfig,
   createIncludeTransform,
   createSubstitutionTransform,
-  EnvFunc,
   isValidUrl,
   readEnvConfig,
 } from './lib';
@@ -50,7 +51,11 @@ export type LoadConfigOptionsRemote = {
   reloadIntervalSeconds: number;
 };
 
-/** @public */
+/**
+ * Options that control the loading of configuration files in the backend.
+ *
+ * @public
+ */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
   configRoot: string;
@@ -71,7 +76,7 @@ export type LoadConfigOptions = {
    *
    * @experimental This API is not stable and may change at any point
    */
-  experimentalEnvFunc?: EnvFunc;
+  experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
 
   /**
    * An optional remote config
@@ -144,7 +149,6 @@ export async function loadConfig(
 
       const input = yaml.parse(await readFile(configPath));
       const substitutionTransform = createSubstitutionTransform(env);
-
       const data = await applyConfigTransforms(dir, input, [
         createIncludeTransform(env, readFile, substitutionTransform),
         substitutionTransform,
@@ -194,9 +198,7 @@ export async function loadConfig(
   try {
     fileConfigs = await loadConfigFiles();
   } catch (error) {
-    throw new Error(
-      `Failed to read static configuration file, ${error.message}`,
-    );
+    throw new ForwardedError('Failed to read static configuration file', error);
   }
 
   let remoteConfigs: AppConfig[] = [];
@@ -204,7 +206,7 @@ export async function loadConfig(
     try {
       remoteConfigs = await loadRemoteConfigFiles();
     } catch (error) {
-      throw new Error(`Failed to read remote configuration file, ${error}`);
+      throw new ForwardedError(`Failed to read remote configuration file, ${error}`);
     }
   }
 
