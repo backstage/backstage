@@ -445,9 +445,26 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   });
   let successful = false;
 
+  const stdErrorHasErrors = (input: string) => {
+    const lines = input.split('\n').filter(Boolean);
+    return (
+      lines.filter(
+        l =>
+          !l.includes('Use of deprecated folder mapping') &&
+          !l.includes('Update this package.json to use a subpath') &&
+          !l.includes(
+            '(Use `node --trace-deprecation ...` to show where the warning was created)',
+          ),
+      ).length !== 0
+    );
+  };
+
   try {
-    await waitFor(() => stdout.includes('Listening on ') || stderr !== '');
+    await waitFor(
+      () => stdout.includes('Listening on ') || stdErrorHasErrors(stderr),
+    );
     if (stderr !== '') {
+      print(`Expected stderr to be clean, got ${stderr}`);
       // Skipping the whole block
       throw new Error(stderr);
     }
@@ -460,6 +477,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     print('Entities fetched successfully');
     successful = true;
   } catch (error) {
+    print('');
     throw new Error(`Backend failed to startup: ${error}`);
   } finally {
     print('Stopping the child process');
