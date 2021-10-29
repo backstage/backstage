@@ -17,8 +17,9 @@ import React from 'react';
 import { Link, InfoCard } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import Cancel from '@material-ui/icons/Cancel';
 
-import { flyteDomainRouteRef } from '../../routes';
+import { rootRouteRef, flyteDomainRouteRef } from '../../routes';
 
 export type FlyteIdComponentProps = {
   project: string;
@@ -32,22 +33,29 @@ export const FlyteIdComponent = ({
   workflowName,
 }: FlyteIdComponentProps) => {
   const getFlyteDomainRouteRef = useRouteRef(flyteDomainRouteRef);
+  const getRootRouteRef = useRouteRef(rootRouteRef);
 
   return (
     <InfoCard title="Identifier">
       <Typography variant="body1">project: {project}</Typography>
       {domain && (
         <Typography variant="body1">
-          domain:{' '}
-          <Link
-            to={getFlyteDomainRouteRef({ project: project, domain: domain })}
-          >
-            {domain}
+          {' '}
+          domain: {domain}
+          <Link to={getRootRouteRef()}>
+            <Cancel fontSize="small" />
           </Link>
         </Typography>
       )}
-      {workflowName && (
-        <Typography variant="body1">workflow: {workflowName}</Typography>
+      {domain && workflowName && (
+        <Typography variant="body1">
+          workflow: {workflowName}
+          <Link
+            to={getFlyteDomainRouteRef({ project: project, domain: domain })}
+          >
+            <Cancel fontSize="small" />
+          </Link>
+        </Typography>
       )}
     </InfoCard>
   );
