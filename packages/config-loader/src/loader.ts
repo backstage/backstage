@@ -24,7 +24,6 @@ import {
   applyConfigTransforms,
   createIncludeTransform,
   createSubstitutionTransform,
-  EnvFunc,
   isValidUrl,
   readEnvConfig,
 } from './lib';
@@ -49,29 +48,6 @@ export type LoadConfigOptionsRemote = {
    * An optional remote config reloading period, in seconds
    */
   reloadIntervalSeconds: number;
-};
-
-/** @public */
-export type RemoteConfigProp = {
-  /**
-   * URL of the remote config
-   */
-  url: string;
-
-  /**
-   * Contents of the remote config
-   */
-  content: string | null;
-
-  /**
-   * An optional new ETag header value. Used when checking for updated config.
-   */
-  newETag?: string;
-
-  /**
-   * An optional old ETag header value. Used when checking for updated config
-   */
-  oldETag?: string;
 };
 
 /**
@@ -229,7 +205,10 @@ export async function loadConfig(
     try {
       remoteConfigs = await loadRemoteConfigFiles();
     } catch (error) {
-      throw new ForwardedError(`Failed to read remote configuration file, ${error}`);
+      throw new ForwardedError(
+        `Failed to read remote configuration file`,
+        error,
+      );
     }
   }
 
