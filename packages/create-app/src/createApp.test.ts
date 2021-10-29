@@ -15,11 +15,24 @@
  */
 
 import inquirer from 'inquirer';
+import mockFs from 'mock-fs';
+import path from 'path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
 
 jest.mock('./lib/tasks');
+
+beforeAll(() => {
+  mockFs({
+    'package.json': '', // required by `findPaths(__dirname)`
+    'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
+  });
+});
+
+afterAll(() => {
+  mockFs.restore();
+});
 
 const promptMock = jest.spyOn(inquirer, 'prompt');
 const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
