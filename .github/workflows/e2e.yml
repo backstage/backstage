@@ -74,8 +74,4 @@ jobs:
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           yarn e2e-test run
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+       
