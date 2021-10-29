@@ -24,6 +24,7 @@ import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import os from 'os';
 import { Command } from 'commander';
+import { assertError } from '@backstage/errors';
 import {
   parseOwnerIds,
   addCodeownersEntry,
@@ -173,6 +174,7 @@ async function buildPlugin(pluginFolder: string) {
         );
       });
     } catch (error) {
+      assertError(error);
       Task.error(error.message);
       break;
     }
@@ -239,7 +241,10 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
+  const pluginId =
+    cmd.backend && !answers.id.endsWith('-backend')
+      ? `${answers.id}-backend`
+      : answers.id;
 
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
@@ -326,6 +331,7 @@ export default async (cmd: Command) => {
     Task.log();
     Task.exit();
   } catch (error) {
+    assertError(error);
     Task.error(error.message);
 
     Task.log('It seems that something went wrong when creating the plugin 🤔');

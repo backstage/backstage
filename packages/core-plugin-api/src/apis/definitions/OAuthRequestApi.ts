@@ -15,7 +15,7 @@
  */
 
 import { IconComponent } from '../../icons/types';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/types';
 import { ApiRef, createApiRef } from '../system';
 
 /**

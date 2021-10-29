@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags } from '../apis';
-import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
+import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
+import {
+  MockAnalyticsApi,
+  renderWithEffects,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
-import { BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { defaultAppIcons } from './icons';
 import {
   configApiRef,
@@ -31,6 +35,7 @@ import {
   createRouteRef,
   createSubRouteRef,
   createRoutableExtension,
+  analyticsApiRef,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 import { AppThemeProvider } from './AppThemeProvider';
@@ -58,7 +63,12 @@ describe('generateBoundRoutes', () => {
 });
 
 describe('Integration Test', () => {
+  const noOpAnalyticsApi = createApiFactory(
+    analyticsApiRef,
+    new NoOpAnalyticsApi(),
+  );
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
+  const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
   const subRouteRef1 = createSubRouteRef({
     id: 'sub1',
@@ -117,6 +127,7 @@ describe('Integration Test', () => {
 
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
+      name: 'HiddenComponent',
       component: () => Promise.resolve((_: { path?: string }) => <div />),
       mountPoint: plugin2RouteRef,
     }),
@@ -124,6 +135,7 @@ describe('Integration Test', () => {
 
   const ExposedComponent = plugin1.provide(
     createRoutableExtension({
+      name: 'ExposedComponent',
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
           const link1 = useRouteRef(plugin1RouteRef);
@@ -155,6 +167,16 @@ describe('Integration Test', () => {
     }),
   );
 
+  const NavigateComponent = plugin1.provide(
+    createRoutableExtension({
+      component: () =>
+        Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
+          return <Navigate to="/foo" />;
+        }),
+      mountPoint: plugin1RouteRef2,
+    }),
+  );
+
   const components = {
     NotFoundErrorPage: () => null,
     BootErrorPage: () => null,
@@ -166,7 +188,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths', async () => {
     const app = new PrivateAppImpl({
-      apis: [],
+      apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
         {
@@ -220,7 +242,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths without optional routes', async () => {
     const app = new PrivateAppImpl({
-      apis: [],
+      apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
         {
@@ -266,6 +288,7 @@ describe('Integration Test', () => {
     jest.spyOn(storageFlags, 'registerFlag');
 
     const apis = [
+      noOpAnalyticsApi,
       createApiFactory({
         api: featureFlagsApiRef,
         deps: { configApi: configApiRef },
@@ -320,6 +343,68 @@ describe('Integration Test', () => {
       name: 'name',
       pluginId: 'test',
     });
+  });
+
+  it('should track route changes via analytics api', async () => {
+    const mockAnalyticsApi = new MockAnalyticsApi();
+    const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
+    const app = new PrivateAppImpl({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultAppIcons,
+      plugins: [],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<NavigateComponent />} />
+            <Route path="/foo" element={<HiddenComponent path="/foo" />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    // Capture initial and subsequent navigation events with expected context.
+    const capturedEvents = mockAnalyticsApi.getEvents();
+    expect(capturedEvents[0]).toMatchObject({
+      action: 'navigate',
+      subject: '/',
+      context: {
+        extension: 'App',
+        pluginId: 'blob',
+        routeRef: 'ref-1-2',
+      },
+    });
+    expect(capturedEvents[1]).toMatchObject({
+      action: 'navigate',
+      subject: '/foo',
+      context: {
+        extension: 'App',
+        pluginId: 'plugin2',
+        routeRef: 'ref-2',
+      },
+    });
+    expect(capturedEvents).toHaveLength(2);
   });
 
   it('should throw some error when the route has duplicate params', () => {

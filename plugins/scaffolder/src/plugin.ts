@@ -90,6 +90,7 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
 
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
+    name: 'ScaffolderPage',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),

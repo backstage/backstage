@@ -7,10 +7,13 @@
 
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { CatalogEntityAncestorsRequest } from '@backstage/catalog-client';
+import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
 import { CatalogListResponse } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -20,10 +23,12 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Location as Location_2 } from '@backstage/catalog-model';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
@@ -52,6 +57,13 @@ export const AboutField: ({
   children,
 }: Props_2) => JSX.Element;
 
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof PluginCatalogComponentsNameToClassKey]?: Partial<
+    StyleRules<PluginCatalogComponentsNameToClassKey[Name]>
+  >;
+};
+
 // Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -67,6 +79,11 @@ export class CatalogClientWrapper implements CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
+  // (undocumented)
+  getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse>;
   // (undocumented)
   getEntityByName(
     compoundName: EntityName,
@@ -315,6 +332,9 @@ export const EntityLinksCard: ({
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
+// @public (undocumented)
+export type EntityLinksEmptyStateClassKey = 'code';
+
 // Warning: (ae-missing-release-tag) "EntityListContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -346,7 +366,7 @@ export const EntityPageLayout: {
 // Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export const EntityProcessingErrorsPanel: () => JSX.Element;
+export const EntityProcessingErrorsPanel: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "EntitySwitch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -354,7 +374,14 @@ export const EntityProcessingErrorsPanel: () => JSX.Element;
 export const EntitySwitch: {
   ({ children }: PropsWithChildren<{}>): JSX.Element | null;
   Case: (_: {
-    if?: ((entity: Entity) => boolean) | undefined;
+    if?:
+      | ((
+          entity: Entity,
+          context: {
+            apis: ApiHolder;
+          },
+        ) => boolean | Promise<boolean>)
+      | undefined;
     children: ReactNode;
   }) => null;
 };
@@ -382,7 +409,12 @@ export const FilteredEntityLayout: ({
 // Warning: (ae-missing-release-tag) "hasCatalogProcessingErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const hasCatalogProcessingErrors: (entity: Entity) => boolean;
+export const hasCatalogProcessingErrors: (
+  entity: Entity,
+  context: {
+    apis: ApiHolder;
+  },
+) => Promise<boolean>;
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -404,6 +436,12 @@ export function isNamespace(namespace: string): (entity: Entity) => boolean;
 // @public (undocumented)
 export const isOrphan: (entity: Entity) => boolean;
 
+// @public (undocumented)
+export type PluginCatalogComponentsNameToClassKey = {
+  PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
+  PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+};
+
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -412,6 +450,14 @@ export const Router: ({
 }: {
   EntityPage?: React_2.ComponentType<{}> | undefined;
 }) => JSX.Element;
+
+// @public (undocumented)
+export type SystemDiagramCardClassKey =
+  | 'domainNode'
+  | 'systemNode'
+  | 'componentNode'
+  | 'apiNode'
+  | 'resourceNode';
 
 // Warnings were encountered during analysis:
 //

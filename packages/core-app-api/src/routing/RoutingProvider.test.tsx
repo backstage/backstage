@@ -83,7 +83,7 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
   } catch (ex) {
     return (
       <div>
-        Error at {props.name}: {ex.message}
+        Error at {props.name}, {String(ex)}
       </div>
     );
   }
@@ -91,30 +91,35 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
 
 const Extension1 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension1',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref1,
   }),
 );
 const Extension2 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension2',
     component: () => Promise.resolve(MockRouteSource),
     mountPoint: ref2,
   }),
 );
 const Extension3 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension3',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref3,
   }),
 );
 const Extension4 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension4',
     component: () => Promise.resolve(MockRouteSource),
     mountPoint: ref4,
   }),
 );
 const Extension5 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension5',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref5,
   }),
@@ -288,12 +293,12 @@ describe('discovery', () => {
 
     expect(
       rendered.getByText(
-        `Error at outsideWithParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideWithParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
     expect(
       rendered.getByText(
-        `Error at outsideNoParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideNoParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
   });

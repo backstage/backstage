@@ -39,7 +39,7 @@ export const BuildList = () => {
   const tableRef = useRef<any>();
 
   const initialFilters = {
-    from: DateTime.now().minus({ year: 1 }).toISODate(),
+    from: DateTime.now().minus({ years: 1 }).toISODate(),
     to: DateTime.now().toISODate(),
   };
 

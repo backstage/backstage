@@ -1,5 +1,45 @@
 # @backstage/plugin-jenkins
 
+## 0.5.11
+
+### Patch Changes
+
+- 3c756657b8: Sort Jenkins build by timestamp in `CITable`
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.5.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.5.9
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
+## 0.5.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
 ## 0.5.7
 
 ### Patch Changes

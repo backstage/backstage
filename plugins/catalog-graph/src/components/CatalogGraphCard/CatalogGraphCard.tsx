@@ -19,8 +19,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  formatEntityRefTitle,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core';
 import qs from 'qs';
 import React, { MouseEvent, useCallback } from 'react';
@@ -78,6 +81,7 @@ export const CatalogGraphCard = ({
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();
   const classes = useStyles({ height });
+  const analytics = useAnalytics();
 
   const onNodeClick = useCallback(
     (node: EntityNode, _: MouseEvent<unknown>) => {
@@ -87,9 +91,14 @@ export const CatalogGraphCard = ({
         namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
         name: nodeEntityName.name,
       });
+      analytics.captureEvent(
+        'click',
+        node.title ?? formatEntityRefTitle(nodeEntityName),
+        { attributes: { to: path } },
+      );
       navigate(path);
     },
-    [catalogEntityRoute, navigate],
+    [catalogEntityRoute, navigate, analytics],
   );
 
   const catalogGraphParams = qs.stringify(

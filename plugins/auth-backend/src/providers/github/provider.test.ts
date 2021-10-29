@@ -278,5 +278,59 @@ describe('GithubAuthProvider', () => {
         refreshToken: 'refresh-me',
       });
     });
+
+    it('should forward a new refresh token on refresh', async () => {
+      const mockRefreshToken = jest.spyOn(
+        helpers,
+        'executeRefreshTokenStrategy',
+      ) as unknown as jest.MockedFunction<() => Promise<{}>>;
+
+      mockRefreshToken.mockResolvedValueOnce({
+        accessToken: 'a.b.c',
+        refreshToken: 'dont-forget-to-send-refresh',
+        params: {
+          id_token: 'my-id',
+          expires_in: '123',
+          scope: 'read_user',
+        },
+      });
+
+      const mockUserProfile = jest.spyOn(
+        helpers,
+        'executeFetchUserProfileStrategy',
+      ) as unknown as jest.MockedFunction<() => Promise<PassportProfile>>;
+
+      mockUserProfile.mockResolvedValueOnce({
+        id: 'mockid',
+        username: 'mockuser',
+        provider: 'github',
+        displayName: 'Mocked User',
+        emails: [
+          {
+            value: 'mockuser@gmail.com',
+          },
+        ],
+      });
+
+      const response = await provider.refresh({} as any);
+
+      expect(response).toEqual({
+        backstageIdentity: {
+          id: 'mockuser',
+          token: 'token-for-mockuser',
+        },
+        profile: {
+          displayName: 'Mocked User',
+          email: 'mockuser@gmail.com',
+          picture: undefined,
+        },
+        providerInfo: {
+          accessToken: 'a.b.c',
+          refreshToken: 'dont-forget-to-send-refresh',
+          expiresInSeconds: 123,
+          scope: 'read_user',
+        },
+      });
+    });
   });
 });

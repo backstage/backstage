@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
 import { MemoryRouter } from 'react-router';
 import { createApp } from '@backstage/core-app-api';

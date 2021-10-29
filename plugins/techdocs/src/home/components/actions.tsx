@@ -28,12 +28,7 @@ export function createCopyDocsUrlAction(copyToClipboard: Function) {
       icon: () => <ShareIcon fontSize="small" />,
       tooltip: 'Click to copy documentation link to clipboard',
       onClick: () =>
-        copyToClipboard(
-          `${window.location.origin}${window.location.pathname.replace(
-            /\/?$/,
-            '/',
-          )}${row.resolved.docsUrl}`,
-        ),
+        copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
     };
   };
 }

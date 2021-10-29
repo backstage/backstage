@@ -17,7 +17,8 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderTabs } from '.';
-import { Badge, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Badge from '@material-ui/core/Badge';
 
 const mockTabs = [
   { id: 'overview', label: 'Overview' },

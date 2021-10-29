@@ -27,7 +27,7 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 import { RenderResult } from '@testing-library/react';
-import { renderWithEffects } from '@backstage/test-utils-core';
+import { renderWithEffects } from './testingLibrary';
 import { mockApis } from './mockApis';
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {
@@ -43,8 +43,9 @@ const Progress = () => <div data-testid="progress" />;
 
 /**
  * Options to customize the behavior of the test app wrapper.
+ * @public
  */
-type TestAppOptions = {
+export type TestAppOptions = {
   /**
    * Initial route entries to pass along as `initialEntries` to the router.
    */
@@ -56,11 +57,11 @@ type TestAppOptions = {
    * used by `useRouteRef` in the rendered elements.
    *
    * @example
-   * wrapInTestApp(<MyComponent />, {
-   *   mountedRoutes: {
+   * wrapInTestApp(<MyComponent />, \{
+   *   mountedRoutes: \{
    *     '/my-path': myRouteRef,
-   *   }
-   * })
+   *   \}
+   * \})
    * // ...
    * const link = useRouteRef(myRouteRef)
    */
@@ -80,6 +81,7 @@ function isExternalRouteRef(
  *
  * @param Component - A component or react node to render inside the test app.
  * @param options - Additional options for the rendering.
+ * @public
  */
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
@@ -171,6 +173,7 @@ export function wrapInTestApp(
  *
  * @param Component - A component or react node to render inside the test app.
  * @param options - Additional options for the rendering.
+ * @public
  */
 export async function renderInTestApp(
   Component: ComponentType | ReactNode,

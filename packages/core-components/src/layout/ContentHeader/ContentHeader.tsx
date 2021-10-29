@@ -19,42 +19,54 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { Helmet } from 'react-helmet';
 
+/** @public */
+export type ContentHeaderClassKey =
+  | 'container'
+  | 'leftItemsBox'
+  | 'rightItemsBox'
+  | 'description'
+  | 'title';
+
 const useStyles = (props: ContentHeaderProps) =>
-  makeStyles(theme => ({
-    container: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginBottom: theme.spacing(2),
-      textAlign: props.textAlign,
-    },
-    leftItemsBox: {
-      flex: '1 1 auto',
-      minWidth: 0,
-      overflow: 'visible',
-    },
-    rightItemsBox: {
-      flex: '0 1 auto',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      marginLeft: theme.spacing(1),
-      minWidth: 0,
-      overflow: 'visible',
-    },
-    description: {},
-    title: {
-      display: 'inline-flex',
-      marginBottom: 0,
-    },
-  }));
+  makeStyles(
+    theme => ({
+      container: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginBottom: theme.spacing(2),
+        textAlign: props.textAlign,
+      },
+      leftItemsBox: {
+        flex: '1 1 auto',
+        minWidth: 0,
+        overflow: 'visible',
+      },
+      rightItemsBox: {
+        flex: '0 1 auto',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        marginLeft: theme.spacing(1),
+        minWidth: 0,
+        overflow: 'visible',
+      },
+      description: {},
+      title: {
+        display: 'inline-flex',
+        marginBottom: 0,
+      },
+    }),
+    { name: 'BackstageContentHeader' },
+  );
 
 type ContentHeaderTitleProps = {
   title?: string;
@@ -82,6 +94,7 @@ type ContentHeaderProps = {
   textAlign?: 'left' | 'right' | 'center';
 };
 
+/** @public */
 export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   const {
     description,
@@ -97,6 +110,7 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   ) : (
     <ContentHeaderTitle title={title} className={classes.title} />
   );
+
   return (
     <>
       <Helmet title={title} />

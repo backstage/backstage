@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
-import { GraphNode } from './types';
+import { EntityNodeData } from './types';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   node: {
@@ -65,7 +65,7 @@ export function CustomNode({
     title,
     onClick,
   },
-}: DependencyGraphTypes.RenderNodeProps<GraphNode>) {
+}: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
   const classes = useStyles();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);

@@ -31,6 +31,7 @@ export class KubernetesClientProvider {
       name: clusterDetails.name,
       server: clusterDetails.url,
       skipTLSVerify: clusterDetails.skipTLSVerify,
+      caData: clusterDetails.caData,
     };
 
     // TODO configure

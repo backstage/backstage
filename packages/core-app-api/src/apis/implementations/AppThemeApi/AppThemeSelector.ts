@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppThemeApi, AppTheme, Observable } from '@backstage/core-plugin-api';
+import { AppThemeApi, AppTheme } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib/subjects';
 
 const STORAGE_KEY = 'theme';

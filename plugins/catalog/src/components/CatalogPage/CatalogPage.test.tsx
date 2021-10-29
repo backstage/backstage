@@ -20,28 +20,32 @@ import {
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { TableColumn, TableProps } from '@backstage/core-components';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import {
-  MockStorageApi,
-  renderWithEffects,
-  wrapInTestApp,
-  mockBreakpoint,
-} from '@backstage/test-utils';
-import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
-import { createComponentRouteRef } from '../../routes';
-import { EntityRow } from '../CatalogTable/types';
-import { CatalogPage } from './CatalogPage';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   IdentityApi,
   identityApiRef,
   ProfileInfo,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  catalogApiRef,
+  DefaultStarredEntitiesApi,
+  entityRouteRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
+import {
+  mockBreakpoint,
+  MockStorageApi,
+  renderWithEffects,
+  wrapInTestApp,
+} from '@backstage/test-utils';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import { fireEvent, screen } from '@testing-library/react';
+import React from 'react';
+import { createComponentRouteRef } from '../../routes';
+import { EntityRow } from '../CatalogTable';
+import { CatalogPage } from './CatalogPage';
 
 describe('CatalogPage', () => {
   const origReplaceState = window.history.replaceState;
@@ -120,6 +124,7 @@ describe('CatalogPage', () => {
     getIdToken: async () => undefined,
     getProfile: () => testProfile,
   };
+  const storageApi = MockStorageApi.create();
 
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
@@ -128,7 +133,11 @@ describe('CatalogPage', () => {
           apis={ApiRegistry.from([
             [catalogApiRef, catalogApi],
             [identityApiRef, identityApi],
-            [storageApiRef, MockStorageApi.create()],
+            [storageApiRef, storageApi],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({ storageApi }),
+            ],
           ])}
         >
           {children}
@@ -136,6 +145,7 @@ describe('CatalogPage', () => {
         {
           mountedRoutes: {
             '/create': createComponentRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),

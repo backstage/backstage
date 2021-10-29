@@ -49,6 +49,8 @@ export async function loadCliConfig(options: Options) {
 
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
+    // Include the package.json in the project root if it exists
+    packagePaths: [paths.resolveTargetRoot('package.json')],
   });
 
   const appConfigs = await loadConfig({

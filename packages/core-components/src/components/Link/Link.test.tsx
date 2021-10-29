@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import { MockAnalyticsApi, wrapInTestApp } from '@backstage/test-utils';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link } from './Link';
 import { Route, Routes } from 'react-router';
-import { act } from 'react-dom/test-utils';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
@@ -34,10 +35,42 @@ describe('<Link />', () => {
       ),
     );
     expect(() => getByText(testString)).toThrow();
-    await act(async () => {
-      fireEvent.click(getByText(linkText));
+    fireEvent.click(getByText(linkText));
+    await waitFor(() => {
+      expect(getByText(testString)).toBeInTheDocument();
     });
-    expect(getByText(testString)).toBeInTheDocument();
+  });
+
+  it('captures click using analytics api', async () => {
+    const linkText = 'Navigate!';
+    const analyticsApi = new MockAnalyticsApi();
+    const customOnClick = jest.fn();
+
+    const { getByText } = render(
+      wrapInTestApp(
+        <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsApi]])}>
+          <Link to="/test" onClick={customOnClick}>
+            {linkText}
+          </Link>
+        </ApiProvider>,
+      ),
+    );
+
+    fireEvent.click(getByText(linkText));
+
+    // Analytics event should have been fired.
+    await waitFor(() => {
+      expect(analyticsApi.getEvents()[0]).toMatchObject({
+        action: 'click',
+        subject: linkText,
+        attributes: {
+          to: '/test',
+        },
+      });
+
+      // Custom onClick handler should have still been fired too.
+      expect(customOnClick).toHaveBeenCalled();
+    });
   });
 
   describe('isExternalUri', () => {

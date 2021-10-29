@@ -19,23 +19,30 @@ import missingAnnotation from './assets/missingAnnotation.svg';
 import noInformation from './assets/noInformation.svg';
 import createComponent from './assets/createComponent.svg';
 import noBuild from './assets/noBuild.svg';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = {
   missing: 'field' | 'info' | 'content' | 'data';
 };
 
-const useStyles = makeStyles({
-  generalImg: {
-    width: '95%',
-    zIndex: 2,
-    position: 'relative',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, 15%)',
-  },
-});
+/** @public */
+export type EmptyStateImageClassKey = 'generalImg';
 
+const useStyles = makeStyles(
+  {
+    generalImg: {
+      width: '95%',
+      zIndex: 2,
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, 15%)',
+    },
+  },
+  { name: 'BackstageEmptyStateImage' },
+);
+
+/** @public */
 export const EmptyStateImage = ({ missing }: Props) => {
   const classes = useStyles();
   switch (missing) {

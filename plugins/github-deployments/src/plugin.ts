@@ -39,6 +39,7 @@ export const githubDeploymentsPlugin = createPlugin({
 
 export const EntityGithubDeploymentsCard = githubDeploymentsPlugin.provide(
   createComponentExtension({
+    name: 'EntityGithubDeploymentsCard',
     component: {
       lazy: () =>
         import('./components/GithubDeploymentsCard').then(

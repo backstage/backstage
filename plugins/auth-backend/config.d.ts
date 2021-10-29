@@ -31,6 +31,32 @@ export interface Config {
       secret?: string;
     };
 
+    /** To control how to store JWK data in auth-backend */
+    keyStore?: {
+      provider?: 'database' | 'memory' | 'firestore';
+      firestore?: {
+        /** The host to connect to */
+        host?: string;
+        /** The port to connect to */
+        port?: number;
+        /** Whether to use SSL when connecting. */
+        ssl?: boolean;
+        /** The Google Cloud Project ID */
+        projectId?: string;
+        /**
+         * Local file containing the Service Account credentials.
+         * You can omit this value to automatically read from
+         * GOOGLE_APPLICATION_CREDENTIALS env which is useful for local
+         * development.
+         */
+        keyFilename?: string;
+        /** The path to use for the collection. Defaults to 'sessions' */
+        path?: string;
+        /** Timeout used for database operations. Defaults to 10000ms */
+        timeout?: number;
+      };
+    };
+
     /**
      * The available auth-provider options and attributes
      */
@@ -50,6 +76,8 @@ export interface Config {
         issuer: string;
         cert: string;
         privateKey?: string;
+        authnContext?: string[];
+        identifierFormat?: string;
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;

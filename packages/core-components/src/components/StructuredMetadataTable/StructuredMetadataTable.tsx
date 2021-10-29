@@ -15,7 +15,12 @@
  */
 
 import React, { Fragment, ReactElement } from 'react';
-import { withStyles, createStyles, WithStyles, Theme } from '@material-ui/core';
+import {
+  withStyles,
+  createStyles,
+  WithStyles,
+  Theme,
+} from '@material-ui/core/styles';
 import startCase from 'lodash/startCase';
 
 import {
@@ -25,12 +30,16 @@ import {
   MetadataListItem,
 } from './MetadataTable';
 
+export type StructuredMetadataTableListClassKey = 'root';
+
 const listStyle = createStyles({
   root: {
     margin: '0 0',
     listStyleType: 'none',
   },
 });
+
+export type StructuredMetadataTableNestedListClassKey = 'root';
 
 const nestedListStyle = (theme: Theme) =>
   createStyles({
@@ -44,16 +53,16 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 // Sub Components
-const StyledList = withStyles(listStyle)(
-  ({ classes, children }: StyleProps) => (
-    <MetadataList classes={classes}>{children}</MetadataList>
-  ),
-);
-const StyledNestedList = withStyles(nestedListStyle)(
-  ({ classes, children }: StyleProps) => (
-    <MetadataList classes={classes}>{children}</MetadataList>
-  ),
-);
+const StyledList = withStyles(listStyle, {
+  name: 'BackstageStructuredMetadataTableList',
+})(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
+const StyledNestedList = withStyles(nestedListStyle, {
+  name: 'BackstageStructuredMetadataTableNestedList',
+})(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
 
 function renderList(list: Array<any>, nested?: boolean) {
   const values = list.map((item: any, index: number) => (

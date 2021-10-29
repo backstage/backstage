@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader, JsonObject } from '@backstage/config';
+
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
@@ -135,13 +137,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );
@@ -173,7 +169,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -187,13 +183,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );
@@ -228,7 +218,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -249,13 +239,7 @@ describe('AwsS3UrlReader', () => {
       'getObject',
       Buffer.from(
         require('fs').readFileSync(
-          path.resolve(
-            'src',
-            'reading',
-            '__fixtures__',
-            'awsS3',
-            'awsS3-mock-object.yaml',
-          ),
+          path.resolve(__dirname, '__fixtures__/awsS3/awsS3-mock-object.yaml'),
         ),
       ),
     );

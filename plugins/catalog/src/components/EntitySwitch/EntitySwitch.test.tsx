@@ -112,4 +112,63 @@ describe('EntitySwitch', () => {
     expect(rendered.queryByText('A')).not.toBeInTheDocument();
     expect(rendered.queryByText('B')).toBeInTheDocument();
   });
+
+  it('should switch with async condition that is true', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.resolve(true);
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case children="B" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('A')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should switch with sync condition that is false', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.resolve(false);
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case if={() => true} children="B" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('B')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+  });
+
+  it('should switch with sync condition that throws', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.reject();
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case if={() => false} children="B" />
+            <EntitySwitch.Case children="C" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('C')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+  });
 });

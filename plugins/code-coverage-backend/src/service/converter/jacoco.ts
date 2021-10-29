@@ -83,7 +83,7 @@ export class Jacoco implements Converter {
   private extractLines(sourcefile: JacocoSourceFile): ParsedLine[] {
     const parsed: ParsedLine[] = [];
 
-    sourcefile.line.forEach(l => {
+    sourcefile.line?.forEach(l => {
       parsed.push({
         number: parseInt(l.$.nr, 10),
         missed_instructions: parseInt(l.$.mi, 10),

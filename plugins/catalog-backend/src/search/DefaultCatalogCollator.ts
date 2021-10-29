@@ -87,7 +87,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     });
     return response.items.map((entity: Entity): CatalogEntityDocument => {
       return {
-        title: entity.metadata.name,
+        title: entity.metadata.title ?? entity.metadata.name,
         location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
           kind: entity.kind,

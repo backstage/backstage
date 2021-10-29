@@ -17,7 +17,7 @@ import { DependencyGraphTypes } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
-import { GraphEdge } from './types';
+import { EntityEdgeData } from './types';
 import classNames from 'classnames';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 export function CustomLabel({
   edge: { relations },
-}: DependencyGraphTypes.RenderLabelProps<GraphEdge>) {
+}: DependencyGraphTypes.RenderLabelProps<EntityEdgeData>) {
   const classes = useStyles();
   return (
     <text className={classes.text} textAnchor="middle">

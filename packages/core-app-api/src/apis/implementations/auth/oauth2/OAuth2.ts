@@ -28,8 +28,8 @@ import {
   SessionState,
   SessionApi,
   BackstageIdentityApi,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 

@@ -15,7 +15,8 @@
  */
 
 import { Schema } from 'jsonschema';
-import { createApiRef, Observable } from '@backstage/core-plugin-api';
+import { createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 export interface ConfigSchemaResult {
   schema?: Schema;

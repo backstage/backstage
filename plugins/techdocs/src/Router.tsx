@@ -25,6 +25,9 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
+export const isTechDocsAvailable = (entity: Entity) =>
+  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
+
 export const Router = () => {
   return (
     <Routes>

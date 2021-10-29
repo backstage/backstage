@@ -16,6 +16,7 @@
 
 import {
   AlertApiForwarder,
+  NoOpAnalyticsApi,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
@@ -25,17 +26,20 @@ import {
   GitlabAuth,
   Auth0Auth,
   MicrosoftAuth,
+  BitbucketAuth,
   OAuthRequestManager,
   WebStorage,
   UrlPatternDiscovery,
   SamlAuth,
   OneLoginAuth,
   UnhandledErrorForwarder,
+  AtlassianAuth,
 } from '../apis';
 
 import {
   createApiFactory,
   alertApiRef,
+  analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
   oauthRequestApiRef,
@@ -51,6 +55,8 @@ import {
   samlAuthApiRef,
   oneloginAuthApiRef,
   oidcAuthApiRef,
+  bitbucketAuthApiRef,
+  atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
@@ -65,6 +71,7 @@ export const defaultApis = [
       ),
   }),
   createApiFactory(alertApiRef, new AlertApiForwarder()),
+  createApiFactory(analyticsApiRef, new NoOpAnalyticsApi()),
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },
@@ -223,5 +230,35 @@ export const defaultApis = [
         },
         environment: configApi.getOptionalString('auth.environment'),
       }),
+  }),
+  createApiFactory({
+    api: bitbucketAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      BitbucketAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        defaultScopes: ['team'],
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: atlassianAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return AtlassianAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
   }),
 ];

@@ -359,7 +359,9 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
 
         expect(result.current).toEqual({
           state: 'INITIAL_BUILD',
@@ -496,7 +498,9 @@ describe('useReaderState', () => {
         });
 
         // the new content is loaded
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           path: '/example',
@@ -576,7 +580,9 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           path: '/new',

@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { IconButton, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledIconProps {
@@ -25,22 +26,27 @@ interface StyledIconProps {
   onClick: any;
 }
 
-const useStyles = makeStyles<BackstageTheme, StyledIconProps>(() => ({
-  root: {
-    color: '#6E6E6E',
-    overflow: 'visible',
-    fontSize: '1.5rem',
-    textAlign: 'center',
-    borderRadius: '50%',
-    backgroundColor: '#E6E6E6',
-    marginLeft: props => (props.isNext ? 'auto' : '0'),
-    marginRight: props => (props.isNext ? '0' : '10px'),
-    '&:hover': {
+export type TabIconClassKey = 'root';
+
+const useStyles = makeStyles<BackstageTheme, StyledIconProps>(
+  () => ({
+    root: {
+      color: '#6E6E6E',
+      overflow: 'visible',
+      fontSize: '1.5rem',
+      textAlign: 'center',
+      borderRadius: '50%',
       backgroundColor: '#E6E6E6',
-      opacity: '1',
+      marginLeft: props => (props.isNext ? 'auto' : '0'),
+      marginRight: props => (props.isNext ? '0' : '10px'),
+      '&:hover': {
+        backgroundColor: '#E6E6E6',
+        opacity: '1',
+      },
     },
-  },
-}));
+  }),
+  { name: 'BackstageTabIcon' },
+);
 
 export const StyledIcon = (props: StyledIconProps) => {
   const classes = useStyles(props);

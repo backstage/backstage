@@ -19,6 +19,7 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  makeStyles,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -30,10 +31,20 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityLifecycleFilter } from '../../filters';
 
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityLifecyclePicker',
+  },
+);
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityLifecyclePicker = () => {
+  const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =
     useEntityListProvider();
 
@@ -91,7 +102,9 @@ export const EntityLifecyclePicker = () => {
         )}
         size="small"
         popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => (
+          <TextField {...params} className={classes.input} variant="outlined" />
+        )}
       />
     </Box>
   );

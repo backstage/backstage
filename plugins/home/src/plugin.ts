@@ -31,6 +31,7 @@ export const homePlugin = createPlugin({
 
 export const HomepageCompositionRoot = homePlugin.provide(
   createRoutableExtension({
+    name: 'HomepageCompositionRoot',
     component: () =>
       import('./components').then(m => m.HomepageCompositionRoot),
     mountPoint: rootRouteRef,
@@ -39,6 +40,7 @@ export const HomepageCompositionRoot = homePlugin.provide(
 
 export const ComponentAccordion = homePlugin.provide(
   createComponentExtension({
+    name: 'ComponentAccordion',
     component: {
       lazy: () =>
         import('./componentRenderers').then(m => m.ComponentAccordion),
@@ -47,6 +49,7 @@ export const ComponentAccordion = homePlugin.provide(
 );
 export const ComponentTabs = homePlugin.provide(
   createComponentExtension({
+    name: 'ComponentTabs',
     component: {
       lazy: () => import('./componentRenderers').then(m => m.ComponentTabs),
     },
@@ -54,8 +57,23 @@ export const ComponentTabs = homePlugin.provide(
 );
 export const ComponentTab = homePlugin.provide(
   createComponentExtension({
+    name: 'ComponentTab',
     component: {
       lazy: () => import('./componentRenderers').then(m => m.ComponentTab),
+    },
+  }),
+);
+
+/**
+ * A component to display a playful greeting for the user.
+ *
+ * @public
+ */
+export const WelcomeTitle = homePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./homePageComponents/WelcomeTitle').then(m => m.WelcomeTitle),
     },
   }),
 );

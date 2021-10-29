@@ -134,6 +134,23 @@ async function findPackageDirs() {
   return packageDirs;
 }
 
+function logApiReportInstructions() {
+  console.log('');
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log(
+    '* You have uncommitted changes to the public API of a package.                      *',
+  );
+  console.log(
+    '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+  );
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log('');
+}
+
 interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
@@ -267,20 +284,7 @@ async function runApiExtraction({
 
     if (!extractorResult.succeeded) {
       if (shouldLogInstructions) {
-        console.log('');
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log(
-          '* You have uncommitted changes to the public API of a package.                      *',
-        );
-        console.log(
-          '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
-        );
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log('');
+        logApiReportInstructions();
 
         if (conflictingFile) {
           console.log('');
@@ -294,7 +298,8 @@ async function runApiExtraction({
 
           const content = await fs.readFile(conflictingFile, 'utf8');
           console.log(content);
-          console.log('');
+
+          logApiReportInstructions();
         }
       }
 
@@ -372,6 +377,18 @@ async function buildDocs({
   // This is where we actually write the markdown and where we can hook
   // in the rendering of our own nodes.
   class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
+    // Until https://github.com/microsoft/rushstack/issues/2914 gets fixed or we change markdown renderer we need a fix
+    // to render pipe | character correctly.
+    protected getEscapedText(text: string): string {
+      return text
+        .replace(/\\/g, '\\\\') // first replace the escape character
+        .replace(/[*#[\]_`~]/g, x => `\\${x}`) // then escape any special characters
+        .replace(/---/g, '\\-\\-\\-') // hyphens only if it's 3 or more
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\|/g, '&#124;');
+    }
     /** @override */
     protected writeNode(
       docNode: DocNode,

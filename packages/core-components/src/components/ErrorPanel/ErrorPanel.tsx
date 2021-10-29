@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import { List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import React, { PropsWithChildren } from 'react';
 import { CopyTextButton } from '../CopyTextButton';
 import { WarningPanel } from '../WarningPanel';
 
-const useStyles = makeStyles(theme => ({
-  text: {
-    fontFamily: 'monospace',
-    whiteSpace: 'pre',
-    overflowX: 'auto',
-    marginRight: theme.spacing(2),
-  },
-  divider: {
-    margin: theme.spacing(2),
-  },
-}));
+/** @public */
+export type ErrorPanelClassKey = 'text' | 'divider';
+
+const useStyles = makeStyles(
+  theme => ({
+    text: {
+      fontFamily: 'monospace',
+      whiteSpace: 'pre',
+      overflowX: 'auto',
+      marginRight: theme.spacing(2),
+    },
+    divider: {
+      margin: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageErrorPanel' },
+);
 
 type ErrorListProps = {
   error: string;
@@ -83,6 +92,7 @@ const ErrorList = ({
   );
 };
 
+/** @public */
 export type ErrorPanelProps = {
   error: Error;
   defaultExpanded?: boolean;
@@ -91,6 +101,8 @@ export type ErrorPanelProps = {
 
 /**
  * Renders a warning panel as the effect of an error.
+ *
+ * @public
  */
 export function ErrorPanel(props: PropsWithChildren<ErrorPanelProps>) {
   const { title, error, defaultExpanded, children } = props;

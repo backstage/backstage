@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { OverflowTooltip } from './OverflowTooltip';
+export type { OverflowTooltipClassKey } from './OverflowTooltip';

@@ -65,6 +65,8 @@ export function parseLocationReference(ref: string): {
 /**
  * Turns a location reference into its string form.
  *
+ * @remarks
+ *
  * Note that the input type is not `LocationSpec`, because we do not want to
  * conflate the string form with the additional properties of that type.
  *
@@ -89,6 +91,8 @@ export function stringifyLocationReference(ref: {
 
 /**
  * Returns the source code location of the Entity, to the extent that one exists.
+ *
+ * @remarks
  *
  * If the returned location type is of type 'url', the target should be readable at least
  * using the UrlReader from `@backstage/backend-common`. If it is not of type 'url', the caller

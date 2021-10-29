@@ -24,14 +24,15 @@ export * from './api';
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { TechDocsApi, TechDocsStorageApi } from './api';
 export { TechDocsClient, TechDocsStorageClient } from './client';
-export type { DocsTableRow, PanelType } from './home/components';
+export * from './components/DocsResultListItem';
 export {
-  EntityListDocsTable,
   DefaultTechDocsHome,
+  EntityListDocsGrid,
+  EntityListDocsTable,
   TechDocsPageWrapper,
   TechDocsPicker,
 } from './home/components';
-export * from './components/DocsResultListItem';
+export type { DocsTableRow, PanelType } from './home/components';
 export {
   DocsCardGrid,
   DocsTable,
@@ -44,4 +45,4 @@ export {
   TechDocsReaderPage,
 } from './plugin';
 export * from './reader';
-export { EmbeddedDocsRouter, Router } from './Router';
+export { EmbeddedDocsRouter, isTechDocsAvailable, Router } from './Router';

@@ -23,6 +23,7 @@ import {
 
 export const EntityFossaCard = fossaPlugin.provide(
   createComponentExtension({
+    name: 'EntityFossaCard',
     component: {
       lazy: () => import('./components/FossaCard').then(m => m.FossaCard),
     },
@@ -31,6 +32,7 @@ export const EntityFossaCard = fossaPlugin.provide(
 
 export const FossaPage = fossaPlugin.provide(
   createRoutableExtension({
+    name: 'FossaPage',
     component: () => import('./components/FossaPage').then(m => m.FossaPage),
     mountPoint: rootRoute,
   }),

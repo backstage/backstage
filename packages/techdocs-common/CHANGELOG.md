@@ -1,5 +1,38 @@
 # @backstage/techdocs-common
 
+## 0.10.4
+
+### Patch Changes
+
+- 87f5b9db13: Use docs/README.md or README.md as fallback if docs/index.md is missing
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.10.3
+
+### Patch Changes
+
+- 156421c59a: Sets the default techdocs docker image to the [latest released version - v0.3.3](https://github.com/backstage/techdocs-container/releases/tag/v0.3.3).
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/integration@0.6.7
+
+## 0.10.2
+
+### Patch Changes
+
+- 1c75e8bf98: Add more context to techdocs log lines when files are not found along with
+  ensuring that the routers return 404 with a descriptive message.
+- e92f0f728b: Locks the version of the default docker image used to generate TechDocs. As of
+  this changelog entry, it is v0.3.2!
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
 ## 0.10.1
 
 ### Patch Changes

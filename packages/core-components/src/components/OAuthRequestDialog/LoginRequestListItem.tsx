@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  makeStyles,
-  Typography,
-  Theme,
-  Button,
-} from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
+import { isError } from '@backstage/errors';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 
-const useItemStyles = makeStyles<Theme>(theme => ({
-  root: {
-    paddingLeft: theme.spacing(3),
-  },
-}));
+export type LoginRequestListItemClassKey = 'root';
+
+const useItemStyles = makeStyles<Theme>(
+  theme => ({
+    root: {
+      paddingLeft: theme.spacing(3),
+    },
+  }),
+  { name: 'BackstageLoginRequestListItem' },
+);
 
 type RowProps = {
   request: PendingAuthRequest;
@@ -40,14 +43,14 @@ type RowProps = {
 
 const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const classes = useItemStyles();
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<string>();
 
   const handleContinue = async () => {
     setBusy(true);
     try {
       await request.trigger();
     } catch (e) {
-      setError(e);
+      setError(isError(e) ? e.message : 'An unspecified error occurred');
     } finally {
       setBusy(false);
     }
@@ -62,13 +65,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
       </ListItemAvatar>
       <ListItemText
         primary={request.provider.title}
-        secondary={
-          error && (
-            <Typography color="error">
-              {error.message || 'An unspecified error occurred'}
-            </Typography>
-          )
-        }
+        secondary={error && <Typography color="error">{error}</Typography>}
       />
       <Button color="primary" variant="contained" onClick={handleContinue}>
         Log in

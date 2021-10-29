@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-/** @public */
+/**
+ * Type alias for implementing validators of various entity objects.
+ *
+ * @public
+ */
 export type Validators = {
   isValidApiVersion(value: unknown): boolean;
   isValidKind(value: unknown): boolean;

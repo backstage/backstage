@@ -21,7 +21,17 @@ export const EntityFossaCard: ({
 // Warning: (ae-missing-release-tag) "FossaPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const FossaPage: () => JSX.Element;
+export const FossaPage: ({ entitiesFilter }: FossaPageProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "FossaPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type FossaPageProps = {
+  entitiesFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+};
 
 // Warning: (ae-missing-release-tag) "fossaPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

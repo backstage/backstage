@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.2.17",
+  "version": "0.2.20",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -31,9 +31,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.5.0",
-    "@backstage/core-plugin-api": "^0.1.8",
-    "@backstage/theme": "^0.2.10",
+    "@backstage/core-components": "^0.7.1",
+    "@backstage/core-plugin-api": "^0.1.11",
+    "@backstage/theme": "^0.2.11",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -44,10 +44,10 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.13",
-    "@backstage/core-app-api": "^0.1.14",
-    "@backstage/dev-utils": "^0.2.10",
-    "@backstage/test-utils": "^0.1.17",
+    "@backstage/cli": "^0.8.0",
+    "@backstage/core-app-api": "^0.1.18",
+    "@backstage/dev-utils": "^0.2.12",
+    "@backstage/test-utils": "^0.1.19",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
@@ -60,5 +60,22 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "experimentalInstallationRecipe": {
+    "type": "frontend-plugin",
+    "steps": [
+      {
+        "type": "app-route",
+        "path": "/graphiql",
+        "element": "<GraphiQLPage />"
+      },
+      {
+        "type": "message",
+        "message": [
+          "The GraphiQL plugin has been installed, but you still need to add API endpoints. ",
+          "See https://github.com/backstage/backstage/tree/master/plugins/graphiql#adding-graphql-endpoints"
+        ]
+      }
+    ]
+  }
 }
