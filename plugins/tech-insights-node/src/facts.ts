@@ -179,14 +179,20 @@ export interface FactRetriever {
    * If omitted, the retriever should apply to all entities.
    *
    * Should be defined for example:
-   *   { field: 'kind', values: ['component'] }
-   *   { field: 'metadata.name', values: ['component-1', 'component-2'] }
+   *   \{ field: 'kind', values: \['component'\] \}
+   *   \{ field: 'metadata.name', values: \['component-1', 'component-2'\] \}
    */
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;
 }
 
+/**
+ * @public
+ *
+ * A flat serializable structure for Facts.
+ * Containing information about fact schema, version, id, and entity filters
+ */
 export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;
 
 /**

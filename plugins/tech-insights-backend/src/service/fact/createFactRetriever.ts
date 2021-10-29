@@ -23,6 +23,12 @@ import {
  *
  * A helper function to construct fact retriever registrations.
  *
+ * @param cadence - cron expression to indicate when the fact retriever should be triggered
+ * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
+ *
+ *
+ * @remarks
+ *
  * Cron expressions help:
  * ┌────────────── second (optional)
  # │ ┌──────────── minute
@@ -34,9 +40,6 @@ import {
  # │ │ │ │ │ │
  # * * * * * *
  *
- *
- * @param cadence - cron expression to indicate when the fact retriever should be triggered
- * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  */
 export function createFactRetrieverRegistration(
   cadence: string,
