@@ -377,7 +377,7 @@ async function testAppServe(pluginName: string, appDir: string) {
         if (attempts >= 20) {
           throw new Error(`App serve test failed, ${error}`);
         }
-        console.log(`App serve failed, trying again, ${error}`);
+        print(`App serve failed, trying again, ${error}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
@@ -463,7 +463,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     await waitFor(
       () => stdout.includes('Listening on ') || stdErrorHasErrors(stderr),
     );
-    if (stderr !== '') {
+    if (stdErrorHasErrors(stderr)) {
       print(`Expected stderr to be clean, got ${stderr}`);
       // Skipping the whole block
       throw new Error(stderr);
