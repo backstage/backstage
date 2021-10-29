@@ -84,66 +84,51 @@ export class ObservableConfigProxy implements Config {
   has(key: string): boolean {
     return this.select(false)?.has(key) ?? false;
   }
-
   keys(): string[] {
     return this.select(false)?.keys() ?? [];
   }
-
   get<T = JsonValue>(key?: string): T {
     return this.select(true).get(key);
   }
-
   getOptional<T = JsonValue>(key?: string): T | undefined {
     return this.select(false)?.getOptional(key);
   }
-
   getConfig(key: string): Config {
     return new ObservableConfigProxy(this.logger, this, key);
   }
-
   getOptionalConfig(key: string): Config | undefined {
     if (this.select(false)?.has(key)) {
       return new ObservableConfigProxy(this.logger, this, key);
     }
     return undefined;
   }
-
   getConfigArray(key: string): Config[] {
     return this.select(true).getConfigArray(key);
   }
-
   getOptionalConfigArray(key: string): Config[] | undefined {
     return this.select(false)?.getOptionalConfigArray(key);
   }
-
   getNumber(key: string): number {
     return this.select(true).getNumber(key);
   }
-
   getOptionalNumber(key: string): number | undefined {
     return this.select(false)?.getOptionalNumber(key);
   }
-
   getBoolean(key: string): boolean {
     return this.select(true).getBoolean(key);
   }
-
   getOptionalBoolean(key: string): boolean | undefined {
     return this.select(false)?.getOptionalBoolean(key);
   }
-
   getString(key: string): string {
     return this.select(true).getString(key);
   }
-
   getOptionalString(key: string): string | undefined {
     return this.select(false)?.getOptionalString(key);
   }
-
   getStringArray(key: string): string[] {
     return this.select(true).getStringArray(key);
   }
-
   getOptionalStringArray(key: string): string[] | undefined {
     return this.select(false)?.getOptionalStringArray(key);
   }
