@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import React from 'react';
-import { InfoCard } from '@backstage/core-components';
+import { Link, InfoCard } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
+import { useRouteRef } from '@backstage/core-plugin-api';
+
+import { flyteDomainRouteRef } from '../../routes';
 
 export type FlyteIdComponentProps = {
   project: string;
@@ -27,10 +30,25 @@ export const FlyteIdComponent = ({
   project,
   domain,
   workflowName,
-}: FlyteIdComponentProps) => (
-  <InfoCard title="Information card">
-    <Typography variant="body1">{project}</Typography>
-    {domain && <Typography variant="body1">{domain}</Typography>}
-    {workflowName && <Typography variant="body1">{workflowName}</Typography>}
-  </InfoCard>
-);
+}: FlyteIdComponentProps) => {
+  const getFlyteDomainRouteRef = useRouteRef(flyteDomainRouteRef);
+
+  return (
+    <InfoCard title="Identifier">
+      <Typography variant="body1">project: {project}</Typography>
+      {domain && (
+        <Typography variant="body1">
+          domain:{' '}
+          <Link
+            to={getFlyteDomainRouteRef({ project: project, domain: domain })}
+          >
+            {domain}
+          </Link>
+        </Typography>
+      )}
+      {workflowName && (
+        <Typography variant="body1">workflow: {workflowName}</Typography>
+      )}
+    </InfoCard>
+  );
+};
