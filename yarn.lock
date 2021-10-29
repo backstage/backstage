@@ -5184,15 +5184,16 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^1.1.23":
-  version "1.1.23"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.23.tgz#bcf7424df5a659df39d5aa75f5fffd8e02c9437e"
-  integrity sha512-3HL9nEtlaE+gFmV0xkrtZGbWHbS26z+NHzEk2KIyV8oqReQ+57PRLTVcXCjFA+djkKfP2hpu5s7zp72aVb0v+w==
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.2.2.tgz#09d958ed15adbb598afda34187f45deedec2264d"
+  integrity sha512-ybomCU/3NIQJYahp/E78wl+JuzpwkRkhyeCcySLA45GaCz/mEqAGSs4xDZancpV2ls6nxV3mKUw/DL9afmMGAw==
   dependencies:
     "@backstage/catalog-model" "^0.9.0"
     "@backstage/core-app-api" "^0.1.3"
-    "@backstage/core-components" "^0.3.0"
+    "@backstage/core-components" "^0.7.0"
     "@backstage/core-plugin-api" "^0.1.3"
-    "@backstage/plugin-catalog-react" "^0.4.0"
+    "@backstage/integration-react" "^0.1.10"
+    "@backstage/plugin-catalog-react" "^0.6.0"
     "@backstage/theme" "^0.2.7"
     "@date-io/core" "2.10.7"
     "@material-ui/core" "^4.11.0"
