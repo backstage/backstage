@@ -25,7 +25,7 @@ import {
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
-import { PersistenceContext } from './persistence/DatabaseManager';
+import { PersistenceContext } from './persistence/persistenceContext';
 import {
   EntityRef,
   parseEntityName,

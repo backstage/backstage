@@ -23,5 +23,5 @@ export type {
   TechInsightsContext,
 } from './service/techInsightsContextBuilder';
 
-export type { PersistenceContext } from './service/persistence/DatabaseManager';
+export type { PersistenceContext } from './service/persistence/persistenceContext';
 export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';

@@ -24,31 +24,31 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
 +    logger,
 +  }),
 
-const builder = new DefaultTechInsightsBuilder({
-logger,
-config,
-database,
-discovery,
-factRetrievers: [myFactRetrieverRegistration],
-+ factCheckerFactory: myFactCheckerFactory
-});
+  const builder = new DefaultTechInsightsBuilder({
+    logger,
+    config,
+    database,
+    discovery,
+    factRetrievers: [myFactRetrieverRegistration],
++   factCheckerFactory: myFactCheckerFactory
+  });
 ```
 
 By default this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
 
 ```diff
-const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
-const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
-  checks: [],
-  logger,
-+ checkRegistry: myTechInsightCheckRegistry
-}),
+  const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
+  const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
+    checks: [],
+    logger,
++   checkRegistry: myTechInsightCheckRegistry
+  }),
 
 ```
 
 ## Adding checks
 
-Checks for this FactChecker are constructed as `json-rules-engine` compatible JSON rules. A check could look like the following for example:
+Checks for this FactChecker are constructed as [`json-rules-engine` compatible JSON rules](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#conditions). A check could look like the following for example:
 
 ```ts
 import { TechInsightJsonRuleCheck } from '../types';

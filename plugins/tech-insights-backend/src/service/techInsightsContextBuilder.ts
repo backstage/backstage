@@ -29,9 +29,9 @@ import {
   TechInsightCheck,
 } from '@backstage/plugin-tech-insights-node';
 import {
-  DatabaseManager,
+  initializePersistenceContext,
   PersistenceContext,
-} from './persistence/DatabaseManager';
+} from './persistence/persistenceContext';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 
 /**
@@ -105,7 +105,7 @@ export const buildTechInsightsContext = async <
 
   const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
 
-  const persistenceContext = await DatabaseManager.initializePersistenceContext(
+  const persistenceContext = await initializePersistenceContext(
     await database.getClient(),
     { logger },
   );

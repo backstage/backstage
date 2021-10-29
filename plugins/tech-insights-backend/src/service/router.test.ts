@@ -19,7 +19,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
 import express from 'express';
-import { PersistenceContext } from './persistence/DatabaseManager';
+import { PersistenceContext } from './persistence/persistenceContext';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';

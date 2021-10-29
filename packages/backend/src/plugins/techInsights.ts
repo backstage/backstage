@@ -39,6 +39,7 @@ export default async function createPlugin({
     discovery,
     factRetrievers: [
       createFactRetrieverRegistration('5 4 * * 6', {
+        // Example cron, At 04:05 on Saturday.
         id: 'testRetriever',
         version: '1.1.2',
         entityFilter: [{ kind: 'component' }], // EntityFilter to be used in the future (creating checks, graphs etc.) to figure out which entities this fact retrieves data for.
@@ -52,7 +53,9 @@ export default async function createPlugin({
           const catalogClient = new CatalogClient({
             discoveryApi: discovery,
           });
-          const entities = await catalogClient.getEntities();
+          const entities = await catalogClient.getEntities({
+            filter: [{ kind: 'component' }],
+          });
 
           return Promise.resolve(
             entities.items.map(it => {

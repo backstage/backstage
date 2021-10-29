@@ -53,20 +53,20 @@ With the `techInsights.ts` router setup in place, add the router to
 `packages/backend/src/index.ts`:
 
 ```diff
-+import techInsights from './plugins/techInsights';
++ import techInsights from './plugins/techInsights';
 
-async function main() {
-  ...
-  const createEnv = makeCreateEnv(config);
+  async function main() {
+    ...
+    const createEnv = makeCreateEnv(config);
 
-  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-+  const techInsightsEnv = useHotMemoize(module, () => createEnv('tech_insights'));
+    const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
++   const techInsightsEnv = useHotMemoize(module, () => createEnv('tech_insights'));
 
-  const apiRouter = Router();
-+  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
-  ...
-  apiRouter.use(notFoundHandler());
-
+    const apiRouter = Router();
++   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
+    ...
+    apiRouter.use(notFoundHandler());
+  }
 ```
 
 ### Adding fact retrievers
@@ -95,10 +95,10 @@ Then you can modify the example `techInsights.ts` file shown above like this:
 
 ```diff
 const builder = new DefaultTechInsightsBuilder({
-logger,
-config,
-database,
-discovery,
+  logger,
+  config,
+  database,
+  discovery,
 - factRetrievers: [],
 + factRetrievers: [myFactRetrieverRegistration],
 });
@@ -119,12 +119,12 @@ An example implementation of a FactRetriever could for example be as follows:
 const myFactRetriever: FactRetriever = {
   id: 'documentation-number-factretriever', // unique identifier of the fact retriever
   version: '0.1.1', // SemVer version number of this fact retriever schema. This should be incremented if the implementation changes
+  entityFilter: [{ kind: 'component' }], // EntityFilter to be used in the future (creating checks, graphs etc.) to figure out which entities this fact retrieves data for.
   schema: {
     // Name/identifier of an individual fact that this retriever returns
     examplenumberfact: {
       type: 'integer', // Type of the fact
       description: 'A fact of a number', // Description of the fact
-      entityTypes: ['component'], // An array of entity kinds that this fact is applicable to
     },
   },
   handler: async ctx => {
@@ -133,7 +133,9 @@ const myFactRetriever: FactRetriever = {
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities(); // Retrieve all entities
+    const entities = await catalogClient.getEntities({
+      filter: [{ kind: 'component' }],
+    });
     /**
      * snip: Do complex logic to retrieve facts from external system or calculate fact values
      */
@@ -183,14 +185,14 @@ and modify the `techInsights.ts` file to contain a reference to the FactChecker 
 +    logger,
 +  }),
 
-const builder = new DefaultTechInsightsBuilder({
-logger,
-config,
-database,
-discovery,
-factRetrievers: [myFactRetrieverRegistration],
-+ factCheckerFactory: myFactCheckerFactory
-});
+  const builder = new DefaultTechInsightsBuilder({
+    logger,
+    config,
+    database,
+    discovery,
+    factRetrievers: [myFactRetrieverRegistration],
++   factCheckerFactory: myFactCheckerFactory
+  });
 ```
 
 To be able to run checks, you need to additionally add individual checks into your FactChecker implementation. For examples how to add these, you can check the documentation of the individual implementation of the FactChecker

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DatabaseManager } from './DatabaseManager';
 import { DateTime, Duration } from 'luxon';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { Knex } from 'knex';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { getVoidLogger } from '@backstage/backend-common';
+import { initializePersistenceContext } from './persistenceContext';
 
 const factSchemas = [
   {
@@ -117,9 +119,14 @@ describe('Tech Insights database', () => {
   let store: TechInsightsStore;
   let testDbClient: Knex<any, unknown[]>;
   beforeAll(async () => {
-    testDbClient = await DatabaseManager.createTestDatabaseConnection();
-    store = (await DatabaseManager.createTestDatabase(testDbClient))
-      .techInsightsStore;
+    testDbClient = await TestDatabases.create().init('SQLITE_3');
+
+    store = (
+      await initializePersistenceContext(testDbClient, {
+        logger: getVoidLogger(),
+      })
+    ).techInsightsStore;
+
     await testDbClient.batchInsert('fact_schemas', factSchemas);
     await testDbClient.batchInsert('facts', facts);
   });
