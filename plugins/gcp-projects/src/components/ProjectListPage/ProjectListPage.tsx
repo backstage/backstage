@@ -15,18 +15,8 @@
  */
 
 //  NEEDS WORK
-import {
-  Button,
-  LinearProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import { Button, LinearProgress, Tooltip, Typography } from '@material-ui/core';
+import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { gcpApiRef, Project } from '../../api';
@@ -43,6 +33,8 @@ import {
 } from '@backstage/core-components';
 
 import { useApi } from '@backstage/core-plugin-api';
+
+import { Link as RouterLink } from 'react-router-dom';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -67,6 +59,18 @@ const PageContents = () => {
 
   const { loading, error, value } = useAsync(() => api.listProjects());
 
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (pageSize: number) => {
+    setRowsPerPage(pageSize);
+    setPage(0);
+  };
+
   if (loading) {
     return <LinearProgress />;
   } else if (error) {
@@ -77,60 +81,80 @@ const PageContents = () => {
     );
   }
 
+  function renderLink(params: GridCellParams) {
+    return (
+      <Link
+        to={`project?projectId=${encodeURIComponent(params.value!.toString())}`}
+      >
+        <Typography color="primary">
+          <LongText text={params.value!.toString()} max={60} />
+        </Typography>
+      </Link>
+    );
+  }
+
+  const columns: GridColDef[] = [
+    {
+      align: 'left',
+      field: 'name',
+      flex: 1,
+      headerAlign: 'left',
+      headerName: 'Name',
+    },
+    {
+      align: 'left',
+      field: 'projectNumber',
+      flex: 0.6,
+      headerAlign: 'left',
+      headerName: 'Project Number',
+    },
+    {
+      align: 'left',
+      field: 'projectID',
+      flex: 1,
+      headerAlign: 'left',
+      headerName: 'Project ID',
+      renderCell: renderLink,
+    },
+    {
+      align: 'left',
+      field: 'state',
+      flex: 0.6,
+      headerAlign: 'left',
+      headerName: 'State',
+    },
+    {
+      align: 'left',
+      field: 'creationTime',
+      flex: 0.7,
+      headerAlign: 'left',
+      headerName: 'Creation Time',
+    },
+  ];
+
+  const rows =
+    value?.map((project: Project) => ({
+      id: project.projectId,
+      name: project.name,
+      projectNumber: project?.projectNumber || 'Error',
+      projectID: project.projectId,
+      state: project?.lifecycleState || 'Error',
+      creationTime: project?.createTime || 'Error',
+    })) || [];
+
   return (
-    <Table component={Paper}>
-      <Table aria-label="GCP Projects table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Project Number</TableCell>
-            <TableCell>Project ID</TableCell>
-            <TableCell>State</TableCell>
-            <TableCell>Creation Time</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {value?.map((project: Project) => (
-            <TableRow key={project.projectId}>
-              <TableCell>
-                <Typography>
-                  <LongText text={project.name} max={30} />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText text={project?.projectNumber || 'Error'} max={30} />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Link
-                  to={`project?projectId=${encodeURIComponent(
-                    project.projectId,
-                  )}`}
-                >
-                  <Typography color="primary">
-                    <LongText text={project.projectId} max={60} />
-                  </Typography>
-                </Link>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText
-                    text={project?.lifecycleState || 'Error'}
-                    max={30}
-                  />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText text={project?.createTime || 'Error'} max={30} />
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Table>
+    <div style={{ height: '95%', width: '100%' }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        page={page}
+        pageSize={rowsPerPage}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        onPageChange={handleChangePage}
+        onPageSizeChange={handleChangeRowsPerPage}
+        disableSelectionOnClick
+      />
+    </div>
   );
 };
 
@@ -141,7 +165,12 @@ export const ProjectListPage = () => (
     </Header>
     <Content>
       <ContentHeader title="">
-        <Button variant="contained" color="primary" href="/gcp-projects/new">
+        <Button
+          component={RouterLink}
+          variant="contained"
+          color="primary"
+          to="new"
+        >
           New Project
         </Button>
         <SupportButton>All your software catalog entities</SupportButton>

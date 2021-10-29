@@ -35,6 +35,7 @@
     "@backstage/core-plugin-api": "^0.1.12",
     "@backstage/theme": "^0.2.12",
     "@material-ui/core": "^4.12.2",
+    "@material-ui/data-grid": "^4.0.0-alpha.37",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "react": "^16.13.1",
