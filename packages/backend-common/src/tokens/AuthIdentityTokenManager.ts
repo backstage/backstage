@@ -19,19 +19,30 @@ import { TokenManager } from './types';
 import { IdentityClient } from '../identity';
 import { PluginEndpointDiscovery } from '../discovery';
 
+// TODO: (b2b-auth) rename this class
 export class AuthIdentityTokenManager implements TokenManager {
   private identityClient: IdentityClient;
   private key: JWK.OctKey;
 
-  constructor(discovery: PluginEndpointDiscovery, secret: string) {
-    this.identityClient = new IdentityClient({
-      discovery,
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    secret: string;
+  }) {
+    const identityClient = new IdentityClient({
+      discovery: options.discovery,
       issuer: 'auth-identity-token-manager',
     });
+    return new AuthIdentityTokenManager(identityClient, options.secret);
+  }
+
+  private constructor(identityClient: IdentityClient, secret: string) {
+    this.identityClient = identityClient;
+    // TODO: (b2b-auth) how do we get this to be the right JWK type
     this.key = JWK.asKey(Buffer.from(secret)) as JWK.OctKey;
   }
 
   async getServerToken(): Promise<{ token: string }> {
+    // TODO: (b2b-auth) figure out how to use HMAC as the alg
     const jwt = JWT.sign({ sub: 'backstage-server' }, this.key);
     return { token: jwt };
   }

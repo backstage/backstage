@@ -28,7 +28,8 @@ const CLOCK_MARGIN_S = 10;
  * @experimental This is not a stable API yet
  */
 
-// TODO: (b2b-auth) integrate IdentityClient into the TokenManager instead
+// TODO: (b2b-auth) move IdentityClient into tokens
+// perhaps also create an interface?
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
