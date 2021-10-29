@@ -79,12 +79,15 @@ const useStyles = makeStyles(
     error: {
       backgroundColor: theme.palette.banner.error,
     },
+    warning: {
+      backgroundColor: theme.palette.banner.warning,
+    },
   }),
   { name: 'BackstageDismissableBanner' },
 );
 
 type Props = {
-  variant: 'info' | 'error';
+  variant: 'info' | 'error' | 'warning';
   message: ReactNode;
   id: string;
   fixed?: boolean;
