@@ -24,19 +24,11 @@ export class AuthIdentityTokenManager implements TokenManager {
   private identityClient: IdentityClient;
   private key: JWK.OctKey;
 
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    secret: string;
-  }) {
-    const identityClient = new IdentityClient({
-      discovery: options.discovery,
+  constructor(discovery: PluginEndpointDiscovery, secret: string) {
+    this.identityClient = new IdentityClient({
+      discovery: discovery,
       issuer: 'auth-identity-token-manager',
     });
-    return new AuthIdentityTokenManager(identityClient, options.secret);
-  }
-
-  private constructor(identityClient: IdentityClient, secret: string) {
-    this.identityClient = identityClient;
     // TODO: (b2b-auth) how do we get this to be the right JWK type
     this.key = JWK.asKey(Buffer.from(secret)) as JWK.OctKey;
   }

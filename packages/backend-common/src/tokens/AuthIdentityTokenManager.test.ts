@@ -36,23 +36,23 @@ beforeAll(() => {
 
 describe('AuthIdentityTokenManager', () => {
   it('should validate a valid server token', async () => {
-    const tokenManager = AuthIdentityTokenManager.create({
+    const tokenManager = new AuthIdentityTokenManager(
       discovery,
-      secret: 'a-secret-key',
-    });
+      'a-secret-key',
+    );
     const { token } = await tokenManager.getServerToken();
     await expect(tokenManager.validateToken(token)).resolves.toBeUndefined();
   });
 
   it('should reject an invalid server token', async () => {
-    const tokenManager = AuthIdentityTokenManager.create({
+    const tokenManager = new AuthIdentityTokenManager(
       discovery,
-      secret: 'a-secret-key',
-    });
-    const differentTokenManager = AuthIdentityTokenManager.create({
+      'a-secret-key',
+    );
+    const differentTokenManager = new AuthIdentityTokenManager(
       discovery,
-      secret: 'a-different-key',
-    });
+      'a-different-key',
+    );
     const { token } = await tokenManager.getServerToken();
     await expect(differentTokenManager.validateToken(token)).rejects.toThrow(
       'Invalid token',
