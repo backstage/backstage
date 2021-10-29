@@ -2,4 +2,4 @@
 '@backstage/dev-utils': patch
 ---
 
-Migrated to using `withDefaults` to pass defaults to `createApp`.
+Migrated to using `@backstage/app-defaults`.
