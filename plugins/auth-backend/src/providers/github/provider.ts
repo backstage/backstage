@@ -31,6 +31,7 @@ import {
   AuthProviderFactory,
   AuthHandler,
   SignInResolver,
+  StateEncoder,
 } from '../types';
 import {
   OAuthAdapter,
@@ -66,6 +67,7 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
   authorizationUrl?: string;
   signInResolver?: SignInResolver<GithubOAuthResult>;
   authHandler: AuthHandler<GithubOAuthResult>;
+  stateEncoder: StateEncoder;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -78,10 +80,12 @@ export class GithubAuthProvider implements OAuthHandlers {
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
+  private readonly stateEncoder: StateEncoder;
 
   constructor(options: GithubAuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
+    this.stateEncoder = options.stateEncoder;
     this.tokenIssuer = options.tokenIssuer;
     this.catalogIdentityClient = options.catalogIdentityClient;
     this.logger = options.logger;
@@ -109,7 +113,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
-      state: encodeState(req.state),
+      state: (await this.stateEncoder(req)).encodedState,
     });
   }
 
@@ -209,6 +213,24 @@ export type GithubProviderOptions = {
      */
     resolver?: SignInResolver<GithubOAuthResult>;
   };
+
+  /**
+   * The state encoder used to encode the 'state' parameter on the OAuth request.
+   *
+   * It should return a string that takes the state params (from the request), url encodes the params
+   * and finally base64 encodes them.
+   *
+   * Providing your own stateEncoder will allow you to add addition parameters to the state field.
+   *
+   * It is typed as follows:
+   *   export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;
+   *
+   * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
+   * (These two values will be set by the req.state by default)
+   *
+   * For more information, please see the helper module in ../../oauth/helpers #readState
+   */
+  stateEncoder?: StateEncoder;
 };
 
 export const createGithubProvider = (
@@ -263,6 +285,12 @@ export const createGithubProvider = (
           logger,
         });
 
+      const stateEncoder: StateEncoder =
+        options?.stateEncoder ??
+        (async (req: OAuthStartRequest): Promise<{ encodedState: string }> => {
+          return { encodedState: encodeState(req.state) };
+        });
+
       const provider = new GithubAuthProvider({
         clientId,
         clientSecret,
@@ -274,6 +302,7 @@ export const createGithubProvider = (
         authHandler,
         tokenIssuer,
         catalogIdentityClient,
+        stateEncoder,
         logger,
       });
 

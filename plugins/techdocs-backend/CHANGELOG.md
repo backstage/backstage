@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.6
+
+### Patch Changes
+
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+  - @backstage/techdocs-common@0.10.5
+
 ## 0.10.5
 
 ### Patch Changes

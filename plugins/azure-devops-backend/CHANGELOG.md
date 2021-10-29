@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.1.4
+
+### Patch Changes
+
+- 2eebc9bac3: Added duration (startTime and finishTime) and identity (uniqueName) to the RepoBuild results. Also did a bit of refactoring to help finish up the backend items in issue #7641
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/backend-common@0.9.8
+
 ## 0.1.3
 
 ### Patch Changes

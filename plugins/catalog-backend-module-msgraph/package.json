@@ -45,7 +45,7 @@
     "@backstage/cli": "^0.8.0",
     "@backstage/test-utils": "^0.1.19",
     "@types/lodash": "^4.14.151",
-    "msw": "^0.29.0"
+    "msw": "^0.35.0"
   },
   "files": [
     "dist",

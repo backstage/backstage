@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.7.2
+
+### Patch Changes
+
+- afd5c82ce1: Updates the d3 dependencies
+- c6c2942daa: Deprecated `DismissbleBannerClassKey` and fixed the typo to make `DismissableBannerClassKey`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.7.1
 
 ### Patch Changes

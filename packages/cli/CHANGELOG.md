@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.8.1
+
+### Patch Changes
+
+- f1e96dc5b1: Update usage of msw in default plugin template
+- b0dc1fd241: bump `@spotify/eslint-config-base` from 9.0.2 to 12.0.0
+- c5bb1df55d: Bump `msw` to `v0.35.0` to resolve [CVE-2021-32796](https://github.com/advisories/GHSA-5fg8-2547-mr8q).
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/config-loader@0.7.1
+
 ## 0.8.0
 
 ### Minor Changes

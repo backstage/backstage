@@ -17,7 +17,6 @@
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
-
 import {
   BackstageTheme,
   BackstageThemeOptions,
@@ -28,6 +27,11 @@ import { pageTheme as defaultPageThemes } from './pageTheme';
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
 
+/**
+ * A helper for creating theme options.
+ *
+ * @public
+ */
 export function createThemeOptions(
   options: SimpleThemeOptions,
 ): BackstageThemeOptions {
@@ -84,6 +88,11 @@ export function createThemeOptions(
   };
 }
 
+/**
+ * A helper for creating theme overrides.
+ *
+ * @public
+ */
 export function createThemeOverrides(theme: BackstageTheme): Overrides {
   return {
     MuiCssBaseline: {
@@ -271,8 +280,12 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
   };
 }
 
-// Creates a Backstage MUI theme using a palette.
-// The theme is created with the common Backstage options and component styles.
+/**
+ * Creates a Backstage MUI theme using a palette. The theme is created with the
+ * common Backstage options and component styles.
+ *
+ * @public
+ */
 export function createTheme(options: SimpleThemeOptions): BackstageTheme {
   const themeOptions = createThemeOptions(options);
   const baseTheme = createMuiTheme(themeOptions) as BackstageTheme;

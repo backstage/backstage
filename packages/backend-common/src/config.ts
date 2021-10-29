@@ -18,10 +18,41 @@ import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
 import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
-import { Config, ConfigReader } from '@backstage/config';
+import {
+  loadConfigSchema,
+  loadConfig,
+  ConfigSchema,
+  ConfigTarget
+} from '@backstage/config-loader';
+import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
-import { ConfigTarget, loadConfig } from '@backstage/config-loader';
+
 import { isValidUrl } from './urls';
+
+import { setRootLoggerRedactionList } from './logging/rootLogger';
+
+// Fetch the schema and get all the secrets to pass to the rootLogger for redaction
+const updateRedactionList = (
+  schema: ConfigSchema,
+  configs: AppConfig[],
+  logger: Logger,
+) => {
+  const secretAppConfigs = schema.process(configs, { visibility: ['secret'] });
+  const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
+  const values = new Set<string>();
+  const data = secretConfig.get();
+
+  JSON.parse(
+    JSON.stringify(data),
+    (_, v) => typeof v === 'string' && values.add(v),
+  );
+
+  logger.info(
+    `${values.size} secrets found in the config which will be redacted`,
+  );
+
+  setRootLoggerRedactionList(Array.from(values));
+};
 
 export class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -155,11 +186,20 @@ export async function loadBackendConfig(options: {
     .flat()
     .map(arg => (isValidUrl(arg) ? { url: arg } : { path: resolvePath(arg) }));
 
-  const config = new ObservableConfigProxy(options.logger);
-
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
+  // TODO(hhogg): This is fetching _all_ of the packages of the monorepo
+  // in order to find the secrets for redactions, however we only care about
+  // the backend ones, we need to find a way to exclude the frontend packages.
+  const { Project } = require('@lerna/project');
+  const project = new Project(paths.targetDir);
+  const packages = await project.getPackages();
+  const schema = await loadConfigSchema({
+    dependencies: packages.map((p: any) => p.name),
+  });
+
+  const config = new ObservableConfigProxy(options.logger);
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
     configPaths: [],
@@ -191,6 +231,10 @@ export async function loadBackendConfig(options: {
   );
 
   config.setConfig(ConfigReader.fromConfigs(configs));
+
+  // Subscribe to config changes and update the redaction list for logging
+  updateRedactionList(schema, configs, options.logger);
+  config.subscribe(() => updateRedactionList(schema, configs, options.logger));
 
   return config;
 }

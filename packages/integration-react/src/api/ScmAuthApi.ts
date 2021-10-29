@@ -20,7 +20,11 @@ import {
   AuthRequestOptions,
 } from '@backstage/core-plugin-api';
 
-/** @public */
+/**
+ * The options that control a {@link ScmAuthApi.getCredentials} call.
+ *
+ * @public
+ */
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   /**
    * The URL of the SCM resource to be accessed.
@@ -43,7 +47,11 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
   };
 }
 
-/** @public */
+/**
+ * The response from a {@link ScmAuthApi.getCredentials} call.
+ *
+ * @public
+ */
 export interface ScmAuthTokenResponse {
   /**
    * An authorization token that can be used to authenticate requests.

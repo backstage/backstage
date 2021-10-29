@@ -37,7 +37,12 @@ const OKTA_OIDC_SCOPES: Set<String> = new Set([
 
 const OKTA_SCOPE_PREFIX: string = 'okta.';
 
-class OktaAuth {
+/**
+ * Implements the OAuth flow to Okta products.
+ *
+ * @public
+ */
+export default class OktaAuth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -67,5 +72,3 @@ class OktaAuth {
     });
   }
 }
-
-export default OktaAuth;

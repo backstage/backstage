@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -90,7 +90,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
   let collator: DefaultTechDocsCollator;
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
   beforeEach(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
@@ -138,6 +138,8 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
+        kind: entity.kind,
+        name: entity.metadata.name,
       });
     });
   });
@@ -148,7 +150,7 @@ describe('DefaultTechDocsCollator', () => {
   let collator: DefaultTechDocsCollator;
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
   beforeEach(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
@@ -183,6 +185,8 @@ describe('DefaultTechDocsCollator', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
+        kind: entity.kind,
+        name: entity.metadata.name,
       });
     });
   });

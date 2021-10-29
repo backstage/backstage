@@ -30,10 +30,14 @@ type ApiProviderProps = {
 
 const ApiContext = createVersionedContext<{ 1: ApiHolder }>('api-context');
 
-export const ApiProvider = ({
-  apis,
-  children,
-}: PropsWithChildren<ApiProviderProps>) => {
+/**
+ * Provides an {@link @backstage/core-plugin-api#ApiHolder} for consumption in
+ * the React tree.
+ *
+ * @public
+ */
+export const ApiProvider = (props: PropsWithChildren<ApiProviderProps>) => {
+  const { apis, children } = props;
   const parentHolder = useContext(ApiContext)?.atVersion(1);
   const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
 

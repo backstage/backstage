@@ -17,7 +17,6 @@ export class ConflictError extends CustomErrorBase {}
 // @public
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
-  // (undocumented)
   readonly cause?: Error | undefined;
 }
 
