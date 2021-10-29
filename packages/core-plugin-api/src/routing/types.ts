@@ -88,7 +88,7 @@ export type RouteRef<Params extends AnyParams = any> = {
 
   // TODO(Rugvip): Remove all of these once plugins don't rely on the path
   /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
-  // path: string;
+  path: string;
   /** @deprecated icons are no longer accessed via RouteRefs */
   icon?: OldIconComponent;
   /** @deprecated titles are no longer accessed via RouteRefs */
