@@ -38,7 +38,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.1"
+    "@backstage/cli": "^0.8.0"
   },
   "files": [
     "dist"

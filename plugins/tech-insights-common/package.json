@@ -34,7 +34,7 @@
     "luxon": "^2.0.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.1"
+    "@backstage/cli": "^0.8.0"
   },
   "files": [
     "dist"
