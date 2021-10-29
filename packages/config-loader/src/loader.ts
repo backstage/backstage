@@ -116,9 +116,7 @@ export async function loadConfig(
     .map(configTarget => configTarget.url);
 
   if (remote === undefined && configUrls.length > 0) {
-    throw new Error(
-      `Remote config detected, however, this feature is turned off. Remote config will be ignored.`,
-    );
+    throw new Error(`Remote config detected but this feature is turned off`);
   }
 
   // If no paths are provided, we default to reading
