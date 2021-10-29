@@ -45,6 +45,7 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { OptionalAppOptions } from '@backstage/app-defaults';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
@@ -150,7 +151,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider: ComponentType<{}>;
+  ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -189,12 +190,13 @@ export type AppIcons = {
 // @public
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
-  icons?: Partial<AppIcons> & {
+  defaultApis?: Iterable<AnyApiFactory>;
+  icons: AppIcons & {
     [key in string]: IconComponent;
   };
   plugins?: BackstagePluginWithAnyOutput[];
-  components?: Partial<AppComponents>;
-  themes?: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
+  components: AppComponents;
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
@@ -308,10 +310,16 @@ export type BootErrorPageProps = {
 
 export { ConfigReader };
 
-// Warning: (ae-forgotten-export) The symbol "PrivateAppImpl" needs to be exported by the entry point index.d.ts
+// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
+// Warning: (ae-forgotten-export) The symbol "AppManager" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
+export function createApp(options?: OptionalAppOptions): AppManager;
+
+// Warning: (ae-missing-release-tag) "createSpecializedApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function createApp(options?: AppOptions): PrivateAppImpl;
+export function createSpecializedApp(options: AppOptions): AppManager;
 
 // @public
 export const defaultConfigLoader: AppConfigLoader;
