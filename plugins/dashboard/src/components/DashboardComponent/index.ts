@@ -1,0 +1,1 @@
+export { DashboardComponent } from './DashboardComponent';

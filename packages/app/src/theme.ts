@@ -35,7 +35,7 @@ const myTheme = createTheme({
     pageTheme: {
       home: { colors:['#112e51','#112e51'], shape: shapes.filledHeader, backgroundImage:`${shapes.filledHeader}; border-bottom:8px solid #fac922;` },
       documentation: genPageTheme(['#112e51','#112e51'], shapes.plain),
-      tool: genPageTheme(['#112e51','#112e51'], shapes.plain),
+      tool: { colors:['#112e51','#112e51'], shape: shapes.filledHeader, backgroundImage:`${shapes.filledHeader}; border-bottom:8px solid #00a6d2;` },
       service: genPageTheme(['#112e51','#112e51'], shapes.plain),
       website: genPageTheme(['#112e51','#112e51'], shapes.plain),
       library: genPageTheme(['#112e51','#112e51'], shapes.plain),

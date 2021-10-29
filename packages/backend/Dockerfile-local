@@ -16,11 +16,11 @@
 
 # Once the commands have been run, you can build the image using `yarn build-image`.
 
-FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs14:14.17.6
+# FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs14:14.17.6
 
 # Can use this image as an unsecured alternative from the IB hardened image 
 # if it is unavaiable.
-# FROM node:14-buster
+FROM node:14-buster
 
 # Change into app working directory.
 WORKDIR /app
@@ -60,4 +60,4 @@ USER node
 EXPOSE 7000
 
 # Run the app at container start.
-CMD ["node", "packages/backend", "--config", "app-config.local.yaml"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml"]

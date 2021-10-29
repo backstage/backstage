@@ -21,6 +21,7 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import DashboardRounded from '@material-ui/icons/DashboardRounded';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
@@ -81,6 +82,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+
       {/* End global nav 
       <SidebarDivider />
       <SidebarScrollWrapper>
@@ -90,6 +92,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />*/}
       <SidebarSpace />
       <SidebarDivider />
+      <SidebarItem icon={DashboardRounded} to="dashboard" text="Dashboard" />
       <SidebarSettings />
     </Sidebar>
     {children}
