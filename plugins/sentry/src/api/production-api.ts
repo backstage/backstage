@@ -51,7 +51,7 @@ export class ProductionSentryApi implements SentryApi {
     return (await response.json()) as SentryIssue[];
   }
 
-  async authOptions() {
+  private async authOptions() {
     if (!this.identityApi) {
       return {};
     }

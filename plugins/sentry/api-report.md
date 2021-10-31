@@ -41,17 +41,6 @@ export class ProductionSentryApi implements SentryApi {
     identityApi?: IdentityApi | undefined,
   );
   // (undocumented)
-  authOptions(): Promise<
-    | {
-        headers?: undefined;
-      }
-    | {
-        headers: {
-          authorization: string;
-        };
-      }
-  >;
-  // (undocumented)
   fetchIssues(
     project: string,
     statsFor: string,
