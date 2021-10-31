@@ -35,6 +35,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAzurePipelinesContent,
+  EntityAzureReposContent,
   isAzureDevOpsAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
@@ -264,6 +265,18 @@ const errorsContent = (
   </EntitySwitch>
 );
 
+const pullRequestsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+      <EntityAzureReposContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case>
+      <EntityGithubPullRequestsContent />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     {entityWarningContent}
@@ -368,7 +381,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
@@ -427,7 +440,7 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">

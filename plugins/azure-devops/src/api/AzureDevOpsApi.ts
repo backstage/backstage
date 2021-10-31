@@ -15,6 +15,8 @@
  */
 
 import {
+  PullRequest,
+  PullRequestOptions,
   RepoBuild,
   RepoBuildOptions,
 } from '@backstage/plugin-azure-devops-common';
@@ -33,4 +35,10 @@ export interface AzureDevOpsApi {
     repoName: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }>;
+
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }>;
 }

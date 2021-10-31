@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  azureDevOpsPlugin,
-  EntityAzurePipelinesContent,
-  EntityAzureReposContent,
-  isAzureDevOpsAvailable,
-} from './plugin';
+
+import { PullRequestTable } from '../PullRequestTable/PullRequestTable';
+import React from 'react';
+
+export const EntityPageAzureRepos = ({
+  defaultLimit,
+}: {
+  defaultLimit?: number;
+}) => {
+  return <PullRequestTable defaultLimit={defaultLimit} />;
+};

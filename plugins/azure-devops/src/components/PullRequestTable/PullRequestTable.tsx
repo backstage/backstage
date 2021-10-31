@@ -1,0 +1,136 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Box, Chip } from '@material-ui/core';
+import {
+  Link,
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
+import React, { useState } from 'react';
+
+import { AzureReposIcon } from '../AzureReposIcon';
+import { DateTime } from 'luxon';
+import { PullRequest } from '../../api/types';
+import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { usePullRequests } from '../../hooks/usePullRequests';
+
+const columns: TableColumn[] = [
+  {
+    title: 'ID',
+    field: 'pullRequestId',
+    highlight: false,
+    width: 'auto',
+  },
+  {
+    title: 'Title',
+    field: 'title',
+    width: 'auto',
+    render: (row: Partial<PullRequest>) => (
+      <Box display="flex" alignItems="center">
+        <Link to={row.link || ''}>{row.title}</Link>
+        <Box paddingLeft={1}>
+          {row.isDraft && (
+            <Chip
+              label="Draft"
+              variant="outlined"
+              color="secondary"
+              size="small"
+            />
+          )}
+        </Box>
+      </Box>
+    ),
+  },
+  {
+    title: 'Source',
+    field: 'sourceRefName',
+    width: 'auto',
+  },
+  {
+    title: 'Target',
+    field: 'targetRefName',
+    width: 'auto',
+  },
+  {
+    title: 'Created By',
+    field: 'createdBy',
+    width: 'auto',
+  },
+  {
+    title: 'Created',
+    field: 'creationDate',
+    width: 'auto',
+    render: (row: Partial<PullRequest>) =>
+      DateTime.fromISO(
+        row.creationDate ? row.creationDate.toString() : new Date().toString(),
+      ).toRelative(),
+  },
+];
+
+type PullRequestTableProps = {
+  defaultLimit?: number;
+};
+
+export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
+  const [pullRequestStatusState, setPullRequestStatusState] =
+    useState<PullRequestStatus>(PullRequestStatus.Active);
+  const { entity } = useEntity();
+
+  const { items, loading, error } = usePullRequests(
+    entity,
+    defaultLimit,
+    pullRequestStatusState,
+  );
+
+  if (error) {
+    return (
+      <div>
+        <ResponseErrorPanel error={error} />
+      </div>
+    );
+  }
+
+  return (
+    <Table
+      isLoading={loading}
+      columns={columns}
+      options={{
+        search: true,
+        paging: true,
+        pageSize: 5,
+        showEmptyDataSourceMessage: !loading,
+      }}
+      title={
+        <Box display="flex" alignItems="center">
+          <AzureReposIcon width="30px" height="30px" />
+          <Box mr={1} />
+          Azure Repos - Pull Requests ({items ? items.length : 0})
+          <Box position="absolute" right={320} top={20}>
+            <PullRequestStatusButtonGroup
+              pullRequestStatusState={pullRequestStatusState}
+              setPullRequestsStatusState={setPullRequestStatusState}
+            />
+          </Box>
+        </Box>
+      }
+      data={items ?? []}
+    />
+  );
+};

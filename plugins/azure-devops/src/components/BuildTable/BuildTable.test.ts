@@ -18,7 +18,10 @@ import {
   BuildResult,
   BuildStatus,
 } from '@backstage/plugin-azure-devops-common';
-import { getBuildResultComponent, getBuildStateComponent } from './BuildTable';
+import { 
+  getBuildResultComponent, 
+  getBuildStateComponent 
+} from './BuildTable';
 
 import { renderInTestApp } from '@backstage/test-utils';
 

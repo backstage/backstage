@@ -56,3 +56,14 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
     mountPoint: azureDevOpsRouteRef,
   }),
 );
+
+export const EntityAzureReposContent = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityAzureReposContent',
+    component: () =>
+      import('./components/EntityPageAzureRepos').then(
+        m => m.EntityPageAzureRepos,
+      ),
+    mountPoint: azureDevOpsRouteRef,
+  }),
+);

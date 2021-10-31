@@ -16,6 +16,8 @@
 
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import {
+  PullRequest,
+  PullRequestOptions,
   RepoBuild,
   RepoBuildOptions,
 } from '@backstage/plugin-azure-devops-common';
@@ -42,6 +44,17 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   ): Promise<{ items: RepoBuild[] }> {
     const items = await this.get<RepoBuild[]>(
       `repo-builds/${projectName}/${repoName}?top=${options?.top}`,
+    );
+    return { items };
+  }
+
+  async getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }> {
+    const items = await this.get<PullRequest[]>(
+      `pull-requests/${projectName}/${repoName}?top=${options?.top}&status=${options?.status}`,
     );
     return { items };
   }

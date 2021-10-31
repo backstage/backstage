@@ -13,9 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  azureDevOpsPlugin,
-  EntityAzurePipelinesContent,
-  EntityAzureReposContent,
-  isAzureDevOpsAvailable,
-} from './plugin';
+
+export { EntityPageAzureRepos } from './EntityPageAzureRepos';
