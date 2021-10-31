@@ -18,6 +18,6 @@ metadata:
     backstage.io/techdocs-ref: dir:.
     lighthouse.com/website-url: https://backstage.io
 spec:
-  type: service
+  type: library
   owner: CNCF
   lifecycle: experimental
