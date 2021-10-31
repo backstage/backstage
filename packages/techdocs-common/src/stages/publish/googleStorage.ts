@@ -41,6 +41,26 @@ import {
 } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
+  private readonly storageClient: Storage;
+  private readonly bucketName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+  private readonly bucketRootPath: string;
+
+  constructor(options: {
+    storageClient: Storage;
+    bucketName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+    bucketRootPath: string;
+  }) {
+    this.storageClient = options.storageClient;
+    this.bucketName = options.bucketName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+    this.bucketRootPath = options.bucketRootPath;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let bucketName = '';
     try {
@@ -84,27 +104,13 @@ export class GoogleGCSPublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    return new GoogleGCSPublish(
+    return new GoogleGCSPublish({
       storageClient,
       bucketName,
       legacyPathCasing,
       logger,
       bucketRootPath,
-    );
-  }
-
-  constructor(
-    private readonly storageClient: Storage,
-    private readonly bucketName: string,
-    private readonly legacyPathCasing: boolean,
-    private readonly logger: Logger,
-    private readonly bucketRootPath: string,
-  ) {
-    this.storageClient = storageClient;
-    this.bucketName = bucketName;
-    this.legacyPathCasing = legacyPathCasing;
-    this.logger = logger;
-    this.bucketRootPath = bucketRootPath;
+    });
   }
 
   /**
