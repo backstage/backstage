@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 
 import { AzureDevOpsApi } from '../api';
-import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { Build, BuildDefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { ConfigReader } from '@backstage/config';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { createRouter } from './router';
@@ -39,7 +39,9 @@ describe('createRouter', () => {
     azureDevOpsApi = {
       getGitRepository: jest.fn(),
       getBuildList: jest.fn(),
+      getBuildDefinitions: jest.fn(),
       getRepoBuilds: jest.fn(),
+      getDefinitionBuilds: jest.fn(),
       getPullRequests: jest.fn(),
     } as any;
     const router = await createRouter({
@@ -136,11 +138,38 @@ describe('createRouter', () => {
 
       expect(azureDevOpsApi.getBuildList).toHaveBeenCalledWith(
         'myProject',
+        undefined,
         'af4ae3af-e747-4129-9bbc-d1329f6b0998',
         40,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(builds);
+    });
+  });
+
+  describe('GET /build-definitions/:projectName/:definitionName', () => {
+    it('fetches a list of build definitions', async () => {
+      const inputDefinition: BuildDefinitionReference = {
+        id: 1,
+        name: 'myBuildDefinition',
+      };
+
+      const inputDefinitions: BuildDefinitionReference[] = [inputDefinition];
+
+      azureDevOpsApi.getBuildDefinitions.mockResolvedValueOnce(
+        inputDefinitions,
+      );
+
+      const response = await request(app).get(
+        '/build-definitions/myProject/myBuildDefinition',
+      );
+
+      expect(azureDevOpsApi.getBuildDefinitions).toHaveBeenCalledWith(
+        'myProject',
+        'myBuildDefinition',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(inputDefinitions);
     });
   });
 
@@ -192,6 +221,60 @@ describe('createRouter', () => {
         'myProject',
         'myRepo',
         50,
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(repoBuilds);
+    });
+  });
+
+  describe('GET /definition-builds/:projectName/:definitionName', () => {
+    it('fetches a list of repo builds', async () => {
+      const firstRepoBuild: RepoBuild = {
+        id: 1,
+        title: 'My Build Definition - Build 1',
+        link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
+        status: BuildStatus.Completed,
+        result: BuildResult.PartiallySucceeded,
+        queueTime: undefined,
+        source: 'refs/heads/develop (f4f78b31)',
+      };
+
+      const secondRepoBuild: RepoBuild = {
+        id: 2,
+        title: 'My Build Definition - Build 2',
+        link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=2',
+        status: BuildStatus.InProgress,
+        result: BuildResult.None,
+        queueTime: undefined,
+        source: 'refs/heads/develop (13c988d4)',
+      };
+
+      const thirdRepoBuild: RepoBuild = {
+        id: 3,
+        title: 'My Build Definition - Build 3',
+        link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=3',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: undefined,
+        source: 'refs/heads/develop (9bedf678)',
+      };
+
+      const repoBuilds: RepoBuild[] = [
+        firstRepoBuild,
+        secondRepoBuild,
+        thirdRepoBuild,
+      ];
+
+      azureDevOpsApi.getDefinitionBuilds.mockResolvedValueOnce(repoBuilds);
+
+      const response = await request(app)
+        .get('/definition-builds/myProject/myDefinition')
+        .query({ top: '30' });
+
+      expect(azureDevOpsApi.getDefinitionBuilds).toHaveBeenCalledWith(
+        'myProject',
+        'myDefinition',
+        30,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);

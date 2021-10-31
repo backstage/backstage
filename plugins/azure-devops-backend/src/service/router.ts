@@ -73,11 +73,24 @@ export async function createRouter(
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
     const buildList = await azureDevOpsApi.getBuildList(
       projectName,
+      undefined,
       repoId,
       top,
     );
     res.status(200).json(buildList);
   });
+
+  router.get(
+    '/build-definitions/:projectName/:definitionName',
+    async (req, res) => {
+      const { projectName, definitionName } = req.params;
+      const buildDefinitionList = await azureDevOpsApi.getBuildDefinitions(
+        projectName,
+        definitionName,
+      );
+      res.status(200).json(buildDefinitionList);
+    },
+  );
 
   router.get('/repo-builds/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
@@ -92,6 +105,20 @@ export async function createRouter(
 
     res.status(200).json(gitRepository);
   });
+
+  router.get(
+    '/definition-builds/:projectName/:definitionName',
+    async (req, res) => {
+      const { projectName, definitionName } = req.params;
+      const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+      const gitRepository = await azureDevOpsApi.getDefinitionBuilds(
+        projectName,
+        definitionName,
+        top,
+      );
+      res.status(200).json(gitRepository);
+    },
+  );
 
   router.get('/pull-requests/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;

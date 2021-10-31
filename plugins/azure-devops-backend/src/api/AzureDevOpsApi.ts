@@ -35,7 +35,7 @@ import {
   getArtifactId,
 } from '../utils';
 
-import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { Build, BuildDefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import { TeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
@@ -60,19 +60,46 @@ export class AzureDevOpsApi {
     return client.getRepository(repoName, projectName);
   }
 
-  public async getBuildList(
+  public async getBuildDefinitions(
     projectName: string,
-    repoId: string,
-    top: number,
-  ): Promise<Build[]> {
+    definitionName: string,
+  ): Promise<BuildDefinitionReference[]> {
     this.logger?.debug(
-      `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
+      `Calling Azure DevOps REST API, getting Build Definitions for ${definitionName} in Project ${projectName}`,
     );
 
     const client = await this.webApi.getBuildApi();
+    return client.getDefinitions(
+      projectName,
+      definitionName,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
+  }
+
+  public async getBuildList(
+    projectName: string,
+    definitions?: number[],
+    repoId?: string,
+    top?: number,
+  ): Promise<Build[]> {
+    const client = await this.webApi.getBuildApi();
     return client.getBuilds(
       projectName,
-      undefined,
+      definitions,
       undefined,
       undefined,
       undefined,
@@ -91,7 +118,7 @@ export class AzureDevOpsApi {
       undefined,
       undefined,
       repoId,
-      'TfsGit',
+      repoId ? 'TfsGit' : undefined,
     );
   }
 
@@ -107,7 +134,36 @@ export class AzureDevOpsApi {
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const buildList = await this.getBuildList(
       projectName,
+      undefined,
       gitRepository.id as string,
+      top,
+    );
+
+    const repoBuilds: RepoBuild[] = buildList.map(build => {
+      return mappedRepoBuild(build);
+    });
+
+    return repoBuilds;
+  }
+
+  public async getDefinitionBuilds(
+    projectName: string,
+    definitionName: string,
+    top: number,
+  ) {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Builds for ${definitionName} in Project ${projectName}`,
+    );
+
+    const buildDefinitions = await this.getBuildDefinitions(
+      projectName,
+      definitionName,
+    );
+    const definitions = buildDefinitions.map(bd => bd.id) as number[];
+    const buildList = await this.getBuildList(
+      projectName,
+      definitions,
+      undefined,
       top,
     );
 
