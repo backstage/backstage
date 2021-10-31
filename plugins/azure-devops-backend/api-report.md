@@ -25,8 +25,9 @@ export class AzureDevOpsApi {
   // (undocumented)
   getBuildList(
     projectName: string,
-    repoId: string,
-    top: number,
+    definitions?: number[],
+    repoId?: string,
+    top?: number,
   ): Promise<Build[]>;
   // (undocumented)
   getDashboardPullRequests(
