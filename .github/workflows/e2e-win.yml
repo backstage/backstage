@@ -40,6 +40,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
+      - name: setup chrome
+        uses: browser-actions/setup-chrome@latest
       - name: yarn install
         run: yarn install --frozen-lockfile
 

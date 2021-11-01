@@ -24,14 +24,16 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions } from 'tar';
 import { paths } from '../paths';
 import { run } from '../run';
-import { packageVersions } from '../version';
 import { ParallelOption } from '../parallel';
+import {
+  dependencies as cliDependencies,
+  devDependencies as cliDevDependencies,
+} from '../../../package.json';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
-  ...Object.keys(packageVersions),
-  '@backstage/cli-common',
-  '@backstage/config-loader',
+  ...Object.keys(cliDependencies),
+  ...Object.keys(cliDevDependencies),
 ];
 
 type LernaPackage = {

@@ -20,15 +20,15 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  DbTaskEventRow,
-  DbTaskRow,
+  SerializedTaskEvent,
+  SerializedTask,
   Status,
   TaskEventType,
   TaskSecrets,
   TaskSpec,
   TaskStore,
   TaskStoreEmitOptions,
-  TaskStoreGetEventsOptions,
+  TaskStoreListEventsOptions,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -54,17 +54,37 @@ export type RawDbTaskEventRow = {
   created_at: string;
 };
 
+/**
+ * DatabaseTaskStore
+ *
+ * @public
+ */
+export type DatabaseTaskStoreOptions = {
+  database: Knex;
+};
+
+/**
+ * DatabaseTaskStore
+ *
+ * @public
+ */
 export class DatabaseTaskStore implements TaskStore {
-  static async create(knex: Knex): Promise<DatabaseTaskStore> {
-    await knex.migrate.latest({
+  private readonly db: Knex;
+
+  static async create(
+    options: DatabaseTaskStoreOptions,
+  ): Promise<DatabaseTaskStore> {
+    await options.database.migrate.latest({
       directory: migrationsDir,
     });
-    return new DatabaseTaskStore(knex);
+    return new DatabaseTaskStore(options);
   }
 
-  constructor(private readonly db: Knex) {}
+  constructor(options: DatabaseTaskStoreOptions) {
+    this.db = options.database;
+  }
 
-  async getTask(taskId: string): Promise<DbTaskRow> {
+  async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select();
@@ -101,7 +121,7 @@ export class DatabaseTaskStore implements TaskStore {
     return { taskId };
   }
 
-  async claimTask(): Promise<DbTaskRow | undefined> {
+  async claimTask(): Promise<SerializedTask | undefined> {
     return this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
@@ -243,7 +263,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents({
     taskId,
     after,
-  }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }> {
+  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }> {
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
