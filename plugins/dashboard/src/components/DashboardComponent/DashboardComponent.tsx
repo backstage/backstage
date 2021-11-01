@@ -15,7 +15,8 @@ const useStyles = makeStyles({
 export const DashboardComponent = () => {
   const classes = useStyles();
   const [table, setTable] = useState('home');
-  const data = useDashboard();
+  let data: any = {};
+  data = useDashboard();
   const [dashboardData, setDashboardData] = useState(null);
 
   useEffect(() => {
