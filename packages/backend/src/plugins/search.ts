@@ -29,6 +29,7 @@ import {
 } from '@backstage/plugin-search-backend-node';
 import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
 import { Logger } from 'winston';
+import { DefaultGitHubIssuesCollator } from '../../../../plugins/github-issues/src/DefaultGitHubIssuesCollator';
 import { PluginEnvironment } from '../types';
 
 async function createSearchEngine({
@@ -77,6 +78,12 @@ export default async function createPlugin({
       discovery,
       logger,
     }),
+  });
+
+  // Indexing our Github Issues Documents.
+  indexBuilder.addCollator({
+    defaultRefreshIntervalSeconds: 600,
+    collator: DefaultGitHubIssuesCollator.fromConfig(config),
   });
 
   // The scheduler controls when documents are gathered from collators and sent

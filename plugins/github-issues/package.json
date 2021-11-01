@@ -1,0 +1,14 @@
+{
+  "name": "github-issues",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "backstage-cli test"
+  },
+  "author": "Sohail Haider",
+  "license": "ISC",
+  "dependencies": {
+    "@backstage/cli": "^0.7.16"
+  }
+}

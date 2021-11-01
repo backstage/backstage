@@ -27,6 +27,7 @@ import {
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
 import React from 'react';
+import { GitHubIssueListItem } from './GitHubIssueListItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -57,9 +58,9 @@ const SearchPage = () => {
           <Grid item xs={3}>
             <Paper className={classes.filters}>
               <SearchType
-                values={['techdocs', 'software-catalog']}
+                values={['techdocs', 'software-catalog', 'github-issue']}
                 name="type"
-                defaultValue="software-catalog"
+                defaultValue="github-issue"
               />
               <SearchFilter.Select
                 className={classes.filter}
@@ -89,6 +90,13 @@ const SearchPage = () => {
                       case 'techdocs':
                         return (
                           <DocsResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                      case 'github-issue':
+                        return (
+                          <GitHubIssueListItem
                             key={document.location}
                             result={document}
                           />
