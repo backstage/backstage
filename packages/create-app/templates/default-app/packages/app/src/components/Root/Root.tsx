@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useContext, PropsWithChildren } from 'react';
-import { Link, makeStyles } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import MapIcon from '@material-ui/icons/MyLocation';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
-import { NavLink } from 'react-router-dom';
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearch } from '@backstage/plugin-search';
 import {
   Sidebar,
-  SidebarPage,
   sidebarConfig,
   SidebarContext,
-  SidebarItem,
   SidebarDivider,
-  SidebarSpace,
+  SidebarItem,
+  SidebarPage,
   SidebarScrollWrapper,
+  SidebarSpace,
 } from '@backstage/core-components';
+import { SidebarSearch } from '@backstage/plugin-search';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { Link, makeStyles } from '@material-ui/core';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import HomeIcon from '@material-ui/icons/Home';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import MapIcon from '@material-ui/icons/MyLocation';
+import React, { PropsWithChildren, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

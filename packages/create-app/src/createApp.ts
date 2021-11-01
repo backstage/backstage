@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { promisify } from 'util';
-import chalk from 'chalk';
-import { Command } from 'commander';
-import inquirer, { Answers, Question } from 'inquirer';
-import { exec as execCb } from 'child_process';
-import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
+import chalk from 'chalk';
+import { exec as execCb } from 'child_process';
+import { Command } from 'commander';
+import fs from 'fs-extra';
+import inquirer, { Answers, Question } from 'inquirer';
 import os from 'os';
+import { resolve as resolvePath } from 'path';
+import { promisify } from 'util';
 import { Task, templatingTask } from './lib/tasks';
 
 const exec = promisify(execCb);

@@ -1,11 +1,11 @@
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import {
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   UrlReader,
 } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 
 export type PluginEnvironment = {
   logger: Logger;

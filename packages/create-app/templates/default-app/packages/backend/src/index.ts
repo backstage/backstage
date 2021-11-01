@@ -6,26 +6,26 @@
  * Happy hacking!
  */
 
-import Router from 'express-promise-router';
 import {
-  createServiceBuilder,
-  loadBackendConfig,
-  getRootLogger,
-  useHotMemoize,
-  notFoundHandler,
   CacheManager,
+  createServiceBuilder,
   DatabaseManager,
+  getRootLogger,
+  loadBackendConfig,
+  notFoundHandler,
   SingleHostDiscovery,
   UrlReaders,
+  useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import Router from 'express-promise-router';
 import app from './plugins/app';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
-import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
-import techdocs from './plugins/techdocs';
+import scaffolder from './plugins/scaffolder';
 import search from './plugins/search';
+import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {

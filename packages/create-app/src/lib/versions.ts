@@ -30,6 +30,29 @@ Rollup will extract the value of the version field in each package at build time
 leaving any imports in place.
 */
 
+import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
+import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
+import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
+import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
+import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
+import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
+import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
+import { version as pluginExplore } from '../../../../plugins/explore/package.json';
+import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
+import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
+import { version as pluginOrg } from '../../../../plugins/org/package.json';
+import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
+import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
+import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
+import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
+import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
+import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as pluginSearch } from '../../../../plugins/search/package.json';
+import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
+import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
+import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
+import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
@@ -42,30 +65,6 @@ import { version as errors } from '../../../errors/package.json';
 import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
-
-import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
-import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
-import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
-import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
-import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
-import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
-import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
-import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
-import { version as pluginExplore } from '../../../../plugins/explore/package.json';
-import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
-import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
-import { version as pluginOrg } from '../../../../plugins/org/package.json';
-import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
-import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
-import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
-import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
-import { version as pluginSearch } from '../../../../plugins/search/package.json';
-import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
-import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
-import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
-import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
-import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
-import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
 export const packageVersions = {
   '@backstage/backend-common': backendCommon,

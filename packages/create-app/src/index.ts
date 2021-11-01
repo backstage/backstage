@@ -21,9 +21,9 @@
  */
 
 import program from 'commander';
-import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import createApp from './createApp';
+import { exitWithError } from './lib/errors';
 
 const main = (argv: string[]) => {
   program

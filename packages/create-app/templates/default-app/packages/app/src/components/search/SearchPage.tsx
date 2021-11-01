@@ -1,14 +1,13 @@
-import React from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
-
+import { Content, Header, Page } from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
+  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
-  DefaultResultListItem,
 } from '@backstage/plugin-search';
-import { Content, Header, Page } from '@backstage/core-components';
+import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {

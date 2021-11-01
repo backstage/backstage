@@ -1,5 +1,5 @@
-import React from 'react';
-import { Navigate, Route } from 'react-router';
+import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -20,13 +20,12 @@ import {
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import React from 'react';
+import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
-import { searchPage } from './components/search/SearchPage';
 import { Root } from './components/Root';
-
-import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { searchPage } from './components/search/SearchPage';
 
 const app = createApp({
   apis,
