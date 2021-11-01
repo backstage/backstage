@@ -24,6 +24,10 @@ import {
 import { OldIconComponent } from '../icons/types';
 
 // TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
+/**
+ * @deprecated
+ * @internal
+ */
 export type RouteRefConfig<Params extends AnyParams> = {
   params?: ParamKeys<Params>;
   path?: string;
@@ -31,6 +35,9 @@ export type RouteRefConfig<Params extends AnyParams> = {
   title: string;
 };
 
+/**
+ * @internal
+ */
 export class RouteRefImpl<Params extends AnyParams>
   implements RouteRef<Params>
 {
@@ -66,6 +73,12 @@ export class RouteRefImpl<Params extends AnyParams>
   }
 }
 
+/**
+ * Create a {@link RouteRef} from a route descriptor.
+ *
+ * @param config - Description of the route reference to be created.
+ * @public
+ */
 export function createRouteRef<
   // Params is the type that we care about and the one to be embedded in the route ref.
   // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}

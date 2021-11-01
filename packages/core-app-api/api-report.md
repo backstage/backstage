@@ -28,6 +28,7 @@ import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Error as Error_2 } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -298,11 +299,7 @@ export class ErrorAlerter implements ErrorApi {
   constructor(alertApi: AlertApi, errorApi: ErrorApi);
   // (undocumented)
   error$(): Observable<{
-    error: {
-      name: string;
-      message: string;
-      stack?: string | undefined;
-    };
+    error: Error_2;
     context?: ErrorContext | undefined;
   }>;
   // (undocumented)

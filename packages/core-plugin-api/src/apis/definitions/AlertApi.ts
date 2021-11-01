@@ -17,6 +17,11 @@
 import { createApiRef, ApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
+/**
+ * Message handled by the {@link AlertApi}.
+ *
+ * @public
+ */
 export type AlertMessage = {
   message: string;
   // Severity will default to success since that is what material ui defaults the value to.
@@ -25,8 +30,9 @@ export type AlertMessage = {
 
 /**
  * The alert API is used to report alerts to the app, and display them to the user.
+ *
+ * @public
  */
-
 export type AlertApi = {
   /**
    * Post an alert for handling by the application.
@@ -39,6 +45,11 @@ export type AlertApi = {
   alert$(): Observable<AlertMessage>;
 };
 
+/**
+ * The {@link ApiRef} of {@link AlertApi}.
+ *
+ * @public
+ */
 export const alertApiRef: ApiRef<AlertApi> = createApiRef({
   id: 'core.alert',
 });

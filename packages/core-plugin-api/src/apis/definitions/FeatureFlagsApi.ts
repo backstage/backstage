@@ -17,29 +17,35 @@
 import { ApiRef, createApiRef } from '../system';
 
 /**
- * The feature flags API is used to toggle functionality to users across plugins and Backstage.
+ * Fetaure flag descriptor.
  *
- * Plugins can use this API to register feature flags that they have available
- * for users to enable/disable, and this API will centralize the current user's
- * state of which feature flags they would like to enable.
- *
- * This is ideal for Backstage plugins, as well as your own App, to trial incomplete
- * or unstable upcoming features. Although there will be a common interface for users
- * to enable and disable feature flags, this API acts as another way to enable/disable.
+ * @public
  */
-
 export type FeatureFlag = {
   name: string;
   pluginId: string;
 };
 
+/**
+ * Enum representing the state of a feature flag (inactive/active).
+ *
+ * @public
+ */
 export enum FeatureFlagState {
+  /**
+   * Feature flag inactive (disabled).
+   */
   None = 0,
+  /**
+   * Feature flag active (enabled).
+   */
   Active = 1,
 }
 
 /**
  * Options to use when saving feature flags.
+ *
+ * @public
  */
 export type FeatureFlagsSaveOptions = {
   /**
@@ -55,8 +61,28 @@ export type FeatureFlagsSaveOptions = {
   merge?: boolean;
 };
 
+/**
+ * User flags alias.
+ *
+ * @public
+ */
 export type UserFlags = {};
 
+/**
+ * The feature flags API is used to toggle functionality to users across plugins and Backstage.
+ *
+ * @remarks
+ *
+ * Plugins can use this API to register feature flags that they have available
+ * for users to enable/disable, and this API will centralize the current user's
+ * state of which feature flags they would like to enable.
+ *
+ * This is ideal for Backstage plugins, as well as your own App, to trial incomplete
+ * or unstable upcoming features. Although there will be a common interface for users
+ * to enable and disable feature flags, this API acts as another way to enable/disable.
+ *
+ * @public
+ */
 export interface FeatureFlagsApi {
   /**
    * Registers a new feature flag. Once a feature flag has been registered it
@@ -80,6 +106,11 @@ export interface FeatureFlagsApi {
   save(options: FeatureFlagsSaveOptions): void;
 }
 
+/**
+ * The {@link ApiRef} of {@link FeatureFlagsApi}.
+ *
+ * @public
+ */
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({
   id: 'core.featureflags',
 });

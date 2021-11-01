@@ -14,25 +14,62 @@
  * limitations under the License.
  */
 
+/**
+ * API reference.
+ *
+ * @public
+ */
 export type ApiRef<T> = {
   id: string;
   T: T;
 };
 
+/**
+ * Catch-all {@link ApiRef} type.
+ *
+ * @public
+ */
 export type AnyApiRef = ApiRef<unknown>;
 
+/**
+ * Transforms ApiRef type into its inner API type.
+ *
+ * @public
+ */
 export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
+/**
+ * Wraps a type with API properties into a type holding their respective {@link ApiRef}s.
+ * Reverse type transform of {@link ApiRefsToTypes}.
+ *
+ * @public
+ */
 export type TypesToApiRefs<T> = { [key in keyof T]: ApiRef<T[key]> };
 
+/**
+ * Unwraps type with {@link ApiRef} properties into a type holding their respective API types.
+ * Reverse type transform of {@link TypesToApiRefs}.
+ *
+ * @public
+ */
 export type ApiRefsToTypes<T extends { [key in string]: ApiRef<unknown> }> = {
   [key in keyof T]: ApiRefType<T[key]>;
 };
 
+/**
+ * Provides lookup of APIs through their {@link ApiRef}s.
+ *
+ * @public
+ */
 export type ApiHolder = {
   get<T>(api: ApiRef<T>): T | undefined;
 };
 
+/**
+ * Describes type returning API implementations.
+ *
+ * @public
+ */
 export type ApiFactory<
   Api,
   Impl extends Api,
@@ -43,6 +80,11 @@ export type ApiFactory<
   factory(deps: Deps): Impl;
 };
 
+/**
+ * Catch-all {@link ApiFactory} type.
+ *
+ * @public
+ */
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,

@@ -32,11 +32,20 @@ import { Observable } from '@backstage/types';
  * An array of scopes, or a scope string formatted according to the
  * auth provider, which is typically a space separated list.
  *
+ * @remarks
+ *
  * See the documentation for each auth provider for the list of scopes
  * supported by each provider.
+ *
+ * @public
  */
 export type OAuthScope = string | string[];
 
+/**
+ * Configuration of an authentication request.
+ *
+ * @public
+ */
 export type AuthRequestOptions = {
   /**
    * If this is set to true, the user will not be prompted to log in,
@@ -45,7 +54,7 @@ export type AuthRequestOptions = {
    * This can be used to perform a check whether the user is logged in, or if you don't
    * want to force a user to be logged in, but provide functionality if they already are.
    *
-   * @default false
+   * @defaultValue false
    */
   optional?: boolean;
 
@@ -55,7 +64,7 @@ export type AuthRequestOptions = {
    *
    * The method must be called synchronously from a user action for this to work in all browsers.
    *
-   * @default false
+   * @defaultValue false
    */
   instantPopup?: boolean;
 };
@@ -63,6 +72,8 @@ export type AuthRequestOptions = {
 /**
  * This API provides access to OAuth 2 credentials. It lets you request access tokens,
  * which can be used to act on behalf of the user when talking to APIs.
+ *
+ * @public
  */
 export type OAuthApi = {
   /**
@@ -95,6 +106,8 @@ export type OAuthApi = {
 /**
  * This API provides access to OpenID Connect credentials. It lets you request ID tokens,
  * which can be passed to backend services to prove the user's identity.
+ *
+ * @public
  */
 export type OpenIdConnectApi = {
   /**
@@ -113,13 +126,15 @@ export type OpenIdConnectApi = {
 
 /**
  * This API provides access to profile information of the user from an auth provider.
+ *
+ * @public
  */
 export type ProfileInfoApi = {
   /**
    * Get profile information for the user as supplied by this auth provider.
    *
    * If the optional flag is not set, a session is guaranteed to be returned, while if
-   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   * the optional flag is set, the session may be undefined. See {@link AuthRequestOptions} for more details.
    */
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
 };
@@ -127,23 +142,32 @@ export type ProfileInfoApi = {
 /**
  * This API provides access to the user's identity within Backstage.
  *
+ * @remarks
+ *
  * An auth provider that implements this interface can be used to sign-in to backstage. It is
  * not intended to be used directly from a plugin, but instead serves as a connection between
- * this authentication method and the app's @IdentityApi
+ * this authentication method and the app's {@link IdentityApi}
+ *
+ * @public
  */
 export type BackstageIdentityApi = {
   /**
    * Get the user's identity within Backstage. This should normally not be called directly,
-   * use the @IdentityApi instead.
+   * use the {@link IdentityApi} instead.
    *
    * If the optional flag is not set, a session is guaranteed to be returned, while if
-   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   * the optional flag is set, the session may be undefined. See {@link AuthRequestOptions} for more details.
    */
   getBackstageIdentity(
     options?: AuthRequestOptions,
   ): Promise<BackstageIdentity | undefined>;
 };
 
+/**
+ * A (user id, token) pair.
+ *
+ * @public
+ */
 export type BackstageIdentity = {
   /**
    * The backstage user ID.
@@ -163,6 +187,8 @@ export type BackstageIdentity = {
 
 /**
  * Profile information of the user.
+ *
+ * @public
  */
 export type ProfileInfo = {
   /**
@@ -183,14 +209,24 @@ export type ProfileInfo = {
 
 /**
  * Session state values passed to subscribers of the SessionApi.
+ *
+ * @public
  */
 export enum SessionState {
+  /**
+   * User signed in.
+   */
   SignedIn = 'SignedIn',
+  /**
+   * User not signed in.
+   */
   SignedOut = 'SignedOut',
 }
 
 /**
  * The SessionApi provides basic controls for any auth provider that is tied to a persistent session.
+ *
+ * @public
  */
 export type SessionApi = {
   /**
@@ -212,10 +248,14 @@ export type SessionApi = {
 /**
  * Provides authentication towards Google APIs and identities.
  *
- * See https://developers.google.com/identity/protocols/googlescopes for a full list of supported scopes.
+ * @remarks
+ *
+ * See {@link https://developers.google.com/identity/protocols/googlescopes} for a full list of supported scopes.
  *
  * Note that the ID token payload is only guaranteed to contain the user's numerical Google ID,
  * email and expiration information. Do not rely on any other fields, as they might not be present.
+ *
+ * @public
  */
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
@@ -230,8 +270,12 @@ export const googleAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitHub APIs.
  *
- * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
+ * @remarks
+ *
+ * See {@link https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -242,8 +286,12 @@ export const githubAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Okta APIs.
  *
- * See https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/
+ * @remarks
+ *
+ * See {@link https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
@@ -258,8 +306,12 @@ export const oktaAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitLab APIs.
  *
- * See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token
+ * @remarks
+ *
+ * See {@link https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -270,8 +322,12 @@ export const gitlabAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Auth0 APIs.
  *
- * See https://auth0.com/docs/scopes/current/oidc-scopes
+ * @remarks
+ *
+ * See {@link https://auth0.com/docs/scopes/current/oidc-scopes}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -282,9 +338,13 @@ export const auth0AuthApiRef: ApiRef<
 /**
  * Provides authentication towards Microsoft APIs and identities.
  *
+ * @remarks
+ *
  * For more info and a full list of supported scopes, see:
- * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
- * - https://docs.microsoft.com/en-us/graph/permissions-reference
+ * - {@link https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent}
+ * - {@link https://docs.microsoft.com/en-us/graph/permissions-reference}
+ *
+ * @public
  */
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
@@ -298,6 +358,8 @@ export const microsoftAuthApiRef: ApiRef<
 
 /**
  * Provides authentication for custom identity providers.
+ *
+ * @public
  */
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
@@ -311,6 +373,8 @@ export const oauth2ApiRef: ApiRef<
 
 /**
  * Provides authentication for custom OpenID Connect identity providers.
+ *
+ * @public
  */
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
@@ -323,7 +387,9 @@ export const oidcAuthApiRef: ApiRef<
 });
 
 /**
- * Provides authentication for saml based identity providers
+ * Provides authentication for SAML-based identity providers.
+ *
+ * @public
  */
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -331,6 +397,11 @@ export const samlAuthApiRef: ApiRef<
   id: 'core.auth.saml',
 });
 
+/**
+ * Provides authentication towards OneLogin APIs.
+ *
+ * @public
+ */
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -344,8 +415,12 @@ export const oneloginAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Bitbucket APIs.
  *
- * See https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
+ * @remarks
+ *
+ * See {@link https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -356,8 +431,12 @@ export const bitbucketAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Atlassian APIs.
  *
- * See https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/
+ * @remarks
+ *
+ * See {@link https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/}
  * for a full list of supported scopes.
+ *
+ * @public
  */
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
