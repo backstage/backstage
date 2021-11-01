@@ -357,7 +357,7 @@ export class AwsS3Publish implements PublisherBase {
         : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
 
       // Re-prepend the root path to the relative file path
-      const filePath = path.join(this.bucketRootPath, filePathNoRoot);
+      const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
