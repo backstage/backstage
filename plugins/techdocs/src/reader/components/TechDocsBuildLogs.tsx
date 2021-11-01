@@ -20,14 +20,15 @@ import {
   Drawer,
   Grid,
   IconButton,
+  LinearProgress,
   makeStyles,
   Theme,
   Typography,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import * as React from 'react';
-import { useState } from 'react';
-import { LazyLog } from 'react-lazylog';
+import React, { Suspense, useState } from 'react';
+
+const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -83,15 +84,17 @@ export const TechDocsBuildLogsDrawerContent = ({
         </IconButton>
       </Grid>
 
-      <LazyLog
-        text={
-          buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n')
-        }
-        extraLines={1}
-        follow
-        selectableLines
-        enableSearch
-      />
+      <Suspense fallback={<LinearProgress />}>
+        <LazyLog
+          text={
+            buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n')
+          }
+          extraLines={1}
+          follow
+          selectableLines
+          enableSearch
+        />
+      </Suspense>
     </Grid>
   );
 };

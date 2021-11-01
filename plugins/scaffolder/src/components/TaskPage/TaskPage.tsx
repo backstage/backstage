@@ -14,38 +14,40 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, memo, useMemo } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useParams } from 'react-router';
-import { useTaskEventStream } from '../hooks/useEventStream';
-import LazyLog from 'react-lazylog/build/LazyLog';
+import {
+  Content,
+  ErrorPage,
+  Header,
+  Lifecycle,
+  Page,
+} from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
 import {
   CircularProgress,
+  LinearProgress,
   Paper,
   StepButton,
   StepIconProps,
 } from '@material-ui/core';
-import { Status, TaskOutput } from '../../types';
-import { DateTime, Interval } from 'luxon';
-import { useInterval } from 'react-use';
-import Check from '@material-ui/icons/Check';
+import Grid from '@material-ui/core/Grid';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Cancel from '@material-ui/icons/Cancel';
+import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import classNames from 'classnames';
-import { BackstageTheme } from '@backstage/theme';
+import { DateTime, Interval } from 'luxon';
+import React, { memo, Suspense, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
+import { useInterval } from 'react-use';
+import { Status, TaskOutput } from '../../types';
+import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
-import {
-  Page,
-  Header,
-  Lifecycle,
-  Content,
-  ErrorPage,
-} from '@backstage/core-components';
+
+const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -213,9 +215,17 @@ export const TaskStatusStepper = memo(
 
 const TaskLogger = memo(({ log }: { log: string }) => {
   return (
-    <div style={{ height: '80vh' }}>
-      <LazyLog text={log} extraLines={1} follow selectableLines enableSearch />
-    </div>
+    <Suspense fallback={<LinearProgress />}>
+      <div style={{ height: '80vh' }}>
+        <LazyLog
+          text={log}
+          extraLines={1}
+          follow
+          selectableLines
+          enableSearch
+        />
+      </div>
+    </Suspense>
   );
 });
 
