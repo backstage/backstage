@@ -17,9 +17,9 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { OpenApiDefinitionWidget } from './OpenApiDefinitionWidget';
+import { OpenApiDefinition } from './OpenApiDefinition';
 
-describe('<OpenApiDefinitionWidget />', () => {
+describe('<OpenApiDefinition />', () => {
   it('renders openapi spec', async () => {
     const definition = `
 openapi: "3.0.0"
@@ -39,7 +39,7 @@ paths:
           description: Success
     `;
     const { getByText } = await renderInTestApp(
-      <OpenApiDefinitionWidget definition={definition} />,
+      <OpenApiDefinition definition={definition} />,
     );
 
     // swagger-ui loads the documentation asynchronously
@@ -51,7 +51,7 @@ paths:
 
   it('renders error if definition is missing', async () => {
     const { getByText } = await renderInTestApp(
-      <OpenApiDefinitionWidget definition="" />,
+      <OpenApiDefinition definition="" />,
     );
     expect(getByText(/No API definition provided/i)).toBeInTheDocument();
   });
