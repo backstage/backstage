@@ -7,6 +7,6 @@ export function useDashboard() {
     const response = useAsync(() => 
         dashboardApi.getDashboardData(), []
     );
-
-    return response;
+    const emptyObject: any= {};
+    return (response ? response : emptyObject);
 }

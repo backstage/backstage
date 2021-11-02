@@ -32,7 +32,7 @@ export const DashboardTable = (devOpsdata: any) => {
     const linkData = (
       <Grid>
         <h3 className={classes.heading}>Important Links</h3>
-        {devOpsdata.data.links.map((link: any, i: number) => {
+        {devOpsdata?.data?.links.map((link: any, i: number) => {
           return (
             <Grid className={classes.linkParent} key={i}>
               <a href="#" className={classes.link}>
@@ -46,7 +46,7 @@ export const DashboardTable = (devOpsdata: any) => {
     const contactData = (
       <Grid>
         <h3 className={classes.heading}>Product Contact List</h3>
-        {devOpsdata.data.contactList.map((contact: any, i: number) => {
+        {devOpsdata?.data?.contactList.map((contact: any, i: number) => {
           return (
             <Grid className={classes.contact} key={i}>
               <Typography>
@@ -58,9 +58,9 @@ export const DashboardTable = (devOpsdata: any) => {
       </Grid>
     );
     const healthData =
-      `${Math.ceil(devOpsdata.data.health)}` + ' of 3 servers are on';
+      `${Math.ceil(devOpsdata?.data?.health)}` + ' of 3 servers are on';
 
-    const updatedTestData = [
+    const updatedTestData: any = [
       {
         prodInfo: linkData,
         cicd: null,
