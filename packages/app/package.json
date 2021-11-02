@@ -52,7 +52,7 @@
     "@roadiehq/backstage-plugin-github-insights": "^1.1.23",
     "@roadiehq/backstage-plugin-github-pull-requests": "^1.0.13",
     "@roadiehq/backstage-plugin-travis-ci": "^1.0.11",
-    "history": "^5.0.0",
+    "history": "5.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
