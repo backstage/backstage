@@ -20,11 +20,11 @@ import {
   Header,
   Lifecycle,
   Page,
+  Progress,
 } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 import {
   CircularProgress,
-  LinearProgress,
   Paper,
   StepButton,
   StepIconProps,
@@ -215,7 +215,7 @@ export const TaskStatusStepper = memo(
 
 const TaskLogger = memo(({ log }: { log: string }) => {
   return (
-    <Suspense fallback={<LinearProgress />}>
+    <Suspense fallback={<Progress />}>
       <div style={{ height: '80vh' }}>
         <LazyLog
           text={log}

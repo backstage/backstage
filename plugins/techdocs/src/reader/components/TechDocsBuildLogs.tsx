@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Progress } from '@backstage/core-components';
 import {
   Button,
   createStyles,
   Drawer,
   Grid,
   IconButton,
-  LinearProgress,
   makeStyles,
   Theme,
   Typography,
@@ -84,7 +84,7 @@ export const TechDocsBuildLogsDrawerContent = ({
         </IconButton>
       </Grid>
 
-      <Suspense fallback={<LinearProgress />}>
+      <Suspense fallback={<Progress />}>
         <LazyLog
           text={
             buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n')

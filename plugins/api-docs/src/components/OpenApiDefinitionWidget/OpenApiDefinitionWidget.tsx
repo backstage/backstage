@@ -29,12 +29,12 @@ export type OpenApiDefinitionWidgetProps = {
   definition: string;
 };
 
-export const OpenApiDefinitionWidget = ({
-  definition,
-}: OpenApiDefinitionWidgetProps) => {
+export const OpenApiDefinitionWidget = (
+  props: OpenApiDefinitionWidgetProps,
+) => {
   return (
     <Suspense fallback={<Progress />}>
-      <LazyOpenApiDefinition definition={definition} />
+      <LazyOpenApiDefinition {...props} />
     </Suspense>
   );
 };

@@ -29,12 +29,12 @@ export type AsyncApiDefinitionWidgetProps = {
   definition: string;
 };
 
-export const AsyncApiDefinitionWidget = ({
-  definition,
-}: AsyncApiDefinitionWidgetProps) => {
+export const AsyncApiDefinitionWidget = (
+  props: AsyncApiDefinitionWidgetProps,
+) => {
   return (
     <Suspense fallback={<Progress />}>
-      <LazyAsyncApiDefinition definition={definition} />
+      <LazyAsyncApiDefinition {...props} />
     </Suspense>
   );
 };

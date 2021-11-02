@@ -29,12 +29,12 @@ export type GraphQlDefinitionWidgetProps = {
   definition: string;
 };
 
-export const GraphQlDefinitionWidget = ({
-  definition,
-}: GraphQlDefinitionWidgetProps) => {
+export const GraphQlDefinitionWidget = (
+  props: GraphQlDefinitionWidgetProps,
+) => {
   return (
     <Suspense fallback={<Progress />}>
-      <LazyGraphQlDefinition definition={definition} />
+      <LazyGraphQlDefinition {...props} />
     </Suspense>
   );
 };
