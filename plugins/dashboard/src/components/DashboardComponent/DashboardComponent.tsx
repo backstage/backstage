@@ -15,12 +15,13 @@ const useStyles = makeStyles({
 export const DashboardComponent = () => {
   const classes = useStyles();
   const [table, setTable] = useState('home');
+
   const data = useDashboard();
   const [dashboardData, setDashboardData] = useState(null);
 
   useEffect(() => {
     if (!data.loading && dashboardData === null) {
-      setDashboardData(data.value.data);
+      setDashboardData(data?.value?.data);
     }
   });
 
