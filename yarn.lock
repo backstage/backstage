@@ -15769,7 +15769,7 @@ highlight.js@~10.7.0:
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
   integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
 
-history@^5.0.0:
+history@5.0.1, history@^5.0.0:
   version "5.0.1"
   resolved "https://registry.npmjs.org/history/-/history-5.0.1.tgz#de35025ed08bce0db62364b47ebbf9d97b5eb06a"
   integrity sha512-5qC/tFUKfVci5kzgRxZxN5Mf1CV8NmJx9ByaPX0YTLx5Vz3Svh7NYp6eA4CpDq4iA9D0C1t8BNIfvQIrUI3mVw==
