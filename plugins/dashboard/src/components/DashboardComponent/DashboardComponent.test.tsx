@@ -4,7 +4,13 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigReader,
+} from '@backstage/core-app-api';
 import { msw, renderInTestApp } from '@backstage/test-utils';
+import { DashboardApi, DashboardRestApi, dashboardApiRef } from '../../api/api';
 
 describe('ExampleComponent', () => {
   const server = setupServer();
@@ -19,11 +25,27 @@ describe('ExampleComponent', () => {
   });
 
   it('should render', async () => {
+    const dashboardApi: jest.Mocked<DashboardApi> = {
+      getDashboardData: () => Promise.resolve({}),
+    } as any;
+    const apis = ApiRegistry.with(
+      dashboardApiRef,
+      DashboardRestApi.fromConfig(
+        new ConfigReader({
+          backend: {
+            baseUrl: 'testUrl'
+          },
+          integrations: {}
+        }),
+      ),
+    ).with(dashboardApiRef, dashboardApi);
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <DashboardComponent />
-      </ThemeProvider>,
+      <ApiProvider apis={apis}>
+        <ThemeProvider theme={lightTheme}>
+          <DashboardComponent />
+        </ThemeProvider>
+      </ApiProvider>,
     );
-    expect(rendered.getByText('Welcome to dashboard!')).toBeInTheDocument();
+    expect(rendered.getByText('DevOps Dashboard')).toBeInTheDocument();
   });
 });

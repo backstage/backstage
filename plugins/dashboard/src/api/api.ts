@@ -57,7 +57,7 @@ export type DashboardApi = {
 }
 
 export const dashboardApiRef = createApiRef<DashboardApi>({
-    id: 'dashboard-backend',
+    id: 'plugin.dashboard-backend.service',
     description: 'Used by the Dashboard plugin to make requests'
 });
 
