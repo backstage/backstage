@@ -1,0 +1,33 @@
+[
+  {
+    "facts": {
+      "examplenumberfact": {
+        "value": 2,
+        "type": "integer",
+        "description": "Example fact returning a number"
+      }
+    },
+    "result": true,
+    "check": {
+      "id": "simpleTestCheck",
+      "type": "json-rules-engine",
+      "name": "simpleTestCheck",
+      "description": "Simple Check For Testing",
+      "factIds": ["testRetriever"],
+      "rule": {
+        "conditions": {
+          "priority": 1,
+          "all": [
+            {
+              "operator": "lessThan",
+              "value": 5,
+              "fact": "examplenumberfact",
+              "factResult": 2,
+              "result": true
+            }
+          ]
+        }
+      }
+    }
+  }
+]

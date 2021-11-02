@@ -35,6 +35,7 @@
     "@backstage/plugin-pagerduty": "0.3.17",
     "@backstage/plugin-rollbar": "^0.3.18",
     "@backstage/plugin-scaffolder": "^0.11.8",
+    "@backstage/plugin-scorecards": "^0.1.0",
     "@backstage/plugin-search": "^0.4.15",
     "@backstage/plugin-sentry": "^0.3.26",
     "@backstage/plugin-shortcuts": "^0.1.12",
