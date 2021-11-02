@@ -41,6 +41,15 @@ export type BackstagePaletteAdditions = {
     indicator: string;
     color: string;
     selectedColor: string;
+    navItem: {
+      hoverBackground: string;
+    };
+    submenu: {
+      background: string;
+      indicator: string;
+      color: string;
+      selectedColor: string;
+    };
   };
   tabbar: {
     indicator: string;
@@ -64,7 +73,6 @@ export type BackstagePaletteAdditions = {
     error: string;
     text: string;
     link: string;
-    warning: string;
   };
 };
 
