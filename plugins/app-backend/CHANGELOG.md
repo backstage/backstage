@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.3.18
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/backend-common@0.9.8
+  - @backstage/config-loader@0.7.1
+
 ## 0.3.17
 
 ### Patch Changes

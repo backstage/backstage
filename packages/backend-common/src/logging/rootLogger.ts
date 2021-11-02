@@ -18,8 +18,10 @@ import { merge } from 'lodash';
 import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
+import { escapeRegExp } from '../util/escapeRegExp';
 
 let rootLogger: winston.Logger;
+let redactionRegExp: RegExp;
 
 /** @public */
 export function getRootLogger(): winston.Logger {
@@ -29,6 +31,30 @@ export function getRootLogger(): winston.Logger {
 /** @public */
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
+}
+
+export function setRootLoggerRedactionList(redactionList: string[]) {
+  if (redactionList.length) {
+    redactionRegExp = new RegExp(
+      `(${redactionList.map(escapeRegExp).join('|')})`,
+      'g',
+    );
+  }
+}
+
+/**
+ * A winston formatting function that finds occurrences of filteredKeys
+ * and replaces them with the corresponding identifier.
+ */
+function redactLogLine(info: winston.Logform.TransformableInfo) {
+  // TODO(hhogg): The logger is created before the config is loaded,
+  // because the logger is needed in the config loader. There is a risk of
+  // a secret being logged out during the config loading stage.
+  if (redactionRegExp) {
+    info.message = info.message.replace(redactionRegExp, '[REDACTED]');
+  }
+
+  return info;
 }
 
 /** @public */
@@ -41,6 +67,7 @@ export function createRootLogger(
       {
         level: env.LOG_LEVEL || 'info',
         format: winston.format.combine(
+          winston.format(redactLogLine)(),
           env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
         ),
         defaultMeta: {

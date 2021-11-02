@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.2
+
+### Patch Changes
+
+- f9cc2509f8: EntityTypePicker can be hidden and have an initial filter value set, similar to EntityKindPicker
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.6.1
 
 ### Patch Changes

@@ -138,6 +138,8 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
+        kind: entity.kind,
+        name: entity.metadata.name,
       });
     });
   });
@@ -183,6 +185,8 @@ describe('DefaultTechDocsCollator', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
+        kind: entity.kind,
+        name: entity.metadata.name,
       });
     });
   });
