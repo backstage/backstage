@@ -46,13 +46,8 @@ import request from 'supertest';
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
  */
-import { createRouter } from '../index';
+import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-
-jest.mock('../scaffolder/tasks');
-
-const MockStorageTaskBroker: jest.MockedClass<typeof StorageTaskBroker> =
-  StorageTaskBroker as any;
 
 const createCatalogClient = (templates: any[] = []) =>
   ({
@@ -79,6 +74,7 @@ const mockUrlReader = UrlReaders.default({
 
 describe('createRouter', () => {
   let app: express.Express;
+  let taskBroker: TaskBroker;
   const template: TemplateEntityV1beta2 = {
     apiVersion: 'backstage.io/v1beta2',
     kind: 'Template',
@@ -109,6 +105,16 @@ describe('createRouter', () => {
   };
 
   beforeEach(async () => {
+    const logger = getVoidLogger();
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await createDatabase().getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+
+    jest.spyOn(taskBroker, 'dispatch');
+    jest.spyOn(taskBroker, 'get');
+    jest.spyOn(taskBroker, 'observe');
+
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({}),
@@ -116,6 +122,7 @@ describe('createRouter', () => {
       catalogClient: createCatalogClient([template]),
       containerRunner: new DockerContainerRunner({} as any),
       reader: mockUrlReader,
+      taskBroker,
     });
     app = express().use(router);
   });
@@ -148,7 +155,9 @@ describe('createRouter', () => {
     });
 
     it('return the template id', async () => {
-      MockStorageTaskBroker.prototype.dispatch.mockResolvedValue({
+      (
+        taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch']
+      ).mockResolvedValue({
         taskId: 'a-random-id',
       });
 
@@ -168,7 +177,7 @@ describe('createRouter', () => {
 
   describe('GET /v2/tasks/:taskId', () => {
     it('does not divulge secrets', async () => {
-      MockStorageTaskBroker.prototype.get.mockResolvedValue({
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -186,37 +195,37 @@ describe('createRouter', () => {
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
       const unsubscribe = jest.fn();
-      MockStorageTaskBroker.prototype.observe.mockImplementation(
-        ({ taskId }, callback) => {
-          // emit after this function returned
-          setImmediate(() => {
-            callback(undefined, {
-              events: [
-                {
-                  id: 0,
-                  taskId,
-                  type: 'log',
-                  createdAt: '',
-                  body: { message: 'My log message' },
-                },
-              ],
-            });
-            callback(undefined, {
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
-            });
+      (
+        taskBroker.observe as jest.Mocked<TaskBroker>['observe']
+      ).mockImplementation(({ taskId }, callback) => {
+        // emit after this function returned
+        setImmediate(() => {
+          callback(undefined, {
+            events: [
+              {
+                id: 0,
+                taskId,
+                type: 'log',
+                createdAt: '',
+                body: { message: 'My log message' },
+              },
+            ],
           });
+          callback(undefined, {
+            events: [
+              {
+                id: 1,
+                taskId,
+                type: 'completion',
+                createdAt: '',
+                body: { message: 'Finished!' },
+              },
+            ],
+          });
+        });
 
-          return unsubscribe;
-        },
-      );
+        return { unsubscribe };
+      });
 
       let statusCode: any = undefined;
       let headers: any = {};
@@ -255,8 +264,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
 `);
 
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+      expect(taskBroker.observe).toBeCalledTimes(1);
+      expect(taskBroker.observe).toBeCalledWith(
         { taskId: 'a-random-id' },
         expect.any(Function),
       );
@@ -266,24 +275,24 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const unsubscribe = jest.fn();
-      MockStorageTaskBroker.prototype.observe.mockImplementation(
-        ({ taskId }, callback) => {
-          setImmediate(() => {
-            callback(undefined, {
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
-            });
+      (
+        taskBroker.observe as jest.Mocked<TaskBroker>['observe']
+      ).mockImplementation(({ taskId }, callback) => {
+        setImmediate(() => {
+          callback(undefined, {
+            events: [
+              {
+                id: 1,
+                taskId,
+                type: 'completion',
+                createdAt: '',
+                body: { message: 'Finished!' },
+              },
+            ],
           });
-          return unsubscribe;
-        },
-      );
+        });
+        return { unsubscribe };
+      });
 
       let statusCode: any = undefined;
       let headers: any = {};
@@ -309,8 +318,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(statusCode).toBe(200);
       expect(headers['content-type']).toBe('text/event-stream');
 
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+      expect(taskBroker.observe).toBeCalledTimes(1);
+      expect(taskBroker.observe).toBeCalledWith(
         { taskId: 'a-random-id', after: 10 },
         expect.any(Function),
       );
@@ -322,29 +331,29 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
       const unsubscribe = jest.fn();
-      MockStorageTaskBroker.prototype.observe.mockImplementation(
-        ({ taskId }, callback) => {
-          callback(undefined, {
-            events: [
-              {
-                id: 0,
-                taskId,
-                type: 'log',
-                createdAt: '',
-                body: { message: 'My log message' },
-              },
-              {
-                id: 1,
-                taskId,
-                type: 'completion',
-                createdAt: '',
-                body: { message: 'Finished!' },
-              },
-            ],
-          });
-          return unsubscribe;
-        },
-      );
+      (
+        taskBroker.observe as jest.Mocked<TaskBroker>['observe']
+      ).mockImplementation(({ taskId }, callback) => {
+        callback(undefined, {
+          events: [
+            {
+              id: 0,
+              taskId,
+              type: 'log',
+              createdAt: '',
+              body: { message: 'My log message' },
+            },
+            {
+              id: 1,
+              taskId,
+              type: 'completion',
+              createdAt: '',
+              body: { message: 'Finished!' },
+            },
+          ],
+        });
+        return { unsubscribe };
+      });
 
       const response = await request(app).get('/v2/tasks/a-random-id/events');
 
@@ -366,8 +375,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         },
       ]);
 
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+      expect(taskBroker.observe).toBeCalledTimes(1);
+      expect(taskBroker.observe).toBeCalledWith(
         { taskId: 'a-random-id' },
         expect.any(Function),
       );
@@ -376,12 +385,12 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const unsubscribe = jest.fn();
-      MockStorageTaskBroker.prototype.observe.mockImplementation(
-        (_, callback) => {
-          callback(undefined, { events: [] });
-          return unsubscribe;
-        },
-      );
+      (
+        taskBroker.observe as jest.Mocked<TaskBroker>['observe']
+      ).mockImplementation((_, callback) => {
+        callback(undefined, { events: [] });
+        return { unsubscribe };
+      });
 
       const response = await request(app)
         .get('/v2/tasks/a-random-id/events')
@@ -390,8 +399,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([]);
 
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledTimes(1);
-      expect(MockStorageTaskBroker.prototype.observe).toBeCalledWith(
+      expect(taskBroker.observe).toBeCalledTimes(1);
+      expect(taskBroker.observe).toBeCalledWith(
         { taskId: 'a-random-id', after: 10 },
         expect.any(Function),
       );

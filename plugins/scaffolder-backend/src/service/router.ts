@@ -305,7 +305,7 @@ export async function createRouter(
       }, 30_000);
 
       // Get all known events after an id (always includes the completion event) and return the first callback
-      unsubscribe = taskBroker.observe(
+      ({ unsubscribe } = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
           // stop the timeout
@@ -320,7 +320,7 @@ export async function createRouter(
 
           res.json(events);
         },
-      );
+      ));
 
       // When client closes connection we update the clients list
       // avoiding the disconnected one
