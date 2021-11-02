@@ -16,7 +16,7 @@
 
 import { FactRetrieverContext } from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 
 const applicableEntityKinds = [
   'component',
@@ -64,7 +64,7 @@ export const entityFactRetriever = {
       filter: entityKindFilter,
     });
 
-    return entities.items.map(it => {
+    return entities.items.map((it: Entity) => {
       return {
         entity: {
           namespace: it.metadata.namespace!!,
@@ -73,7 +73,9 @@ export const entityFactRetriever = {
         },
         facts: {
           hasSpecWithOwner: Boolean(it.spec?.owner),
-          hasSpecWithGroupOwner: Boolean(it.spec?.owner && it.spec?.owner),
+          hasSpecWithGroupOwner: Boolean(
+            it.spec?.owner && (it.spec?.owner as string).startsWith('group:'),
+          ),
           hasOwnedByRelation: Boolean(
             it.relations &&
               it.relations.find(({ type }) => type === RELATION_OWNED_BY),

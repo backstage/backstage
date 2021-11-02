@@ -15,7 +15,7 @@
  */
 
 import { entityFactRetriever } from './entityFactRetriever';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
@@ -49,7 +49,7 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
       },
       relations: [
         {
-          type: 'ownedBy',
+          type: RELATION_OWNED_BY,
           target: { name: 'team-a', kind: 'group', namespace: 'default' },
         },
       ],
@@ -63,6 +63,19 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
       spec: {
         type: 'service',
         lifecycle: 'test',
+        owner: '',
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1beta1',
+      metadata: {
+        name: 'service-with-user-owner',
+      },
+      kind: 'Component',
+      spec: {
+        type: 'service',
+        lifecycle: 'test',
+        owner: 'user:my-user',
       },
     },
   ],
@@ -103,6 +116,44 @@ describe('entityFactRetriever', () => {
         ).toMatchObject({
           facts: {
             hasSpecWithOwner: false,
+          },
+        });
+      });
+    });
+  });
+  describe('hasSpecWithGroupOwner', () => {
+    describe('where the entity has an group as owner in the spec', () => {
+      it('returns true for hasSpecWithGroupOwner', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-owner'),
+        ).toMatchObject({
+          facts: {
+            hasSpecWithGroupOwner: true,
+          },
+        });
+      });
+    });
+    describe('where the entity has a user as owner in the spec', () => {
+      it('returns false for hasSpecWithGroupOwner', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-user-owner'),
+        ).toMatchObject({
+          facts: {
+            hasSpecWithGroupOwner: false,
+          },
+        });
+      });
+    });
+    describe('where the entity does not have an owner in the spec', () => {
+      it('returns false for hasSpecWithGroupOwner', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-without-owner'),
+        ).toMatchObject({
+          facts: {
+            hasSpecWithGroupOwner: false,
           },
         });
       });
