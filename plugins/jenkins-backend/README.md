@@ -48,6 +48,29 @@ export default async function createPlugin({
 }
 ```
 
+### src/index.ts
+
+```diff
+diff --git a/packages/backend/src/index.ts b/packages/backend/src/index.ts
+index f2b14b2..2c64f47 100644
+--- a/packages/backend/src/index.ts
++++ b/packages/backend/src/index.ts
+@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
+ import app from './plugins/app';
++import jenkins from './plugins/jenkins';
+ import scaffolder from './plugins/scaffolder';
+@@ -56,6 +57,7 @@ async function main() {
+   const authEnv = useHotMemoize(module, () => createEnv('auth'));
++  const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
+@@ -63,6 +65,7 @@ async function main() {
+
+   const apiRouter = Router();
+   apiRouter.use('/catalog', await catalog(catalogEnv));
++  apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+```
+
 This plugin must be provided with a JenkinsInfoProvider, this is a strategy object for finding the Jenkins instance and job for an entity.
 
 There is a standard one provided, but the Integrator is free to build their own.
