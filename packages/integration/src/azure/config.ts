@@ -21,6 +21,8 @@ const AZURE_HOST = 'dev.azure.com';
 
 /**
  * The configuration parameters for a single Azure provider.
+ *
+ * @public
  */
 export type AzureIntegrationConfig = {
   /**
@@ -41,7 +43,8 @@ export type AzureIntegrationConfig = {
 /**
  * Reads a single Azure integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readAzureIntegrationConfig(
   config: Config,
@@ -62,7 +65,8 @@ export function readAzureIntegrationConfig(
  * Reads a set of Azure integration configs, and inserts some defaults for
  * public Azure if not specified.
  *
- * @param configs All of the integration config objects
+ * @param configs - All of the integration config objects
+ * @public
  */
 export function readAzureIntegrationConfigs(
   configs: Config[],

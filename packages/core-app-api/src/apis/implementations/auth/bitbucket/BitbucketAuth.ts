@@ -40,7 +40,12 @@ const DEFAULT_PROVIDER = {
   icon: BitbucketIcon,
 };
 
-class BitbucketAuth {
+/**
+ * Implements the OAuth flow to Bitbucket products.
+ *
+ * @public
+ */
+export default class BitbucketAuth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -57,5 +62,3 @@ class BitbucketAuth {
     });
   }
 }
-
-export default BitbucketAuth;

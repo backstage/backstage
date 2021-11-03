@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef, Observable } from '@backstage/core-plugin-api';
+import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 /**
  * An API to store starred entities

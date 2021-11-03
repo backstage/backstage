@@ -36,7 +36,7 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { RepoBuild } from '../../api/types';
 
-const getBuildResultComponent = (result: number | undefined) => {
+export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
     case BuildResult.Succeeded:
       return (
@@ -72,7 +72,7 @@ const getBuildResultComponent = (result: number | undefined) => {
   }
 };
 
-const getBuildStateComponent = (
+export const getBuildStateComponent = (
   status: number | undefined,
   result: number | undefined,
 ) => {

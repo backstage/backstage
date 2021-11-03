@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
 import React, { useCallback, useState } from 'react';
@@ -128,13 +128,8 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    try {
-      const id = await scaffolderApi.scaffold(templateName, formState);
-
-      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
-    } catch (e) {
-      errorApi.post(e);
-    }
+    const id = await scaffolderApi.scaffold(templateName, formState);
+    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
   };
 
   if (error) {

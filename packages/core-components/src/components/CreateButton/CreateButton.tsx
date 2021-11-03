@@ -24,6 +24,8 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
 /**
  * Properties for {@link CreateButton}
+ *
+ * @public
  */
 export type CreateButtonProps = {
   title: string;
@@ -31,6 +33,8 @@ export type CreateButtonProps = {
 
 /**
  * Responsive Button giving consistent UX for creation of different things
+ *
+ * @public
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;

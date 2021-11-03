@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { Button } from '@material-ui/core';
 import { ErrorPage, ErrorPanel, Progress } from '@backstage/core-components';
 import { darkTheme, lightTheme } from '@backstage/theme';
@@ -47,6 +48,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
  * which can be rewritten at runtime to contain an additional JSON config object.
  * If runtime config is present, it will be placed first in the config array, overriding
  * other config values.
+ *
+ * @public
  */
 export const defaultConfigLoader: AppConfigLoader = async (
   // This string may be replaced at runtime to provide additional config.
@@ -99,6 +102,8 @@ export function OptionallyWrapInRouter({ children }: PropsWithChildren<{}>) {
 
 /**
  * Creates a new Backstage App.
+ *
+ * @public
  */
 export function createApp(options?: AppOptions) {
   const DefaultNotFoundPage = () => (

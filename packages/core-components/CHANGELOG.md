@@ -1,5 +1,28 @@
 # @backstage/core-components
 
+## 0.7.2
+
+### Patch Changes
+
+- afd5c82ce1: Updates the d3 dependencies
+- c6c2942daa: Deprecated `DismissbleBannerClassKey` and fixed the typo to make `DismissableBannerClassKey`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.7.1
+
+### Patch Changes
+
+- e535ea766a: Switched to relying on the built-in support for async loading in `react-syntax-highlighter`. This should provide further improvements to async rendering and lazy loading, and avoid test flakiness that was happening because of the significant number or resources being loaded in lazily all at once.
+- 2023a9683f: Fixed invalid wrap in DismissableBanner component
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+
 ## 0.7.0
 
 ### Minor Changes

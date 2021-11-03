@@ -22,6 +22,7 @@ import React, { PropsWithChildren } from 'react';
 import { CopyTextButton } from '../CopyTextButton';
 import { WarningPanel } from '../WarningPanel';
 
+/** @public */
 export type ErrorPanelClassKey = 'text' | 'divider';
 
 const useStyles = makeStyles(
@@ -91,6 +92,7 @@ const ErrorList = ({
   );
 };
 
+/** @public */
 export type ErrorPanelProps = {
   error: Error;
   defaultExpanded?: boolean;
@@ -99,6 +101,8 @@ export type ErrorPanelProps = {
 
 /**
  * Renders a warning panel as the effect of an error.
+ *
+ * @public
  */
 export function ErrorPanel(props: PropsWithChildren<ErrorPanelProps>) {
   const { title, error, defaultExpanded, children } = props;

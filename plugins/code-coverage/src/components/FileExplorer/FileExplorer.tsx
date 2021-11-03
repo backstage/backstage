@@ -30,7 +30,6 @@ import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
-
 import {
   Progress,
   ResponseErrorPanel,
@@ -51,33 +50,46 @@ type CoverageTableRow = {
   tableData?: { id: number };
 };
 
-const buildFileStructure = (row: CoverageTableRow) => {
-  const dataGroupedByPath: FileStructureObject = row.files.reduce(
-    (acc: FileStructureObject, cur: CoverageTableRow) => {
-      let path = cur.filename;
-      if (row.path) {
-        path = path?.split(`${row.path}/`)[1];
-      }
-      const pathArray = path?.split('/');
-
-      if (!pathArray) {
-        return acc;
-      }
+export const groupByPath = (files: CoverageTableRow[]) => {
+  const acc: FileStructureObject = {};
+  files.forEach(file => {
+    const filename = file.filename;
+    if (!file.filename) return;
+    const pathArray = filename?.split('/').filter(el => el !== '');
+    if (pathArray) {
       if (!acc.hasOwnProperty(pathArray[0])) {
         acc[pathArray[0]] = [];
       }
-      acc[pathArray[0]].push(cur);
-      return acc;
-    },
-    {},
-  );
+      acc[pathArray[0]].push(file);
+    }
+  });
+  return acc;
+};
 
+const removeVisitedPathGroup = (
+  files: CoverageTableRow[],
+  pathGroup: string,
+) => {
+  return files.map(file => {
+    return {
+      ...file,
+      filename: file.filename
+        ? file.filename.substring(
+            file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
+          )
+        : file.filename,
+    };
+  });
+};
+
+export const buildFileStructure = (row: CoverageTableRow) => {
+  const dataGroupedByPath: FileStructureObject = groupByPath(row.files);
   row.files = Object.keys(dataGroupedByPath).map(pathGroup => {
     return buildFileStructure({
       path: pathGroup,
       files: dataGroupedByPath.hasOwnProperty('files')
-        ? dataGroupedByPath.files
-        : dataGroupedByPath[pathGroup],
+        ? removeVisitedPathGroup(dataGroupedByPath.files, pathGroup)
+        : removeVisitedPathGroup(dataGroupedByPath[pathGroup], pathGroup),
       coverage:
         dataGroupedByPath[pathGroup].reduce(
           (acc: number, cur: CoverageTableRow) => acc + cur.coverage,

@@ -148,7 +148,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         labelSelector,
       )
       .then(r => {
-        return { type: objectType, resources: (r.body as any).items };
+        return {
+          type: objectType,
+          resources: (r.body as any).items,
+        };
       });
   }
 }

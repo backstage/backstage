@@ -19,6 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 
+/** @public */
 export type ItemCardHeaderClassKey = 'root';
 
 const styles = (theme: BackstageTheme) =>
@@ -34,6 +35,7 @@ const styles = (theme: BackstageTheme) =>
 
 const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
+/** @public */
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**
    * A large title to show in the header, providing the main heading.
@@ -66,9 +68,9 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *
- * <code>
- *   <ItemCardHeader title="Hello" classes={{ root: myClassName }} />
- * </code>
+ * `<ItemCardHeader title="Hello" classes={{ root: myClassName }} />`
+ *
+ * @public
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;

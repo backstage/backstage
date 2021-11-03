@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
 import { filterByVisibility, filterErrorsByVisibility } from './filtering';

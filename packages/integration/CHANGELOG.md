@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 0.6.9
+
+### Patch Changes
+
+- a15d028517: More API fixes: mark things public, add docs, fix exports
+- Updated dependencies
+  - @backstage/config@0.1.11
+
 ## 0.6.8
 
 ### Patch Changes

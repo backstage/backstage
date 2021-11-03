@@ -26,6 +26,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
+/** @public */
 export type HeaderClassKey =
   | 'header'
   | 'leftItemsBox'
@@ -190,6 +191,7 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   );
 };
 
+/** @public */
 export function Header(props: PropsWithChildren<Props>) {
   const {
     children,

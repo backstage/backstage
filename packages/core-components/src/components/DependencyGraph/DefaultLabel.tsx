@@ -19,6 +19,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
 import { RenderLabelProps } from './types';
 
+/** @public */
 export type DependencyGraphDefaultLabelClassKey = 'text';
 
 const useStyles = makeStyles(
@@ -30,6 +31,7 @@ const useStyles = makeStyles(
   { name: 'BackstageDependencyGraphDefaultLabel' },
 );
 
+/** @public */
 export function DefaultLabel({ edge: { label } }: RenderLabelProps) {
   const classes = useStyles();
   return (
