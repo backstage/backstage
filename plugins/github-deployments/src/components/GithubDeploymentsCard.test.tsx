@@ -16,7 +16,10 @@
 import React from 'react';
 
 import { fireEvent } from '@testing-library/react';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import {
   GithubDeployment,
   GithubDeploymentsApiClient,
@@ -127,7 +130,7 @@ const assertFetchedData = async () => {
 
 describe('github-deployments', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     worker.resetHandlers();

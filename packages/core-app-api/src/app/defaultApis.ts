@@ -33,6 +33,7 @@ import {
   SamlAuth,
   OneLoginAuth,
   UnhandledErrorForwarder,
+  AtlassianAuth,
 } from '../apis';
 
 import {
@@ -55,6 +56,7 @@ import {
   oneloginAuthApiRef,
   oidcAuthApiRef,
   bitbucketAuthApiRef,
+  atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
@@ -243,5 +245,20 @@ export const defaultApis = [
         defaultScopes: ['team'],
         environment: configApi.getOptionalString('auth.environment'),
       }),
+  }),
+  createApiFactory({
+    api: atlassianAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return AtlassianAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
   }),
 ];

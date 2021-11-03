@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { useApi } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/search-common';
 import React, {

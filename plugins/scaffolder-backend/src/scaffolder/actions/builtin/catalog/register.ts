@@ -27,8 +27,8 @@ export function createCatalogRegisterAction(options: {
   const { catalogClient, integrations } = options;
 
   return createTemplateAction<
-    | { catalogInfoUrl: string }
-    | { repoContentsUrl: string; catalogInfoPath?: string }
+    | { catalogInfoUrl: string; optional?: boolean }
+    | { repoContentsUrl: string; catalogInfoPath?: string; optional?: boolean }
   >({
     id: 'catalog:register',
     description:
@@ -45,6 +45,12 @@ export function createCatalogRegisterAction(options: {
                 description:
                   'An absolute URL pointing to the catalog info file location',
                 type: 'string',
+              },
+              optional: {
+                title: 'Optional',
+                description:
+                  'Permit the registered location to optionally exist. Default: false',
+                type: 'boolean',
               },
             },
           },
@@ -63,6 +69,12 @@ export function createCatalogRegisterAction(options: {
                 description:
                   'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
                 type: 'string',
+              },
+              optional: {
+                title: 'Optional',
+                description:
+                  'Permit the registered location to optionally exist. Default: false',
+                type: 'boolean',
               },
             },
           },
@@ -100,22 +112,30 @@ export function createCatalogRegisterAction(options: {
         },
         ctx.token ? { token: ctx.token } : {},
       );
-      const result = await catalogClient.addLocation(
-        {
-          dryRun: true,
-          type: 'url',
-          target: catalogInfoUrl,
-        },
-        ctx.token ? { token: ctx.token } : {},
-      );
 
-      if (result.entities.length > 0) {
-        const { entities } = result;
-        const entity =
-          entities.find(e => !e.metadata.name.startsWith('generated-')) ??
-          entities[0];
-        ctx.output('entityRef', stringifyEntityRef(entity));
+      try {
+        const result = await catalogClient.addLocation(
+          {
+            dryRun: true,
+            type: 'url',
+            target: catalogInfoUrl,
+          },
+          ctx.token ? { token: ctx.token } : {},
+        );
+
+        if (result.entities.length > 0) {
+          const { entities } = result;
+          const entity =
+            entities.find(e => !e.metadata.name.startsWith('generated-')) ??
+            entities[0];
+          ctx.output('entityRef', stringifyEntityRef(entity));
+        }
+      } catch (e) {
+        if (!input.optional) {
+          throw e;
+        }
       }
+
       ctx.output('catalogInfoUrl', catalogInfoUrl);
     },
   });

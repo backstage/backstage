@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { deserializeError, serializeError } from './error';
+export { deserializeError, serializeError, stringifyError } from './error';
 export type { SerializedError } from './error';
 export { parseErrorResponse } from './response';
 export type { ErrorResponse } from './response';

@@ -27,4 +27,4 @@ export * from './extensions';
 export * from './icons';
 export * from './plugin';
 export * from './routing';
-export * from './types';
+export * from './deprecatedTypes';

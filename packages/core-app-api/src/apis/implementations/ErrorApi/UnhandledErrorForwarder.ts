@@ -16,6 +16,11 @@ import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
  * limitations under the License.
  */
 
+/**
+ * Utility class that helps with error forwarding.
+ *
+ * @public
+ */
 export class UnhandledErrorForwarder {
   /**
    * Add event listener, such that unhandled errors can be forwarded using an given `ErrorApi` instance

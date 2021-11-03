@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 import { TransformFunc } from './types';
 import { isObject } from './utils';

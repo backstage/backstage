@@ -15,21 +15,28 @@
  */
 
 import { KafkaApi, ConsumerGroupOffsetsResponse } from './types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class KafkaBackendClient implements KafkaApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   private async internalGet(path: string): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kafka')}${path}`;
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
 

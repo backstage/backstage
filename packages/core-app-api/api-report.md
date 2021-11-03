@@ -15,6 +15,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
+import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { AuthProvider } from '@backstage/core-plugin-api';
 import { AuthRequester } from '@backstage/core-plugin-api';
@@ -39,7 +40,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
@@ -57,8 +58,6 @@ import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueChange } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "AlertApiForwarder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class AlertApiForwarder implements AlertApi {
   // (undocumented)
@@ -67,8 +66,6 @@ export class AlertApiForwarder implements AlertApi {
   post(alert: AlertMessage): void;
 }
 
-// Warning: (ae-missing-release-tag) "ApiFactoryHolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ApiFactoryHolder = {
   get<T>(api: ApiRef<T>):
@@ -82,8 +79,6 @@ export type ApiFactoryHolder = {
     | undefined;
 };
 
-// Warning: (ae-missing-release-tag) "ApiFactoryRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ApiFactoryRegistry implements ApiFactoryHolder {
   // (undocumented)
@@ -108,11 +103,9 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
   >(scope: ApiFactoryScope, factory: ApiFactory<Api, Impl, Deps>): boolean;
 }
 
-// Warning: (ae-missing-release-tag) "ApiProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ApiProvider: {
-  ({ apis, children }: PropsWithChildren<ApiProviderProps>): JSX.Element;
+  (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
       PropTypes.InferProps<{
@@ -123,9 +116,7 @@ export const ApiProvider: {
   };
 };
 
-// Warning: (ae-missing-release-tag) "ApiRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ApiRegistry implements ApiHolder {
   constructor(apis: Map<string, unknown>);
   // Warning: (ae-forgotten-export) The symbol "ApiRegistryBuilder" needs to be exported by the entry point index.d.ts
@@ -133,22 +124,14 @@ export class ApiRegistry implements ApiHolder {
   // (undocumented)
   static builder(): ApiRegistryBuilder;
   // Warning: (ae-forgotten-export) The symbol "ApiImpl" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   static from(apis: ApiImpl[]): ApiRegistry;
   // (undocumented)
   get<T>(api: ApiRef<T>): T | undefined;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   static with<T>(api: ApiRef<T>, impl: T): ApiRegistry;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   with<T>(api: ApiRef<T>, impl: T): ApiRegistry;
 }
 
-// Warning: (ae-missing-release-tag) "ApiResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ApiResolver implements ApiHolder {
   constructor(factories: ApiFactoryHolder);
   // (undocumented)
@@ -159,9 +142,7 @@ export class ApiResolver implements ApiHolder {
   ): void;
 }
 
-// Warning: (ae-missing-release-tag) "AppComponents" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
@@ -172,23 +153,17 @@ export type AppComponents = {
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
-// Warning: (ae-missing-release-tag) "AppConfigLoader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
-// Warning: (ae-missing-release-tag) "AppContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AppContext = {
   getPlugins(): BackstagePlugin<any, any>[];
   getSystemIcon(key: string): IconComponent | undefined;
   getComponents(): AppComponents;
 };
 
-// Warning: (ae-missing-release-tag) "AppOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
   icons?: Partial<AppIcons> & {
@@ -204,9 +179,8 @@ export type AppOptions = {
 // Warning: (ae-forgotten-export) The symbol "PartialKeys" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "TargetRouteMap" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KeysWithType" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AppRouteBinder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export type AppRouteBinder = <
   ExternalRoutes extends {
     [name: string]: ExternalRouteRef;
@@ -219,9 +193,7 @@ export type AppRouteBinder = <
   >,
 ) => void;
 
-// Warning: (ae-missing-release-tag) "AppThemeSelector" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class AppThemeSelector implements AppThemeApi {
   constructor(themes: AppTheme[]);
   // (undocumented)
@@ -236,12 +208,21 @@ export class AppThemeSelector implements AppThemeApi {
   setActiveThemeId(themeId?: string): void;
 }
 
-// Warning: (ae-missing-release-tag) "Auth0Auth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class Auth0Auth {
+// @public
+export class AtlassianAuth {
   // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
   //
+  // (undocumented)
+  static create({
+    discoveryApi,
+    environment,
+    provider,
+    oauthRequestApi,
+  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
+}
+
+// @public
+export class Auth0Auth {
   // (undocumented)
   static create({
     discoveryApi,
@@ -252,9 +233,7 @@ export class Auth0Auth {
   }: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "BackstageApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BackstageApp = {
   getPlugins(): BackstagePlugin<any, any>[];
   getSystemIcon(key: string): IconComponent | undefined;
@@ -262,19 +241,20 @@ export type BackstageApp = {
   getRouter(): ComponentType<{}>;
 };
 
-// Warning: (ae-missing-release-tag) "BackstagePluginWithAnyOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BackstagePluginWithAnyOutput = Omit<
   BackstagePlugin<any, any>,
   'output'
 > & {
-  output(): (PluginOutput | UnknownPluginOutput)[];
+  output(): (
+    | PluginOutput
+    | {
+        type: string;
+      }
+  )[];
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class BitbucketAuth {
   // (undocumented)
   static create({
@@ -286,9 +266,7 @@ export class BitbucketAuth {
   }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "BitbucketSession" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BitbucketSession = {
   providerInfo: {
     accessToken: string;
@@ -299,9 +277,7 @@ export type BitbucketSession = {
   backstageIdentity: BackstageIdentity;
 };
 
-// Warning: (ae-missing-release-tag) "BootErrorPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
@@ -310,18 +286,13 @@ export type BootErrorPageProps = {
 export { ConfigReader };
 
 // Warning: (ae-forgotten-export) The symbol "PrivateAppImpl" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function createApp(options?: AppOptions): PrivateAppImpl;
 
-// Warning: (ae-missing-release-tag) "defaultConfigLoader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const defaultConfigLoader: AppConfigLoader;
 
-// Warning: (ae-missing-release-tag) "ErrorAlerter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ErrorAlerter implements ErrorApi {
   constructor(alertApi: AlertApi, errorApi: ErrorApi);
@@ -338,8 +309,6 @@ export class ErrorAlerter implements ErrorApi {
   post(error: Error, context?: ErrorContext): void;
 }
 
-// Warning: (ae-missing-release-tag) "ErrorApiForwarder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ErrorApiForwarder implements ErrorApi {
   // (undocumented)
@@ -351,23 +320,17 @@ export class ErrorApiForwarder implements ErrorApi {
   post(error: Error, context?: ErrorContext): void;
 }
 
-// Warning: (ae-missing-release-tag) "ErrorBoundaryFallbackProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ErrorBoundaryFallbackProps = {
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
 };
 
-// Warning: (ae-missing-release-tag) "FeatureFlagged" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FeatureFlaggedProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type FeatureFlaggedProps = {
   children: ReactNode;
 } & (
@@ -379,15 +342,15 @@ export type FeatureFlaggedProps = {
     }
 );
 
-// Warning: (ae-forgotten-export) The symbol "FlatRoutesProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "FlatRoutes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "GithubAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type FlatRoutesProps = {
+  children: ReactNode;
+};
+
+// @public
 export class GithubAuth implements OAuthApi, SessionApi {
   // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
   constructor(sessionManager: SessionManager<GithubSession>);
@@ -417,9 +380,7 @@ export class GithubAuth implements OAuthApi, SessionApi {
   signOut(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubSession" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type GithubSession = {
   providerInfo: {
     accessToken: string;
@@ -430,9 +391,7 @@ export type GithubSession = {
   backstageIdentity: BackstageIdentity;
 };
 
-// Warning: (ae-missing-release-tag) "GitlabAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GitlabAuth {
   // (undocumented)
   static create({
@@ -444,9 +403,7 @@ export class GitlabAuth {
   }: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "GoogleAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GoogleAuth {
   // (undocumented)
   static create({
@@ -458,8 +415,6 @@ export class GoogleAuth {
   }: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "LocalStorageFeatureFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
@@ -472,9 +427,7 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   save(options: FeatureFlagsSaveOptions): void;
 }
 
-// Warning: (ae-missing-release-tag) "MicrosoftAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class MicrosoftAuth {
   // (undocumented)
   static create({
@@ -486,17 +439,13 @@ export class MicrosoftAuth {
   }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "NoOpAnalyticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class NoOpAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(_event: AnalyticsEvent): void;
 }
 
-// Warning: (ae-missing-release-tag) "OAuth2" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class OAuth2
   implements
     OAuthApi,
@@ -505,8 +454,10 @@ export class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options);
+  constructor(options: {
+    sessionManager: SessionManager<OAuth2Session>;
+    scopeTransform: (scopes: string[]) => string[];
+  });
   // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -539,9 +490,7 @@ export class OAuth2
   signOut(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "OAuth2Session" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type OAuth2Session = {
   providerInfo: {
     idToken: string;
@@ -553,8 +502,6 @@ export type OAuth2Session = {
   backstageIdentity: BackstageIdentity;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthRequestManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class OAuthRequestManager implements OAuthRequestApi {
   // (undocumented)
@@ -563,9 +510,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
   createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T>;
 }
 
-// Warning: (ae-missing-release-tag) "OktaAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class OktaAuth {
   // (undocumented)
   static create({
@@ -577,9 +522,7 @@ export class OktaAuth {
   }: OAuthApiCreateOptions): typeof oktaAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "OneLoginAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class OneLoginAuth {
   // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
   //
@@ -592,9 +535,7 @@ export class OneLoginAuth {
   }: CreateOptions_2): typeof oneloginAuthApiRef.T;
 }
 
-// Warning: (ae-missing-release-tag) "SamlAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
@@ -622,16 +563,12 @@ export class SamlAuth
   signOut(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "SignInPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type SignInPageProps = {
   onResult(result: SignInResult): void;
 };
 
-// Warning: (ae-missing-release-tag) "SignInResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type SignInResult = {
   userId: string;
   profile: ProfileInfo;
@@ -639,15 +576,11 @@ export type SignInResult = {
   signOut?: () => Promise<void>;
 };
 
-// Warning: (ae-missing-release-tag) "UnhandledErrorForwarder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class UnhandledErrorForwarder {
   static forward(errorApi: ErrorApi, errorContext: ErrorContext): void;
 }
 
-// Warning: (ae-missing-release-tag) "UrlPatternDiscovery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class UrlPatternDiscovery implements DiscoveryApi {
   static compile(pattern: string): UrlPatternDiscovery;
@@ -655,15 +588,14 @@ export class UrlPatternDiscovery implements DiscoveryApi {
   getBaseUrl(pluginId: string): Promise<string>;
 }
 
-// Warning: (ae-missing-release-tag) "WebStorage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class WebStorage implements StorageApi {
   constructor(namespace: string, errorApi: ErrorApi);
-  // Warning: (ae-forgotten-export) The symbol "CreateStorageApiOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  static create(options: CreateStorageApiOptions): WebStorage;
+  static create(options: {
+    errorApi: ErrorApi;
+    namespace?: string;
+  }): WebStorage;
   // (undocumented)
   forBucket(name: string): WebStorage;
   // (undocumented)
@@ -678,7 +610,6 @@ export class WebStorage implements StorageApi {
 
 // Warnings were encountered during analysis:
 //
-// src/apis/system/ApiProvider.d.ts:9:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:89:5 - (ae-forgotten-export) The symbol "UnknownPluginOutput" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
+// src/apis/system/ApiProvider.d.ts:15:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
+// src/app/types.d.ts:152:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```

@@ -16,6 +16,11 @@
 
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+/**
+ * Session information for Bitbucket auth.
+ *
+ * @public
+ */
 export type BitbucketSession = {
   providerInfo: {
     accessToken: string;

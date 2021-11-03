@@ -23,6 +23,7 @@ import { Link, LinkProps } from '../Link';
 /**
  * Properties for {@link Button}
  *
+ * @public
  * @remarks
  *
  * See {@link https://v4.mui.com/api/button/#props | Material-UI Button Props} for all properties
@@ -33,6 +34,7 @@ export type ButtonProps = MaterialButtonProps &
 /**
  * Thin wrapper on top of material-ui's {@link https://v4.mui.com/components/buttons/ | Button} component
  *
+ * @public
  * @remarks
  *
  * Makes the Button to utilise react-router
@@ -46,6 +48,7 @@ const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
   <Link ref={ref} {...props} color="initial" />
 ));
 
+/** @public */
 const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
   <MaterialButton ref={ref} component={LinkWrapper} {...props} />
 )) as { (props: ButtonProps): JSX.Element };

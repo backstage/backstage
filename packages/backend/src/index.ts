@@ -53,6 +53,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
+import techInsights from './plugins/techInsights';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -107,12 +108,16 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const techInsightsEnv = useHotMemoize(module, () =>
+    createEnv('tech-insights'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
   apiRouter.use('/search', await search(searchEnv));

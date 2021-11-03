@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader, JsonObject } from '@backstage/config';
+
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { AwsS3UrlReader } from './AwsS3UrlReader';

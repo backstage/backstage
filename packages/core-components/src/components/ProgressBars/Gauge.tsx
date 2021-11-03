@@ -19,6 +19,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
+/** @public */
 export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -82,6 +83,7 @@ export function getProgressColor(
   return palette.status.ok;
 }
 
+/** @public */
 export function Gauge(props: Props) {
   const classes = useStyles(props);
   const theme = useTheme<BackstageTheme>();

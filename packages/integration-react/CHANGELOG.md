@@ -1,5 +1,17 @@
 # @backstage/integration-react
 
+## 0.1.13
+
+### Patch Changes
+
+- 36e2b548cb: Clean up the API exports
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.1.12
 
 ### Patch Changes

@@ -19,7 +19,7 @@ import { usePrevious } from 'react-use';
 import qs from 'qs';
 import { useLocation, useOutlet } from 'react-router';
 import { SearchContextProvider, useSearch } from '../SearchContext';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {

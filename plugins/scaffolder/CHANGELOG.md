@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.9
+
+### Patch Changes
+
+- 5e10974af6: Surfacing all components of the ScaffolderPage outside of the plugin so you can customize the page
+- 5df2435892: Scaffolder: Enable back Template action buttons if template fails to execute
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.11.8
 
 ### Patch Changes

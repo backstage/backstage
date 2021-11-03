@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { EntityName } from '../types';
 import { UNSTABLE_EntityStatus } from './EntityStatus';
 

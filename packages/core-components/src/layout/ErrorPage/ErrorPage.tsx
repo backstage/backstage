@@ -30,6 +30,7 @@ interface IErrorPageProps {
   additionalInfo?: string;
 }
 
+/** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -54,6 +55,7 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageErrorPage' },
 );
 
+/** @public */
 export function ErrorPage(props: IErrorPageProps) {
   const { status, statusMessage, additionalInfo } = props;
   const classes = useStyles();
