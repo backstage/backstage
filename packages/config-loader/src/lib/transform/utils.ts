@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/types';
 
 export function isObject(obj: JsonValue | undefined): obj is JsonObject {
   if (typeof obj !== 'object') {

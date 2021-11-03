@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { FindingSummary, SonarQubeClient } from './index';
@@ -54,7 +54,7 @@ const identityApiGuest: IdentityApi = {
 };
 
 describe('SonarQubeClient', () => {
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);

@@ -30,6 +30,7 @@ export type IconLinkVerticalProps = {
   title?: string;
 };
 
+/** @public */
 export type IconLinkVerticalClassKey =
   | 'link'
   | 'disabled'
@@ -65,6 +66,7 @@ const useIconStyles = makeStyles(
   { name: 'BackstageIconLinkVertical' },
 );
 
+/** @public */
 export function IconLinkVertical({
   color = 'primary',
   disabled = false,

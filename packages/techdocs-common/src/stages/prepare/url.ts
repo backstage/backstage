@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NotModifiedError } from '@backstage/errors';
+import { assertError } from '@backstage/errors';
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
@@ -40,8 +40,9 @@ export class UrlPreparer implements PreparerBase {
         logger: this.logger,
       });
     } catch (error) {
+      assertError(error);
       // NotModifiedError means that etag based cache is still valid.
-      if (error instanceof NotModifiedError) {
+      if (error.name === 'NotModifiedError') {
         this.logger.debug(`Cache is valid for etag ${options?.etag}`);
       } else {
         this.logger.debug(

@@ -25,6 +25,7 @@ import React, { ComponentProps, Fragment } from 'react';
 
 type Props = ComponentProps<typeof MaterialBreadcrumbs>;
 
+/** @public */
 export type BreadcrumbsClickableTextClassKey = 'root';
 
 const ClickableText = withStyles(
@@ -37,6 +38,7 @@ const ClickableText = withStyles(
   { name: 'BackstageBreadcrumbsClickableText' },
 )(Typography);
 
+/** @public */
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
 const StyledBox = withStyles(
@@ -49,6 +51,7 @@ const StyledBox = withStyles(
   { name: 'BackstageBreadcrumbsStyledBox' },
 )(Box);
 
+/** @public */
 export function Breadcrumbs(props: Props) {
   const { children, ...restProps } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(

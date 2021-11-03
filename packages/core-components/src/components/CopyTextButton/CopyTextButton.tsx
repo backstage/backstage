@@ -23,6 +23,8 @@ import { useCopyToClipboard } from 'react-use';
 
 /**
  * Properties for {@link CopyTextButton}
+ *
+ * @public
  */
 export interface CopyTextButtonProps {
   /**
@@ -50,6 +52,7 @@ export interface CopyTextButtonProps {
 /**
  * Copy text button with visual feedback
  *
+ * @public
  * @remarks
  *
  * Visual feedback takes form of:

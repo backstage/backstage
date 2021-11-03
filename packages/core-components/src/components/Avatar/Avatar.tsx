@@ -18,6 +18,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MaterialAvatar from '@material-ui/core/Avatar';
 import { extractInitials, stringToColor } from './utils';
 
+/** @public */
 export type AvatarClassKey = 'avatar';
 
 const useStyles = makeStyles(
@@ -36,7 +37,9 @@ const useStyles = makeStyles(
 );
 
 /**
- * Properties for {@link Avatar}
+ * Properties for {@link Avatar}.
+ *
+ * @public
  */
 export interface AvatarProps {
   /**
@@ -56,9 +59,10 @@ export interface AvatarProps {
 /**
  *  Component rendering an Avatar
  *
- *  @remarks
+ * @public
+ * @remarks
  *
- *  Based on https://v4.mui.com/components/avatars/#avatar with some styling adjustment and two-letter initials
+ * Based on https://v4.mui.com/components/avatars/#avatar with some styling adjustment and two-letter initials
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;

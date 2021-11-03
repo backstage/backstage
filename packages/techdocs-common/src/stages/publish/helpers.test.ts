@@ -25,6 +25,7 @@ import {
   bulkStorageOperation,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
+  normalizeExternalStorageRootPath,
 } from './helpers';
 
 describe('getHeadersForFileExtension', () => {
@@ -107,6 +108,34 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
   });
 });
 
+describe('normalizeExternalStorageRootPath', () => {
+  it('returns an empty string when empty string provided', () => {
+    const originalPath = '';
+    const normalPath = normalizeExternalStorageRootPath(originalPath);
+    expect(normalPath).toBe('');
+  });
+  it('returns an empty string when only separator is provided', () => {
+    const originalPath = '/';
+    const normalPath = normalizeExternalStorageRootPath(originalPath);
+    expect(normalPath).toBe('');
+  });
+  it('returns normalized path from path with leading and trailing sep', () => {
+    const originalPath = '/backstage-data/techdocs/';
+    const normalPath = normalizeExternalStorageRootPath(originalPath);
+    expect(normalPath).toBe('backstage-data/techdocs');
+  });
+  it('returns normalized path from path without leading and trailing sep', () => {
+    const originalPath = 'backstage-data/techdocs';
+    const normalPath = normalizeExternalStorageRootPath(originalPath);
+    expect(normalPath).toBe('backstage-data/techdocs');
+  });
+  it('returns normalized path from path with trailing sep', () => {
+    const originalPath = 'backstage-data/techdocs/';
+    const normalPath = normalizeExternalStorageRootPath(originalPath);
+    expect(normalPath).toBe('backstage-data/techdocs');
+  });
+});
+
 describe('getStaleFiles', () => {
   const defaultFiles = [
     'default/Component/backstage/index.html',
@@ -171,6 +200,60 @@ describe('getCloudPathForLocalPath', () => {
 
   it('should throw error when entity is invalid', () => {
     expect(() => getCloudPathForLocalPath({} as Entity)).toThrow();
+  });
+
+  it('should prepend root directory to destination', () => {
+    const localPath = 'index/html';
+    const rootPath = 'backstage-data/techdocs/';
+    const remoteBucket = getCloudPathForLocalPath(
+      entity,
+      localPath,
+      false,
+      rootPath,
+    );
+    expect(remoteBucket).toBe(
+      `backstage-data/techdocs/custom/component/backstage/${localPath}`,
+    );
+  });
+
+  it('should add trailing seperator to root directory', () => {
+    const localPath = 'index/html';
+    const rootPath = 'backstage-data/techdocs';
+    const remoteBucket = getCloudPathForLocalPath(
+      entity,
+      localPath,
+      false,
+      rootPath,
+    );
+    expect(remoteBucket).toBe(
+      `backstage-data/techdocs/custom/component/backstage/${localPath}`,
+    );
+  });
+
+  it('should remove leading seperator from root directory', () => {
+    const localPath = 'index/html';
+    const rootPath = '/backstage-data/techdocs/';
+    const remoteBucket = getCloudPathForLocalPath(
+      entity,
+      localPath,
+      false,
+      rootPath,
+    );
+    expect(remoteBucket).toBe(
+      `backstage-data/techdocs/custom/component/backstage/${localPath}`,
+    );
+  });
+
+  it('should ignore seperator if root directory is explicitly defined', () => {
+    const localPath = 'index/html';
+    const rootPath = '/';
+    const remoteBucket = getCloudPathForLocalPath(
+      entity,
+      localPath,
+      false,
+      rootPath,
+    );
+    expect(remoteBucket).toBe(`custom/component/backstage/${localPath}`);
   });
 });
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import { CommanderStatic } from 'commander';
 import { exitWithError } from '../lib/errors';
 
@@ -252,6 +253,7 @@ function lazy(
 
       process.exit(0);
     } catch (error) {
+      assertError(error);
       exitWithError(error);
     }
   };

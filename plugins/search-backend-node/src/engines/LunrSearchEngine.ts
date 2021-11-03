@@ -80,11 +80,17 @@ export class LunrSearchEngine implements SearchEngine {
         });
 
         if (filters) {
-          Object.entries(filters).forEach(([field, value]) => {
+          Object.entries(filters).forEach(([field, fieldValue]) => {
             if (!q.allFields.includes(field)) {
               // Throw for unknown field, as this will be a non match
               throw new Error(`unrecognised field ${field}`);
             }
+            // Arrays are poorly supported, but we can make it better for single-item arrays,
+            // which should be a common case
+            const value =
+              Array.isArray(fieldValue) && fieldValue.length === 1
+                ? fieldValue[0]
+                : fieldValue;
 
             // Require that the given field has the given value
             if (['string', 'number', 'boolean'].includes(typeof value)) {

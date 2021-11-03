@@ -1,5 +1,27 @@
 # @backstage/core-plugin-api
 
+## 0.1.12
+
+### Patch Changes
+
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- 925a967f36: Replace usage of test-utils-core with test-utils
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+
+## 0.1.11
+
+### Patch Changes
+
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
 ## 0.1.10
 
 ### Patch Changes

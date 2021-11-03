@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.6
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.2
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/catalog-model@0.9.6
+
+## 0.3.5
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.3.4
 
 ### Patch Changes

@@ -37,6 +37,20 @@ const expectedEntities: Entity[] = [
       owner: 'someone',
     },
   },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      title: 'Test Entity',
+      name: 'test-entity-2',
+      description: 'The expected description 2',
+    },
+    spec: {
+      type: 'some-type',
+      lifecycle: 'experimental',
+      owner: 'someone',
+    },
+  },
 ];
 
 describe('DefaultCatalogCollator', () => {
@@ -88,6 +102,15 @@ describe('DefaultCatalogCollator', () => {
       componentType: expectedEntities[0]!.spec!.type,
       lifecycle: expectedEntities[0]!.spec!.lifecycle,
       owner: expectedEntities[0]!.spec!.owner,
+    });
+    expect(documents[1]).toMatchObject({
+      title: expectedEntities[1].metadata.title,
+      location: '/catalog/default/component/test-entity-2',
+      text: expectedEntities[1].metadata.description,
+      namespace: 'default',
+      componentType: expectedEntities[1]!.spec!.type,
+      lifecycle: expectedEntities[1]!.spec!.lifecycle,
+      owner: expectedEntities[1]!.spec!.owner,
     });
   });
 

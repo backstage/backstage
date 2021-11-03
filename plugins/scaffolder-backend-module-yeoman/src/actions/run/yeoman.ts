@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
 import { yeomanRun } from './yeomanRun';
 

@@ -1,5 +1,24 @@
 # example-app
 
+## 0.2.51
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/plugin-techdocs@0.12.3
+  - @backstage/plugin-sentry@0.3.26
+  - @backstage/plugin-user-settings@0.3.10
+  - @backstage/plugin-catalog-graph@0.2.1
+  - @backstage/plugin-jenkins@0.5.11
+  - @backstage/core-app-api@0.1.18
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/cli@0.8.0
+  - @backstage/plugin-catalog@0.7.2
+  - @backstage/plugin-catalog-import@0.7.3
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
 ## 0.2.50
 
 ### Patch Changes

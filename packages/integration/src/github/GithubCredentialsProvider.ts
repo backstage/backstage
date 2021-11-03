@@ -159,7 +159,11 @@ class GithubAppManager {
   }
 }
 
-// GithubAppCredentialsMux corresponds to a Github installation which internally could hold several GitHub Apps.
+/**
+ * Corresponds to a Github installation which internally could hold several GitHub Apps.
+ *
+ * @public
+ */
 export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
@@ -211,15 +215,32 @@ export class GithubAppCredentialsMux {
   }
 }
 
+/**
+ * The type of credentials produced by the credential provider.
+ *
+ * @public
+ */
 export type GithubCredentialType = 'app' | 'token';
 
+/**
+ * A set of credentials information for a GitHub integration.
+ *
+ * @public
+ */
 export type GithubCredentials = {
   headers?: { [name: string]: string };
   token?: string;
   type: GithubCredentialType;
 };
 
-// TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
+/**
+ * Handles the creation and caching of credentials for GitHub integrations.
+ *
+ * @public
+ * @remarks
+ *
+ * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
+ */
 export class GithubCredentialsProvider {
   static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
     return new GithubCredentialsProvider(
@@ -234,13 +255,24 @@ export class GithubCredentialsProvider {
   ) {}
 
   /**
-   * Returns GithubCredentials for requested url.
-   * Consecutive calls to this method with the same url will return cached credentials.
+   * Returns {@link GithubCredentials} for a given URL.
+   *
+   * @remarks
+   *
+   * Consecutive calls to this method with the same URL will return cached
+   * credentials.
+   *
    * The shortest lifetime for a token returned is 10 minutes.
-   * @param opts containing the organization or repository url
-   * @returns {Promise} of @type {GithubCredentials}.
+   *
    * @example
-   * const { token, headers } = await getCredentials({url: 'github.com/backstage/foobar'})
+   * ```ts
+   * const { token, headers } = await getCredentials({
+   *   url: 'github.com/backstage/foobar'
+   * })
+   * ```
+   *
+   * @param opts - The organization or repository URL
+   * @returns A promise of {@link GithubCredentials}.
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = parseGitUrl(opts.url);

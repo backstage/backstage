@@ -22,6 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 
+/** @public */
 export type HeaderTabsClassKey =
   | 'tabsWrapper'
   | 'defaultTab'
@@ -66,6 +67,8 @@ type HeaderTabsProps = {
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };
+
+/** @public */
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);

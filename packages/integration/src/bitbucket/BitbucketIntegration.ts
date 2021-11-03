@@ -22,6 +22,11 @@ import {
   readBitbucketIntegrationConfigs,
 } from './config';
 
+/**
+ * A Bitbucket based integration.
+ *
+ * @public
+ */
 export class BitbucketIntegration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<BitbucketIntegration> = ({
     config,

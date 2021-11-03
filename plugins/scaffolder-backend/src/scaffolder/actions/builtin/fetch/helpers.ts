@@ -15,7 +15,7 @@
  */
 
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';

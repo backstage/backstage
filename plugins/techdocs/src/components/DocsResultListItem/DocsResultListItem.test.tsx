@@ -33,6 +33,17 @@ const validResult = {
   lifecycle: 'production',
 };
 
+const validResultWithTitle = {
+  location: 'https://backstage.io/docs',
+  title: 'Documentation',
+  text: 'Backstage is an open-source developer portal that puts the developer experience first.',
+  kind: 'library',
+  namespace: '',
+  name: 'Backstage',
+  entityTitle: 'Backstage App',
+  lifecycle: 'production',
+};
+
 describe('DocsResultListItem test', () => {
   it('should render search doc passed in', async () => {
     const { findByText } = render(<DocsResultListItem result={validResult} />);
@@ -57,6 +68,16 @@ describe('DocsResultListItem test', () => {
       await findByText(
         'Backstage is an open-source developer portal that puts the developer experience first.',
       ),
+    ).toBeInTheDocument();
+  });
+
+  it('should use entity title if defined', async () => {
+    const { findByText } = render(
+      <DocsResultListItem result={validResultWithTitle} />,
+    );
+
+    expect(
+      await findByText('Documentation | Backstage App docs'),
     ).toBeInTheDocument();
   });
 });

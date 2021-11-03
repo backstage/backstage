@@ -69,6 +69,8 @@ export type EntityRefContext = {
  * Parses an entity reference, either on string or compound form, and always
  * returns a complete entity name including kind, namespace and name.
  *
+ * @remarks
+ *
  * This function automatically assumes the default namespace "default" unless
  * otherwise specified as part of the options, and will throw an error if no
  * kind was specified in the input reference and no default kind was given.
@@ -100,7 +102,9 @@ export function parseEntityName(
  * Parses an entity reference, either on string or compound form, and returns
  * a structure with a name, and optional kind and namespace.
  *
- * The options object can contain default values for the kind and namespace,
+ * @remarks
+ *
+ * The context object can contain default values for the kind and namespace,
  * that will be used if the input reference did not specify any.
  *
  * @public
@@ -111,12 +115,12 @@ export function parseEntityName(
 export function parseEntityRef(
   ref: EntityRef,
   context?: { defaultKind: string; defaultNamespace: string },
-): {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-/** @public */
+): EntityName;
+/**
+ * parseEntityRef with optional Kind.
+ *
+ * @public
+ */
 export function parseEntityRef(
   ref: EntityRef,
   context?: { defaultKind: string },
@@ -125,7 +129,11 @@ export function parseEntityRef(
   namespace?: string;
   name: string;
 };
-/** @public */
+/**
+ * parseEntityRef with optional Namespace.
+ *
+ * @public
+ */
 export function parseEntityRef(
   ref: EntityRef,
   context?: { defaultNamespace: string },
@@ -134,6 +142,11 @@ export function parseEntityRef(
   namespace: string;
   name: string;
 };
+/**
+ * parseEntityRef with optional Kind and Namespace.
+ *
+ * @public
+ */
 export function parseEntityRef(
   ref: EntityRef,
   context: EntityRefContext = {},
@@ -223,6 +236,8 @@ export function serializeEntityRef(
  * Takes an entity or entity name/reference, and returns the string form of an
  * entity ref.
  *
+ * @remarks
+ *
  * This function creates a canonical and unique reference to the entity, converting
  * all parts of the name to lowercase and inserts the default namespace if needed.
  * It is typically not the best way to represent the entity reference to the user.
@@ -255,6 +270,8 @@ export function stringifyEntityRef(
 
 /**
  * Compares an entity to either a string reference or a compound reference.
+ *
+ * @remarks
  *
  * The comparison is case insensitive, and all of kind, namespace, and name
  * must match (after applying the optional context to the ref).

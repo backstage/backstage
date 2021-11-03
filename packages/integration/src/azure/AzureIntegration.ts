@@ -19,6 +19,11 @@ import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
+/**
+ * Microsoft Azure based integration.
+ *
+ * @public
+ */
 export class AzureIntegration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<AzureIntegration> = ({ config }) => {
     const configs = readAzureIntegrationConfigs(

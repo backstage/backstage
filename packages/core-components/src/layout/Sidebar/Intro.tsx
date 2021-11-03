@@ -29,6 +29,7 @@ import {
 } from './config';
 import { SidebarDivider } from './Items';
 
+/** @public */
 export type SidebarIntroClassKey =
   | 'introCard'
   | 'introDismiss'
@@ -87,6 +88,7 @@ type IntroCardProps = {
   onClose: () => void;
 };
 
+/** @public */
 export function IntroCard(props: IntroCardProps) {
   const classes = useStyles();
   const { text, onClose } = props;

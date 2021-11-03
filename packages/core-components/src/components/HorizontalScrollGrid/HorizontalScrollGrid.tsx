@@ -56,6 +56,7 @@ type Props = {
   minScrollDistance?: number; // limits how small steps the scroll can take in px
 };
 
+/** @public */
 export type HorizontalScrollGridClassKey =
   | 'root'
   | 'container'
@@ -197,6 +198,7 @@ function useSmoothScroll(
   return setScrollTarget;
 }
 
+/** @public */
 export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
   const {
     scrollStep = 100,

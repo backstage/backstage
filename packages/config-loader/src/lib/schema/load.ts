@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
 import { filterByVisibility, filterErrorsByVisibility } from './filtering';
@@ -25,7 +26,11 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 
-/** @public */
+/**
+ * Options that control the loading of configuration schema files in the backend.
+ *
+ * @public
+ */
 export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];

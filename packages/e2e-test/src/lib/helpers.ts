@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import {
   spawn,
   execFile as execFileCb,
@@ -21,11 +22,9 @@ import {
   ChildProcess,
 } from 'child_process';
 import { promisify } from 'util';
+import puppeteer from 'puppeteer';
 
 const execFile = promisify(execFileCb);
-
-const EXPECTED_LOAD_ERRORS =
-  /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
 
 export function spawnPiped(cmd: string[], options?: SpawnOptions) {
   function pipeWithPrefix(stream: NodeJS.WriteStream, prefix = '') {
@@ -66,11 +65,12 @@ export async function runPlain(cmd: string[], options?: SpawnOptions) {
     });
     return stdout.trim();
   } catch (error) {
+    assertError(error);
     if (error.stdout) {
-      process.stdout.write(error.stdout);
+      process.stdout.write(error.stdout as Buffer);
     }
     if (error.stderr) {
-      process.stderr.write(error.stderr);
+      process.stderr.write(error.stderr as Buffer);
     }
     throw error;
   }
@@ -126,36 +126,44 @@ export async function waitForExit(child: ChildProcess) {
 }
 
 export async function waitForPageWithText(
-  browser: any,
+  page: puppeteer.Page,
   path: string,
   text: string,
-  { intervalMs = 1000, maxLoadAttempts = 50 } = {},
+  { intervalMs = 1000, maxFindAttempts = 50 } = {},
 ) {
-  let loadAttempts = 0;
+  let findAttempts = 0;
   for (;;) {
     try {
-      const waitTimeMs = intervalMs * (Math.log10(loadAttempts + 1) + 1);
+      const waitTimeMs = intervalMs * (findAttempts + 1);
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
-      await browser.visit(path);
 
-      const escapedText = text.replace(/"|\\/g, '\\$&');
-      browser.assert.evaluate(
-        `Array.from(document.querySelectorAll("*")).some(el => el.textContent === "${escapedText}")`,
-        true,
-        `expected to find text ${text}`,
+      await page.goto(`http://localhost:3000${path}`, {
+        waitUntil: 'networkidle0',
+      });
+
+      const match = await page.evaluate(
+        textContent =>
+          Array.from(document.querySelectorAll('*')).some(
+            el => el.textContent === textContent,
+          ),
+        text,
       );
+
+      if (!match) {
+        throw new Error(`Expected to find text ${text}`);
+      }
+
       break;
     } catch (error) {
-      if (error.message.match(EXPECTED_LOAD_ERRORS)) {
-        loadAttempts++;
-        if (loadAttempts >= maxLoadAttempts) {
-          throw new Error(
-            `Failed to load page '${path}', max number of attempts reached`,
-          );
-        }
-      } else {
-        throw error;
+      console.log(error);
+      assertError(error);
+
+      findAttempts++;
+      if (findAttempts >= maxFindAttempts) {
+        throw new Error(
+          `Failed to load page '${path}', max number of attempts reached`,
+        );
       }
     }
   }

@@ -29,6 +29,7 @@ import {
 import { AuthProviderRouteHandlers, AuthProviderFactory } from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity/types';
+import { isError } from '@backstage/errors';
 
 type SamlInfo = {
   fullProfile: any;
@@ -93,12 +94,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         },
       });
     } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
-        error: {
-          name: error.name,
-          message: error.message,
-        },
+        error: { name, message },
       });
     }
   }

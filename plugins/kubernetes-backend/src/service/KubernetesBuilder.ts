@@ -124,6 +124,7 @@ export class KubernetesBuilder {
           group: c.getString('group'),
           apiVersion: c.getString('apiVersion'),
           plural: c.getString('plural'),
+          objectType: 'customresources',
         } as CustomResource),
     );
 

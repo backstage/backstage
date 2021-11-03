@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Utilities to test Backstage core
- *
- * @packageDocumentation
- */
-
-export * from './testUtils';
+export {};
+throw new Error(
+  'This module has been removed. Use @backstage/dev-utils instead',
+);

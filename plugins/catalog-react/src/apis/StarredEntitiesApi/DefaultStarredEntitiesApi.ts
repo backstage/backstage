@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Observable, StorageApi } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { performMigrationToTheNewBucket } from './migration';
 import { StarredEntitiesApi } from './StarredEntitiesApi';

@@ -16,7 +16,7 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
 import { CatalogProcessor } from './types';

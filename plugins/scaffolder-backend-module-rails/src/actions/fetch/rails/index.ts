@@ -15,7 +15,7 @@
  */
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';

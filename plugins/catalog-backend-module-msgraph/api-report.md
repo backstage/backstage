@@ -6,6 +6,8 @@
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { EntityProvider } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
@@ -91,6 +93,38 @@ export class MicrosoftGraphClient {
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
   requestRaw(url: string): Promise<Response>;
+}
+
+// Warning: (ae-missing-release-tag) "MicrosoftGraphOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: Logger_2;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      id: string;
+      target: string;
+      logger: Logger_2;
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+      organizationTransformer?: OrganizationTransformer;
+    },
+  ): MicrosoftGraphOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  read(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "MicrosoftGraphOrgReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

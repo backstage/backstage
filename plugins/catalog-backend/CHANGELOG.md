@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.2
+
+### Patch Changes
+
+- b9ce1ce2c1: Allow custom LocationAnalyzer in NextCatalogBuilder
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+
+## 0.17.1
+
+### Patch Changes
+
+- 3adaf88db2: Take CatalogParser in account when processing file locations.
+- 1f62d1cbe9: Minor rearrangement of `Stitcher` to clarify the scope of one stitch round
+- 3ba87f514e: Add a `GitHubOrgEntityProvider` that can be used instead of the `GithubOrgReaderProcessor`.
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- 177401b571: Use entity title (if defined) as title of documents indexed by `DefaultCatalogCollator`
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
 ## 0.17.0
 
 ### Minor Changes

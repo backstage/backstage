@@ -22,10 +22,12 @@ import { CatalogEntityClient } from '../lib/catalog';
 import { validate } from 'jsonschema';
 import {
   DatabaseTaskStore,
-  StorageTaskBroker,
+  TemplateActionRegistry,
   TaskWorker,
-} from '../scaffolder/tasks';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
+  TemplateAction,
+  createBuiltinActions,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
@@ -38,12 +40,13 @@ import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../scaffolder/actions';
-import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
-import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
-import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
-import { TaskSpec } from '../scaffolder/tasks/types';
+import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
 
+/**
+ * RouterOptions
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -53,6 +56,7 @@ export interface RouterOptions {
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   containerRunner: ContainerRunner;
+  taskBroker?: TaskBroker;
 }
 
 function isSupportedTemplate(
@@ -85,34 +89,27 @@ export async function createRouter(
   const workingDirectory = await getWorkingDirectory(config, logger);
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
+  let taskBroker: TaskBroker;
 
-  const databaseTaskStore = await DatabaseTaskStore.create(
-    await database.getClient(),
-  );
-  const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  if (!options.taskBroker) {
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await database.getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  } else {
+    taskBroker = options.taskBroker;
+  }
+
   const actionRegistry = new TemplateActionRegistry();
-  const legacyWorkflowRunner = new LegacyWorkflowRunner({
-    logger,
-    actionRegistry,
-    integrations,
-    workingDirectory,
-  });
-
-  const workflowRunner = new DefaultWorkflowRunner({
-    actionRegistry,
-    integrations,
-    logger,
-    workingDirectory,
-  });
 
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = new TaskWorker({
+    const worker = await TaskWorker.create({
       taskBroker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
     });
     workers.push(worker);
   }
@@ -261,7 +258,7 @@ export async function createRouter(
       });
 
       // After client opens connection send all events as string
-      const unsubscribe = taskBroker.observe(
+      const { unsubscribe } = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
           if (error) {

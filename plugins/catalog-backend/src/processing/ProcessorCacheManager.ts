@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { CatalogProcessor } from '../ingestion/processors';
 import { CatalogProcessorCache } from '../ingestion/processors/types';
 import { isObject } from './util';

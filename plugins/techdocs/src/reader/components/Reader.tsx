@@ -321,6 +321,7 @@ export const useTechDocsReaderDom = (): Element | null => {
           baseUrl: window.location.origin,
           onClick: (_: MouseEvent, url: string) => {
             const parsedUrl = new URL(url);
+            // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
               navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
               // Scroll to hash if it's on the current page
@@ -329,6 +330,10 @@ export const useTechDocsReaderDom = (): Element | null => {
                 ?.scrollIntoView();
             } else {
               navigate(parsedUrl.pathname);
+              // Scroll to top of reader if primary sidebar link is clicked
+              transformedElement
+                ?.querySelector('.md-content__inner')
+                ?.scrollIntoView();
             }
           },
         }),

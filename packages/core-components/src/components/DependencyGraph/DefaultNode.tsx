@@ -19,6 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { RenderNodeProps } from './types';
 
+/** @public */
 export type DependencyGraphDefaultNodeClassKey = 'node' | 'text';
 
 const useStyles = makeStyles(
@@ -34,6 +35,7 @@ const useStyles = makeStyles(
   { name: 'BackstageDependencyGraphDefaultNode' },
 );
 
+/** @public */
 export function DefaultNode({ node: { id } }: RenderNodeProps) {
   const classes = useStyles();
   const [width, setWidth] = React.useState(0);

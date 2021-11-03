@@ -1,5 +1,12 @@
 # @backstage/theme
 
+## 0.2.12
+
+### Patch Changes
+
+- 40cfec8b3f: More theme API cleanup
+- a15d028517: More API fixes: mark things public, add docs, fix exports
+
 ## 0.2.11
 
 ### Patch Changes
