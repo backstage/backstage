@@ -234,7 +234,7 @@ export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
       }}
       title={
         <Box display="flex" alignItems="center">
-          <AzurePipelinesIcon width="30px" height="30px" />
+          <AzurePipelinesIcon style={{ fontSize: 30 }} />
           <Box mr={1} />
           Azure Pipelines - Builds ({items ? items.length : 0})
         </Box>

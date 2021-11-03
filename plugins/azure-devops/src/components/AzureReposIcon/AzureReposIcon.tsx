@@ -14,41 +14,57 @@
  * limitations under the License.
  */
 
-import { makeStyles, useTheme } from '@material-ui/core';
+import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-import AzureReposSvg from '../../icons/alt-azure-repos-icon.svg';
 import React from 'react';
 
-const useStyles = makeStyles({
-  darkMode: {
-    filter: 'invert(100%)',
-  },
-  lightMode: {
-    filter: 'invert(0%)',
-  },
-});
-
-export const AzureReposIcon = ({
-  width,
-  height,
-}: {
-  width: string;
-  height: string;
-}) => {
-  const theme = useTheme();
-  const classes = useStyles();
-
-  return (
-    <img
-      src={AzureReposSvg}
-      alt="Azure Repos"
-      width={width}
-      height={height}
-      className={
-        theme.palette.type.toString() === 'dark'
-          ? classes.darkMode
-          : classes.lightMode
-      }
+export const AzureReposIcon = (props: SvgIconProps) => (
+  <SvgIcon {...props} viewBox="0 0 512 512">
+    <circle
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+      cx="128"
+      cy="416"
+      r="48"
     />
-  );
-};
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+      d="M128 144v224M288 160l-64-64 64-64"
+    />
+    <circle
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+      cx="128"
+      cy="96"
+      r="48"
+    />
+    <circle
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+      cx="384"
+      cy="416"
+      r="48"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+      d="M240 96h84a60 60 0 0160 60v212"
+    />
+  </SvgIcon>
+);

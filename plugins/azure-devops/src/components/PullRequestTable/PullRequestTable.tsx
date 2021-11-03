@@ -119,7 +119,7 @@ export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
       }}
       title={
         <Box display="flex" alignItems="center">
-          <AzureReposIcon width="30px" height="30px" />
+          <AzureReposIcon style={{ fontSize: 30 }} />
           <Box mr={1} />
           Azure Repos - Pull Requests ({items ? items.length : 0})
           <Box position="absolute" right={320} top={20}>
