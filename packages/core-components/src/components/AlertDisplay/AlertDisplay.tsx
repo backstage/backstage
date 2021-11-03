@@ -25,6 +25,7 @@ import pluralize from 'pluralize';
 /**
  * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
  *
+ * @public
  * @remarks
  *
  * Shown as SnackBar at the top of the page

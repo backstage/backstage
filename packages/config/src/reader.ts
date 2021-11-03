@@ -72,6 +72,9 @@ export class ConfigReader implements Config {
   private filteredKeys?: string[];
   private notifiedFilteredKeys = new Set<string>();
 
+  /**
+   * Instantiates the config reader from a list of application config objects.
+   */
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
       return new ConfigReader(undefined);
@@ -96,6 +99,7 @@ export class ConfigReader implements Config {
     private readonly prefix: string = '',
   ) {}
 
+  /** {@inheritdoc Config.has} */
   has(key: string): boolean {
     const value = this.readValue(key);
     if (value !== undefined) {
@@ -104,12 +108,14 @@ export class ConfigReader implements Config {
     return this.fallback?.has(key) ?? false;
   }
 
+  /** {@inheritdoc Config.keys} */
   keys(): string[] {
     const localKeys = this.data ? Object.keys(this.data) : [];
     const fallbackKeys = this.fallback?.keys() ?? [];
     return [...new Set([...localKeys, ...fallbackKeys])];
   }
 
+  /** {@inheritdoc Config.get} */
   get<T = JsonValue>(key?: string): T {
     const value = this.getOptional(key);
     if (value === undefined) {
@@ -118,6 +124,7 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
+  /** {@inheritdoc Config.getOptional} */
   getOptional<T = JsonValue>(key?: string): T | undefined {
     const value = this.readValue(key);
     const fallbackValue = this.fallback?.getOptional<T>(key);
@@ -154,6 +161,7 @@ export class ConfigReader implements Config {
     ).value as T;
   }
 
+  /** {@inheritdoc Config.getConfig} */
   getConfig(key: string): ConfigReader {
     const value = this.getOptionalConfig(key);
     if (value === undefined) {
@@ -162,6 +170,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalConfig} */
   getOptionalConfig(key: string): ConfigReader | undefined {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getOptionalConfig(key);
@@ -177,6 +186,7 @@ export class ConfigReader implements Config {
     return fallbackConfig;
   }
 
+  /** {@inheritdoc Config.getConfigArray} */
   getConfigArray(key: string): ConfigReader[] {
     const value = this.getOptionalConfigArray(key);
     if (value === undefined) {
@@ -185,6 +195,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalConfigArray} */
   getOptionalConfigArray(key: string): ConfigReader[] | undefined {
     const configs = this.readConfigValue<JsonObject[]>(key, values => {
       if (!Array.isArray(values)) {
@@ -220,6 +231,7 @@ export class ConfigReader implements Config {
     return configs.map((obj, index) => this.copy(obj, `${key}[${index}]`));
   }
 
+  /** {@inheritdoc Config.getNumber} */
   getNumber(key: string): number {
     const value = this.getOptionalNumber(key);
     if (value === undefined) {
@@ -228,6 +240,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalNumber} */
   getOptionalNumber(key: string): number | undefined {
     const value = this.readConfigValue<string | number>(
       key,
@@ -247,6 +260,7 @@ export class ConfigReader implements Config {
     return number;
   }
 
+  /** {@inheritdoc Config.getBoolean} */
   getBoolean(key: string): boolean {
     const value = this.getOptionalBoolean(key);
     if (value === undefined) {
@@ -255,6 +269,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalBoolean} */
   getOptionalBoolean(key: string): boolean | undefined {
     return this.readConfigValue(
       key,
@@ -262,6 +277,7 @@ export class ConfigReader implements Config {
     );
   }
 
+  /** {@inheritdoc Config.getString} */
   getString(key: string): string {
     const value = this.getOptionalString(key);
     if (value === undefined) {
@@ -270,6 +286,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalString} */
   getOptionalString(key: string): string | undefined {
     return this.readConfigValue(
       key,
@@ -278,6 +295,7 @@ export class ConfigReader implements Config {
     );
   }
 
+  /** {@inheritdoc Config.getStringArray} */
   getStringArray(key: string): string[] {
     const value = this.getOptionalStringArray(key);
     if (value === undefined) {
@@ -286,6 +304,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalStringArray} */
   getOptionalStringArray(key: string): string[] | undefined {
     return this.readConfigValue(key, values => {
       if (!Array.isArray(values)) {

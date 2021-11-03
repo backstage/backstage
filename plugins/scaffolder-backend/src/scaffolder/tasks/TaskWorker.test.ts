@@ -19,8 +19,20 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker } from './TaskWorker';
-import { WorkflowRunner } from './types';
-import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
+import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
+import { ScmIntegrations } from '@backstage/integration';
+import { TemplateActionRegistry } from '../actions';
+import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
+
+jest.mock('./HandlebarsWorkflowRunner');
+const MockedHandlebarsWorkflowRunner =
+  HandlebarsWorkflowRunner as jest.Mock<HandlebarsWorkflowRunner>;
+MockedHandlebarsWorkflowRunner.mockImplementation();
+
+jest.mock('./NunjucksWorkflowRunner');
+const MockedNunjucksWorkflowRunner =
+  NunjucksWorkflowRunner as jest.Mock<NunjucksWorkflowRunner>;
+MockedNunjucksWorkflowRunner.mockImplementation();
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -33,18 +45,26 @@ async function createStore(): Promise<DatabaseTaskStore> {
       },
     }),
   ).forPlugin('scaffolder');
-  return await DatabaseTaskStore.create(await manager.getClient());
+  return await DatabaseTaskStore.create({
+    database: await manager.getClient(),
+  });
 }
 
 describe('TaskWorker', () => {
   let storage: DatabaseTaskStore;
-  const workflowRunner: WorkflowRunner = {
-    execute: jest.fn(),
-  } as unknown as WorkflowRunner;
 
-  const legacyWorkflowRunner: LegacyWorkflowRunner = {
+  const integrations: ScmIntegrations = {} as ScmIntegrations;
+
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const workingDirectory = '/tmp/scaffolder';
+
+  const handlebarsWorkflowRunner: HandlebarsWorkflowRunner = {
     execute: jest.fn(),
-  } as unknown as LegacyWorkflowRunner;
+  } as unknown as HandlebarsWorkflowRunner;
+
+  const workflowRunner: NunjucksWorkflowRunner = {
+    execute: jest.fn(),
+  } as unknown as NunjucksWorkflowRunner;
 
   beforeAll(async () => {
     storage = await createStore();
@@ -52,18 +72,22 @@ describe('TaskWorker', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    MockedHandlebarsWorkflowRunner.mockImplementation(
+      () => handlebarsWorkflowRunner,
+    );
+    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
   const logger = getVoidLogger();
 
   it('should call the legacy workflow runner when the apiVersion is not beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = new TaskWorker({
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
       taskBroker: broker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
     });
 
     await broker.dispatch({
@@ -78,17 +102,23 @@ describe('TaskWorker', () => {
     const task = await broker.claim();
     await taskWorker.runOneTask(task);
 
-    expect(legacyWorkflowRunner.execute).toHaveBeenCalled();
+    expect(MockedHandlebarsWorkflowRunner).toBeCalledWith({
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+    });
+    expect(handlebarsWorkflowRunner.execute).toHaveBeenCalled();
   });
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = new TaskWorker({
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
       taskBroker: broker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
     });
 
     await broker.dispatch({
@@ -112,12 +142,12 @@ describe('TaskWorker', () => {
     });
 
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = new TaskWorker({
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
       taskBroker: broker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
     });
 
     const { taskId } = await broker.dispatch({

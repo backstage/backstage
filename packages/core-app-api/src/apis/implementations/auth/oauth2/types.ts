@@ -16,6 +16,11 @@
 
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+/**
+ * Session information for generic OAuth2 auth.
+ *
+ * @public
+ */
 export type OAuth2Session = {
   providerInfo: {
     idToken: string;

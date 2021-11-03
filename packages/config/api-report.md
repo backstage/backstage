@@ -46,39 +46,22 @@ export class ConfigReader implements Config {
     fallback?: ConfigReader | undefined,
     prefix?: string,
   );
-  // (undocumented)
   static fromConfigs(configs: AppConfig[]): ConfigReader;
-  // (undocumented)
   get<T = JsonValue_2>(key?: string): T;
-  // (undocumented)
   getBoolean(key: string): boolean;
-  // (undocumented)
   getConfig(key: string): ConfigReader;
-  // (undocumented)
   getConfigArray(key: string): ConfigReader[];
-  // (undocumented)
   getNumber(key: string): number;
-  // (undocumented)
   getOptional<T = JsonValue_2>(key?: string): T | undefined;
-  // (undocumented)
   getOptionalBoolean(key: string): boolean | undefined;
-  // (undocumented)
   getOptionalConfig(key: string): ConfigReader | undefined;
-  // (undocumented)
   getOptionalConfigArray(key: string): ConfigReader[] | undefined;
-  // (undocumented)
   getOptionalNumber(key: string): number | undefined;
-  // (undocumented)
   getOptionalString(key: string): string | undefined;
-  // (undocumented)
   getOptionalStringArray(key: string): string[] | undefined;
-  // (undocumented)
   getString(key: string): string;
-  // (undocumented)
   getStringArray(key: string): string[];
-  // (undocumented)
   has(key: string): boolean;
-  // (undocumented)
   keys(): string[];
 }
 

@@ -21,6 +21,11 @@ import {
   readGitHubIntegrationConfigs,
 } from './config';
 
+/**
+ * A GitHub based integration.
+ *
+ * @public
+ */
 export class GitHubIntegration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<GitHubIntegration> = ({ config }) => {
     const configs = readGitHubIntegrationConfigs(
@@ -54,15 +59,22 @@ export class GitHubIntegration implements ScmIntegration {
     // GitHub uses blob URLs for files and tree urls for directory listings. But
     // there is a redirect from tree to blob for files, so we can always return
     // tree urls here.
-    return replaceUrlType(defaultScmResolveUrl(options), 'tree');
+    return replaceGitHubUrlType(defaultScmResolveUrl(options), 'tree');
   }
 
   resolveEditUrl(url: string): string {
-    return replaceUrlType(url, 'edit');
+    return replaceGitHubUrlType(url, 'edit');
   }
 }
 
-export function replaceUrlType(
+/**
+ * Takes a GitHub URL and replaces the type part (blob, tree etc).
+ *
+ * @param url - The original URL
+ * @param type - The desired type, e.g. "blob"
+ * @public
+ */
+export function replaceGitHubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
 ): string {

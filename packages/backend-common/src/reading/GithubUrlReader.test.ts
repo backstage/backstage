@@ -20,7 +20,7 @@ import {
   GitHubIntegration,
   readGitHubIntegrationConfig,
 } from '@backstage/integration';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
@@ -73,7 +73,7 @@ const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
 describe('GithubUrlReader', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     mockFs({

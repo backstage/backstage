@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
-import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import {
   createApiFactory,
   createPlugin,
@@ -23,7 +21,15 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+
+import { AZURE_DEVOPS_ANNOTATION } from './constants';
+import { AzureDevOpsClient } from './api/AzureDevOpsClient';
+import { Entity } from '@backstage/catalog-model';
+import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
 import { azureDevOpsRouteRef } from './routes';
+
+export const isAzureDevOpsAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION]);
 
 export const azureDevOpsPlugin = createPlugin({
   id: 'azureDevOps',
@@ -43,7 +49,10 @@ export const azureDevOpsPlugin = createPlugin({
 export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'EntityAzurePipelinesContent',
-    component: () => import('./components/Router').then(m => m.Router),
+    component: () =>
+      import('./components/EntityPageAzurePipelines').then(
+        m => m.EntityPageAzurePipelines,
+      ),
     mountPoint: azureDevOpsRouteRef,
   }),
 );

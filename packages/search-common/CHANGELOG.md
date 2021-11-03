@@ -1,5 +1,11 @@
 # @backstage/search-common
 
+## 0.2.1
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+
 ## 0.2.0
 
 ### Minor Changes

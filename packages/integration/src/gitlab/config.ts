@@ -23,6 +23,8 @@ const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
 
 /**
  * The configuration parameters for a single GitLab integration.
+ *
+ * @public
  */
 export type GitLabIntegrationConfig = {
   /**
@@ -57,7 +59,8 @@ export type GitLabIntegrationConfig = {
 /**
  * Reads a single GitLab integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readGitLabIntegrationConfig(
   config: Config,
@@ -104,7 +107,8 @@ export function readGitLabIntegrationConfig(
  * Reads a set of GitLab integration configs, and inserts some defaults for
  * public GitLab if not specified.
  *
- * @param configs All of the integration config objects
+ * @param configs - All of the integration config objects
+ * @public
  */
 export function readGitLabIntegrationConfigs(
   configs: Config[],

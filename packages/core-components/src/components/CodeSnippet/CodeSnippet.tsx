@@ -24,6 +24,8 @@ import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
 /**
  * Properties for {@link CodeSnippet}
+ *
+ * @public
  */
 export interface CodeSnippetProps {
   /**
@@ -67,6 +69,8 @@ export interface CodeSnippetProps {
 /**
  * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
  * providing consistent theming and copy code button
+ *
+ * @public
  */
 export function CodeSnippet(props: CodeSnippetProps) {
   const {

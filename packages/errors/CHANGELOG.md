@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 0.1.4
+
+### Patch Changes
+
+- a15d028517: More API fixes: mark things public, add docs, fix exports
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 8c30ae8902: Add `stringifyError` that is useful for logging e.g. `Something went wrong, ${stringifyError(e)}`
+
 ## 0.1.3
 
 ### Patch Changes

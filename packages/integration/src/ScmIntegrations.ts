@@ -24,14 +24,24 @@ import { defaultScmResolveUrl } from './helpers';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
 
-type IntegrationsByType = {
+/**
+ * The set of supported integrations.
+ *
+ * @public
+ */
+export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
-};
+}
 
+/**
+ * Exposes the set of supported integrations.
+ *
+ * @public
+ */
 export class ScmIntegrations implements ScmIntegrationRegistry {
   private readonly byType: IntegrationsByType;
 
