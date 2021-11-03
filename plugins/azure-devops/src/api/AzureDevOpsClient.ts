@@ -37,7 +37,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     this.identityApi = options.identityApi;
   }
 
-  async getRepoBuilds(
+  public async getRepoBuilds(
     projectName: string,
     repoName: string,
     options?: RepoBuildOptions,
@@ -48,7 +48,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     return { items };
   }
 
-  async getPullRequests(
+  public async getPullRequests(
     projectName: string,
     repoName: string,
     options?: PullRequestOptions,

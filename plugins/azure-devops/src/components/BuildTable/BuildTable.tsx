@@ -115,7 +115,10 @@ export const getBuildStateComponent = (
   }
 };
 
-export const getBuildDuration = (startTime?: Date, finishTime?: Date) => {
+export const getBuildDuration = (
+  startTime?: Date,
+  finishTime?: Date,
+): string => {
   if (!startTime || (!startTime && !finishTime)) {
     return '';
   }
