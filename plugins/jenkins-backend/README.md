@@ -12,6 +12,12 @@ This is the backend half of the 2 Jenkins plugins and is responsible for:
 
 This plugin needs to be added to an existing backstage instance.
 
+```bash
+# From your Backstage root directory
+cd packages/backend
+yarn add @backstage/plugin-jenkins-backend
+```
+
 Typically, this means creating a `src/plugins/jenkins.ts` file and adding a reference to it to `src/index.ts`
 
 ### jenkins.ts
