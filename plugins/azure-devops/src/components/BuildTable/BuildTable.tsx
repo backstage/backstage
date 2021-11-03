@@ -20,7 +20,6 @@ import {
   BuildStatus,
   RepoBuild,
 } from '@backstage/plugin-azure-devops-common';
-import { DateTime, Interval } from 'luxon'
 import {
   Link,
   ResponseErrorPanel,
@@ -35,8 +34,9 @@ import {
 } from '@backstage/core-components';
 
 import { AzurePipelinesIcon } from '../AzurePipelinesIcon';
+import { DateTime } from 'luxon';
 import React from 'react';
-import humanizeDuration from 'humanize-duration';
+import { getDurationFromDates } from '../../utils/getDurationFromDates';
 
 export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
@@ -115,46 +115,6 @@ export const getBuildStateComponent = (
   }
 };
 
-export const getBuildDuration = (
-  startTime?: Date,
-  finishTime?: Date,
-): string => {
-  if (!startTime || (!startTime && !finishTime)) {
-    return '';
-  }
-
-  const start = DateTime.fromISO(startTime.toString());
-  const finish = finishTime
-    ? DateTime.fromISO(finishTime.toString())
-    : DateTime.now();
-
-  const formatted = Interval.fromDateTimes(start, finish)
-    .toDuration()
-    .valueOf();
-
-  const shortEnglishHumanizer = humanizeDuration.humanizer({
-    language: 'shortEn',
-    languages: {
-      shortEn: {
-        y: () => 'y',
-        mo: () => 'mo',
-        w: () => 'w',
-        d: () => 'd',
-        h: () => 'h',
-        m: () => 'm',
-        s: () => 's',
-        ms: () => 'ms',
-      },
-    },
-  });
-
-  return shortEnglishHumanizer(formatted, {
-    largest: 2,
-    round: true,
-    spacer: '',
-  });
-};
-
 const columns: TableColumn[] = [
   {
     title: 'ID',
@@ -193,7 +153,7 @@ const columns: TableColumn[] = [
     render: (row: Partial<RepoBuild>) => (
       <Box display="flex" alignItems="center">
         <Typography>
-          {getBuildDuration(row.startTime, row.finishTime)}
+          {getDurationFromDates(row.startTime, row.finishTime)}
         </Typography>
       </Box>
     ),

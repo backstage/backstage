@@ -242,23 +242,3 @@ describe('getBuildStateComponent', () => {
     });
   });
 });
-
-describe('getBuildDuration', () => {
-  describe('getBuildDuration with undefined startTime and valid finishTime', () => {
-    it('should return empty result', () => {
-      const finishTime = new Date('2021-10-15T11:00:00.0000000Z');
-
-      const result = getBuildDuration(undefined, finishTime);
-
-      expect(result).toEqual('');
-    });
-  });
-
-  describe('getBuildDuration with undefined startTime and undefined finishTime', () => {
-    it('should return empty result', () => {
-      const result = getBuildDuration(undefined, undefined);
-
-      expect(result).toEqual('');
-    });
-  });
-});
