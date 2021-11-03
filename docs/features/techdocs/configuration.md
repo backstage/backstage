@@ -106,6 +106,11 @@ techdocs:
       # This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
       s3ForcePathStyle: false
 
+      # (Optional) AWS Server Side Encryption
+      # If not set, encrypted buckets will fail to publish.
+      # https://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-encryption.html
+      sse: 'aws:kms' # or AES256
+
     # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
 
     azureBlobStorage:
