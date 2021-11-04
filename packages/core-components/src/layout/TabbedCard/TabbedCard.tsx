@@ -46,6 +46,7 @@ const useTabsStyles = makeStyles(
   { name: 'BackstageTabbedCard' },
 );
 
+/** @public */
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
 const BoldHeader = withStyles(
@@ -120,6 +121,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
   );
 }
 
+/** @public */
 export type CardTabClassKey = 'root' | 'selected';
 
 const useCardTabStyles = makeStyles(
@@ -147,6 +149,7 @@ type CardTabProps = TabProps & {
   children: ReactNode;
 };
 
+/** @public */
 export function CardTab(props: PropsWithChildren<CardTabProps>) {
   const { children, ...restProps } = props;
   const classes = useCardTabStyles();

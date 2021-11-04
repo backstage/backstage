@@ -19,7 +19,7 @@ import {
   EntityRelationSpec,
   LocationSpec,
 } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 export type CatalogProcessor = {
   /**

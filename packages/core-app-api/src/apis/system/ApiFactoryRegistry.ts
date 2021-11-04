@@ -44,6 +44,8 @@ type FactoryTuple = {
  *
  * Each scope has an assigned priority, where factories registered with
  * higher priority scopes override ones with lower priority.
+ *
+ * @public
  */
 export class ApiFactoryRegistry implements ApiFactoryHolder {
   private readonly factories = new Map<string, FactoryTuple>();

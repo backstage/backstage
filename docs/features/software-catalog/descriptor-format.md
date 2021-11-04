@@ -502,6 +502,8 @@ spec:
   lifecycle: production
   owner: artist-relations-team
   system: artist-engagement-portal
+  dependsOn:
+    - resource:default/artists-db
   providesApis:
     - artist-api
 ```

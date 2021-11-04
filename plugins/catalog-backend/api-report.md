@@ -18,8 +18,8 @@ import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
-import { JsonObject } from '@backstage/config';
-import { JsonValue } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
@@ -1295,6 +1295,7 @@ export class NextCatalogBuilder {
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): NextCatalogBuilder;
+  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(

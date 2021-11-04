@@ -16,7 +16,7 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { BackstageTheme } from '@backstage/theme';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/types';
 
 /**
  * Describes a theme provided by the app.

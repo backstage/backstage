@@ -21,4 +21,3 @@
  */
 
 export * from './testUtils';
-export * from '@backstage/test-utils-core';

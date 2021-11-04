@@ -41,6 +41,7 @@ export type EdgeProperties = {
 };
 export type GraphEdge<T> = DependencyEdge<T> & dagre.GraphEdge & EdgeProperties;
 
+/** @public */
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
 
 const useStyles = makeStyles(
@@ -60,6 +61,7 @@ const useStyles = makeStyles(
 
 type EdgePoint = dagre.GraphEdge['points'][0];
 
+/** @public */
 export type EdgeComponentProps<T = unknown> = {
   id: dagre.Edge;
   edge: GraphEdge<T>;

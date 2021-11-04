@@ -13,28 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
-  Task,
+  TaskContext,
   TaskSecrets,
   TaskSpec,
   TaskStore,
   TaskBroker,
   DispatchResult,
-  DbTaskEventRow,
-  DbTaskRow,
+  SerializedTaskEvent,
+  SerializedTask,
 } from './types';
 
-export class TaskAgent implements Task {
+/**
+ * TaskManager
+ *
+ * @public
+ */
+export class TaskManager implements TaskContext {
   private isDone = false;
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(state: TaskState, storage: TaskStore, logger: Logger) {
-    const agent = new TaskAgent(state, storage, logger);
+    const agent = new TaskManager(state, storage, logger);
     agent.startTimeout();
     return agent;
   }
@@ -104,7 +109,12 @@ export class TaskAgent implements Task {
   }
 }
 
-interface TaskState {
+/**
+ * TaskState
+ *
+ * @public
+ */
+export interface TaskState {
   spec: TaskSpec;
   taskId: string;
   secrets?: TaskSecrets;
@@ -125,11 +135,11 @@ export class StorageTaskBroker implements TaskBroker {
   ) {}
   private deferredDispatch = defer();
 
-  async claim(): Promise<Task> {
+  async claim(): Promise<TaskContext> {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        return TaskAgent.create(
+        return TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
@@ -155,7 +165,7 @@ export class StorageTaskBroker implements TaskBroker {
     };
   }
 
-  async get(taskId: string): Promise<DbTaskRow> {
+  async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
   }
 
@@ -166,9 +176,9 @@ export class StorageTaskBroker implements TaskBroker {
     },
     callback: (
       error: Error | undefined,
-      result: { events: DbTaskEventRow[] },
+      result: { events: SerializedTaskEvent[] },
     ) => void,
-  ): () => void {
+  ): { unsubscribe: () => void } {
     const { taskId } = options;
 
     let cancelled = false;
@@ -195,7 +205,7 @@ export class StorageTaskBroker implements TaskBroker {
       }
     })();
 
-    return unsubscribe;
+    return { unsubscribe };
   }
 
   async vacuumTasks(timeoutS: { timeoutS: number }): Promise<void> {

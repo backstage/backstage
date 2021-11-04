@@ -30,6 +30,7 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
+/** @public */
 export type GaugeCardClassKey = 'root';
 
 const useStyles = makeStyles(
@@ -42,6 +43,7 @@ const useStyles = makeStyles(
   { name: 'BackstageGaugeCard' },
 );
 
+/** @public */
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);
   const { title, subheader, progress, inverse, deepLink, variant } = props;

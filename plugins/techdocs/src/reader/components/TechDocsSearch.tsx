@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { EntityName } from '@backstage/catalog-model';
+import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
 import {
   CircularProgress,
   Grid,
@@ -22,21 +23,15 @@ import {
   InputAdornment,
   TextField,
 } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
-import { DocsResultListItem } from '../../components/DocsResultListItem';
 import SearchIcon from '@material-ui/icons/Search';
-import { useDebounce } from 'react-use';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useDebounce } from 'react-use';
+import { DocsResultListItem } from '../../components/DocsResultListItem';
 
-type EntityId = {
-  name: string;
-  namespace: string;
-  kind: string;
-};
 type TechDocsSearchProps = {
-  entityId: EntityId;
+  entityId: EntityName;
   debounceTime?: number;
 };
 
@@ -52,17 +47,6 @@ type TechDocsDoc = {
 type TechDocsSearchResult = {
   type: string;
   document: TechDocsDoc;
-};
-
-export const buildInitialFilters = (
-  legacyPaths: boolean,
-  entityId: EntityId,
-) => {
-  return legacyPaths
-    ? entityId
-    : Object.entries(entityId).reduce((acc, [key, value]) => {
-        return { ...acc, [key]: value?.toLocaleLowerCase('en-US') };
-      }, {});
 };
 
 const TechDocsSearchBar = ({
@@ -176,15 +160,11 @@ const TechDocsSearchBar = ({
 };
 
 export const TechDocsSearch = (props: TechDocsSearchProps) => {
-  const configApi = useApi(configApiRef);
-  const legacyPaths = configApi.getOptionalBoolean(
-    'techdocs.legacyUseCaseSensitiveTripletPaths',
-  );
   const initialState = {
     term: '',
     types: ['techdocs'],
     pageCursor: '',
-    filters: buildInitialFilters(legacyPaths || false, props.entityId),
+    filters: props.entityId,
   };
   return (
     <SearchContextProvider initialState={initialState}>

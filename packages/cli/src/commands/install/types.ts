@@ -15,7 +15,7 @@
  */
 
 import { YarnInfoInspectData } from '../../lib/versioning';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /**
  * TODO: possible types
