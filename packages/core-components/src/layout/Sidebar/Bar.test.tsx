@@ -28,7 +28,7 @@ import { SubmenuItem } from './SubmenuItem';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
-    <Sidebar>
+    <Sidebar disableExpandOnHover>
       <SidebarSearchField onSearch={() => {}} to="/search" />
       <SidebarItem
         icon={CatalogSidebarLogo}
@@ -70,6 +70,10 @@ describe('Sidebar', () => {
     it('Sidebar should show expanded items when expand button is clicked', async () => {
       userEvent.click(screen.getByTestId('sidebar-expand-button'));
       expect(await screen.findByText('Create...')).toBeInTheDocument();
+    });
+    it('Sidebar should not show expanded items when hovered on', async () => {
+      userEvent.hover(screen.getByTestId('sidebar-root'));
+      expect(await screen.queryByText('Create...')).not.toBeInTheDocument();
     });
   });
   describe('Submenu Items', () => {

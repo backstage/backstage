@@ -17,12 +17,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx';
-import React, {
-  useState,
-  useContext,
-  PropsWithChildren,
-  useEffect,
-} from 'react';
+import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
@@ -88,24 +83,85 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageSidebar' },
 );
 
-export function Sidebar({ children }: PropsWithChildren<{}>) {
+enum State {
+  Closed,
+  Idle,
+  Open,
+}
+
+type Props = {
+  openDelayMs?: number;
+  closeDelayMs?: number;
+  disableExpandOnHover?: boolean;
+};
+
+export function Sidebar(props: PropsWithChildren<Props>) {
+  const {
+    disableExpandOnHover = false,
+    openDelayMs = sidebarConfig.defaultOpenDelayMs,
+    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+    children,
+  } = props;
   const classes = useStyles();
-
+  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('md'),
+  );
+  const [state, setState] = useState(State.Closed);
+  const hoverTimerRef = useRef<number>();
   const { isPinned } = useContext(SidebarPinStateContext);
-  const [isOpen, setIsOpen] = useState(isPinned);
 
-  useEffect(() => {
+  const handleOpen = () => {
     if (isPinned) {
-      setIsOpen(true);
+      return;
     }
-  }, [isPinned]);
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    if (state !== State.Open && !isSmallScreen) {
+      hoverTimerRef.current = window.setTimeout(() => {
+        hoverTimerRef.current = undefined;
+        setState(State.Open);
+      }, openDelayMs);
+
+      setState(State.Idle);
+    }
+  };
+
+  const handleClose = () => {
+    if (isPinned) {
+      return;
+    }
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    if (state === State.Idle) {
+      setState(State.Closed);
+    } else if (state === State.Open) {
+      hoverTimerRef.current = window.setTimeout(() => {
+        hoverTimerRef.current = undefined;
+        setState(State.Closed);
+      }, closeDelayMs);
+    }
+  };
+
+  const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   return (
-    <div className={classes.root} data-testid="sidebar-root">
+    <div
+      className={classes.root}
+      data-testid="sidebar-root"
+      onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
+      onFocus={disableExpandOnHover ? () => {} : handleOpen}
+      onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
+      onBlur={disableExpandOnHover ? () => {} : handleClose}
+    >
       <SidebarContext.Provider
         value={{
           isOpen,
-          setIsOpen,
+          handleOpen,
+          handleClose,
         }}
       >
         <div
@@ -122,26 +178,21 @@ export function Sidebar({ children }: PropsWithChildren<{}>) {
 
 export const SidebarExpandButton = () => {
   const classes = useStyles();
+  const { isOpen, handleOpen, handleClose } = useContext(SidebarContext);
+  const { isPinned } = useContext(SidebarPinStateContext);
   const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
   );
-  const { isPinned } = useContext(SidebarPinStateContext);
-  const { isOpen, setIsOpen } = useContext(SidebarContext);
-
-  const openDelayMs = sidebarConfig.defaultOpenDelayMs;
-  const closeDelayMs = sidebarConfig.defaultCloseDelayMs;
 
   const handleClick = () => {
-    if (isPinned || isSmallScreen) {
-      return;
+    if (isOpen) {
+      handleClose();
+    } else {
+      handleOpen();
     }
-    const delayMs = isOpen ? openDelayMs : closeDelayMs;
-    setTimeout(async () => {
-      setIsOpen(!isOpen);
-    }, delayMs);
   };
 
-  if (isSmallScreen || isPinned) {
+  if (isPinned || isSmallScreen) {
     return null;
   }
 

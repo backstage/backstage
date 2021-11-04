@@ -24,6 +24,7 @@ export const CatalogSidebarLogo = () => {
       height="21"
       fill="none"
       viewBox="0 0 20 21"
+      fontSize="small"
     >
       <path
         fillRule="evenodd"

@@ -55,6 +55,18 @@ export const SampleSidebar = () => (
   <Sidebar>
     <SidebarSearchField onSearch={handleSearch} to="/search" />
     <SidebarDivider />
+    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+    <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+    <SidebarDivider />
+    <SidebarIntro />
+    <SidebarSpace />
+  </Sidebar>
+);
+
+export const SampleScalableSidebar = () => (
+  <Sidebar disableExpandOnHover>
+    <SidebarSearchField onSearch={handleSearch} to="/search" />
+    <SidebarDivider />
     <SidebarItem
       icon={CatalogSidebarLogo}
       onClick={() => {}}
