@@ -281,7 +281,7 @@ export class NextCatalogBuilder {
    * parsing, and processing entities before they are persisted in the catalog. Changing
    * the order of processing can give more control to custom processors.
    *
-   * Consider using with with {@link NextCatalogBuilder#replaceProcessors}
+   * Consider using with {@link NextCatalogBuilder#replaceProcessors}
    *
    */
   getDefaultProcessors(): CatalogProcessor[] {
@@ -417,7 +417,7 @@ export class NextCatalogBuilder {
   }
 
   private buildProcessors(): CatalogProcessor[] {
-    const { config, logger, reader } = this.env;
+    const { config, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
 
     this.checkDeprecatedReaderProcessors();
