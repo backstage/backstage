@@ -92,11 +92,6 @@ export async function createRouter<
     router.post('/checks/run/:namespace/:kind/:name', async (req, res) => {
       const { namespace, kind, name } = req.params;
       try {
-        if (!('checks' in req.body)) {
-          return res.status(422).send({
-            message: 'Failed to get checks from request.',
-          });
-        }
         const { checks }: { checks: string[] } = req.body;
         const entityTriplet = stringifyEntityRef({ namespace, kind, name });
         const checkResult = await factChecker.runChecks(entityTriplet, checks);
