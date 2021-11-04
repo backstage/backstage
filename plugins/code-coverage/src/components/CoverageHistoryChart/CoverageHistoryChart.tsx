@@ -69,6 +69,11 @@ const getTrendIcon = (trend: number, classes: ClassNameMap) => {
   }
 };
 
+// convert timestamp to human friendly form
+function formatDateToHuman(timeStamp: string | number) {
+  return new Date(timeStamp).toUTCString();
+}
+
 export const CoverageHistoryChart = () => {
   const { entity } = useEntity();
   const codeCoverageApi = useApi(codeCoverageApiRef);
@@ -149,10 +154,10 @@ export const CoverageHistoryChart = () => {
             margin={{ right: 48, top: 32 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp" />
+            <XAxis dataKey="timestamp" tickFormatter={formatDateToHuman} />
             <YAxis dataKey="line.percentage" />
             <YAxis dataKey="branch.percentage" />
-            <Tooltip />
+            <Tooltip labelFormatter={formatDateToHuman} />
             <Legend />
             <Line
               type="monotone"
