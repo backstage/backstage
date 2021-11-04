@@ -97,3 +97,24 @@ export const LinkInFooter = () => (
     </Grid>
   </Wrapper>
 );
+
+export const StaticColor = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard getColor={() => '#f00'} title="Red" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard getColor={() => '#0f0'} title="Green" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard getColor={() => '#00f'} title="Blue" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        getColor={({ palette }) => palette.error}
+        title="palette.error"
+        progress={0.5}
+      />
+    </Grid>
+  </Wrapper>
+);

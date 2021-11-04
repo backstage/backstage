@@ -52,7 +52,15 @@ type Props = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  getColor?: GetColor;
 };
+
+export type GetColor = (args: {
+  palette: BackstageTheme['palette'];
+  value: number;
+  inverse?: boolean;
+  max?: number;
+}) => string | BackstageTheme['palette']['error'];
 
 const defaultProps = {
   fractional: true,
@@ -83,10 +91,18 @@ export function getProgressColor(
   return palette.status.ok;
 }
 
+export const defaultGetProgressColor: GetColor = ({
+  palette,
+  value,
+  inverse,
+  max,
+}) => getProgressColor(palette, value, inverse, max);
+
 /** @public */
 export function Gauge(props: Props) {
+  const { getColor = defaultGetProgressColor } = props;
   const classes = useStyles(props);
-  const theme = useTheme<BackstageTheme>();
+  const { palette } = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
     ...defaultProps,
     ...props,
@@ -102,7 +118,7 @@ export function Gauge(props: Props) {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getProgressColor(theme.palette, asActual, inverse, max)}
+        strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
       <div className={classes.overlay}>
