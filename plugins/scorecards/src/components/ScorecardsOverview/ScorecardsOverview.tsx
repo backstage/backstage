@@ -28,7 +28,7 @@ export const ScorecardsOverview = () => {
   const { namespace, kind, name } = useParams();
 
   const { value, loading, error } = useAsync(
-    async () => await api.fetchChecks({ namespace, kind, name }),
+    async () => await api.runChecks({ namespace, kind, name }),
   );
 
   if (loading) {

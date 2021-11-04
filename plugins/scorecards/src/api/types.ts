@@ -13,27 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createApiRef } from '@backstage/core-plugin-api';
-import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { Check } from './types';
-
-export const scorecardsApiRef = createApiRef<ScorecardsApi>({
-  id: 'plugin.scorecards.service',
-  description: 'Used by the scorecards plugin to make requests',
-});
-
-export interface ScorecardsApi {
-  getAllChecks(): Promise<Check[]>;
-  runChecks({
-    namespace,
-    kind,
-    name,
-    checks,
-  }: {
-    namespace: string;
-    kind: string;
-    name: string;
-    checks?: Check[];
-  }): Promise<CheckResult[]>;
-}
+export type Check = {
+  id: string;
+  type: string;
+  name: string;
+  description: string;
+  factIds: string[];
+};

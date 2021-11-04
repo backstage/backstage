@@ -15,10 +15,8 @@
  */
 
 import { ScorecardsApi } from './ScorecardsApi';
-import {
-  CheckResult,
-  CheckResponse,
-} from '@backstage/plugin-tech-insights-common';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import { Check } from './types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type Options = {
@@ -41,33 +39,35 @@ export class ScorecardsClient implements ScorecardsApi {
     return this.baseUrl;
   };
 
-  async fetchAllChecks(): Promise<CheckResult[]> {
+  async getAllChecks(): Promise<Check[]> {
     const url = await this.getBaseUrl();
     const allChecks = await fetch(`${url}/checks`);
     const payload = await allChecks.json();
     if (!allChecks.ok) {
       throw new Error(payload.errors[0]);
     }
-    const checks = payload.map((check: CheckResponse) => check.id);
-    return checks;
+    return payload;
   }
 
-  async fetchChecks({
+  async runChecks({
     namespace,
     kind,
     name,
+    checks,
   }: {
     namespace: string;
     kind: string;
     name: string;
+    checks: Check[];
   }): Promise<CheckResult[]> {
     const url = await this.getBaseUrl();
-    const allChecks = await this.fetchAllChecks();
+    const allChecks = checks ? checks : await this.getAllChecks();
+    const checkIds = allChecks.map((check: Check) => check.id);
     const response = await fetch(
       `${url}/checks/run/${namespace}/${kind}/${name}`,
       {
         method: 'POST',
-        body: JSON.stringify({ checks: allChecks }),
+        body: JSON.stringify({ checks: checkIds }),
         headers: {
           'Content-Type': 'application/json',
         },
