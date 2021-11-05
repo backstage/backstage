@@ -20,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
-import { defaultGetProgressColor, GetColor } from './Gauge';
+import { getProgressColor, GetColor } from './Gauge';
 
 type Props = {
   /**
@@ -31,7 +31,7 @@ type Props = {
 };
 
 export function LinearGauge(props: Props) {
-  const { value, getColor = defaultGetProgressColor } = props;
+  const { value, getColor = getProgressColor } = props;
   const { palette } = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;

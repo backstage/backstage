@@ -55,12 +55,16 @@ type Props = {
   getColor?: GetColor;
 };
 
-export type GetColor = (args: {
+type GetColorArgs = {
   palette: BackstageTheme['palette'];
   value: number;
   inverse?: boolean;
   max?: number;
-}) => string | BackstageTheme['palette']['error'];
+};
+
+export type GetColor = (
+  args: GetColorArgs,
+) => string | BackstageTheme['palette']['error'];
 
 const defaultProps = {
   fractional: true,
@@ -69,12 +73,12 @@ const defaultProps = {
   max: 100,
 };
 
-export function getProgressColor(
-  palette: BackstageTheme['palette'],
-  value: number,
-  inverse?: boolean,
-  max?: number,
-) {
+export const getProgressColor: GetColor = ({
+  palette,
+  value,
+  inverse,
+  max,
+}) => {
   if (isNaN(value)) {
     return '#ddd';
   }
@@ -89,18 +93,11 @@ export function getProgressColor(
   }
 
   return palette.status.ok;
-}
-
-export const defaultGetProgressColor: GetColor = ({
-  palette,
-  value,
-  inverse,
-  max,
-}) => getProgressColor(palette, value, inverse, max);
+};
 
 /** @public */
 export function Gauge(props: Props) {
-  const { getColor = defaultGetProgressColor } = props;
+  const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
