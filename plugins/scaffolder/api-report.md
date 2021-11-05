@@ -178,6 +178,7 @@ export class ScaffolderClient implements ScaffolderApi {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
   });
   // (undocumented)
   getIntegrationsList(options: { allowedHosts: string[] }): Promise<
@@ -199,13 +200,7 @@ export class ScaffolderClient implements ScaffolderApi {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // (undocumented)
-  streamLogs({
-    taskId,
-    after,
-  }: {
-    taskId: string;
-    after?: number;
-  }): Observable<LogEvent>;
+  streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;
 }
 
 // Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
