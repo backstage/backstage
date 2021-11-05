@@ -22,7 +22,7 @@ import {
   loadConfigSchema,
   loadConfig,
   ConfigSchema,
-  ConfigTarget
+  ConfigTarget,
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
