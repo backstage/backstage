@@ -80,7 +80,8 @@ const useStyles = makeStyles(
       backgroundColor: theme.palette.banner.error,
     },
     warning: {
-      backgroundColor: theme.palette.banner.warning,
+      backgroundColor:
+        theme.palette.banner.warning ?? theme.palette.banner.error,
     },
   }),
   { name: 'BackstageDismissableBanner' },
