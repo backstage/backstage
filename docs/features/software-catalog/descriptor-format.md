@@ -144,7 +144,8 @@ spec:
 
 Note that to be able to read from targets that are outside of the normal
 integration points such as `github.com`, you'll need to explicitly allow it by
-adding an entry in the `backend.reading.allow` list. For example:
+adding an entry in the `backend.reading.allow` list. Paths can be specified to
+further restrict targets For example:
 
 ```yml
 backend:
@@ -153,6 +154,8 @@ backend:
     allow:
       - host: example.com
       - host: '*.examples.org'
+      - host: example.net
+        paths: ['/api/']
 ```
 
 ## Common to All Kinds: The Envelope
