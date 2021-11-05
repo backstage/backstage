@@ -18,6 +18,10 @@ import { ScorecardsApi } from './ScorecardsApi';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  CheckResultRenderer,
+  defaultCheckResultRenderers,
+} from '../components/CheckResultRenderer';
 
 export type Options = {
   discoveryApi: DiscoveryApi;
@@ -30,6 +34,14 @@ export class ScorecardsClient implements ScorecardsApi {
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
+  }
+
+  getScorecardsDefinition(
+    type: string,
+    value: CheckResult[],
+  ): CheckResultRenderer | undefined {
+    const resultRenderers = defaultCheckResultRenderers(value);
+    return resultRenderers.find(d => d.type === type);
   }
 
   getBaseUrl: () => Promise<string> = async () => {

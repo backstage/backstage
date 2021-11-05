@@ -52,7 +52,15 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Prop = {
-  checkResult: CheckResult;
+  checkResult: CheckResult[];
+};
+
+const renderResult = (classes: any, result: Boolean) => {
+  return result ? (
+    <CheckCircleOutline className={classes.icon} color="primary" />
+  ) : (
+    <ErrorOutlineIcon className={classes.icon} color="error" />
+  );
 };
 
 export const BooleanCheck = ({ checkResult }: Prop) => {
@@ -60,15 +68,15 @@ export const BooleanCheck = ({ checkResult }: Prop) => {
 
   return (
     <ListItem className={classes.listItem}>
-      <ListItemText
-        primary={checkResult.check.name}
-        className={classes.listItemText}
-      />
-      {'result' in checkResult ? (
-        <CheckCircleOutline className={classes.icon} color="primary" />
-      ) : (
-        <ErrorOutlineIcon className={classes.icon} color="error" />
-      )}
+      {checkResult!.map(check => (
+        <>
+          <ListItemText
+            primary={check.check.name}
+            className={classes.listItemText}
+          />
+          {renderResult(classes, check.result)}
+        </>
+      ))}
     </ListItem>
   );
 };

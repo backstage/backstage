@@ -16,10 +16,11 @@
 
 import React from 'react';
 import { makeStyles, Grid, Typography } from '@material-ui/core';
+import { useApi } from '@backstage/core-plugin-api';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { BackstageTheme } from '@backstage/theme';
-import { BooleanCheck } from '../BooleanCheck';
+import { scorecardsApiRef } from '../../api/ScorecardsApi';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   listItem: {
@@ -51,31 +52,36 @@ type Checks = {
 
 export const ChecksOverview = ({ checks }: Checks) => {
   const classes = useStyles();
-  return (
-    <Page themeId="home">
-      <Content className={classes.contentScorecards}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <InfoCard>
-              <Grid container direction="row">
-                <Grid item>
-                  <Typography variant="h6">Check name</Typography>
-                </Grid>
-              </Grid>
-              <Grid container direction="row">
-                <Grid item xs={9}>
-                  {checks!.map(
-                    (checkResult, index) =>
-                      checkResult.check.type === 'json-rules-engine' && (
-                        <BooleanCheck key={index} checkResult={checkResult} />
-                      ),
-                  )}
-                </Grid>
-              </Grid>
-            </InfoCard>
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
+  const api = useApi(scorecardsApiRef);
+  const checkRenderType = api.getScorecardsDefinition(
+    checks[0].check.type,
+    checks,
   );
+
+  if (checkRenderType) {
+    return (
+      <Page themeId="home">
+        <Content className={classes.contentScorecards}>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <InfoCard title={checkRenderType.title}>
+                <Grid container direction="row">
+                  <Grid item>
+                    <Typography variant="h6">Check name</Typography>
+                  </Grid>
+                </Grid>
+                <Grid container direction="row">
+                  <Grid item xs={9}>
+                    {checkRenderType.component}
+                  </Grid>
+                </Grid>
+              </InfoCard>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    );
+  }
+
+  return <></>;
 };
