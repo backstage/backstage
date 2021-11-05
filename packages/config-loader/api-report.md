@@ -51,6 +51,21 @@ export type LoadConfigOptions = {
   watch?: LoadConfigOptionsWatch;
 };
 
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsRemote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LoadConfigOptionsRemote = {
+  reloadIntervalSeconds: number;
+};
+
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsWatch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LoadConfigOptionsWatch = {
+  onChange: (configs: AppConfig[]) => void;
+  stopSignal?: Promise<void>;
+};
+
 // @public
 export function loadConfigSchema(
   options: LoadConfigSchemaOptions,
@@ -74,13 +89,6 @@ export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
 
-// Warning: (ae-missing-release-tag) "LoadConfigOptionsRemote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type LoadConfigOptionsRemote = {
-  reloadIntervalSeconds: number;
-};
-
 // @public
 export type TransformFunc<T extends number | string | boolean> = (
   value: T,
@@ -89,11 +97,7 @@ export type TransformFunc<T extends number | string | boolean> = (
   },
 ) => T | undefined;
 
-// Warning: (ae-missing-release-tag) "LoadConfigOptionsWatch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warnings were encountered during analysis:
 //
-// @public (undocumented)
-export type LoadConfigOptionsWatch = {
-  onChange: (configs: AppConfig[]) => void;
-  stopSignal?: Promise<void>;
-};
+// src/loader.d.ts:33:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/config-loader" does not have an export "configTargets"
 ```
