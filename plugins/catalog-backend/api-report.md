@@ -113,6 +113,11 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
+// Warning: (ae-missing-release-tag) "AnyCatalogBundle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AnyCatalogBundle = CatalogBundleV1;
+
 // Warning: (ae-missing-release-tag) "AwsOrganizationCloudAccountProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -254,6 +259,43 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+}
+
+// @public
+export interface CatalogBundleV1 {
+  // (undocumented)
+  init(options: {
+    environment: CatalogBundleV1Environment;
+    hooks: CatalogBundleV1Hooks;
+  }): void | Promise<void>;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  version: 1;
+}
+
+// Warning: (ae-missing-release-tag) "CatalogBundleV1Environment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CatalogBundleV1Environment {
+  database: Knex;
+  logger: Logger_2;
+}
+
+// Warning: (ae-missing-release-tag) "CatalogBundleV1Hooks" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CatalogBundleV1Hooks {
+  addEntityPolicy(...policies: EntityPolicy[]): void;
+  addEntityProvider(...providers: EntityProvider[]): void;
+  addProcessor(...processors: CatalogProcessor[]): void;
+  replaceEntityPolicies(policies: EntityPolicy[]): void;
+  replaceProcessors(processors: CatalogProcessor[]): void;
+  setEntityDataParser(parser: CatalogProcessorParser): void;
+  setFieldFormatValidators(validators: Partial<Validators>): void;
+  setPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
+  setRefreshInterval(refreshInterval: RefreshIntervalFunction): void;
+  setRefreshIntervalSeconds(seconds: number): void;
 }
 
 // Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -496,6 +538,36 @@ export class CommonDatabase implements Database {
     matchingEtag?: string,
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
+}
+
+// Warning: (ae-missing-release-tag) "createBundle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function createBundle(
+  definition: CreateBundleDefinition,
+): CatalogBundleV1;
+
+// Warning: (ae-missing-release-tag) "CreateBundleDefinition" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CreateBundleDefinition {
+  entityProviders?: Array<
+    | EntityProvider
+    | ((
+        environment: CatalogBundleV1Environment,
+      ) => EntityProvider | Promise<EntityProvider>)
+  >;
+  init?(options: {
+    environment: CatalogBundleV1Environment;
+    hooks: CatalogBundleV1Hooks;
+  }): void | Promise<void>;
+  name: string;
+  processors?: Array<
+    | CatalogProcessor
+    | ((
+        environment: CatalogBundleV1Environment,
+      ) => CatalogProcessor | Promise<CatalogProcessor>)
+  >;
 }
 
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1273,11 +1345,8 @@ export type LocationUpdateStatus = {
 // @public
 export class NextCatalogBuilder {
   constructor(env: CatalogEnvironment);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
   build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
@@ -1287,17 +1356,13 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  // (undocumented)
+  register(bundle: AnyCatalogBundle): NextCatalogBuilder;
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): NextCatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
