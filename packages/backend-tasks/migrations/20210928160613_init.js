@@ -50,7 +50,6 @@ exports.up = async function up(knex) {
       .dateTime('current_run_expires_at')
       .nullable()
       .comment('The time that the current task run will time out');
-    table.index(['id'], 'backstage_backend_tasks__tasks__id_idx');
   });
 };
 
@@ -61,8 +60,5 @@ exports.down = async function down(knex) {
   //
   // tasks
   //
-  await knex.schema.alterTable('backstage_backend_tasks__tasks', table => {
-    table.dropIndex([], 'backstage_backend_tasks__tasks__id_idx');
-  });
   await knex.schema.dropTable('backstage_backend_tasks__tasks');
 };

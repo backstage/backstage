@@ -16,7 +16,7 @@
 
 import { DatabaseManager, getRootLogger } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { memoize } from 'lodash';
+import { once } from 'lodash';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -57,7 +57,7 @@ export class TaskScheduler {
    * @returns A {@link PluginTaskScheduler} instance
    */
   forPlugin(pluginId: string): PluginTaskScheduler {
-    const databaseFactory = memoize(async () => {
+    const databaseFactory = once(async () => {
       const knex = await this.databaseManager.forPlugin(pluginId).getClient();
 
       await migrateBackendTasks(knex);
