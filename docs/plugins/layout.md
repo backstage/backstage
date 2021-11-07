@@ -1026,3 +1026,41 @@ have this global state though, and probably gonna be a nightmare to have it
 working well with TS in the long run, especially considering dependencies.
 
 Will try out an implementation of the first idea...
+
+#### Implementation
+
+[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment10.tsx)
+
+#### Followup thoughts
+
+Implemented pretty much as planned, but simplified the API a bit:
+
+```tsx
+const PageLayout = createLayout<PageLayoutProps>({
+  mapContentProps: ({/* contentProps */}) => ({/* baseProps */}),
+})
+
+<PageLayout.Provider render={renderPage}/>
+<PageLayout.Override map={props => /* overrides */}/>
+<PageLayout {/* contentProps */}/>
+```
+
+The `mapContentProps` feels a bit useless, so gonna get rid of it.
+
+Another realization is that this pattern doesn't only apply to layouts and has
+rather become more of a general "component override" thing. For example applying
+this to cards, the naming `CardLayout` doesn't really make sense, as it sounds
+more like a way to lay out cards. Calling it just `Card` or something similar
+makes more sense, and the creation function itself could be something like
+`createOverridableComponent`, or something shorter...
+
+Yet another realization at this point is that this solution has significant
+overlap with the "app components", which is pretty much the same thing just that
+there's no prop overrides for those. It would very likely make sense to view
+this as an evolution of the app components, and completely replace those with
+this. That does however immediately bring back the provider stacking concern,
+since a stack of `<A.Provider><B.Provider><C.Provider>` at the root of the app
+is a bit shit, even if beautified with some wrapping APIs.
+
+Probably worth exploring of we can keep the API similar, but merge together the
+implementation into a single context.
