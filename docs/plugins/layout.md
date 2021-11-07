@@ -1064,3 +1064,35 @@ is a bit shit, even if beautified with some wrapping APIs.
 
 Probably worth exploring of we can keep the API similar, but merge together the
 implementation into a single context.
+
+### Experiment 11
+
+#### Implementation
+
+Straight into implementation, getting rid of `mapContentProps` and trying out a
+single context.
+
+[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment11.tsx)
+
+#### Followup thoughts
+
+Ended up with the planned API and called it `createOverrideComponent`. The
+context type ends up containing a collection "component specs", with each of
+them containing the `mapProps` + `Component` (instead of render) pair. Initially
+the context used an interface inspired by the `ApiHolder`, but it was switched
+over to a simple record, both because we use string keys here and can use this
+arguably simpler model, as well as some slight performance concerns because of
+having to call the full function chain on every render.
+
+Big question here is gonna be the level of granularity of the usage of these
+components. For example, given an entity page, is it possible to override both
+the entire entity page, the page layout within it, the header within the page
+layout, and maybe even the content component? Is this nesting of the overrides
+gonna cause trouble as well or will it behave just fine and still be simple to
+reason about?
+
+Another big question is where the core override components live,
+`@backstage/core-plugin-api`? Perhaps re-exported by
+`@backstage/core-components` for sanity?
+
+Thinking it's time for some real world tests now...
