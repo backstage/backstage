@@ -859,3 +859,170 @@ function EntityLayout(props) {
 #### Implementation
 
 [Off we go!](../../plugins/welcome/src/components/Experiment/Experiment8.tsx)
+
+### Experiment 9
+
+Continuation of experiment 8, with an exploration in how to make overrides work
+in a more natural way instead of the backwards way from experiment 8. Handling
+this through a `mapProps` or similar function seems sane, as this allows us to
+apply transforms in the opposite order compared to the render function.
+
+For example, given the following component hierarchy where we assume that each
+component applies its own transforms to the layout:
+
+```tsx
+<Top>
+  <Middle>
+    <Inner />
+  </Middle>
+</Top>
+```
+
+Any function calls would be executed bottom-up `Inner -> Middle -> Top`, meaning
+that the `Inner` component is the first one to get a change decorate the
+parameters, and the last one to get to modify the return value. Along with this,
+the `render` function doesn't return anything that we can transform in a
+meaningful way, as in once the component is rendered at the top of the hierarchy
+it's too late to add any additional transforms to the props. Because of this our
+ability to override props only works in one direction, and in this case the less
+desirable one.
+
+This is why we introduce a `mapProps` function, as it allows us to add
+transforms on our way back down the call stack as well. For example when the
+return values pass back down through for example the `Middle` component, it can
+apply its own transforms in the top-down direction. It's worth noting that the
+`mapProps` function can and probably should be used to override props in both
+directions in case we ever want to apply any bottom-up transforms, rather than
+overriding the render function.
+
+There are tweaks that can be made to the exact implementation of these top-down
+transforms, for example avoiding the separate function by passing the transform
+as a parameter instead, but I'll defer any further exploration as there are some
+other issues that I want to have a look at first and those might guide the
+design here.
+
+### Experiment 10
+
+#### Issue
+
+The previous layout implementation experiments had a quite hardcoded set of
+supported layout elements. I'd like to see if it's possible to break things down
+a bit so that the set of available layouts is more flexible, with one of the
+main goals being that it should be simple to create custom layouts. Another
+reason for this decoupling is that it may simplify versioning and make the
+layout API easier to evolve over time.
+
+#### Brainstorm
+
+We currently have this:
+
+```ts
+interface LayoutContextType {
+  page?: {
+    render(props: PageLayoutProps): JSX.Element;
+    mapProps(props: PageLayoutProps): PageLayoutProps;
+  };
+  // ...
+}
+```
+
+The value type here is pretty nicely defined, and we could slim that down to
+something like this to begin with:
+
+```ts
+interface LayoutContextType {
+  page?: LayoutPrimitive<PageLayoutProps>;
+}
+```
+
+There are a couple of producer and consumer patterns that we need to keep in
+mind:
+
+```tsx
+// Provider
+<LayoutProvider page={{ render: renderPage, mapProps: props => props }} />
+
+// Overrides
+<LayoutOverride page={props => /* overrides */} />
+
+// Rendering
+function LayoutContentPage({/* contentProps */}: Props) {
+  const { page: { render, mapProps } } = useContext(LayoutContext);
+  return render(mapProps(/* baseProps */));
+}
+```
+
+All of these pattern have a very direct relation to the `page` key, which is
+what we're going to try to get rid of. There are a couple of ways we can go
+here. Let's start off with something that creates us an individual component
+toolbox for each layout:
+
+```tsx
+const {
+  Provider: PageLayoutProvider,
+  Override: PageLayoutOverride,
+  Content: PageLayoutContent, // renamed to fit pattern
+} = createLayout<PageLayoutProps>({
+  mapContentProps: ({/* contentProps */}) => ({/* baseProps */}),
+})
+
+<PageLayoutProvider render={renderPage}/>
+<PageLayoutOverride map={props => /* overrides */}/>
+<PageLayoutContent {/* contentProps */}/>
+```
+
+The above becomes a very thin implementation that just sets up the contract of
+how a layout works. I did experiment with passing in more options to
+`createLayout`, but realized that it was gonna hurt the flexibility. Passing in
+a default `render` method could for example make sense, but then you can't get
+rid of it or the dependencies from the bundle in any way. The `mapContentProps`
+stays though, as that serves as a way to not have to have the content component
+require all the props that are otherwise required by the prop type. It can for
+example be used to initialize empty arrays and whatnot, so that each transform
+layer doesn't have to deal with that.
+
+Perhaps the biggest benefit of this approach is the simplicity, while I think
+the biggest downside is gonna be the fragmentation in that you end up with a
+bunch of different components in places, especially if we expand the API. You
+also end up with a separate provider for every layout that you use, which bloats
+the element tree. It's also could be nice to have a central API to track all
+layouts, but that is likely to cause versioning issues in the long run.
+
+It feels like this kind of API is the way to go, but will keep exploring some
+more options.
+
+Let's try one that's based on refs:
+
+```tsx
+const pageLayoutRef = createLayoutRef<PageLayoutProps>()
+
+<LayoutProvider layouts={[[pageLayoutRef, { render: renderPage }]]} />
+
+<LayoutOverride ref={pageLayoutRef} map={props => /* overrides */} />
+
+<LayoutContent ref={pageLayoutRef} {/* contentProps */} />
+```
+
+Meh, looks like shit, this API needs better DX.
+
+What about something that's more freeform and based on a key instead?
+
+```tsx
+const app = createApp({
+  layouts: {
+    page: createLayout<PageLayoutProps>()
+  }
+})
+
+<LayoutProvider page={{render: renderPage}} />
+
+<LayoutOverride page={props => /* overrides */} />
+
+<LayoutContent render='page' /> // ?
+```
+
+Looks a bit nice at times and does provide good discoverability. Bit scary to
+have this global state though, and probably gonna be a nightmare to have it
+working well with TS in the long run, especially considering dependencies.
+
+Will try out an implementation of the first idea...
