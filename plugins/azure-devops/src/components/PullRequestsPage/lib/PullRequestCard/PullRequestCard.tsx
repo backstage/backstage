@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, Link } from '@material-ui/core';
 
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { Avatar } from '@backstage/core-components';
+import { DateTime } from 'luxon';
 import { PullRequest } from '../../../../api/types';
 import { PullRequestCardPolicies } from './PullRequestCardPolicies';
 import { PullRequestCardReviewers } from './PullRequestCardReviewers';
@@ -71,6 +72,20 @@ export const PullRequestCard = ({
     </Link>
   );
 
+  const subheader = (
+    <span>
+      <Link
+        href={pullRequest.repository.url}
+        color="inherit"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {pullRequest.repository.name}
+      </Link>{' '}
+      · {DateTime.fromISO(pullRequest.creationDate.toString()).toRelative()}
+    </span>
+  );
+
   const avatar = (
     <Avatar
       displayName={pullRequest.createdBy.displayName}
@@ -86,6 +101,7 @@ export const PullRequestCard = ({
       <CardHeader
         avatar={avatar}
         title={title}
+        subheader={subheader}
         action={
           <AutoCompleteIcon hasAutoComplete={pullRequest.hasAutoComplete} />
         }
