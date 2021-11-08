@@ -18,7 +18,7 @@ import {
   BuildResult,
   BuildStatus,
   RepoBuild,
-} from '@backstage/plugin-azure-devops-backend';
+} from '@backstage/plugin-azure-devops-common';
 
 import { BuildTable } from './BuildTable';
 import { MemoryRouter } from 'react-router';

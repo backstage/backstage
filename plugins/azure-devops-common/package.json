@@ -1,0 +1,37 @@
+{
+  "name": "@backstage/plugin-azure-devops-common",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/azure-devops-common"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.8.1"
+  },
+  "files": [
+    "dist"
+  ]
+}
