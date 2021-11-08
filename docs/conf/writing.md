@@ -67,13 +67,15 @@ production build.
 
 ## Configuration Files
 
-It is possible to have multiple configuration files, both to support different
-environments, but also to define configuration that is local to specific
-packages. The configuration files to load are selected using a `--config <path>`
-flag, and it is possible to load any number of files. Paths are relative to the
-working directory of the executed process, for example `package/backend`. This
-means that to select a config file in the repo root when running the backend,
-you would use `--config ../../my-config.yaml`.
+It is possible to have multiple configuration files (bundled and/or remote),
+both to support different environments, but also to define configuration that is
+local to specific packages. The configuration files to load are selected using a
+`--config <local-path|url>` flag, and it is possible to load any number of
+files. Paths are relative to the working directory of the executed process, for
+example `package/backend`. This means that to select a config file in the repo
+root when running the backend, you would use `--config ../../my-config.yaml`,
+and for config file on a config server you would use
+`--config https://some.domain.io/app-config.yaml`
 
 If no `config` flags are specified, the default behavior is to load
 `app-config.yaml` and, if it exists, `app-config.local.yaml` from the repo root.
@@ -85,7 +87,7 @@ are NOT loaded. To include them you need to explicitly include them with a flag,
 for example:
 
 ```shell
-yarn start --config ../../app-config.yaml --config ../../app-config.staging.yaml
+yarn start --config ../../app-config.yaml --config ../../app-config.staging.yaml --config https://some.domain.io/app-config.yaml
 ```
 
 All loaded configuration files are merged together using the following rules:

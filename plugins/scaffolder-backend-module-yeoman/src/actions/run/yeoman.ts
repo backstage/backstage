@@ -18,6 +18,15 @@ import { JsonObject } from '@backstage/types';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
 import { yeomanRun } from './yeomanRun';
 
+/**
+ * Creates a `run:yeoman` Scaffolder action.
+ *
+ * @remarks
+ *
+ * See {@link https://yeoman.io/} and {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
+ *
+ * @public
+ */
 export function createRunYeomanAction() {
   return createTemplateAction<{
     namespace: string;

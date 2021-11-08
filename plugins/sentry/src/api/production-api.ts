@@ -16,12 +16,13 @@
 
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class ProductionSentryApi implements SentryApi {
   constructor(
     private readonly discoveryApi: DiscoveryApi,
     private readonly organization: string,
+    private readonly identityApi?: IdentityApi,
   ) {}
 
   async fetchIssues(
@@ -34,11 +35,13 @@ export class ProductionSentryApi implements SentryApi {
     }
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
+    const options = await this.authOptions();
 
     const queryPart = query ? `&query=${query}` : '';
 
     const response = await fetch(
       `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}${queryPart}`,
+      options,
     );
 
     if (response.status >= 400 && response.status < 600) {
@@ -46,5 +49,17 @@ export class ProductionSentryApi implements SentryApi {
     }
 
     return (await response.json()) as SentryIssue[];
+  }
+
+  private async authOptions() {
+    if (!this.identityApi) {
+      return {};
+    }
+    const token = await this.identityApi.getIdToken();
+    return {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    };
   }
 }
