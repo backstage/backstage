@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-scaffolder': minor
 ---
 
 Added changes so as to enable addition of custom components in scaffolder.
