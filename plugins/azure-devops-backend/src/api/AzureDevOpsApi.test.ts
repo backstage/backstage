@@ -16,17 +16,21 @@
 
 import {
   Build,
+  DefinitionReference,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
   BuildResult,
   BuildStatus,
-  GitPullRequest,
-  GitRepository,
   PullRequest,
   PullRequestStatus,
   RepoBuild,
-} from './types';
+} from '@backstage/plugin-azure-devops-common';
+import {
+  GitPullRequest,
+  GitRepository,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { mappedPullRequest, mappedRepoBuild } from './AzureDevOpsApi';
 
-import { DefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
 describe('AzureDevOpsApi', () => {
