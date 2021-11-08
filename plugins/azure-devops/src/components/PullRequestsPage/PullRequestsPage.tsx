@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { Content, Header, Page } from '@backstage/core-components';
 
-export const azurePrsRootRouteRef = createRouteRef({
-  path: '',
-  title: 'Azure Pull Requests',
-});
+import React from 'react';
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  title: 'Azure Pipelines Entity Content',
-});
+export const PullRequestsPage = () => {
+  return (
+    <Page themeId="tool">
+      <Header title="Azure Pull Requests" />
+      <Content />
+    </Page>
+  );
+};
