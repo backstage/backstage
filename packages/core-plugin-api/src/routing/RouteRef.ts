@@ -80,7 +80,7 @@ export class RouteRefImpl<Params extends AnyParams>
 
   /** @deprecated use `useRouteRef` instead */
   get path() {
-    return this;
+    return this.config.path ?? '';
   }
 
   get icon() {
