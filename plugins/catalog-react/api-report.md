@@ -727,17 +727,13 @@ export function getEntitySourceLocation(
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
 
-// Warning: (ae-missing-release-tag) "loadCatalogOwnerRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function loadCatalogOwnerRefs(
   catalogApi: CatalogApi,
   identityOwnerRefs: string[],
 ): Promise<string[]>;
 
-// Warning: (ae-missing-release-tag) "loadIdentityOwnerRefs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function loadIdentityOwnerRefs(
   identityApi: IdentityApi,
 ): Promise<string[]>;
@@ -829,8 +825,6 @@ export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
-// Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function useEntityOwnership(): {
   loading: boolean;
