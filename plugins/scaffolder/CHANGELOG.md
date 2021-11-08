@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 5263e13238: Ability to add custom components in scaffolder frontend
+- 5263e13238: Added ability to add custom components in scaffolder frontend
 
 ## 0.11.9
 
