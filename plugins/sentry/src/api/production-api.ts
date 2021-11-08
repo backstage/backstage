@@ -24,15 +24,21 @@ export class ProductionSentryApi implements SentryApi {
     private readonly organization: string,
   ) {}
 
-  async fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]> {
+  async fetchIssues(
+    project: string,
+    statsFor: string,
+    query?: string,
+  ): Promise<SentryIssue[]> {
     if (!project) {
       return [];
     }
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
 
+    const queryPart = query ? `&query=${query}` : '';
+
     const response = await fetch(
-      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}`,
+      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}${queryPart}`,
     );
 
     if (response.status >= 400 && response.status < 600) {

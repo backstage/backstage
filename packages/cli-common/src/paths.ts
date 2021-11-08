@@ -17,7 +17,12 @@
 import fs from 'fs';
 import { dirname, resolve as resolvePath } from 'path';
 
-/** @public */
+/**
+ * A function that takes a set of path fragments and resolves them into a
+ * single complete path, relative to some root.
+ *
+ * @public
+ */
 export type ResolveFunc = (...paths: string[]) => string;
 
 /**

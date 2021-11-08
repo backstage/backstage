@@ -38,6 +38,7 @@ import { ARROW_MARKER_ID } from './constants';
 /**
  * Properties of {@link DependencyGraph}
  *
+ * @public
  * @remarks
  * <NodeData> and <EdgeData> are useful when rendering custom or edge labels
  */
@@ -167,6 +168,8 @@ const WORKSPACE_ID = 'workspace';
 
 /**
  * Graph component used to visualize relations between entities
+ *
+ * @public
  */
 export function DependencyGraph<NodeData, EdgeData>(
   props: DependencyGraphProps<NodeData, EdgeData>,

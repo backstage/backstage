@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
 import { DeferredEntity } from '../processing/types';
 

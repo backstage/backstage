@@ -25,7 +25,8 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 
-export type DismissbleBannerClassKey =
+/** @public */
+export type DismissableBannerClassKey =
   | 'root'
   | 'topPosition'
   | 'icon'
@@ -33,6 +34,12 @@ export type DismissbleBannerClassKey =
   | 'message'
   | 'info'
   | 'error';
+
+/**
+ * @public
+ * @deprecated This type contained a typo, please use DismissableBannerClassKey instead
+ */
+export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
 const useStyles = makeStyles(
   (theme: BackstageTheme) => ({
@@ -72,17 +79,22 @@ const useStyles = makeStyles(
     error: {
       backgroundColor: theme.palette.banner.error,
     },
+    warning: {
+      backgroundColor:
+        theme.palette.banner.warning ?? theme.palette.banner.error,
+    },
   }),
   { name: 'BackstageDismissableBanner' },
 );
 
 type Props = {
-  variant: 'info' | 'error';
+  variant: 'info' | 'error' | 'warning';
   message: ReactNode;
   id: string;
   fixed?: boolean;
 };
 
+/** @public */
 export const DismissableBanner = (props: Props) => {
   const { variant, message, id, fixed = false } = props;
   const classes = useStyles();

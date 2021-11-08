@@ -19,12 +19,15 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+} from '@backstage/test-utils';
 
 describe('ExampleComponent', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   // setup mock response
   beforeEach(() => {

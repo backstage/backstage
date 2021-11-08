@@ -25,7 +25,12 @@ const DEFAULT_PROVIDER = {
   icon: AtlassianIcon,
 };
 
-class AtlassianAuth {
+/**
+ * Implements the OAuth flow to Atlassian products.
+ *
+ * @public
+ */
+export default class AtlassianAuth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -40,5 +45,3 @@ class AtlassianAuth {
     });
   }
 }
-
-export default AtlassianAuth;

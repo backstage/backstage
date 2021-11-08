@@ -23,6 +23,7 @@ import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { Link } from '../../components/Link';
 
+/** @public */
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -42,12 +43,14 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageBottomLink' },
 );
 
+/** @public */
 export type BottomLinkProps = {
   link: string;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
+/** @public */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;
   const classes = useStyles();

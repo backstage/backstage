@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 0.7.1
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- ea21f7f567: bump `typescript-json-schema` from 0.50.1 to 0.51.0
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+
 ## 0.7.0
 
 ### Minor Changes

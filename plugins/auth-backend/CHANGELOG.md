@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.6
+
+### Patch Changes
+
+- 3b767f19c9: Allow OAuth state to be encoded by a stateEncoder.
+- Updated dependencies
+  - @backstage/test-utils@0.1.20
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+
 ## 0.4.5
 
 ### Patch Changes

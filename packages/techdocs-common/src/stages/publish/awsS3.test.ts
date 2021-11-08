@@ -43,9 +43,11 @@ const loggerErrorSpy = jest.spyOn(logger, 'error');
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
+  bucketRootPath = '/',
   legacyUseCaseSensitiveTripletPaths = false,
 }: {
   bucketName?: string;
+  bucketRootPath?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
 } = {}) => {
   const mockConfig = new ConfigReader({
@@ -59,6 +61,7 @@ const createPublisherFromConfig = ({
             secretAccessKey: 'secretAccessKey',
           },
           bucketName,
+          bucketRootPath,
         },
       },
       legacyUseCaseSensitiveTripletPaths,
@@ -153,6 +156,21 @@ describe('AwsS3Publish', () => {
       expect(await publisher.publish({ entity, directory })).toBeUndefined();
     });
 
+    it('should publish a directory when root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+    });
+
+    it('should publish a directory when root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+    });
+
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
@@ -214,6 +232,23 @@ describe('AwsS3Publish', () => {
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
     });
 
+    it('should return true if docs has been generated if root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+    });
+
+    it('should return true if docs has been generated if root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+    });
+
     it('should return false if docs has not been generated', async () => {
       const publisher = createPublisherFromConfig();
       expect(
@@ -239,6 +274,27 @@ describe('AwsS3Publish', () => {
 
     it('should return tech docs metadata even if the legacy case is enabled', async () => {
       const publisher = createPublisherFromConfig({
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+    });
+
+    it('should return tech docs metadata even if root path is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
+      });
+      await publisher.publish({ entity, directory });
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
+      );
+    });
+
+    it('should return tech docs metadata if root path is specified and legacy casing is used', async () => {
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: 'backstage-data/techdocs',
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
@@ -278,15 +334,12 @@ describe('AwsS3Publish', () => {
         name: 'path',
       };
 
-      const techDocsMetadaFilePath = path.posix.join(
-        ...Object.values(invalidEntityName),
-        'techdocs_metadata.json',
-      );
-
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadaFilePath} does not exist!`,
+        message: expect.stringMatching(
+          /TechDocs metadata fetch failed; caused by Error: The file .* does not exist/i,
+        ),
       });
     });
   });
@@ -331,6 +384,47 @@ describe('AwsS3Publish', () => {
       );
       const jsResponse = await request(app).get(
         `/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass expected object path to bucket if root path is specified', async () => {
+      const rootPath = 'backstage-data/techdocs';
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: rootPath,
+      });
+      await publisher.publish({ entity, directory });
+      app = express().use(publisher.docsRouter());
+
+      const pngResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass expected object path to bucket if root path is specified and legacy case is enabled', async () => {
+      const rootPath = 'backstage-data/techdocs';
+      const publisher = createPublisherFromConfig({
+        bucketRootPath: rootPath,
+        legacyUseCaseSensitiveTripletPaths: true,
+      });
+      await publisher.publish({ entity, directory });
+      app = express().use(publisher.docsRouter());
+
+      const pngResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
     });

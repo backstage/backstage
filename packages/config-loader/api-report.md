@@ -4,7 +4,7 @@
 
 ```ts
 import { AppConfig } from '@backstage/config';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
 // @public

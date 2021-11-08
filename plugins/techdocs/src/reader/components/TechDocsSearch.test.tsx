@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { buildInitialFilters, TechDocsSearch } from './TechDocsSearch';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { searchApiRef } from '@backstage/plugin-search';
+import { wrapInTestApp } from '@backstage/test-utils';
 import {
   act,
   fireEvent,
@@ -22,9 +23,8 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { searchApiRef } from '@backstage/plugin-search';
+import React from 'react';
+import { TechDocsSearch } from './TechDocsSearch';
 
 const entityId = {
   name: 'test',
@@ -89,7 +89,7 @@ describe('<TechDocsPage />', () => {
       await singleResult;
       expect(querySpy).toBeCalledWith({
         filters: {
-          kind: 'testable',
+          kind: 'Testable',
           name: 'test',
           namespace: 'testspace',
         },
@@ -108,7 +108,7 @@ describe('<TechDocsPage />', () => {
       await waitFor(() =>
         expect(querySpy).toBeCalledWith({
           filters: {
-            kind: 'testable',
+            kind: 'Testable',
             name: 'test',
             namespace: 'testspace',
           },
@@ -117,26 +117,6 @@ describe('<TechDocsPage />', () => {
           types: ['techdocs'],
         }),
       );
-    });
-  });
-});
-
-describe('buildInitialFilters', () => {
-  const filterEnt = {
-    name: 'Test',
-    kind: 'TestKind',
-    namespace: 'TeStNaMeSpAcE',
-  };
-  it('should use filters as is when legacy path', () => {
-    const filters = buildInitialFilters(true, filterEnt);
-    expect(filters).toStrictEqual(filterEnt);
-  });
-  it('should lowercase all filters for new approach', () => {
-    const filters = buildInitialFilters(false, filterEnt);
-    expect(filters).toStrictEqual({
-      name: 'test',
-      kind: 'testkind',
-      namespace: 'testnamespace',
     });
   });
 });

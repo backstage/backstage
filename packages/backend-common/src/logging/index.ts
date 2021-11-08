@@ -15,5 +15,5 @@
  */
 
 export * from './formats';
-export * from './rootLogger';
+export { createRootLogger, getRootLogger, setRootLogger } from './rootLogger';
 export * from './voidLogger';

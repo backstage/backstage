@@ -23,7 +23,7 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { withLogCollector } from '@backstage/test-utils-core';
+import { withLogCollector } from './logCollector';
 import { render } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router';

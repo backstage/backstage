@@ -254,6 +254,9 @@ export class ScmAuth implements ScmAuthApi {
     return url.host === this.#host;
   }
 
+  /**
+   * Fetches credentials for the given resource.
+   */
   async getCredentials(
     options: ScmAuthTokenOptions,
   ): Promise<ScmAuthTokenResponse> {

@@ -23,7 +23,7 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-import { msw, wrapInTestApp } from '@backstage/test-utils';
+import { setupRequestMockHandlers, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -44,7 +44,7 @@ describe('CreateAudit', () => {
   let apis: ApiRegistry;
   let errorApi: ErrorApi;
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     errorApi = { post: jest.fn(), error$: jest.fn() };

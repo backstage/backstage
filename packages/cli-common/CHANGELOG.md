@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.5
+
+### Patch Changes
+
+- c2d50a0073: Add docs to the last export of cli-common
+
 ## 0.1.4
 
 ### Patch Changes

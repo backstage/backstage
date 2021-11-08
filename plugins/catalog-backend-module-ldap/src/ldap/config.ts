@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Config, JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
 import { RecursivePartial } from '@backstage/plugin-catalog-backend';

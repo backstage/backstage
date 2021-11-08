@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { ConfigVisibility } from './types';
 import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 

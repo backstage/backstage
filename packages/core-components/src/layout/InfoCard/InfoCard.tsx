@@ -25,6 +25,7 @@ import classNames from 'classnames';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 
+/** @public */
 export type InfoCardClassKey =
   | 'noPadding'
   | 'header'
@@ -58,6 +59,7 @@ const useStyles = makeStyles(
   { name: 'BackstageInfoCard' },
 );
 
+/** @public */
 export type CardActionsTopRightClassKey = 'root';
 
 const CardActionsTopRight = withStyles(
@@ -99,6 +101,7 @@ const VARIANT_STYLES = {
   },
 };
 
+/** @public */
 export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 /**
@@ -117,7 +120,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
  * When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.
  * Set to the 'gridItem' variant to display the InfoCard with full height suitable for Grid:
  *
- *   <InfoCard variant="gridItem">...</InfoCard>
+ * `<InfoCard variant="gridItem">...</InfoCard>`
  */
 type Props = {
   title?: ReactNode;
@@ -141,6 +144,7 @@ type Props = {
   titleTypographyProps?: object;
 };
 
+/** @public */
 export function InfoCard(props: Props): JSX.Element {
   const {
     title,

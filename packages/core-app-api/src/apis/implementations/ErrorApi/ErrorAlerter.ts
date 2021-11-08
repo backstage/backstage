@@ -18,6 +18,8 @@ import { ErrorApi, ErrorContext, AlertApi } from '@backstage/core-plugin-api';
 /**
  * Decorates an ErrorApi by also forwarding error messages
  * to the alertApi with an 'error' severity.
+ *
+ * @public
  */
 export class ErrorAlerter implements ErrorApi {
   constructor(

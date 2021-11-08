@@ -21,6 +21,8 @@ const ERROR_PREFIX = 'Invalid discovery URL pattern,';
 /**
  * UrlPatternDiscovery is a lightweight DiscoveryApi implementation.
  * It uses a single template string to construct URLs for each plugin.
+ *
+ * @public
  */
 export class UrlPatternDiscovery implements DiscoveryApi {
   /**

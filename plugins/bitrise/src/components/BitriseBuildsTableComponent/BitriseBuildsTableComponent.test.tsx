@@ -18,7 +18,10 @@ import React from 'react';
 import { bitriseApiRef } from '../../plugin';
 import { BitriseClientApi } from '../../api/bitriseApi.client';
 import { setupServer } from 'msw/node';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { useBitriseBuilds } from '../../hooks/useBitriseBuilds';
 import { BitriseBuildsTable } from './BitriseBuildsTableComponent';
 import {
@@ -34,7 +37,7 @@ jest.mock('../../hooks/useBitriseBuilds', () => ({
 const server = setupServer();
 
 describe('BitriseBuildsFetchComponent', () => {
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
   const mockBaseUrl = 'http://backstage:9191';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   let apis: ApiRegistry;

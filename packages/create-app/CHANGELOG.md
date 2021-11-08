@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.4.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 4f1c30c176: Support optional path argument when generating a project using `create-app`
+- Updated dependencies
+  - @backstage/cli-common@0.1.5
+
 ## 0.4.0
 
 ### Minor Changes

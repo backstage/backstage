@@ -19,10 +19,10 @@ import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
-import { Observable } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -178,6 +178,7 @@ export class ScaffolderClient implements ScaffolderApi {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
   });
   // (undocumented)
   getIntegrationsList(options: { allowedHosts: string[] }): Promise<
@@ -199,13 +200,7 @@ export class ScaffolderClient implements ScaffolderApi {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // (undocumented)
-  streamLogs({
-    taskId,
-    after,
-  }: {
-    taskId: string;
-    after?: number;
-  }): Observable<LogEvent>;
+  streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;
 }
 
 // Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -239,6 +234,29 @@ const scaffolderPlugin: BackstagePlugin<
 >;
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
+
+// Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateList: ({
+  TemplateCardComponent,
+}: TemplateListProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TemplateListProps = {
+  TemplateCardComponent?:
+    | ComponentType<{
+        template: TemplateEntityV1beta2;
+      }>
+    | undefined;
+};
+
+// Warning: (ae-missing-release-tag) "TemplateTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateTypePicker: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "TextValuePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

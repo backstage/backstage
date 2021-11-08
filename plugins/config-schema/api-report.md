@@ -7,7 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { Schema } from 'jsonschema';
 

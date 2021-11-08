@@ -25,7 +25,12 @@ const DEFAULT_PROVIDER = {
   icon: GitlabIcon,
 };
 
-class GitlabAuth {
+/**
+ * Implements the OAuth flow to GitLab products.
+ *
+ * @public
+ */
+export default class GitlabAuth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -42,4 +47,3 @@ class GitlabAuth {
     });
   }
 }
-export default GitlabAuth;
