@@ -834,6 +834,9 @@ export function useElementFilter<T>(
   dependencies?: any[],
 ): T;
 
+// @public @deprecated (undocumented)
+export type UserFlags = {};
+
 // Warning: (ae-forgotten-export) The symbol "RouteFunc" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-missing-release-tag) "useRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
