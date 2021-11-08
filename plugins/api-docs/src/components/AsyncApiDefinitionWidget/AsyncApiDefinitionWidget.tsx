@@ -145,7 +145,6 @@ const fetchResolver = {
   fetchOptions: {},
 
   async read(file: any) {
-    // @ts-ignore
     const response = await fetch(file.url, {
       ...this.fetchOptions,
     });
