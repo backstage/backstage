@@ -19,6 +19,8 @@ import { Card, CardContent, CardHeader, Link } from '@material-ui/core';
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { Avatar } from '@backstage/core-components';
 import { PullRequest } from '../../../../api/types';
+import { PullRequestCardPolicies } from './PullRequestCardPolicies';
+import { PullRequestCardReviewers } from './PullRequestCardReviewers';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -33,14 +35,17 @@ const useStyles = makeStyles(
     cardHeaderSimplified: {
       paddingBottom: theme.spacing(2),
     },
-    content: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
     cardHeaderAction: {
       display: 'flex',
       alignSelf: 'center',
       margin: 0,
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    policies: {
+      flex: 1,
     },
   }),
   { name: 'PullRequestCard' },
@@ -90,7 +95,16 @@ export const PullRequestCard = ({
         }}
       />
 
-      {!simplified && <CardContent className={classes.content} />}
+      {!simplified && (
+        <CardContent className={classes.content}>
+          <PullRequestCardPolicies
+            policies={pullRequest.policies}
+            className={classes.policies}
+          />
+
+          <PullRequestCardReviewers reviewers={pullRequest.reviewers} />
+        </CardContent>
+      )}
     </Card>
   );
 };
